@@ -29,9 +29,32 @@ especially those they need to be aware of when upgrading.
 - big imrpvoemetns to PRogressMonitor code
 
 
+------------
+
+- BuildScripts
+  - configure
+    - libxml2 support defaults on, and xerces now defaults off (if libxml2 on), qHasFeature_libxml2
+    - replace old </PkgConfigLinkLineAppendages> with simpler PkgConfigNames (to fix libxml2 include issue)
+    - for libxml add LIBXML_STATIC to CPPFLAGS (so seen in vscode)
+
+  - Docker Build Containers
+    - Refactoring/options - tweak so builds smaller docker windows container - avoiding(???) issue with .github actions
+      not having enuf disk space (so failing)
+
+  - Makefile
+    - improved docs and behavior of WRITE_PREPROCESSOR_OUTPUT makefile option
+    - new make distclean in top level makefile
+
+  - Skel
+    - Small cleanups (makefiles)
+
+  - IDE Support
+    - Delete some no longer needed references to vs2k17/19
 
 
 -    VS_17_8_0 in docker container, 
+    dockerfile use vs VS_17_9_0
+
 - docker build for windows compiler: tweaked and better documented source of --add lines in installation of Visual Studio
 
 - Moved many enum names into surrounding namespace with using, such as:
@@ -42,342 +65,130 @@ especially those they need to be aware of when upgrading.
 - Execution
   - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
 
+- Characters
+  - ToString
+    -  ToString() support for (some) chrono::duration and chrono time_point values (with any clock)
+  - FloatConversion
+    - improved Characters::FloatConversion code checking with concepts use (so better error reports, but no real changes)
+  - String
+    - Added String::Remove() overload
+
+
 - Configuration
-  - Updated bug defines for _MSC_VER_2k22_17Pt8_
+  - Compiler Bug Defines
+    - Updated bug defines for _MSC_VER_2k22_17Pt8_
+    - Support _MSC_VER_2k22_17Pt9_
+    - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+    - qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy for clang
+    - qCompilerAndStdLib_template_template_auto_deduced_Buggy BWA
+    - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy new bug workaround define and attempted bug workaround - testing
+    - New bug define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+- DataExchange
+  - ObjectVariantMapper
+    - Added DurationSeconds support to ObjectVariantMapper::MakeCommonSerializer
+  - XML
+    - Massive change (somewhat backward compatible, but mostly not) - very little the same
+    - New XML::{Provider,DOM,Namespace,XPath, Schema} etc support
+    - XML::SAXParse deprecated overload taking context reference, and instead take context ptr
+    - Targets either Xerces or libxml2
+    - libxml2 now the default because IT supports XPath in the DOM code (so does Xerces but much weaker in Xerces)
 
 - Debug
   - Assertions
     - new _ASSUME_ATTRIBUTE_ macro, and experimental use of it in Assert/Require macros
     - split Assert into Assert (procedure) and AssertExpression for expressions; and sample for Require/RequireExpression and Ensure/EnsureExpression; for the PROCEDURE versions - in RELEASE BUILDS - add [[assume(C)]] where possible (RISKY, INTERESTING, BUT PROBBABLY HELPFUL FOR PERFORMANCE)
+    - in release builds, Assert(ETC)NotReached() calls std::unreachable () if available
+  - Sanitizers
+    - tried memory sanitizer - a boondoggle - not worth trying for now...
+
+- Math
+  - Math utilities use more concepts for better error reporting
+
+- Memory
+  - Added new ValueOfOrThrow
+
+
+- Time
+  - ***not backward compatible*** - big change to Time::Realtime code: deprecate Time::DurationSecondsType in favor of sometimes Time::DurationSeconds and sometimes Time::TimePointSeconds
+    - mostly this means places where you used to specify a timeout, just add an 's' to the end (3.0 becomes 3.0s).
+      Also- when treating the duration as a float, you need to say .count (). And when treating a TimePointSeconds as a float
+      In process of converting, fixed a couple bugs due to confusion beteween teh float being timepoint vs duration.
+  - new experimental Time::FromAppStartRelative and ToAppStartRelative
+  - New Configuration concepts support  - IDuration and ITimePoint
+  - renamed Time::kInfinite to Time::kInfinity
+  - duration now a literal type (constexpr dtor was missing); so now can make Duration::min/max and related duration range stuff constexpr
+  - defined Traversal::RangeTraits::Default<> template specializations for Time::DurationSeconds and Time::TimePointSeconds so ranges work better with these types
+  - DateTime
+    - big change to DateTime 'chrono::time_point' and 'tickcount' support; now directly support arbitrary time_point in DateTime CTOR, and as template for DateTime::As<> and rewrote To/From TickCount to use these
+  - Clocks
+    - clock_cast extension of std::chrono::clock_cast, plus add (Stroika) Range support
+    - AppStartZeroedClock
+      define new template AppStartZeroedClock<> - and use that in place of (very recent add/removed) ToAppStartRelative/FromAppStartRelative using this clock type with clock_cast>?
+    - defined new RealTimeClock type alais for steack_clock (doc used for TickCount); 
+    - new Time::DisplayedRealtimeClock (and use);
+
+- Traversal
+  - Range
+    - Migrate Foundation::Traversal::Openness type to Traversal Common.h file, so can be used elsewhere (without #include Range.h which pulls alot in); no namespace changes
+
+- Frameworks
+  - Led
+    - Actually ported to MacOS/Unix
+      - old code just had commented out builds - so misleadingly ported before v3 (really just windows)
+      - Lots done here - but still tons of led code disabled on UNIX (if/cuz no GDI)
+      - But I can now use alot of the Led code (AskHealthFrame uses for record RTF read/convert).
+    - Lose old MacOS 'quicktime/carbon' code (so check pre-v3.0d5 for that code if ever needed)
+    - minor cleanups to constexpr Led code, etc, modernizing usage
+
+  - SystemPerformanceMonitor
+    - fix system performance monitor code to better track initial time on measurements; change sample to print times using DisplayedRealtimeClock::time_point; and related cleanups
+
+  - New Frameworks/Test
+    - Simple wrapper on google test code
+
+- ThirdPartyComponnents
+  - Boost 
+   - 1.84.0
+   - tweak makefile
+   - fixed boost download - jfrog seems broken
+  - LibCurl
+    - libcurl 8.5.0
+  - libxml2
+    - new thirdparty compoennt
+    - version 2.12.14
+
+  - openssl
+    - openssl 3.2.0
+  - SQLite
+    - sqlite 3.44.2
+  - Xerces
+    - 3.2.5
+    - patch Xerces ubsan issue
+
+
+
+------
 
 - Docs and comments
+  - Tons and miscelaneous
+
+- Tests
+  - GoogleTest
+    - Depend on googletest for regression testing (disabled if thirdpartycomponent googletest not configured/enabled).
+    - cleanup of output of Tests makefile for run-tests for compat with new gtest code
+    - Rewrote all regtests to use googltests, but only about 1/4 rewritten WELL on top of googletest (so more todo but low priority).
+  - Valgrind
+    - disable another test under valgrind cuz too slow
+    - disable valgrind-debug-SSLPurify cuz extremely slow and vanishingly little value
+
+
 
 #if 0
-
-commit 5560bed8b7c571679a9a8d6e506919681b45372b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 15 23:49:03 2023 -0500
-
-    if MSVC compiler, and release build, use assume hack on Asserts (even though compiler not yet supporting [[assume]])
-
-commit 0eb48e9b148e674abd68f4a6d024723881105ab9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 16 09:34:24 2023 -0500
-
-    avoid noisy performance warning
-
-commit e2baa554fe52897cf89dfb4a5f41e4cc3943a0a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 16 09:41:43 2023 -0500
-
-    in release builds, Assert(ETC)NotReached() calls std::unreachable () if available
-
-commit 2460d78c15662f30e0294ecc12a8712d7a1f0778
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 16 09:44:27 2023 -0500
-
-    another tweka to timings to reduce docker timing warnings
-
-commit 5ad4219c0b46ea33dc72ff0315506ed3777db0ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 16 09:45:50 2023 -0500
-
-    another tweka to timings to reduce docker timing warnings
-
-commit 36674e68bf73be32a8dc1d9cc27863bbb09c86b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 16 10:21:17 2023 -0500
-
-    start experimental playing with Time::DurationSeconds and Time::DurationSecondsTimePoint to replace Time::DuractionSecondsType
-
-commit 5f9d870a47ca61a2a2d0848ee9412bfa9a9ad625
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 16 11:10:14 2023 -0500
-
-    switch TimingTrace and WhenTimeExceeded code to use new experimental Time realtime changes (DurationSecondsTimePoint etc)
-
-commit 2eceeb883fafc58ef80f4c829f9e6d8555568931
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 16 11:39:10 2023 -0500
-
-    new experimental Time::FromAppStartRelative and ToAppStartRelative - and test usage in DbgTrace code
-
-commit 85ece493c084f23fe894570c68d97088cda44cda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 16 21:03:02 2023 -0500
-
-    tweak timing threshold for warning avoidance in docker container
-
-commit d6721d0588ea21536f42c3fa8778522919c891a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 17 22:12:06 2023 -0500
-
-    New Configuration concepts support  - IDuration and ITimePoint
-
-commit 1f7a56103a9aac3e27c56610ed989f97bf3b10a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 17 22:18:04 2023 -0500
-
-    ToString() support for (some) chrono::duration and chrono time_point values
-
-commit 1b0834e918f1d0fa77310f2a13b40a4f4ee991d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 15:57:58 2023 -0500
-
-    extend Vs2kASANBugWorkaround to samples
-
-commit c9640dc063909360d2c5da31c45d834a17ddbac6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 16:00:14 2023 -0500
-
-    improved Characters::FloatConversion code checking with concepts use (so better error reports, but otehrwise no real changes)
-
-commit 2fb75ab813fe88569669e755db69db6beb90834e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 16:06:26 2023 -0500
-
-    Math utilities use more concepts for better error reporting
-
-commit 71251aa43011bdd9212d659eb4af5e2e33db9d43
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 19:23:21 2023 -0500
-
-    ***not backward compatible*** - big change to Time::Realtime code: deprecate Time::DurationSecondsType in favor of sometimes Time::DurationSeconds and sometimes Time::TimePointSeconds
-    
-    - lose obsolete file Foundation\Time\Realtime.cpp
-    - mostly this means places where you used to specify a timeout, just add an 's' to the end (3.0 becomes 3.0s).
-    Also- when treating the duration as a float, you need to say .count (). And when treating a TimePointSeconds as a float
-    In process of converting, fixed a couple bugs due to confusion beteween teh float being timepoint vs duration.
-    
-    renamed Time::kInfinite to Time::kInfinity
-
-commit 29c64ed1ed04d5877b138b1911a85ba6fad8f434
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 22:07:35 2023 -0500
-
-    minor tweaks to avoid clang++ libclang++ errors (not sure whose bug)
-
-commit f88e7c59bacdd3b27d11abbe0f56755d3776ed09
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 22:08:22 2023 -0500
-
-    Fixed typo in last checkin
-
-commit 2a3de69258a53cbf343403790ecd7263198df36b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 22:09:37 2023 -0500
-
-    fixed minor clang++ issues
-
-commit 8e91da716a445b4196925b07e044e551a0733ce9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 22:12:04 2023 -0500
-
-    cosmetic
-
-commit d53a09b0c0fe9542f26ab0e148db5f00be0e1904
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 22:49:40 2023 -0500
-
-    duration now a literal type (constexpr dtor was missing); so now can make Duration::min/max and related duration range stuff constexpr
-
-commit bad989a1cad2a7a332dbf2c021c05cfa0393d374
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 18 23:14:34 2023 -0500
-
-    Added DurationSeconds support to ObjectVariantMapper::MakeCommonSerializer
-
-commit 0d4aa335569ed88e463446e88db8366e6512904f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 08:19:55 2023 -0500
-
-    fixed typo
-
-commit 6dd59411a566c9d9d0af172c96f0e5e69576f27e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 08:25:41 2023 -0500
-
-    mostly cosmetic
-
-commit e8ee455b680ef5e50923cff473a6ed375d347554
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 08:27:11 2023 -0500
-
-    save forgotten cehckin
-
-commit c487b30c593923f72d901e0d1b5f9d4692a1d2fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 08:36:23 2023 -0500
-
-    mostly cosmetic
-
-commit a4fd2f501e3a277e53112bb68cc9134e17bdd58f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 08:37:04 2023 -0500
-
-    adjust ping timeout
-
-commit 7f59a97aef49e4939272a7f8c01abb1028f00e0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 09:01:19 2023 -0500
-
-    improved docs and behavior of WRITE_PREPROCESSOR_OUTPUT makefile option
-
-commit b4b56f47a61ed20faa4a477727a398b0f0ae6c80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 09:09:32 2023 -0500
-
-    more tweaks to WRITE_PREPROCESSOR_OUTPUT behavior
-
-commit 6618a54fc58c64194a2d9abd18e4909a6ef93d5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 11:47:54 2023 -0500
-
-    test worakround for old clang++ compiler bug
-
-commit 70eb489db5d602ccbe16b05cac87f83f5b7ea0fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 17:34:35 2023 -0500
-
-    Migrate Foundation::Traversal::Openness type to Traversal Common.h file, so can be used elsewhere (without #include Range.h which pulls alot in); no namespace changes
-
-commit 67195cfd378bf1738a0fbe531faeb4bd3e300faa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 17:35:36 2023 -0500
-
-    defined Traversal::RangeTraits::Default<> template specializations for Time::DurationSeconds and Time::TimePointSeconds so ranges work better with these types
-
-commit f1661ff83fba0482c46f634652f59af17c0bb098
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Nov 19 20:36:09 2023 -0500
-
-    cleanup recent Traversal::RangeTraits::Default<Time::TimePointSeconds> etc changes
-
-commit 89ddcadf0bfa0aae2749a9ead3ea08f05a1567a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 19 20:40:22 2023 -0500
-
-    mostly cosmetic
-
-commit c4543449950f6259e6622c6599d6c625900f109e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 09:48:03 2023 -0500
-
-    fiddling with convert between timepoint and DateTime objects
-
-commit 6fbb2949957b4da05490666f9622918fe38dfc43
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 13:40:34 2023 -0500
-
-    big change to DateTime 'chrono::time_point' and 'tickcount' support; now directly support arbitrary time_point in DateTime CTOR, and as template for DateTime::As<> and rewrote To/From TickCount to use these
-
-commit 838fa2e94ee36e2406554fb953ccfd3a5c08cb76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 14:08:33 2023 -0500
-
-    get compiling recent changes on macos
-
-commit 431b042aa36b08f4f989533a7ca0237759ba3a0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 14:22:30 2023 -0500
-
-    qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy and use to cleanup last checkin
-
-commit 42307cbb4698565abf580807de8e3d2f88139576
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 14:26:06 2023 -0500
-
-    cosmetic
-
-commit 031e43ffb8b360e8069f4a6c63b40cca4b617e1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 14:40:16 2023 -0500
-
-    cosmetic
-
-commit aaec63687f0854b7cdf9c23b60ae23786c649916
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 20:32:40 2023 -0500
-
-    migrated new clock_cast code to its own module, and did several fixes, and related cleanups
-
-commit cf1804766e7efdf2630edc0eb45a26be920e04da
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 20:45:45 2023 -0500
-
-    disable another test under valgrind cuz too slow
-
-commit da52906d567d25d2bf4899bfa9d4b1bb0459c967
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 20:48:27 2023 -0500
-
-    fixed typo
-
-commit 1ffcb7652b81dc7cb672e768495b399f1c6dd1cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 22:30:16 2023 -0500
-
-    fixed typo
-
-commit 6b86a2c67189beff68d7a924cc810a559101e45e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 20 22:32:26 2023 -0500
-
-    defined new RealTimeClock type alais for steack_clock (doc used for TickCount); define new template AppStartZeroedClock<> - and use that in place of (very recent add/removed) ToAppStartRelative/FromAppStartRelative using this clock type with clock_cast>?
-
-commit 36b07e0ba46a6db3f24c335c766b0741e233af2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 00:02:24 2023 -0500
-
-    more AppStartZeroedClock<BASE_CLOCK_T, DURATION_T> and fixes - and use it better in Debug::Private_::Emitter so it prints right numbers
-
-commit 64897f4a8f51bf712b9b8f3e27a8be89fe4be2a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 00:09:35 2023 -0500
-
-    Comments
-
-commit 9d7e1315d43041f2df8761f1f6b4bd8be0bba57e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 00:13:37 2023 -0500
-
-    fixed typo
-
-commit edbb61f2555f5fb9fd508925b28b057b6107a5bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 00:24:41 2023 -0500
-
-    minor cleanups and comments
-
-commit deaca18b91db2f27ae7b5136b473469b35ee7742
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 13:25:16 2023 -0500
-
-    fix ToString() to support time_point with any clock
-
-commit 8b12f0d416815fbaf8af1a3746a1860d0b6effb4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 13:27:10 2023 -0500
-
-    new Time::DisplayedRealtimeClock (and use); fix system performance monitor code to better track initial time on measurements; chagne sample to print times using DisplayedRealtimeClock::time_point; and related cleanups
-
-commit 0b004f745ede2d34b2c330b17c302329be90176f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 13:38:27 2023 -0500
-
-    todo, comments and static_asserts
-
 commit a6028f892c7e11e414562a426a944f88b6b34ae2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 21 19:01:51 2023 -0500
 
     https://stroika.atlassian.net/browse/STK-566  Major Characters::ToString cleanup, including ToString (...elipsis) support, and cleanup use of templates in Private_ - ToStringDefaults, etc. BROKE case of enums - so have to circle back and fix that
-
-commit 133b66c8f2a0f7814a93355fdb9561a17a2966a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 19:02:31 2023 -0500
-
-    another Debug::IsRunningUnderValgrind too slow owrkaround for test40
 
 commit 976b5a556cdd8ee68c545b6a13c8f000d891913d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -397,12 +208,6 @@ Date:   Tue Nov 21 23:32:08 2023 -0500
 
     Added requires () on default CTOR for various container archtypes, that require less, or equal_to etc to be defined, so we hopefully get better compiler error messages (otehrwise should have no effect)
 
-commit f0f2dac62e86593404fe78d9f3ac51cef8e843bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 23:32:25 2023 -0500
-
-    cosmetic
-
 commit e7f4516ea7f09c6ca4112dcb20444607cf3563da
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 21 23:32:47 2023 -0500
@@ -415,59 +220,11 @@ Date:   Tue Nov 21 23:49:54 2023 -0500
 
     network monitor traceroute code new overload taking per hop callback; used to improve the UI of the traceroute app so more like regular traceroute tool (but still maybe broken - debug soon)
 
-commit 2f2f8ab5fadb82c2afc572fd2b44fc61de77e7bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 00:04:46 2023 -0500
-
-    docs
-
 commit 77e1544a135a0e7dd55b79c659e05e301f62b40d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 22 00:16:25 2023 -0500
 
     cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
-
-commit 56659770b8b05d38524cb888d808da351f20c1e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 00:42:56 2023 -0500
-
-    cosmetic
-
-commit cc50d0b396537a2f1a7b07e110898f8b01ca46e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 11:01:26 2023 -0500
-
-    fixed typo
-
-commit d31e447ec6621b5e7e270cc24848b52031f57e71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 11:02:03 2023 -0500
-
-    Cleanup new Time::clock_cast code, and added Range support - critical for the jittery case
-
-commit 31743478aa5973e8c6f1b9faf266dcbc0fa69a35
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 11:02:28 2023 -0500
-
-    try new Time::clock_cast for rnages
-
-commit 5023a8d4a117c989c4ece0d64755912e124eb07f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 11:20:06 2023 -0500
-
-    Minor cleanups to recent clock_cast<> code
-
-commit b1385d9860b408ca54182d64ca2fe516ef5a1b0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 11:23:21 2023 -0500
-
-    qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy for clang
-
-commit 0cf23446e84f0bb098f84ce809c5c00ca2248338
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 11:40:12 2023 -0500
-
-    qCompilerAndStdLib_template_template_auto_deduced_Buggy BWA
 
 commit e878618a4d953d46067d00e4ec769b190a7201ff
 Author: Lewis Pringle <lewis@sophists.com>
@@ -487,23 +244,11 @@ Date:   Wed Nov 22 22:26:49 2023 -0500
 
     **incompatible change** to SAXReader/StructuredStreamEvents::IConsumer - added Mapping<StructuredStreamEvents::Name, String> attributes argument to StartElement () callback, and no longer generate Start/End/TextInside calls for each attribute (though ObjectReader still does this)
 
-commit e9713db25f546103eb42741020aea4e8a7bba2f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 22:42:42 2023 -0500
-
-    fixed typo
-
 commit a142c5e0afad87b26d6f2b37cda2fee3128d1dc4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 23 09:11:14 2023 -0500
 
     several tweaks and DbgTraces to help address slow memcheck issue on unix
-
-commit 43cba323783210f657ff600d8ec714533777f1c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 23 09:13:08 2023 -0500
-
-    tweaked timeout in regtest
 
 commit 43531c12149115166884df6af9dd122d1906eca5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -523,18 +268,6 @@ Date:   Thu Nov 23 12:48:22 2023 -0500
 
     more cleanups to BLOB::FromRaw/FromHex code
 
-commit 4c7774dfd3ffec2f1c3cb2084eec25e2403e03e0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Nov 23 14:04:22 2023 -0500
-
-    Comments
-
-commit 89dae941769aa01949addfa7a28f53e02ff89d9b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Nov 23 14:16:35 2023 -0500
-
-    workaround issue with old libc++
-
 commit ff9dad8ce8c13336878b93baf407420d72c2ed9f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 23 20:42:00 2023 -0500
@@ -552,18 +285,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Nov 24 13:27:49 2023 -0500
 
     Minor ease of use tweaks to ProgressMonitor code
-
-commit cd1858edc1efcdd45d5b9f248d10f3f408a4de67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 24 13:34:23 2023 -0500
-
-    silence another slow valgrind test
-
-commit f34c2c3437b36fa2e12bf533c5ff78761e7e7eec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 24 13:37:04 2023 -0500
-
-    fixed typos
 
 commit 2252612b7eee472234f8d1a9eb715fa8dbbbfdc0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -583,41 +304,17 @@ Date:   Sat Nov 25 08:16:45 2023 -0500
 
     Minor clenaups to Iteartor <> code - mostly using const in a few more places
 
-commit e5001c5dd941ccfaf9c2233d26b96ca823add3fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 08:32:44 2023 -0500
-
-    disable valgrind-debug-SSLPurify cuz extremely slow and vanishingly little value
-
 commit 94b253e34cf8ed1f6a7c0f4bceedd7f905a323e4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 25 08:54:37 2023 -0500
 
     span<byte> support for MemoryMappedFileReader
 
-commit 0627350ea3cdd65f28eb127bd52f1a5080cc1bd9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 10:43:53 2023 -0500
-
-    cosmetic
-
 commit cf0db8a9c8b5e9f5fd618991dc3eb16696a25a33
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 25 10:44:54 2023 -0500
 
     better factoring and requires errreporting for BLOB::As() and deprecated BLOB::As/1
-
-commit c300281f0c6f1089bbe504bb197365b686e5ca43
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 12:59:25 2023 -0500
-
-    fixed typo
-
-commit bd373c25b4aedbe2120bcea9da0397814b3976fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 12:59:43 2023 -0500
-
-    more use BlockAllocation
 
 commit 1a7ba8d3ded6fef7a3285db1b51aa8667ddb9d58
 Author: Lewis Pringle <lewis@sophists.com>
@@ -631,12 +328,6 @@ Date:   Sat Nov 25 20:37:36 2023 -0500
 
     more requires on contaner 'no comparer arg' - usually default - CTORs so better error messages - no semantics changes
 
-commit 9eb2b1e3f40da86989da71a62d94cedebaf7180e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 26 16:48:16 2023 -0500
-
-    tweak workarounds for regtest 40 slow on debug valgrind builds
-
 commit 61535f87a34c0f692f08d96d5b8dde429ae9f148
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sun Nov 26 17:47:34 2023 -0500
@@ -649,35 +340,11 @@ Date:   Sun Nov 26 20:21:27 2023 -0500
 
     incompatiblename changes, but rarely referenced directly: qAllowBlockAllocation -> qStroika_Foundation_Memory_PreferBlockAllocation
 
-commit 23fe0a5fa92c4a12244fbfeaad10b877a43a4fe7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 26 20:23:35 2023 -0500
-
-    cosmetic
-
-commit e4f6a5e0f3e9fd128e085777f4fa1f5fb88ab691
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 11:34:19 2023 -0500
-
-    Minor duration_cast<> cleanups and Duration::AsPinned template cleanups
-
 commit bb609c830d72cb625082341367b1be2398fc2b9c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 27 11:58:57 2023 -0500
 
     Set<>::insert overloads / tweaks to make more STL like
-
-commit 8820971900ed10d77416345d86336c08b5f48ab4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 11:59:13 2023 -0500
-
-    cosemetic/comments
-
-commit c1af9f618f842f9b1bf01ba58d154ad888e85c9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 14:29:53 2023 -0500
-
-    fixed typo
 
 commit c87cdd46815dbe5865bd5d36fb8e995cbf1a5e4e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -697,41 +364,11 @@ Date:   Mon Nov 27 15:43:48 2023 -0500
 
     cleanp use of new ThreadPool CTOR (avoid deprecated api) and for WebServer - change behavior so we max-out the QMax value (possibly no effect, possible reduce attack surface)
 
-commit 3ed05a98f3b3d3ce7fe75c30a97b54baa866bb7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 16:05:35 2023 -0500
-
-    minor fix warning
-
-commit b58ad3cfd22de30a28c1845f4a1f355839a995a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 16:12:30 2023 -0500
-
-    tweak recent checkin
-
-commit a876905f4877615570bf52448abca10a068b7452
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 16:24:35 2023 -0500
-
-    comments
-
 commit 26750de6ba1965a5dd352315d2d5e04b7e3c51f2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 27 20:00:55 2023 -0500
 
     ScriptsLib/ApplyConfiguration sorts configurations by name now for .vscode - making it much easier to handle tons of configs in menu in vscode
-
-commit 8cab1fa725e744f41bd60cd018f794b2dde76d5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 20:09:48 2023 -0500
-
-    more speed tweaks for valgrind slow memcheck
-
-commit e5d39b856f733a797a94f23847b49057145d6422
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 28 13:10:33 2023 -0500
-
-    silence a warning with a cast
 
 commit edec7554fe7e3167ae645de80d7570c8be055946
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -763,24 +400,6 @@ Date:   Tue Nov 28 17:41:16 2023 -0500
 
     Minor tweeaks to recent ConnectionManager for WebServer statistics
 
-commit 2870ebe11ce4266e97e821cee7c3b43e2c6c46f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 28 17:43:45 2023 -0500
-
-    fixed typo
-
-commit 55c092754948301eb49b02e861818f58ffcddc7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 28 22:10:32 2023 -0500
-
-    fix small typo
-
-commit 6ff83aff0736a90d4b5db6d1221f7f8f60b3823a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 29 10:47:13 2023 -0500
-
-    fixed warning
-
 commit a9176e0981536a9c4da05414c6d097bfb4f85311
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Nov 29 11:05:35 2023 -0500
@@ -805,24 +424,6 @@ Date:   Wed Nov 29 22:23:02 2023 -0500
 
     better eror checking in MemoryMappedFileReader.cpp
 
-commit f4ebb1f304cdc2c83ef4a5c20728728eafe4bd2a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 29 22:23:42 2023 -0500
-
-    qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy new bug workaround define and attempted bug workaround - testing
-
-commit 5a1193192d1a212fb09bdd21aff1febad80bf6b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 09:09:05 2023 -0500
-
-    cosmetic
-
-commit 57922dcb0af242cf22544b458287a8fc9d46b1d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 09:12:54 2023 -0500
-
-    cosmeitc
-
 commit 21110369d1a1d163aec640b463145ad8f2609f0b
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Nov 30 09:35:12 2023 -0500
@@ -841,29 +442,11 @@ Date:   Thu Nov 30 11:47:50 2023 -0500
 
     changed rules for thread::Ptr::Abort - no longer legal to call with NotYetStarted(); and make START promise/ensure state != notyetstarted when it returns. Removed a few regtests (or adjust them) to reflect new rules and this fixes assert failre very sporadic in service test (i hope); - test more and more cleanups related to this
 
-commit f9b1da7033ef8a27e43724d9bf90b4b87ec5f4a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 11:53:46 2023 -0500
-
-    cosmetic
-
-commit 5d57079fa39c2b33340ee39dbaf115576e027c62
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 14:09:51 2023 -0500
-
-    silence warning
-
 commit a8892b3cb6ddaea564fcd96cc2592299ebda254a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 30 14:28:23 2023 -0500
 
     fixed a bunch of holes, including docs, in ProgressMontior utility; still not used anyplace, but starting to use in RFL code, so testing there
-
-commit 32968a358c60049b9167cede057df38ffbd5adbc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 14:44:58 2023 -0500
-
-    docs
 
 commit 675a97707f20522abc8f570a41f4bafcc2de373d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -876,18 +459,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 30 17:55:14 2023 -0500
 
     mostly cosmetic cleanups to ProgressMonitor, but added some comments and WeakAsserts on SetProgress () code
-
-commit 47b820a41ecf3757a205b303cb6cf258ace3b9fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 17:55:40 2023 -0500
-
-    cosmetic
-
-commit 008ffb04c8724bf24a14926760eec0a3b81fe8e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 21:39:27 2023 -0500
-
-    cosmetic
 
 commit ea0b7f36291ad3ec116f19682110f07af13fb19d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -919,12 +490,6 @@ Date:   Fri Dec 1 20:00:20 2023 -0500
 
     new sanitizer configurations - cleanups and start trying msan
 
-commit 9bbefbed92c49846be59d4c841ca5f13bf2c0377
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 1 20:10:25 2023 -0500
-
-    fix typo
-
 commit b0c7933df8ae161a6962f0643b0a781aa9e1c1b2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 1 20:12:41 2023 -0500
@@ -942,30 +507,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 2 14:50:56 2023 -0500
 
     fixed bug in String :: CTOR (utf8) code - if contained latin1 characters and ascii, but no non-latin1 characters; added regtest for this case, and fixed the bug (could be more efficient, but hopefully good enuf for now - wait ti I see in profiling)
-
-commit 4df86b4bed9913abe9640147e168181347027420
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 2 14:55:41 2023 -0500
-
-    fixed typo
-
-commit 115d1b6ca9e48ef7c4fd5009ef8bde1f4f1b02d1
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Dec 2 15:40:08 2023 -0500
-
-    test losing  = hidden in configure
-
-commit 301dc07f2ab7ffc80a284451d06fdda67b785e24
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Dec 2 15:40:37 2023 -0500
-
-    memory sanitizer a boondoggle - not worth trying for now...
-
-commit 4807adbd8e8ce19dfa6b13825eececa8f1de2b07
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 2 15:41:07 2023 -0500
-
-    make format-code
 
 commit 08a61375053a1145fad1e5391234b658341ee55b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -985,23 +526,11 @@ Date:   Sun Dec 3 08:11:59 2023 -0500
 
     confoigure args for LinkTime_CopyFilesToEXEDir
 
-commit cefd9aaaf9dfd0d553b734e0a6f9378e2cc2a410
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 3 08:15:33 2023 -0500
-
-    Delete some no longer needed references to vs2k17/19
-
 commit 8a07778a41434b1101394f2247f1bc4efcbe8e7e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 3 11:59:11 2023 -0500
 
     new module Foundation::Debug::Visualizations to fix visual studio .natvis problems; #include Debug/Visualizations.h to get visualizations in debugger from now on
-
-commit 38faf247c53482f0bab4d9a9d6f3b680c757fc98
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Dec 4 09:39:43 2023 -0500
-
-    minor cleanups to configure script
 
 commit f7cd9c41c915d8d6b0af90576b8f13c1ff113970
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1009,23 +538,11 @@ Date:   Mon Dec 4 10:56:53 2023 -0500
 
     redid alot of the Thread start / abort logic so we now support RegressionTest25_AbortNotYetStartedThread_ again and re-enabled that test; probably more cleanups todo here but enuf done to run some tests
 
-commit d9122f9f54fe6a3c0c21f9b654a1416705266b02
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 4 14:09:22 2023 -0500
-
-    Comments
-
 commit 2938da6a5d1e3c1334803ecaad5e2344caff602c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 4 14:10:23 2023 -0500
 
     big simplification of Thread rep internals - removed fStatus_ - and just use values in various events: RISKY - but seems to work - test carefully before moving on
-
-commit 07f994cf15e8cdcaf515172c88e4e06a0b4ee88b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Dec 4 14:21:34 2023 -0500
-
-    cosmetic
 
 commit edd504df48dc21e4c2febf93f4824f273070e4ac
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1045,41 +562,17 @@ Date:   Mon Dec 4 22:42:47 2023 -0500
 
     lose Thread::Status::eNull - status for the rep, not the Ptr
 
-commit d1cb02384cc129777b8aa68d2c5fbc04ec0170bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 07:53:26 2023 -0500
-
-    tweak performance regtest warning thresholds so fewer warnings
-
-commit c153c628e0f8ea5cd489e4e328006ac8bda3721e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 08:12:32 2023 -0500
-
-    cleanup warning
-
 commit e2bcbb0c27fd64ea4fb29beb254068208b96b71f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 5 08:27:57 2023 -0500
 
     simplify LinkerArgs_LibPath configure - just store cmdline args in variable not actual path so dont need to do that magic in appy
 
-commit e7c93c9db099ad9c9c0dd301d520b1a129206d6b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 12:45:49 2023 -0500
-
-    cosmetic
-
 commit a0e74181aaa5f12f68e20900582f36c748f86e24
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 5 12:46:44 2023 -0500
 
     Debug/Visualizations natvis major improvement for Stroika strings - still not great but at least OK now
-
-commit 59cf435abadacb87af7b41e017226af7323b6145
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 12:47:17 2023 -0500
-
-    cosmetic
 
 commit 091a1e923108748c6a1c61fbac4110984b53a85f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1116,12 +609,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 6 10:16:52 2023 -0500
 
     qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy BWA; and BLOB::Repeat () optimizaiton
-
-commit 741529409d203df044016c882f7fa43378c4cc95
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 11:27:22 2023 -0500
-
-    Minor cosmetic
 
 commit 14d4343fcb53672bbf8dd3f6a13ec84fc400b7a3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1171,47 +658,11 @@ Date:   Wed Dec 6 15:23:23 2023 -0500
 
     more docs, regtests and progress on deduction for LRUCache and better use of requires/concepts
 
-commit 95ad8fb8162a66055cba4e017fafb0ccb897c713
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 15:57:37 2023 -0500
-
-    fixed tighter assert regtests
-
 commit 2af6901bffaa4fa5b286248af2f6972f4932fef4
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Dec 6 16:29:08 2023 -0500
 
     fixed minor recent regressions to SyncrhonizedLRUCache code (needs similar factory/CTORS)
-
-commit ccbb16255cef1d42a26b2241e409e81e82538711
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 6 16:35:43 2023 -0500
-
-    Comments
-
-commit a86825280803116bfde063365d97eff413ea14ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 16:36:19 2023 -0500
-
-    fixed typo
-
-commit ed55bc7fbab836e1431222ed3f96220bc38b23ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 16:37:54 2023 -0500
-
-    Comments
-
-commit f3801d16de8f474c5e4385230f7c0c06fd0cf423
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 16:58:55 2023 -0500
-
-    fixed typo; and retesting something ( turn workaround off 2023-12-06 to test)
-
-commit 9f5ceded570cc6d76242c7e8b0e705082957eeda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 17:10:01 2023 -0500
-
-    Comment and noexcept in ProgressMontitor code
 
 commit ff3867a80da7efee96650337124b13fbbf1643ef
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1225,23 +676,11 @@ Date:   Wed Dec 6 21:28:47 2023 -0500
 
     fix Cache::Stats_Basic so copyable
 
-commit bc2ff31111d6ad0329981d5e202f341dd2afc994
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 21:29:18 2023 -0500
-
-    cosmetic
-
 commit 9bf861eeeb3ef90f4e86647a23531d5b553faaf3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 6 21:42:40 2023 -0500
 
     minor tweaks to ProgressMonitor::Updater::SetCurrentTaskInfo - chgeck for chagnes
-
-commit 92cf0b381e943e279089198cf3b8913f9c1cb583
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 21:59:14 2023 -0500
-
-    fixed typo
 
 commit 431a46753b76388a30b48747ab46cfcfdddfbe7c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1254,30 +693,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 7 11:22:15 2023 -0500
 
     workaround/avoid probably real serious bug https://stroika.atlassian.net/browse/STK-700
-
-commit 2e9f9114f11a7197fdcdf4bbc97f241683ccd3d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 7 13:48:14 2023 -0500
-
-    mostly cosmetic name changes/celanups
-
-commit f5fa49e84212cfccb03eecb51418be933646bccc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 8 07:53:01 2023 -0500
-
-    experiemntal Traversal::Map4<> to replace Traversal::Map<> after suitable testing
-
-commit 98eac45b5439eaa800c957ecf82737dad1ac2ffa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 8 10:12:53 2023 -0500
-
-    Further improved Iterable::Map code with Map5 variant - close to usable/testable replacement
-
-commit 8c99f5be22fad701d1cab06fa5840c3d61dc00dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 8 10:48:31 2023 -0500
-
-    more fixes to Map5 code (including added draft to Set)
 
 commit c20a972c2d6ee21e271150a32d51bffa1fcda4d6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1296,12 +711,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 8 21:12:47 2023 -0500
 
     more cleanups to Iterable<T>::Map () - new impl - now supports lazy eval for Iterable<T> - just testing and then backfitting names and docs
-
-commit e73586e0e7ac224b463a29e786d92ca8a873949e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 8 21:42:13 2023 -0500
-
-    Comments
 
 commit a76f914a9e3d5c77b692659b3a1f8e3613068cdf
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1327,41 +736,17 @@ Date:   Sat Dec 9 15:41:43 2023 -0500
 
     Iterable<>::Where cleanup - using perfect forwarding and concepts and better subclass tuning in Containers like Set etc.
 
-commit 38f93e9857737058dd52bdaa15ac70f2337e6fb9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 17:01:14 2023 -0500
-
-    fixed typo
-
 commit 3c8daa35f1baff745851eeec63156a53ac87aa33
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 9 17:01:31 2023 -0500
 
     workaround qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
 
-commit 379e4a0caf1b2302126c13363018d2e371c908f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 17:06:52 2023 -0500
-
-    commetns
-
-commit 9f371347e48af5ce48cd38fbfe89111e0beb6b40
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 17:14:46 2023 -0500
-
-    comments
-
 commit 646fc024853e04b26961436b8441cd9b7f5981b4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 9 17:54:38 2023 -0500
 
     fixed typo in qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
-
-commit 722de612f558fa4362998c8ed08786b34204f758
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 17:55:15 2023 -0500
-
-    cleanup template names of recent class changes
 
 commit 06118a00b0947162e94d35d0238ba5465eb11244
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1374,24 +759,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 9 21:16:00 2023 -0500
 
     apply some of same resultEmpty cleanps just did to Itererable<>::Where overrides to Iterable<>::Map overrides - and related cleanups
-
-commit 56c2d20ba6681587eafc7cbd181ae298a7e89048
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 21:22:24 2023 -0500
-
-    docs
-
-commit 1635a5625573f733d146f1777936aaf9c790d31d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 21:30:06 2023 -0500
-
-    comments
-
-commit c938cd94eecf1df2be4e6244749ebc407bd7e4e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 23:21:22 2023 -0500
-
-    todcs
 
 commit 621349d7b2d021aded886dcc581548825b85f01a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1417,47 +784,17 @@ Date:   Sun Dec 10 12:07:33 2023 -0500
 
     Another attempt at CraeteFile for GetTempFile code
 
-commit d81232ad2a3ae1f633f39bdc4b0284213363124d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 10 12:17:23 2023 -0500
-
-    mostly cosmetic
-
 commit 9baaf3701327b49178847bbcc2181c9acb4a3b98
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 10 14:15:21 2023 -0500
 
     fixed remaining deprecated code usage
 
-commit 12049cfb88907b5c24213fd6636bc0f761e77b7e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 10 14:50:54 2023 -0500
-
-    cleanup String deprecations a bit
-
 commit 37ef8cfb207d148087485656b8a99db92bd999e1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 10 15:05:25 2023 -0500
 
     optimize String::ToUpperCase/ToLowerCase
-
-commit 3b020cde1d580e94af600a71f3ab5e3b17fdc6fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 10 17:33:30 2023 -0500
-
-    Comments and silence warning
-
-commit 9476519f9b7dee5226226514dd27d5265c5a7610
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 09:51:24 2023 -0500
-
-    fixed typo in last checkin
-
-commit be2f6b5884bbed9ee4102bc64c1fb45e12375389
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 09:52:13 2023 -0500
-
-    use integral/floating_point concepts more in Characters::String2Int/FloatingConversion code
 
 commit cb8e90ea47a838617c0c7c2e0e4d1eff92c8d0c2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1471,329 +808,17 @@ Date:   Mon Dec 11 10:33:27 2023 -0500
 
     early draft   Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Frameworks-Debugger-Template.natvis support
 
-commit e8ac4c782e559ace8f932f314e8d8380fddaf1e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 10:41:06 2023 -0500
-
-    early draft Frameworks/Test
-
-commit 9856c14207e0dd385a999b3ce171efbd0a163e48
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 15:16:03 2023 -0500
-
-    factored common shared Test code out into Test Framework (to be used in other projects and evanutlly updated to be based on google test ?? perhaps)
-
-commit 91ad3ca08fd895fda354d228fbf97cc07cc5be25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 18:30:38 2023 -0500
-
-    comments and cosmetic
-
-commit 71dd10c3e422da122933e40e455c669701a31641
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 18:30:53 2023 -0500
-
-    fixed small recent regression
-
-commit c725f62041b6aeb8b6892e47565884aa84149c70
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 20:41:21 2023 -0500
-
-    fixed one more minor regession
-
-commit 9b60e4d749593272e05590d082a7062670d14e68
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Dec 11 20:44:17 2023 -0500
-
-    fixed another minor typo/regression
-
-commit a8646aa1650c367c93ebd45f88e8464acc8589e0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Dec 11 20:58:09 2023 -0500
-
-    cosmetic
-
-commit 30580f39471e960ccc79255fe6a6da9665d5a58d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 21:06:44 2023 -0500
-
-    cosmetic
-
-commit 3009e533402bf0d50f87935d393c7518ee84cb27
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 21:31:46 2023 -0500
-
-    docs
-
-commit 6a65be167a631ff6a095315336de99596548743f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 20:35:30 2023 -0500
-
-    early draft of build thirdpartycompoennt googletest
-
-commit 497a9fda3e3031e330196e2c72464a86b66a428a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 20:39:05 2023 -0500
-
-    tweak googletest makefile
-
-commit 74c9c2315d01a82683e55ed8c96a281376dda4b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 20:42:14 2023 -0500
-
-    tweak googletest makefile
-
-commit fe057dd301f3c741a284eba22e79a10eca94d3e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 20:53:38 2023 -0500
-
-    googletest makefile cleanups
-
-commit f6949020fd589a8cbf398fc0ddbeba5bdfc9c1b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 20:59:39 2023 -0500
-
-    fixed googletest makefile
-
-commit c37e5a95c6d6788241350d0d4109173117870edd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 21:02:02 2023 -0500
-
-    fixed typo
-
-commit beb3eca6f24e39c9768c065ba36a5aace30e93ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 21:13:16 2023 -0500
-
-    googletest configure support
-
-commit a9a00fb26103c34caa375b4dcb343851fddd2c44
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 21:16:33 2023 -0500
-
-    googletest configure support
-
-commit 236477f51fafdf3f2cd6383c584d882fa7ad438c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 21:19:23 2023 -0500
-
-    build support for googletest
-
-commit e4bc2967fed6bbeb799740bd172e28a572a4a277
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 22:16:55 2023 -0500
-
-    fixed name
-
-commit 7ccb154e8c7e36f2b81fb717fa4eb82c9bc83ff9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 22:44:09 2023 -0500
-
-    maybe patched/fixed issue with gtest makefile so works with pkg-config on windows
-
-commit aa87a7c77a1782e52edbd7db55574a14b6d7c728
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 22:58:42 2023 -0500
-
-    another googletest makefile fix
-
-commit 50903626c7368083a5cca3fdcacff1c4f96026dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 23:07:56 2023 -0500
-
-    patch filename case issues with googletest makefile
-
-commit ccbaab22b4f835b09a6aad3d762c2f539936014e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 12 23:10:26 2023 -0500
-
-    .gitignore
-
-commit a3235a115601b4d6365f4c825b5ec9bec4e5023e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 10:31:11 2023 -0500
-
-    Progress on switchign to gtest
-
-commit d40d14d05de69f9e50bb81cb0b9ec867a7400f2a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 11:19:22 2023 -0500
-
-    progress switching over to gtest
-
-commit 44e5a4f01c2b3a0a8af0c24a81206b9e447b8ef8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 12:59:17 2023 -0500
-
-    cleanup of output of Tests makefile for run-tests for compat with new gtest code
-
-commit cd0cc3d768d814e171b504a70e0e8fcfc88aad2a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 13:04:50 2023 -0500
-
-    Progress switchign to gtest
-
-commit c4730875d510edfd07698f5118c65598ef27cea4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 13:19:40 2023 -0500
-
-    tweak formatting of run-tests output
-
-commit 7bea0c78afeb38c34aa8e68eb3765df0395f2cd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 13:21:00 2023 -0500
-
-    tweaked running remote run-tests
-
-commit bc97bf635ade5e15ff16c5f1a4d32318656c3221
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 13:28:32 2023 -0500
-
-    more tweaks for gtest support
-
-commit 8c6bc29033db8c98c699e0af4255e651031517fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 16:04:08 2023 -0500
-
-    adjust RegressionTest script to accomodate new output style from gtest
-
-commit e5133e2f95af90ff552db267fbdbf3a8a7b2c696
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 16:39:19 2023 -0500
-
-    more migration to gtest - use EXPECT_TRUE macro instead of VerifyTestResult () - closeest analog - use for now - but later update to more nuanced EXPECT variants?
-
-commit 8ff92803aa41f8210035f034e50da0f9ec4784c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 17:00:11 2023 -0500
-
-    more conversions to using gtest
-
-commit 9e1223ba1bc7f1f58607aa2966fca233b1ecd975
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 13 23:38:36 2023 -0500
-
-    early draft build support for libxml2 thirdparty compoennt
-
-commit fd41e8a009e1f54523d02ad930e1d2a544b251fd
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 13 23:57:20 2023 -0500
-
-    libxml2 build static libs
-
-commit 8ebf222486353a5fb563679a3307a851ffe94ca7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 00:01:22 2023 -0500
-
-    libxml2
-
-commit 4b35b5ebffcf7ebad71739e0e89342eb9f646def
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 00:03:34 2023 -0500
-
-    hopefully fixed regtest capture of new gtest 'passed' state for regtests
-
-commit 80a701759ed035995b65e016ef6b31861e4833ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 11:11:40 2023 -0500
-
-    tweak gtest output in make run-tests
-
-commit c2b64746db7c5aee1ecda4ee79ae017f725642ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 12:34:28 2023 -0500
-
-    configure and build support for libxml2 (third party component)
-
-commit 3153cad81acc46d2d5c60cdc5ec40ce1c1dfac52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 12:52:16 2023 -0500
-
-    tweaked output for building tests and runnign tests - makefile cosmetic
-
-commit 9e45becacbaf2580c60b85726afbb51e2b1828bb
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 14 13:33:21 2023 -0500
-
-    Boost 1.84.0
-
-commit fbb777282e6cb95bfd4ad1947ede9712ac3e7b00
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 14 13:33:59 2023 -0500
-
-    vscode
-
-commit 342c6a9f75bdb8f329286bcfe6349f68ab0a0534
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 14 14:05:47 2023 -0500
-
-    dockerfile for ubuntu 20.04 need patch to get recent cmake needed for libxml2
-
-commit c0e908bcf3e1eae7c3153144388c313354554eab
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 14 14:09:09 2023 -0500
-
-    fixed typo
-
-commit 98efd5a84697d6414bf02c390074a6324fae1e0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 14:11:26 2023 -0500
-
-    tweak dockerfile changes
-
-commit b5f826f5ef2d54593ec6b5226701492db7eb0875
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 15:16:22 2023 -0500
-
-    tweak boost makefile
-
-commit a3191cc1bfa9944f0486c495050c687e20e7a350
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 15:17:20 2023 -0500
-
-    tweak boost makefile
-
-commit 7ceb201af427b0f870fb215bdcfbaf432222be79
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 17:39:35 2023 -0500
-
-    lose libxml2 directry from produced_artifiacts - for libxml2 for now - causing tropuble and little benefit
 
 commit 9ccf43756d2c43185c8b1ef28bb3249f393af774
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 14 19:30:33 2023 -0500
 
-    XML DOM code cleanups (not fully backward compat) - Read method no longer takes encrypt arg, and replaced mutex/lock support with AssertExternallySyncrhonizedMutex, and other cleanups
-
-commit 07a033bd666bc3fb76c43733ff632639acd1eb80
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 14 20:25:30 2023 -0500
-
-    fixup regtests to compile if no googletest module included
 
 commit 7c34dc76d80f938a2f92cc4beeb291c6333b64b0
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Dec 14 20:27:05 2023 -0500
 
     temporarily reset boost version cuz having weird build issues - retry when stable
-
-commit 9bf9480d84625816c432bd08764f467f86a98778
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 14 21:23:15 2023 -0500
-
-    fixed thirdaprtycomponets build of libxml2 to depend on zlib
-
-commit 0eb22f48af942748791f8761441ccd8e15cf190f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 14 21:24:46 2023 -0500
-
-    renabled boost 1.84
-
-commit 4dc79408fca578b3ba0028225b23c3d782ebcb94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 21:41:34 2023 -0500
-
-    Cosmetic
 
 commit 70ecd750c14bebb8db88a202c477d69f568eb808
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1819,42 +844,6 @@ Date:   Fri Dec 15 09:34:34 2023 -0500
 
     start experimenting with __has_include instead of qHasFeature code
 
-commit 855c43b9303a6472e7c495e906c95b7381d56ec3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 10:39:34 2023 -0500
-
-    Minor cleanups to XML code
-
-commit b33684a67604ca346ba11fd17c2b367d4371945c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 10:45:58 2023 -0500
-
-    experimental workaround for cygwin issue with pkg-config
-
-commit 1aac01589e2d0a9001d005648e4c31f230b92d23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 11:01:06 2023 -0500
-
-    Another attempt at workaround for pgkconfig libxml2 issue
-
-commit e092e19d5d3bf34160035ad29db4d037f2826e90
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 11:09:55 2023 -0500
-
-    another attempted workaround for /lib/libxml2.lib cygwin issue
-
-commit ec4583d5a934985cce084d1adb7f0545ce450c4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 12:58:25 2023 -0500
-
-    Added misisng #includes
-
-commit fd8470e7a877f5a22cdf8e98b57fcdcaf8da766b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 13:00:34 2023 -0500
-
-    retest if configure hack -define-variable=pcfiledir needed for cygwin libxml2 workaround
-
 commit 009ab5785321b1a93e9446370f1fe40809c04385
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 15 15:48:49 2023 -0500
@@ -1872,24 +861,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 16 16:06:58 2023 -0500
 
     added embeddings to regtest 34 (xml) and additional (DOM) test - very primitive but a start
-
-commit 9b421d71641f10eb090fc305a7359eff1354d5d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 16:28:58 2023 -0500
-
-    big cleanup to XML support (**not backward compatible**) - but migrating towards Provider reps for Xerces and libxml2 so can interoperate between the two and use either one (so we can get xpath)
-
-commit 868d4d8b55d56fdba94380538f7492a1e069c6d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 19:07:23 2023 -0500
-
-    fix a few small errors in recent checkins
-
-commit f0556ecdae522bd3ac2fb5bcd1eed54062d69125
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 19:29:29 2023 -0500
-
-    XML DOM code GetChildren returns Iterbale now - losing SubNodeIterator
 
 commit 37a9c24f3ebef1e5a3136d0cbac24df3097dde06
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1968,18 +939,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 17 09:21:49 2023 -0500
 
     minor Xerces wrapper code cleanups
-
-commit 906b84ff1e36d2ea3d041ccf2989d5b9ff81afc8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 09:28:31 2023 -0500
-
-    hopefully fix valgrind error detection in regtest output for new google test support
-
-commit c7b1e8fb7afd5954881ed7733efaf3388741e6bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 10:42:04 2023 -0500
-
-    todo docs xml
 
 commit d9a1b3e17f128f44c457ead240aab891388a8d88
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2179,18 +1138,6 @@ Date:   Mon Dec 18 17:01:25 2023 -0500
 
     fixed a few small bugs/issues with recent InputStream changes
 
-commit c1b64f93ab9162d97b1cb407ad257509dafdef52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 17:02:57 2023 -0500
-
-    cosmetic
-
-commit ca641bc2dffb1c09bbf7252f4f273e5df848f430
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 17:03:15 2023 -0500
-
-    cosmeitc
-
 commit f392d74c085af07c7a1cb1efcc7f1591099600a1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 18 17:35:44 2023 -0500
@@ -2215,23 +1162,11 @@ Date:   Tue Dec 19 10:29:07 2023 -0500
 
     patch another memcpy issue with Xerces (sanitizer warning)
 
-commit d0bff9040ddd14da7f6b026a862564a6a58199ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 10:55:45 2023 -0500
-
-    fixed patch
-
 commit 6b8b01b76503aad055bcc29bb4ec3bbb2e31c9bd
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 19 11:03:30 2023 -0500
 
     minor re-org Xerces stuff to avoid clang compiler bug
-
-commit 257d65671713b45be2241a1eeec2c3b95acb67e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 11:42:33 2023 -0500
-
-    Xerces DOM code refactoring - nearly ready to start adding libxml2 code
 
 commit cae30eefc173d4103d56672fbfd8c5630673e22d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2239,41 +1174,11 @@ Date:   Tue Dec 19 11:53:53 2023 -0500
 
     more XML DOM code (and test) cleanups (mostly cosmetic)
 
-commit 788378ca3ac4101fa5e5c810e7477571a9af039e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 19 12:12:50 2023 -0500
-
-    fixed typo
-
-commit fe790080142031d74fda7de0002079755f5c3236
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 12:16:27 2023 -0500
-
-    cosmetic and todo comments
-
 commit 6df1d3003ad8158b0e512cdcc29df6558ef96017
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 19 16:26:44 2023 -0500
 
     undo quasi-namespace impl of Streams::MemoryStream, and use requires() on As instead of template specialization (better error reporting)
-
-commit 0a8c8211b04443436e8ad84c969ccc7accffeddd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 16:36:49 2023 -0500
-
-    mostly cosmetic
-
-commit 2847743a6bec682166813e05a8211a38abec8a59
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 20:13:02 2023 -0500
-
-    maybe workaround issue with extracting libxml2 code on msys docker container
-
-commit 907c0365a8f962a60de0830965bedee4557d4273
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 20:14:43 2023 -0500
-
-    fix typo
 
 commit 38ca24d7133cda90aa7904bff278cc7ea28854e0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2285,19 +1190,6 @@ commit 998c30b5c171684c178bbd9d5672adfa9f50a72d
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Dec 19 21:05:16 2023 -0500
 
-    sqlite 3.44.2
-
-commit 74564b2ff69cb64860ac93f74e05a2566bda5cae
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 19 21:05:33 2023 -0500
-
-    openssl 3.2.0
-
-commit b4747c06473805b09468baf57af7a8f9b08a3d5e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 19 21:06:11 2023 -0500
-
-    libcurl 8.5.0
 
 commit a2badfd9956cc33bdc4a053171ec392ef491d097
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -2329,143 +1221,17 @@ Date:   Wed Dec 20 10:54:52 2023 -0500
 
     tweak performance test warning limit to avoid noise from docker container runs windows
 
-commit 2ddc7584d742a94f6ced2962f706e9aa16fa44a6
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 20 11:38:29 2023 -0500
-
-    patch further quirky libxml-2.0.pc
-
-commit d6d98be80d2b9446056e0209949b26308a3af050
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 20 13:06:25 2023 -0500
-
-    fixed typo
-
-commit bac6cace6f913e854d6e93fdfe5715e78778166c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 20 13:36:02 2023 -0500
-
-    replace old </PkgConfigLinkLineAppendages> with simpler PkgConfigNames and use to fix libxml2 include issue
-
-commit cfed2ed1ef5673f38ed85b621988e4df6f92ba35
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 13:53:00 2023 -0500
-
-    Start at libxml2 XML schema support (draft)
-
-commit 24529455755829c790cd8c05d42a37569c420b73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 20:03:06 2023 -0500
-
-    Minor cleanup of XML/Schema code
-
-commit ed291edfe856ef988a794c94d28a9d68d00f483a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 20:04:12 2023 -0500
-
-    for libxml add LIBXML_STATIC to CPPFLAGS (so seen in vscode)
-
-commit dc526110ff39e7601ee2abb8f7665402ef2172d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 20:05:07 2023 -0500
-
-    tweak qHasFeature_libxml2 regtest - still quite incomplete/not working
-
-commit 8aa08bbbec06f209ff8f47b5e8b1ee860783b96d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 20:14:30 2023 -0500
-
-    hopefully fixed libxml2 makefile so builds with non-dll version of msvc runtime library - avoiding conflicts iwth other libs
-
-commit 7af1bcf6362fb8dddab80cc472c407f2ff3bc413
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 20:35:24 2023 -0500
-
-    disabled failing qHasFeature_libxml2 to make sure all else working
-
-commit 9c46d364bcacde5b359548f509f74324b4d45757
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 20:36:18 2023 -0500
-
-    cosmetic
-
-commit 70b880511d7b2fa43c339b8f9243d9ad591f1ea4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 21:24:43 2023 -0500
-
-    cosmetic
-
-commit 9654d03d2f77c6fc3f03c98b6c21e13eb67712f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 22:26:38 2023 -0500
-
-    libxml2 makefile fix
-
-commit 32f14c94a3da07278082f9089ee19b04f32920d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 08:29:47 2023 -0500
-
-    Minor cleanup to XML/Common Provider enums
-
 commit 0852deb8f154b1d86b99707034770e21a4a396f9
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 21 09:48:28 2023 -0500
 
     Convert TextReader and TextWriter from quasi-namespace to actual namespaces
 
-commit 246779d0981d2745b667865e92586177b5331521
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 10:37:36 2023 -0500
-
-    fixed typo
-
-commit 74155d649939dd1805bb5f9eac3d450d260bb6c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 10:38:11 2023 -0500
-
-    factored DependencyLibraryInitializer for XML and draft libxml2 support
-
-commit 4abedefa0b8f37620ba08b6011ca3b640d4b599f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 10:43:58 2023 -0500
-
-    re-enable qHasFeature_libxml2 test code now that I have libxml2 module init - it passes
-
-commit e715d865081b70815d43dd2f91dfe4303ffd3e9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 12:38:08 2023 -0500
-
-    fixed a couple minor recent typos and some cleanups
-
 commit 28e9e0ac8a8d53a547e304396bbfde1661821d03
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 21 12:39:28 2023 -0500
 
     experimental addition of  /*explicit*/ operator Streams::InputStream<byte>::Ptr () const; for BLOB to simplify a bunch of things
-
-commit 36fcc753af929e152291f85e36928d6d1788b732
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 12:40:15 2023 -0500
-
-    progress on getting SAXREader to work with limxml2 and new Provider API
-
-commit 555423e5d5eca9f51815ecdb339f0a12f3c7102e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 13:11:56 2023 -0500
-
-    simplified SAXParse API a bit, and progress with Providers and libxml2 support
-
-commit 6e40b997586789fecfe8da5b83f98dc8b68ca567
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 15:07:37 2023 -0500
-
-    got BASIC SAX parsing with libxml2 working (no validation yet) in XML API - but still needs polishing/error checking etc
-
-commit 0a5966425e133ef932aefd685decd18753a7120b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 22:38:45 2023 -0500
-
-    many small cahgnes - moved -DXML_LIBRARY=1 to configure from Xerces.h; updated but still need libxml2/PatchReplacements/libxml-2.0.pc; back to ln -s in ThirdPartyComponents/libxml2 makefile and changed names; LIBXML2_WITH_HTTP="OFF";  tried  = " --msvc-syntax", but had to revert; still alot of kludges on libxml2 stuff but closer to having working (a few test cases work)
 
 commit df2d698d3247bbcbe7bc51c324d09cac31470124
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2479,12 +1245,6 @@ Date:   Fri Dec 22 11:36:52 2023 -0500
 
     switched BufferInputStream and BufferOutputStream to namespace (from quasi-namespace) style - incomplete but mostly testable)
 
-commit 5c44b9cc1587dcb6238bc0c1aaf38e4176591617
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 22 11:41:03 2023 -0500
-
-    fixed GoogleTest makefile windows regression
-
 commit bf1e8f0f36cc39ad3c2d5c5050bd2b7287bfc1aa
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 22 13:02:30 2023 -0500
@@ -2496,12 +1256,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 22 20:08:29 2023 -0500
 
     Convert Streams::iostream::InputStreamFromStdIStream to new namespace style
-
-commit 5bd78c1e1285f7fd460daece495c76b9da6846a8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 22 20:42:08 2023 -0500
-
-    maybe workaround docker build of libxml2 cygwin issue
 
 commit 6fd27887cd9dc29fed281339b904858e5d43f030
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2557,43 +1311,11 @@ Date:   Sun Dec 24 10:49:10 2023 -0500
 
     replace quasinamespace OutputStream with namespace OutputStream (and so Streams::OutputStream<byte>::Ptr ->  Streams::OutputStream::Ptr<byte>
 
-commit e493d8403b181fb58d83ae46e948fa5f0c199ba5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 10:49:24 2023 -0500
-
-    tweak namespace uisage
-
-commit dcf8477640596c460bf5ba9adc64eca9916fccf5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 12:26:00 2023 -0500
-
-    fixed typo
-
-commit 1d241620956ca32f2fdf3faad44d93b15c0dcec5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Dec 24 19:35:40 2023 -0500
-
-    fixed typo
-
 commit 78ed73b269ee5e34ed396a5cc934facbc403bd87
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 24 19:40:20 2023 -0500
 
     Convert InputStream from quasi-namespace to namespace (Streams::InputStream<byte>::Ptr -> Streams::InputStream::Ptr<byte>)
-
-commit 18ab9685b55a3d44c2cdb36187f2b6d72ada70f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 19:37:24 2023 -0500
-
-    Convert InputStream from quasi-namespace to namespace (Streams::InputStream<byte>::Ptr -> Streams::InputStream::Ptr<byte>)
-
-commit 25c277274d496d2c28c2cd927e7f008f4a9216d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 20:00:52 2023 -0500
-
-    Revert "Convert InputStream from quasi-namespace to namespace (Streams::InputStream<byte>::Ptr -> Streams::InputStream::Ptr<byte>)"
-    
-    This reverts commit 18ab9685b55a3d44c2cdb36187f2b6d72ada70f4.
 
 commit 16e451dcced82b787760d1dbca948229c2a0b288
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2631,53 +1353,17 @@ Date:   Mon Dec 25 13:53:26 2023 -0500
 
     naming and other various cleanups of OutputStream (not backward compatible for implementers of reps, but otherwise probably no notable changes)
 
-commit d10bd88decd885ee820f2abafeb1eed74109ea2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 15:14:20 2023 -0500
-
-    InputOutputStream::IRep cleanup
-
-commit b8b3f88794436e4fdbf5929b0c44b0704ea8377c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 15:24:35 2023 -0500
-
-    fixed typo
-
-commit e9c5000ffbf0329072d637fd98e68f31c4f2d07b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 15:28:29 2023 -0500
-
-    typo fixed
-
 commit a8e54b26f5b40a679c7cae628132a84b93e7f6c4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 25 16:36:48 2023 -0500
 
     depreacated input/output streams GetOffsetToEndOfStream method, and rewrote a fwe places that used it
 
-commit 12ba053e43ea734682709d62ff66470942ca719a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Dec 25 16:40:23 2023 -0500
-
-    celanup linxml2 init code
-
-commit a66a0b2acfd30014ffea8aa33413f14357259767
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 16:42:29 2023 -0500
-
-    cosmetic
-
 commit 2e19b342e03036223cf5acb76e77c74f3401566d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 25 17:37:50 2023 -0500
 
     use Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized in place of inheritance in a few more places
-
-commit 417c461fbed20655af0ecd4575aa7d3d35253382
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 17:38:02 2023 -0500
-
-    cosmetic
 
 commit 17b185040cfe660b47ddb542e377a46045d27028
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2703,18 +1389,6 @@ Date:   Mon Dec 25 19:43:47 2023 -0500
 
     Cleanup FileInputStream flags/enums
 
-commit 60da23b89ccf5226a9e6b5a6d17691aa45476302
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 19:46:22 2023 -0500
-
-    Cleanup FileOutputStream flags/enums
-
-commit 2bf5b6f07327500d573ccaaafda37cb4606255fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 19:48:31 2023 -0500
-
-    todo comments
-
 commit df114860c4b3da67232c02ea3906c21277238105
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 25 22:51:31 2023 -0500
@@ -2726,18 +1400,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 25 23:14:03 2023 -0500
 
     use InheritAndUseBlockAllocationIfAppropriate in other Streams/InternallySynchronized functions
-
-commit 386ff1df8719f506d18694e49e0a65559b019f45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 23:14:33 2023 -0500
-
-    progress on xmlschema support with libxml2
-
-commit 2f6a4d1185c527150d96e86db54be3793639fa3f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 23:29:09 2023 -0500
-
-    progress on libxml2 schema validation
 
 commit 9d514101009e75d7f252b93da00900168a23567c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2756,12 +1418,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 26 10:40:39 2023 -0500
 
     lots of cleanups to Streams code - especially re-fixing alot of the InternallySynchronized support in various streams (more todo but did about 80%)
-
-commit a26d5f035620d11ed579485b00d0a577f6e0c8a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 10:40:52 2023 -0500
-
-    cosmetic
 
 commit eac829ec4941400777b600a999ec70cff13f0a1b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2793,12 +1449,6 @@ Date:   Tue Dec 26 17:31:05 2023 -0500
 
     Simple Execution::InternallySynchronized support for TextWriter
 
-commit 2219149efb8f1d8f1183ff56dcf997bc3741d90f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 21:35:31 2023 -0500
-
-    fixed typo
-
 commit ea39c1b60561cbf462c58c92c7704c16c234f13d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 27 12:58:05 2023 -0500
@@ -2810,24 +1460,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 27 14:51:36 2023 -0500
 
     **incompatible change** but only affects users who implement InputStream reps; InputStream::Rep::Read() now takes span instead of start/end pointers (more to come probbaly)
-
-commit ac040127efacd4575762c45adfff5e6057e43d87
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 27 15:04:38 2023 -0500
-
-    clang++15 BWA (but no define yet)
-
-commit ba7f9ae53ad2b053b055d00cb33293b3a980f865
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 27 16:05:29 2023 -0500
-
-    clang++15 BWA (but no define yet)
-
-commit 93ea82b0265a21c91408ace8a844f5f246541b02
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 16:10:40 2023 -0500
-
-    Attempt at bug define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
 
 commit 221e621d8a285bfe8916fe6825af8d42e61fa806
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -2842,23 +1474,11 @@ Date:   Wed Dec 27 16:45:45 2023 -0500
 
     more qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy BWAs
 
-commit 785f18d725b2feebb353a9ba79c3a9807c85e1b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 16:46:48 2023 -0500
-
-    cosmetic
-
 commit f3f16ae626bdda3b1c99dfba28fdab3ae179f503
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 27 18:10:33 2023 -0500
 
     InputStream::IRep::Read now returns span (not backward compatible but not additionally so)
-
-commit cb248b905bc887c52b6573785fd944e8d71f2601
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 19:46:54 2023 -0500
-
-    fixed typo
 
 commit 15cf0ed4f48d6733f2c6d34b135131575ddf34d6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2872,29 +1492,11 @@ Date:   Wed Dec 27 21:31:53 2023 -0500
 
     fix a few (newly) deprecated usages to use more modern API
 
-commit 083e2c921f5b31beb04335693b3001d0d09f61c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 21:32:06 2023 -0500
-
-    todo comments
-
 commit d8cad93db2c81b3b6501c58e647ddcdcc36a99b7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 27 23:12:45 2023 -0500
 
     Small progress cleaning up span usage in InputStream and docs
-
-commit e5949667052959ccaedb0e775d62ff21a3d9d8d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 28 09:00:44 2023 -0500
-
-    fix another use of deprecated function
-
-commit 9b6f5dd46c16d2e2a9df305e1b10f6e1cb53c9a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 28 10:15:06 2023 -0500
-
-    more InputStream span cleanups (ReadAll)
 
 commit 148771c76c55235b9fcd3034c3182aa740856918
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2914,47 +1516,11 @@ Date:   Thu Dec 28 22:42:15 2023 -0500
 
     LineEndings GetEOL can only be constexpr if c++ version >= c++23(constexpr)
 
-commit cbdae29536d3c90811901f291a5a066ecb3c8417
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 28 22:42:35 2023 -0500
-
-    avoid deprecated usage
-
-commit f727f3fce8d78884288898c70426bbf2b388a69d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 28 22:56:31 2023 -0500
-
-    Minor misc cleanups
-
 commit 72ed4446d559c72091ce5db236e8de5fd448d348
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 29 00:39:50 2023 -0500
 
     dont fail saving locks i file files missing on github actions macos
-
-commit b9e55be2ce7c5c73308f83f4b470f2d64be1e30e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 29 00:40:08 2023 -0500
-
-    adjust cast issue
-
-commit 27b0fefc5ace8dcc683c6146cbfe65ca9df1e45e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 29 00:56:14 2023 -0500
-
-    cosmetic
-
-commit 3472a499979df0290e71a7287a964755a104b72e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 30 15:25:53 2023 -0500
-
-    fixed small regresison in OutStream::WriteRaw - matched wrong overload for POD_TYPE cuz span<> looks like a legit POD_TYPE
-
-commit eb06f785b231e43ff65fa58e4253fd643574f93c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Dec 31 11:16:20 2023 -0500
-
-    fixed boost download - jfrog seems broken
 
 commit 61f8a48c704fc39c24e51b86776f24663a91c846
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3058,24 +1624,6 @@ Date:   Mon Jan 1 16:33:54 2024 -0500
 
     maybe fixed/finished TextRader non-blocking IO code
 
-commit 74b4956fc2ad80a17d02cf711c648d7d88160ff7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Jan 2 09:34:14 2024 -0500
-
-    fixed typo in regressiontest file
-
-commit 6f7d78160e06780664961ab9286e68b2e45d83dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 10:03:58 2024 -0500
-
-    mostly cosmetic gtest fixes for regtest 32
-
-commit d9c2509aa535fd87edb23c0200cd65407cf5727e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 10:08:30 2024 -0500
-
-    cosmetic
-
 commit 071a9eabb01ee687cbce714237b40b2ab41ffa36
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 2 12:01:57 2024 -0500
@@ -3123,24 +1671,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 2 13:18:04 2024 -0500
 
     InternallySynchronized overload of InputSubStream::New ()
-
-commit b29263380aebf8ae05a7d6aa6a7cfd0b521a1f10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 13:21:29 2024 -0500
-
-    fixed typo
-
-commit 0e8350b6bee549e35230a06ce50383d31209ae67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 14:36:38 2024 -0500
-
-    silence warnings building libxml2 for windows, since warnigns show up there in link time in projects using it
-
-commit deeaaee1733e98f5330db032d1f5ba0b0d53cb8f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 14:41:32 2024 -0500
-
-    cosmetic
 
 commit 99da1a58ab8aa3c0e96bf84765336739a7f5bca2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3202,143 +1732,11 @@ Date:   Wed Jan 3 15:19:42 2024 -0500
 
     InputStream RemainingLength API added
 
-commit c07365846af0b5eabcf5b0c6ace5ac3e95b55f1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 15:20:27 2024 -0500
-
-    progress on new XML Provider API (Schema and SAXParse code migrated)
-
-commit 9f8df058932655ecfcf40d4d93c969f38f26fa8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 15:36:39 2024 -0500
-
-    fixed typo
-
-commit d1b4ea401a665afa07e79644238e41ce49a2bbed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 16:01:30 2024 -0500
-
-    More XML Provider cleanups
-
-commit 6ee36dd6149c63c79bb0a833c46483ca75d799dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 16:50:09 2024 -0500
-
-    Migrated XML DOM code to new Provider structure
-
-commit 37aed06e9b90f3fd64f757bbba07d2e8f75e15e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 17:49:16 2024 -0500
-
-    more XML provider cleanups
-
-commit 5a679e66e51f5f73daee1c00062ffee3539d9d30
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 21:56:32 2024 -0500
-
-    XML::SAXParse deprecated overload taking context reference, and instead take context ptr; and in a few cases of regtests - run both xxewrces and libxml2, but more todo
-
-commit 96071db1188ccdf2f4e54cea1c75f8a03206b5f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 08:28:29 2024 -0500
-
-    fixed typo
-
-commit bdececaaf5cacb37799c4d551239e886f03efefd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 08:28:09 2024 -0500
-
-    cleanup SAXXMLTests
-
-commit 63b786233a1f4e5d1d41f9e88423aa4c9f850145
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 08:30:41 2024 -0500
-
-    make format
-
-commit 5a223cb0b20c1043f43c8041c66d26e6e842554b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 08:49:54 2024 -0500
-
-    more SAX XML parser test factoring
-
-commit d3779bf10eefad25f70aac5645a3ad2d43fa4242
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 08:55:40 2024 -0500
-
-    more work factoring sax parser regtests
-
-commit 19bba2b0e545451cf7388c0ea60abfdfa94780cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 10:08:03 2024 -0500
-
-    More minor fixups to saxxml regtests
-
-commit 67914b3df9711165903e2dc435eed07852a7b871
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 11:32:23 2024 -0500
-
-    progress on internal safety / testing and regtests xml
-
-commit cbaeea2a88a11877d4326f436c2bb5b8e28be6fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 12:47:57 2024 -0500
-
-    Progress on XML DOM document parsing with libxml2 (incomplete)
-
-commit 16ec70f9eb6a41247f87dabb8e0c8ae6ee91275a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 12:52:17 2024 -0500
-
-    fixed typo
-
-commit 7a445636b97d763ed04ef97d4ebaf4ad54acfd9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 13:02:00 2024 -0500
-
-    minor progress on libxml2 doc parsing
-
-commit 65a62f28835c3fb3fefcd72e4da2097afd15d431
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 15:02:02 2024 -0500
-
-    a few minor code cleanups  - static const kException_ and re-use
-
 commit f58228bdb01332170d426dcf15cc73b3f6c81820
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 4 15:25:31 2024 -0500
 
-    new Streams_ToSeekableInputStream_ and used experimentally in LibXML2; and used to do SAXParse parse and validate schema
-
-commit 19b68513d7127ce6926a1ee5da426cad7929cf94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 17:20:42 2024 -0500
-
-    have sax validation minimally working and passing regtests with libxml2; and fixed reporting libxml2 validation messages
-
-commit fddf88764279e23b4ae5794151e95ad435658e9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 17:57:11 2024 -0500
-
-    fixed small warning/typo
-
-commit dfa93d9d313cf48b4f6f9afa7e2d894a0cbe76fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 17:57:20 2024 -0500
-
-    cosmetic
-
-commit c8ffadd9fb35d41ee50f19b06150585328131c68
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 17:57:58 2024 -0500
-
-    cosmetic
-
-commit ee3d179c63f9ee2f24b2192cce6c73d1f829bec2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 20:05:45 2024 -0500
-
-    silence warning(tmp)
+    new Streams_ToSeekableInputStream_ 
 
 commit 3607385ee5b57eaa7a548683ee9616ca186ee633
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -3346,53 +1744,11 @@ Date:   Thu Jan 4 20:30:54 2024 -0500
 
     fixed Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag) serious bug - where default missing caharacter not representable in the current locale codepage
 
-commit 480afd37832ad0c6e580cedd46be7ee2dbf69ea2
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jan 4 20:45:52 2024 -0500
-
-    fixed typo
-
-commit 5ef2b67ca2b54834cc79b3674338917402811145
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jan 4 20:46:02 2024 -0500
-
-    minor
-
-commit 849455a0caf5062ee10e22e3026b2931cc06a5de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 21:04:38 2024 -0500
-
-    cosmetic
-
-commit 583c9e16fe380ed2589e70bfc79e3ff369b02c66
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 21:05:06 2024 -0500
-
-    libxml2 doc write; and added it to regtests xml suite
-
 commit dce9a66417a886b7697226effff983e10a229a57
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jan 5 09:17:39 2024 -0500
 
     docs and AssertExternallySynchronizedMutex and possible fix to race (tsan found) in WaitForIOReady
-
-commit 13a67202b9467a27cade6e7de9775acdbd4e8b12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 09:23:26 2024 -0500
-
-    cosmetic
-
-commit 8ec464f1685786d8695b4d815425450cb55994bf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Jan 5 10:01:48 2024 -0500
-
-    valgrind suppression changed for Test_04_CheckStringQuoting due to name change in code called due to refactor of gtest stuff
-
-commit 20b45ab51b80337331a32c03a38b8d3440c3e098
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Jan 5 10:57:13 2024 -0500
-
-    xmlDocDumpFormatMemoryEnc use for libxml cuz got valgrind warning using xmlDocDumpFormatMemory and respect option options.fPrettyPrint
 
 commit a4252f2e398c8fb2796dbf3f57f76930ab7c6471
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3404,133 +1760,7 @@ commit 6c121fc481556628025aaddfa9754c17b5f3289b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jan 5 11:58:25 2024 -0500
 
-    Streams::RemainingLength now returns optional<SeekOffsetType>; fix warnings in ToSeekableInputStream; various libxml2 cleanups/fixes (small)
-
-commit 33e9c4cc7afae52d27ef65deb18fd15ce1555801
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 17:47:01 2024 -0500
-
-    progress on DOM Node support for Libxml2
-
-commit 125d1cad9df36ca9c558f1dbb4e3f8d24bbef08d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 17:50:39 2024 -0500
-
-    libxml2 progress
-
-commit 478977f1d158aa283bf9bea8c25e2e962c05a86e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 21:12:59 2024 -0500
-
-    XML::DOM IRep simplifications (and some related changes to xerces code); and more/better implemetnation of LibXML2 DOM/Node code
-
-commit fba1ba112668d5fc62cb32dc09752e5f44b9d4db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 21:13:15 2024 -0500
-
-    comsetic
-
-commit 7699519ac2e878237b4ea4690feefe339a7c644f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 21:53:20 2024 -0500
-
-    More XML DOM refactoring/renaming and bit of progress on LibXML2 DOM Node IMPL
-
-commit db9d1d0f9778a9384ab9eb344b40dcea01ba19a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 11:51:01 2024 -0500
-
-    more XML node clenaups - cleanup simplify API, better document, and implement more of it for libxml2 (still no regtests yet)
-
-commit 887bf4882bcf17e6eeb0a550fa7e6b27ce3d1852
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 15:05:11 2024 -0500
-
-    lots more cleanups to XML DOM stuff - fixing ns usage (untested), draft of new Element::Ptr API, and completed draft untested libxml DOM API
-
-commit 714caac148d993a4b8f6e72394a8eea204723aa9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 15:55:30 2024 -0500
-
-    draft impl of  XML::DOM::Element::Ptr and added ns param to SetName for DOM Nodes
-
-commit b25f26b8cd4b99486f9c6419fe5fd875d92d8a29
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 15:59:01 2024 -0500
-
-    started fix of libxml2 renameNode
-
-commit 930443d28352370adfa106057301810b70979b02
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 17:54:12 2024 -0500
-
-    cosmetic
-
-commit 89ffc426ace2f843dad0e498a55b73a3ebcb11ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 17:59:39 2024 -0500
-
-    fixed a couple recent typos
-
-commit 6e83e88b7ee65efd4550886e1bb610089a4b05c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 20:06:42 2024 -0500
-
-    lose alot ofthe XML Node bwckward compatabiliity stuff I had; DOM Node code all new in Stroika v3; only place upgrading is HF code, and that will be easy to adopt
-
-commit fb010787ce07aeaf2d4ffde450194102c9b428b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 20:07:00 2024 -0500
-
-    cosmetic
-
-commit 6ac5dde35f05d52fd3381df1bf3676667057c635
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 20:18:49 2024 -0500
-
-    Libxml2 - hopefully fixed setting namespace on Element rename
-
-commit ecee753f17c0c94d0a1c5843b7547a975066872c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 20:31:30 2024 -0500
-
-    Update copyright
-
-commit b6a97ef92da3d00888ad04da5226b92bfcc05a12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 21:26:46 2024 -0500
-
-    start at DOM_Update regtests; and refactoring apis to use NameWithNamespace (XML)
-
-commit 379eb0f239ea7313b0457429af1d30955770c3dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 21:26:58 2024 -0500
-
-    cosmetic
-
-commit 565232bb8a9cdae512bb2764f04c010b43eb8347
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 21:38:09 2024 -0500
-
-    disable test cuz part NYI
-
-commit 07e5cdaea671ebc4fb1ba236d08bcfcd522707ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 22:48:42 2024 -0500
-
-    re-emane;d libmxl2 dom test; fixed bug with GetNamespace code for domnode
-
-commit 5dced7c9a06f021d3fa47db8679b5b7258df80bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 23:04:44 2024 -0500
-
-    DOM XML Node cleanups - Rep API and libxml2 impl
-
-commit ab44412879f08e2c19a550b138e95a98758ed8de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 6 23:15:04 2024 -0500
-
-    cosmetic
+    Streams::RemainingLength now returns optional<SeekOffsetType>; fix warnings in ToSeekableInputStream; 
 
 commit a1724ab6ec7b440a466532911e674d4557a55005
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3538,77 +1768,11 @@ Date:   Sun Jan 7 09:46:43 2024 -0500
 
     qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
 
-commit d33c7592728a346770d769dc04a3802cb08376ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 7 10:14:08 2024 -0500
-
-    cosmetic
-
-commit 77a38ee5912dd9e9de8035b67ab552011bb80294
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 7 12:27:58 2024 -0500
-
-    refactor NameWithNamespace
-
-commit 500e2b1d4969533fdda7c689acbe5abd805cebe4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 7 22:49:11 2024 -0500
-
-    cosmetic
-
-commit 485b2bc417a00ef92597cef08164f4e7ebf9c4c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 7 22:50:04 2024 -0500
-
-    XML code: Write Node to stream support and use to implement Node::Ptr::ToString() - mostyly helpful for debugging
-
-commit d740ac76aba867ff77d491783dd747a1968e79a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 7 22:50:35 2024 -0500
-
-    more progress on xml regtests (DOM) - first test wroks for xerces but not libxml yet
-
-commit edc3980153670bb857310a64d4182f6657f71bd8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 7 22:56:53 2024 -0500
-
-    cosmetic
-
-commit e1e26b6e12fb0ab6255f6896679ec842c020aaa6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 7 23:32:05 2024 -0500
-
-    cleanups and removed one bad time regtest
-
-commit 5e3254540474472c6554f48a7b7cd6c48fbc3035
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 08:05:06 2024 -0500
-
-    minor tweaks
-
-commit 9d25601bee88bfa2cea7cc3bd0bf27c7ed673965
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 08:07:35 2024 -0500
-
-    cosmetic
-
 commit 6481bcfd7bcccde86aec8cd7c64dc7f2194f6920
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 8 09:08:07 2024 -0500
 
     cleanup qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations checks (improved reporting)
-
-commit 0c1d8b4989460f94fe14fc5aae47e1b323fdd3ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 09:15:22 2024 -0500
-
-    Cosmetic
-
-commit d467502bf7d4e0972ca708336c03dc5a06652f25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 10:32:38 2024 -0500
-
-    fix bugs with libxml2 getchildren iterators - next not ++ to get next! - and a few other regtest cleanups
 
 commit 35fb8221d4f9f58d7318f4ee491f4aff5a98ff9d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3616,125 +1780,17 @@ Date:   Mon Jan 8 12:00:48 2024 -0500
 
     a few misc cleanups - mostly losing unneeded initializer_list<ObjectVariantMapper::StructFieldInfo> specifiers
 
-commit 970cb858c406b201112aada1e8081a46658fda3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 15:14:33 2024 -0500
-
-    Added String::Remove() overload
-
-commit 6053c8344c06be186f6f06d920ec04cb94bfe52a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 15:15:05 2024 -0500
-
-    Added DOM::Elemeent::Ptr::getChild helper
-
-commit 8c6e50c68a65407e8047694bb0caa546a7c3b034
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 15:15:38 2024 -0500
-
-    Significantly stronger DOM regression test - passing (with one small libxml2 workaround)
-
-commit a0793fa5b4229e04027f2fe08fe55d8b7bf451df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 15:27:55 2024 -0500
-
-    Silence clang warning
-
 commit 893067a0b247123279d837c10d115c85867174ac
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 8 15:28:24 2024 -0500
 
     testing simplified DefaultNames<> definition style
 
-commit d7a034b24e526935a82adcebd733bfcb826bafc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 15:28:54 2024 -0500
-
-    Small docs/messages cleanups
-
 commit cc7fb18b9c6e07cae527e96a002a11dd410b09a9
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 8 15:40:42 2024 -0500
 
     more terse style definition for DefaultNames<> instances
-
-commit ff8763010c3cd2952d0ec99d6a30c4bbfdfdbeca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 15:52:59 2024 -0500
-
-    cosmetic
-
-commit 3e044af5cc58c3e2f02541f6d8d3df61d6f777b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 16:02:05 2024 -0500
-
-    Minor cleanups
-
-commit b3b18ebb22193290081125ee81dcdaa76ceb85ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 16:58:38 2024 -0500
-
-    change default to libxml2 (for now/testing)
-
-commit a94cb27218d9b26d4952c9c8efead2ad470bd168
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 16:58:55 2024 -0500
-
-    more progress on xml update regtests
-
-commit 5c9ad141b93fea0244e37e03b414437483b37ced
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 19:56:31 2024 -0500
-
-    attempt to capture line info on schema validaiton failure for Libxml2
-
-commit 2b8aaf7eab06c8ad89b36083b88fcf192f5edfe6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 20:41:24 2024 -0500
-
-    fixed Schema::ValidateFile to use provider from the schema
-
-commit 24fb2093d1b8d0711faa6949e03f4a468c2f42f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 20:42:12 2024 -0500
-
-    not complete fix - but partial - fix to LibXML2 sax parser interface to return structured events with right type attribute for attr names (but still wrong namespace)
-
-commit 855ff49ca0299f6addd067d18d1383fd2208b4d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 21:00:55 2024 -0500
-
-    Minor code cleanups
-
-commit 680a4151f5e9a8ece69c84d55d894cc2a8334f83
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 22:51:22 2024 -0500
-
-    fixed typo
-
-commit 1bb90230b67662d94c05718eb7483adf55c34e29
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 07:41:46 2024 -0500
-
-    revert to using xerces as default to test
-
-commit a3ba82e39084d20f27b183bab060d8a929dedcfd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 09:24:54 2024 -0500
-
-    targetNamespace now computed automatically in Schema::New () - so no more targetNamespace param
-
-commit 04201abf07fd20ef6837fde8c79c1de24ba9a74c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 10:32:20 2024 -0500
-
-    cleanup names
-
-commit 4fb2a6be13844f778735dc592a56f37a5db8e543
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 11:15:39 2024 -0500
-
-    cleanup Schema construction - no longer taking namespacedefintiions list (probably going to deprecate idea in schema); and regtest cleanups
 
 commit 6a1372b67218813e581188ef446c1385dc3ad4fa
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3754,71 +1810,11 @@ Date:   Tue Jan 9 13:27:07 2024 -0500
 
     Added new ResolverPtr mechanism to replace SourceComponents
 
-commit 689133268040e9c78c014c21fddf79ee6c7b8b10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 13:39:56 2024 -0500
-
-    fix a couple warnings
-
-commit 420530cf1c4ba9db17acdbd23714cbd21b7f7db3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 13:40:37 2024 -0500
-
-    Cosmetic
-
-commit 68d669adc945e5796634654feb19f546f5deb07e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 13:43:34 2024 -0500
-
-    cosmetic and todo notes
-
-commit 7ef69e6468f1a127d5926720f0dfe29de5f68f79
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 16:18:40 2024 -0500
-
-    minor code cleanups
-
-commit aba2bc982b53de82bfb176081353029d7d7facab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 17:13:21 2024 -0500
-
-    Schema::Ptr::As<> support
-
 commit c3dc39d019e73c64fa8765497ee4b288ff1a9762
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 9 20:46:14 2024 -0500
 
     more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
-commit c1b68541f7a759c746f275e32b539d9d4adda812
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 20:47:36 2024 -0500
-
-    a few namespace fixes for libxml2 code, and more regtests and docs on new libxml2 - https://stroika.atlassian.net/browse/STK-999
-
-commit 375c498620b6147bfab6bc3dc6d864525767e8c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 20:50:06 2024 -0500
-
-    cosmetic
-
-commit 82adfc1cf73436123f7ebf059a50c85889d5a672
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 20:50:20 2024 -0500
-
-    cosmetic
-
-commit a256cc95d67fddcbc5e3c82b9ffc81212092855e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 21:09:11 2024 -0500
-
-    more cosemtic
-
-commit 19597510806daae5e584cc3cbedb997865ed6de4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 10 12:39:35 2024 -0500
-
-    early progress on XML XPath support (so far only Xerces and simple regtest)
 
 commit 69c8207d856b2af3b9aeeb143da9e3764fd1b829
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3826,47 +1822,13 @@ Date:   Wed Jan 10 12:58:12 2024 -0500
 
     ToString() support (minimally) std::variant
 
-commit eec1bf34784a6f67d4b135c60491a6ad13a988a4
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Jan 10 13:30:21 2024 -0500
-
-    fixed bad qStroika_Foundation_DataExchange_XML_SupportDOM check
-
-commit c0044bdfb4d15666a853922fc69ebd693ed6ab37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 10 13:31:03 2024 -0500
-
-    XPath XML cleanups/progress
-
 commit 3efd0e92791c585861fee80cb6bdb15aebf7308e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 10 14:25:23 2024 -0500
 
     new utility Common::variant_index; and used in DOM/XPath code to simplify and comply with constraint that xerces seems to have (must specify resturn type in expression)
 
-commit 1778cd91745afed2f07ac09e592816846f6877fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 10 14:26:02 2024 -0500
 
-    cosmetic
-
-commit c0e72897fe56b437e0e42f2c22b3bb46f6259239
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 10 15:17:25 2024 -0500
-
-    more refactoring of xpath support
-
-commit e8aca6834a913f3f00b55f2ce694e79605021b3b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jan 11 09:23:59 2024 -0500
-
-    cleanup Expression default options issue on clang/gcc
-
-commit d2922c29268573a66d6e1222b36872196b98fd1b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jan 11 10:15:37 2024 -0500
-
-    patch Xerces ubsan issue
 
 commit d4114c461c49dd1a41e78a254420e24b069a05fe
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -3874,35 +1836,16 @@ Date:   Thu Jan 11 10:17:07 2024 -0500
 
     tweak .vscode/launch.json settings for debugger mostly)
 
-commit 08bf1e8e25e8380de69cc7b602852bf69b70df80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 10:17:48 2024 -0500
-
-    tweak regtests xml
-
 commit 82cc067591a1c232c818acb81124e678397e8ad4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 11 10:32:30 2024 -0500
 
     Xerces build out of CURRENT source rather than extracting source to IntermediateFiles (fewer copies and source stays around on clean so better debugging experience)
 
-commit f89e41c25c953fb18e083b3f74c76851b1723712
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 10:33:17 2024 -0500
-
-    comment
-
 commit 24d0a5079c70e0fae015e5d39e79c54655897d9c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 11 10:38:47 2024 -0500
 
-    new make distclean in top level makefile
-
-commit 29d3fc7ade18a64067bc8d6172bf8fc19f345bf0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 16:10:33 2024 -0500
-
-    Comment
 
 commit 10d3a3b4a128258802ba648e39ab70c30e5ca777
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3934,101 +1877,17 @@ Date:   Thu Jan 11 20:19:31 2024 -0500
 
     pay attention to prefix/namespace code for XML XPATH DOM expressions (xerces)
 
-commit 7c6ad5736c60eed0f7af0f424fa5261563ab669e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 21:31:20 2024 -0500
-
-    first draft of xpath for libxml2 - seems to work - enabled regtest (still no namespace xpath tests)
-
-commit 8ff9d641ded534e39f8952baea05780a0ecef11f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 12 09:22:52 2024 -0500
-
-    cosmetic
-
 commit 6c3b8a8bd1cd0f21bb00d469cc8ab8a7451d3c9b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jan 12 11:19:20 2024 -0500
 
     DOM Node fOrdering and fSnapshot support, and support Lookup (so iterator produced now but still not tesetd)- both xerces and libxml2)
 
-commit 4ee9db3d779c1662a5df5824266057c3494d313a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 12 11:25:56 2024 -0500
-
-    more cleanups of recent DOM XPath code
-
-commit e39d204d2f46bfdfd94ad0e1ae7ef7486d3183bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 12 11:45:07 2024 -0500
-
-    a few small cleanups/docs/tests fixes cleanups DOM Node XPath code
-
-commit 81de8964916dc9926b28f8129fa6d42f12c445c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 12 13:35:01 2024 -0500
-
-    minor fix
-
-commit 61c44355b07983638fb209d29f2f90be8a7c74bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 12 15:46:50 2024 -0500
-
-    cosmetic
-
-commit c4351bc60dcb03683a2311b53f508c0fd2009668
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 12 16:18:35 2024 -0500
-
-    cosmetic; fixed bug in xerxes (my adapter to) code with iterators/xpath; and improved regtests for xpath
-
-commit 96e909ce3aa30c87b96ff8412e01b95cee568abd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 13 09:49:58 2024 -0500
-
-    A few cleanups/docs/exptions checkc/messages for what is supported in xerces xpath and regtests updates
-
-commit 8ef3f64d43e727a0d383e9614c9c74d754565949
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 13 16:11:36 2024 -0500
-
-    More cleanups to DOM code - XPath now returns Node::Ptr internally, and wrappers to do just ELementPtr or Attribute etc... and improved regtests for said
-
-commit 46220db9478ab9f1bd58645e296aaa731265f3d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 13 16:30:34 2024 -0500
-
-    re-enabled a few accidentally disabled tests and clenaups
-
-commit 6de8c8b05fe20948d4c22d69d7dbfa761b97b3ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 13 16:40:57 2024 -0500
-
-    cosmetic
-
-commit 6f6d58da46b92a2aede2db291851442a3e9d1a21
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 13 16:50:20 2024 -0500
-
-    cleanup cleanups and docs and regtests
-
-commit 3ea4c90d9d5b9bfa3a270464b429b9458a0bc6fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 13 16:59:55 2024 -0500
-
-    Xerces 3.2.5
-
 commit e843c2cffba65165e8822efcb7b9c91d48104059
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 14 09:21:44 2024 -0500
 
     refactor - EncodeBase64 / DecodeBase64 (deprecated old names) -> Base64::Encode, and Base64::Decode and added options object
-
-commit c7489a671d8f6eeced6a7ff0ab2613532b180939
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 14 09:44:17 2024 -0500
-
-    fixed typo
 
 commit d50e09dbb59243cb58c99c3fffeb2166eb5038ad
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -4048,41 +1907,11 @@ Date:   Sun Jan 14 10:05:53 2024 -0500
 
     trim PkgConfigNames before check for '' before call to pkg-config in script
 
-commit a08c663fd6a9712f42b51da3d109f2c0fd7afc38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 14 14:10:10 2024 -0500
-
-    Comments
-
-commit 1f4270138f6f01836c73c1a4db228941b503aab2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 14 14:35:23 2024 -0500
-
-    LibXML2 now default over Xerces cuz of slightly better XPath support
-
-commit bc118b1b16390f94073b1c2fd10ff248a6945759
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 14 16:45:30 2024 -0500
-
-    added distclean to skel built project makefiles
-
 commit 43f94bf0ef40ee8b397aaaa5b991d17e04dd4645
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 14 19:27:28 2024 -0500
 
     Improved Iterable::First/FirstValue/Last/LastValue with concepts and cleaned one use
-
-commit 979753d0f4acbd1fbaba97df9f15a38d03d78004
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 14 20:36:24 2024 -0500
-
-    fixed typo
-
-commit 41ada31b7fe171bb808488a1a318ffd2b0c6b906
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 14 20:55:28 2024 -0500
-
-    cleanups
 
 commit 817dcfbab89ee337f783923eec16a52f7ddb16cc
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4090,77 +1919,17 @@ Date:   Mon Jan 15 09:43:46 2024 -0500
 
     supress apparently bad visual studio compiler warning about FirstValue
 
-commit 622193fcffc8b7419560860eb66037276c3c93f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 10:39:24 2024 -0500
-
-    Comments/docs; and refactored namespace defs support for XML::XPath
-
-commit c988dfd4ca6695addec16cae7eb85bdac7c3d487
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 10:52:28 2024 -0500
-
-    More cleanups to XML namespace code
-
-commit db8df15ce1036d13ffcb2707569796e50ad8a200
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 10:53:08 2024 -0500
-
-    forgot to remove file from proejct file
-
-commit f9bd93a8c34e20c6cbd7ca49bbd503bf0d3db0d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 11:02:36 2024 -0500
-
-    namespace code has ToString() methods now
-
 commit 3f7c865906efdb58634bc90be7cb66c649bd50ca
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 15 11:58:21 2024 -0500
 
     lose lots of overloads taking Memory::BLOB where we already took InputStream::Ptr - as redundant (mostly); left in a few were was perofrmance tweak (and documented as such); and forced adding a couple explicit Memory::BLOB ctors in calls - but for hte better as making more clear the behavior
 
-commit 5f227babefb7b14ed17861933ab0d13bdc4b4e1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 11:58:36 2024 -0500
-
-    cosmeitc
-
-commit ac7058701e88e772b9aa6042bd35d1e4ef0cd557
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 13:30:29 2024 -0500
-
-    lose two empty cpp files from builds
-
 commit 33465f9806babc93c42ab15daf351714207040a3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 15 13:31:08 2024 -0500
 
     Add another qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy BWA
-
-commit 1fad40c12fc3cea49c15b25d967c73b8269166cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 13:31:20 2024 -0500
-
-    cosmetic
-
-commit 5843f4ede4860c32df1ef8b1ca39b707c9d461a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 13:32:16 2024 -0500
-
-    cosmetic
-
-commit 9bfcec16fdd0b5766c4cf37016197323237cada5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 13:34:23 2024 -0500
-
-    cosmetic
-
-commit 733197ff1e6ec6fb257f97830ad3d6bef8993b77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 13:34:36 2024 -0500
-
-    cosmetic
 
 commit 174793481a97c07ffdb85e0d01150da95b9a04dd
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4174,29 +1943,6 @@ Date:   Mon Jan 15 15:50:03 2024 -0500
 
     Adjust qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy for clang++15
 
-commit 13d9d1b974f2e2085fc6d71d8db3034e96ac2621
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 15:32:54 2024 -0500
-
-    cosmetic
-
-commit 74b5b8c8e298abc2f8e75d902d132e88941791ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 16:19:12 2024 -0500
-
-    minor cleanups
-
-commit c3bbe9eefcbddc3c066e10da8f485841aa88b848
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 18:15:41 2024 -0500
-
-    minor progress on regtests
-
-commit aaf81a7dc02497af9d388a8ceeffcb925e6febaf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jan 15 18:23:45 2024 -0500
-
-    libxml2 2.12.14
 
 commit c088ffeac8fead4b784722f14ac42f3968ad5a5d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4222,12 +1968,6 @@ Date:   Tue Jan 16 11:50:23 2024 -0500
 
     New DOM::Element::Ptr LookupElements, and finished reasonable draft of DOM XPath regtests (inculding namespaces and dom updates
 
-commit e9c9fddfdc6456394fc3cd3e932138d28ef9058d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 16 12:48:54 2024 -0500
-
-    docs about default namespaces and updates test cases slightly
-
 commit f24a1712573cecb22489274d77887da1a2564437
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 16 14:56:05 2024 -0500
@@ -4246,18 +1986,6 @@ Date:   Tue Jan 16 14:59:24 2024 -0500
 
     touchup RegressionScript test code for counting failures to accomodate warning that has the word failure in it
 
-commit c434c69ac421ebeaf53a3efbfd1e4ca6e184afe7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 16 15:22:15 2024 -0500
-
-    cosmetic
-
-commit 5e393b3db8ae5dd392eadf01a74649b138e07235
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 16 16:24:27 2024 -0500
-
-    fixed minor regression
-
 commit 74044d39921c9e654e3d1717f38a3cbeee4e0d6d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 16 21:06:00 2024 -0500
@@ -4269,24 +1997,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Jan 17 09:55:21 2024 -0500
 
     qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA
-
-commit 43bff722572b6faea845abdd48330cd52a28648a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 09:58:19 2024 -0500
-
-    skel tweak
-
-commit ad442d016dcdbb2d5cb62f49882e3e7fff6bc2a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 10:01:15 2024 -0500
-
-    cosmetic
-
-commit dd5826eed364ecb4c3f7a158a8cfdccba7f28f4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 10:07:54 2024 -0500
-
-    minor makefile tweaks
 
 commit 9b7303ad20b74e9cac030d4be3ac29494a271cde
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4492,61 +2202,11 @@ Date:   Sat Jan 27 09:59:31 2024 -0500
 
     deprecate Range::DefinitelyLessThan and replaced wtih operator<=> just returing partial_ordering
 
-commit 21f43f4d57402832f99217e2bd5a90742a3ce7de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 14:47:08 2024 -0500
-
-    cosmetic
-
-commit b4f1c7d53b5ee0ca5a2a9b83eac447d8ea29688c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 14:47:47 2024 -0500
-
-    String::operator== and operator<=> simplification and optimization (untested)
-
-commit a577b25fee238979a0148a6f9ed3da79b9f4f828
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 17:11:10 2024 -0500
-
-    minor fix to recent checkin
-
 commit 9c5c30ba5dacb8d17a4360e6805b26e04be40dc7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 27 17:56:14 2024 -0500
 
     Node::Ptr::operator bool
-
-commit f92da1b55b656ea1ad1576fa1481f63ecb19c0f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 18:07:40 2024 -0500
-
-    tewak worakrspace
-
-commit 49eb84eaf3918ed5ea45fce04f8e69e342d6f0a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 09:44:06 2024 -0500
-
-    Cosmetic
-
-commit d0750d54e93079451e0e1c0c17cda6dd43b656f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 09:44:49 2024 -0500
-
-    Revert "String::operator== and operator<=> simplification and optimization (untested)"
-    
-    This reverts commit b4f1c7d53b5ee0ca5a2a9b83eac447d8ea29688c.
-
-commit 5442b43fc71d6b74db05fe1ed387ca82a4d429f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 09:53:34 2024 -0500
-
-    minor cosmetic
-
-commit e260e1ac1acd78c70eaf27b8072bbe8728095c0f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 10:35:46 2024 -0500
-
-    cosmetic
 
 commit 7ab85bcc83949e72492890b0f14329adb209cc14
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4578,35 +2238,11 @@ Date:   Sun Jan 28 12:51:24 2024 -0500
 
     silence warning based on qCompilerAndStdLib_CompareOpReverse_Buggy for clang as well
 
-commit ca31b74cdc37e3cdb23100b75e9cce2d067eb718
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 13:05:36 2024 -0500
-
-    mostly cosmetic
-
-commit ba2c93e5d004ce55ba904d9256cbd38ee7ae7679
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 13:32:32 2024 -0500
-
-    cosmetic
-
-commit f21947a6a552d7f89fdfd55be1751c132343faa6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 13:32:51 2024 -0500
-
-    cosmetic
-
 commit f889204136ee0b39571bb3a88fcf200e1f5c2a40
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 28 13:33:48 2024 -0500
 
     (untested) optimization of String EqualsComparer - for case of (String,basic_string_view<ASCII>) - COMMON case - so possibly helpful
-
-commit 8c312f50a5383fc55a4e55889d8a3f4a599c1ecf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 28 13:43:40 2024 -0500
-
-    docs
 
 commit f6f5dbf19c85d380fc7a987dc3a4cad4a19293de
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -4619,36 +2255,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sun Jan 28 13:58:40 2024 -0500
 
     changed String usage of is_same_v to same_as (cosmetic); and fixed regression in string optimization code I just checkedin
-
-commit 9522040146230fa2dd98ef9f9071bc6b4c6ea377
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 28 14:08:53 2024 -0500
-
-    cosmeitc
-
-commit 06b5adad0de8c2a293c7a320afc0dc0e116c6ee1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 14:10:54 2024 -0500
-
-    cosmetic
-
-commit d39b46ed4b64a59bc72ce54a605e585283b77ff8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 14:18:25 2024 -0500
-
-    fixed typo
-
-commit 59449aa6d2dffebc32519175365da3bbb70f16b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 14:26:19 2024 -0500
-
-    docs
-
-commit e9acfccd9aaed5f9e86606e73ba9538f57646a5e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 14:27:28 2024 -0500
-
-    docs
 
 commit 7f6528065f96f5589ba84ab48ede5026a180795b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4673,18 +2279,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 29 18:12:00 2024 -0500
 
     Added XML::Document::New () overload without documentEltName
-
-commit 8d9ae37141aec0d40a1712aa2880612771849aef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 29 22:06:13 2024 -0500
-
-    Cosmetic
-
-commit 6ad7d2d211983c05987fdedf0914b64ff3bac46b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 30 15:46:36 2024 -0500
-
-    tweak Skel-gen output
 
 commit d1c7d2e6b6272ca8bd1c3dc9112c1b00c7dd5235
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4715,18 +2309,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 30 20:52:45 2024 -0500
 
     Document::Ptr::ToString ()
-
-commit 05402b2950d5062a721684f63b3859b1a3c4f482
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 30 20:58:10 2024 -0500
-
-    fixed rm in distclean to remove symbolic links
-
-commit 2938af25d81af6b52a0cbf707dd50b2b70e5c572
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 13:52:28 2024 -0500
-
-    cosmetic:
 
 commit 518574922756e6aef42821cfd12fb8baefa6bb16
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4776,12 +2358,6 @@ Date:   Wed Jan 31 18:07:17 2024 -0500
 
     fix regtests for recent changes
 
-commit 24da5c73d3bd9b829890ffe390d6ddd951edd420
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 22:29:24 2024 -0500
-
-    cosmetic
-
 commit 5a707f422a13cbb46d385eb0f9ff75398cd1ebe4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 31 22:30:05 2024 -0500
@@ -4830,12 +2406,6 @@ Date:   Sat Feb 3 10:43:44 2024 -0500
 
     Added static_assert IPossibleCharacterRepresentation to document
 
-commit 7a46599a1fe4bd127dff66fb79c824ad3e9951c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 10:44:07 2024 -0500
-
-    fixed typo
-
 commit 61810b82d1a3f637bb7632d3daf02627d8c8c528
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 3 10:44:33 2024 -0500
@@ -4860,35 +2430,11 @@ Date:   Sat Feb 3 11:14:31 2024 -0500
 
     new bool childrenInheritNS param for Document::Ptr::ReplaceRootElement (OPTIONAL); new Element::Ptr::GetDefaultNamespace  and SetDefaultNamespace support, and impl for xerces and libxm workaround for https://stroika.atlassian.net/browse/STK-1001 (maybe xerces bug or maybe libxml2 or maybe mine????)
 
-commit 71433f47c60e7334e00ae245cd1ff349d659629e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 16:47:07 2024 -0500
-
-    Cosmetic
-
 commit fd8860d85a474921baa6518be1dbe4d918d1e87d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 3 17:09:21 2024 -0500
 
     hopefully fixed libxml2 newNS - memory leak
-
-commit 457a143a579e895706b60aeba46931347e953ce2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 17:54:01 2024 -0500
-
-    cosmetic
-
-commit 5f8292555c8ea9b0330f72fbec4f33b1da17eaad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 18:10:03 2024 -0500
-
-    fixed missing include
-
-commit 46ad94c4cb92d3da11a5f01e231dfa485fe0c89d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 19:35:11 2024 -0500
-
-    mostly cosmetic
 
 commit 318019086eff421dc61f07340cc9f0210e8cd3bc
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4908,23 +2454,11 @@ Date:   Sun Feb 4 15:20:34 2024 -0500
 
     testing more effective fix for https://stroika.atlassian.net/browse/STK-1001 - that doesn't cause xsd validation failures
 
-commit 1c6cf99fa9408f262f2c4f34cf2896f63e472fe1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 4 15:40:39 2024 -0500
-
-    cosmetic
-
 commit 12581fee1585a824b0ae91afae7fb252f4b11484
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 4 15:50:10 2024 -0500
 
     cleanup last https://stroika.atlassian.net/browse/STK-1001  - fixed
-
-commit 0240d2a4e04745c251f6837012acbf039ec5aafd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 10:01:56 2024 -0500
-
-    Added new ValueOfOrThrow
 
 commit e9556a5615d7badb83cc282bcdc87bfe362cbef5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -4955,18 +2489,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 5 17:24:38 2024 -0500
 
     slight simplification of dockerfile
-
-commit bd9ece5a630ed9ec9122955a3218cdd400c6440c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:28:56 2024 -0500
-
-    cosmetic dockerfile clanup
-
-commit 73a56d39dc8505590c5f8896ec5579ffde9b7105
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:53:06 2024 -0500
-
-    makefile cleanup googletest tpc
 
 commit 2b6e1c2c1e4130af69459c66878989e9da2eb7c5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -5784,12 +3306,6 @@ Date:   Wed Feb 14 12:14:35 2024 -0500
 
     more progress getting new Led stuff compiling on MacOS
 
-commit 83e730288e88e43f3fa0403711ba17cd5c6d78d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 12:15:17 2024 -0500
-
-    Cosmetic
-
 commit 6f13e11e18b0b298f15144c5f4265ca3006717d7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 14 12:36:10 2024 -0500
@@ -5814,29 +3330,11 @@ Date:   Wed Feb 14 13:52:02 2024 -0500
 
     Led building on MacOS again
 
-commit 2d86e5333af68e1bcd7437a11bda7ff392b6ba06
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 14:08:29 2024 -0500
-
-    cosmetic
-
-commit 50b0604042c6259ef2247e905de663ebe3248cb6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 14:26:32 2024 -0500
-
-    Cosmetic
-
 commit c0466c45368de1a959d4c5879bf1f45955e5d89a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 14 14:56:55 2024 -0500
 
     more progress cleaning up Led table stuff to run (sort of) on Linux
-
-commit bb62db9dbba9874c304a8ef948e13e5ede412df1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 15:36:26 2024 -0500
-
-    minor cleanups to constexpr Led code
 
 commit beb1da25d3b771a608efaf229881e43a1af9984c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -5850,65 +3348,11 @@ Date:   Wed Feb 14 16:06:35 2024 -0500
 
     lose Led option qURLStyleMarkerNewDisplayMode  - just assume (it was) true
 
-commit 556bd826d5103a7da986301ea840079fc98444d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 21:16:54 2024 -0500
-
-    more porting of Led table code to UNIX
-
-commit d87ac968e40fbe40f12f8b50ec4eb0d500c828da
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 23:02:35 2024 -0500
-
-    More Led UNIX port support
-
-commit 94abb99ec5d3349a1719f4671b8f3a57455d86ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 23:16:38 2024 -0500
-
-    mostlty comsmetic
-
-commit d3b46af1ecc8877cf22a94b90aff1544629ab991
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 23:24:34 2024 -0500
-
-    cosmetic
-
-commit 3c6fd23b0c8d2343dad84df3627204940ada9dd8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 23:27:40 2024 -0500
-
-    cleanup
-
-commit 042c2c89c56ff3b3e497bdc227b6a6e9275ab1a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 06:57:06 2024 -0500
-
-    Silence warning
-
-commit 884a7dbcfa05caa99c121f7af2c53985da4ecca8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 07:08:59 2024 -0500
-
-    enable more Led WP code
-
-commit 1a5128b7a283f59d535225cb7b6e690176acb398
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 07:30:19 2024 -0500
-
-    More tweaks to WP code to compile on macos
-
 commit 3fa525cae787df434dc4005015e6afd6e43efdc0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 15 07:39:18 2024 -0500
 
     More tweaks to WP code to compile on macos
-
-commit a45b04e2bbaec65ac7d4d19c04bfa9fd97bd8261
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 07:39:35 2024 -0500
-
-    cosmetic
 
 commit eb8df2bd81bccb40becfa8c1c4cc9dfe93a52e7f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -5916,53 +3360,11 @@ Date:   Thu Feb 15 07:44:43 2024 -0500
 
     More tweaks to WP code to compile on macos
 
-commit 5b3d129d344a06c8e369cc0f5002b39b4d0e94bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 07:46:37 2024 -0500
-
-    Cosmetic
-
-commit bcbc43cca5e1a800993e90cfb690b2ab652455ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 07:51:00 2024 -0500
-
-    fixed typo
-
-commit 510dcc77427b807cbc6f6ab20f7467f8e505294c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 08:04:46 2024 -0500
-
-    more Led code cleanups
-
 commit 72a849a7e6c7133200737da8e27c3fe153da1490
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 15 09:54:39 2024 -0500
 
     respect qStroika_Frameworks_Led_SupportClipboard better
-
-commit 45194d939d8da34e2b18cdfe1e5464a34af2f54c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 08:03:29 2024 -0500
-
-    cosmetic
-
-commit 687cd801a0227c9bfd54a7f2e0c0969c5ab857a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 09:55:12 2024 -0500
-
-    cosmetic
-
-commit ffc763aa53a95c299dc998a65cd1b171b24b4efd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 09:57:46 2024 -0500
-
-    cosmetic
-
-commit 2c0d0f1b5b5b22cd6eb2073ae7d6c9bfa855895e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 09:58:02 2024 -0500
-
-    cosmetic
 
 commit 74f2bcc59ac19c436e2191e8cf00c7bef6cc6e23
 Author: Lewis Pringle <lewis@sophists.com>
@@ -5980,13 +3382,6 @@ commit 9784839f0b521007cc65ca10230c03c505f446ec
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 15 15:53:45 2024 -0500
 
-    dockerfile use vs VS_17_9_0
-
-commit 77f66225896ee8c3a680f4ffd843f1e1edb218fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 16:25:44 2024 -0500
-
-    config file _MSC_VER_2k22_17Pt9_ support for new compiler
 
 commit 509ec9d7563d80a17cebdc65877bbc6c10f92d62
 Author: Lewis Pringle <lewis@sophists.com>
@@ -6102,53 +3497,17 @@ Date:   Thu Feb 22 10:18:30 2024 -0500
 
     ModuleGetterSetter<T, IMPL>::Get () const now
 
-commit b0ec760cf02c2293610a85092d7ec7d6fd6cdc1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 14:34:03 2024 -0500
-
-    cosmetic
-
-commit 253638fc664111bc0a87d9ceddfeaae3e0521295
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 14:34:26 2024 -0500
-
-    cosmetic and tweaked DbgTrace messages
-
-commit 5c8ccd6698c9c8d803cc68782b3845e5d584b7fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 14:52:35 2024 -0500
-
-    cleanup regtest 35 for googletest
-
 commit 60580b753dd26a960859cb82034325c4b5fb166b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 22 15:47:06 2024 -0500
 
     fixed bug with InternetMediaTypeRegistry::Get ().IsA and added related regression tests and docs
 
-commit 954fde67f60e96f8cb94afea0e52e439d23020dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 17:29:54 2024 -0500
-
-    cosmetic
-
 commit b26109065d07abd2dfa76400baa659c1ff3094ef
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 22 17:32:25 2024 -0500
 
     lose not really working anyhow StyledTextIOWriterSinkStream_FileDescriptor StyledTextIOSrcStream_FileDescriptor code; and document StyledTextIOReader::SrcStream  and SinkStream need to be replaced with Streams::InputStream::Ptr<byte> and OutputStream::Ptr<byte> if we ever need to get this really working more widely
-
-commit bbb86c7b4e9e0d123cab5337a48dd930a70a0001
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 17:32:46 2024 -0500
-
-    minor exmaple cleanup
-
-commit c4122c9ee19fa525bc345f8eed7e57ce8e642613
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 20:42:39 2024 -0500
-
-    start release 3.0d5
 
 commit e0da14fca6a1de01e8e8b286ec9fec3cfb19b9b6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -6161,18 +3520,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 24 09:13:33 2024 -0500
 
     tweaks to Led Font code to avoid some compiler warnings
-
-commit 724fe98ddd178ece0314d34cc6d05319469eb065
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 24 23:27:14 2024 -0500
-
-    minor hacks to get building for macos
-
-commit b5fbb85e81d92c0a12bdf773fb60e66633141c71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 24 09:15:41 2024 -0500
-
-    docs makefile
 
 commit f9ec69e63cbd6411e608038be3a3c050709aa508
 Author: Lewis Pringle <lewis@sophists.com>
@@ -6203,12 +3550,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 25 17:58:58 2024 -0500
 
     hopefully workaround docker build issue for windows on github actions (run out of space)
-
-commit 4a8e245ba9e9a4b7d5b1749a3aeac20e9786d8a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 25 18:02:11 2024 -0500
-
-    cosmetic
 
 #endif
 
