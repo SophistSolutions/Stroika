@@ -62,6 +62,12 @@ especially those they need to be aware of when upgrading.
 
 - tons of mostly cosmetic changes; L string cleanup; regularizing namespace imports at top of modules; lose one or two empty cpp files
 
+
+
+- Library
+  - All
+    - new version of clang-format (17.0.3) with latest vis studio - so re-ran make-format-code
+
 - Execution
   - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
 
@@ -81,6 +87,7 @@ especially those they need to be aware of when upgrading.
     - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
     - qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy for clang
     - qCompilerAndStdLib_template_template_auto_deduced_Buggy BWA
+    - workaround qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
     - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy new bug workaround define and attempted bug workaround - testing
     - New bug define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
 - DataExchange
@@ -736,18 +743,6 @@ Date:   Sat Dec 9 15:41:43 2023 -0500
 
     Iterable<>::Where cleanup - using perfect forwarding and concepts and better subclass tuning in Containers like Set etc.
 
-commit 3c8daa35f1baff745851eeec63156a53ac87aa33
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 17:01:31 2023 -0500
-
-    workaround qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
-
-commit 646fc024853e04b26961436b8441cd9b7f5981b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 17:54:38 2023 -0500
-
-    fixed typo in qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
-
 commit 06118a00b0947162e94d35d0238ba5465eb11244
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 9 17:55:55 2023 -0500
@@ -910,24 +905,6 @@ Date:   Sun Dec 17 00:23:45 2023 -0500
 
     more minor tweaks for configuraiton of features
 
-commit e8c26aa737f15eee69123de32630ade69aa4e1a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 00:24:47 2023 -0500
-
-    Cosmeitc"
-
-commit d606489d6d48294cd2622fbc6afcdce55ffa876c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 00:50:23 2023 -0500
-
-    fixed bad checkin
-
-commit 1f74ba9cc8c8f4effdb2af8bc7182dbb02ef8006
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 00:50:31 2023 -0500
-
-    Cometic
-
 commit 0c68c2daa0320353d928567b0e9ea1f5df69b99d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 17 00:53:15 2023 -0500
@@ -970,41 +947,11 @@ Date:   Sun Dec 17 14:29:01 2023 -0500
 
     incompatible XML DOM changes (lose RWDocument)
 
-commit 4dbb633b19609294fd658af056fe7621885cacbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 15:53:15 2023 -0500
-
-    Cosmetic
-
-commit 3dc46e58eee8a4839161130f61178628ce063df7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 15:53:31 2023 -0500
-
-    Cosmetic
-
-commit e515eff7346da89e0c9a333c7a8008334ce2516f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 15:54:06 2023 -0500
-
-    Cosmetic
-
 commit ce66b9840679d4a6aeef7bf69e86d7fac3c809f4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 17 15:57:13 2023 -0500
 
     XML::DOM Document namespace refactoring
-
-commit 2644d0a68b353a69a7501e2028adc8c529a9a9eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 17:00:25 2023 -0500
-
-    docs cleanups
-
-commit 043be3de81b73ec4d83db6f7087e53675832c351
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 17:00:40 2023 -0500
-
-    todo docs
 
 commit 3230e0a2f446a0d97b58facff6eb140fe4c35532
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1024,41 +971,11 @@ Date:   Sun Dec 17 21:28:06 2023 -0500
 
     lots more cleanups to XML DOM code - lose CreateDocumentElement (replaced with New () overload), and SetRootElement and AppendNodes/InsertNodes (we may need to add that back when I find out why I needed it later - but for now adds undesirable complexity)
 
-commit aa0057ee548b124e79ec31ee186ea13c502ba080
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 10:55:46 2023 -0500
-
-    misc cosmetic cleanups relating to streams
-
-commit b81e2bef24f16ee9146ac0ea26210a772e8934f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 11:59:41 2023 -0500
-
-    cosmetic and todo
-
 commit d8cc4ff02537e7f8396b2414a6f598f290ecd76a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 18 12:00:23 2023 -0500
 
     fixed template args to SpanReInterpretCast - must have template arg for FROM_EXTENT to work with static arrays
-
-commit fbe6742d5d95335ca8183a2c5027638b43a518d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 12:01:01 2023 -0500
-
-    cosmetic
-
-commit c7168fa3fce87fa9f63373e28e14d4fa8799b5d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 12:01:17 2023 -0500
-
-    docs
-
-commit 7503f7be53e171719e846d943d4858de014e6a79
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 12:01:31 2023 -0500
-
-    docs
 
 commit c5d7b02a8c9ad57e39d748546503107c781b48f0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1096,35 +1013,11 @@ Date:   Mon Dec 18 15:36:16 2023 -0500
 
     not backward compat but minor - lose OutputStream::_SharedIRep and use shared_ptr directly, and a few related changes - losing _mkPtr etc
 
-commit 40b2867436e952022faf3ebc5c2d7b4a8157ca7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 15:54:13 2023 -0500
-
-    cosmetic
-
 commit a74cb181b487f0f35a8c721221569b532129c5d1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 18 15:54:32 2023 -0500
 
     refactored InputSubStream to new namespace style
-
-commit be51ebfa2ae41825b139667a0d40d652699916e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 15:55:43 2023 -0500
-
-    cosmetic
-
-commit 4920f5688914662018874a0e4c7333f124dfef85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 16:14:57 2023 -0500
-
-    docs
-
-commit 27b2cdaab907fa340efbb05b0cdb27cf889615e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 16:15:16 2023 -0500
-
-    minor code cleanup
 
 commit c65d0755218ee0ec0cacd1e00d4e7f6596e74713
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1186,11 +1079,6 @@ Date:   Tue Dec 19 21:01:32 2023 -0500
 
     lose MemoryStream.cpp and simplified MemoryStream code slightly
 
-commit 998c30b5c171684c178bbd9d5672adfa9f50a72d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 19 21:05:16 2023 -0500
-
-
 commit a2badfd9956cc33bdc4a053171ec392ef491d097
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Dec 19 21:06:48 2023 -0500
@@ -1244,12 +1132,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 22 11:36:52 2023 -0500
 
     switched BufferInputStream and BufferOutputStream to namespace (from quasi-namespace) style - incomplete but mostly testable)
-
-commit bf1e8f0f36cc39ad3c2d5c5050bd2b7287bfc1aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 22 13:02:30 2023 -0500
-
-    fixed typo
 
 commit ed500fdfdbe3b835d04273791771a614a61e3a19
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1522,12 +1404,6 @@ Date:   Fri Dec 29 00:39:50 2023 -0500
 
     dont fail saving locks i file files missing on github actions macos
 
-commit 61f8a48c704fc39c24e51b86776f24663a91c846
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 31 11:20:33 2023 -0500
-
-    fixed forgtten checkin
-
 commit 96b33eab78863ef3a0f90eb9ccc12d32da40bc10
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 29 11:42:01 2023 -0500
@@ -1540,23 +1416,11 @@ Date:   Fri Dec 29 20:41:54 2023 -0500
 
     INputStream::IRep::Read now returns otpional - where missing means (wrapper do throw EWouldBlock::kThe) - unlike wrapper ptr API (that just uses nullopt for EOF
 
-commit 52b23f43bc99a63ded5f22fd70466f2944efc5da
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 29 23:12:28 2023 -0500
-
-    fixed missing file
-
 commit abd1701e612960b2538f9855b756fba0997c509b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 30 10:12:09 2023 -0500
 
     progress on new Stream blcokign code - lose old rep API ReadNonBlocking - replaced with AvailableToRead; REP API NOT CLOSE to compatible. (as far as non-blcokgin conscerned); Ptr API pretty close to compatible, but not 100% ; passes regtests but webserver broken currently
-
-commit b6cc4a1e23ca0629b460fd689e6b2ca85c3c78d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 30 12:41:38 2023 -0500
-
-    fixed posix typo
 
 commit b179a1ce7a0e22f7fea93fdbd342316680e479f1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1568,7 +1432,7 @@ commit dd0b65e5442100c77059b13d8c79dec23e1d87f6
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 30 22:56:52 2023 -0500
 
-    cosmetic; and added draft regtest 53 (webserver)
+    added draft regtest 53 (webserver)
 
 commit 53d2f7bf6e34bbb3a4bf623845a491178f9f239f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1654,18 +1518,6 @@ Date:   Tue Jan 2 12:45:45 2024 -0500
 
     renamed new Memory::ISpanT -> Memory::ISpan
 
-commit 84e9dfa2ccac58544d8f4cc79e3dfaca1942735b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 12:53:01 2024 -0500
-
-    cosmetic
-
-commit 1eff2ccd0e3c801a14daf948522d80f868920e18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 13:07:19 2024 -0500
-
-    mostly cosmetic
-
 commit 5de620d8fe313e1f1270b54002c6366a34d412c0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 2 13:18:04 2024 -0500
@@ -1707,12 +1559,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Jan 2 17:46:34 2024 -0500
 
     minor libcurl makefile cleanups - losing old BWA notes
-
-commit a9d9c186f085fb16a8de9c0c23e100f996f78034
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 20:15:27 2024 -0500
-
-    cosmetic
 
 commit 0637e19f022931de453c649bfe879b09194be2c1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1828,24 +1674,11 @@ Date:   Wed Jan 10 14:25:23 2024 -0500
 
     new utility Common::variant_index; and used in DOM/XPath code to simplify and comply with constraint that xerces seems to have (must specify resturn type in expression)
 
-
-
-commit d4114c461c49dd1a41e78a254420e24b069a05fe
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jan 11 10:17:07 2024 -0500
-
-    tweak .vscode/launch.json settings for debugger mostly)
-
 commit 82cc067591a1c232c818acb81124e678397e8ad4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 11 10:32:30 2024 -0500
 
     Xerces build out of CURRENT source rather than extracting source to IntermediateFiles (fewer copies and source stays around on clean so better debugging experience)
-
-commit 24d0a5079c70e0fae015e5d39e79c54655897d9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 10:38:47 2024 -0500
-
 
 commit 10d3a3b4a128258802ba648e39ab70c30e5ca777
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1858,12 +1691,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 11 16:29:03 2024 -0500
 
     more cleanups of recent DOM Node / Element refactor
-
-commit bfdadf45cd6873dea3ee3f156bb3d4bcd4ae63eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 16:40:28 2024 -0500
-
-    fixed typos
 
 commit 9e233a588c0d4929e5acd80ee7d3acfe07f6089e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1912,12 +1739,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 14 19:27:28 2024 -0500
 
     Improved Iterable::First/FirstValue/Last/LastValue with concepts and cleaned one use
-
-commit 817dcfbab89ee337f783923eec16a52f7ddb16cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 09:43:46 2024 -0500
-
-    supress apparently bad visual studio compiler warning about FirstValue
 
 commit 3f7c865906efdb58634bc90be7cb66c649bd50ca
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2004,23 +1825,11 @@ Date:   Wed Jan 17 10:14:31 2024 -0500
 
     minor cleanup to buildroots script
 
-commit fbb2b84091e9e7c1c4c1ddf3d867c0502471e541
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 11:53:36 2024 -0500
-
-    regressiontests dosc
-
 commit 92ad41dd030eb244a2a6ed08b4272326e1f2a543
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 17 13:36:31 2024 -0500
 
     special speed tweak on builds for libraries if QUICK_BUILD=1 set as command-line argument to make
-
-commit 140f78cb5e126c9838551a9e23f554692f568fe8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 15:27:39 2024 -0500
-
-    fixed typo
 
 commit 9ac89f992fe45b9e2732a38c7d233fce23c4ded2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2034,35 +1843,11 @@ Date:   Wed Jan 17 15:58:08 2024 -0500
 
     Comments: documented that Range, and its various subtypes, are all immutable (except for allowing operator=)
 
-commit 9e8174df40a0b7e59400f27219190aa2c3ac4a10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 16:00:41 2024 -0500
-
-    cosmetic
-
-commit ddc07898c069d87d5533f20c7fdf3af497555ba3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 21:00:57 2024 -0500
-
-    minor tweaks to regtests
-
-commit 2f59da4f1681064e0ad2bace41c4cb385b92ba53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 23:28:19 2024 -0500
-
-    Cosmetic
-
 commit 5d6db00b09196ab5fd9b436b7a8e646534fc183b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 18 12:48:01 2024 -0500
 
     DateTime CTOR minor cleanups - made a few CTORs explicit, and lost one (mostly) redundant one. Only incompat this introduces is maybe sometimes will need expplicit DateTime{} around Date{} objects; and a few other minor cleanups to tests, quiet warnings etc
-
-commit 9cd1fae58b41f368ae05d9889185f6487d913b22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 19 10:23:43 2024 -0500
-
-    Comments
 
 commit 3d0e723d9721ce457ea4bfcf48cee779c1a9e203
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2082,23 +1867,11 @@ Date:   Sun Jan 21 09:59:22 2024 -0500
 
      Range<T, TRAITS>::LessIsh
 
-commit f7810011b26e0f8e77268758a2fed8a8ab4304f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 21 10:08:27 2024 -0500
-
-    forgot checkin
-
 commit 50d239b4f29b42f7c548c4ba4d92f5c19ace7fba
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 21 10:32:23 2024 -0500
 
     renamed last checkin to DefinitelyLessThan and fixed typo
-
-commit a73322bd8a980e84ad9359a15261f19cb2736512
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 21 10:34:46 2024 -0500
-
-    fixed typo
 
 commit 85bc25532b76c729f6f95dd4ad308f6a467a3e27
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2118,47 +1891,17 @@ Date:   Mon Jan 22 09:54:26 2024 -0500
 
     new RecordNotFoundException class
 
-commit 74681f4e645ef28460039f9369f8c3cc1d54e3f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 22 09:59:12 2024 -0500
-
-    fixed typo
-
-commit 6d293309c846b2f89dd5bb30dbfba3e21a589f16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 25 09:54:49 2024 -0500
-
-    added missing #include
-
 commit 1f1714197aef6c03edd3d194311ae5aa389986ec
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Jan 25 10:16:18 2024 -0500
 
     qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy BWA
 
-commit e0d4b34a4aad2e32763a06156f7758b5460d32d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 25 13:03:15 2024 -0500
-
-    cosmetic
-
 commit 659ee62cbd2a6ba059bfc2f9f9fc5740fe7656ce
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 25 13:04:02 2024 -0500
 
     renamed new Common::variant_index -> Common::VariantIndex and made it variable, not function (so invoke shorter)
-
-commit b5a902ee04d185f1401b3bd6351a3345db8b05ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 25 13:05:44 2024 -0500
-
-    fixed typo
-
-commit 5c4cdc163e5b531ac18259e28753645353f89ca5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 25 13:15:45 2024 -0500
-
-    cosmeticcomments
 
 commit 19bc0adbd9bcf292d9420c35b2dcce2a167c3d62
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2171,30 +1914,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jan 26 16:41:38 2024 -0500
 
     Added DateTime::ParseQuietly () overload with list of formatPatterns and default kDefaultParseFormats)
-
-commit 97765b322140d63c666d63c5a4c955366df10470
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 07:48:23 2024 -0500
-
-    docs
-
-commit 85a6e2190b427e9a68364229a5a180872b2abdfc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 08:03:49 2024 -0500
-
-    docs
-
-commit 4cd9da7c51bef0764f605b85a31a60738954f299
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 08:38:31 2024 -0500
-
-    cosmeitc
-
-commit 13860d9f00be67678bb7946529efb9d9958fbe2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 09:58:59 2024 -0500
-
-    added static assert
 
 commit 81ab8848bcf8167687af0f1f0706f0482bb993d2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2351,12 +2070,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 31 18:00:06 2024 -0500
 
     more progress/fixes for URI::AsString_ (optional<StringPCTEncodedFlag>  - and docuemnt issue https://stroika.atlassian.net/browse/STK-1000
-
-commit 56ccda4b275e082e3193c7dac0d296f637d68c26
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 18:07:17 2024 -0500
-
-    fix regtests for recent changes
 
 commit 5a707f422a13cbb46d385eb0f9ff75398cd1ebe4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2580,12 +2293,6 @@ Date:   Tue Feb 6 15:01:59 2024 -0500
 
     regtests update so builds right without xerces
 
-commit 4b9ef665db8b89f3a8cad1df9b56a8817f1aa161
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 15:02:18 2024 -0500
-
-    cosmetic
-
 commit 8026819c2ef2388d3bc0229a4a8e7c599e64a709
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 6 15:15:16 2024 -0500
@@ -2640,29 +2347,11 @@ Date:   Thu Feb 8 09:25:49 2024 -0500
 
     more compiler bug workarounds for clang - qCompilerAndStdLib_kDefaultToStringConverter_Buggy and qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy and qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy tweaks
 
-commit ee1ab73de4e0202975f69e07905b887edb5346cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 09:35:14 2024 -0500
-
-    cosmetic
-
-commit ee1ba43b41f72a0628817e09c612808d38590af1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 09:36:26 2024 -0500
-
-    Added regtest
-
 commit baed59727eafb97b560b2d1b61b9ab8f2e40a646
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 8 09:56:14 2024 -0500
 
     minor cleanups/improvements to Join code
-
-commit 478024c10060aace8a806a48ecfca82234b05a54
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 09:56:50 2024 -0500
-
-    cosmetic
 
 commit bf1ed317dbf9f910686c50c4e37b8d0ac2b0a635
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2681,12 +2370,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Feb 8 10:25:35 2024 -0500
 
     more qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy for clang
-
-commit c67721f3681b63681292d1132b684e0b7a4b7770
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 10:45:19 2024 -0500
-
-    comments/docs/regtests
 
 commit 5eea61ecf872707ed48e7dc0e1d06ca73400b58a
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -2760,59 +2443,11 @@ Date:   Fri Feb 9 10:07:36 2024 -0500
 
     experiment with apt-remove hack to save space on some github actions
 
-commit c453c6a92aa3013f51286ea39a61f4c289974dd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 11:30:43 2024 -0500
-
-    fixed typo
-
 commit 599cf00dd93648afb69453b43e62e9c758c3f86d
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri Feb 9 11:49:13 2024 -0500
 
     fixed minor mistake / bad checkin for qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy BWA
-
-commit c11df47e4fdf1596a504c4b0e63af701388e072f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Feb 9 11:50:04 2024 -0500
-
-    minor tweak to Character class
-
-commit a10725dce83385882a03d9c02ad1048cd18e3875
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Feb 9 11:52:20 2024 -0500
-
-    fixed minor github action bug
-
-commit be9277465e72b5924e43d5d30a59828451dfa519
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 13:29:53 2024 -0500
-
-    apt-remove hack to save space failed
-
-commit 8120468dddb70e1b0e28cbaf9539beb63bdb45a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 13:31:49 2024 -0500
-
-    fixed minor regression
-
-commit e4f3454cd102d23590a8cf23471bd0129cc92c17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 15:46:25 2024 -0500
-
-    fixed typo
-
-commit 3f19d4bf726933fa8b2e53858b4e70dc4f4dfd68
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 20:04:12 2024 -0500
-
-    fixed distclean to delete extra stuff in Origs-Cache
-
-commit 4b2e0f0a88a36a9124fa64dac4218353d5a1831c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 20:59:07 2024 -0500
-
-    .gitingore
 
 commit 49bb0ff213e876474ebb4e5bb29501f29e9e4e94
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -2952,35 +2587,11 @@ Date:   Sun Feb 11 17:55:46 2024 -0500
 
     more progress getting Led to build on UNIX
 
-commit b0a6bb4d3f12f2c00f803c1f8f64da28075c273e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 18:04:01 2024 -0500
-
-    cosmetic
-
-commit edcd178550b8909ee84105b599a183a5e68c7a2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 20:19:20 2024 -0500
-
-    fixed typo
-
 commit c933e31a4055bea662551699e99e04e0b40bb2e1
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sun Feb 11 20:23:41 2024 -0500
 
     more progress getting Led to compile on UNIX
-
-commit f7add815b2ca36447cd07c6c8e443223087cc59f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 20:26:56 2024 -0500
-
-    comsetic ; and fixed typo
-
-commit 1047bdc1697f3665cb4fa4369202bff7cf0bda9b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 11 21:45:30 2024 -0500
-
-    minor makefile tweaks
 
 commit 5b893ba5cfa8b8d3b477f2c191077083e1094573
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2988,113 +2599,17 @@ Date:   Mon Feb 12 09:45:55 2024 -0500
 
     get more of Led compiling on MacOS - mostly deleting old macos carbon code
 
-commit 05ebea7234f901a4d9f4f44d8769acd58f7b3cc4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 09:46:31 2024 -0500
-
-    cosmetic
-
-commit d341cf6b6eef580e45fcf46174908049e58c91c5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 12 09:48:38 2024 -0500
-
-    ore progress porting Led to Linux
-
-commit e029e6e7f6280bca1750854d0d0aa9fb007c6495
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 09:50:50 2024 -0500
-
-    cosmetic
-
-commit d90436a675e5f4d4e9c0698c3fd9293975a49f4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 10:01:22 2024 -0500
-
-    get running on windows again - recnet Led changes
-
-commit f85613e3f212855267d05c38f89ef0e8e3ee9239
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 10:01:57 2024 -0500
-
-    cosmetic
-
-commit b97654ba6e7e25e36acad478d6fed3b06ad18966
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 10:16:33 2024 -0500
-
-    cosmetic
-
-commit 86789029b8b84729b9fe02deb92a6523064c6634
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 10:34:24 2024 -0500
-
-    get recent Led chagnes compiling on macos
-
-commit 0dc03aa6e735b6b840a4a2afd8c77e4e4c803876
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 10:44:38 2024 -0500
-
-    cosmetic:
-
-commit 38456fe22e12dd8f092b93ae917fb0ec0b7130a7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 12 10:44:53 2024 -0500
-
-    minor
-
 commit e930b179fff22aac7db61b72a982379cddeb5d7b
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Feb 12 10:52:41 2024 -0500
 
     progress getting Led compiling on unix
 
-commit ad3c1b9617eb3b892be927e206944e2df61d65c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 10:53:56 2024 -0500
-
-    Address warning
-
-commit 20f46d95349dfb59c46a49d719217acc159c3609
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 12 11:10:59 2024 -0500
-
-    more progress getting LEd to compile on UNIX
-
-commit bfefaa323a7038248767f54eb80c9e6aa05625df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 11:11:32 2024 -0500
-
-    cosmetic
-
-commit 36b98c0e76df236589c907f6fe1be43decfae47b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 11:26:45 2024 -0500
-
-    cosmetic
-
 commit ab5a83fcab158a7d7116099d1ccebc0ac462bda0
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Feb 12 11:34:17 2024 -0500
 
     now all Led code compiling on unix(sort of - barely)
-
-commit 7247f81b7e42eafa065df4fd83012c7d88ae420f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 11:39:22 2024 -0500
-
-    minor fixes
-
-commit 04cc4d3e1d50b779d9e1d16a1f09b7adec057828
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 11:51:58 2024 -0500
-
-    got Led compiling (minimally) oN MacOS
-
-commit 376e60461c1f53206ef2e15784fcaacbf7bd7552
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 11:56:42 2024 -0500
-
-    cosmetic
 
 commit 48813058af3ae3f079e379888b018d3f335e0d9a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3108,47 +2623,11 @@ Date:   Mon Feb 12 14:07:33 2024 -0500
 
     lose more unsupported old apis from Led code (qUseSystemNetscapeOpenURLs etc)
 
-commit 10e63c4012768a12463bfd0887c08e8c14421e46
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 14:27:55 2024 -0500
-
-    fix a few more macos Led warnings
-
-commit 79981dbc1481d1f468c0ede8388f77a63cbb21f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 14:44:18 2024 -0500
-
-    more mostly cosmetic Led cleanups
-
-commit c19fb5272787f0eeb8cfef3fdfe2120607b43356
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 14:53:27 2024 -0500
-
-    Led macos cleanups
-
-commit 1094d8beb5519c667b2e4036340c0021bb8fe585
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 14:54:13 2024 -0500
-
-    cosmetic
-
-commit 250de6879a0fe123ac30c3dafc4f27ef7da25d80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 15:09:47 2024 -0500
-
-    cosmeitic
-
 commit acb2a757fa447953699fb97d43dae817f3c5edcc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 12 20:53:30 2024 -0500
 
     Led cleanups of #defines - no longer supprt qWideCharacters/qMultibyteCharacters/qSingleByteCharacters - instead always do what we used to call qWideCharacter, and document @todo - swithcing to using span<const Character> at some point (if I work enuf of Stroika/Led)
-
-commit 8673942b33ec800b07d0198ee48cd5552344c928
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 21:00:54 2024 -0500
-
-    cosmetic and lose unused ifdefs
 
 commit 1b4d068e0185ea9075954ce9da8ae2189feeabe8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3162,47 +2641,11 @@ Date:   Tue Feb 13 09:43:22 2024 -0500
 
     fix small regresion in sqlite tpc makefile
 
-commit bf7f021f073afbb2806534c88773a29b3879c842
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Feb 13 09:58:56 2024 -0500
-
-    avoid deprecated api
-
-commit 1436821b0a74548cb6fed19f4147e71edf5904d2
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Feb 13 10:00:30 2024 -0500
-
-    imporved deprecation warning
-
-commit 1bf8f89977617832abfea6aa9493e32f87743e11
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Feb 13 10:03:53 2024 -0500
-
-    Comments
-
 commit 59bd175145f8c902c41e2f60f29a271ac528e4ae
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 13 10:15:53 2024 -0500
 
     Minor Led cleanups/modernizing/comments/warnings
-
-commit 6027da032dcad038f6fdcdfa3a79c418287abcc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 10:57:44 2024 -0500
-
-    Minor Led cleanups/modernizing/comments/warnings
-
-commit bc8a5bd411ab8ace01dc91ac66019d492f287922
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 11:22:34 2024 -0500
-
-    minor makefile tweak
-
-commit 921a9efd699387a3e03709e0c99b19ebd4e9d4e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 11:26:30 2024 -0500
-
-    cosmetic
 
 commit b3aa1cf89d27ae7614e4bdf716e96d20dc866a81
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3221,54 +2664,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 13 17:17:08 2024 -0500
 
     cleanup github actions recent changes
-
-commit 0a2ef793b6af959cd523633561f452fce95d2d4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 17:17:22 2024 -0500
-
-    cosmetic
-
-commit 2d8dd90aecb3abfc0bd5da535f2ae77da73b92cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 17:23:13 2024 -0500
-
-    silence warning
-
-commit 8a28c4e0c44be4350c2bf6efcd9500113bc4c387
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 17:37:35 2024 -0500
-
-    Misc Led refactoring/celanups around style dbase
-
-commit 1dd4a63780ee54a77b507ac0e8082df993367440
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 20:15:52 2024 -0500
-
-    More Led refactoring - so paragraphDB can work without GDI code compiled
-
-commit 2f8348703baeda659470a80f7ff9d1079e478ea2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 20:22:52 2024 -0500
-
-    More Led refactoring - so hidableTExtDB can work without GDI code compiled
-
-commit 63edeb26160224c8b555e571f6608b654c49c153
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 20:39:30 2024 -0500
-
-    get compiling on macos (Led changes)
-
-commit bb0df7119de47ae2b258532b6e6cd9c1aaa6489e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 20:40:05 2024 -0500
-
-    cosmetic
-
-commit 9ff11305483a28ddffb7e2b72e6623a93c36b06f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 20:54:24 2024 -0500
-
-    more Led cleanups
 
 commit 6ece678cf005b4cca5f440d499ab5b908adcdbf8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3311,18 +2706,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 14 12:36:10 2024 -0500
 
     cosmetic and new qStroika_Frameworks_Led_SupportTables define
-
-commit 6289f4b41c91d1b4b3b45a9a9012237eb0820b1e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 13:38:46 2024 -0500
-
-    fixed typo in recent github action change
-
-commit b75853d4b8315cf9aba29641645cfadf7b67ae73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 13:39:53 2024 -0500
-
-    progress towards getting Led WordProcessorTextIOSrcStream working on UNIX
 
 commit 8e29f04846e2720a1bfe230844362f97675adc2e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3378,17 +2761,6 @@ Date:   Thu Feb 15 14:28:57 2024 -0500
 
     lose unneeded qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
 
-commit 9784839f0b521007cc65ca10230c03c505f446ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 15:53:45 2024 -0500
-
-
-commit 509ec9d7563d80a17cebdc65877bbc6c10f92d62
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 16:31:12 2024 -0500
-
-    new version of clang-format (17.0.3) with latest vis studio - so re-ran make-format-code
-
 commit 8b7e7f77631c2a907e1daa72655a1c1882742e3e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 20 15:08:07 2024 -0500
@@ -3413,23 +2785,11 @@ Date:   Wed Feb 21 11:03:49 2024 -0500
 
     trivial tweak to VariantValue::operator bool ()
 
-commit 72615c587a950cb897003346a9c4d5eeed522fbe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 11:04:53 2024 -0500
-
-    cosmetic
-
 commit 13802cd6861b8410a61e8f01870705b7244b9b2e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 21 11:06:09 2024 -0500
 
     new draft Mapping_IKey and Mapping_IMappedValue concepts, and starting to use, and fill out what are the requirements - much tbd and more todo for other containers, but a sensible place to start since I just ran into trouble with this (assignment requirement was not obvious and led to confusing error message)
-
-commit b24b202842d7a0d684a3b30b5452739a36a7a03a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 11:48:10 2024 -0500
-
-    Docs
 
 commit ec778ba6fa4cf36c181f1f096dd016b6aa9313f9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3461,35 +2821,17 @@ Date:   Wed Feb 21 14:52:44 2024 -0500
 
     Tons of VariantValue cleanups - but MOSTLY - adding rquires constraint to As<> method instead of using template specailization (so get better compiler error messages and executable docs for what is allowed)
 
-commit c7fd226d8eabfcd405a144e7b00ec9de0f9c4794
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 15:28:01 2024 -0500
-
-    fixed recent typo
-
 commit 341f0e02201e59c02f5bad474cca8e5dda60827a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 21 18:35:23 2024 -0500
 
     More elaborate AppSettings example/sample app
 
-commit 15fc44ab812f4a3d6de9f21e9e34035e4f31ab24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 23:55:26 2024 -0500
-
-    Silence warning
-
 commit 6be08889b81a2aa11144274f9bd061d62e00ea38
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 22 09:42:49 2024 -0500
 
     Docs and new experimental operator-> for ModuleGetterSetter
-
-commit 474fd82fce51241ad7728e2f8259b29fc0908434
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 09:46:29 2024 -0500
-
-    fixed typo
 
 commit 7155287af2a927dc139c95783cfa72c941e38653
 Author: Lewis Pringle <lewis@sophists.com>
