@@ -55,6 +55,8 @@ jobs:
           systeminfo
           echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+          # Was running out of space, and doesn't seem to be commandline way to set storage opts, so
+          # add --storage-opts ["size=60GB"] or some such, to this file, and see if it works better, but not needed for now --LGP 2024-02-26
           echo "C:/ProgramData/Docker/config/daemon.json:" -n ; cat "C:/ProgramData/Docker/config/daemon.json"
       - name: Build Windows Container Images (STEP1-vs2k22)
         # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
