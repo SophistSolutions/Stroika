@@ -26,7 +26,6 @@ especially those they need to be aware of when upgrading.
         Only lazy if default Iterable<T> used.
 
 - Big improvements to XML support - schemas and Xquilla (hope soon) and xpath in xml support.
-- big imrpvoemetns to PRogressMonitor code
 
 
 ------------
@@ -36,6 +35,7 @@ especially those they need to be aware of when upgrading.
     - libxml2 support defaults on, and xerces now defaults off (if libxml2 on), qHasFeature_libxml2
     - replace old </PkgConfigLinkLineAppendages> with simpler PkgConfigNames (to fix libxml2 include issue)
     - for libxml add LIBXML_STATIC to CPPFLAGS (so seen in vscode)
+    - new configure LinkTime_CopyFilesToEXEDir feature, and used to replace old ScriptsLib/Vs2kASANBugWorkaround
 
   - Docker Build Containers
     - Refactoring/options - tweak so builds smaller docker windows container - avoiding(???) issue with .github actions
@@ -68,17 +68,26 @@ especially those they need to be aware of when upgrading.
   - All
     - new version of clang-format (17.0.3) with latest vis studio - so re-ran make-format-code
 
-- Execution
-  - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
+- Cache
+  - fix Cache::Stats_Basic so copyable
+  - redo lazy access to Mapping<> in CallerStalenessCache for special case of void KEY - since I now am experimenting with better validation of Mapping<> template parameters
+  - cleanups to LRUCache constructors (factory deduction approach), and similarly SyncrhonizedLRUCache
+  - Test8_NewLRUCacheConstructors_ in regtests
+  - better use of requires/concepts
 
 - Characters
   - ToString
+    - https://stroika.atlassian.net/browse/STK-566  Major Characters::ToString cleanup, including ToString (...elipsis) support, and cleanup use of templates in Private_ - ToStringDefaults, etc.
     -  ToString() support for (some) chrono::duration and chrono time_point values (with any clock)
+    - Added Characters::UnoverloadedToString (some contexts appear to not work with ToString overloaded template - e.g. Iterable<>::Join)
+    - added IToString concept replacing deprecated has_ToString_v
+    - Draft of StringShorteningPreference support in ToString() code
+    - ToString() support (minimally) std::variant
+    - Use Configuration::IBoundedEnum concept and in Characters::ToString()
   - FloatConversion
     - improved Characters::FloatConversion code checking with concepts use (so better error reports, but no real changes)
   - String
     - Added String::Remove() overload
-
 
 - Configuration
   - Compiler Bug Defines
@@ -90,7 +99,17 @@ especially those they need to be aware of when upgrading.
     - workaround qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
     - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy new bug workaround define and attempted bug workaround - testing
     - New bug define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+  - Enums
+    - define Configuration::IBoundedEnum concept
+
+- Containers
+  - All
+    - Added requires () on default CTOR for various container archtypes, that require less, or equal_to etc to be defined, so we hopefully get better compiler error messages (otehrwise should have no effect)
+
 - DataExchange
+  - StructuredStreamEvents
+    - **incompatible change** to SAXReader/StructuredStreamEvents::IConsumer - added Mapping<StructuredStreamEvents::Name, String> attributes argument to StartElement () callback, and no longer generate Start/End/TextInside calls for each attribute (though ObjectReader still does this)
+
   - ObjectVariantMapper
     - Added DurationSeconds support to ObjectVariantMapper::MakeCommonSerializer
   - XML
@@ -99,20 +118,38 @@ especially those they need to be aware of when upgrading.
     - XML::SAXParse deprecated overload taking context reference, and instead take context ptr
     - Targets either Xerces or libxml2
     - libxml2 now the default because IT supports XPath in the DOM code (so does Xerces but much weaker in Xerces)
+    - exposed qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations since slow, and made sure we actually check on destruction no leak! if you do all that work
 
 - Debug
   - Assertions
     - new _ASSUME_ATTRIBUTE_ macro, and experimental use of it in Assert/Require macros
     - split Assert into Assert (procedure) and AssertExpression for expressions; and sample for Require/RequireExpression and Ensure/EnsureExpression; for the PROCEDURE versions - in RELEASE BUILDS - add [[assume(C)]] where possible (RISKY, INTERESTING, BUT PROBBABLY HELPFUL FOR PERFORMANCE)
     - in release builds, Assert(ETC)NotReached() calls std::unreachable () if available
+  - AssertExternallySynchronizedMutex
+    - renamed macro qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled -> qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+
   - Sanitizers
     - tried memory sanitizer - a boondoggle - not worth trying for now...
+
+- Execution
+  - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
+  - ProgressMonitor
+    - big improvements (just in time to possibly deprecate cuz really not that useful anymore).
+    - Added ProgressMonitor::SetCurrentTaskInfo () method
+    - ProgressMonitor: SetCurrentProgressAndThrowIfCanceled depreacted - use SetProgress, and update docs / code so SetProcess does Throw
+    - use Syncronized in ProgressMonitor code and more minor cleanups/asserts
+    - optional (default on) feautre to restore taskinfo on DTOR, and keep task callbacks by reference so works better with mutable lambdas
 
 - Math
   - Math utilities use more concepts for better error reporting
 
 - Memory
-  - Added new ValueOfOrThrow
+  - BLOB
+    - deprecated BLOB::Hex in favor or better name and improved API BLOB::FromHex; Same for BLOB::Raw -> BLOB::FromRaw, and cleanups to said methods
+  - InlineBuffer
+    - minor cleanup to InlineBuffer<>::reserve() - docs, simplificiation, and hopefully avoids warning in g++-12 cross-compile for raspi/arm
+  - Optional
+    - Added new ValueOfOrThrow
 
 
 - Time
@@ -135,6 +172,9 @@ especially those they need to be aware of when upgrading.
     - new Time::DisplayedRealtimeClock (and use);
 
 - Traversal
+  - Iterable
+    - declare Iterable<>::iterator / const_iterator for easier STL interoperability
+
   - Range
     - Migrate Foundation::Traversal::Openness type to Traversal Common.h file, so can be used elsewhere (without #include Range.h which pulls alot in); no namespace changes
 
@@ -142,16 +182,30 @@ especially those they need to be aware of when upgrading.
   - Led
     - Actually ported to MacOS/Unix
       - old code just had commented out builds - so misleadingly ported before v3 (really just windows)
-      - Lots done here - but still tons of led code disabled on UNIX (if/cuz no GDI)
+      - Lots done here - but still tons of led code disabled on UNIX (if/cuz no GDI - qStroika_Frameworks_Led_SupportGDI)
       - But I can now use alot of the Led code (AskHealthFrame uses for record RTF read/convert).
     - Lose old MacOS 'quicktime/carbon' code (so check pre-v3.0d5 for that code if ever needed)
+    - lose old apis support: qUseSystemNetscapeOpenURLs, 
     - minor cleanups to constexpr Led code, etc, modernizing usage
+      lose some no longer needed (and not helpful/wrong) #define checkers etc for qDebug/NDEBUG, etc; lose qHasIsAscii
+    - Led cleanups of #defines - no longer supprt qWideCharacters/qMultibyteCharacters/qSingleByteCharacters - instead always do what we used to call qWideCharacter, 
+    - document @todo : switch to using span<const Character> at some point (if I work enuf of Stroika/Led)
+    - Minor Led cleanups/modernizing/comments/warnings
+    - cosmetic and new qStroika_Frameworks_Led_SupportTables define
+    - lose Led option qURLStyleMarkerNewDisplayMode  - just assume (it was) true
+    - respect qStroika_Frameworks_Led_SupportClipboard better
+    - lose not really working anyhow StyledTextIOWriterSinkStream_FileDescriptor StyledTextIOSrcStream_FileDescriptor code; and document StyledTextIOReader::SrcStream  and SinkStream need to be replaced with Streams::InputStream::Ptr<byte> and OutputStream::Ptr<byte> if we ever need to get this really working more widely
+
+
 
   - SystemPerformanceMonitor
     - fix system performance monitor code to better track initial time on measurements; change sample to print times using DisplayedRealtimeClock::time_point; and related cleanups
-
-  - New Frameworks/Test
+  - Test Frameework **new**
     - Simple wrapper on google test code
+  - WebServer
+    - Minor cleanups to ThreadPool stat collection; and used with new property / option in Frameworks::WebServer::ConnectionManager
+    - cleanp use of new ThreadPool CTOR (avoid deprecated api) and for WebServer - change behavior so we max-out the QMax value (possibly no effect, possible reduce attack surface)
+    - fixed Frameworks/WebServer/Response.inl writeln code to not write NUL chars in EOL
 
 - ThirdPartyComponnents
   - Boost 
@@ -187,111 +241,17 @@ especially those they need to be aware of when upgrading.
   - Valgrind
     - disable another test under valgrind cuz too slow
     - disable valgrind-debug-SSLPurify cuz extremely slow and vanishingly little value
+  - New WebServer (first framework) regression test
+    - Simple but real/reasonable regtest for webserver and check with curl
 
+- Samples
+  - Traceroute
+    - tweak UI of traceroute sample app
+    - network monitor traceroute code new overload taking per hop callback; used to improve the UI of the traceroute app so more like regular traceroute tool
+    - cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
 
 
 #if 0
-commit a6028f892c7e11e414562a426a944f88b6b34ae2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 19:01:51 2023 -0500
-
-    https://stroika.atlassian.net/browse/STK-566  Major Characters::ToString cleanup, including ToString (...elipsis) support, and cleanup use of templates in Private_ - ToStringDefaults, etc. BROKE case of enums - so have to circle back and fix that
-
-commit 976b5a556cdd8ee68c545b6a13c8f000d891913d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 20:06:48 2023 -0500
-
-    define Configuration::IBoundedEnum concept and use to ToString() to reverse recent regression handling ToString () of enums (not yet tested)
-
-commit a97f1cdc9bcde7e62594e6e72c6075119e3f0e8b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 21:18:38 2023 -0500
-
-    aded IToString concepot replacing deprecated has_ToString_v
-
-commit fa0a472eeffe5adeb5007015ab60de686217b090
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 23:32:08 2023 -0500
-
-    Added requires () on default CTOR for various container archtypes, that require less, or equal_to etc to be defined, so we hopefully get better compiler error messages (otehrwise should have no effect)
-
-commit e7f4516ea7f09c6ca4112dcb20444607cf3563da
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 23:32:47 2023 -0500
-
-    tweak UI of traceroute sample app
-
-commit 174a022890b53e91bdddc02deacc6adf7405bdfb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 21 23:49:54 2023 -0500
-
-    network monitor traceroute code new overload taking per hop callback; used to improve the UI of the traceroute app so more like regular traceroute tool (but still maybe broken - debug soon)
-
-commit 77e1544a135a0e7dd55b79c659e05e301f62b40d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 00:16:25 2023 -0500
-
-    cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
-
-commit e878618a4d953d46067d00e4ec769b190a7201ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 12:14:18 2023 -0500
-
-    Skip more tests that run too slowly under valgrind
-
-commit ac273ae1362d3c6c435268403b0efa606f14e76c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 13:14:28 2023 -0500
-
-    more fixes to requires stuff (hints) on container default CTORS (more todo)
-
-commit 90c23d2ad5c0b09dbad7d06daad84071d4d2e95f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 22 22:26:49 2023 -0500
-
-    **incompatible change** to SAXReader/StructuredStreamEvents::IConsumer - added Mapping<StructuredStreamEvents::Name, String> attributes argument to StartElement () callback, and no longer generate Start/End/TextInside calls for each attribute (though ObjectReader still does this)
-
-commit a142c5e0afad87b26d6f2b37cda2fee3128d1dc4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 23 09:11:14 2023 -0500
-
-    several tweaks and DbgTraces to help address slow memcheck issue on unix
-
-commit 43531c12149115166884df6af9dd122d1906eca5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 23 11:42:43 2023 -0500
-
-    slight cleanup to MakeShared<> usage; deprecated BLOB::Hex in favor or better name and improved API BLOB::FromHex; Same for BLOB::Raw -> BLOB::FromRaw
-
-commit c5aefa955efd1c58a797ce6c52baa48f02305896
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 23 11:58:40 2023 -0500
-
-    another minor BLOB::FromHex/FromRaw cleanup
-
-commit 332b26929ad48baf16dcfa62e496d4f4c8b9cdb7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 23 12:48:22 2023 -0500
-
-    more cleanups to BLOB::FromRaw/FromHex code
-
-commit ff9dad8ce8c13336878b93baf407420d72c2ed9f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 23 20:42:00 2023 -0500
-
-    declare Iterable<>::iterator / const_iterator for easier STL interoperability
-
-commit 85eb6752a5d0995621c75713c2758cf2669cd84e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 23 23:38:58 2023 -0500
-
-    renamed macro qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled -> qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-
-commit 6b715af647feac52bbbee249cf00da5c93921447
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 24 13:27:49 2023 -0500
-
-    Minor ease of use tweaks to ProgressMonitor code
 
 commit 2252612b7eee472234f8d1a9eb715fa8dbbbfdc0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -365,12 +325,6 @@ Date:   Mon Nov 27 15:15:48 2023 -0500
 
     Minor fix (<= not <) in ThrowTimeoutExceptionAfter, and several other 'throw' utility tweaks to use perfect forwarding
 
-commit 1caccc3daf8855b652619327b05ee6d4cbae5f5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 15:43:48 2023 -0500
-
-    cleanp use of new ThreadPool CTOR (avoid deprecated api) and for WebServer - change behavior so we max-out the QMax value (possibly no effect, possible reduce attack surface)
-
 commit 26750de6ba1965a5dd352315d2d5e04b7e3c51f2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 27 20:00:55 2023 -0500
@@ -394,18 +348,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 28 14:12:08 2023 -0500
 
     also disabled valgrind-debug-SSLPurify-NoBlockAlloc (still doing release version) - should be good enuf; maybe retry next release of memcheck valgrind in next major ubuntu release, but so far seems unhelpful and slow
-
-commit 8b8fa3346a494783d0efc580731f1679ce8805db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 28 15:32:44 2023 -0500
-
-    Minor cleanups to ThreadPool stat collection; and used with new property / option in Frameworks::WebServer::ConnectionManager
-
-commit b4be2618f9361632dd4d08c9c9b88ddccab28602
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 28 17:41:16 2023 -0500
-
-    Minor tweeaks to recent ConnectionManager for WebServer statistics
 
 commit a9176e0981536a9c4da05414c6d097bfb4f85311
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -431,12 +373,6 @@ Date:   Wed Nov 29 22:23:02 2023 -0500
 
     better eror checking in MemoryMappedFileReader.cpp
 
-commit 21110369d1a1d163aec640b463145ad8f2609f0b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Nov 30 09:35:12 2023 -0500
-
-    minor cleanup to InlineBuffer<T, BUF_SIZE>::reserve() - docs, simplificiation, and hopefully avoids warning in g++-12 cross-compile for raspi/arm
-
 commit 0a36f56cb5fb5ff800c0e517cb1e2a05caf56dd1
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Nov 30 10:16:16 2023 -0500
@@ -454,36 +390,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 30 14:28:23 2023 -0500
 
     fixed a bunch of holes, including docs, in ProgressMontior utility; still not used anyplace, but starting to use in RFL code, so testing there
-
-commit 675a97707f20522abc8f570a41f4bafcc2de373d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 17:29:34 2023 -0500
-
-    fix small but crazybad bug in ProgressMonitor code (must have never been used)
-
-commit 87ef9f256beb9bb76263bfc7c8cfd81df3714c9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 17:55:14 2023 -0500
-
-    mostly cosmetic cleanups to ProgressMonitor, but added some comments and WeakAsserts on SetProgress () code
-
-commit ea0b7f36291ad3ec116f19682110f07af13fb19d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 1 07:52:39 2023 -0500
-
-    ProgressMontitor - optional (default on) feautre to restore taskinfo on DTOR, and keep task callbacks by reference so works better with mutable lambdas
-
-commit 09f10d6a69ec5a68f185310473143dbf1adc6751
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 1 08:46:20 2023 -0500
-
-    use Syncronized in ProgressMonitor code and more CTOR cleanups
-
-commit f5b430dcad220e6518872284d875ffd9b7e71067
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 1 10:20:36 2023 -0500
-
-    more cleanups of Progress code; and XML code - exposed qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations since slow, and made sure we actually check on destruction no leak! if you do all that work
 
 commit 47c578fd8a25f4b4671ba6e383c95046312e2922
 Author: Lewis Pringle <lewis@sophists.com>
@@ -519,19 +425,11 @@ commit 08a61375053a1145fad1e5391234b658341ee55b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 2 23:29:21 2023 -0500
 
-    new experimental LinkTime_CopyFilesToEXEDir in configure and make scripts; used to replace RUN_PREFIX hack and script hack to workaround MSFT ASAN bug/misfeature/regression; just testing now - but if owrks more cleanups todo
 
 commit 538dd23083a024449fbe80ddeb9b69c2e857b743
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 3 08:00:47 2023 -0500
 
-    more cleanups of new configure LinkTime_CopyFilesToEXEDir feature, and used to replace old ScriptsLib/Vs2kASANBugWorkaround
-
-commit 3caeff68b5077f10cc7834957f662d5dc71a0992
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 3 08:11:59 2023 -0500
-
-    confoigure args for LinkTime_CopyFilesToEXEDir
 
 commit 8a07778a41434b1101394f2247f1bc4efcbe8e7e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -587,47 +485,17 @@ Date:   Tue Dec 5 13:42:55 2023 -0500
 
     slightl cleanup to Base64 support (spans); Memory::BLOB now directly supports FromBase64/AsBase64; and better templates for this and Hex support
 
-commit fa84cc7b610256afbe4a11a66da92cc41768bfdc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 16:09:39 2023 -0500
-
-    Added ProgressMonitor::SetCurrentTaskInfo () method
-
-commit cac8adc3ea59af1e981d7d5f35b94a64423da665
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 19:39:56 2023 -0500
-
-    ProgressMonitor: SetCurrentProgressAndThrowIfCanceled depreacted - use SetProgress, and update docs / code so SetProcess does Throw
-
 commit 02612e01c4844e8a7288e449f05237a77d6191a1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 5 19:42:40 2023 -0500
 
     Fixed Updater::ThrowIfCanceled to call Thread::CheckForInterruption ()
 
-commit 8234b3f2a8e7712edf099a76c5c35fb32597dab9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 10:15:30 2023 -0500
-
-    cleanups to LRUCache constructors (preliminary/incomplete)
-
 commit d8fdf8c884693ff2a8f0cab552ee8351dc6f24f6
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 6 10:16:52 2023 -0500
 
     qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy BWA; and BLOB::Repeat () optimizaiton
-
-commit 14d4343fcb53672bbf8dd3f6a13ec84fc400b7a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 11:28:08 2023 -0500
-
-    Minor docs/comsetic and lsoe recently added ProgressMonitor::SetCurrentTaskInfo
-
-commit b0685fb639ee49f9424d837fbaf4130d8f9525ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 11:29:32 2023 -0500
-
-    Test8_NewLRUCacheConstructors_ in regtests
 
 commit 45b538258bd4af10d78f9300eab652cdcc52d23e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -641,59 +509,11 @@ Date:   Wed Dec 6 13:01:45 2023 -0500
 
     minor cleanups/fixes to recent regrssions ot PRogerssMontitor code and comments of stuff todo
 
-commit 0cc7e0f21ccf791aac33293eb9c7df8c8c1844ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 13:02:07 2023 -0500
-
-    progress celaning up LRUCache code
-
-commit bab0ff8d0281c629cc65c0f7cc24caee803bec1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 14:21:10 2023 -0500
-
-    more cleanups to LRUCache factory deduction apporahc
-
-commit afd5977665289de5c7a2dd29b4c4235f5f798021
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 14:43:26 2023 -0500
-
-    more LRUCache cleanups
-
-commit c64894325d06171597e347b0c6952c3255ff8a86
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 15:23:23 2023 -0500
-
-    more docs, regtests and progress on deduction for LRUCache and better use of requires/concepts
-
-commit 2af6901bffaa4fa5b286248af2f6972f4932fef4
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 6 16:29:08 2023 -0500
-
-    fixed minor recent regressions to SyncrhonizedLRUCache code (needs similar factory/CTORS)
-
 commit ff3867a80da7efee96650337124b13fbbf1643ef
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 6 17:18:35 2023 -0500
 
     cannot use noexcept with std::function
-
-commit db5d5a59ab80528fe6393ce6b7ed19bed08a55d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 21:28:47 2023 -0500
-
-    fix Cache::Stats_Basic so copyable
-
-commit 9bf861eeeb3ef90f4e86647a23531d5b553faaf3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 21:42:40 2023 -0500
-
-    minor tweaks to ProgressMonitor::Updater::SetCurrentTaskInfo - chgeck for chagnes
-
-commit 431a46753b76388a30b48747ab46cfcfdddfbe7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 22:25:35 2023 -0500
-
-    Draft of StringShorteningPreference support in ToString() code
 
 commit 0e31cad24614023c946b05d5e30dea154cf67368
 Author: Lewis Pringle <lewis@sophists.com>
@@ -831,7 +651,6 @@ commit f81c95a2084206af955e042867767df2a6e1cf99
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 15 09:29:16 2023 -0500
 
-    fix recent configure change - add LinkTime_CopyFilesToEXEDir cygpath --mixed no --unix cuz dont want /cygdrive stuff in config file
 
 commit 7382b0ec904af01d6e9c3cec30c1ab4e7fbe82b3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1420,7 +1239,7 @@ commit abd1701e612960b2538f9855b756fba0997c509b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 30 10:12:09 2023 -0500
 
-    progress on new Stream blcokign code - lose old rep API ReadNonBlocking - replaced with AvailableToRead; REP API NOT CLOSE to compatible. (as far as non-blcokgin conscerned); Ptr API pretty close to compatible, but not 100% ; passes regtests but webserver broken currently
+    progress on new Stream blcokign code - lose old rep API ReadNonBlocking - replaced with AvailableToRead; REP API NOT CLOSE to compatible. (as far as non-blcokgin conscerned); Ptr API pretty close to compatible, but not 100% ; 
 
 commit b179a1ce7a0e22f7fea93fdbd342316680e479f1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1428,11 +1247,6 @@ Date:   Sat Dec 30 14:55:06 2023 -0500
 
     a few small bugs with recent inputstream conversion work
 
-commit dd0b65e5442100c77059b13d8c79dec23e1d87f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 30 22:56:52 2023 -0500
-
-    added draft regtest 53 (webserver)
 
 commit 53d2f7bf6e34bbb3a4bf623845a491178f9f239f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1488,11 +1302,8 @@ Date:   Mon Jan 1 16:33:54 2024 -0500
 
     maybe fixed/finished TextRader non-blocking IO code
 
-commit 071a9eabb01ee687cbce714237b40b2ab41ffa36
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 12:01:57 2024 -0500
 
-    Simple but real/reasonable regtest for webserver and check with curl
+
 
 commit 50dd1755ea6c18c1bfcd26456b712d325f41c67d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1504,7 +1315,6 @@ commit 1391c0dd2ef28d23a8ed932beb64340040478106
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 2 12:03:00 2024 -0500
 
-    fixed Frameworks/WebServer/Response.inl writeln code to not write NUL chars in EOL
 
 commit 809af16230466074c3861b9a4f2f22539f994765
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1661,12 +1471,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 9 20:46:14 2024 -0500
 
     more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
-commit 69c8207d856b2af3b9aeeb143da9e3764fd1b829
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 10 12:58:12 2024 -0500
-
-    ToString() support (minimally) std::variant
 
 commit 3efd0e92791c585861fee80cb6bdb15aebf7308e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2023,18 +1827,6 @@ Date:   Tue Jan 30 18:29:04 2024 -0500
 
     tweaks to DOM::Node/etc code - GetRep () / PeekRep, and a couple extra regtests
 
-commit 0f9686265d04dc72f50e0a9465cd400257cd066d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 30 20:52:45 2024 -0500
-
-    Document::Ptr::ToString ()
-
-commit 518574922756e6aef42821cfd12fb8baefa6bb16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 13:53:24 2024 -0500
-
-    tweak namesace (XML) ToString() methdo to wrap in quotes
-
 commit 69595dd887be4b3a7fc0e45a5de593f86c80e80d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 31 14:14:08 2024 -0500
@@ -2070,12 +1862,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 31 18:00:06 2024 -0500
 
     more progress/fixes for URI::AsString_ (optional<StringPCTEncodedFlag>  - and docuemnt issue https://stroika.atlassian.net/browse/STK-1000
-
-commit 5a707f422a13cbb46d385eb0f9ff75398cd1ebe4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 22:30:05 2024 -0500
-
-    draft XPath::Expression::ToString() method and used in exception
 
 commit bf7e48c3a61cffc9fe54c0296d61ed91b1b92044
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2317,12 +2103,6 @@ Date:   Wed Feb 7 20:01:14 2024 -0500
 
     lose Common::Identity, and replace with a differnt version of Common::Identity (identiy function not type mapper) - probably more useful and other can be simulated easily enuf with conditional_t<true,T,T>
 
-commit e044c2100c7639e8da74c5aa577a08d77af7a270
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 7 20:47:26 2024 -0500
-
-    Added Characters::UnoverloadedToString
-
 commit 67549edf224b9bb82a25bed8a18cff02ba6dd7ec
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 7 20:51:37 2024 -0500
@@ -2491,12 +2271,6 @@ Date:   Sat Feb 10 17:44:47 2024 -0500
 
     use Configuration::IAnyOf in a couple more places to simplify
 
-commit 29d32ec0d924ddd8d6696e021441e3a60934fd5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 10 20:31:56 2024 -0500
-
-    lose some no longer needed (and not helpful/wrong) #define checkers etc for qDebug/NDEBUG, etc, and lose qHasIsAscii from Led framework as well
-
 commit 0446ebdeb86e248e72fbeb29eefef974afd32c73
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 11 09:58:11 2024 -0500
@@ -2521,36 +2295,6 @@ Date:   Sun Feb 11 10:00:21 2024 -0500
 
     added regtest for IOStreamSeekBug
 
-commit 8ed9f668e824cab9a512aa76d052a3dec5ec8b73
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 11 10:45:23 2024 -0500
-
-    tweaks to begin getting Led to compile on UNIX
-
-commit 2120ce7af032e5757260b687892a101260ca3d22
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 11 14:39:40 2024 -0500
-
-    more tweaks trying to get Led stuff compiling on UNIX
-
-commit fc9b8352bd628568ea6e0b4cea13755b728e77d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 14:43:15 2024 -0500
-
-    rehack Led makefile temporarily while trying to get to compile so regtests pass
-
-commit fbeda6dc94f6d2f96638e6bfec2bb3b5ffa35d07
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 14:46:31 2024 -0500
-
-    more tweaks to Led Frameworks - getting to work on unix
-
-commit c7595f220d50ccb30ae369f6d70a040caecc6767
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 11 15:03:45 2024 -0500
-
-    more qStroika_Frameworks_Led_SupportGDI support
-
 commit 66ba61be50030b0bf17cc30827c151300a941424
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 11 15:27:48 2024 -0500
@@ -2563,72 +2307,6 @@ Date:   Sun Feb 11 15:28:03 2024 -0500
 
     simplify/generalize slightly the EndianConverter code (if constexpr and and concepts)
 
-commit a5a8580d72562f8656106e7ab3b39f8ca32b2efd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 15:38:06 2024 -0500
-
-    More Led cleanups (trying to get working on unix)
-
-commit 9974d4c42d080cb17318ad0aafb4dee4b9297f09
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 11 16:36:19 2024 -0500
-
-    progress getting to build on unix
-
-commit 73ea3223e6605182f53833caad0088fea6c11b21
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 17:04:16 2024 -0500
-
-    more progress porting Led to UNIX
-
-commit ea6dd30458fabc2ad1f36827310d7be96f6712a7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 11 17:55:46 2024 -0500
-
-    more progress getting Led to build on UNIX
-
-commit c933e31a4055bea662551699e99e04e0b40bb2e1
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 11 20:23:41 2024 -0500
-
-    more progress getting Led to compile on UNIX
-
-commit 5b893ba5cfa8b8d3b477f2c191077083e1094573
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 09:45:55 2024 -0500
-
-    get more of Led compiling on MacOS - mostly deleting old macos carbon code
-
-commit e930b179fff22aac7db61b72a982379cddeb5d7b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 12 10:52:41 2024 -0500
-
-    progress getting Led compiling on unix
-
-commit ab5a83fcab158a7d7116099d1ccebc0ac462bda0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 12 11:34:17 2024 -0500
-
-    now all Led code compiling on unix(sort of - barely)
-
-commit 48813058af3ae3f079e379888b018d3f335e0d9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 13:46:23 2024 -0500
-
-    lose StyledTextIO_STYLText support - old macos stuff no longer supported (no idea if apple even does anymore)
-
-commit da6cbafc5abcb1607d76bcb3e5c13efb396f1a3e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 12 14:07:33 2024 -0500
-
-    lose more unsupported old apis from Led code (qUseSystemNetscapeOpenURLs etc)
-
-commit acb2a757fa447953699fb97d43dae817f3c5edcc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 20:53:30 2024 -0500
-
-    Led cleanups of #defines - no longer supprt qWideCharacters/qMultibyteCharacters/qSingleByteCharacters - instead always do what we used to call qWideCharacter, and document @todo - swithcing to using span<const Character> at some point (if I work enuf of Stroika/Led)
-
 commit 1b4d068e0185ea9075954ce9da8ae2189feeabe8
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 12 22:03:10 2024 -0500
@@ -2640,18 +2318,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Feb 13 09:43:22 2024 -0500
 
     fix small regresion in sqlite tpc makefile
-
-commit 59bd175145f8c902c41e2f60f29a271ac528e4ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 10:15:53 2024 -0500
-
-    Minor Led cleanups/modernizing/comments/warnings
-
-commit b3aa1cf89d27ae7614e4bdf716e96d20dc866a81
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 17:12:15 2024 -0500
-
-    more Led refactoring so more can be built without GDI code (style database and more related soon)
 
 commit 1583c6f00854921507f773870fc3460795cea926
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2671,83 +2337,11 @@ Date:   Wed Feb 14 09:24:04 2024 -0500
 
     disable github workflow ubuntu-22.04-g++-All3rdParty (Debug.. cuz runs out of diskspace (and cannot remove boost but still test all configs)
 
-commit 9c6c8159ebb0ee84c8884c8ba7f48977efedafd1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 09:31:24 2024 -0500
-
-    cosmetic; and progress getting more Led frameowrk working without GDI
-
-commit 6f07de30d6228aab6e2fd6cf7112da407c187522
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 09:53:17 2024 -0500
-
-    cosmetic; and progress getting more Led frameowrk working without GDI
-
-commit 9428ceb2adc1247d4320a0c9c71bfce9a42b4d33
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 11:59:58 2024 -0500
-
-    more progress getting  more of Led to compile without GDI
-
 commit 1d135d85398973de1bfe2bbd8d5a0c32a09dc6a3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 14 12:00:18 2024 -0500
 
     more workaroudns for github run out of space issue
-
-commit 87fe1f8e12022936d1d1a0081b4e6e2329bf8a1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 12:14:35 2024 -0500
-
-    more progress getting new Led stuff compiling on MacOS
-
-commit 6f13e11e18b0b298f15144c5f4265ca3006717d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 12:36:10 2024 -0500
-
-    cosmetic and new qStroika_Frameworks_Led_SupportTables define
-
-commit 8e29f04846e2720a1bfe230844362f97675adc2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 13:52:02 2024 -0500
-
-    Led building on MacOS again
-
-commit c0466c45368de1a959d4c5879bf1f45955e5d89a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 14:56:55 2024 -0500
-
-    more progress cleaning up Led table stuff to run (sort of) on Linux
-
-commit beb1da25d3b771a608efaf229881e43a1af9984c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 15:55:50 2024 -0500
-
-    get more WordProcessor Led code compiling on MacOS
-
-commit da069561e2a2364d56f5c54cb9d365a92b3ad0b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 16:06:35 2024 -0500
-
-    lose Led option qURLStyleMarkerNewDisplayMode  - just assume (it was) true
-
-commit 3fa525cae787df434dc4005015e6afd6e43efdc0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 07:39:18 2024 -0500
-
-    More tweaks to WP code to compile on macos
-
-commit eb8df2bd81bccb40becfa8c1c4cc9dfe93a52e7f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 07:44:43 2024 -0500
-
-    More tweaks to WP code to compile on macos
-
-commit 72a849a7e6c7133200737da8e27c3fe153da1490
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 09:54:39 2024 -0500
-
-    respect qStroika_Frameworks_Led_SupportClipboard better
 
 commit 74f2bcc59ac19c436e2191e8cf00c7bef6cc6e23
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2790,12 +2384,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 21 11:06:09 2024 -0500
 
     new draft Mapping_IKey and Mapping_IMappedValue concepts, and starting to use, and fill out what are the requirements - much tbd and more todo for other containers, but a sensible place to start since I just ran into trouble with this (assignment requirement was not obvious and led to confusing error message)
-
-commit ec778ba6fa4cf36c181f1f096dd016b6aa9313f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 13:22:41 2024 -0500
-
-    redo lazy access to Mapping<> in CallerStalenessCache for special case of void KEY - since I now am experimenting with better validation of Mapping<> template parameters
 
 commit ba7d06d0d56823f4070c974bdc038c6d295559aa
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2845,23 +2433,11 @@ Date:   Thu Feb 22 15:47:06 2024 -0500
 
     fixed bug with InternetMediaTypeRegistry::Get ().IsA and added related regression tests and docs
 
-commit b26109065d07abd2dfa76400baa659c1ff3094ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 17:32:25 2024 -0500
-
-    lose not really working anyhow StyledTextIOWriterSinkStream_FileDescriptor StyledTextIOSrcStream_FileDescriptor code; and document StyledTextIOReader::SrcStream  and SinkStream need to be replaced with Streams::InputStream::Ptr<byte> and OutputStream::Ptr<byte> if we ever need to get this really working more widely
-
 commit e0da14fca6a1de01e8e8b286ec9fec3cfb19b9b6
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 22 21:11:01 2024 -0500
 
     cleanup docker DOCKER_NETWORK hack/workaround in docker build makefile
-
-commit 0ec5a075502f6936a68925b06a7f4659164d0726
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 24 09:13:33 2024 -0500
-
-    tweaks to Led Font code to avoid some compiler warnings
 
 commit f9ec69e63cbd6411e608038be3a3c050709aa508
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3080,7 +2656,7 @@ Date:   Sun Feb 25 17:58:58 2024 -0500
       - Compilers supported
         - g++-13 build added to github actions, and compiler bug defines and scripted in regtests
         - Added configs to makefile for clang++-16
-        - desupport clang++-13 (since libstdc++ version 13 doesn't compile (at least boost build) with that version of clang++ - not my problme
+        - desupport clang++-13 (since libstdc++ version 13 doesn't compile (at least boost build) with that version of clang++ - not my problem)
         - VS_17_7_5 in docker container for testing
         - Compiler bug defines for xcode 15
         - just check __GNUC__ not __GNUC_MINOR__ in compiler bug version detector
