@@ -103,7 +103,7 @@ $(SubDirs):
 # @todo fix - this iterates over all the subdirs calling make, which is a little slow and perhaps unneeded -- LGP 2019-10-27
 .PHONY: all_objs_
 all_objs_:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Foundation Objs:";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Foundation Objs {$(CONFIGURATION)}:";
 	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
