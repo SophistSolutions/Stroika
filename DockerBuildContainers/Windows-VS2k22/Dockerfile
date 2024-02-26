@@ -97,16 +97,25 @@ RUN Invoke-WebRequest "$env:VS_17_9_1" \
 #       Windows10SDK.20348 is apparently the final Windows 10 SDK (WAG/been this number for a while).
 #       Windows10SDK.22621 appears to be a windows 11 SDK (not my typo) - still untested using this instead
 #       of the windows 10 SDK... try next release... --LGP 2024-02-24
-ARG USEWINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.20348"
-#ARG USEWINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.22621"
-ARG REMOVEWINSDK="--remove Microsoft.VisualStudio.Component.Windows10SDK.10240 --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 --remove Microsoft.VisualStudio.Component.Windows10SDK.14393"
+ARG USE_WINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.20348"
+#ARG USE_WINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.22621"
+
+# Attempt to save a little space - running out of space on github actions; but didn't materially help --LGP 2024-02-26
+# ARG REMOVE_WINSDK="--remove Microsoft.VisualStudio.Component.Windows10SDK.10240 --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 --remove Microsoft.VisualStudio.Component.Windows81SDK"
+ARG REMOVE_WINSDK=""
+
+# Microsoft.VisualStudio.Workload.UniversalBuildTools appars to be around 10GB, and doesn't appear needed to build
+# Stroika, and bigness causes issues with github actions running out of space, so lose this for now --LGP 2024-02-26
+# ARG USE_UniversalBuildTools="--add Microsoft.VisualStudio.Workload.UniversalBuildTools"
+ARG USE_UniversalBuildTools=""
+
 
 # del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
 RUN (%TEMP%\vs_buildtools.exe \
     --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
     --add Microsoft.VisualStudio.Workload.MSBuildTools  \
-    --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
+    %USE_UniversalBuildTools% \
     --add Microsoft.VisualStudio.Workload.VCTools \
     --add Microsoft.VisualStudio.Component.VC.ASAN \
     --add Microsoft.VisualStudio.Component.VC.CLI.Support \
@@ -114,8 +123,8 @@ RUN (%TEMP%\vs_buildtools.exe \
     --add Microsoft.VisualStudio.Component.VC.ATL \
     --add Microsoft.VisualStudio.Component.VC.ATLMFC \
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
-    %USEWINSDK% \
-    %REMOVEWINSDK% \
+    %USE_WINSDK% \
+    %REMOVE_WINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
     && (del /f /s /q "%TEMP%\*.*")
