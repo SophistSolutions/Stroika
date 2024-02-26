@@ -306,7 +306,7 @@ namespace {
             auto in = Streams::iostream::InputStreamFromStdIStream::New<byte> (tmp);
 
             auto r = in.ReadAll ();
-            EXPECT_EQ (r.size (), 1);
+            EXPECT_EQ (r.size (), 1u);
         }
         {
             stringstream tmp;
@@ -314,7 +314,7 @@ namespace {
             auto inb = Streams::iostream::InputStreamFromStdIStream::New<byte> (tmp);
             auto in  = TextReader::New (inb, nullopt, SeekableFlag::eSeekable);
             auto r   = in.ReadAll ();
-            EXPECT_EQ (r.size (), 1);
+            EXPECT_EQ (r.size (), 1u);
         }
     }
 }

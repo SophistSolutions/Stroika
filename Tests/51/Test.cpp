@@ -1078,9 +1078,9 @@ namespace {
         {
             using IO::Network::InternetAddress;
             Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-            EXPECT_EQ (c.Repeat (0).size (), 0);
+            EXPECT_EQ (c.Repeat (0).size (), 0u);
             EXPECT_TRUE (c.Repeat (1).SequentialEquals (c));
-            EXPECT_EQ (c.Repeat (10).size (), 20);
+            EXPECT_EQ (c.Repeat (10).size (), 20u);
         }
     }
 }
