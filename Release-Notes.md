@@ -11,6 +11,8 @@ especially those they need to be aware of when upgrading.
 
 ### WORKING ON DDRAFT v3.0d5 release notes
 
+- (temporarily?) lose valgrind testing, cuz too slow (and sanitizers better cost-benefit)
+
 -- pre d5 relnotes hints
 
  - new section "Upgrade Notes" and there empahizze what you need todo to upgrade to this version from previous
@@ -71,17 +73,20 @@ especially those they need to be aware of when upgrading.
 
 - docker build for windows compiler: tweaked and better documented source of --add lines in installation of Visual Studio
 
-- Moved many enum names into surrounding namespace with using, such as:
-  - (in Characters namespace) using AllowMissingCharacterErrorsFlag::eIgnoreErrors;
 
-- tons of mostly cosmetic changes; L string cleanup; regularizing namespace imports at top of modules; lose one or two empty cpp files
 
 
 
 - Library
-  - All
+  - All/Misc
     - new version of clang-format (17.0.3) with latest vis studio - so re-ran make-format-code
     - in many places, changed usage of is_same_v to same_as (cosmetic; shorter; more modern; uniform)
+    - Moved many enum names into surrounding namespace with using, such as:
+      - (in Characters namespace) using AllowMissingCharacterErrorsFlag::eIgnoreErrors;
+    - tons of mostly cosmetic changes; L string cleanup; regularizing namespace imports at top of modules; lose some empty cpp files
+    - experimented with __has_include instead of qHasFeature code, but decided BAD IDEA, cuz may want to disable stroika dependency
+      on library even if it exists in system includes
+    - Several enums that were naemd eDefault were renamed to eDEFAULT (**not backward comaptible but I think mostly on new stuff since v3 so probbaly not user noticible**)
 
 - Cache
   - fix Cache::Stats_Basic so copyable
@@ -103,6 +108,10 @@ especially those they need to be aware of when upgrading.
     - improved Characters::FloatConversion code checking with concepts use (so better error reports, but no real changes)
   - String
     - Added String::Remove() overload
+    - fixed bug in String :: CTOR (utf8) code - if contained latin1 characters and ascii, but no non-latin1 characters; added regtest for this case, and fixed the bug (could be more efficient, but hopefully good enuf for now - wait ti I see in profiling)
+    - deprecated bool arg to String::LimitLength (replaced with enum) and used that enum in ToString code; 
+    - optimize String::ToUpperCase/ToLowerCase
+    - optimization of String EqualsComparer - for case of (String,basic_string_view<ASCII>) - COMMON case - so possibly helpful
   - StringBuilder
     - StringBuilder<OPTIONS>::ShrinkTo (size_t sz)
     - experiment with StringBuilder having non-explicit String conversion op
@@ -136,7 +145,10 @@ especially those they need to be aware of when upgrading.
     - Adjust qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy for clang++15
     - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy for raspberry  pi tests
     - lose unneeded qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-
+    - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define updated libversion# for
+    - qCompilerAndStdLib_CompareOpReverse_Buggy broken starting on gcc 13, so maybe really my bug after all
+    - workaround qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy in Test_Join
 
   - Enums
     - define Configuration::IBoundedEnum concept
@@ -178,6 +190,10 @@ especially those they need to be aware of when upgrading.
   - Sanitizers
     - tried memory sanitizer - a boondoggle - not worth trying for now...
     - fixed docs on Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS usage, and used in qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA for Debug::Private_::Emitter::DoEmit_ RASPI issue
+  - Visualizations
+    - new module Foundation::Debug::Visualizations to fix visual studio .natvis problems; #include Debug/Visualizations.h to get visualizations in debugger from now on
+    - natvis major improvement for Stroika strings - still not great but at least OK now
+    - early draft Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Frameworks-Debugger-Template.natvis support
 
 - Execution
   - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
@@ -188,6 +204,7 @@ especially those they need to be aware of when upgrading.
     - use Syncronized in ProgressMonitor code and more minor cleanups/asserts
     - optional (default on) feautre to restore taskinfo on DTOR, and keep task callbacks by reference so works better with mutable lambdas
     - Fixed Updater::ThrowIfCanceled to call Thread::CheckForInterruption ()
+    - ChangedCallbackType cannot use noexcept with std::function
   - Thread
     - **not backward compatible** : changed rules for thread::Ptr::Abort - no longer legal to call with NotYetStarted(); and make START promise/ensure state != notyetstarted when it returns. Removed a few regtests (or adjust them) to reflect new rules and this fixes assert failre very sporadic in service test (i hope); - test more and more cleanups related to this
     - redid alot of the Thread start / abort logic so we now support RegressionTest25_AbortNotYetStartedThread_ again and re-enabled that test; 
@@ -198,6 +215,8 @@ especially those they need to be aware of when upgrading.
     - deprecated CTOR (unsigned int nThreads, const optional<String>& threadPoolName) and replace with ThreadPool::Options CTOR; 
     - add new QMax settable option and respect it in AddTask method - either blocking or waiting (poorly) or throwing;
   - Minor fix (<= not <) in ThrowTimeoutExceptionAfter, and several other 'throw' utility tweaks to use perfect forwarding
+  - Synchronized
+    - workaround/avoid probably real serious bug https://stroika.atlassian.net/browse/STK-700
 
 - IO
   - Filesystem
@@ -304,6 +323,7 @@ especially those they need to be aware of when upgrading.
    - VERSION 1.84.0
    - tweak makefile
    - fixed boost download - jfrog seems broken
+   - Using new boost and clang compilers, must disable cobalt library
   - LibCurl
     - VERSION 8.5.0
     - tried 8.6.0 - but problems
@@ -334,13 +354,16 @@ especially those they need to be aware of when upgrading.
 
 
 - Tests
+  - regtests now depend on Framework library (just fixed project files for visual studio so far)
+  - Sanitizers
+    - tried msan, but didn't seem helpful/working
   - GoogleTest
     - Depend on googletest for regression testing (disabled if thirdpartycomponent googletest not configured/enabled).
     - cleanup of output of Tests makefile for run-tests for compat with new gtest code
     - Rewrote all regtests to use googltests, but only about 1/4 rewritten WELL on top of googletest (so more todo but low priority).
   - Valgrind
-    - disable another test under valgrind cuz too slow
-    - disable valgrind-debug-SSLPurify cuz extremely slow and vanishingly little value
+    - had to disable many tests since it was just so slow. And eventually decided not worth it (sanitizers work better) - so at least temporarily
+      lose VALGRIND support. May re-add when I get to test with next LTS Ubuntu release (soon).
   - New WebServer (first framework) regression test
     - Simple but real/reasonable regtest for webserver and check with curl
 
@@ -351,87 +374,9 @@ especially those they need to be aware of when upgrading.
     - cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
 
 
-    Minor cleanups to Enumeration code
-    Several enums that were naemd eDefault were renamed to eDEFAULT (**not backward comaptible but I think mostly on new stuff since v3 so probbaly not user noticible**)
-
-
-
-
-
 
 
 #if 0
-commit c69fced2781af6282fbfccbda8976eb3a5ea3ec7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 28 14:12:08 2023 -0500
-
-    also disabled valgrind-debug-SSLPurify-NoBlockAlloc (still doing release version) - should be good enuf; maybe retry next release of memcheck valgrind in next major ubuntu release, but so far seems unhelpful and slow
-
-commit 762ef6dd178b95a30d8e173ccbaedaa96ee52a12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 29 11:46:32 2023 -0500
-
-    fixed minor regression from configuration var name changes in lzma makefile
-
-commit 47c578fd8a25f4b4671ba6e383c95046312e2922
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 1 19:52:14 2023 -0500
-
-    adjust names/defs for sanitizer unix configurations
-
-commit 272a35ff3ea8bfe5c789e62970396d1c7d77f42e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 1 20:00:20 2023 -0500
-
-    new sanitizer configurations - cleanups and start trying msan
-
-commit 0efe5f255b4b686569b9d8877fb8e703321750a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 2 14:50:56 2023 -0500
-
-    fixed bug in String :: CTOR (utf8) code - if contained latin1 characters and ascii, but no non-latin1 characters; added regtest for this case, and fixed the bug (could be more efficient, but hopefully good enuf for now - wait ti I see in profiling)
-
-commit 8a07778a41434b1101394f2247f1bc4efcbe8e7e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 3 11:59:11 2023 -0500
-
-    new module Foundation::Debug::Visualizations to fix visual studio .natvis problems; #include Debug/Visualizations.h to get visualizations in debugger from now on
-
-commit a0e74181aaa5f12f68e20900582f36c748f86e24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 12:46:44 2023 -0500
-
-    Debug/Visualizations natvis major improvement for Stroika strings - still not great but at least OK now
-
-commit 0210bcbc22cdf63d2202f3095f12b44278ac85d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 13:01:45 2023 -0500
-
-    minor cleanups/fixes to recent regrssions ot PRogerssMontitor code and comments of stuff todo
-
-commit ff3867a80da7efee96650337124b13fbbf1643ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 17:18:35 2023 -0500
-
-    cannot use noexcept with std::function
-
-commit 0e31cad24614023c946b05d5e30dea154cf67368
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 7 11:22:15 2023 -0500
-
-    workaround/avoid probably real serious bug https://stroika.atlassian.net/browse/STK-700
-
-commit 06118a00b0947162e94d35d0238ba5465eb11244
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 17:55:55 2023 -0500
-
-    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bog workarounds
-
-commit a086adb1c8cfbc6f7ebd146a691158aae4f48932
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 10 10:45:46 2023 -0500
-
-    deprecated bool arg to String::LimitLength (replaced with enum) and used that enum in ToString code; and moved  eCaseInsensitive / eCaseSsensitive to top level of Characters namespace
 
 commit db94ccc8479eb499274a8df0e3b911bbeb51d96d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -444,48 +389,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 10 12:07:33 2023 -0500
 
     Another attempt at CraeteFile for GetTempFile code
-
-commit 37ef8cfb207d148087485656b8a99db92bd999e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 10 15:05:25 2023 -0500
-
-    optimize String::ToUpperCase/ToLowerCase
-
-commit cb8e90ea47a838617c0c7c2e0e4d1eff92c8d0c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 10:29:24 2023 -0500
-
-    regtests now depend on Framework library (just fixed project files for visual studio so far)
-
-commit 32be0271b01ede8128849e9856344303e4bcaf42
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 11 10:33:27 2023 -0500
-
-    early draft   Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Frameworks-Debugger-Template.natvis support
-
-commit 7c34dc76d80f938a2f92cc4beeb291c6333b64b0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 14 20:27:05 2023 -0500
-
-    temporarily reset boost version cuz having weird build issues - retry when stable
-
-commit c62b5ac2498c89552835c76d8db51a1cda2b7ef6
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Dec 15 00:06:30 2023 -0500
-
-    Using new boost and clang compilers, must disable cobalt library
-
-commit 7382b0ec904af01d6e9c3cec30c1ab4e7fbe82b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 09:34:34 2023 -0500
-
-    start experimenting with __has_include instead of qHasFeature code
-
-commit 009ab5785321b1a93e9446370f1fe40809c04385
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 15:48:49 2023 -0500
-
-    updated libversion# for qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define
 
 commit 37a9c24f3ebef1e5a3136d0cbac24df3097dde06
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1146,29 +1049,11 @@ Date:   Sun Jan 28 11:36:28 2024 -0500
 
     siwtched most use of Configuraiton::IOperatorEq IOperatorLtetc to using equality_comparable, three_way_comparable, etc and added those checks to Sequence<> opreator==/<=> template so only defined if subselts defined for too - not 100% working - one queer case in
 
-commit 2824605b3f11dacd801f22c8b8f83291f13b935d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 12:13:25 2024 -0500
-
-    re-apply operator==/operator<=> optimizaiton/simplification, but with qCompilerAndStdLib_CompareOpReverse_Buggy bug workaround
-
-commit f889204136ee0b39571bb3a88fcf200e1f5c2a40
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 13:33:48 2024 -0500
-
-    (untested) optimization of String EqualsComparer - for case of (String,basic_string_view<ASCII>) - COMMON case - so possibly helpful
-
 commit f6f5dbf19c85d380fc7a987dc3a4cad4a19293de
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sun Jan 28 13:57:59 2024 -0500
 
     Syncrhonized opeartor== and operator<=> respect  equality_comparable<T> three_way_comparable<T>
-
-commit 7f6528065f96f5589ba84ab48ede5026a180795b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 21:25:27 2024 -0500
-
-    qCompilerAndStdLib_CompareOpReverse_Buggy broken starting on gcc 13, so maybe really my bug after all
 
 commit 82ff88a345436d13b8d362a4cdbb513226867083
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1524,11 +1409,7 @@ Date:   Sat Feb 24 23:31:36 2024 -0500
 
     dockerfile -lose pull-base-image support
 
-commit e42a2ddc77f149f0618e0736f18aeed260d8cb95
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 25 14:38:00 2024 -0500
 
-    cleanup gtest regtest 51; and workaround   qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy in Test_Join
 
 #endif
 
