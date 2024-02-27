@@ -30,10 +30,15 @@ especially those they need to be aware of when upgrading.
 
 - BuildScripts
   - configure
-    - libxml2 support defaults on, and xerces now defaults off (if libxml2 on), qHasFeature_libxml2
     - replace old </PkgConfigLinkLineAppendages> with simpler PkgConfigNames (to fix libxml2 include issue)
     - for libxml add LIBXML_STATIC to CPPFLAGS (so seen in vscode)
     - new configure LinkTime_CopyFilesToEXEDir feature, and used to replace old ScriptsLib/Vs2kASANBugWorkaround
+    - Xerces defaults to not being built (if libxml2 is built - qHasFeature_libxml2); and new --default-third-party-components --all-available-third-party-components options available
+    - **NOT BACKWARD COMPATIBLE** - cleaned up format and names used in configure files/scripts. Users may need to update makefile scritps; Linker=>LINKER; EXTRA_PREFIX_LINKER_ARGS=> LinkerArgs_ExtraPrefix; EXTRA_SUFFIX_LINKER_ARGS=> LinkerArgs_ExtraSuffix; LIB_DEPENDENCIES=>LinkerArgs_LibDependencies; LIBS_PATH=>LinkerArgs_LibPath
+    - fixed minor array indexing bug in configure perl script
+    - simplify LinkerArgs_LibPath configure - just store cmdline args in variable not actual path so dont need to do that magic in app
+    - improved configure script on windows to print out warning if it finds multiple compiler/visual studio instances, and to pick slightly better between them
+
 
   - Docker Build Containers
     - Refactoring/options - tweak so builds smaller docker windows container - avoiding(???) issue with .github actions
@@ -43,11 +48,22 @@ especially those they need to be aware of when upgrading.
     - improved docs and behavior of WRITE_PREPROCESSOR_OUTPUT makefile option
     - new make distclean in top level makefile
 
+  - Scripts
+    - ApplyConfiguration
+      - ApplyConfiguration sorts configurations by name now for .vscode - making it much easier to handle tons of configs in menu in vscode
+      - fixed ApplyConfigurations processing of .env.myDefaultIncludePath update
+      - ApplyConfiguraiton now generates ::= instead of = (posix style simply expanded) variables instead of recursive expand variables written to Configuration.mk (faster, more portable, and sometimes less confusing)
+
   - Skel
     - Small cleanups (makefiles)
 
   - IDE Support
     - Delete some no longer needed references to vs2k17/19
+
+
+- Documentation
+  - Tons/Misc comments/todo/docs cleanups
+  - Cleanup Code-Status.md settings (simplified enumeration) and re-reviewed all uses so more sensible
 
 
 -    VS_17_8_0 in docker container, 
@@ -65,6 +81,7 @@ especially those they need to be aware of when upgrading.
 - Library
   - All
     - new version of clang-format (17.0.3) with latest vis studio - so re-ran make-format-code
+    - in many places, changed usage of is_same_v to same_as (cosmetic; shorter; more modern; uniform)
 
 - Cache
   - fix Cache::Stats_Basic so copyable
@@ -86,6 +103,10 @@ especially those they need to be aware of when upgrading.
     - improved Characters::FloatConversion code checking with concepts use (so better error reports, but no real changes)
   - String
     - Added String::Remove() overload
+  - StringBuilder
+    - StringBuilder<OPTIONS>::ShrinkTo (size_t sz)
+    - experiment with StringBuilder having non-explicit String conversion op
+    - Experimental support for ToString implicitly in operator<< for StringBuilder; and a few test uses of simplified API
 
 - Configuration
   - Compiler Bug Defines
@@ -97,12 +118,37 @@ especially those they need to be aware of when upgrading.
     - workaround qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
     - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy new bug workaround define and attempted bug workaround - testing
     - New bug define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+    - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
+    - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+    - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy BWA
+    - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA
+    - qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy BWA
+    - qCompilerAndStdLib_CompareOpReverse_Buggy BWA improved
+    - qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy BWA; 
+    - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy BWA
+    - qCompilerAndStdLib_CompareOpReverse_Buggy broken on clang++-16 too
+    - qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy GCC 11
+    - silence warning based on qCompilerAndStdLib_CompareOpReverse_Buggy for clang as well
+    - qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy bug define and possible workaround
+    - qCompilerAndStdLib_kDefaultToStringConverter_Buggy 
+    - qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy 
+    - qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy for clang
+    - Adjust qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy for clang++15
+    - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy for raspberry  pi tests
+    - lose unneeded qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
+
+
   - Enums
     - define Configuration::IBoundedEnum concept
 
 - Containers
   - All
     - Added requires () on default CTOR for various container archtypes, that require less, or equal_to etc to be defined, so we hopefully get better compiler error messages (otehrwise should have no effect)
+    - template 'overloads' for Map in SortedSet/Sequence - just forwarding - but to change default template produced
+  - Adapters
+    - Adapters::Adder greatly simplified using concepts - now works more generally, and without all the dependencies it had on other modules; used it now to siplify adding stuff in Iterable<>
+  - Set
+    - Set<>::insert overloads / tweaks to make more STL drop-in-replacement compatible
 
 - DataExchange
   - StructuredStreamEvents
@@ -111,71 +157,15 @@ especially those they need to be aware of when upgrading.
   - ObjectVariantMapper
     - Added DurationSeconds support to ObjectVariantMapper::MakeCommonSerializer
   - XML
-    - Massive change (somewhat backward compatible, but mostly not) - very little the same
+    - **incompatible change** - Massive change (somewhat backward compatible, but mostly not) - very little the same
     - New XML::{Provider,DOM,Namespace,XPath, Schema} etc support
     - XML::SAXParse deprecated overload taking context reference, and instead take context ptr
     - Targets either Xerces or libxml2
     - libxml2 now the default because IT supports XPath in the DOM code (so does Xerces but much weaker in Xerces)
     - exposed qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations since slow, and made sure we actually check on destruction no leak! if you do all that work
-
-
-   use mutex not recursive_mutex for fLastSnapshot in DataExchange/XML/Common.cpp
-    More XML lib cleanups/factoring in preps for larger changes; and Test cleanups
-    minor cleanups to xml regtest for new gogole tests frameowrk
-    added embeddings to regtest 34 (xml) and additional (DOM) test - very primitive but a start
-    tons more cleanup/abstraction on XML DOMNode crap
-    more XML DOM Node cleanups - no longer allow null Node objects
-    More XML/DOM refactoring (Node => Node::Ptr)
-    incompatible XML DOM changes (lose RWDocument)
-    XML::DOM Document namespace refactoring
-    more minor XML cleanups; and Document::New () takes stream (reading) overloads, which replace Document::Read ()
-    More clenaups of XML DOM code - draft Schema As() API
-
-    lots more cleanups to XML DOM code - lose CreateDocumentElement (replaced with New () overload), and SetRootElement and AppendNodes/InsertNodes (we may need to add that back when I find out why I needed it later - but for now adds undesirable complexity)
-    small additions to XML DOM regtsts
-    added another regtest for schema doc parsing xml
-    more XML DOM code (and test) cleanups (mostly cosmetic)
-    xml regtest refactor - moved test files to folder TestFiles; and added ASTM_CCR_V1.xsd SampleCCR.ccr and tried validating (so far no luck but more to debug)
-    refactoring XML Providers logic - progress - 1/2 way
-    cleanup qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations checks (improved reporting)
-    Doc/Node XML GetProvider rep method
-    pay attention to prefix/namespace code for XML XPATH DOM expressions (xerces)
-    DOM Node fOrdering and fSnapshot support, and support Lookup (so iterator produced now but still not tesetd)- both xerces and libxml2)
-    cleanup qStroika_Foundation_DataExchange_XML_Supportxxx flags
-    minor tweaks to libxml2 xpath error handling, and corresponding regtests chages
-    More progress on DOM XML regtests
-    did namespace version of xpath iterator regtest
-    New DOM::Element::Ptr LookupElements, and finished reasonable draft of DOM XPath regtests (inculding namespaces and dom updates
-
-    Add warning supression flag for xerces like I did for libxml2 - warning only appears building RFLLib code - -LTCG
-    Document::New (XML DOM) clone facility
-    XML::DOM cleanups - simplfied DocumentFactory, and added SetRootNode method to document (and related cleanups)
-    minor tweak to last XML::DOM change - but renamed to ReplaceRootElement and had it return value created
-    Added XML::Document::New () overload without documentEltName
-    Minor tweaks to XML::DOM code
-    XML code now uses constexpr auto kUseURIEncodingFlag_ = URI::StringPCTEncodedFlag::eDecoded - in URI string conversions - to fix issue with ASTM CCR schema
-    re-fixed/better fixed ReplaceRootElement for libxml2
-    DOM cleanup Eleemnt::Ptr::AppendIf; and new regtest DOM_WEIRD_LIBXML2_NAMESPACE_BUG and kludgy workaroudn for it (come back and find cleaner answer)
-    expermimental fix to leak / hacks with libxml2 for setting default namespace
-    Added kXMLNS define
-
-    new bool childrenInheritNS param for Document::Ptr::ReplaceRootElement (OPTIONAL); new Element::Ptr::GetDefaultNamespace  and SetDefaultNamespace support, and impl for xerces and libxm workaround for https://stroika.atlassian.net/browse/STK-1001 (maybe xerces bug or maybe libxml2 or maybe mine????)
-
-    hopefully fixed libxml2 newNS - memory leak
-    DOM node docs cleanups and fixed one errant #if
-
-
-    LibXML2 support - GetWrapperDoc_ - breadcrumbs so internally we can get from a node to the wrapper class where we may store some extra useful info
-    fixed def for qStroika_Foundation_DataExchange_XML_SupportDOM ; qStroika_Foundation_DataExchange_XML_SupportSchema; qStroika_Foundation_DataExchange_XML_SupportParsing
-
-    minor tweaks to SAXReader code
-
-    Xerces build out of CURRENT source rather than extracting source to IntermediateFiles (fewer copies and source stays around on clean so better debugging experience)
-    bit of refactoring of DOM Node API (several methods moved to Eleemnt::IRep)
-    more cleanups of recent DOM Node / Element refactor
-
-
-
+    - New regtests for new XML (esp schema and DOM and XPath) APIs
+    - new qStroika_Foundation_DataExchange_XML_SupportDOM ; qStroika_Foundation_DataExchange_XML_SupportSchema; qStroika_Foundation_DataExchange_XML_SupportParsing
+    - Added new ResolverPtr mechanism to replace SourceComponents
 
 - Debug
   - Assertions
@@ -187,6 +177,7 @@ especially those they need to be aware of when upgrading.
 
   - Sanitizers
     - tried memory sanitizer - a boondoggle - not worth trying for now...
+    - fixed docs on Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS usage, and used in qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA for Debug::Private_::Emitter::DoEmit_ RASPI issue
 
 - Execution
   - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
@@ -196,6 +187,23 @@ especially those they need to be aware of when upgrading.
     - ProgressMonitor: SetCurrentProgressAndThrowIfCanceled depreacted - use SetProgress, and update docs / code so SetProcess does Throw
     - use Syncronized in ProgressMonitor code and more minor cleanups/asserts
     - optional (default on) feautre to restore taskinfo on DTOR, and keep task callbacks by reference so works better with mutable lambdas
+    - Fixed Updater::ThrowIfCanceled to call Thread::CheckForInterruption ()
+  - Thread
+    - **not backward compatible** : changed rules for thread::Ptr::Abort - no longer legal to call with NotYetStarted(); and make START promise/ensure state != notyetstarted when it returns. Removed a few regtests (or adjust them) to reflect new rules and this fixes assert failre very sporadic in service test (i hope); - test more and more cleanups related to this
+    - redid alot of the Thread start / abort logic so we now support RegressionTest25_AbortNotYetStartedThread_ again and re-enabled that test; 
+    - big simplification of Thread rep internals - removed fStatus_ - and just use values in various events: RISKY - but seems to work
+    - Minor cleanusp to recent Thread::Ptr::Rep_::PeekStatusForToString_ changes - fixed issue(s) on clang++15
+    - lose Thread::Status::eNull - status for the rep, not the Ptr
+  - ThreadPool
+    - deprecated CTOR (unsigned int nThreads, const optional<String>& threadPoolName) and replace with ThreadPool::Options CTOR; 
+    - add new QMax settable option and respect it in AddTask method - either blocking or waiting (poorly) or throwing;
+  - Minor fix (<= not <) in ThrowTimeoutExceptionAfter, and several other 'throw' utility tweaks to use perfect forwarding
+
+- IO
+  - Filesystem
+    -  MemoryMappedFileReader
+      - span<byte> support
+      - improved error message in CTOR (activty to record opening what file)
 
 - Math
   - Math utilities use more concepts for better error reporting
@@ -203,6 +211,16 @@ especially those they need to be aware of when upgrading.
 - Memory
   - BLOB
     - deprecated BLOB::Hex in favor or better name and improved API BLOB::FromHex; Same for BLOB::Raw -> BLOB::FromRaw, and cleanups to said methods
+    - use BlockAllocation in BLOB code for its private binary stream
+    - better factoring and requires errreporting for BLOB::As() and deprecated BLOB::As/1
+    - Memory::BLOB now directly supports FromBase64/AsBase64; and better templates for this and Hex support
+    -  BLOB::Repeat () optimizaiton
+    - lose lots of overloads taking Memory::BLOB where we already took InputStream::Ptr - as redundant (mostly); left in a few were was perofrmance tweak (and documented as such); and forced adding a couple explicit Memory::BLOB ctors in calls - but for hte better as making more clear the behavior
+    - cleanup regtests for blob and cleanup output of BLOB ToString() for ascii case
+  - BlockAllocation
+    - **not backward compatible**, but rarely referenced directly: qAllowBlockAllocation -> qStroika_Foundation_Memory_PreferBlockAllocation
+    - fixed small bug in BlockAllocator for when qStroika_Foundation_Memory_PreferBlockAllocation disabled
+
   - InlineBuffer
     - minor cleanup to InlineBuffer<>::reserve() - docs, simplificiation, and hopefully avoids warning in g++-12 cross-compile for raspi/arm
   - Optional
@@ -210,7 +228,7 @@ especially those they need to be aware of when upgrading.
 
 
 - Time
-  - ***not backward compatible*** - big change to Time::Realtime code: deprecate Time::DurationSecondsType in favor of sometimes Time::DurationSeconds and sometimes Time::TimePointSeconds
+  - **not backward compatible** - big change to Time::Realtime code: deprecate Time::DurationSecondsType in favor of sometimes Time::DurationSeconds and sometimes Time::TimePointSeconds
     - mostly this means places where you used to specify a timeout, just add an 's' to the end (3.0 becomes 3.0s).
       Also- when treating the duration as a float, you need to say .count (). And when treating a TimePointSeconds as a float
       In process of converting, fixed a couple bugs due to confusion beteween teh float being timepoint vs duration.
@@ -219,8 +237,12 @@ especially those they need to be aware of when upgrading.
   - renamed Time::kInfinite to Time::kInfinity
   - duration now a literal type (constexpr dtor was missing); so now can make Duration::min/max and related duration range stuff constexpr
   - defined Traversal::RangeTraits::Default<> template specializations for Time::DurationSeconds and Time::TimePointSeconds so ranges work better with these types
+  - new Time::Pin2SafeSeconds () utility and used in a couple places to avoid ubsan failures
   - DateTime
     - big change to DateTime 'chrono::time_point' and 'tickcount' support; now directly support arbitrary time_point in DateTime CTOR, and as template for DateTime::As<> and rewrote To/From TickCount to use these
+    - Added DateTime::ParseQuietly () overload with list of formatPatterns and default kDefaultParseFormats
+  - Date
+    - Added Date::Now() function (based on DateTime::Now()) and operator+/- for Date which handles duration (rounding)
   - Clocks
     - clock_cast extension of std::chrono::clock_cast, plus add (Stroika) Range support
     - AppStartZeroedClock
@@ -228,9 +250,22 @@ especially those they need to be aware of when upgrading.
     - defined new RealTimeClock type alais for steack_clock (doc used for TickCount); 
     - new Time::DisplayedRealtimeClock (and use);
 
+
 - Traversal
   - Iterable
     - declare Iterable<>::iterator / const_iterator for easier STL interoperability
+
+    - Map **major not backward compat change**
+      - new impl - now supports lazy eval for Iterable<T>
+      - now has container arg first, and no longer has element arg - but defaults much better so often can be omitted
+    - Where cleanup - using perfect forwarding and concepts and better subclass tuning in Containers like Set etc.
+    - Improved Iterable::First/FirstValue/Last/LastValue with concepts and cleaned use
+    - Iterable<>::Join significant implementation changes, api about the same
+
+
+  - Iterator
+    - Minor clenaups to Iterator<> code - mostly using const in a few more places
+
 
   - Range
     - Migrate Foundation::Traversal::Openness type to Traversal Common.h file, so can be used elsewhere (without #include Range.h which pulls alot in); no namespace changes
@@ -266,29 +301,37 @@ especially those they need to be aware of when upgrading.
 
 - ThirdPartyComponnents
   - Boost 
-   - 1.84.0
+   - VERSION 1.84.0
    - tweak makefile
    - fixed boost download - jfrog seems broken
   - LibCurl
-    - libcurl 8.5.0
+    - VERSION 8.5.0
+    - tried 8.6.0 - but problems
+    - minor libcurl makefile cleanups - losing old BWA notes
   - libxml2
     - new thirdparty compoennt
-    - version 2.12.5
+    - VERSION 2.12.5
 
   - openssl
-    - openssl 3.2.0
+    - VERSION 3.2.1
   - SQLite
-    - sqlite 3.44.2
+    - VERSION 3.45.1
   - Xerces
-    - 3.2.5
+    - VERSION 3.2.5
     - patch Xerces ubsan issue
+    - Xerces build out of CURRENT source rather than extracting source to IntermediateFiles (fewer copies and source stays around on clean so better debugging experience)
+    - patch another memcpy issue with Xerces (sanitizer warning)
+  - zlib
+    - VERSION 1.3.1
+  - StrawberryPerl
+    - download strawberryperl from github now (at least experiment)
+    - VERSION 5.38.2.2
 
 
 
-------
+- .github actions
+  - workaround many build issues with github actions: run out of space
 
-- Docs and comments
-  - Tons and miscelaneous
 
 - Tests
   - GoogleTest
@@ -308,146 +351,27 @@ especially those they need to be aware of when upgrading.
     - cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
 
 
+    Minor cleanups to Enumeration code
+    Several enums that were naemd eDefault were renamed to eDEFAULT (**not backward comaptible but I think mostly on new stuff since v3 so probbaly not user noticible**)
+
+
+
+
+
+
 
 #if 0
-
-commit 2252612b7eee472234f8d1a9eb715fa8dbbbfdc0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 24 19:46:27 2023 -0500
-
-    use BlockAllocation in BLOB code for its private binary stream
-
-commit 220bd115a917dfd20296d3736924c5e60d3da6ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 08:16:24 2023 -0500
-
-    Minor cleanups to Enumeration code
-
-commit bd82afd64d5d172be1df8fadaa7eaf258cf8b1b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 08:16:45 2023 -0500
-
-    Minor clenaups to Iteartor <> code - mostly using const in a few more places
-
-commit 94b253e34cf8ed1f6a7c0f4bceedd7f905a323e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 08:54:37 2023 -0500
-
-    span<byte> support for MemoryMappedFileReader
-
-commit cf0db8a9c8b5e9f5fd618991dc3eb16696a25a33
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 10:44:54 2023 -0500
-
-    better factoring and requires errreporting for BLOB::As() and deprecated BLOB::As/1
-
-commit 1a7ba8d3ded6fef7a3285db1b51aa8667ddb9d58
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 19:22:55 2023 -0500
-
-    more requires on contaner 'no comparer arg' - usually default - CTORs so better error messages - no semantics changes
-
-commit 29366b1b408dc5eb6530c05e2547c58184f2192c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 25 20:37:36 2023 -0500
-
-    more requires on contaner 'no comparer arg' - usually default - CTORs so better error messages - no semantics changes
-
-commit 61535f87a34c0f692f08d96d5b8dde429ae9f148
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Nov 26 17:47:34 2023 -0500
-
-    fixed small bug in BlockAllocator for when disabled in compile; and fix use and docs for UseBlockAllocationIfAppropriate vs BlockAllocationUseHelper
-
-commit 479319c1ec89167c47ae320d9464930417588dea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 26 20:21:27 2023 -0500
-
-    incompatiblename changes, but rarely referenced directly: qAllowBlockAllocation -> qStroika_Foundation_Memory_PreferBlockAllocation
-
-commit bb609c830d72cb625082341367b1be2398fc2b9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 11:58:57 2023 -0500
-
-    Set<>::insert overloads / tweaks to make more STL like
-
-commit c87cdd46815dbe5865bd5d36fb8e995cbf1a5e4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 14:54:15 2023 -0500
-
-    deprecated ThreadPool (unsigned int nThreads, const optional<String>& threadPoolName) CTOR and replace with ThreadPool::Options CTOR; add new QMax settable option and respect it in AddTask method - either blocking or waiting (poorly) or throwing; all backward compatible
-
-commit 94613dbd753c28d8f2f4d9ecc2d1d44b1edaf9c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 15:15:48 2023 -0500
-
-    Minor fix (<= not <) in ThrowTimeoutExceptionAfter, and several other 'throw' utility tweaks to use perfect forwarding
-
-commit 26750de6ba1965a5dd352315d2d5e04b7e3c51f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 27 20:00:55 2023 -0500
-
-    ScriptsLib/ApplyConfiguration sorts configurations by name now for .vscode - making it much easier to handle tons of configs in menu in vscode
-
-commit edec7554fe7e3167ae645de80d7570c8be055946
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 28 13:44:18 2023 -0500
-
-    new Time::Pin2SafeSeconds () utility and used in a couple places to avoid ubsan failures
-
-commit 4ae4dd311015134457c4f11a7270e2ed36f4351e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 28 14:09:00 2023 -0500
-
-    cleanups and docs for Time::Pin2SafeSeconds; and use it in many more places where it MIGHT be important (not yet getting flagged, but could plausibly)
-
 commit c69fced2781af6282fbfccbda8976eb3a5ea3ec7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 28 14:12:08 2023 -0500
 
     also disabled valgrind-debug-SSLPurify-NoBlockAlloc (still doing release version) - should be good enuf; maybe retry next release of memcheck valgrind in next major ubuntu release, but so far seems unhelpful and slow
 
-commit a9176e0981536a9c4da05414c6d097bfb4f85311
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Nov 29 11:05:35 2023 -0500
-
-    cleaned up format and names used in configure files/scripts. **NOT BACKWARD COMPATIBLE** - may need to update makefile scritps; Linker=>LINKER; EXTRA_PREFIX_LINKER_ARGS=> LinkerArgs_ExtraPrefix; EXTRA_SUFFIX_LINKER_ARGS=> LinkerArgs_ExtraSuffix; LIB_DEPENDENCIES=>LinkerArgs_LibDependencies; LIBS_PATH=>LinkerArgs_LibPath
-
 commit 762ef6dd178b95a30d8e173ccbaedaa96ee52a12
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 29 11:46:32 2023 -0500
 
     fixed minor regression from configuration var name changes in lzma makefile
-
-commit 045284905b8295126f22925c1dc0999cda792765
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 29 12:34:59 2023 -0500
-
-    minor teaks to configure script output
-
-commit 44566566e417febf57ea178e9f661c94fcbe18ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 29 22:23:02 2023 -0500
-
-    better eror checking in MemoryMappedFileReader.cpp
-
-commit 0a36f56cb5fb5ff800c0e517cb1e2a05caf56dd1
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Nov 30 10:16:16 2023 -0500
-
-    fixed docs on Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS usage, and used in qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA for Debug::Private_::Emitter::DoEmit_ RASPI issue
-
-commit 1efff3893f9bc7166dabf473dbf506d3afbb68f3
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Nov 30 11:47:50 2023 -0500
-
-    changed rules for thread::Ptr::Abort - no longer legal to call with NotYetStarted(); and make START promise/ensure state != notyetstarted when it returns. Removed a few regtests (or adjust them) to reflect new rules and this fixes assert failre very sporadic in service test (i hope); - test more and more cleanups related to this
-
-commit a8892b3cb6ddaea564fcd96cc2592299ebda254a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 30 14:28:23 2023 -0500
-
-    fixed a bunch of holes, including docs, in ProgressMontior utility; still not used anyplace, but starting to use in RFL code, so testing there
 
 commit 47c578fd8a25f4b4671ba6e383c95046312e2922
 Author: Lewis Pringle <lewis@sophists.com>
@@ -461,10 +385,6 @@ Date:   Fri Dec 1 20:00:20 2023 -0500
 
     new sanitizer configurations - cleanups and start trying msan
 
-commit 72d58da58a903fe0d481e8e0f716708d036c6234
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 1 20:37:59 2023 -0500
-
 commit 0efe5f255b4b686569b9d8877fb8e703321750a5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 2 14:50:56 2023 -0500
@@ -477,71 +397,11 @@ Date:   Sun Dec 3 11:59:11 2023 -0500
 
     new module Foundation::Debug::Visualizations to fix visual studio .natvis problems; #include Debug/Visualizations.h to get visualizations in debugger from now on
 
-commit f7cd9c41c915d8d6b0af90576b8f13c1ff113970
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 4 10:56:53 2023 -0500
-
-    redid alot of the Thread start / abort logic so we now support RegressionTest25_AbortNotYetStartedThread_ again and re-enabled that test; probably more cleanups todo here but enuf done to run some tests
-
-commit 2938da6a5d1e3c1334803ecaad5e2344caff602c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 4 14:10:23 2023 -0500
-
-    big simplification of Thread rep internals - removed fStatus_ - and just use values in various events: RISKY - but seems to work - test carefully before moving on
-
-commit edd504df48dc21e4c2febf93f4824f273070e4ac
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Dec 4 15:59:22 2023 -0500
-
-    fixed minor array indexing bug in configure perl script
-
-commit 244027ab693ff8fecda613e8cd660e5f9738e934
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Dec 4 16:32:06 2023 -0500
-
-    Minor cleanusp to recent Thread::Ptr::Rep_::PeekStatusForToString_ changes - fixed issue(s) on clang++15
-
-commit 6d738f377071e2fe20371f676d78bfd586ceeeaa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 4 22:42:47 2023 -0500
-
-    lose Thread::Status::eNull - status for the rep, not the Ptr
-
-commit e2bcbb0c27fd64ea4fb29beb254068208b96b71f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 08:27:57 2023 -0500
-
-    simplify LinkerArgs_LibPath configure - just store cmdline args in variable not actual path so dont need to do that magic in appy
-
 commit a0e74181aaa5f12f68e20900582f36c748f86e24
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 5 12:46:44 2023 -0500
 
     Debug/Visualizations natvis major improvement for Stroika strings - still not great but at least OK now
-
-commit 091a1e923108748c6a1c61fbac4110984b53a85f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 13:42:55 2023 -0500
-
-    slightl cleanup to Base64 support (spans); Memory::BLOB now directly supports FromBase64/AsBase64; and better templates for this and Hex support
-
-commit 02612e01c4844e8a7288e449f05237a77d6191a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 5 19:42:40 2023 -0500
-
-    Fixed Updater::ThrowIfCanceled to call Thread::CheckForInterruption ()
-
-commit d8fdf8c884693ff2a8f0cab552ee8351dc6f24f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 10:16:52 2023 -0500
-
-    qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy BWA; and BLOB::Repeat () optimizaiton
-
-commit 45b538258bd4af10d78f9300eab652cdcc52d23e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 6 11:59:33 2023 -0500
-
-    fixed typo in BLOB::Repeat
 
 commit 0210bcbc22cdf63d2202f3095f12b44278ac85d3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -561,65 +421,11 @@ Date:   Thu Dec 7 11:22:15 2023 -0500
 
     workaround/avoid probably real serious bug https://stroika.atlassian.net/browse/STK-700
 
-commit c20a972c2d6ee21e271150a32d51bffa1fcda4d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 8 11:50:20 2023 -0500
-
-    more clenaups/simplifications of new Map Iterable<T> code - still using tmpname Map5
-
-commit 31a7f46dc57574cb6c4e9ef1e0ea002f606c2563
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 8 18:21:49 2023 -0500
-
-    siwtch/test using new Itererable<>::Map5 (tmphack name) to test new Map fuunctionality
-
-commit eaedf07b3c03c6edfd3094423ac7a165517e0a54
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 8 21:12:47 2023 -0500
-
-    more cleanups to Iterable<T>::Map () - new impl - now supports lazy eval for Iterable<T> - just testing and then backfitting names and docs
-
-commit a76f914a9e3d5c77b692659b3a1f8e3613068cdf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 8 23:45:40 2023 -0500
-
-    **not backward compat change** - Iterable::Map<> now has container arg first, and no longer has element arg - but defaults much better so often can be omitted
-
-commit 25b150635a504872c29aafbae1f478f64502332d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 10:33:52 2023 -0500
-
-    template 'overloads' for Map in SortedSet/Sequence - just forwarding - but to change default template produced
-
-commit 5837635439e50dbeceb0f7218d14778a77a2c221
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 11:26:47 2023 -0500
-
-    Containers/Adapters/Adder greatly simplified using concepts - now works more generally, and without all the dependencies it had on other modules; used it now to siplify adding stuff in Iterable<>
-
-commit 34e23405d6eb7772663cee96edaac9e1769f11e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 15:41:43 2023 -0500
-
-    Iterable<>::Where cleanup - using perfect forwarding and concepts and better subclass tuning in Containers like Set etc.
-
 commit 06118a00b0947162e94d35d0238ba5465eb11244
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 9 17:55:55 2023 -0500
 
     more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bog workarounds
-
-commit 14ff02cc7c2efc37632da7621acd52cfb7773ecf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 21:16:00 2023 -0500
-
-    apply some of same resultEmpty cleanps just did to Itererable<>::Where overrides to Iterable<>::Map overrides - and related cleanups
-
-commit 621349d7b2d021aded886dcc581548825b85f01a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 9 23:34:04 2023 -0500
-
-    improved error message in MemoryMappedFileReader CTOR (activty to record opening what file)
 
 commit a086adb1c8cfbc6f7ebd146a691158aae4f48932
 Author: Lewis Pringle <lewis@sophists.com>
@@ -638,12 +444,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 10 12:07:33 2023 -0500
 
     Another attempt at CraeteFile for GetTempFile code
-
-commit 9baaf3701327b49178847bbcc2181c9acb4a3b98
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 10 14:15:21 2023 -0500
-
-    fixed remaining deprecated code usage
 
 commit 37ef8cfb207d148087485656b8a99db92bd999e1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -722,30 +522,11 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 17 00:53:15 2023 -0500
 
     fixed makefile def for only-zlib-system-third-party-component configuration
-
-commit ccd2f34d2c907e1a9f9566fd523b345f51acbfa7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 09:21:49 2023 -0500
-
-    minor Xerces wrapper code cleanups
-
-commit d9a1b3e17f128f44c457ead240aab891388a8d88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 11:59:04 2023 -0500
-
-    fixed configure no-third-party-components to disable xerces
-
 commit 1c4ef2310cc897e6f2405a33ae96b9eaabb0d912
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 17 14:00:11 2023 -0500
 
     docker/wiondows/msys containers needs vim (for xxd for resource strategy)
-
-commit 205dea740cc8601f2c23cb3766f94c302a662289
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Dec 17 14:39:24 2023 -0500
-
-    minor cosmetic cleanups
 
 commit 608fd169b05946cc666633f868c7d36140ecb34c
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -801,63 +582,17 @@ Date:   Mon Dec 18 15:54:32 2023 -0500
 
     refactored InputSubStream to new namespace style
 
-commit c65d0755218ee0ec0cacd1e00d4e7f6596e74713
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 16:31:18 2023 -0500
-
 commit 40b6e5c22b4ee382114ad7390ed776cedb1036cc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 18 17:01:25 2023 -0500
 
     fixed a few small bugs/issues with recent InputStream changes
 
-commit 37aebf6db5f8f584de38579cb987ce4ab86757a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 21:03:00 2023 -0500
-
-    refactored DOM node Write code
-
-commit 71a218942692ec2384198e4746d2970a5bf041fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 21:04:44 2023 -0500
-
-    attempt to display string - had issue on macos - testing again
-
-commit 64d6681ea842ad897e18cd2e0a297240a3470303
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 10:29:07 2023 -0500
-
-    patch another memcpy issue with Xerces (sanitizer warning)
-
-commit 6b8b01b76503aad055bcc29bb4ec3bbb2e31c9bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 11:03:30 2023 -0500
-
-    minor re-org Xerces stuff to avoid clang compiler bug
-
 commit 6df1d3003ad8158b0e512cdcc29df6558ef96017
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 19 16:26:44 2023 -0500
 
     undo quasi-namespace impl of Streams::MemoryStream, and use requires() on As instead of template specialization (better error reporting)
-
-commit 38ca24d7133cda90aa7904bff278cc7ea28854e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 21:01:32 2023 -0500
-
-    lose MemoryStream.cpp and simplified MemoryStream code slightly
-
-commit a2badfd9956cc33bdc4a053171ec392ef491d097
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 19 21:06:48 2023 -0500
-
-    two more qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy BWA
-
-commit 97c8c81272a9a1f7c9afc69dba5324664e79e177
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 19 21:07:12 2023 -0500
-
-    minor possible xerces DOM code fixes and comments/todo
 
 commit c5e5e9b7a915566c05ca5090702c69a803a4cbb1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -887,7 +622,7 @@ commit 28e9e0ac8a8d53a547e304396bbfde1661821d03
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 21 12:39:28 2023 -0500
 
-    experimental addition of  /*explicit*/ operator Streams::InputStream<byte>::Ptr () const; for BLOB to simplify a bunch of things
+    experimental addition of  /*explicit*/ operator Streams::InputStream<byte>::Ptr () const; 
 
 commit df2d698d3247bbcbe7bc51c324d09cac31470124
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1057,12 +792,6 @@ Date:   Tue Dec 26 09:19:14 2023 -0500
 
     Added otpions to treams::InternallySynchronized.. helpers - so can specify mutex type
 
-commit 02b8ec21a7bf5b0dcbfc9cd8b4f3125440dc54c3
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 26 09:20:17 2023 -0500
-
-    another attempt at InheritAndUseBlockAllocationIfAppropriate which maybe works for g++
-
 commit 247640b7f7c5e09510dc89591a0cff7ac2f7431c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 26 10:40:39 2023 -0500
@@ -1111,19 +840,6 @@ Date:   Wed Dec 27 14:51:36 2023 -0500
 
     **incompatible change** but only affects users who implement InputStream reps; InputStream::Rep::Read() now takes span instead of start/end pointers (more to come probbaly)
 
-commit 221e621d8a285bfe8916fe6825af8d42e61fa806
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 27 16:27:10 2023 -0500
-
-    Fixed #if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
-     define
-
-commit b4f577be66aac9dd0f3709136f05585ff3c29f54
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Dec 27 16:45:45 2023 -0500
-
-    more qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy BWAs
-
 commit f3f16ae626bdda3b1c99dfba28fdab3ae179f503
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 27 18:10:33 2023 -0500
@@ -1135,12 +851,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 27 19:47:50 2023 -0500
 
     InputStream::Read(span) now returns span
-
-commit 047e9c16479ecf483f1eb68d38e22dada7c05263
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 21:31:53 2023 -0500
-
-    fix a few (newly) deprecated usages to use more modern API
 
 commit d8cad93db2c81b3b6501c58e647ddcdcc36a99b7
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1201,18 +911,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 31 10:02:51 2023 -0500
 
     Lots more cleanups of old ReadNonBlocking code to new NoDataAvailableHandling ennum flag code - but still incomplete
-
-commit fcab437c1ff48e3e9cca0030f3bda017b5ba4bc1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 31 10:18:40 2023 -0500
-
-    Several enums that were naemd eDefault were renamed to eDEFAULT (**not backward comaptible but I think mostly on new stuff since v3 so probbaly not user noticible**)
-
-commit d2c0c626e8177c870b33f777fac096b4fbe96b55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 31 11:17:40 2023 -0500
-
-    fixed a ton of spelling/typos
 
 commit e2841fa75e79cf0e0712c1a2fd7936a686e17773
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1280,30 +978,6 @@ Date:   Tue Jan 2 14:42:11 2024 -0500
 
     default to -j5 instead of -j8 cuz now getting (on windows) running out of memory errors too often - just change defaults so less aggressive
 
-commit b6abab153a7c14ccfa10fd013f2ce210b8cb6450
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 16:21:12 2024 -0500
-
-    fixed CCR sample so regtest passes
-
-commit 6ac17df0ed2bb416ed839a1623f1ec038ba64c09
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Jan 2 17:43:35 2024 -0500
-
-    fixed typo in regtest 34 for recent name changes
-
-commit a3bd07253f93f0b1e199071ba95f3a725223fed9
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Jan 2 17:44:03 2024 -0500
-
-    fixed typo in libcurl makefile - was still using old version
-
-commit cac4122f3c7ecfc09f09eba38e104efcf9a8a674
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Jan 2 17:46:34 2024 -0500
-
-    minor libcurl makefile cleanups - losing old BWA notes
-
 commit 31f3509236c133834f1871e9cd9d5e6ab64eac53
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 3 12:01:14 2024 -0500
@@ -1346,12 +1020,6 @@ Date:   Fri Jan 5 11:58:25 2024 -0500
 
     Streams::RemainingLength now returns optional<SeekOffsetType>; fix warnings in ToSeekableInputStream; 
 
-commit a1724ab6ec7b440a466532911e674d4557a55005
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 7 09:46:43 2024 -0500
-
-    qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
-
 commit 35fb8221d4f9f58d7318f4ee491f4aff5a98ff9d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 8 12:00:48 2024 -0500
@@ -1376,30 +1044,6 @@ Date:   Tue Jan 9 13:25:16 2024 -0500
 
     Added KeyedCollection overload
 
-commit 1820ef4f1a2bc860e2639c0a427ecbab61331eee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 13:25:53 2024 -0500
-
-    StringBuilder<OPTIONS>::ShrinkTo (size_t sz)
-
-commit 5e17f7f2472c7ba206b7ebe568ee0c42e6fb9fab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 13:27:07 2024 -0500
-
-    Added new ResolverPtr mechanism to replace SourceComponents
-
-commit c3dc39d019e73c64fa8765497ee4b288ff1a9762
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 20:46:14 2024 -0500
-
-    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
-commit 3efd0e92791c585861fee80cb6bdb15aebf7308e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 10 14:25:23 2024 -0500
-
-    new utility Common::variant_index; and used in DOM/XPath code to simplify and comply with constraint that xerces seems to have (must specify resturn type in expression)
-
 commit e843c2cffba65165e8822efcb7b9c91d48104059
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 14 09:21:44 2024 -0500
@@ -1412,59 +1056,17 @@ Date:   Sun Jan 14 10:05:53 2024 -0500
 
     trim PkgConfigNames before check for '' before call to pkg-config in script
 
-commit 43f94bf0ef40ee8b397aaaa5b991d17e04dd4645
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 14 19:27:28 2024 -0500
-
-    Improved Iterable::First/FirstValue/Last/LastValue with concepts and cleaned one use
-
-commit 3f7c865906efdb58634bc90be7cb66c649bd50ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 11:58:21 2024 -0500
-
-    lose lots of overloads taking Memory::BLOB where we already took InputStream::Ptr - as redundant (mostly); left in a few were was perofrmance tweak (and documented as such); and forced adding a couple explicit Memory::BLOB ctors in calls - but for hte better as making more clear the behavior
-
-commit 33465f9806babc93c42ab15daf351714207040a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 13:31:08 2024 -0500
-
-    Add another qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy BWA
-
-commit 174793481a97c07ffdb85e0d01150da95b9a04dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 15:01:04 2024 -0500
-
-    progress on namespace regtests for DOM XPATH
-
-commit 34ef16d50ceb8ece9512aa4280016acf6f2262c0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jan 15 15:50:03 2024 -0500
-
-    Adjust qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy for clang++15
-
 commit f24a1712573cecb22489274d77887da1a2564437
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 16 14:56:05 2024 -0500
 
     minor cleanups; and use as_bytes in place of Memory::SpanReInterpretCast<const byte> in a bunch of places and documented in description of SpanReInterpretCast that its better to use as_bytes where you can easily
 
-commit 520f62494093080189c74ed01af2345540ead5b3
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Jan 16 14:58:49 2024 -0500
-
-    more qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy for raspberry  pi tests
-
 commit 74e26522a1a6edf88df1ad2873f6e56889db4d15
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Jan 16 14:59:24 2024 -0500
 
     touchup RegressionScript test code for counting failures to accomodate warning that has the word failure in it
-
-commit aa364c5ce299a3f303936b8c0bdac4119e168aa0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Jan 17 09:55:21 2024 -0500
-
-    qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA
 
 commit 9b7303ad20b74e9cac030d4be3ac29494a271cde
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1520,23 +1122,11 @@ Date:   Sun Jan 21 10:32:23 2024 -0500
 
     renamed last checkin to DefinitelyLessThan and fixed typo
 
-commit 7ddc0ea1333a7772c4a2627c6c8173c81a115187
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 21 17:11:20 2024 -0500
-
-    using ENUM::E instead of constexpr ENUM e = ENUM::e in a bunch of places (and a few inconsequential I hope name changes)
-
 commit 19656f54204f229ca1a1c79821972b20258a4652
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 22 09:54:26 2024 -0500
 
     new RecordNotFoundException class
-
-commit 1f1714197aef6c03edd3d194311ae5aa389986ec
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jan 25 10:16:18 2024 -0500
-
-    qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy BWA
 
 commit 659ee62cbd2a6ba059bfc2f9f9fc5740fe7656ce
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1544,29 +1134,11 @@ Date:   Thu Jan 25 13:04:02 2024 -0500
 
     renamed new Common::variant_index -> Common::VariantIndex and made it variable, not function (so invoke shorter)
 
-commit 19bc0adbd9bcf292d9420c35b2dcce2a167c3d62
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 25 18:11:29 2024 -0500
-
-    try qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy GCC 11
-
-commit b2bbe6a5352558dd1d9d3f2d17e510c3e714f3a8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 26 16:41:38 2024 -0500
-
-    Added DateTime::ParseQuietly () overload with list of formatPatterns and default kDefaultParseFormats)
-
 commit 81ab8848bcf8167687af0f1f0706f0482bb993d2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 27 09:59:31 2024 -0500
 
     deprecate Range::DefinitelyLessThan and replaced wtih operator<=> just returing partial_ordering
-
-commit 9c5c30ba5dacb8d17a4360e6805b26e04be40dc7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 17:56:14 2024 -0500
-
-    Node::Ptr::operator bool
 
 commit 7ab85bcc83949e72492890b0f14329adb209cc14
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1580,24 +1152,6 @@ Date:   Sun Jan 28 12:13:25 2024 -0500
 
     re-apply operator==/operator<=> optimizaiton/simplification, but with qCompilerAndStdLib_CompareOpReverse_Buggy bug workaround
 
-commit b4c87037db984a3effcc14abd2d2179e381612f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 12:50:21 2024 -0500
-
-    improved qCompilerAndStdLib_CompareOpReverse_Buggy BWA
-
-commit 279e016c5c2dc0dba3547fb9199e5d68c06615af
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 12:51:04 2024 -0500
-
-    qCompilerAndStdLib_CompareOpReverse_Buggy broken on clang++-16 too
-
-commit 83f7316bada84049ba887f7a4888517fb61db228
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 12:51:24 2024 -0500
-
-    silence warning based on qCompilerAndStdLib_CompareOpReverse_Buggy for clang as well
-
 commit f889204136ee0b39571bb3a88fcf200e1f5c2a40
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 28 13:33:48 2024 -0500
@@ -1609,12 +1163,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sun Jan 28 13:57:59 2024 -0500
 
     Syncrhonized opeartor== and operator<=> respect  equality_comparable<T> three_way_comparable<T>
-
-commit d72840fa38f35d13bef4dd47ced4da49c18d68b7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 28 13:58:40 2024 -0500
-
-    changed String usage of is_same_v to same_as (cosmetic); and fixed regression in string optimization code I just checkedin
 
 commit 7f6528065f96f5589ba84ab48ede5026a180795b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1658,23 +1206,11 @@ Date:   Wed Jan 31 16:51:49 2024 -0500
 
     changed the StringPCTEncodedFlag parameters to As<'stringish'> functions to optional, so they can each vary based on 'T' - as appropriate (documented how they all default but mostly - if you care - dont use the default - specify
 
-commit 7b20f4dcd4f18f8171de2509e198e2f847662d5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 17:15:38 2024 -0500
-
-    fixed one more case of kUseURIEncodingFlag_ use - in constructing xpath provider apis
-
 commit be4b6f2980f62485261e1fc33af781bd96134601
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 31 18:00:06 2024 -0500
 
     more progress/fixes for URI::AsString_ (optional<StringPCTEncodedFlag>  - and docuemnt issue https://stroika.atlassian.net/browse/STK-1000
-
-commit bf7e48c3a61cffc9fe54c0296d61ed91b1b92044
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 1 14:16:29 2024 -0500
-
-    fixed small but serious bug in xpath iterator (was always returning fist element of list)
 
 commit bc321f9686256a88e4bc2ee5a3d8622027269216
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1693,24 +1229,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 3 10:43:44 2024 -0500
 
     Added static_assert IPossibleCharacterRepresentation to document
-
-commit 1565d095a9cb581273f972b8712831ee0916b072
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 10:54:21 2024 -0500
-
-    fixed minor test issue; and some test cleanups
-
-commit c68f29f3fdddfb244d20b990f3a7b8431cfdf48f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 11:09:23 2024 -0500
-
-    cleanup regtests for blob and cleanup output of BLOB ToString() for ascii case
-
-commit 318019086eff421dc61f07340cc9f0210e8cd3bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 19:59:25 2024 -0500
-
-    fixed ApplyConfigurations processing of .env.myDefaultIncludePath update
 
 commit 3bc16ecf3a79f03a248aa0e20c193f5570f414b6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1736,110 +1254,17 @@ Date:   Mon Feb 5 17:00:21 2024 -0500
 
     support VS_17_8_6 in docker container
 
-commit bfc71ad5e45f461bcc65f11f5a008c397d3fef11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:00:51 2024 -0500
-
-    release notes and readme changes for  2.1.15
-
-commit b55725c70b6d79d7c8df04fc68e401cf0047a911
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:01:12 2024 -0500
-
-    sqlite 3450000
-
 commit db0240b05e75f0cb9d07936f28d35140b7dcc2cd
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 5 17:24:38 2024 -0500
 
     slight simplification of dockerfile
 
-commit 2b6e1c2c1e4130af69459c66878989e9da2eb7c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:53:34 2024 -0500
-
-    libcurl 8.6.0
-
-commit fc271cdc5b78ed4e94a338da995071d75713e104
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:54:04 2024 -0500
-
-
-commit 20a4d0a1f5f595c2305f202b479405fccb2a2285
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:54:27 2024 -0500
-
-    openssl 3.2.1
-
-commit a839698cef1f64c47b08736ac6c2ae7b586cf8a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:55:38 2024 -0500
-
-    zlib 1.3.1
-
-commit ef26baa5b50433cde9eede1314964e93be74000f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 5 18:17:05 2024 -0500
-
-    revert to libcurl 8.5.0
-
-commit b82e2c8221d91aa585c3677d486f2b20d82d5aa5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 18:19:10 2024 -0500
-
-    sqlite 3450100
-
-commit 4518fbe5caf7799ef442150dd32707515ef1d862
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 18:19:49 2024 -0500
-
-    download strawberryperl from github now (at least experiment) and newer version - 5.38.2.2
-
-commit 36c8a3414d05d7239aaa3bf098173f6524878593
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 20:51:10 2024 -0500
-
-    temporarily reset zlib version used - due to windows build problem
-
 commit 55c6b3f2c52022bb27cdd8204ce91f35aa5230c4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 6 12:07:29 2024 -0500
 
     tiny unused hack added to make default-configurations (DEFAULT_CONFIGURAITON_ADD2ALL)
-
-commit 28517395780acbc77f57f253b6ea33927083e45c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 12:08:34 2024 -0500
-
-    re-enabled zlib 1.3.1 now that I have workaround for windows issue
-
-commit 4ab8efa8c9312b5ae5635071fd7e330e855c1d67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 13:00:41 2024 -0500
-
-    configure script - Xerces defaults to not being built (if libxml2 is built); and new --default-third-party-components --all-available-third-party-components options available
-
-commit a377fcab3d1635adfb47c232f099fab467cab244
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 13:05:10 2024 -0500
-
-    fixed regression zlib mkaefile for non-windows
-
-commit 8a79e171d8b2c23f2f372e028bde64aed968a603
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 14:50:13 2024 -0500
-
-    fixed regtests for when xml support missing
-
-commit cb6c5437d5d590a109c4d9f09997ddb56bdb65e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 14:49:55 2024 -0500
-
-commit 9b1ee3d1eeb64f7ff47faeee306744dad37a5e23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 15:01:59 2024 -0500
-
-    regtests update so builds right without xerces
 
 commit 8026819c2ef2388d3bc0229a4a8e7c599e64a709
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1871,83 +1296,17 @@ Date:   Wed Feb 7 20:51:37 2024 -0500
 
     Added StringCombiner; and related kDefaultStringCombiner
 
-commit 1bdb4e64f4db15fe3b6da6b13db6c95b17c46ffc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 7 21:16:32 2024 -0500
-
-    Draft of new Iterable<>::Join functionality
-
-commit 6ac3ea0660643790b01b25f42a6ce5fa6725c3e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 7 23:56:19 2024 -0500
-
-    qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy bug define and possible workaround
-
-commit 8d7874f0fa0b80320140b69f218f30c464262564
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Feb 8 09:25:49 2024 -0500
-
-    more compiler bug workarounds for clang - qCompilerAndStdLib_kDefaultToStringConverter_Buggy and qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy and qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy tweaks
-
-commit baed59727eafb97b560b2d1b61b9ab8f2e40a646
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 09:56:14 2024 -0500
-
-    minor cleanups/improvements to Join code
-
-commit bf1ed317dbf9f910686c50c4e37b8d0ac2b0a635
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 10:20:05 2024 -0500
-
-    fixed small regression in Iterable<>::Join
-
-commit 91543ec37c43f2872079ce06db80d8401be3a262
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 10:20:35 2024 -0500
-
-    Added another overload to Iterable<>::Join
-
-commit 5d8bfd62bc2d714b41ee184ab5118b730b8ab86d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Feb 8 10:25:35 2024 -0500
-
-    more qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy for clang
-
-commit 5eea61ecf872707ed48e7dc0e1d06ca73400b58a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Feb 8 10:53:05 2024 -0500
-
-    fixed bug in all-available support in configure (recent regression)
-
 commit f0a98bf0daaab9042aef67c7b79ca91ed4e9346b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 8 16:53:34 2024 -0500
 
     make script support for LinkerArgs_StroikaDependentLibDependencies
 
-commit 0d92355dbecaba684a5aaecf1a83766e69130c0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 17:03:33 2024 -0500
-
-    ApplyConfiguraiton now uses ::= instead of = (posix style simply expanded) variables instead of recursive expand variables written to Configuration.mk (faster, more portable, and sometimes less confusing)
-
-commit bc18e8bafb84af56f6105c10b6e0822d032dce3f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 17:08:51 2024 -0500
-
-    regression in ApplyCOnfigurations change - try again
-
 commit 5e7ccd3942a472e63332742df6610cdd6f34255f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 8 17:12:42 2024 -0500
 
     OK still didnt work - ::= not happy on gnu make 3.81 (on my macos machine)
-
-commit 667a5e033180de7d1b347440f901e5dd8b20b704
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 17:16:15 2024 -0500
-
-    one more tweak to ApplyConfiguraiton
 
 commit 7e3ae69297517fec4f4735b4568426975da0465f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1961,47 +1320,17 @@ Date:   Thu Feb 8 20:35:32 2024 -0500
 
     Minor tweaks for recent Character change
 
-commit bccd671989fede92a1854b11a6bb237b7b235297
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 23:36:46 2024 -0500
-
-    experiment with StringBuilder having non-explicit String conversion op
-
-commit fbafdebe0b3edaf2299c2e5314bf79dd1db9fdc0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 09:09:44 2024 -0500
-
-    Added Date::Now() function (based on DateTime::Now()) and operator+/- for Date which handles duration (rounding)
-
-commit d1090089269645b3ce7ca20505139f41d848d708
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 09:38:55 2024 -0500
-
-    Experimental support for ToString implicitly in operator<< for StringBuilder; and a few test uses of simplified API
-
 commit 0933927c0dfeb08d10f5ccbd755d430c8ec06dc2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 9 10:07:36 2024 -0500
 
     experiment with apt-remove hack to save space on some github actions
 
-commit 599cf00dd93648afb69453b43e62e9c758c3f86d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Feb 9 11:49:13 2024 -0500
-
-    fixed minor mistake / bad checkin for qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy BWA
-
 commit 49bb0ff213e876474ebb4e5bb29501f29e9e4e94
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sat Feb 10 10:53:17 2024 -0500
 
     slight code re-org to avoid issue with clang++-14
-
-commit d632f77f3e0d83fe8266019bcbc3d1ebfb169aef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 10 12:14:36 2024 -0500
-
-    Cleanup Code-Status.md settings (simplified enumeration) and re-reviewed all uses so more sensible
 
 commit 8ff0db573f0624b4fd1d4971dddfe2f8d4fbb2a7
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2075,12 +1404,6 @@ Date:   Mon Feb 12 22:03:10 2024 -0500
 
     use more := in Makefiles (probably clearer semantics and probably faster, but probably not measurably)
 
-commit b9756cb3a420bef37e4f3e870b21f731af815daf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Feb 13 09:43:22 2024 -0500
-
-    fix small regresion in sqlite tpc makefile
-
 commit 1583c6f00854921507f773870fc3460795cea926
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 13 17:14:56 2024 -0500
@@ -2104,18 +1427,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 14 12:00:18 2024 -0500
 
     more workaroudns for github run out of space issue
-
-commit 74f2bcc59ac19c436e2191e8cf00c7bef6cc6e23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 13:47:17 2024 -0500
-
-    improved configure script on windows to print out warning if it finds multiple compiler/visaul studio instances, and to pick slightly better between them
-
-commit 773658e3e0912e1584f9427c2ff03b8953a1cb8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 15 14:28:57 2024 -0500
-
-    lose unneeded qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
 
 commit 8b7e7f77631c2a907e1daa72655a1c1882742e3e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2218,18 +1529,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sun Feb 25 14:38:00 2024 -0500
 
     cleanup gtest regtest 51; and workaround   qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy in Test_Join
-
-commit b30608d5743d4742e4d22c02ff631ae832aca316
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 25 15:59:29 2024 -0500
-
-    hopefully fix github action
-
-commit 6236cb2f69d43e30887c2afd7d4bc83c424d43ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 25 17:58:58 2024 -0500
-
-    hopefully workaround docker build issue for windows on github actions (run out of space)
 
 #endif
 
