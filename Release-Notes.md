@@ -58,7 +58,9 @@ especially those they need to be aware of when upgrading.
     - improved docs and behavior of WRITE_PREPROCESSOR_OUTPUT makefile option
     - new make distclean in top level makefile
     - special speed tweak on builds for libraries if QUICK_BUILD=1 set as command-line argument to make
-
+    - tiny unused hack added to make default-configurations (DEFAULT_CONFIGURAITON_ADD2ALL)
+    - changed 'regressiontest configurations' to by default include TEST_CONFIGURATIONS_ADD2ALL - so to include xerces
+    - **new** LinkerArgs_StroikaDependentLibDependencies
 
   - Scripts
     - ApplyConfiguration
@@ -82,8 +84,6 @@ especially those they need to be aware of when upgrading.
 - Documentation
   - Tons/Misc comments/todo/docs cleanups
   - Cleanup Code-Status.md settings (simplified enumeration) and re-reviewed all uses so more sensible
-
-
 
 
 
@@ -169,7 +169,9 @@ especially those they need to be aware of when upgrading.
     - workaround qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy in Test_Join
   - Concepts
     - new utility Configuration::IAnyOf concept; and used in a few places to test
-  - Enums
+  - Endian
+    - simplify/generalize slightly the EndianConverter code (if constexpr and and concepts)
+- Enums
     - define Configuration::IBoundedEnum concept
   - switched most use of Configuraiton::IOperatorEq IOperatorLtetc to using equality_comparable, three_way_comparable, etc and added those checks to Sequence<> opreator==/<=> template so only defined if subselts defined for too - not 100% working - one queer case
 
@@ -183,6 +185,9 @@ especially those they need to be aware of when upgrading.
     - mark Containers::STL::Make as deprecated
   - KeyedCollection
     - Added CTOR overload
+  - Mapping
+    - new draft Mapping_IKey and Mapping_IMappedValue concepts (so give better error messages in Mapping template instantiation)
+    - Document CANNOT use Mapping_IKey Mapping_IMappedValue as because typename constraints dont interact well wtih templates on incomplete types (Like Mapping<String,VariantValue> in VariantValue); so instead use static_assert which appears to work fine with these incomplete types
   - Set
     - Set<>::insert overloads / tweaks to make more STL drop-in-replacement compatible
 
@@ -200,6 +205,10 @@ especially those they need to be aware of when upgrading.
     - **incompatible change** to SAXReader/StructuredStreamEvents::IConsumer - added Mapping<StructuredStreamEvents::Name, String> attributes argument to StartElement () callback, and no longer generate Start/End/TextInside calls for each attribute (though ObjectReader still does this)
   - ObjectVariantMapper
     - Added DurationSeconds support to ObjectVariantMapper::MakeCommonSerializer
+  - VariantValue
+    - trivial tweak to VariantValue::operator bool ()
+    - Tons of VariantValue cleanups - but MOSTLY - adding rquires constraint to As<> method instead of using template specailization (so get better compiler error messages and executable docs for what is allowed)
+
   - XML
     - **incompatible change** - Massive change (somewhat backward compatible, but mostly not) - very little the same
     - New XML::{Provider,DOM,Namespace,XPath, Schema} etc support
@@ -232,7 +241,9 @@ especially those they need to be aware of when upgrading.
   - CommandLine
     - Added Execution::CommandLine overloads
     - Added overloads for Execution::ParseCommandLine
-
+  - ModuleGetterSetter
+    - Docs and new experimental operator-> for ModuleGetterSetter
+    - ModuleGetterSetter<T, IMPL>::Get () const now
   - WaitForIOReady
     - fix to race (tsan found) in WaitForIOReady
   - ProgressMonitor
@@ -265,6 +276,11 @@ especially those they need to be aware of when upgrading.
     -  MemoryMappedFileReader
       - span<byte> support
       - improved error message in CTOR (activty to record opening what file)
+  - Network
+    - URI
+      - new StringPCTEncodedFlag enum and (optional) flag to several URI(and related) methods; Deprecated AsEncoded and AsDecoded functions in those classes (instead As<StringOrstring> (eEncoded or eDecoded)
+      - changed the StringPCTEncodedFlag parameters to As<'stringish'> functions to optional, so they can each vary based on 'T' - as appropriate (documented how they all default but mostly - if you care - dont use the default - specify
+      - document issue https://stroika.atlassian.net/browse/STK-1000 - corner case issues with parsing/decoding StringPCTEncodedFlag
 
 - Math
   - Math utilities use more concepts for better error reporting
@@ -410,12 +426,13 @@ especially those they need to be aware of when upgrading.
     - lose Led option qURLStyleMarkerNewDisplayMode  - just assume (it was) true
     - respect qStroika_Frameworks_Led_SupportClipboard better
     - lose not really working anyhow StyledTextIOWriterSinkStream_FileDescriptor StyledTextIOSrcStream_FileDescriptor code; and document StyledTextIOReader::SrcStream  and SinkStream need to be replaced with Streams::InputStream::Ptr<byte> and OutputStream::Ptr<byte> if we ever need to get this really working more widely
-
-
   - SystemPerformanceMonitor
     - fix system performance monitor code to better track initial time on measurements; change sample to print times using DisplayedRealtimeClock::time_point; and related cleanups
-  - Test Frameework **new**
+  - Test Framework **new**
     - Simple wrapper on google test code
+  - Service
+    - --runFor option to services intead of using first 'unused' argument
+    - various minor Frameworks::Service cleanups
   - WebServer
     - Minor cleanups to ThreadPool stat collection; and used with new property / option in Frameworks::WebServer::ConnectionManager
     - cleanp use of new ThreadPool CTOR (avoid deprecated api) and for WebServer - change behavior so we max-out the QMax value (possibly no effect, possible reduce attack surface)
@@ -435,7 +452,6 @@ especially those they need to be aware of when upgrading.
   - libxml2
     - new thirdparty compoennt
     - VERSION 2.12.5
-
   - openssl
     - VERSION 3.2.1
     - add better backup openssl backup download urls
@@ -461,7 +477,13 @@ especially those they need to be aware of when upgrading.
   - fixed regression in github actions config file (clang++16 requires ubuntun 23.10 or later)
   - --boost no on github action running out of space
   - renamed build-v3-Docker-Containers to build-Dev-Docker-Containers
-
+- Samples
+  - AppSettings
+    - More elaborate AppSettings example/sample app
+  - Traceroute
+    - tweak UI of traceroute sample app
+    - network monitor traceroute code new overload taking per hop callback; used to improve the UI of the traceroute app so more like regular traceroute tool
+    - cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
 - Tests
   - xxd
     - added xxd to dockerfiles/build tool dependencies
@@ -478,177 +500,6 @@ especially those they need to be aware of when upgrading.
       lose VALGRIND support. May re-add when I get to test with next LTS Ubuntu release (soon).
   - New WebServer (first framework) regression test
     - Simple but real/reasonable regtest for webserver and check with curl
-
-- Samples
-  - Traceroute
-    - tweak UI of traceroute sample app
-    - network monitor traceroute code new overload taking per hop callback; used to improve the UI of the traceroute app so more like regular traceroute tool
-    - cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
-
-
-#if 0
-
-commit 69595dd887be4b3a7fc0e45a5de593f86c80e80d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 14:14:08 2024 -0500
-
-    new StringPCTEncodedFlag enum and (optional) flag to several URI(and related) methods; Deprecated AsEncoded and AsDecoded functions in those classes (instead As<StringOrstring> (eEncoded or eDecoded)
-
-commit e2f2959b5315be1b5b9a2e063daa1536d3db51d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 16:51:49 2024 -0500
-
-    changed the StringPCTEncodedFlag parameters to As<'stringish'> functions to optional, so they can each vary based on 'T' - as appropriate (documented how they all default but mostly - if you care - dont use the default - specify
-
-commit be4b6f2980f62485261e1fc33af781bd96134601
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 18:00:06 2024 -0500
-
-    more progress/fixes for URI::AsString_ (optional<StringPCTEncodedFlag>  - and docuemnt issue https://stroika.atlassian.net/browse/STK-1000
-
-commit 3bc16ecf3a79f03a248aa0e20c193f5570f414b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 4 15:20:34 2024 -0500
-
-    testing more effective fix for https://stroika.atlassian.net/browse/STK-1001 - that doesn't cause xsd validation failures
-
-commit 12581fee1585a824b0ae91afae7fb252f4b11484
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 4 15:50:10 2024 -0500
-
-    cleanup last https://stroika.atlassian.net/browse/STK-1001  - fixed
-
-commit 55c6b3f2c52022bb27cdd8204ce91f35aa5230c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 12:07:29 2024 -0500
-
-    tiny unused hack added to make default-configurations (DEFAULT_CONFIGURAITON_ADD2ALL)
-
-commit 8026819c2ef2388d3bc0229a4a8e7c599e64a709
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 15:15:16 2024 -0500
-
-    changed 'regressiontest configurations' to by default include TEST_CONFIGURATIONS_ADD2ALL - so to include xerces
-
-commit a97604a87be0e4e1ea2bee89667a01598b5b86d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 7 20:01:14 2024 -0500
-
-    lose Common::Identity, and replace with a differnt version of Common::Identity (identiy function not type mapper) - probably more useful and other can be simulated easily enuf with conditional_t<true,T,T>
-
-commit f0a98bf0daaab9042aef67c7b79ca91ed4e9346b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 16:53:34 2024 -0500
-
-    make script support for LinkerArgs_StroikaDependentLibDependencies
-
-commit 66ba61be50030b0bf17cc30827c151300a941424
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 15:27:48 2024 -0500
-
-    simplify/generalize slightly the EndianConverter code (if constexpr and and concepts)
-
-commit 3bacf35d0d66d2b12cd1e20c6ea473f484738416
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 15:28:03 2024 -0500
-
-    simplify/generalize slightly the EndianConverter code (if constexpr and and concepts)
-
-commit 1b4d068e0185ea9075954ce9da8ae2189feeabe8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 12 22:03:10 2024 -0500
-
-    use more := in Makefiles (probably clearer semantics and probably faster, but probably not measurably)
-
-commit 6ece678cf005b4cca5f440d499ab5b908adcdbf8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 09:24:04 2024 -0500
-
-    disable github workflow ubuntu-22.04-g++-All3rdParty (Debug.. cuz runs out of diskspace (and cannot remove boost but still test all configs)
-
-commit 8b7e7f77631c2a907e1daa72655a1c1882742e3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 20 15:08:07 2024 -0500
-
-    Service framework - --runFor option to services intead of using first 'unused' argument
-
-commit e6aae0b63318ac51792c84032a7e57cea159c41f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 20 17:03:43 2024 -0500
-
-    various minor Frameworks::Service cleanups
-
-commit 85f3dd08470b61eeeca1fea056c6c348a93e73bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 20 17:04:37 2024 -0500
-
-    fixed regtest for recent --run-directly change
-
-commit 6575e1cb0d09a420026c3c5298378635a1238a73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 11:03:49 2024 -0500
-
-    trivial tweak to VariantValue::operator bool ()
-
-commit 13802cd6861b8410a61e8f01870705b7244b9b2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 11:06:09 2024 -0500
-
-    new draft Mapping_IKey and Mapping_IMappedValue concepts, and starting to use, and fill out what are the requirements - much tbd and more todo for other containers, but a sensible place to start since I just ran into trouble with this (assignment requirement was not obvious and led to confusing error message)
-
-commit ba7d06d0d56823f4070c974bdc038c6d295559aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 13:27:20 2024 -0500
-
-    Experimental use of Mapping_IKey to constrain Mapping<> object (so far just on KEY)
-
-commit 373ec38692b5a0a4e427539dc0fb7c3afd2776ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 13:40:02 2024 -0500
-
-    Use Mapping_IMappedValue in Mapping<> - again experimental - and a few other small Mapping cleanups
-
-commit 8674eb4c8100e364e7f63cdaf4f89bbdc8e8266d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 14:25:16 2024 -0500
-
-    revert recent contraints on Mapping<> key/value types - and instead use static_assert, because typename constraints dont interact well wtih templates on incomplete types (Like Mapping<String,VariantValue> in VariantValue)
-
-commit c4b5201a42d85694818c4a4eb87f263b25a11105
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 14:52:44 2024 -0500
-
-    Tons of VariantValue cleanups - but MOSTLY - adding rquires constraint to As<> method instead of using template specailization (so get better compiler error messages and executable docs for what is allowed)
-
-commit 341f0e02201e59c02f5bad474cca8e5dda60827a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 21 18:35:23 2024 -0500
-
-    More elaborate AppSettings example/sample app
-
-commit 6be08889b81a2aa11144274f9bd061d62e00ea38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 09:42:49 2024 -0500
-
-    Docs and new experimental operator-> for ModuleGetterSetter
-
-commit 7155287af2a927dc139c95783cfa72c941e38653
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 10:18:30 2024 -0500
-
-    ModuleGetterSetter<T, IMPL>::Get () const now
-
-commit 60580b753dd26a960859cb82034325c4b5fb166b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 15:47:06 2024 -0500
-
-
-commit e0da14fca6a1de01e8e8b286ec9fec3cfb19b9b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 22 21:11:01 2024 -0500
-
-
-#endif
 
 
 
