@@ -25,8 +25,6 @@ especially those they need to be aware of when upgrading.
         And more efficent.
         Only lazy if default Iterable<T> used.
 
-- Big improvements to XML support - schemas and Xquilla (hope soon) and xpath in xml support.
-
 
 ------------
 
@@ -119,6 +117,65 @@ especially those they need to be aware of when upgrading.
     - Targets either Xerces or libxml2
     - libxml2 now the default because IT supports XPath in the DOM code (so does Xerces but much weaker in Xerces)
     - exposed qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations since slow, and made sure we actually check on destruction no leak! if you do all that work
+
+
+   use mutex not recursive_mutex for fLastSnapshot in DataExchange/XML/Common.cpp
+    More XML lib cleanups/factoring in preps for larger changes; and Test cleanups
+    minor cleanups to xml regtest for new gogole tests frameowrk
+    added embeddings to regtest 34 (xml) and additional (DOM) test - very primitive but a start
+    tons more cleanup/abstraction on XML DOMNode crap
+    more XML DOM Node cleanups - no longer allow null Node objects
+    More XML/DOM refactoring (Node => Node::Ptr)
+    incompatible XML DOM changes (lose RWDocument)
+    XML::DOM Document namespace refactoring
+    more minor XML cleanups; and Document::New () takes stream (reading) overloads, which replace Document::Read ()
+    More clenaups of XML DOM code - draft Schema As() API
+
+    lots more cleanups to XML DOM code - lose CreateDocumentElement (replaced with New () overload), and SetRootElement and AppendNodes/InsertNodes (we may need to add that back when I find out why I needed it later - but for now adds undesirable complexity)
+    small additions to XML DOM regtsts
+    added another regtest for schema doc parsing xml
+    more XML DOM code (and test) cleanups (mostly cosmetic)
+    xml regtest refactor - moved test files to folder TestFiles; and added ASTM_CCR_V1.xsd SampleCCR.ccr and tried validating (so far no luck but more to debug)
+    refactoring XML Providers logic - progress - 1/2 way
+    cleanup qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations checks (improved reporting)
+    Doc/Node XML GetProvider rep method
+    pay attention to prefix/namespace code for XML XPATH DOM expressions (xerces)
+    DOM Node fOrdering and fSnapshot support, and support Lookup (so iterator produced now but still not tesetd)- both xerces and libxml2)
+    cleanup qStroika_Foundation_DataExchange_XML_Supportxxx flags
+    minor tweaks to libxml2 xpath error handling, and corresponding regtests chages
+    More progress on DOM XML regtests
+    did namespace version of xpath iterator regtest
+    New DOM::Element::Ptr LookupElements, and finished reasonable draft of DOM XPath regtests (inculding namespaces and dom updates
+
+    Add warning supression flag for xerces like I did for libxml2 - warning only appears building RFLLib code - -LTCG
+    Document::New (XML DOM) clone facility
+    XML::DOM cleanups - simplfied DocumentFactory, and added SetRootNode method to document (and related cleanups)
+    minor tweak to last XML::DOM change - but renamed to ReplaceRootElement and had it return value created
+    Added XML::Document::New () overload without documentEltName
+    Minor tweaks to XML::DOM code
+    XML code now uses constexpr auto kUseURIEncodingFlag_ = URI::StringPCTEncodedFlag::eDecoded - in URI string conversions - to fix issue with ASTM CCR schema
+    re-fixed/better fixed ReplaceRootElement for libxml2
+    DOM cleanup Eleemnt::Ptr::AppendIf; and new regtest DOM_WEIRD_LIBXML2_NAMESPACE_BUG and kludgy workaroudn for it (come back and find cleaner answer)
+    expermimental fix to leak / hacks with libxml2 for setting default namespace
+    Added kXMLNS define
+
+    new bool childrenInheritNS param for Document::Ptr::ReplaceRootElement (OPTIONAL); new Element::Ptr::GetDefaultNamespace  and SetDefaultNamespace support, and impl for xerces and libxm workaround for https://stroika.atlassian.net/browse/STK-1001 (maybe xerces bug or maybe libxml2 or maybe mine????)
+
+    hopefully fixed libxml2 newNS - memory leak
+    DOM node docs cleanups and fixed one errant #if
+
+
+    LibXML2 support - GetWrapperDoc_ - breadcrumbs so internally we can get from a node to the wrapper class where we may store some extra useful info
+    fixed def for qStroika_Foundation_DataExchange_XML_SupportDOM ; qStroika_Foundation_DataExchange_XML_SupportSchema; qStroika_Foundation_DataExchange_XML_SupportParsing
+
+    minor tweaks to SAXReader code
+
+    Xerces build out of CURRENT source rather than extracting source to IntermediateFiles (fewer copies and source stays around on clean so better debugging experience)
+    bit of refactoring of DOM Node API (several methods moved to Eleemnt::IRep)
+    more cleanups of recent DOM Node / Element refactor
+
+
+
 
 - Debug
   - Assertions
@@ -216,7 +273,7 @@ especially those they need to be aware of when upgrading.
     - libcurl 8.5.0
   - libxml2
     - new thirdparty compoennt
-    - version 2.12.14
+    - version 2.12.5
 
   - openssl
     - openssl 3.2.0
@@ -249,6 +306,7 @@ especially those they need to be aware of when upgrading.
     - tweak UI of traceroute sample app
     - network monitor traceroute code new overload taking per hop callback; used to improve the UI of the traceroute app so more like regular traceroute tool
     - cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
+
 
 
 #if 0
@@ -403,33 +461,15 @@ Date:   Fri Dec 1 20:00:20 2023 -0500
 
     new sanitizer configurations - cleanups and start trying msan
 
-commit b0c7933df8ae161a6962f0643b0a781aa9e1c1b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 1 20:12:41 2023 -0500
-
-    use mutex not recursive_mutex for fLastSnapshot in DataExchange/XML/Common.cpp
-
 commit 72d58da58a903fe0d481e8e0f716708d036c6234
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 1 20:37:59 2023 -0500
-
-    minor tweaks to SAXReader code
 
 commit 0efe5f255b4b686569b9d8877fb8e703321750a5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 2 14:50:56 2023 -0500
 
     fixed bug in String :: CTOR (utf8) code - if contained latin1 characters and ascii, but no non-latin1 characters; added regtest for this case, and fixed the bug (could be more efficient, but hopefully good enuf for now - wait ti I see in profiling)
-
-commit 08a61375053a1145fad1e5391234b658341ee55b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 2 23:29:21 2023 -0500
-
-
-commit 538dd23083a024449fbe80ddeb9b69c2e857b743
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 3 08:00:47 2023 -0500
-
 
 commit 8a07778a41434b1101394f2247f1bc4efcbe8e7e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -623,34 +663,17 @@ Date:   Mon Dec 11 10:33:27 2023 -0500
 
     early draft   Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Frameworks-Debugger-Template.natvis support
 
-
-commit 9ccf43756d2c43185c8b1ef28bb3249f393af774
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 19:30:33 2023 -0500
-
-
 commit 7c34dc76d80f938a2f92cc4beeb291c6333b64b0
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Dec 14 20:27:05 2023 -0500
 
     temporarily reset boost version cuz having weird build issues - retry when stable
 
-commit 70ecd750c14bebb8db88a202c477d69f568eb808
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 14 21:55:15 2023 -0500
-
-    More XML lib cleanups/factoring in preps for larger changes; and Test cleanups
-
 commit c62b5ac2498c89552835c76d8db51a1cda2b7ef6
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri Dec 15 00:06:30 2023 -0500
 
     Using new boost and clang compilers, must disable cobalt library
-
-commit f81c95a2084206af955e042867767df2a6e1cf99
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 15 09:29:16 2023 -0500
-
 
 commit 7382b0ec904af01d6e9c3cec30c1ab4e7fbe82b3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -664,47 +687,17 @@ Date:   Fri Dec 15 15:48:49 2023 -0500
 
     updated libversion# for qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define
 
-commit 05f94491b706e77b67ad588d66895d74976c665d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 15:26:48 2023 -0500
-
-    minor cleanups to xml regtest for new gogole tests frameowrk
-
-commit 078b871f65fe1b8232c86ec5d9e8de8667dc5b8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 16:06:58 2023 -0500
-
-    added embeddings to regtest 34 (xml) and additional (DOM) test - very primitive but a start
-
 commit 37a9c24f3ebef1e5a3136d0cbac24df3097dde06
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 16 19:43:56 2023 -0500
 
     added xxd to dockerfiles for linux
 
-commit 95a7a8c665c300b16ae8bfce9ed87d85969c1fe3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 20:57:32 2023 -0500
-
-    tons more cleanup/abstraction on XML DOMNode crap
-
-commit 06f29ad7ddda33b2b7a863a81c550e1e2a9bfaf7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 21:55:28 2023 -0500
-
-    more XML DOM Node cleanups - no longer allow null Node objects
-
 commit 1ae9d9920b2791957453cb1de132c1a3e68ed3ef
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 16 22:45:10 2023 -0500
 
     no longer support XCode 14 - since I dont have easy way to run/debug there now
-
-commit bdac7ff734683de6a5c05cbbbb4546a059356589
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 00:01:21 2023 -0500
-
-    More XML/DOM refactoring (Node => Node::Ptr)
 
 commit 62707fca418c2062ff165c745f9795c2230fec52
 Author: Lewis Pringle <lewis@sophists.com>
@@ -760,36 +753,6 @@ Date:   Sun Dec 17 14:42:51 2023 -0500
 
     Suppress raspberrypi-g++-11-release-sanitize_address config as appears to be hard to workaround compiler bug and fine with gcc-12
 
-commit 1e8c20a43421650f3bbcffa44dc1e2e421c2ce15
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 14:29:01 2023 -0500
-
-    incompatible XML DOM changes (lose RWDocument)
-
-commit ce66b9840679d4a6aeef7bf69e86d7fac3c809f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 15:57:13 2023 -0500
-
-    XML::DOM Document namespace refactoring
-
-commit 3230e0a2f446a0d97b58facff6eb140fe4c35532
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 17:01:36 2023 -0500
-
-    more minor XML cleanups; and Document::New () takes stream (reading) overloads, which replace Document::Read ()
-
-commit ae089cf4eb9fdc7dcec19ce7f89348e985987cf1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 19:45:34 2023 -0500
-
-    More clenaups of XML DOM code - draft Schema As() API
-
-commit 22fa9b5b25c19fd9aa6b3aad4a6633238a9a3c43
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 21:28:06 2023 -0500
-
-    lots more cleanups to XML DOM code - lose CreateDocumentElement (replaced with New () overload), and SetRootElement and AppendNodes/InsertNodes (we may need to add that back when I find out why I needed it later - but for now adds undesirable complexity)
-
 commit d8cc4ff02537e7f8396b2414a6f598f290ecd76a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 18 12:00:23 2023 -0500
@@ -842,19 +805,11 @@ commit c65d0755218ee0ec0cacd1e00d4e7f6596e74713
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 18 16:31:18 2023 -0500
 
-    small additions to XML DOM regtsts
-
 commit 40b6e5c22b4ee382114ad7390ed776cedb1036cc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 18 17:01:25 2023 -0500
 
     fixed a few small bugs/issues with recent InputStream changes
-
-commit f392d74c085af07c7a1cb1efcc7f1591099600a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 17:35:44 2023 -0500
-
-    added another regtest for schema doc parsing xml
 
 commit 37aebf6db5f8f584de38579cb987ce4ab86757a0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -879,12 +834,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 19 11:03:30 2023 -0500
 
     minor re-org Xerces stuff to avoid clang compiler bug
-
-commit cae30eefc173d4103d56672fbfd8c5630673e22d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 11:53:53 2023 -0500
-
-    more XML DOM code (and test) cleanups (mostly cosmetic)
 
 commit 6df1d3003ad8158b0e512cdcc29df6558ef96017
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1247,7 +1196,6 @@ Date:   Sat Dec 30 14:55:06 2023 -0500
 
     a few small bugs with recent inputstream conversion work
 
-
 commit 53d2f7bf6e34bbb3a4bf623845a491178f9f239f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 31 10:02:51 2023 -0500
@@ -1302,19 +1250,11 @@ Date:   Mon Jan 1 16:33:54 2024 -0500
 
     maybe fixed/finished TextRader non-blocking IO code
 
-
-
-
 commit 50dd1755ea6c18c1bfcd26456b712d325f41c67d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 2 12:02:30 2024 -0500
 
     complete ReadNonBlocking replacement for  Library/Sources/Stroika/Foundation/Streams/TextToByteReader.cpp
-
-commit 1391c0dd2ef28d23a8ed932beb64340040478106
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 12:03:00 2024 -0500
-
 
 commit 809af16230466074c3861b9a4f2f22539f994765
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1340,12 +1280,6 @@ Date:   Tue Jan 2 14:42:11 2024 -0500
 
     default to -j5 instead of -j8 cuz now getting (on windows) running out of memory errors too often - just change defaults so less aggressive
 
-commit 1eacbd47070caec46c9b89f9287415f89eea614a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 15:48:38 2024 -0500
-
-    xml regtest refactor - moved test files to folder TestFiles; and added ASTM_CCR_V1.xsd SampleCCR.ccr and tried validating (so far no luck but more to debug)
-
 commit b6abab153a7c14ccfa10fd013f2ce210b8cb6450
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 2 16:21:12 2024 -0500
@@ -1369,12 +1303,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Jan 2 17:46:34 2024 -0500
 
     minor libcurl makefile cleanups - losing old BWA notes
-
-commit 0637e19f022931de453c649bfe879b09194be2c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 10:38:44 2024 -0500
-
-    refactoring XML Providers logic - progress - 1/2 way
 
 commit 31f3509236c133834f1871e9cd9d5e6ab64eac53
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1424,12 +1352,6 @@ Date:   Sun Jan 7 09:46:43 2024 -0500
 
     qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
 
-commit 6481bcfd7bcccde86aec8cd7c64dc7f2194f6920
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 09:08:07 2024 -0500
-
-    cleanup qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations checks (improved reporting)
-
 commit 35fb8221d4f9f58d7318f4ee491f4aff5a98ff9d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 8 12:00:48 2024 -0500
@@ -1478,59 +1400,11 @@ Date:   Wed Jan 10 14:25:23 2024 -0500
 
     new utility Common::variant_index; and used in DOM/XPath code to simplify and comply with constraint that xerces seems to have (must specify resturn type in expression)
 
-commit 82cc067591a1c232c818acb81124e678397e8ad4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 10:32:30 2024 -0500
-
-    Xerces build out of CURRENT source rather than extracting source to IntermediateFiles (fewer copies and source stays around on clean so better debugging experience)
-
-commit 10d3a3b4a128258802ba648e39ab70c30e5ca777
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 16:11:03 2024 -0500
-
-    bit of refactoring of DOM Node API (several methods moved to Eleemnt::IRep)
-
-commit 4999a73b0b646a021c3db4a6fa52dadb275594c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 16:29:03 2024 -0500
-
-    more cleanups of recent DOM Node / Element refactor
-
-commit 9e233a588c0d4929e5acd80ee7d3acfe07f6089e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 17:53:04 2024 -0500
-
-    Doc/Node XML GetProvider rep method
-
-commit c9f05e010bf376edef3c7ac320237c3420f6c3c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 11 20:19:31 2024 -0500
-
-    pay attention to prefix/namespace code for XML XPATH DOM expressions (xerces)
-
-commit 6c3b8a8bd1cd0f21bb00d469cc8ab8a7451d3c9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 12 11:19:20 2024 -0500
-
-    DOM Node fOrdering and fSnapshot support, and support Lookup (so iterator produced now but still not tesetd)- both xerces and libxml2)
-
 commit e843c2cffba65165e8822efcb7b9c91d48104059
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 14 09:21:44 2024 -0500
 
     refactor - EncodeBase64 / DecodeBase64 (deprecated old names) -> Base64::Encode, and Base64::Decode and added options object
-
-commit d50e09dbb59243cb58c99c3fffeb2166eb5038ad
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 14 10:04:52 2024 -0500
-
-    cleanup qStroika_Foundation_DataExchange_XML_Supportxxx flags
-
-commit d6ff912ec735f0f16b772d2d4c0a7ec01c5c12a9
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 14 10:05:21 2024 -0500
-
-    DOM node docs cleanups and fixed one errant #if
 
 commit ec63fc9d48a706d7f01b4af540316003220ba397
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1568,31 +1442,6 @@ Date:   Mon Jan 15 15:50:03 2024 -0500
 
     Adjust qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy for clang++15
 
-
-commit c088ffeac8fead4b784722f14ac42f3968ad5a5d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 15 20:24:42 2024 -0500
-
-    minor tweaks to libxml2 xpath error handling, and corresponding regtests chages
-
-commit 7fc4e621b5889017be0b34d7923aa49705af3138
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 16 10:21:41 2024 -0500
-
-    More progress on DOM XML regtests
-
-commit dd0a05df42a922005067c6e46996e9f263bc592f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 16 10:42:04 2024 -0500
-
-    did namespace version of xpath iterator regtest
-
-commit 73959e2635012604ef71842e9fe7fe2c227da879
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 16 11:50:23 2024 -0500
-
-    New DOM::Element::Ptr LookupElements, and finished reasonable draft of DOM XPath regtests (inculding namespaces and dom updates
-
 commit f24a1712573cecb22489274d77887da1a2564437
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 16 14:56:05 2024 -0500
@@ -1610,12 +1459,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Jan 16 14:59:24 2024 -0500
 
     touchup RegressionScript test code for counting failures to accomodate warning that has the word failure in it
-
-commit 74044d39921c9e654e3d1717f38a3cbeee4e0d6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 16 21:06:00 2024 -0500
-
-    Add warning supression flag for xerces like I did for libxml2 - warning only appears building RFLLib code - -LTCG
 
 commit aa364c5ce299a3f303936b8c0bdac4119e168aa0
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1676,12 +1519,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 21 10:32:23 2024 -0500
 
     renamed last checkin to DefinitelyLessThan and fixed typo
-
-commit 85bc25532b76c729f6f95dd4ad308f6a467a3e27
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 21 17:09:54 2024 -0500
-
-    Document::New (XML DOM) clone facility
 
 commit 7ddc0ea1333a7772c4a2627c6c8173c81a115187
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1785,30 +1622,6 @@ Date:   Sun Jan 28 21:25:27 2024 -0500
 
     qCompilerAndStdLib_CompareOpReverse_Buggy broken starting on gcc 13, so maybe really my bug after all
 
-commit 83a5bc5a93a3fc2e91d612775b9a629a5fb7c615
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 29 16:32:08 2024 -0500
-
-    XML::DOM cleanups - simplfied DocumentFactory, and added SetRootNode method to document (and related cleanups)
-
-commit 5b9571088e68ad584855c817b3a63a2b3d510c1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 29 17:05:33 2024 -0500
-
-    minor tweak to last XML::DOM change - but renamed to ReplaceRootElement and had it return value created
-
-commit fbde5b3e673c647daab5401aeec5739bbfb5a704
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 29 18:12:00 2024 -0500
-
-    Added XML::Document::New () overload without documentEltName
-
-commit d1c7d2e6b6272ca8bd1c3dc9112c1b00c7dd5235
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 30 15:47:06 2024 -0500
-
-    Minor tweaks to XML::DOM code
-
 commit 82ff88a345436d13b8d362a4cdbb513226867083
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 30 15:50:52 2024 -0500
@@ -1832,12 +1645,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 31 14:14:08 2024 -0500
 
     new StringPCTEncodedFlag enum and (optional) flag to several URI(and related) methods; Deprecated AsEncoded and AsDecoded functions in those classes (instead As<StringOrstring> (eEncoded or eDecoded)
-
-commit f503c3e7a2877afb67dd3357f65afd8b7647b824
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 31 14:15:00 2024 -0500
-
-    XML code now uses constexpr auto kUseURIEncodingFlag_ = URI::StringPCTEncodedFlag::eDecoded - in URI string conversions - to fix issue with ASTM CCR schema
 
 commit d40cf7ceeeb51915067a95679bc8d0a4e0759e17
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1875,24 +1682,6 @@ Date:   Fri Feb 2 10:11:19 2024 -0500
 
     fixed bug with ReplaceRootElement not creating right namespace node
 
-commit a30b92af04eae0b8ef5be10b475900233ddfc181
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 2 11:47:20 2024 -0500
-
-    re-fixed/better fixed ReplaceRootElement for libxml2
-
-commit f393c5c4d3795172a7107d7ebb3515952e6d5a6f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 2 17:45:49 2024 -0500
-
-    DOM cleanup Eleemnt::Ptr::AppendIf; and new regtest DOM_WEIRD_LIBXML2_NAMESPACE_BUG and kludgy workaroudn for it (come back and find cleaner answer)
-
-commit a0325770d330dfb5e679cd7a428544bec3640507
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 07:33:11 2024 -0500
-
-    expermimental fix to leak / hacks with libxml2 for setting default namespace
-
 commit e692b7bc64df964464ff5f8596f1741bbfd402f1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 3 10:43:08 2024 -0500
@@ -1904,12 +1693,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 3 10:43:44 2024 -0500
 
     Added static_assert IPossibleCharacterRepresentation to document
-
-commit 61810b82d1a3f637bb7632d3daf02627d8c8c528
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 10:44:33 2024 -0500
-
-    Added kXMLNS define
 
 commit 1565d095a9cb581273f972b8712831ee0916b072
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1923,29 +1706,11 @@ Date:   Sat Feb 3 11:09:23 2024 -0500
 
     cleanup regtests for blob and cleanup output of BLOB ToString() for ascii case
 
-commit 037d7b6fbd6c4a04cd970c94c67fabc828241042
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 11:14:31 2024 -0500
-
-    new bool childrenInheritNS param for Document::Ptr::ReplaceRootElement (OPTIONAL); new Element::Ptr::GetDefaultNamespace  and SetDefaultNamespace support, and impl for xerces and libxm workaround for https://stroika.atlassian.net/browse/STK-1001 (maybe xerces bug or maybe libxml2 or maybe mine????)
-
-commit fd8860d85a474921baa6518be1dbe4d918d1e87d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 17:09:21 2024 -0500
-
-    hopefully fixed libxml2 newNS - memory leak
-
 commit 318019086eff421dc61f07340cc9f0210e8cd3bc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 3 19:59:25 2024 -0500
 
     fixed ApplyConfigurations processing of .env.myDefaultIncludePath update
-
-commit 118899db54649e802cb3f44df0a36747e0d1bb37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 4 15:05:35 2024 -0500
-
-    LibXML2 support - GetWrapperDoc_ - breadcrumbs so internally we can get from a node to the wrapper class where we may store some extra useful info
 
 commit 3bc16ecf3a79f03a248aa0e20c193f5570f414b6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1999,7 +1764,6 @@ commit fc271cdc5b78ed4e94a338da995071d75713e104
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 5 17:54:04 2024 -0500
 
-    libxml2 2.12.5
 
 commit 20a4d0a1f5f595c2305f202b479405fccb2a2285
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2070,8 +1834,6 @@ Date:   Tue Feb 6 14:50:13 2024 -0500
 commit cb6c5437d5d590a109c4d9f09997ddb56bdb65e4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 6 14:49:55 2024 -0500
-
-    fixed def for qStroika_Foundation_DataExchange_XML_SupportDOM ; qStroika_Foundation_DataExchange_XML_SupportSchema; qStroika_Foundation_DataExchange_XML_SupportParsing
 
 commit 9b1ee3d1eeb64f7ff47faeee306744dad37a5e23
 Author: Lewis Pringle <lewis@sophists.com>
