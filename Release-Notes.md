@@ -30,6 +30,9 @@ especially those they need to be aware of when upgrading.
 
 ------------
 
+- Compilers supported
+  -     no longer support XCode 14 - since I dont have easy way to run/debug there now
+
 - BuildScripts
   - configure
     - replace old </PkgConfigLinkLineAppendages> with simpler PkgConfigNames (to fix libxml2 include issue)
@@ -41,20 +44,33 @@ especially those they need to be aware of when upgrading.
     - simplify LinkerArgs_LibPath configure - just store cmdline args in variable not actual path so dont need to do that magic in app
     - improved configure script on windows to print out warning if it finds multiple compiler/visual studio instances, and to pick slightly better between them
 
-
   - Docker Build Containers
     - Refactoring/options - tweak so builds smaller docker windows container - avoiding(???) issue with .github actions
       not having enuf disk space (so failing)
+    - dockerfile -lose pull-base-image support
+    - Windows
+      - support VS_17_9_1 in docker container
+      - docker build for windows compiler: tweaked and better documented source of --add lines in installation of Visual Studio
+      - cleanup docker DOCKER_NETWORK hack/workaround in docker build makefile
+      - use/define Dockerfile ARG USEWINSDK and docs, but not actual change yet
 
   - Makefile
     - improved docs and behavior of WRITE_PREPROCESSOR_OUTPUT makefile option
     - new make distclean in top level makefile
+    - special speed tweak on builds for libraries if QUICK_BUILD=1 set as command-line argument to make
+
 
   - Scripts
     - ApplyConfiguration
       - ApplyConfiguration sorts configurations by name now for .vscode - making it much easier to handle tons of configs in menu in vscode
       - fixed ApplyConfigurations processing of .env.myDefaultIncludePath update
       - ApplyConfiguraiton now generates ::= instead of = (posix style simply expanded) variables instead of recursive expand variables written to Configuration.mk (faster, more portable, and sometimes less confusing)
+      - trim PkgConfigNames before check for '' before call to pkg-config in script
+      - ScriptsLib/MakeBuildRoot
+    - RegressionTests
+      - touchup RegressionTests test code for counting failures to accomodate warning that has the word failure in it
+      - fixed a few small issues with TOTAL_WARNINGS_EXPECTED and fFailConnectionIfSSLCertificateInvalid for raspberrypi
+
 
   - Skel
     - Small cleanups (makefiles)
@@ -67,11 +83,6 @@ especially those they need to be aware of when upgrading.
   - Tons/Misc comments/todo/docs cleanups
   - Cleanup Code-Status.md settings (simplified enumeration) and re-reviewed all uses so more sensible
 
-
--    VS_17_8_0 in docker container, 
-    dockerfile use vs VS_17_9_0
-
-- docker build for windows compiler: tweaked and better documented source of --add lines in installation of Visual Studio
 
 
 
@@ -96,6 +107,12 @@ especially those they need to be aware of when upgrading.
   - better use of requires/concepts
 
 - Characters
+  - IPossibleCharacterRepresentation
+  - Characters::CString::Length and Characters::GetEOL use concept IPossibleCharacterRepresentation instead of specializations
+  - LineEndings GetEOL can only be constexpr if c++ version >= c++23(constexpr)
+  - fixed SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag) serious bug - where default missing character not representable in the current locale codepage
+  - Character
+    - refinements to CTOR - more overloads - and more restrictive - and more carefuly about throws/checking on them - and documented
   - ToString
     - https://stroika.atlassian.net/browse/STK-566  Major Characters::ToString cleanup, including ToString (...elipsis) support, and cleanup use of templates in Private_ - ToStringDefaults, etc.
     -  ToString() support for (some) chrono::duration and chrono time_point values (with any clock)
@@ -150,9 +167,11 @@ especially those they need to be aware of when upgrading.
     - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define updated libversion# for
     - qCompilerAndStdLib_CompareOpReverse_Buggy broken starting on gcc 13, so maybe really my bug after all
     - workaround qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy in Test_Join
-
+  - Concepts
+    - new utility Configuration::IAnyOf concept; and used in a few places to test
   - Enums
     - define Configuration::IBoundedEnum concept
+  - switched most use of Configuraiton::IOperatorEq IOperatorLtetc to using equality_comparable, three_way_comparable, etc and added those checks to Sequence<> opreator==/<=> template so only defined if subselts defined for too - not 100% working - one queer case
 
 - Containers
   - All
@@ -160,13 +179,25 @@ especially those they need to be aware of when upgrading.
     - template 'overloads' for Map in SortedSet/Sequence - just forwarding - but to change default template produced
   - Adapters
     - Adapters::Adder greatly simplified using concepts - now works more generally, and without all the dependencies it had on other modules; used it now to siplify adding stuff in Iterable<>
+  - STL
+    - mark Containers::STL::Make as deprecated
+  - KeyedCollection
+    - Added CTOR overload
   - Set
     - Set<>::insert overloads / tweaks to make more STL drop-in-replacement compatible
 
+- Common
+  - new utility Common::VariantIndex for extracting info from std::variant
+
+- Cryptography
+  - Encoding
+    - renamed to Base64::Decode : deprecated DecodeBase64 (span<const char> s), similarly Base64::Encode
+
 - DataExchange
+  - new RecordNotFoundException class
+  - fixed bug with InternetMediaTypeRegistry::Get ().IsA and added related regression tests and docs
   - StructuredStreamEvents
     - **incompatible change** to SAXReader/StructuredStreamEvents::IConsumer - added Mapping<StructuredStreamEvents::Name, String> attributes argument to StartElement () callback, and no longer generate Start/End/TextInside calls for each attribute (though ObjectReader still does this)
-
   - ObjectVariantMapper
     - Added DurationSeconds support to ObjectVariantMapper::MakeCommonSerializer
   - XML
@@ -187,6 +218,7 @@ especially those they need to be aware of when upgrading.
     - in release builds, Assert(ETC)NotReached() calls std::unreachable () if available
   - AssertExternallySynchronizedMutex
     - renamed macro qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled -> qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+    - use Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized in place of inheritance in a few more places
 
   - Sanitizers
     - tried memory sanitizer - a boondoggle - not worth trying for now...
@@ -195,9 +227,14 @@ especially those they need to be aware of when upgrading.
     - new module Foundation::Debug::Visualizations to fix visual studio .natvis problems; #include Debug/Visualizations.h to get visualizations in debugger from now on
     - natvis major improvement for Stroika strings - still not great but at least OK now
     - early draft Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Frameworks-Debugger-Template.natvis support
-
 - Execution
   - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
+  - CommandLine
+    - Added Execution::CommandLine overloads
+    - Added overloads for Execution::ParseCommandLine
+
+  - WaitForIOReady
+    - fix to race (tsan found) in WaitForIOReady
   - ProgressMonitor
     - big improvements (just in time to possibly deprecate cuz really not that useful anymore).
     - Added ProgressMonitor::SetCurrentTaskInfo () method
@@ -218,9 +255,13 @@ especially those they need to be aware of when upgrading.
   - Minor fix (<= not <) in ThrowTimeoutExceptionAfter, and several other 'throw' utility tweaks to use perfect forwarding
   - Synchronized
     - workaround/avoid probably real serious bug https://stroika.atlassian.net/browse/STK-700
+    - opeartor== and operator<=> respect equality_comparable<T> three_way_comparable<T>
 
 - IO
   - Filesystem
+    - AppTempFileManager
+      - a few cleanups to TempFile code - mostly make windows open code use same code as UNIX and filesystem::perms::all instead of POSIX gorp
+      - Another attempt at CreateFile for GetTempFile code
     -  MemoryMappedFileReader
       - span<byte> support
       - improved error message in CTOR (activty to record opening what file)
@@ -320,6 +361,7 @@ especially those they need to be aware of when upgrading.
   - DateTime
     - big change to DateTime 'chrono::time_point' and 'tickcount' support; now directly support arbitrary time_point in DateTime CTOR, and as template for DateTime::As<> and rewrote To/From TickCount to use these
     - Added DateTime::ParseQuietly () overload with list of formatPatterns and default kDefaultParseFormats
+    - CTOR minor cleanups - made a few CTORs explicit, and lost one (mostly) redundant one. Only incompat this introduces is maybe sometimes will need expplicit DateTime{} around Date{} objects; and a few other minor cleanups to tests, quiet warnings etc
   - Date
     - Added Date::Now() function (based on DateTime::Now()) and operator+/- for Date which handles duration (rounding)
   - Clocks
@@ -348,6 +390,8 @@ especially those they need to be aware of when upgrading.
 
   - Range
     - Migrate Foundation::Traversal::Openness type to Traversal Common.h file, so can be used elsewhere (without #include Range.h which pulls alot in); no namespace changes
+    - new operator<=> just returing partial_ordering (was briefly called DefinitelyLessThan)
+
 
 - Frameworks
   - Led
@@ -368,7 +412,6 @@ especially those they need to be aware of when upgrading.
     - lose not really working anyhow StyledTextIOWriterSinkStream_FileDescriptor StyledTextIOSrcStream_FileDescriptor code; and document StyledTextIOReader::SrcStream  and SinkStream need to be replaced with Streams::InputStream::Ptr<byte> and OutputStream::Ptr<byte> if we ever need to get this really working more widely
 
 
-
   - SystemPerformanceMonitor
     - fix system performance monitor code to better track initial time on measurements; change sample to print times using DisplayedRealtimeClock::time_point; and related cleanups
   - Test Frameework **new**
@@ -379,6 +422,7 @@ especially those they need to be aware of when upgrading.
     - fixed Frameworks/WebServer/Response.inl writeln code to not write NUL chars in EOL
 
 - ThirdPartyComponnents
+  - simplify and fix bugs in ThirdPartyComponents/Makefile
   - Boost 
    - VERSION 1.84.0
    - tweak makefile
@@ -394,6 +438,7 @@ especially those they need to be aware of when upgrading.
 
   - openssl
     - VERSION 3.2.1
+    - add better backup openssl backup download urls
   - SQLite
     - VERSION 3.45.1
   - Xerces
@@ -409,11 +454,18 @@ especially those they need to be aware of when upgrading.
 
 
 
-- .github actions
+- .github workflow actions
   - workaround many build issues with github actions: run out of space
-
+  - dont fail saving logfiles if file files missing on github actions macos
+  - Added a few All3rdParty configurations (v3-Release only) to github action builds
+  - fixed regression in github actions config file (clang++16 requires ubuntun 23.10 or later)
+  - --boost no on github action running out of space
+  - renamed build-v3-Docker-Containers to build-Dev-Docker-Containers
 
 - Tests
+  - xxd
+    - added xxd to dockerfiles/build tool dependencies
+    - use in Tests for embedded resources
   - regtests now depend on Framework library (just fixed project files for visual studio so far)
   - Sanitizers
     - tried msan, but didn't seem helpful/working
@@ -434,262 +486,7 @@ especially those they need to be aware of when upgrading.
     - cosmetic and docs about isuses with traceroute and firewalls/unix sudo (issues with sampple)
 
 
-
-
-
-
 #if 0
-
-commit db94ccc8479eb499274a8df0e3b911bbeb51d96d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 10 11:20:52 2023 -0500
-
-    a few cleanups to TempFile code - mostly make windows open code use same code as UNIX and filesystem::perms::all instead of POSIX gorp
-
-commit 42d9fb53f2b7b4c30d2f6ae6effd328de8f81821
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 10 12:07:33 2023 -0500
-
-    Another attempt at CraeteFile for GetTempFile code
-
-commit 37a9c24f3ebef1e5a3136d0cbac24df3097dde06
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 19:43:56 2023 -0500
-
-    added xxd to dockerfiles for linux
-
-commit 1ae9d9920b2791957453cb1de132c1a3e68ed3ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 16 22:45:10 2023 -0500
-
-    no longer support XCode 14 - since I dont have easy way to run/debug there now
-
-commit 62707fca418c2062ff165c745f9795c2230fec52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 00:03:04 2023 -0500
-
-    use 17.8.3 vis studio in docker build
-
-commit 2ff859d5b34b3c77f180f744c7be05f966b98b31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 00:03:27 2023 -0500
-
-    Added xdd to install for cygwin docker container
-
-commit 1dcc1adb9cff81012b6c4f5558aff736c1605df3
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Dec 17 00:23:45 2023 -0500
-
-    more minor tweaks for configuraiton of features
-
-commit 0c68c2daa0320353d928567b0e9ea1f5df69b99d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 00:53:15 2023 -0500
-
-    fixed makefile def for only-zlib-system-third-party-component configuration
-commit 1c4ef2310cc897e6f2405a33ae96b9eaabb0d912
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 17 14:00:11 2023 -0500
-
-    docker/wiondows/msys containers needs vim (for xxd for resource strategy)
-
-commit 608fd169b05946cc666633f868c7d36140ecb34c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Dec 17 14:42:51 2023 -0500
-
-    Suppress raspberrypi-g++-11-release-sanitize_address config as appears to be hard to workaround compiler bug and fine with gcc-12
-
-commit 9499eaf90594cd5590588d37d75c32f884cbadbe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 10:54:52 2023 -0500
-
-    tweak performance test warning limit to avoid noise from docker container runs windows
-
-commit 2e19b342e03036223cf5acb76e77c74f3401566d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 17:37:50 2023 -0500
-
-    use Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized in place of inheritance in a few more places
-
-commit 8f1f80e839fd54e0326df31b6d3e326e90ca42b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 28 17:54:33 2023 -0500
-
-    Characters::CString::Length and Characters::GetEOL support IPossibleCharacterRepresentation; 
-
-commit 137caacfaf534c3d04544528767557c4d936a524
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Dec 28 22:42:15 2023 -0500
-
-    LineEndings GetEOL can only be constexpr if c++ version >= c++23(constexpr)
-
-commit 72ed4446d559c72091ce5db236e8de5fd448d348
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 29 00:39:50 2023 -0500
-
-    dont fail saving locks i file files missing on github actions macos
-
-commit 99da1a58ab8aa3c0e96bf84765336739a7f5bca2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 14:42:11 2024 -0500
-
-    default to -j5 instead of -j8 cuz now getting (on windows) running out of memory errors too often - just change defaults so less aggressive
-
-commit 3607385ee5b57eaa7a548683ee9616ca186ee633
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jan 4 20:30:54 2024 -0500
-
-    fixed Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag) serious bug - where default missing caharacter not representable in the current locale codepage
-
-commit dce9a66417a886b7697226effff983e10a229a57
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 09:17:39 2024 -0500
-
-    docs and AssertExternallySynchronizedMutex and possible fix to race (tsan found) in WaitForIOReady
-
-commit a4252f2e398c8fb2796dbf3f57f76930ab7c6471
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 11:05:03 2024 -0500
-
-    adjust ScriptsLib/RunLocalWindowsDockerRegressionTests to -j5 instead of -j8 cuz run out of memory pretty often now
-
-commit 35fb8221d4f9f58d7318f4ee491f4aff5a98ff9d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 12:00:48 2024 -0500
-
-    a few misc cleanups - mostly losing unneeded initializer_list<ObjectVariantMapper::StructFieldInfo> specifiers
-
-commit 893067a0b247123279d837c10d115c85867174ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 15:28:24 2024 -0500
-
-    testing simplified DefaultNames<> definition style
-
-commit cc7fb18b9c6e07cae527e96a002a11dd410b09a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 8 15:40:42 2024 -0500
-
-    more terse style definition for DefaultNames<> instances
-
-commit 6a1372b67218813e581188ef446c1385dc3ad4fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 9 13:25:16 2024 -0500
-
-    Added KeyedCollection overload
-
-commit e843c2cffba65165e8822efcb7b9c91d48104059
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 14 09:21:44 2024 -0500
-
-    refactor - EncodeBase64 / DecodeBase64 (deprecated old names) -> Base64::Encode, and Base64::Decode and added options object
-
-commit ec63fc9d48a706d7f01b4af540316003220ba397
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 14 10:05:53 2024 -0500
-
-    trim PkgConfigNames before check for '' before call to pkg-config in script
-
-commit 74e26522a1a6edf88df1ad2873f6e56889db4d15
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Jan 16 14:59:24 2024 -0500
-
-    touchup RegressionScript test code for counting failures to accomodate warning that has the word failure in it
-
-commit 9b7303ad20b74e9cac030d4be3ac29494a271cde
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 10:14:31 2024 -0500
-
-    minor cleanup to buildroots script
-
-commit 92ad41dd030eb244a2a6ed08b4272326e1f2a543
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 13:36:31 2024 -0500
-
-    special speed tweak on builds for libraries if QUICK_BUILD=1 set as command-line argument to make
-
-commit 9ac89f992fe45b9e2732a38c7d233fce23c4ded2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 15:36:44 2024 -0500
-
-    hopefully fixed a few small issues with TOTAL_WARNINGS_EXPECTED and fFailConnectionIfSSLCertificateInvalid for raspberrypi
-
-commit 8768a8743219fe40d09eb298a758c38d9d82207c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 17 15:58:08 2024 -0500
-
-    Comments: documented that Range, and its various subtypes, are all immutable (except for allowing operator=)
-
-commit 5d6db00b09196ab5fd9b436b7a8e646534fc183b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 18 12:48:01 2024 -0500
-
-    DateTime CTOR minor cleanups - made a few CTORs explicit, and lost one (mostly) redundant one. Only incompat this introduces is maybe sometimes will need expplicit DateTime{} around Date{} objects; and a few other minor cleanups to tests, quiet warnings etc
-
-commit 3d0e723d9721ce457ea4bfcf48cee779c1a9e203
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 19 11:41:30 2024 -0500
-
-    mark Containers::STL::Make as deprecated
-
-commit 0fa6ffff69300c4f49a55003f3e9af00be7b45cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 20 17:03:07 2024 -0500
-
-    add better backup openssl backup urls
-
-commit 0e048bd1e9192307f8b7174e3c6b721759acb7ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 21 09:59:22 2024 -0500
-
-     Range<T, TRAITS>::LessIsh
-
-commit 50d239b4f29b42f7c548c4ba4d92f5c19ace7fba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 21 10:32:23 2024 -0500
-
-    renamed last checkin to DefinitelyLessThan and fixed typo
-
-commit 19656f54204f229ca1a1c79821972b20258a4652
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 22 09:54:26 2024 -0500
-
-    new RecordNotFoundException class
-
-commit 659ee62cbd2a6ba059bfc2f9f9fc5740fe7656ce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 25 13:04:02 2024 -0500
-
-    renamed new Common::variant_index -> Common::VariantIndex and made it variable, not function (so invoke shorter)
-
-commit 81ab8848bcf8167687af0f1f0706f0482bb993d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 27 09:59:31 2024 -0500
-
-    deprecate Range::DefinitelyLessThan and replaced wtih operator<=> just returing partial_ordering
-
-commit 7ab85bcc83949e72492890b0f14329adb209cc14
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 28 11:36:28 2024 -0500
-
-    siwtched most use of Configuraiton::IOperatorEq IOperatorLtetc to using equality_comparable, three_way_comparable, etc and added those checks to Sequence<> opreator==/<=> template so only defined if subselts defined for too - not 100% working - one queer case in
-
-commit f6f5dbf19c85d380fc7a987dc3a4cad4a19293de
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 28 13:57:59 2024 -0500
-
-    Syncrhonized opeartor== and operator<=> respect  equality_comparable<T> three_way_comparable<T>
-
-commit 82ff88a345436d13b8d362a4cdbb513226867083
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 30 15:50:52 2024 -0500
-
-    Added overloads for Execution::ParseCommandLine
-
-commit 66acb252575f8319da70172776643ca66cfbc2ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 30 18:28:24 2024 -0500
-
-    Added Execution::CommandLine overloads
 
 commit 69595dd887be4b3a7fc0e45a5de593f86c80e80d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -709,12 +506,6 @@ Date:   Wed Jan 31 18:00:06 2024 -0500
 
     more progress/fixes for URI::AsString_ (optional<StringPCTEncodedFlag>  - and docuemnt issue https://stroika.atlassian.net/browse/STK-1000
 
-commit 5fbab3b1bc6046d4254800bf853a652ec482d12d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 10:43:44 2024 -0500
-
-    Added static_assert IPossibleCharacterRepresentation to document
-
 commit 3bc16ecf3a79f03a248aa0e20c193f5570f414b6
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 4 15:20:34 2024 -0500
@@ -726,24 +517,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 4 15:50:10 2024 -0500
 
     cleanup last https://stroika.atlassian.net/browse/STK-1001  - fixed
-
-commit e9556a5615d7badb83cc282bcdc87bfe362cbef5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:00:00 2024 -0500
-
-    renamed github workflow
-
-commit 34b0abe24b2e5a19b848e96fc6042c4f6b0884f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:00:21 2024 -0500
-
-    support VS_17_8_6 in docker container
-
-commit db0240b05e75f0cb9d07936f28d35140b7dcc2cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 5 17:24:38 2024 -0500
-
-    slight simplification of dockerfile
 
 commit 55c6b3f2c52022bb27cdd8204ce91f35aa5230c4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -757,18 +530,6 @@ Date:   Tue Feb 6 15:15:16 2024 -0500
 
     changed 'regressiontest configurations' to by default include TEST_CONFIGURATIONS_ADD2ALL - so to include xerces
 
-commit 00dab72b2269dee23be2006b508e4d1f41f4376d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 6 15:24:54 2024 -0500
-
-    Added a few All3rdParty configurations (v3-Release only) to github action builds
-
-commit 78e69262e744a4b78ae00730e366c3fdc3c2b994
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Feb 7 16:15:39 2024 -0500
-
-    fixed regression in github actions config file (clang++16 requires ubuntun 23.10 or later)
-
 commit a97604a87be0e4e1ea2bee89667a01598b5b86d1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 7 20:01:14 2024 -0500
@@ -780,66 +541,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 8 16:53:34 2024 -0500
 
     make script support for LinkerArgs_StroikaDependentLibDependencies
-
-commit 5e7ccd3942a472e63332742df6610cdd6f34255f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 17:12:42 2024 -0500
-
-    OK still didnt work - ::= not happy on gnu make 3.81 (on my macos machine)
-
-commit 7e3ae69297517fec4f4735b4568426975da0465f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 20:18:14 2024 -0500
-
-    refinements to Character CTOR - more overloads - and more restrictive - and more carefuly about throws/checking on them -a nd documented
-
-commit 2ff48de32bd16cb3f85553a7d4fa377f2b36dbd1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 8 20:35:32 2024 -0500
-
-    Minor tweaks for recent Character change
-
-commit 0933927c0dfeb08d10f5ccbd755d430c8ec06dc2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 9 10:07:36 2024 -0500
-
-    experiment with apt-remove hack to save space on some github actions
-
-commit 8ff0db573f0624b4fd1d4971dddfe2f8d4fbb2a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 10 15:37:21 2024 -0500
-
-    new utility Configuration::IAnyOf concept; and used in a few places to test
-
-commit c7af9a1b2875d5afd4a1e9e1af29b2e319dd3d9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 10 15:40:38 2024 -0500
-
-    experiment with --boost no on github action running out of space
-
-commit 4100f284fe0cdf3059c52f230c0d89c32930dc8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 10 16:44:55 2024 -0500
-
-    fixed typo in .github action test fix
-
-commit 9e578709cf4be6d0aea1881323f474f2e4d0aa0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 10 17:44:06 2024 -0500
-
-    simplify and fix bugs in ThirdPartyComponents/Makefile
-
-commit e2823ef83f1c9573b762812ba0efeed02769675f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 10 17:44:47 2024 -0500
-
-    use Configuration::IAnyOf in a couple more places to simplify
-
-commit d8f6427a234b55ff26cbfbad32e23acff8175ca1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 09:58:41 2024 -0500
-
-    forward/using ReaderOptions::Algorithm::eStroikaNative/etc
 
 commit 66ba61be50030b0bf17cc30827c151300a941424
 Author: Lewis Pringle <lewis@sophists.com>
@@ -859,29 +560,11 @@ Date:   Mon Feb 12 22:03:10 2024 -0500
 
     use more := in Makefiles (probably clearer semantics and probably faster, but probably not measurably)
 
-commit 1583c6f00854921507f773870fc3460795cea926
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 17:14:56 2024 -0500
-
-    another try at --bost no hack for running out of space on some github actions
-
-commit 694c4184a3eae64d86f56db45bc2eaa425b08be2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 13 17:17:08 2024 -0500
-
-    cleanup github actions recent changes
-
 commit 6ece678cf005b4cca5f440d499ab5b908adcdbf8
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 14 09:24:04 2024 -0500
 
     disable github workflow ubuntu-22.04-g++-All3rdParty (Debug.. cuz runs out of diskspace (and cannot remove boost but still test all configs)
-
-commit 1d135d85398973de1bfe2bbd8d5a0c32a09dc6a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 14 12:00:18 2024 -0500
-
-    more workaroudns for github run out of space issue
 
 commit 8b7e7f77631c2a907e1daa72655a1c1882742e3e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -959,25 +642,10 @@ commit 60580b753dd26a960859cb82034325c4b5fb166b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 22 15:47:06 2024 -0500
 
-    fixed bug with InternetMediaTypeRegistry::Get ().IsA and added related regression tests and docs
 
 commit e0da14fca6a1de01e8e8b286ec9fec3cfb19b9b6
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 22 21:11:01 2024 -0500
-
-    cleanup docker DOCKER_NETWORK hack/workaround in docker build makefile
-
-commit f9ec69e63cbd6411e608038be3a3c050709aa508
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 24 23:28:33 2024 -0500
-
-    docker VS_17_9_1; and updated docker continaer build to use/define USEWINSDK and docs, but not actual change yet
-
-commit 15d73ba1baf4073fa9b68e1c626309268b1450b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 24 23:31:36 2024 -0500
-
-    dockerfile -lose pull-base-image support
 
 
 #endif

@@ -818,8 +818,6 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
 
 bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const
 {
-    DbgTrace (L"mg = %s", Characters::ToString (moreGeneralType).c_str ());
-    DbgTrace (L"moreSpecificType = %s", Characters::ToString (moreSpecificType).c_str ());
     /**
      *  Generally simple to compare because AtomType code and parser handle case and breaking off bits like +xml, and ; parameters
      * 
