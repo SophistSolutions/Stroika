@@ -112,6 +112,7 @@ especially those they need to be aware of when upgrading.
     - deprecated bool arg to String::LimitLength (replaced with enum) and used that enum in ToString code; 
     - optimize String::ToUpperCase/ToLowerCase
     - optimization of String EqualsComparer - for case of (String,basic_string_view<ASCII>) - COMMON case - so possibly helpful
+  - Added StringCombiner; and related kDefaultStringCombiner (for Iterable<>::Join)
   - StringBuilder
     - StringBuilder<OPTIONS>::ShrinkTo (size_t sz)
     - experiment with StringBuilder having non-explicit String conversion op
@@ -236,14 +237,73 @@ especially those they need to be aware of when upgrading.
     -  BLOB::Repeat () optimizaiton
     - lose lots of overloads taking Memory::BLOB where we already took InputStream::Ptr - as redundant (mostly); left in a few were was perofrmance tweak (and documented as such); and forced adding a couple explicit Memory::BLOB ctors in calls - but for hte better as making more clear the behavior
     - cleanup regtests for blob and cleanup output of BLOB ToString() for ascii case
+    - experimental addition of  /*explicit*/ operator Streams::InputStream<byte>::Ptr () const; 
   - BlockAllocation
     - **not backward compatible**, but rarely referenced directly: qAllowBlockAllocation -> qStroika_Foundation_Memory_PreferBlockAllocation
     - fixed small bug in BlockAllocator for when qStroika_Foundation_Memory_PreferBlockAllocation disabled
+    - new Memory::InheritAndUseBlockAllocationIfAppropriate
 
   - InlineBuffer
     - minor cleanup to InlineBuffer<>::reserve() - docs, simplificiation, and hopefully avoids warning in g++-12 cross-compile for raspi/arm
   - Optional
     - Added new ValueOfOrThrow
+  - Span
+    - fixed template args to SpanReInterpretCast - must have template arg for FROM_EXTENT to work with static arrays
+    - cleanup a few Span support templates
+    - renamed new Memory::ISpanT -> Memory::ISpan
+    - use as_bytes in place of Memory::SpanReInterpretCast<const byte> in a bunch of places and documented in description of SpanReInterpretCast that its better to use as_bytes where you can easily
+
+
+- Streams
+   - **not backward compatible or even close - HUGE CHANGE** -  supports span, and deprecats iterator New methods, loses quasi-namespace code 
+     (so InputStream<byte>::Ptr becomes InputStream::Ptr<byte> - ETC - that is biggest change users will face)
+   - **not backward compatible** lose _SharedIRep and use shared_ptr directly, and a few related changes - losing _mkPtr in most 'streams ptr' subtypes
+   - use concepts/requires in many methods, types, constructors, factories etc, to give better error messages (at time of call not link errors) instead of template specialization
+   - **incompatible change** updated ExternallyOwnedMemoryInputStream, SplitterOutputStream, and ... to use namespace, not quasi-namespace style; generally all that is needed to upgrade is to rewrite ExternallyOwnedMemoryInputStream<byte>::New () as ExternallyOwnedMemoryInputStream::New<byte> ()
+   -  use new Memory::InheritAndUseBlockAllocationIfAppropriate, and use in InternallySynchronizedInputStream so can re-enable UseBlockAllocationIfAppropriate
+  - InputStream
+    - **incompatible change** but only affects users who implement InputStream reps; InputStream::Rep::Read() now takes span instead of start/end pointers and now returns span (more to come probbaly)
+    - Lots more cleanups of old ReadNonBlocking code to new NoDataAvailableHandling enum flag code
+    - progress on New Streams EWouldBlock design - incomplete
+    - INputStream::IRep::Read now returns otpional - where missing means (wrapper do throw EWouldBlock::kThe) - unlike wrapper ptr API (that just uses nullopt for EOF
+    - progress on new Stream blcokign code - lose old rep API ReadNonBlocking - replaced with AvailableToRead; REP API NOT CLOSE to compatible. (as far as non-blcokgin conscerned); Ptr API pretty close to but not 100% ; 
+    - InputStream RemainingLength API added
+  - OutputStream
+    - Write now uses span (**not backward compatible change to rep**)
+    - cleanup/generalization of OutputStream::Ptr::WriteLn and related OutputStream::Write cleanups (concepts/requires)
+  - InputOutputStream
+    - depreacated input/output streams GetOffsetToEndOfStream method, and rewrote a fwe places that used it
+  - InputSubStream
+    - InternallySynchronized overload of InputSubStream::New ()
+  - iostream
+    - added regtest for IOStreamSeekBug and fixed bug
+      - implementation intenrally needed a few fOriginalStreamRef_.clear () calls cuz read past eof set failbit, and even if you seek back, it didn't get auto-cleared, so we threw (happened in case of a short seekable stream, like one byte/char, and wrapping TextReader that looked for BOM before reading text)
+  - TextReader
+    - refactored TextReader::IterableAdapterStreamRep_ private impl into new public module Streams::IterableToInputStream - and generalized to trnaslate any Iterable<T> to InputStream<T>.
+    - **not fully backward compatible**  - but big simplification to TextReader::New overloads - and docs
+    - TextReader::New - use codeCvtFlags in more cases - like not seekable
+  - TextWriter
+  - TextToByteReader
+    - Streams::TextToByteReader uses new IterableToInputStream::New to add Iterable<Character> overload to New; and switched to new namespace style for this streams class
+  - SharedMemoryStream
+    - SharedMemoryStream no longer accepts overloads with InternallySynchronized parameter - since always internallyschrhonized
+  
+  - InternallySyncrhonizedXXXStream: 
+    - big cleanups to (and mostly convert to namesapce from quasinamespace code) InternallySynchronizedInputStream, InternallySynchronizedOutputStream, and InternallySynchronizedInputOutputStream
+
+  - OpenSSLInputStream/OpenSSLOutputStream
+  - FileInputStream/FileOutputStream
+  - SplitterOutputStream
+  - new ExternallyOwnedSpanInputStream : replacing deprecated ExternallyOwnedMemoryInputStream
+
+  - progress on zlib reader compression/decompress new ReadNonBlocking support
+  - more cleanups of Compression/Zip/Reader code and other stream code
+  - Added InputStreamDelegationHelper helper
+  - new Streams_ToSeekableInputStream_ 
+  - FileInputStream
+    -  Cleanup FileInputStream flags/enums
+  - MemoryStream
+    - Added MemoryStream::ToString() support
 
 
 - Time
@@ -376,6 +436,8 @@ especially those they need to be aware of when upgrading.
 
 
 
+
+
 #if 0
 
 commit db94ccc8479eb499274a8df0e3b911bbeb51d96d
@@ -437,215 +499,11 @@ Date:   Sun Dec 17 14:42:51 2023 -0500
 
     Suppress raspberrypi-g++-11-release-sanitize_address config as appears to be hard to workaround compiler bug and fine with gcc-12
 
-commit d8cc4ff02537e7f8396b2414a6f598f290ecd76a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 12:00:23 2023 -0500
-
-    fixed template args to SpanReInterpretCast - must have template arg for FROM_EXTENT to work with static arrays
-
-commit c5d7b02a8c9ad57e39d748546503107c781b48f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 12:03:03 2023 -0500
-
-    Streams/MemoryStream big changes: **not backward compatible** - no longer supports Execution::InternallySynchronized (confusing); supports span, and deprecats iterator New method
-
-commit 02bd1b830e38e085cb8c081dd1c1309bb321bbbe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 14:20:28 2023 -0500
-
-    refactored TextReader::IterableAdapterStreamRep_ private impl into new public module Streams::IterableToInputStream - and generalized to trnaslate any Iterable<T> to InputStream<T>. And experiment with leaf first switch to non-quasdi-namespace style for streams
-
-commit 646327cd9faeb94d87a18548c1920024b9177a2a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 14:49:57 2023 -0500
-
-    InputStream<> simplifications - Ptr(shared_ptr<REP>>>) now public not proteted, so no more need for _mkPtr hack; more instances of this left todo, and lose _SharedIRep typenmae - **not backward compatible** but not importantly
-
-commit 981cd82b53251366e6f41e2ab2cc76787bc6b628
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 15:15:02 2023 -0500
-
-    Streams::TextToByteReader uses new IterableToInputStream::New to add Iterable<Character> overload to New; and switched to new namespace style for this streams class
-
-commit cf94fe3e84366084072f68bba3f829aefb182c01
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 15:35:27 2023 -0500
-
-    Document::New (const String& in... now supported
-
-commit c69796a3af79f65e15b6a55eaf09be86a2274045
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 15:36:16 2023 -0500
-
-    not backward compat but minor - lose OutputStream::_SharedIRep and use shared_ptr directly, and a few related changes - losing _mkPtr etc
-
-commit a74cb181b487f0f35a8c721221569b532129c5d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 15:54:32 2023 -0500
-
-    refactored InputSubStream to new namespace style
-
-commit 40b6e5c22b4ee382114ad7390ed776cedb1036cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 18 17:01:25 2023 -0500
-
-    fixed a few small bugs/issues with recent InputStream changes
-
-commit 6df1d3003ad8158b0e512cdcc29df6558ef96017
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 19 16:26:44 2023 -0500
-
-    undo quasi-namespace impl of Streams::MemoryStream, and use requires() on As instead of template specialization (better error reporting)
-
-commit c5e5e9b7a915566c05ca5090702c69a803a4cbb1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 10:15:18 2023 -0500
-
-    various minor cleanups, but mostly swtiched SharedMemoryStream to non-quasi-namespace style
-
-commit f53c1ce3688f1c5d797f39b0f449da14fed9ea47
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 20 10:47:50 2023 -0500
-
-    SharedMemoryStream no longer accepts overloads with InternallySynchronized parameter - since always internallyschrhonized
-
 commit 9499eaf90594cd5590588d37d75c32f884cbadbe
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 20 10:54:52 2023 -0500
 
     tweak performance test warning limit to avoid noise from docker container runs windows
-
-commit 0852deb8f154b1d86b99707034770e21a4a396f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 09:48:28 2023 -0500
-
-    Convert TextReader and TextWriter from quasi-namespace to actual namespaces
-
-commit 28e9e0ac8a8d53a547e304396bbfde1661821d03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 21 12:39:28 2023 -0500
-
-    experimental addition of  /*explicit*/ operator Streams::InputStream<byte>::Ptr () const; 
-
-commit df2d698d3247bbcbe7bc51c324d09cac31470124
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 22 09:32:18 2023 -0500
-
-    updated ExternallyOwnedMemoryInputStream, SplitterOutputStream, and LoggingInputOutputStream to use namespace, not quasi-namespace style ; **incompatible change** ; generally all that is needed to upgrade is to rewrite ExternallyOwnedMemoryInputStream<byte>::New () as ExternallyOwnedMemoryInputStream::New<byte> ()
-
-commit 1a08d2d051012b2942f98b985da64df1c625456c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 22 11:36:52 2023 -0500
-
-    switched BufferInputStream and BufferOutputStream to namespace (from quasi-namespace) style - incomplete but mostly testable)
-
-commit ed500fdfdbe3b835d04273791771a614a61e3a19
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 22 20:08:29 2023 -0500
-
-    Convert Streams::iostream::InputStreamFromStdIStream to new namespace style
-
-commit 6fd27887cd9dc29fed281339b904858e5d43f030
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 23 13:13:04 2023 -0500
-
-    OutputStreamFromStdOStream namespace refactoring/cleanup
-
-commit 6a8a4a1498fd9ca48eae38f12a56ca4fe313d504
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 23 19:38:18 2023 -0500
-
-    cleanup recent InputStreamFromStdIStream changes
-
-commit ee6ccd31c39bb8029fd90446818b8addcb1347c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 23 19:53:52 2023 -0500
-
-    convert SocketStream code to namespace from quasi-namespace style
-
-commit 1fe594bc749e2ae8882b6be89b1845bc11b6a43f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 23 20:43:15 2023 -0500
-
-    big cleanups to (and mostly convert to namesapce from quasinamespace code) InternallySynchronizedInputStream, InternallySynchronizedOutputStream, and InternallySynchronizedInputOutputStream
-
-commit bda09722a8584712284dd8f630f2d715196e6ede
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 23 21:37:25 2023 -0500
-
-    replace quasinamespace FileInputStream/FileOutputStream with namespace version - sb nothing noticible different for users
-
-commit f0a33fffb03d39e5cece9e9303296b619410f2cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 23 21:54:33 2023 -0500
-
-    converted OpenSSLInputStream/OpenSSLOutputStream code to namespace from quasninamespace
-
-commit 3f6e28e5b87685600234d7bc674586ceae535d9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 23 22:54:19 2023 -0500
-
-    convert InputOutputStream from quasninamespace to namespace (Streams::InputOutputStream<byte>::Ptr -> Streams::InputOutputStream::Ptr<byte> for example)
-
-commit f22f2e6520091092e506a16568988ddf697c3063
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 10:00:32 2023 -0500
-
-    hopefully fixed typos due to FileInputStream change
-
-commit 892ce8b6292a455bbcc0c6a57a991d23446744e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 10:49:10 2023 -0500
-
-    replace quasinamespace OutputStream with namespace OutputStream (and so Streams::OutputStream<byte>::Ptr ->  Streams::OutputStream::Ptr<byte>
-
-commit 78ed73b269ee5e34ed396a5cc934facbc403bd87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 19:40:20 2023 -0500
-
-    Convert InputStream from quasi-namespace to namespace (Streams::InputStream<byte>::Ptr -> Streams::InputStream::Ptr<byte>)
-
-commit 16e451dcced82b787760d1dbca948229c2a0b288
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 22:23:52 2023 -0500
-
-    convert Stream<> from quasinamespace to namespace types (really never used directly  just internally so no user visible changes likely)
-
-commit 51aac45c83bf5f9df5f3cf800f848678a43ead74
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 22:58:36 2023 -0500
-
-    quite a few mostly intenral cleanups (and a few unintersting dpreations) for Stream class"
-
-commit 5491764f53db4b8f479e751a4b09980848f7bf42
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 24 23:26:10 2023 -0500
-
-    Stream class (and subclass) cleanups - Debug::UncheckedDynamicCast etc
-
-commit 994aa2c3c7c020e14166c55dd44717e4c4398193
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 12:43:29 2023 -0500
-
-    InputStream naming cleanups - not fully backward comatible
-
-commit b017aac597afffdfc3ecd1c72338ee6566fa1899
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 13:18:52 2023 -0500
-
-    More InputStream name cleanups/reactions
-
-commit 2302b487b073380dc7e7a41626677a1145976415
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 13:53:26 2023 -0500
-
-    naming and other various cleanups of OutputStream (not backward compatible for implementers of reps, but otherwise probably no notable changes)
-
-commit a8e54b26f5b40a679c7cae628132a84b93e7f6c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 16:36:48 2023 -0500
-
-    depreacated input/output streams GetOffsetToEndOfStream method, and rewrote a fwe places that used it
 
 commit 2e19b342e03036223cf5acb76e77c74f3401566d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -653,125 +511,11 @@ Date:   Mon Dec 25 17:37:50 2023 -0500
 
     use Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized in place of inheritance in a few more places
 
-commit 17b185040cfe660b47ddb542e377a46045d27028
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 18:45:56 2023 -0500
-
-    use aggregated AssertExternallySynchronizedMutex in place of inherited in a couple more places
-
-commit ad3556827310214616f5ba809146ec2f7fb9cc34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 19:02:11 2023 -0500
-
-    use aggregated AssertExternallySynchronizedMutex in place of inherited in a couple more places
-
-commit a645b2a80fc76944f0e979c16b521597300357d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 19:14:01 2023 -0500
-
-    use aggregated AssertExternallySynchronizedMutex in place of inherited in a couple more places
-
-commit 49683f839c7d051430edb2d5d13b250f2a922fc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 19:43:47 2023 -0500
-
-    Cleanup FileInputStream flags/enums
-
-commit df114860c4b3da67232c02ea3906c21277238105
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 22:51:31 2023 -0500
-
-    new Memory::InheritAndUseBlockAllocationIfAppropriate, and use in InternallySynchronizedInputStream so can re-enable UseBlockAllocationIfAppropriate use elesewhere
-
-commit 9cee587549053b8b0c9532a7e135ff0f41305736
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 25 23:14:03 2023 -0500
-
-    use InheritAndUseBlockAllocationIfAppropriate in other Streams/InternallySynchronized functions
-
-commit 9d514101009e75d7f252b93da00900168a23567c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 09:19:14 2023 -0500
-
-    Added otpions to treams::InternallySynchronized.. helpers - so can specify mutex type
-
-commit 247640b7f7c5e09510dc89591a0cff7ac2f7431c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 10:40:39 2023 -0500
-
-    lots of cleanups to Streams code - especially re-fixing alot of the InternallySynchronized support in various streams (more todo but did about 80%)
-
-commit eac829ec4941400777b600a999ec70cff13f0a1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 13:01:56 2023 -0500
-
-    cleanup SplitterOutputStream internallizesync support; various TextReader cleanups, and docs
-
-commit 235040065536fa76e2746e3d5940d0b1eaddc103
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 14:26:53 2023 -0500
-
-    Lots of cleanups/enhancements to InternallySyncronizedXXXStreams - support wrapping arbitrary streams not just reps (though more efficient todo reps)
-
-commit 88cd9611ec4fa6241a8d7dc0603b84d525e54130
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 15:51:06 2023 -0500
-
-    **not fully backward compatible**  - but big simplification to TextReader::New overloads - and docs
-
-commit 538334c81a64d7898a59b73b5e4a1b791f794cbe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 16:14:16 2023 -0500
-
-    More InternallySynchronized stream cleanups  including reinstating New (Execution::InternallySynchronized internallySynchronized for TextReader
-
-commit 9cbbaabbf20bec8c55d209e0b622227c53556973
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 26 17:31:05 2023 -0500
-
-    Simple Execution::InternallySynchronized support for TextWriter
-
-commit ea39c1b60561cbf462c58c92c7704c16c234f13d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 12:58:05 2023 -0500
-
-    deprecated ExternallyOwnedMemoryInputStream in favor of replacement ExternallyOwnedSpanInputStream
-
-commit 32b7f7db03ffa8e9e869eed94e912ff2c75902e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 14:51:36 2023 -0500
-
-    **incompatible change** but only affects users who implement InputStream reps; InputStream::Rep::Read() now takes span instead of start/end pointers (more to come probbaly)
-
-commit f3f16ae626bdda3b1c99dfba28fdab3ae179f503
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 18:10:33 2023 -0500
-
-    InputStream::IRep::Read now returns span (not backward compatible but not additionally so)
-
-commit 15cf0ed4f48d6733f2c6d34b135131575ddf34d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 19:47:50 2023 -0500
-
-    InputStream::Read(span) now returns span
-
-commit d8cad93db2c81b3b6501c58e647ddcdcc36a99b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 27 23:12:45 2023 -0500
-
-    Small progress cleaning up span usage in InputStream and docs
-
-commit 148771c76c55235b9fcd3034c3182aa740856918
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 28 14:48:45 2023 -0500
-
-    OutStream - Write now uses span (**not backward compatible change to rep**)
-
 commit 8f1f80e839fd54e0326df31b6d3e326e90ca42b5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 28 17:54:33 2023 -0500
 
-    Characters::CString::Length and Characters::GetEOL support IPossibleCharacterRepresentation; and used in cleanup/generalization of OutputStream::Ptr::WriteLn and related OutputStream::Write cleanups
+    Characters::CString::Length and Characters::GetEOL support IPossibleCharacterRepresentation; 
 
 commit 137caacfaf534c3d04544528767557c4d936a524
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -785,119 +529,11 @@ Date:   Fri Dec 29 00:39:50 2023 -0500
 
     dont fail saving locks i file files missing on github actions macos
 
-commit 96b33eab78863ef3a0f90eb9ccc12d32da40bc10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 29 11:42:01 2023 -0500
-
-    progress on New Streams EWouldBlock design - incomplete
-
-commit 8d08e430d5cd3f3701c2ecfba76a8fb94ce8b38f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 29 20:41:54 2023 -0500
-
-    INputStream::IRep::Read now returns otpional - where missing means (wrapper do throw EWouldBlock::kThe) - unlike wrapper ptr API (that just uses nullopt for EOF
-
-commit abd1701e612960b2538f9855b756fba0997c509b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 30 10:12:09 2023 -0500
-
-    progress on new Stream blcokign code - lose old rep API ReadNonBlocking - replaced with AvailableToRead; REP API NOT CLOSE to compatible. (as far as non-blcokgin conscerned); Ptr API pretty close to compatible, but not 100% ; 
-
-commit b179a1ce7a0e22f7fea93fdbd342316680e479f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 30 14:55:06 2023 -0500
-
-    a few small bugs with recent inputstream conversion work
-
-commit 53d2f7bf6e34bbb3a4bf623845a491178f9f239f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 31 10:02:51 2023 -0500
-
-    Lots more cleanups of old ReadNonBlocking code to new NoDataAvailableHandling ennum flag code - but still incomplete
-
-commit e2841fa75e79cf0e0712c1a2fd7936a686e17773
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 31 15:00:16 2023 -0500
-
-    more cleanups to inputstream nonblocking API
-
-commit e0929f23a7ddebebcc92f9d330a11522e51dc8c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 31 15:48:39 2023 -0500
-
-    more cleanups of Streams (BLOCKING) API
-
-commit b001e80ca0b250dddf5293bf16f9faeaf64fc634
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 31 19:11:20 2023 -0500
-
-    progress on zlib reader compression/decompress new ReadNonBlocking support
-
-commit 451252bb96c9d6fbd91ab51f6ce41ed063db38f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 31 21:26:46 2023 -0500
-
-    more cleanups of Compression/Zip/Reader code and other stream code
-
-commit aa361ae53b92340d7eaa1c37ef02bb06997556bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 1 14:27:12 2024 -0500
-
-    progress cleaning up new blocking code for TextReader - mostly there
-
-commit 6074b42e7739832d3bdfdd9dd894f00bbc0845ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 1 16:33:54 2024 -0500
-
-    maybe fixed/finished TextRader non-blocking IO code
-
-commit 50dd1755ea6c18c1bfcd26456b712d325f41c67d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 12:02:30 2024 -0500
-
-    complete ReadNonBlocking replacement for  Library/Sources/Stroika/Foundation/Streams/TextToByteReader.cpp
-
-commit 809af16230466074c3861b9a4f2f22539f994765
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 12:29:35 2024 -0500
-
-    cleanup a few Span support templates
-
-commit 9dc4f4c7bfaa512cd9a7b0be398863b48fe4e5d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 12:45:45 2024 -0500
-
-    renamed new Memory::ISpanT -> Memory::ISpan
-
-commit 5de620d8fe313e1f1270b54002c6366a34d412c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 2 13:18:04 2024 -0500
-
-    InternallySynchronized overload of InputSubStream::New ()
-
 commit 99da1a58ab8aa3c0e96bf84765336739a7f5bca2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 2 14:42:11 2024 -0500
 
     default to -j5 instead of -j8 cuz now getting (on windows) running out of memory errors too often - just change defaults so less aggressive
-
-commit 31f3509236c133834f1871e9cd9d5e6ab64eac53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 12:01:14 2024 -0500
-
-    Added InputStreamDelegationHelper helper
-
-commit 27ce205db736b1175d2424cd455216f61e01e937
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 3 15:19:42 2024 -0500
-
-    InputStream RemainingLength API added
-
-commit f58228bdb01332170d426dcf15cc73b3f6c81820
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 4 15:25:31 2024 -0500
-
-    new Streams_ToSeekableInputStream_ 
 
 commit 3607385ee5b57eaa7a548683ee9616ca186ee633
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -916,12 +552,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jan 5 11:05:03 2024 -0500
 
     adjust ScriptsLib/RunLocalWindowsDockerRegressionTests to -j5 instead of -j8 cuz run out of memory pretty often now
-
-commit 6c121fc481556628025aaddfa9754c17b5f3289b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 5 11:58:25 2024 -0500
-
-    Streams::RemainingLength now returns optional<SeekOffsetType>; fix warnings in ToSeekableInputStream; 
 
 commit 35fb8221d4f9f58d7318f4ee491f4aff5a98ff9d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -958,12 +588,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sun Jan 14 10:05:53 2024 -0500
 
     trim PkgConfigNames before check for '' before call to pkg-config in script
-
-commit f24a1712573cecb22489274d77887da1a2564437
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 16 14:56:05 2024 -0500
-
-    minor cleanups; and use as_bytes in place of Memory::SpanReInterpretCast<const byte> in a bunch of places and documented in description of SpanReInterpretCast that its better to use as_bytes where you can easily
 
 commit 74e26522a1a6edf88df1ad2873f6e56889db4d15
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1067,23 +691,11 @@ Date:   Tue Jan 30 18:28:24 2024 -0500
 
     Added Execution::CommandLine overloads
 
-commit d1f6c300e67730c962e948373e32397e5a998187
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 30 18:29:04 2024 -0500
-
-    tweaks to DOM::Node/etc code - GetRep () / PeekRep, and a couple extra regtests
-
 commit 69595dd887be4b3a7fc0e45a5de593f86c80e80d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 31 14:14:08 2024 -0500
 
     new StringPCTEncodedFlag enum and (optional) flag to several URI(and related) methods; Deprecated AsEncoded and AsDecoded functions in those classes (instead As<StringOrstring> (eEncoded or eDecoded)
-
-commit d40cf7ceeeb51915067a95679bc8d0a4e0759e17
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Jan 31 15:21:25 2024 -0500
-
-    adapt to stricter gcc compiler
 
 commit e2f2959b5315be1b5b9a2e063daa1536d3db51d6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1096,18 +708,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 31 18:00:06 2024 -0500
 
     more progress/fixes for URI::AsString_ (optional<StringPCTEncodedFlag>  - and docuemnt issue https://stroika.atlassian.net/browse/STK-1000
-
-commit bc321f9686256a88e4bc2ee5a3d8622027269216
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 2 10:11:19 2024 -0500
-
-    fixed bug with ReplaceRootElement not creating right namespace node
-
-commit e692b7bc64df964464ff5f8596f1741bbfd402f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 3 10:43:08 2024 -0500
-
-    Added MemoryStream::ToString() support
 
 commit 5fbab3b1bc6046d4254800bf853a652ec482d12d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1175,12 +775,6 @@ Date:   Wed Feb 7 20:01:14 2024 -0500
 
     lose Common::Identity, and replace with a differnt version of Common::Identity (identiy function not type mapper) - probably more useful and other can be simulated easily enuf with conditional_t<true,T,T>
 
-commit 67549edf224b9bb82a25bed8a18cff02ba6dd7ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 7 20:51:37 2024 -0500
-
-    Added StringCombiner; and related kDefaultStringCombiner
-
 commit f0a98bf0daaab9042aef67c7b79ca91ed4e9346b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 8 16:53:34 2024 -0500
@@ -1210,12 +804,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 9 10:07:36 2024 -0500
 
     experiment with apt-remove hack to save space on some github actions
-
-commit 49bb0ff213e876474ebb4e5bb29501f29e9e4e94
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Feb 10 10:53:17 2024 -0500
-
-    slight code re-org to avoid issue with clang++-14
 
 commit 8ff0db573f0624b4fd1d4971dddfe2f8d4fbb2a7
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1247,29 +835,11 @@ Date:   Sat Feb 10 17:44:47 2024 -0500
 
     use Configuration::IAnyOf in a couple more places to simplify
 
-commit 0446ebdeb86e248e72fbeb29eefef974afd32c73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 09:58:11 2024 -0500
-
-    Streams/iostream/InputStreamFromStdIStream implementation intenrally needed a few fOriginalStreamRef_.clear () calls cuz read past eof set failbit, and even if you seek back, it didn't get auto-cleared, so we threw (happened in case of a short seekable stream, like one byte/char, and wrapping TextReader that looked for BOM before reading text)
-
 commit d8f6427a234b55ff26cbfbad32e23acff8175ca1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 11 09:58:41 2024 -0500
 
     forward/using ReaderOptions::Algorithm::eStroikaNative/etc
-
-commit ada0afe40912efd3727aea8ab25b9cac107eecba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 09:59:38 2024 -0500
-
-    TextReader::New - use codeCvtFlags in more cases - like not seekable
-
-commit ced00e7d3aad988e5328f23587fcf20ee1f58269
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 11 10:00:21 2024 -0500
-
-    added regtest for IOStreamSeekBug
 
 commit 66ba61be50030b0bf17cc30827c151300a941424
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1408,7 +978,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 24 23:31:36 2024 -0500
 
     dockerfile -lose pull-base-image support
-
 
 
 #endif
