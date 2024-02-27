@@ -7,32 +7,30 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 3.0d5 {2024-02-28} {[diff](../../compare/v3.0d4...v3.0d5)}  **DRAFT RELNOTES**
 
+#### TLDR
+- Iterable::Map big improvement - concepts, performance, power
+- Streams no longer use quasi-namespace trick
+- Dramatically improved XML support (DOM, Schema, and XPath added, as well as libxml2 support)
+- googletest
+- Cleaned up alot with using concepts/requires
+- Improved clock/realtime clock support (Time::DurationSeconds replaced with use of chrono more directly).
 
-### WORKING ON DDRAFT v3.0d5 release notes
+#### Upgrade Notes (3.0d4 to 3.0d5)
 
-- (temporarily?) lose valgrind testing, cuz too slow (and sanitizers better cost-benefit)
+- Iterable::Map() - generally if you have templated arguments, probbaly just try deleting them and the defaults will do fine.
+   If not, then specify container as sole template argument, rather than mapped_type followed by container type
+- BIG streams changes - not backward compatible
+  - generally replace InputStream<byte>::Ptr with (or Character) with InputStream::Ptr<byte> (or Character). Same
+    for OutputStream. And same for SomeKindOfStream::New () - now needs template (of T) - parameter - like MemoryStream::New<byte> ()
+- big change to Time::Realtime code: deprecate Time::DurationSecondsType in favor of sometimes Time::DurationSeconds and sometimes Time::TimePointSeconds
+- due to new ASSUME_ATTRIBUTE macro, and experimental use of it in Assert/Require macros, some assert/require calls may need to be wrapped in #if qDebug
 
--- pre d5 relnotes hints
-
- - new section "Upgrade Notes" and there empahizze what you need todo to upgrade to this version from previous
-
- - here - include Iterable::Map() - generally if you have templated arguments, probbaly just try deleting them and the defaults will do fine.
-   If not, then specify container as sole template argument, rather than mapped_type followed by container type).
-
-- major changes:
-   Big change top Iterable::Map
-      - now uses concepts well and better deduction to automatically do the right thing in most cases,
-        and where you want/need to specify a resulting container type, do so (But Set for example overrides so it does right thing there - keeping compaerer etc).
-        And more efficent.
-        Only lazy if default Iterable<T> used.
-
-
-------------
+#### Change Details
 
 - Compilers supported
-  -     no longer support XCode 14 - since I dont have easy way to run/debug there now
-
+  - no longer support XCode 14 - since I dont have easy way to run/debug there now
 - BuildScripts
   - configure
     - replace old </PkgConfigLinkLineAppendages> with simpler PkgConfigNames (to fix libxml2 include issue)
@@ -43,7 +41,6 @@ especially those they need to be aware of when upgrading.
     - fixed minor array indexing bug in configure perl script
     - simplify LinkerArgs_LibPath configure - just store cmdline args in variable not actual path so dont need to do that magic in app
     - improved configure script on windows to print out warning if it finds multiple compiler/visual studio instances, and to pick slightly better between them
-
   - Docker Build Containers
     - Refactoring/options - tweak so builds smaller docker windows container - avoiding(???) issue with .github actions
       not having enuf disk space (so failing)
@@ -53,7 +50,6 @@ especially those they need to be aware of when upgrading.
       - docker build for windows compiler: tweaked and better documented source of --add lines in installation of Visual Studio
       - cleanup docker DOCKER_NETWORK hack/workaround in docker build makefile
       - use/define Dockerfile ARG USEWINSDK and docs, but not actual change yet
-
   - Makefile
     - improved docs and behavior of WRITE_PREPROCESSOR_OUTPUT makefile option
     - new make distclean in top level makefile
@@ -61,7 +57,6 @@ especially those they need to be aware of when upgrading.
     - tiny unused hack added to make default-configurations (DEFAULT_CONFIGURAITON_ADD2ALL)
     - changed 'regressiontest configurations' to by default include TEST_CONFIGURATIONS_ADD2ALL - so to include xerces
     - **new** LinkerArgs_StroikaDependentLibDependencies
-
   - Scripts
     - ApplyConfiguration
       - ApplyConfiguration sorts configurations by name now for .vscode - making it much easier to handle tons of configs in menu in vscode
@@ -72,24 +67,15 @@ especially those they need to be aware of when upgrading.
     - RegressionTests
       - touchup RegressionTests test code for counting failures to accomodate warning that has the word failure in it
       - fixed a few small issues with TOTAL_WARNINGS_EXPECTED and fFailConnectionIfSSLCertificateInvalid for raspberrypi
-
-
   - Skel
     - Small cleanups (makefiles)
-
   - IDE Support
     - Delete some no longer needed references to vs2k17/19
-
-
 - Documentation
   - Tons/Misc comments/todo/docs cleanups
   - Cleanup Code-Status.md settings (simplified enumeration) and re-reviewed all uses so more sensible
-
-
-
-
 - Library
-  - All/Misc
+  - General
     - new version of clang-format (17.0.3) with latest vis studio - so re-ran make-format-code
     - in many places, changed usage of is_same_v to same_as (cosmetic; shorter; more modern; uniform)
     - Moved many enum names into surrounding namespace with using, such as:
@@ -98,346 +84,326 @@ especially those they need to be aware of when upgrading.
     - experimented with __has_include instead of qHasFeature code, but decided BAD IDEA, cuz may want to disable stroika dependency
       on library even if it exists in system includes
     - Several enums that were naemd eDefault were renamed to eDEFAULT (**not backward comaptible but I think mostly on new stuff since v3 so probbaly not user noticible**)
+- Foundation
+  - Cache
+    - fix Cache::Stats_Basic so copyable
+    - redo lazy access to Mapping<> in CallerStalenessCache for special case of void KEY - since I now am experimenting with better validation of Mapping<> template parameters
+    - cleanups to LRUCache constructors (factory deduction approach), and similarly SyncrhonizedLRUCache
+    - Test8_NewLRUCacheConstructors_ in regtests
+    - better use of requires/concepts
+  - Characters
+    - IPossibleCharacterRepresentation
+    - Characters::CString::Length and Characters::GetEOL use concept IPossibleCharacterRepresentation instead of specializations
+    - LineEndings GetEOL can only be constexpr if c++ version >= c++23(constexpr)
+    - fixed SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag) serious bug - where default missing character not representable in the current locale codepage
+    - Character
+      - refinements to CTOR - more overloads - and more restrictive - and more carefuly about throws/checking on them - and documented
+    - ToString
+      - https://stroika.atlassian.net/browse/STK-566  Major Characters::ToString cleanup, including ToString (...elipsis) support, and cleanup use of templates in Private_ - ToStringDefaults, etc.
+      -  ToString() support for (some) chrono::duration and chrono time_point values (with any clock)
+      - Added Characters::UnoverloadedToString (some contexts appear to not work with ToString overloaded template - e.g. Iterable<>::Join)
+      - added IToString concept replacing deprecated has_ToString_v
+      - Draft of StringShorteningPreference support in ToString() code
+      - ToString() support (minimally) std::variant
+      - Use Configuration::IBoundedEnum concept and in Characters::ToString()
+    - FloatConversion
+      - improved Characters::FloatConversion code checking with concepts use (so better error reports, but no real changes)
+    - String
+      - Added String::Remove() overload
+      - fixed bug in String :: CTOR (utf8) code - if contained latin1 characters and ascii, but no non-latin1 characters; added regtest for this case, and fixed the bug (could be more efficient, but hopefully good enuf for now - wait ti I see in profiling)
+      - deprecated bool arg to String::LimitLength (replaced with enum) and used that enum in ToString code; 
+      - optimize String::ToUpperCase/ToLowerCase
+      - optimization of String EqualsComparer - for case of (String,basic_string_view<ASCII>) - COMMON case - so possibly helpful
+    - Added StringCombiner; and related kDefaultStringCombiner (for Iterable<>::Join)
+    - StringBuilder
+      - StringBuilder<OPTIONS>::ShrinkTo (size_t sz)
+      - experiment with StringBuilder having non-explicit String conversion op
+      - Experimental support for ToString implicitly in operator<< for StringBuilder; and a few test uses of simplified API
+  - Configuration
+    - Compiler Bug Defines
+      - Updated bug defines for _MSC_VER_2k22_17Pt8_
+      - Support _MSC_VER_2k22_17Pt9_
+      - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+      - qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy for clang
+      - qCompilerAndStdLib_template_template_auto_deduced_Buggy BWA
+      - workaround qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
+      - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy new bug workaround define and attempted bug workaround - testing
+      - New bug define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+      - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
+      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+      - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy BWA
+      - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA
+      - qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy BWA
+      - qCompilerAndStdLib_CompareOpReverse_Buggy BWA improved
+      - qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy BWA; 
+      - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy BWA
+      - qCompilerAndStdLib_CompareOpReverse_Buggy broken on clang++-16 too
+      - qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy GCC 11
+      - silence warning based on qCompilerAndStdLib_CompareOpReverse_Buggy for clang as well
+      - qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy bug define and possible workaround
+      - qCompilerAndStdLib_kDefaultToStringConverter_Buggy 
+      - qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy 
+      - qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy for clang
+      - Adjust qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy for clang++15
+      - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy for raspberry  pi tests
+      - lose unneeded qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
+      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+      - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define updated libversion# for
+      - qCompilerAndStdLib_CompareOpReverse_Buggy broken starting on gcc 13, so maybe really my bug after all
+      - workaround qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy in Test_Join
+    - Concepts
+      - new utility Configuration::IAnyOf concept; and used in a few places to test
+    - Endian
+      - simplify/generalize slightly the EndianConverter code (if constexpr and and concepts)
+    - Enums
+        - define Configuration::IBoundedEnum concept
+      - switched most use of Configuraiton::IOperatorEq IOperatorLtetc to using equality_comparable, three_way_comparable, etc and added those checks to Sequence<> opreator==/<=> template so only defined if subselts defined for too - not 100% working - one queer case
+  - Containers
+    - All
+      - Added requires () on default CTOR for various container archtypes, that require less, or equal_to etc to be defined, so we hopefully get better compiler error messages (otehrwise should have no effect)
+      - template 'overloads' for Map in SortedSet/Sequence - just forwarding - but to change default template produced
+    - Adapters
+      - Adapters::Adder greatly simplified using concepts - now works more generally, and without all the dependencies it had on other modules; used it now to siplify adding stuff in Iterable<>
+    - STL
+      - mark Containers::STL::Make as deprecated
+    - KeyedCollection
+      - Added CTOR overload
+    - Mapping
+      - new draft Mapping_IKey and Mapping_IMappedValue concepts (so give better error messages in Mapping template instantiation)
+      - Document CANNOT use Mapping_IKey Mapping_IMappedValue as because typename constraints dont interact well wtih templates on incomplete types (Like Mapping<String,VariantValue> in VariantValue); so instead use static_assert which appears to work fine with these incomplete types
+    - Set
+      - Set<>::insert overloads / tweaks to make more STL drop-in-replacement compatible
+  - Common
+    - new utility Common::VariantIndex for extracting info from std::variant
+  - Cryptography
+    - Encoding
+      - renamed to Base64::Decode : deprecated DecodeBase64 (span<const char> s), similarly Base64::Encode
+  - DataExchange
+    - new RecordNotFoundException class
+    - fixed bug with InternetMediaTypeRegistry::Get ().IsA and added related regression tests and docs
+    - StructuredStreamEvents
+      - **incompatible change** to SAXReader/StructuredStreamEvents::IConsumer - added Mapping<StructuredStreamEvents::Name, String> attributes argument to StartElement () callback, and no longer generate Start/End/TextInside calls for each attribute (though ObjectReader still does this)
+    - ObjectVariantMapper
+      - Added DurationSeconds support to ObjectVariantMapper::MakeCommonSerializer
+    - VariantValue
+      - trivial tweak to VariantValue::operator bool ()
+      - Tons of VariantValue cleanups - but MOSTLY - adding rquires constraint to As<> method instead of using template specailization (so get better compiler error messages and executable docs for what is allowed)
+    - XML
+      - **incompatible change** - Massive change (somewhat backward compatible, but mostly not) - very little the same
+      - New XML::{Provider,DOM,Namespace,XPath, Schema} etc support
+      - XML::SAXParse deprecated overload taking context reference, and instead take context ptr
+      - Targets either Xerces or libxml2
+      - libxml2 now the default because IT supports XPath in the DOM code (so does Xerces but much weaker in Xerces)
+      - exposed qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations since slow, and made sure we actually check on destruction no leak! if you do all that work
+      - New regtests for new XML (esp schema and DOM and XPath) APIs
+      - new qStroika_Foundation_DataExchange_XML_SupportDOM ; qStroika_Foundation_DataExchange_XML_SupportSchema; qStroika_Foundation_DataExchange_XML_SupportParsing
+      - Added new ResolverPtr mechanism to replace SourceComponents
+  - Debug
+    - Assertions
+      - new _ASSUME_ATTRIBUTE_ macro, and experimental use of it in Assert/Require macros
+      - split Assert into Assert (procedure) and AssertExpression for expressions; and sample for Require/RequireExpression and Ensure/EnsureExpression; for the PROCEDURE versions - in RELEASE BUILDS - add [[assume(C)]] where possible (RISKY, INTERESTING, BUT PROBBABLY HELPFUL FOR PERFORMANCE)
+      - in release builds, Assert(ETC)NotReached() calls std::unreachable () if available
+    - AssertExternallySynchronizedMutex
+      - renamed macro qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled -> qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+      - use Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized in place of inheritance in a few more places
 
-- Cache
-  - fix Cache::Stats_Basic so copyable
-  - redo lazy access to Mapping<> in CallerStalenessCache for special case of void KEY - since I now am experimenting with better validation of Mapping<> template parameters
-  - cleanups to LRUCache constructors (factory deduction approach), and similarly SyncrhonizedLRUCache
-  - Test8_NewLRUCacheConstructors_ in regtests
-  - better use of requires/concepts
+    - Sanitizers
+      - tried memory sanitizer - a boondoggle - not worth trying for now...
+      - fixed docs on Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS usage, and used in qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA for Debug::Private_::Emitter::DoEmit_ RASPI issue
+    - Visualizations
+      - new module Foundation::Debug::Visualizations to fix visual studio .natvis problems; #include Debug/Visualizations.h to get visualizations in debugger from now on
+      - natvis major improvement for Stroika strings - still not great but at least OK now
+      - early draft Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Frameworks-Debugger-Template.natvis support
+  - Execution
+    - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
+    - CommandLine
+      - Added Execution::CommandLine overloads
+      - Added overloads for Execution::ParseCommandLine
+    - ModuleGetterSetter
+      - Docs and new experimental operator-> for ModuleGetterSetter
+      - ModuleGetterSetter<T, IMPL>::Get () const now
+    - WaitForIOReady
+      - fix to race (tsan found) in WaitForIOReady
+    - ProgressMonitor
+      - big improvements (just in time to possibly deprecate cuz really not that useful anymore).
+      - Added ProgressMonitor::SetCurrentTaskInfo () method
+      - ProgressMonitor: SetCurrentProgressAndThrowIfCanceled depreacted - use SetProgress, and update docs / code so SetProcess does Throw
+      - use Syncronized in ProgressMonitor code and more minor cleanups/asserts
+      - optional (default on) feautre to restore taskinfo on DTOR, and keep task callbacks by reference so works better with mutable lambdas
+      - Fixed Updater::ThrowIfCanceled to call Thread::CheckForInterruption ()
+      - ChangedCallbackType cannot use noexcept with std::function
+    - Thread
+      - **not backward compatible** : changed rules for thread::Ptr::Abort - no longer legal to call with NotYetStarted(); and make START promise/ensure state != notyetstarted when it returns. Removed a few regtests (or adjust them) to reflect new rules and this fixes assert failre very sporadic in service test (i hope); - test more and more cleanups related to this
+      - redid alot of the Thread start / abort logic so we now support RegressionTest25_AbortNotYetStartedThread_ again and re-enabled that test; 
+      - big simplification of Thread rep internals - removed fStatus_ - and just use values in various events: RISKY - but seems to work
+      - Minor cleanusp to recent Thread::Ptr::Rep_::PeekStatusForToString_ changes - fixed issue(s) on clang++15
+      - lose Thread::Status::eNull - status for the rep, not the Ptr
+    - ThreadPool
+      - deprecated CTOR (unsigned int nThreads, const optional<String>& threadPoolName) and replace with ThreadPool::Options CTOR; 
+      - add new QMax settable option and respect it in AddTask method - either blocking or waiting (poorly) or throwing;
+    - Minor fix (<= not <) in ThrowTimeoutExceptionAfter, and several other 'throw' utility tweaks to use perfect forwarding
+    - Synchronized
+      - workaround/avoid probably real serious bug https://stroika.atlassian.net/browse/STK-700
+      - opeartor== and operator<=> respect equality_comparable<T> three_way_comparable<T>
+  - IO
+    - Filesystem
+      - AppTempFileManager
+        - a few cleanups to TempFile code - mostly make windows open code use same code as UNIX and filesystem::perms::all instead of POSIX gorp
+        - Another attempt at CreateFile for GetTempFile code
+      -  MemoryMappedFileReader
+        - span<byte> support
+        - improved error message in CTOR (activty to record opening what file)
+    - Network
+      - URI
+        - new StringPCTEncodedFlag enum and (optional) flag to several URI(and related) methods; Deprecated AsEncoded and AsDecoded functions in those classes (instead As<StringOrstring> (eEncoded or eDecoded)
+        - changed the StringPCTEncodedFlag parameters to As<'stringish'> functions to optional, so they can each vary based on 'T' - as appropriate (documented how they all default but mostly - if you care - dont use the default - specify
+        - document issue https://stroika.atlassian.net/browse/STK-1000 - corner case issues with parsing/decoding StringPCTEncodedFlag
+  - Math
+    - Math utilities use more concepts for better error reporting
+  - Memory
+    - BLOB
+      - deprecated BLOB::Hex in favor or better name and improved API BLOB::FromHex; Same for BLOB::Raw -> BLOB::FromRaw, and cleanups to said methods
+      - use BlockAllocation in BLOB code for its private binary stream
+      - better factoring and requires errreporting for BLOB::As() and deprecated BLOB::As/1
+      - Memory::BLOB now directly supports FromBase64/AsBase64; and better templates for this and Hex support
+      -  BLOB::Repeat () optimizaiton
+      - lose lots of overloads taking Memory::BLOB where we already took InputStream::Ptr - as redundant (mostly); left in a few were was perofrmance tweak (and documented as such); and forced adding a couple explicit Memory::BLOB ctors in calls - but for hte better as making more clear the behavior
+      - cleanup regtests for blob and cleanup output of BLOB ToString() for ascii case
+      - experimental addition of  /*explicit*/ operator Streams::InputStream<byte>::Ptr () const; 
+    - BlockAllocation
+      - **not backward compatible**, but rarely referenced directly: qAllowBlockAllocation -> qStroika_Foundation_Memory_PreferBlockAllocation
+      - fixed small bug in BlockAllocator for when qStroika_Foundation_Memory_PreferBlockAllocation disabled
+      - new Memory::InheritAndUseBlockAllocationIfAppropriate
 
-- Characters
-  - IPossibleCharacterRepresentation
-  - Characters::CString::Length and Characters::GetEOL use concept IPossibleCharacterRepresentation instead of specializations
-  - LineEndings GetEOL can only be constexpr if c++ version >= c++23(constexpr)
-  - fixed SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag) serious bug - where default missing character not representable in the current locale codepage
-  - Character
-    - refinements to CTOR - more overloads - and more restrictive - and more carefuly about throws/checking on them - and documented
-  - ToString
-    - https://stroika.atlassian.net/browse/STK-566  Major Characters::ToString cleanup, including ToString (...elipsis) support, and cleanup use of templates in Private_ - ToStringDefaults, etc.
-    -  ToString() support for (some) chrono::duration and chrono time_point values (with any clock)
-    - Added Characters::UnoverloadedToString (some contexts appear to not work with ToString overloaded template - e.g. Iterable<>::Join)
-    - added IToString concept replacing deprecated has_ToString_v
-    - Draft of StringShorteningPreference support in ToString() code
-    - ToString() support (minimally) std::variant
-    - Use Configuration::IBoundedEnum concept and in Characters::ToString()
-  - FloatConversion
-    - improved Characters::FloatConversion code checking with concepts use (so better error reports, but no real changes)
-  - String
-    - Added String::Remove() overload
-    - fixed bug in String :: CTOR (utf8) code - if contained latin1 characters and ascii, but no non-latin1 characters; added regtest for this case, and fixed the bug (could be more efficient, but hopefully good enuf for now - wait ti I see in profiling)
-    - deprecated bool arg to String::LimitLength (replaced with enum) and used that enum in ToString code; 
-    - optimize String::ToUpperCase/ToLowerCase
-    - optimization of String EqualsComparer - for case of (String,basic_string_view<ASCII>) - COMMON case - so possibly helpful
-  - Added StringCombiner; and related kDefaultStringCombiner (for Iterable<>::Join)
-  - StringBuilder
-    - StringBuilder<OPTIONS>::ShrinkTo (size_t sz)
-    - experiment with StringBuilder having non-explicit String conversion op
-    - Experimental support for ToString implicitly in operator<< for StringBuilder; and a few test uses of simplified API
+    - InlineBuffer
+      - minor cleanup to InlineBuffer<>::reserve() - docs, simplificiation, and hopefully avoids warning in g++-12 cross-compile for raspi/arm
+    - Optional
+      - Added new ValueOfOrThrow
+    - Span
+      - fixed template args to SpanReInterpretCast - must have template arg for FROM_EXTENT to work with static arrays
+      - cleanup a few Span support templates
+      - renamed new Memory::ISpanT -> Memory::ISpan
+      - use as_bytes in place of Memory::SpanReInterpretCast<const byte> in a bunch of places and documented in description of SpanReInterpretCast that its better to use as_bytes where you can easily
+  - Streams
+    - **not backward compatible or even close - HUGE CHANGE** -  supports span, and deprecats iterator New methods, loses quasi-namespace code 
+      (so InputStream<byte>::Ptr becomes InputStream::Ptr<byte> - ETC - that is biggest change users will face)
+    - **not backward compatible** lose _SharedIRep and use shared_ptr directly, and a few related changes - losing _mkPtr in most 'streams ptr' subtypes
+    - use concepts/requires in many methods, types, constructors, factories etc, to give better error messages (at time of call not link errors) instead of template specialization
+    - **incompatible change** updated ExternallyOwnedMemoryInputStream, SplitterOutputStream, and ... to use namespace, not quasi-namespace style; generally all that is needed to upgrade is to rewrite ExternallyOwnedMemoryInputStream<byte>::New () as ExternallyOwnedMemoryInputStream::New<byte> ()
+    -  use new Memory::InheritAndUseBlockAllocationIfAppropriate, and use in InternallySynchronizedInputStream so can re-enable UseBlockAllocationIfAppropriate
+    - InputStream
+      - **incompatible change** but only affects users who implement InputStream reps; InputStream::Rep::Read() now takes span instead of start/end pointers and now returns span (more to come probbaly)
+      - Lots more cleanups of old ReadNonBlocking code to new NoDataAvailableHandling enum flag code
+      - progress on New Streams EWouldBlock design - incomplete
+      - INputStream::IRep::Read now returns otpional - where missing means (wrapper do throw EWouldBlock::kThe) - unlike wrapper ptr API (that just uses nullopt for EOF
+      - progress on new Stream blcokign code - lose old rep API ReadNonBlocking - replaced with AvailableToRead; REP API NOT CLOSE to compatible. (as far as non-blcokgin conscerned); Ptr API pretty close to but not 100% ; 
+      - InputStream RemainingLength API added
+    - OutputStream
+      - Write now uses span (**not backward compatible change to rep**)
+      - cleanup/generalization of OutputStream::Ptr::WriteLn and related OutputStream::Write cleanups (concepts/requires)
+    - InputOutputStream
+      - depreacated input/output streams GetOffsetToEndOfStream method, and rewrote a fwe places that used it
+    - InputSubStream
+      - InternallySynchronized overload of InputSubStream::New ()
+    - iostream
+      - added regtest for IOStreamSeekBug and fixed bug
+        - implementation intenrally needed a few fOriginalStreamRef_.clear () calls cuz read past eof set failbit, and even if you seek back, it didn't get auto-cleared, so we threw (happened in case of a short seekable stream, like one byte/char, and wrapping TextReader that looked for BOM before reading text)
+    - TextReader
+      - refactored TextReader::IterableAdapterStreamRep_ private impl into new public module Streams::IterableToInputStream - and generalized to trnaslate any Iterable<T> to InputStream<T>.
+      - **not fully backward compatible**  - but big simplification to TextReader::New overloads - and docs
+      - TextReader::New - use codeCvtFlags in more cases - like not seekable
+    - TextWriter
+    - TextToByteReader
+      - Streams::TextToByteReader uses new IterableToInputStream::New to add Iterable<Character> overload to New; and switched to new namespace style for this streams class
+    - SharedMemoryStream
+      - SharedMemoryStream no longer accepts overloads with InternallySynchronized parameter - since always internallyschrhonized
+    
+    - InternallySyncrhonizedXXXStream: 
+      - big cleanups to (and mostly convert to namesapce from quasinamespace code) InternallySynchronizedInputStream, InternallySynchronizedOutputStream, and InternallySynchronizedInputOutputStream
 
-- Configuration
-  - Compiler Bug Defines
-    - Updated bug defines for _MSC_VER_2k22_17Pt8_
-    - Support _MSC_VER_2k22_17Pt9_
-    - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
-    - qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy for clang
-    - qCompilerAndStdLib_template_template_auto_deduced_Buggy BWA
-    - workaround qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
-    - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy new bug workaround define and attempted bug workaround - testing
-    - New bug define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
-    - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
-    - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-    - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy BWA
-    - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA
-    - qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy BWA
-    - qCompilerAndStdLib_CompareOpReverse_Buggy BWA improved
-    - qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy BWA; 
-    - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy BWA
-    - qCompilerAndStdLib_CompareOpReverse_Buggy broken on clang++-16 too
-    - qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy GCC 11
-    - silence warning based on qCompilerAndStdLib_CompareOpReverse_Buggy for clang as well
-    - qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy bug define and possible workaround
-    - qCompilerAndStdLib_kDefaultToStringConverter_Buggy 
-    - qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy 
-    - qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy for clang
-    - Adjust qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy for clang++15
-    - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy for raspberry  pi tests
-    - lose unneeded qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-    - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define updated libversion# for
-    - qCompilerAndStdLib_CompareOpReverse_Buggy broken starting on gcc 13, so maybe really my bug after all
-    - workaround qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy in Test_Join
-  - Concepts
-    - new utility Configuration::IAnyOf concept; and used in a few places to test
-  - Endian
-    - simplify/generalize slightly the EndianConverter code (if constexpr and and concepts)
-- Enums
-    - define Configuration::IBoundedEnum concept
-  - switched most use of Configuraiton::IOperatorEq IOperatorLtetc to using equality_comparable, three_way_comparable, etc and added those checks to Sequence<> opreator==/<=> template so only defined if subselts defined for too - not 100% working - one queer case
+    - OpenSSLInputStream/OpenSSLOutputStream
+    - FileInputStream/FileOutputStream
+    - SplitterOutputStream
+    - new ExternallyOwnedSpanInputStream : replacing deprecated ExternallyOwnedMemoryInputStream
 
-- Containers
-  - All
-    - Added requires () on default CTOR for various container archtypes, that require less, or equal_to etc to be defined, so we hopefully get better compiler error messages (otehrwise should have no effect)
-    - template 'overloads' for Map in SortedSet/Sequence - just forwarding - but to change default template produced
-  - Adapters
-    - Adapters::Adder greatly simplified using concepts - now works more generally, and without all the dependencies it had on other modules; used it now to siplify adding stuff in Iterable<>
-  - STL
-    - mark Containers::STL::Make as deprecated
-  - KeyedCollection
-    - Added CTOR overload
-  - Mapping
-    - new draft Mapping_IKey and Mapping_IMappedValue concepts (so give better error messages in Mapping template instantiation)
-    - Document CANNOT use Mapping_IKey Mapping_IMappedValue as because typename constraints dont interact well wtih templates on incomplete types (Like Mapping<String,VariantValue> in VariantValue); so instead use static_assert which appears to work fine with these incomplete types
-  - Set
-    - Set<>::insert overloads / tweaks to make more STL drop-in-replacement compatible
+    - progress on zlib reader compression/decompress new ReadNonBlocking support
+    - more cleanups of Compression/Zip/Reader code and other stream code
+    - Added InputStreamDelegationHelper helper
+    - new Streams_ToSeekableInputStream_ 
+    - FileInputStream
+      -  Cleanup FileInputStream flags/enums
+    - MemoryStream
+      - Added MemoryStream::ToString() support
+  - Time
+    - **not backward compatible** - big change to Time::Realtime code: deprecate Time::DurationSecondsType in favor of sometimes Time::DurationSeconds and sometimes Time::TimePointSeconds
+      - mostly this means places where you used to specify a timeout, just add an 's' to the end (3.0 becomes 3.0s).
+        Also- when treating the duration as a float, you need to say .count (). And when treating a TimePointSeconds as a float
+        In process of converting, fixed a couple bugs due to confusion beteween teh float being timepoint vs duration.
+    - new experimental Time::FromAppStartRelative and ToAppStartRelative
+    - New Configuration concepts support  - IDuration and ITimePoint
+    - renamed Time::kInfinite to Time::kInfinity
+    - duration now a literal type (constexpr dtor was missing); so now can make Duration::min/max and related duration range stuff constexpr
+    - defined Traversal::RangeTraits::Default<> template specializations for Time::DurationSeconds and Time::TimePointSeconds so ranges work better with these types
+    - new Time::Pin2SafeSeconds () utility and used in a couple places to avoid ubsan failures
+    - DateTime
+      - big change to DateTime 'chrono::time_point' and 'tickcount' support; now directly support arbitrary time_point in DateTime CTOR, and as template for DateTime::As<> and rewrote To/From TickCount to use these
+      - Added DateTime::ParseQuietly () overload with list of formatPatterns and default kDefaultParseFormats
+      - CTOR minor cleanups - made a few CTORs explicit, and lost one (mostly) redundant one. Only incompat this introduces is maybe sometimes will need expplicit DateTime{} around Date{} objects; and a few other minor cleanups to tests, quiet warnings etc
+    - Date
+      - Added Date::Now() function (based on DateTime::Now()) and operator+/- for Date which handles duration (rounding)
+    - Clocks
+      - clock_cast extension of std::chrono::clock_cast, plus add (Stroika) Range support
+      - AppStartZeroedClock
+        define new template AppStartZeroedClock<> - and use that in place of (very recent add/removed) ToAppStartRelative/FromAppStartRelative using this clock type with clock_cast>?
+      - defined new RealTimeClock type alais for steack_clock (doc used for TickCount); 
+      - new Time::DisplayedRealtimeClock (and use);
+  - Traversal
+    - Iterable
+      - declare Iterable<>::iterator / const_iterator for easier STL interoperability
 
-- Common
-  - new utility Common::VariantIndex for extracting info from std::variant
-
-- Cryptography
-  - Encoding
-    - renamed to Base64::Decode : deprecated DecodeBase64 (span<const char> s), similarly Base64::Encode
-
-- DataExchange
-  - new RecordNotFoundException class
-  - fixed bug with InternetMediaTypeRegistry::Get ().IsA and added related regression tests and docs
-  - StructuredStreamEvents
-    - **incompatible change** to SAXReader/StructuredStreamEvents::IConsumer - added Mapping<StructuredStreamEvents::Name, String> attributes argument to StartElement () callback, and no longer generate Start/End/TextInside calls for each attribute (though ObjectReader still does this)
-  - ObjectVariantMapper
-    - Added DurationSeconds support to ObjectVariantMapper::MakeCommonSerializer
-  - VariantValue
-    - trivial tweak to VariantValue::operator bool ()
-    - Tons of VariantValue cleanups - but MOSTLY - adding rquires constraint to As<> method instead of using template specailization (so get better compiler error messages and executable docs for what is allowed)
-
-  - XML
-    - **incompatible change** - Massive change (somewhat backward compatible, but mostly not) - very little the same
-    - New XML::{Provider,DOM,Namespace,XPath, Schema} etc support
-    - XML::SAXParse deprecated overload taking context reference, and instead take context ptr
-    - Targets either Xerces or libxml2
-    - libxml2 now the default because IT supports XPath in the DOM code (so does Xerces but much weaker in Xerces)
-    - exposed qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations since slow, and made sure we actually check on destruction no leak! if you do all that work
-    - New regtests for new XML (esp schema and DOM and XPath) APIs
-    - new qStroika_Foundation_DataExchange_XML_SupportDOM ; qStroika_Foundation_DataExchange_XML_SupportSchema; qStroika_Foundation_DataExchange_XML_SupportParsing
-    - Added new ResolverPtr mechanism to replace SourceComponents
-
-- Debug
-  - Assertions
-    - new _ASSUME_ATTRIBUTE_ macro, and experimental use of it in Assert/Require macros
-    - split Assert into Assert (procedure) and AssertExpression for expressions; and sample for Require/RequireExpression and Ensure/EnsureExpression; for the PROCEDURE versions - in RELEASE BUILDS - add [[assume(C)]] where possible (RISKY, INTERESTING, BUT PROBBABLY HELPFUL FOR PERFORMANCE)
-    - in release builds, Assert(ETC)NotReached() calls std::unreachable () if available
-  - AssertExternallySynchronizedMutex
-    - renamed macro qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled -> qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-    - use Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized in place of inheritance in a few more places
-
-  - Sanitizers
-    - tried memory sanitizer - a boondoggle - not worth trying for now...
-    - fixed docs on Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS usage, and used in qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA for Debug::Private_::Emitter::DoEmit_ RASPI issue
-  - Visualizations
-    - new module Foundation::Debug::Visualizations to fix visual studio .natvis problems; #include Debug/Visualizations.h to get visualizations in debugger from now on
-    - natvis major improvement for Stroika strings - still not great but at least OK now
-    - early draft Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Frameworks-Debugger-Template.natvis support
-- Execution
-  - Execution/Resource/Accessor and Manager use span<> (***not backward compatible but rarely if ever used***)
-  - CommandLine
-    - Added Execution::CommandLine overloads
-    - Added overloads for Execution::ParseCommandLine
-  - ModuleGetterSetter
-    - Docs and new experimental operator-> for ModuleGetterSetter
-    - ModuleGetterSetter<T, IMPL>::Get () const now
-  - WaitForIOReady
-    - fix to race (tsan found) in WaitForIOReady
-  - ProgressMonitor
-    - big improvements (just in time to possibly deprecate cuz really not that useful anymore).
-    - Added ProgressMonitor::SetCurrentTaskInfo () method
-    - ProgressMonitor: SetCurrentProgressAndThrowIfCanceled depreacted - use SetProgress, and update docs / code so SetProcess does Throw
-    - use Syncronized in ProgressMonitor code and more minor cleanups/asserts
-    - optional (default on) feautre to restore taskinfo on DTOR, and keep task callbacks by reference so works better with mutable lambdas
-    - Fixed Updater::ThrowIfCanceled to call Thread::CheckForInterruption ()
-    - ChangedCallbackType cannot use noexcept with std::function
-  - Thread
-    - **not backward compatible** : changed rules for thread::Ptr::Abort - no longer legal to call with NotYetStarted(); and make START promise/ensure state != notyetstarted when it returns. Removed a few regtests (or adjust them) to reflect new rules and this fixes assert failre very sporadic in service test (i hope); - test more and more cleanups related to this
-    - redid alot of the Thread start / abort logic so we now support RegressionTest25_AbortNotYetStartedThread_ again and re-enabled that test; 
-    - big simplification of Thread rep internals - removed fStatus_ - and just use values in various events: RISKY - but seems to work
-    - Minor cleanusp to recent Thread::Ptr::Rep_::PeekStatusForToString_ changes - fixed issue(s) on clang++15
-    - lose Thread::Status::eNull - status for the rep, not the Ptr
-  - ThreadPool
-    - deprecated CTOR (unsigned int nThreads, const optional<String>& threadPoolName) and replace with ThreadPool::Options CTOR; 
-    - add new QMax settable option and respect it in AddTask method - either blocking or waiting (poorly) or throwing;
-  - Minor fix (<= not <) in ThrowTimeoutExceptionAfter, and several other 'throw' utility tweaks to use perfect forwarding
-  - Synchronized
-    - workaround/avoid probably real serious bug https://stroika.atlassian.net/browse/STK-700
-    - opeartor== and operator<=> respect equality_comparable<T> three_way_comparable<T>
-
-- IO
-  - Filesystem
-    - AppTempFileManager
-      - a few cleanups to TempFile code - mostly make windows open code use same code as UNIX and filesystem::perms::all instead of POSIX gorp
-      - Another attempt at CreateFile for GetTempFile code
-    -  MemoryMappedFileReader
-      - span<byte> support
-      - improved error message in CTOR (activty to record opening what file)
-  - Network
-    - URI
-      - new StringPCTEncodedFlag enum and (optional) flag to several URI(and related) methods; Deprecated AsEncoded and AsDecoded functions in those classes (instead As<StringOrstring> (eEncoded or eDecoded)
-      - changed the StringPCTEncodedFlag parameters to As<'stringish'> functions to optional, so they can each vary based on 'T' - as appropriate (documented how they all default but mostly - if you care - dont use the default - specify
-      - document issue https://stroika.atlassian.net/browse/STK-1000 - corner case issues with parsing/decoding StringPCTEncodedFlag
-
-- Math
-  - Math utilities use more concepts for better error reporting
-
-- Memory
-  - BLOB
-    - deprecated BLOB::Hex in favor or better name and improved API BLOB::FromHex; Same for BLOB::Raw -> BLOB::FromRaw, and cleanups to said methods
-    - use BlockAllocation in BLOB code for its private binary stream
-    - better factoring and requires errreporting for BLOB::As() and deprecated BLOB::As/1
-    - Memory::BLOB now directly supports FromBase64/AsBase64; and better templates for this and Hex support
-    -  BLOB::Repeat () optimizaiton
-    - lose lots of overloads taking Memory::BLOB where we already took InputStream::Ptr - as redundant (mostly); left in a few were was perofrmance tweak (and documented as such); and forced adding a couple explicit Memory::BLOB ctors in calls - but for hte better as making more clear the behavior
-    - cleanup regtests for blob and cleanup output of BLOB ToString() for ascii case
-    - experimental addition of  /*explicit*/ operator Streams::InputStream<byte>::Ptr () const; 
-  - BlockAllocation
-    - **not backward compatible**, but rarely referenced directly: qAllowBlockAllocation -> qStroika_Foundation_Memory_PreferBlockAllocation
-    - fixed small bug in BlockAllocator for when qStroika_Foundation_Memory_PreferBlockAllocation disabled
-    - new Memory::InheritAndUseBlockAllocationIfAppropriate
-
-  - InlineBuffer
-    - minor cleanup to InlineBuffer<>::reserve() - docs, simplificiation, and hopefully avoids warning in g++-12 cross-compile for raspi/arm
-  - Optional
-    - Added new ValueOfOrThrow
-  - Span
-    - fixed template args to SpanReInterpretCast - must have template arg for FROM_EXTENT to work with static arrays
-    - cleanup a few Span support templates
-    - renamed new Memory::ISpanT -> Memory::ISpan
-    - use as_bytes in place of Memory::SpanReInterpretCast<const byte> in a bunch of places and documented in description of SpanReInterpretCast that its better to use as_bytes where you can easily
-
-
-- Streams
-   - **not backward compatible or even close - HUGE CHANGE** -  supports span, and deprecats iterator New methods, loses quasi-namespace code 
-     (so InputStream<byte>::Ptr becomes InputStream::Ptr<byte> - ETC - that is biggest change users will face)
-   - **not backward compatible** lose _SharedIRep and use shared_ptr directly, and a few related changes - losing _mkPtr in most 'streams ptr' subtypes
-   - use concepts/requires in many methods, types, constructors, factories etc, to give better error messages (at time of call not link errors) instead of template specialization
-   - **incompatible change** updated ExternallyOwnedMemoryInputStream, SplitterOutputStream, and ... to use namespace, not quasi-namespace style; generally all that is needed to upgrade is to rewrite ExternallyOwnedMemoryInputStream<byte>::New () as ExternallyOwnedMemoryInputStream::New<byte> ()
-   -  use new Memory::InheritAndUseBlockAllocationIfAppropriate, and use in InternallySynchronizedInputStream so can re-enable UseBlockAllocationIfAppropriate
-  - InputStream
-    - **incompatible change** but only affects users who implement InputStream reps; InputStream::Rep::Read() now takes span instead of start/end pointers and now returns span (more to come probbaly)
-    - Lots more cleanups of old ReadNonBlocking code to new NoDataAvailableHandling enum flag code
-    - progress on New Streams EWouldBlock design - incomplete
-    - INputStream::IRep::Read now returns otpional - where missing means (wrapper do throw EWouldBlock::kThe) - unlike wrapper ptr API (that just uses nullopt for EOF
-    - progress on new Stream blcokign code - lose old rep API ReadNonBlocking - replaced with AvailableToRead; REP API NOT CLOSE to compatible. (as far as non-blcokgin conscerned); Ptr API pretty close to but not 100% ; 
-    - InputStream RemainingLength API added
-  - OutputStream
-    - Write now uses span (**not backward compatible change to rep**)
-    - cleanup/generalization of OutputStream::Ptr::WriteLn and related OutputStream::Write cleanups (concepts/requires)
-  - InputOutputStream
-    - depreacated input/output streams GetOffsetToEndOfStream method, and rewrote a fwe places that used it
-  - InputSubStream
-    - InternallySynchronized overload of InputSubStream::New ()
-  - iostream
-    - added regtest for IOStreamSeekBug and fixed bug
-      - implementation intenrally needed a few fOriginalStreamRef_.clear () calls cuz read past eof set failbit, and even if you seek back, it didn't get auto-cleared, so we threw (happened in case of a short seekable stream, like one byte/char, and wrapping TextReader that looked for BOM before reading text)
-  - TextReader
-    - refactored TextReader::IterableAdapterStreamRep_ private impl into new public module Streams::IterableToInputStream - and generalized to trnaslate any Iterable<T> to InputStream<T>.
-    - **not fully backward compatible**  - but big simplification to TextReader::New overloads - and docs
-    - TextReader::New - use codeCvtFlags in more cases - like not seekable
-  - TextWriter
-  - TextToByteReader
-    - Streams::TextToByteReader uses new IterableToInputStream::New to add Iterable<Character> overload to New; and switched to new namespace style for this streams class
-  - SharedMemoryStream
-    - SharedMemoryStream no longer accepts overloads with InternallySynchronized parameter - since always internallyschrhonized
-  
-  - InternallySyncrhonizedXXXStream: 
-    - big cleanups to (and mostly convert to namesapce from quasinamespace code) InternallySynchronizedInputStream, InternallySynchronizedOutputStream, and InternallySynchronizedInputOutputStream
-
-  - OpenSSLInputStream/OpenSSLOutputStream
-  - FileInputStream/FileOutputStream
-  - SplitterOutputStream
-  - new ExternallyOwnedSpanInputStream : replacing deprecated ExternallyOwnedMemoryInputStream
-
-  - progress on zlib reader compression/decompress new ReadNonBlocking support
-  - more cleanups of Compression/Zip/Reader code and other stream code
-  - Added InputStreamDelegationHelper helper
-  - new Streams_ToSeekableInputStream_ 
-  - FileInputStream
-    -  Cleanup FileInputStream flags/enums
-  - MemoryStream
-    - Added MemoryStream::ToString() support
-
-
-- Time
-  - **not backward compatible** - big change to Time::Realtime code: deprecate Time::DurationSecondsType in favor of sometimes Time::DurationSeconds and sometimes Time::TimePointSeconds
-    - mostly this means places where you used to specify a timeout, just add an 's' to the end (3.0 becomes 3.0s).
-      Also- when treating the duration as a float, you need to say .count (). And when treating a TimePointSeconds as a float
-      In process of converting, fixed a couple bugs due to confusion beteween teh float being timepoint vs duration.
-  - new experimental Time::FromAppStartRelative and ToAppStartRelative
-  - New Configuration concepts support  - IDuration and ITimePoint
-  - renamed Time::kInfinite to Time::kInfinity
-  - duration now a literal type (constexpr dtor was missing); so now can make Duration::min/max and related duration range stuff constexpr
-  - defined Traversal::RangeTraits::Default<> template specializations for Time::DurationSeconds and Time::TimePointSeconds so ranges work better with these types
-  - new Time::Pin2SafeSeconds () utility and used in a couple places to avoid ubsan failures
-  - DateTime
-    - big change to DateTime 'chrono::time_point' and 'tickcount' support; now directly support arbitrary time_point in DateTime CTOR, and as template for DateTime::As<> and rewrote To/From TickCount to use these
-    - Added DateTime::ParseQuietly () overload with list of formatPatterns and default kDefaultParseFormats
-    - CTOR minor cleanups - made a few CTORs explicit, and lost one (mostly) redundant one. Only incompat this introduces is maybe sometimes will need expplicit DateTime{} around Date{} objects; and a few other minor cleanups to tests, quiet warnings etc
-  - Date
-    - Added Date::Now() function (based on DateTime::Now()) and operator+/- for Date which handles duration (rounding)
-  - Clocks
-    - clock_cast extension of std::chrono::clock_cast, plus add (Stroika) Range support
-    - AppStartZeroedClock
-      define new template AppStartZeroedClock<> - and use that in place of (very recent add/removed) ToAppStartRelative/FromAppStartRelative using this clock type with clock_cast>?
-    - defined new RealTimeClock type alais for steack_clock (doc used for TickCount); 
-    - new Time::DisplayedRealtimeClock (and use);
+      - Map **major not backward compat change**
+        - new impl - now supports lazy eval for Iterable<T>
+        - now has container arg first, and no longer has element arg - but defaults much better so often can be omitted
+      - Where cleanup - using perfect forwarding and concepts and better subclass tuning in Containers like Set etc.
+      - Improved Iterable::First/FirstValue/Last/LastValue with concepts and cleaned use
+      - Iterable<>::Join significant implementation changes, api about the same
 
 
-- Traversal
-  - Iterable
-    - declare Iterable<>::iterator / const_iterator for easier STL interoperability
-
-    - Map **major not backward compat change**
-      - new impl - now supports lazy eval for Iterable<T>
-      - now has container arg first, and no longer has element arg - but defaults much better so often can be omitted
-    - Where cleanup - using perfect forwarding and concepts and better subclass tuning in Containers like Set etc.
-    - Improved Iterable::First/FirstValue/Last/LastValue with concepts and cleaned use
-    - Iterable<>::Join significant implementation changes, api about the same
+    - Iterator
+      - Minor clenaups to Iterator<> code - mostly using const in a few more places
 
 
-  - Iterator
-    - Minor clenaups to Iterator<> code - mostly using const in a few more places
-
-
-  - Range
-    - Migrate Foundation::Traversal::Openness type to Traversal Common.h file, so can be used elsewhere (without #include Range.h which pulls alot in); no namespace changes
-    - new operator<=> just returing partial_ordering (was briefly called DefinitelyLessThan)
-
-
-- Frameworks
-  - Led
-    - Actually ported to MacOS/Unix
-      - old code just had commented out builds - so misleadingly ported before v3 (really just windows)
-      - Lots done here - but still tons of led code disabled on UNIX (if/cuz no GDI - qStroika_Frameworks_Led_SupportGDI)
-      - But I can now use alot of the Led code (AskHealthFrame uses for record RTF read/convert).
-    - Lose old MacOS 'quicktime/carbon' code (so check pre-v3.0d5 for that code if ever needed)
-    - lose old apis support: qUseSystemNetscapeOpenURLs, 
-    - minor cleanups to constexpr Led code, etc, modernizing usage
-      lose some no longer needed (and not helpful/wrong) #define checkers etc for qDebug/NDEBUG, etc; lose qHasIsAscii
-    - Led cleanups of #defines - no longer supprt qWideCharacters/qMultibyteCharacters/qSingleByteCharacters - instead always do what we used to call qWideCharacter, 
-    - document @todo : switch to using span<const Character> at some point (if I work enuf of Stroika/Led)
-    - Minor Led cleanups/modernizing/comments/warnings
-    - cosmetic and new qStroika_Frameworks_Led_SupportTables define
-    - lose Led option qURLStyleMarkerNewDisplayMode  - just assume (it was) true
-    - respect qStroika_Frameworks_Led_SupportClipboard better
-    - lose not really working anyhow StyledTextIOWriterSinkStream_FileDescriptor StyledTextIOSrcStream_FileDescriptor code; and document StyledTextIOReader::SrcStream  and SinkStream need to be replaced with Streams::InputStream::Ptr<byte> and OutputStream::Ptr<byte> if we ever need to get this really working more widely
-  - SystemPerformanceMonitor
-    - fix system performance monitor code to better track initial time on measurements; change sample to print times using DisplayedRealtimeClock::time_point; and related cleanups
-  - Test Framework **new**
-    - Simple wrapper on google test code
-  - Service
-    - --runFor option to services intead of using first 'unused' argument
-    - various minor Frameworks::Service cleanups
-  - WebServer
-    - Minor cleanups to ThreadPool stat collection; and used with new property / option in Frameworks::WebServer::ConnectionManager
-    - cleanp use of new ThreadPool CTOR (avoid deprecated api) and for WebServer - change behavior so we max-out the QMax value (possibly no effect, possible reduce attack surface)
-    - fixed Frameworks/WebServer/Response.inl writeln code to not write NUL chars in EOL
-
+    - Range
+      - Migrate Foundation::Traversal::Openness type to Traversal Common.h file, so can be used elsewhere (without #include Range.h which pulls alot in); no namespace changes
+      - new operator<=> just returing partial_ordering (was briefly called DefinitelyLessThan)
+  - Frameworks
+    - Led
+      - Actually ported to MacOS/Unix
+        - old code just had commented out builds - so misleadingly ported before v3 (really just windows)
+        - Lots done here - but still tons of led code disabled on UNIX (if/cuz no GDI - qStroika_Frameworks_Led_SupportGDI)
+        - But I can now use alot of the Led code (AskHealthFrame uses for record RTF read/convert).
+      - Lose old MacOS 'quicktime/carbon' code (so check pre-v3.0d5 for that code if ever needed)
+      - lose old apis support: qUseSystemNetscapeOpenURLs, 
+      - minor cleanups to constexpr Led code, etc, modernizing usage
+        lose some no longer needed (and not helpful/wrong) #define checkers etc for qDebug/NDEBUG, etc; lose qHasIsAscii
+      - Led cleanups of #defines - no longer supprt qWideCharacters/qMultibyteCharacters/qSingleByteCharacters - instead always do what we used to call qWideCharacter, 
+      - document @todo : switch to using span<const Character> at some point (if I work enuf of Stroika/Led)
+      - Minor Led cleanups/modernizing/comments/warnings
+      - cosmetic and new qStroika_Frameworks_Led_SupportTables define
+      - lose Led option qURLStyleMarkerNewDisplayMode  - just assume (it was) true
+      - respect qStroika_Frameworks_Led_SupportClipboard better
+      - lose not really working anyhow StyledTextIOWriterSinkStream_FileDescriptor StyledTextIOSrcStream_FileDescriptor code; and document StyledTextIOReader::SrcStream  and SinkStream need to be replaced with Streams::InputStream::Ptr<byte> and OutputStream::Ptr<byte> if we ever need to get this really working more widely
+    - SystemPerformanceMonitor
+      - fix system performance monitor code to better track initial time on measurements; change sample to print times using DisplayedRealtimeClock::time_point; and related cleanups
+    - Test Framework **new**
+      - Simple wrapper on google test code
+    - Service
+      - --runFor option to services intead of using first 'unused' argument
+      - various minor Frameworks::Service cleanups
+    - WebServer
+      - Minor cleanups to ThreadPool stat collection; and used with new property / option in Frameworks::WebServer::ConnectionManager
+      - cleanp use of new ThreadPool CTOR (avoid deprecated api) and for WebServer - change behavior so we max-out the QMax value (possibly no effect, possible reduce attack surface)
+      - fixed Frameworks/WebServer/Response.inl writeln code to not write NUL chars in EOL
 - ThirdPartyComponnents
   - simplify and fix bugs in ThirdPartyComponents/Makefile
   - Boost 
@@ -467,9 +433,6 @@ especially those they need to be aware of when upgrading.
   - StrawberryPerl
     - download strawberryperl from github now (at least experiment)
     - VERSION 5.38.2.2
-
-
-
 - .github workflow actions
   - workaround many build issues with github actions: run out of space
   - dont fail saving logfiles if file files missing on github actions macos
@@ -501,6 +464,32 @@ especially those they need to be aware of when upgrading.
   - New WebServer (first framework) regression test
     - Simple but real/reasonable regtest for webserver and check with curl
 
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13 }
+  - Clang++ { unix: 14, 15, 16; XCode: 15.0 }
+  - MSVC: { 17.9.1 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 14.3.1 - arm64/m1 chip
+  - Linux: { Ubuntu: [20.04, 22.04, 23.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, DEBIABVERSION###), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
 
 ---
