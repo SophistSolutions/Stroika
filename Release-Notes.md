@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d5 {2024-02-28} {[diff](../../compare/v3.0d4...v3.0d5)}  **DRAFT RELNOTES**
+### 3.0d5 {2024-02-28} {[diff](../../compare/v3.0d4...v3.0d5)}
 
 #### TLDR
 - Iterable::Map big improvement - concepts, performance, power
