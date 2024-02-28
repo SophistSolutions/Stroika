@@ -24,16 +24,17 @@ especially those they need to be aware of when upgrading.
 - BIG streams changes - not backward compatible
   - generally replace InputStream<byte>::Ptr with (or Character) with InputStream::Ptr<byte> (or Character). Same
     for OutputStream. And same for SomeKindOfStream::New () - now needs template (of T) - parameter - like MemoryStream::New<byte> ()
-- big change to Time::Realtime code: deprecate Time::DurationSecondsType in favor of sometimes Time::DurationSeconds and sometimes Time::TimePointSeconds
+- replace Time::DurationSecondsType with Time::DurationSeconds (if a duration) and sometimes Time::TimePointSeconds (if from GetTickCount)
 - due to new ASSUME_ATTRIBUTE macro, and experimental use of it in Assert/Require macros, some assert/require calls may need to be wrapped in #if qDebug
 
 #### Change Details
 
-- Compilers supported
+- Compilers support changes
   - no longer support XCode 14 - since I dont have easy way to run/debug there now
+  - 17.9.1
 - BuildScripts
   - configure
-    - replace old </PkgConfigLinkLineAppendages> with simpler PkgConfigNames (to fix libxml2 include issue)
+    - replace old \<PkgConfigLinkLineAppendages> with simpler PkgConfigNames (to fix libxml2 include issue)
     - for libxml add LIBXML_STATIC to CPPFLAGS (so seen in vscode)
     - new configure LinkTime_CopyFilesToEXEDir feature, and used to replace old ScriptsLib/Vs2kASANBugWorkaround
     - Xerces defaults to not being built (if libxml2 is built - qHasFeature_libxml2); and new --default-third-party-components --all-available-third-party-components options available
@@ -123,7 +124,6 @@ especially those they need to be aware of when upgrading.
     - Compiler Bug Defines
       - Updated bug defines for _MSC_VER_2k22_17Pt8_
       - Support _MSC_VER_2k22_17Pt9_
-      - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
       - qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy for clang
       - qCompilerAndStdLib_template_template_auto_deduced_Buggy BWA
       - workaround qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
@@ -132,24 +132,14 @@ especially those they need to be aware of when upgrading.
       - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
       - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
       - qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy BWA
-      - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy BWA
       - qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy BWA
-      - qCompilerAndStdLib_CompareOpReverse_Buggy BWA improved
+      - qCompilerAndStdLib_CompareOpReverse_Buggy BWA improved; broken on clang++-16 too; broken starting on gcc 13, so maybe really my bug after all
       - qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy BWA; 
       - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy BWA
-      - qCompilerAndStdLib_CompareOpReverse_Buggy broken on clang++-16 too
-      - qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy GCC 11
-      - silence warning based on qCompilerAndStdLib_CompareOpReverse_Buggy for clang as well
       - qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy bug define and possible workaround
       - qCompilerAndStdLib_kDefaultToStringConverter_Buggy 
       - qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy 
-      - qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy for clang
-      - Adjust qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy for clang++15
-      - qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy for raspberry  pi tests
       - lose unneeded qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-      - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define updated libversion# for
-      - qCompilerAndStdLib_CompareOpReverse_Buggy broken starting on gcc 13, so maybe really my bug after all
       - workaround qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy in Test_Join
     - Concepts
       - new utility Configuration::IAnyOf concept; and used in a few places to test
@@ -170,7 +160,7 @@ especially those they need to be aware of when upgrading.
       - Added CTOR overload
     - Mapping
       - new draft Mapping_IKey and Mapping_IMappedValue concepts (so give better error messages in Mapping template instantiation)
-      - Document CANNOT use Mapping_IKey Mapping_IMappedValue as because typename constraints dont interact well wtih templates on incomplete types (Like Mapping<String,VariantValue> in VariantValue); so instead use static_assert which appears to work fine with these incomplete types
+      - Document that we CANNOT use Mapping_IKey Mapping_IMappedValue as typename constraints cuz they dont interact well wtih templates on incomplete types (Like Mapping<String,VariantValue> in VariantValue); so instead use static_assert which appears to work fine with these incomplete types
     - Set
       - Set<>::insert overloads / tweaks to make more STL drop-in-replacement compatible
   - Common
