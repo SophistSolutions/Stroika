@@ -748,9 +748,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         /**
          */
         struct IRep {
-            virtual ~IRep ()                                                                                = default;
-            virtual const Providers::IDOMProvider* GetProvider () const                                     = 0;
-            virtual Element::Ptr                   ReplaceRootElement (const NameWithNamespace& newEltName) = 0;
+            virtual ~IRep ()                                            = default;
+            virtual const Providers::IDOMProvider* GetProvider () const = 0;
+            virtual Element::Ptr                   ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS)   = 0;
             virtual void                Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;
             virtual void                Validate (const Schema::Ptr& schema) const                                                    = 0;

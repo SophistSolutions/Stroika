@@ -398,11 +398,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline Element::Ptr Document::Ptr::ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) const
     {
         // Note this cannot be implemented using the existing Replace () mechanism for elements because the document could be created without a root.
-        Element::Ptr r = GetRep ()->ReplaceRootElement (newEltName);
-        if (childrenInheritNS) {
-            r.SetDefaultNamespace (newEltName.fNamespace);
-        }
-        return r;
+        return GetRep ()->ReplaceRootElement (newEltName, childrenInheritNS);
     }
 
 }

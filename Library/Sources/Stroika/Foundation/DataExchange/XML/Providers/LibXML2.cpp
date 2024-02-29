@@ -621,7 +621,7 @@ namespace {
         {
             return fLibRep_;
         }
-        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName) override
+        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) override
         {
             // confusing libxml api - OK to pass no node to xmlNewNs - just create the ns object
             xmlNsPtr ns = newEltName.fNamespace == nullopt
@@ -633,7 +633,11 @@ namespace {
             // confusing libxml api - xmlNewDocNode replaces the better named xmlNewNode (happens HERE to be a document root node but in fact API used for any nodes)
             xmlNodePtr n = xmlNewDocNode (fLibRep_, ns, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
             xmlDocSetRootElement (fLibRep_, n);
-            return WrapLibXML2NodeInStroikaNode_ (n);
+            Element::Ptr r{WrapLibXML2NodeInStroikaNode_ (n)};
+            if (childrenInheritNS and newEltName.fNamespace) {
+                r.SetAttribute (kXMLNS, newEltName.fNamespace->As<String> ());
+            }
+            return r;
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {

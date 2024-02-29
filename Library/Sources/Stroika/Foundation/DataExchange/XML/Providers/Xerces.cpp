@@ -1275,7 +1275,7 @@ namespace {
                 });
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName) override
+        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) override
         {
             DOMElement* n = newEltName.fNamespace == nullopt
                                 ? fXMLDoc->createElement (newEltName.fName.As<u16string> ().c_str ())
@@ -1307,7 +1307,11 @@ namespace {
                  */
             }
             Assert (fXMLDoc->getDocumentElement () == n);
-            return WrapXercesNodeInStroikaNode_ (n);
+            Element::Ptr r{WrapXercesNodeInStroikaNode_ (n)};
+            if (childrenInheritNS and newEltName.fNamespace) {
+                r.SetAttribute (kXMLNS, newEltName.fNamespace->As<String> ());
+            }
+            return r;
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
