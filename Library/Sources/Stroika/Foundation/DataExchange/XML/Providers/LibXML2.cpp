@@ -623,15 +623,31 @@ namespace {
         }
         virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) override
         {
-            // confusing libxml api - xmlNewDocNode replaces the better named xmlNewNode (happens HERE to be a document root node but in fact API used for any nodes)
-            // and super confusing if you use namespaces, you MUST not pass them in to xmlNewDocNode, but create them afterwards (else it doesn't end up in n->nsDef, and
-            // doesn't get searched (xmlSearchNsByHref) --LGP 2024-02-29
-            xmlNodePtr n = xmlNewDocNode (fLibRep_, nullptr, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
+            // This API is very confusing. I could find no examples online, or clear documentation on how to handle
+            // create a prefixed namespace and default namespace.
+            // I only came upon this series of hacks after looking carefully at the code and alot of experimenting...
+            //      --LGP 2024-02-29
+            xmlNsPtr   ns{nullptr};
+            if (newEltName.fNamespace) {
+                if (childrenInheritNS) {
+                    ns = xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+                }
+                else {
+                    // need some random prefix in this case...
+                    ns = xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), BAD_CAST "x");
+                }
+            }
+            xmlNodePtr n  = xmlNewDocNode (fLibRep_, ns, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
+            Assert (n->nsDef == nullptr);
             if (childrenInheritNS and newEltName.fNamespace) {
-               xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+                n->nsDef = ns;  // UGH
             }
             xmlDocSetRootElement (fLibRep_, n);
-            return WrapLibXML2NodeInStroikaNode_ (n);
+            auto r = WrapLibXML2NodeInStroikaNode_ (n);
+            DbgTrace (L"newEltName=%s", Characters::ToString (newEltName).c_str ());
+            DbgTrace (L"r.GetName ()=%s", Characters::ToString (r.GetName ()).c_str ());
+            Ensure (r.GetName () == newEltName);
+            return r;
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
