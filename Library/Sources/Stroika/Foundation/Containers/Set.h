@@ -219,6 +219,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  Mimic stl::set name
+         */
+        nonvirtual bool contains (ArgByValueType<value_type> item) const;
+
+    public:
+        /**
          */
         nonvirtual bool ContainsAll (const Iterable<value_type>& items) const;
 
