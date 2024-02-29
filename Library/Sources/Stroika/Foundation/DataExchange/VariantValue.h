@@ -203,6 +203,7 @@ namespace Stroika::Foundation::DataExchange {
          *  \todo Can shorten this a bit using templates and concepts (integral, floating_point etc - like I did for "StringIsh").
          */
         VariantValue () = default;
+        VariantValue (nullopt_t);
         VariantValue (nullptr_t);
         VariantValue (bool val);
         VariantValue (const BLOB& val);
@@ -295,6 +296,8 @@ namespace Stroika::Foundation::DataExchange {
          *  then DataExchange::BadFormatException will be thrown (not assertion error).
          *
          *  Only specifically specialized variants are supported (see requires clause).
+         * 
+         *  For the optional<OF_T> specialization, if this is nullopt (==nullptr) - then return nullopt, and only otherwise attempt to coerce (As<the optional type>).
          *
          *  \note   Why As<T> () instead of conversion operator / static_cast support?
          *          1) - not sure - maybe a mistake
@@ -328,14 +331,19 @@ namespace Stroika::Foundation::DataExchange {
          */
         template <typename RETURNTYPE>
         nonvirtual RETURNTYPE As () const
-            requires (same_as<RETURNTYPE, bool> or same_as<RETURNTYPE, BLOB> or integral<RETURNTYPE> or floating_point<RETURNTYPE> or
-                      same_as<RETURNTYPE, Date> or same_as<RETURNTYPE, DateTime> or same_as<RETURNTYPE, wstring> or same_as<RETURNTYPE, String> or
-                      same_as<RETURNTYPE, Mapping<String, VariantValue>> or same_as<RETURNTYPE, Sequence<VariantValue>> or
-                      same_as<RETURNTYPE, map<wstring, VariantValue>> or same_as<RETURNTYPE, vector<VariantValue>>
+            requires (Configuration::IAnyOf<RETURNTYPE, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
+                                            map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>
 #if qHasFeature_boost
-                      or same_as<RETURNTYPE, boost::json::value>
+                                            ,
+                                            boost::json::value
 #endif
-            );
+                                            > or
+                      integral<RETURNTYPE> or floating_point<RETURNTYPE>);
+#if 0
+        template <typename OF_T>
+        nonvirtual optional<OF_T> As () const
+            requires (requires (VariantValue v) { v.As<OF_T> (); });
+#endif
 
     public:
         /**

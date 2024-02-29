@@ -29,6 +29,10 @@ namespace Stroika::Foundation::DataExchange {
         : VariantValue{}
     {
     }
+    inline VariantValue::VariantValue (nullopt_t)
+        : VariantValue{}
+    {
+    }
     inline VariantValue::VariantValue (const vector<VariantValue>& val)
         : VariantValue{Sequence<VariantValue> (val)}
     {
@@ -65,14 +69,15 @@ namespace Stroika::Foundation::DataExchange {
     }
     template <typename RETURNTYPE>
     inline RETURNTYPE VariantValue::As () const
-        requires (same_as<RETURNTYPE, bool> or same_as<RETURNTYPE, BLOB> or integral<RETURNTYPE> or floating_point<RETURNTYPE> or
-                  same_as<RETURNTYPE, Date> or same_as<RETURNTYPE, DateTime> or same_as<RETURNTYPE, wstring> or same_as<RETURNTYPE, String> or
-                  same_as<RETURNTYPE, Mapping<String, VariantValue>> or same_as<RETURNTYPE, Sequence<VariantValue>> or
-                  same_as<RETURNTYPE, map<wstring, VariantValue>> or same_as<RETURNTYPE, vector<VariantValue>>
+        requires (Configuration::IAnyOf<RETURNTYPE, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
+                                        map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>
 #if qHasFeature_boost
-                  or same_as<RETURNTYPE, boost::json::value>
+                                        ,
+                                        boost::json::value
 #endif
-        )
+
+                                        > or
+                  integral<RETURNTYPE> or floating_point<RETURNTYPE>)
     {
         if constexpr (same_as<RETURNTYPE, bool>) {
             return this->AsBool_ ();
@@ -121,6 +126,19 @@ namespace Stroika::Foundation::DataExchange {
         }
 #endif
     }
+#if 0
+    template <typename OF_T>
+    inline optional<OF_T> VariantValue::As () const
+        requires (requires (VariantValue v) { v.As<OF_T> (); })
+    {
+        if (*this == nullopt) {
+            return nullopt;
+        }
+        else {
+            return this->As<OF_T> ();
+        }
+    }
+#endif
     inline strong_ordering VariantValue::operator<=> (const VariantValue& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs);
