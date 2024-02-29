@@ -309,18 +309,6 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  \brief return true iff value GetType () != null;
-         *
-         *  \note - this is NOT the same as not empty ()!
-         *  \note this is NOT the same same as As<bool> ()
-         * 
-         *  And because of that - at least partly - we avoided support explicit operator (for each type in the basic variant like explicit operator String).
-         *  \see As<T>
-         */
-        nonvirtual explicit operator bool () const;
-
-    public:
-        /**
          *  @see Characters::ToString()
          *  Return a debug-friendly, display version of the current variant. This is not guaranteed parsable or usable except for debugging.
          */
@@ -381,6 +369,28 @@ namespace Stroika::Foundation::DataExchange {
 #endif
                       or integral<RETURNTYPE> or floating_point<RETURNTYPE> or integral<typename RETURNTYPE::value_type> or
                       floating_point<typename RETURNTYPE::value_type>);
+
+    public:
+        /**
+         *  \brief return true iff value GetType () != null;
+         *
+         *  \note - this is NOT the same as not empty ()!
+         *  \note this is NOT the same same as As<bool> ()
+         * 
+         *  And because of that - at least partly - we avoided support explicit operator (for each type in the basic variant like explicit operator String).
+         *  \see As<T>
+         */
+        nonvirtual explicit operator bool () const;
+
+        // Consider if explicit operator T a suitable replacement for As() pattern? Just more standard c++ syntax for the same idea? Experimenting in VariantValue
+        // maybe allow BOTH - cuz As<> sytnax often better/more functional a then b then c - not having to put the type conversion before thing its operating on...
+        //CONSIDER FIXING issue with diff for operator bool and As<bool> () - confusing special case...
+        template <typename T>
+        explicit operator T () const
+            requires (requires (T) { As<T> (); })
+        {
+            return As<T> ();
+        }
 
     public:
         /**
