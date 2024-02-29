@@ -158,6 +158,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         GetRep ()->SetAttribute (attrName, v);
     }
+    template <same_as<VariantValue> VV>
+    inline void Element::Ptr::SetAttribute (const NameWithNamespace& attrName, const VV& v)
+    {
+        GetRep ()->SetAttribute (attrName, v == nullptr ? optional<String>{} : v.As<String> ());
+    }
     inline optional<String> Element::Ptr::GetID () const
     {
         static const NameWithNamespace kID_{"id"sv};
@@ -226,12 +231,27 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         r.SetValue (v);
         return r;
     }
+    template <same_as<VariantValue> VV>
+    inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName, const VV& v)
+    {
+        auto r = Append (eltName);
+        r.SetValue (v.As<String> ());
+        return r;
+    }
     inline Element::Ptr Element::Ptr::AppendIf (const NameWithNamespace& eltName, const optional<String>& v)
     {
         if (v) {
             auto r = Append (eltName);
             r.SetValue (*v);
             return r;
+        }
+        return Element::Ptr{nullptr};
+    }
+    template <same_as<VariantValue> VV>
+    inline Element::Ptr Element::Ptr::AppendIf (const NameWithNamespace& eltName, const VV& v)
+    {
+        if (v != nullptr) {
+            return Append (eltName, v.As<String> ());
         }
         return Element::Ptr{nullptr};
     }

@@ -14,6 +14,7 @@
 #include "../../Streams/OutputStream.h"
 
 #include "../BadFormatException.h"
+#include "../VariantValue.h"
 
 #include "Namespace.h"
 
@@ -26,7 +27,6 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
 
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
-    using DataExchange::BadFormatException;
     using Traversal::Iterable;
 
     /*
@@ -379,9 +379,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  Note - setting the attribute to nullopt is equivalent to deleting the attribute
              * 
+             *  The 'VariantValue' overload maps null to missing attribute, and any other value to a String (v.As<String>()).
+             * 
              *  \req *this != nullptr
              */
             nonvirtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v);
+            template <same_as<VariantValue> VV>
+            nonvirtual void SetAttribute (const NameWithNamespace& attrName, const VV& v);
 
         public:
             /**
@@ -455,10 +459,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  value overload just creates the node and calls SetValue() before returning it (so simple shorthand).
              * 
+             *  value=VariantValue overload is just a short-hand for value.As<String>() - so will fail if value cannot be converted to a String
+             * 
              *  \req *this != nullptr
              */
             nonvirtual Ptr Append (const NameWithNamespace& eltName);
             nonvirtual Ptr Append (const NameWithNamespace& eltName, const String& value);
+            template <same_as<VariantValue> VV>
+            nonvirtual Ptr Append (const NameWithNamespace& eltName, const VV& value);
 
         public:
             /**
@@ -466,9 +474,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  Trivial, but I've found helpful in making certain uses more terse.
              * 
+             *  VariantValue overload maps nullptr/nullopt=v to 'missing' case above, but otherwise calls v.As<String>() which may fail depending on the type of v.
+             * 
              *  \req *this != nullptr
              */
             nonvirtual Ptr AppendIf (const NameWithNamespace& eltName, const optional<String>& v);
+            template <same_as<VariantValue> VV>
+            nonvirtual Ptr AppendIf (const NameWithNamespace& eltName, const VV& v);
 
         public:
             [[deprecated]] Ptr AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v)
