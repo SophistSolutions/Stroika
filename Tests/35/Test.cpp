@@ -139,8 +139,41 @@ namespace {
     GTEST_TEST (Foundation_DataExchange_Other, Test4_VariantValue_)
     {
         Debug::TraceContextBumper            ctx{"{}::Test4_VariantValue_"};
-        Containers::Collection<VariantValue> vc;
-        VariantValue                         vv{vc};
+
+        using namespace Containers;
+        using namespace Characters;
+        using namespace Time;
+        {
+            Collection<VariantValue> vc;
+            VariantValue                         vv{vc};
+        }
+        {
+            optional<String> x1;
+            optional<Date>  x2;
+            String         representAs1 = VariantValue{x1}.As<String> ();
+            String           representAs2 = VariantValue{x2}.As<String> ();
+            x1                          = VariantValue{representAs1}.As<optional<String>> ();
+            x2                            = VariantValue{representAs2}.As<optional<Date>> ();
+        }
+        {
+            auto roundTrip = [] (auto tValue) {
+                using T = remove_cvref_t<decltype (tValue)>;
+                String representation = VariantValue{tValue}.As<String> ();
+                return VariantValue{representation}.As<T> ();
+            };
+            EXPECT_EQ (roundTrip ("v"_k), "v");
+            EXPECT_EQ (roundTrip (5), 5);
+            EXPECT_EQ (roundTrip (optional<int>{}), optional<int>{});
+            EXPECT_EQ (roundTrip (optional<Date>{}), optional<Date>{});
+            constexpr DateTime kT1_ = DateTime{Date{January / 3 / 1944}};
+            EXPECT_EQ (roundTrip (kT1_), kT1_);
+
+            // But doesn't work perfectly. Empty string and optional<String>{} get represented as the same so that's ambiguous
+            EXPECT_EQ (roundTrip (String{}), String{});
+            EXPECT_EQ (roundTrip (optional<String>{}), nullopt);
+            EXPECT_EQ (roundTrip (optional<String>{String{}}), nullopt);    // oops - but really how could it tell?
+
+        }
     }
 }
 

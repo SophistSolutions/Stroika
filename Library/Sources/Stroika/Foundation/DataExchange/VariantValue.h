@@ -96,6 +96,45 @@ namespace Stroika::Foundation::DataExchange {
      *          When comparing any other types (except Map or Array) with a String, the to types are coerced
      *          into Strings, and compared as strings.
      * 
+     * 
+     *  \note - VariantValue can be used to 'normalize' various type representations for externalization in String formats.
+     *          Not perfect for all types (like string) - but does about as well as you can reasonably... And often good enuf.
+     * 
+     *          For example, dates written out as ISO-2022 strings, and read back as such. Numbers - like NAN written portably and read back.
+     *          For structured types (like arrays) - but explicitly use JSON reader/writer ;-).
+     * 
+     *  \par Example Usage
+     *      \code
+     *          optional<String> x1;
+     *          optional<Date> x2;
+     * 
+     *          String representAs1 = VariantValue{x1}.As<String> ();
+     *          String representAs2 = VariantValue{x12}.As<String> ();
+     * 
+     *          x1 = VariantValue{representAs1}.As<optional<String>> ();
+     *          x2= VariantValue{representAs2}.As<optional<String>> ();
+     *      \endcode    
+     * 
+     *  \par Example Usage
+     *      \code
+     *          auto roundTrip = [] (auto tValue) {
+     *              using T = remove_cvref_t<decltype (tValue)>;
+     *              String representation = VariantValue{tValue}.As<String> ();
+     *              return VariantValue{representation}.As<T> ();
+     *          };
+     *          EXPECT_EQ (roundTrip ("v"_k), "v");
+     *          EXPECT_EQ (roundTrip (5), 5);
+     *          EXPECT_EQ (roundTrip (optional<int>{}), optional<int>{});
+     *          EXPECT_EQ (roundTrip (optional<Date>{}), optional<Date>{});
+     *          constexpr DateTime kT1_ = DateTime{Date{January / 3 / 1944}};
+     *          EXPECT_EQ (roundTrip (kT1_), kT1_);
+     *
+     *          // But doesn't work perfectly. Empty string and optional<String>{} get represented as the same so that's ambiguous
+     *          EXPECT_EQ (roundTrip (String{}), String{});
+     *          EXPECT_EQ (roundTrip (optional<String>{}), nullopt);
+     *          EXPECT_EQ (roundTrip (optional<String>{String{}}), nullopt);    // oops - but really how could it tell?
+     *      \endcode    
+     * 
      *  TODO:
      *
      *      @todo   XPath / JPath / JSONPath feature in DataExchange::VariantValue - https://github.com/SophistSolutions/Stroika/issues/110
@@ -289,15 +328,12 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  Only these (enum Type) types supported.
-         *  There is no generic As<T> implementation.
+         *  Only (see requires) types supported;  There is no generic As<T> implementation.
          *
          *  If the caller attempts a conversion that isn't supported, or doesn't make sense
          *  then DataExchange::BadFormatException will be thrown (not assertion error).
          *
-         *  Only specifically specialized variants are supported (see requires clause).
-         * 
-         *  For the optional<OF_T> specialization, if this is nullopt (==nullptr) - then return nullopt, and only otherwise attempt to coerce (As<the optional type>).
+         *  For the optional<OF_T> specialization, if this is empty (nullopt counts as empty) - then return nullopt, and only otherwise attempt to coerce (As<the optional type>).
          *
          *  \note   Why As<T> () instead of conversion operator / static_cast support?
          *          1) - not sure - maybe a mistake
@@ -328,22 +364,23 @@ namespace Stroika::Foundation::DataExchange {
          *          This converts strings and integer and floating point types. 'empty' - or the null type - is converted to nan().
          *          Similarly, if the string cannot be converted, a nan will be returned. Other types (like Mapping) generate
          *          an exception.
+         * 
+         *  \todo   Try to find a neater way to express the IAnyOf OPTIONAL case - shouldn't need to repeat everything. Tried using
+         *          template <typename OF_T> nonvirtual optional<OF_T> As () const requires (requires (OF_T v) { VariantValue{}.As<OF_T> (); });
+         *          But somehow on visual studio that produced ambiguity errors from compiler.
          */
         template <typename RETURNTYPE>
         nonvirtual RETURNTYPE As () const
             requires (Configuration::IAnyOf<RETURNTYPE, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
-                                            map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>
+                                            map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>> or
+                      Configuration::IAnyOf<RETURNTYPE, optional<bool>, optional<BLOB>, optional<Date>, optional<DateTime>, optional<wstring>,
+                                            optional<String>, optional<Mapping<String, VariantValue>>, optional<map<wstring, VariantValue>>,
+                                            optional<Sequence<VariantValue>>, optional<vector<VariantValue>>>
 #if qHasFeature_boost
-                                            ,
-                                            boost::json::value
+                      or Configuration::IAnyOf<RETURNTYPE, boost::json::value, optional<boost::json::value>>
 #endif
-                                            > or
-                      integral<RETURNTYPE> or floating_point<RETURNTYPE>);
-#if 0
-        template <typename OF_T>
-        nonvirtual optional<OF_T> As () const
-            requires (requires (VariantValue v) { v.As<OF_T> (); });
-#endif
+                      or integral<RETURNTYPE> or floating_point<RETURNTYPE> or integral<typename RETURNTYPE::value_type> or
+                      floating_point<typename RETURNTYPE::value_type>);
 
     public:
         /**
