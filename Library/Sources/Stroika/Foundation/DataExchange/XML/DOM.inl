@@ -161,7 +161,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     template <same_as<VariantValue> VV>
     inline void Element::Ptr::SetAttribute (const NameWithNamespace& attrName, const VV& v)
     {
-        GetRep ()->SetAttribute (attrName, v == nullptr ? optional<String>{} : v.As<String> ());
+        GetRep ()->SetAttribute (attrName, v == nullptr ? optional<String>{} : v.template As<String> ());
     }
     inline optional<String> Element::Ptr::GetID () const
     {
@@ -220,12 +220,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     template <same_as<VariantValue> VV>
     inline void Element::Ptr::SetValue (const VV& v)
     {
-        SetValue (v.As<String> ());
+        SetValue (v.template As<String> ());
     }
     template <same_as<VariantValue> VV>
     inline void Element::Ptr::SetValue (const XPath::Expression& e, const VV& v)
     {
-        SetValue (e, v.As<String> ());
+        SetValue (e, v.template As<String> ());
     }
     inline auto Element::Ptr::Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode) -> Ptr
     {
@@ -245,7 +245,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName, const VV& v)
     {
         auto r = Append (eltName);
-        r.SetValue (v.As<String> ());
+        r.SetValue (v.template As<String> ());
         return r;
     }
     inline Element::Ptr Element::Ptr::AppendIf (const NameWithNamespace& eltName, const optional<String>& v)
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline Element::Ptr Element::Ptr::AppendIf (const NameWithNamespace& eltName, const VV& v)
     {
         if (v != nullptr) {
-            return Append (eltName, v.As<String> ());
+            return Append (eltName, v.template As<String> ());
         }
         return Element::Ptr{nullptr};
     }
