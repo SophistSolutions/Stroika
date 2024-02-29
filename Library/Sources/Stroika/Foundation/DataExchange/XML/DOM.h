@@ -440,10 +440,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  For now, SetValue(e,v) - must  finds an Element (or Attribute) node at 'e' - otherwise throws runtime exception,
              *  cuz no way to know in general where to add what element (could do in some specific cases maybe - like simple QName or @QName expression).
              * 
+             *  The overloads with VariantValue are just a short-hand for v.As<String> () on the variant value (with no checking).
+             * 
              *  \req *this != nullptr
              */
             using Node::Ptr::SetValue;
             nonvirtual void SetValue (const XPath::Expression& e, const String& v);
+            template <same_as<VariantValue> VV>
+            nonvirtual void SetValue (const VV& v);
+            template <same_as<VariantValue> VV>
+            nonvirtual void SetValue (const XPath::Expression& e, const VV& v);
 
         public:
             /**

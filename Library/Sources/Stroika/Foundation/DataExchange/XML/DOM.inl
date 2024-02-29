@@ -214,8 +214,18 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                 return;
             }
         }
-        static const auto kException_ = Execution::RuntimeErrorException<> ("Node not found relative to given element");
+        static const auto kException_ = Execution::RuntimeErrorException<> ("Node not found relative to given element"sv);
         Execution::Throw (kException_);
+    }
+    template <same_as<VariantValue> VV>
+    inline void Element::Ptr::SetValue (const VV& v)
+    {
+        SetValue (v.As<String> ());
+    }
+    template <same_as<VariantValue> VV>
+    inline void Element::Ptr::SetValue (const XPath::Expression& e, const VV& v)
+    {
+        SetValue (e, v.As<String> ());
     }
     inline auto Element::Ptr::Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode) -> Ptr
     {
