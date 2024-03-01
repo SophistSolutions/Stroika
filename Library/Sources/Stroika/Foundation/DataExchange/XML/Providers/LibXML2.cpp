@@ -627,7 +627,7 @@ namespace {
             // create a prefixed namespace and default namespace.
             // I only came upon this series of hacks after looking carefully at the code and alot of experimenting...
             //      --LGP 2024-02-29
-            xmlNsPtr   ns{nullptr};
+            xmlNsPtr ns{nullptr};
             if (newEltName.fNamespace) {
                 if (childrenInheritNS) {
                     ns = xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
@@ -637,10 +637,10 @@ namespace {
                     ns = xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), BAD_CAST "x");
                 }
             }
-            xmlNodePtr n  = xmlNewDocNode (fLibRep_, ns, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
+            xmlNodePtr n = xmlNewDocNode (fLibRep_, ns, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
             Assert (n->nsDef == nullptr);
             if (childrenInheritNS and newEltName.fNamespace) {
-                n->nsDef = ns;  // UGH
+                n->nsDef = ns; // UGH
             }
             xmlDocSetRootElement (fLibRep_, n);
             auto r = WrapLibXML2NodeInStroikaNode_ (n);
