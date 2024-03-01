@@ -10,6 +10,7 @@
 #include <concepts>
 #include <functional> // needed for std::equal_to
 #include <iterator>   // needed for std::begin/std::end calls
+#include <optional>
 
 #include "../Configuration/Common.h"
 
