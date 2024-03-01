@@ -361,14 +361,15 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual RETURNTYPE As () const
             requires (Configuration::IAnyOf<RETURNTYPE, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
                                             map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>> or
-                      Configuration::IAnyOf<RETURNTYPE, optional<bool>, optional<BLOB>, optional<Date>, optional<DateTime>, optional<wstring>,
-                                            optional<String>, optional<Mapping<String, VariantValue>>, optional<map<wstring, VariantValue>>,
-                                            optional<Sequence<VariantValue>>, optional<vector<VariantValue>>>
+                      (Configuration::IStdOptional<RETURNTYPE> and 
+                            Configuration::IAnyOf<Configuration::ExtractStdOptionalOf_t<RETURNTYPE>, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
+                                            map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>>)
 #if qHasFeature_boost
                       or Configuration::IAnyOf<RETURNTYPE, boost::json::value, optional<boost::json::value>>
 #endif
-                      or integral<RETURNTYPE> or floating_point<RETURNTYPE> or integral<typename RETURNTYPE::value_type> or
-                      floating_point<typename RETURNTYPE::value_type>);
+                      or integral<RETURNTYPE> or floating_point<RETURNTYPE>
+                      or (Configuration::IStdOptional<RETURNTYPE> and (integral<Configuration::ExtractStdOptionalOf_t<RETURNTYPE>> or floating_point<Configuration::ExtractStdOptionalOf_t<RETURNTYPE>>))
+                                     );
 
     public:
         /**
