@@ -112,25 +112,10 @@ namespace Stroika::Foundation::Configuration {
     template <typename...>
     using True = true_type;
 
-
-     template <typename OT>
-    concept IStdOptional = 
-        same_as<OT,std::optional<typename OT::value_type>>;
-        static_assert(same_as<int,std::optional<int>::value_type>);
-        static_assert(same_as<std::optional<int>,std::optional<std::optional<int>::value_type>>);
-   static_assert(IStdOptional<std::optional<int>>);
-    static_assert(not IStdOptional<int>);
-
- template < typename OT>
-    using ExtractStdOptionalOf_t = typename std::optional<OT>::value_type  ;
-
-
     /**
      */
     template <typename OT>
     concept IStdOptional = same_as<remove_cvref_t<OT>, std::optional<typename OT::value_type>>;
-    static_assert (same_as<int, std::optional<int>::value_type>);
-    static_assert (same_as<std::optional<int>, std::optional<std::optional<int>::value_type>>);
     static_assert (IStdOptional<std::optional<int>>);
     static_assert (not IStdOptional<int>);
 
