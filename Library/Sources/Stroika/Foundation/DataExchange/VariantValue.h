@@ -40,6 +40,17 @@ namespace Stroika::Foundation::DataExchange {
     using Time::Date;
     using Time::DateTime;
 
+    class VariantValue;
+    namespace Private_ {
+        template <typename T>
+        concept IVariantValueAsBasic_ = Configuration::IAnyOf<T, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
+                                                              map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>>
+#if qHasFeature_boost
+                                        or same_as<T, boost::json::value>
+#endif
+                                        or integral<T> or floating_point<T>;
+    }
+
     /**
      * \brief   Simple variant-value (case variant union) object, with (variant) basic types analogous to a value in any weakly typed language (like JavaScript, Lisp, etc)
      *
@@ -359,17 +370,8 @@ namespace Stroika::Foundation::DataExchange {
          */
         template <typename RETURNTYPE>
         nonvirtual RETURNTYPE As () const
-            requires (Configuration::IAnyOf<RETURNTYPE, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
-                                            map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>> or
-                      (Configuration::IStdOptional<RETURNTYPE> and 
-                            Configuration::IAnyOf<Configuration::ExtractStdOptionalOf_t<RETURNTYPE>, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
-                                            map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>>)
-#if qHasFeature_boost
-                      or Configuration::IAnyOf<RETURNTYPE, boost::json::value, optional<boost::json::value>>
-#endif
-                      or integral<RETURNTYPE> or floating_point<RETURNTYPE>
-                      or (Configuration::IStdOptional<RETURNTYPE> and (integral<Configuration::ExtractStdOptionalOf_t<RETURNTYPE>> or floating_point<Configuration::ExtractStdOptionalOf_t<RETURNTYPE>>))
-                                     );
+            requires (Private_::IVariantValueAsBasic_<RETURNTYPE> or
+                      (Configuration::IStdOptional<RETURNTYPE> and Private_::IVariantValueAsBasic_<Configuration::ExtractValueType_t<RETURNTYPE>>));
 
     public:
         /**
