@@ -19,7 +19,8 @@
 
 namespace Stroika::Foundation::Execution {
     // Instead of #include "../Execution/Throw.h"
-    void ThrowIfNull (const void* p); // avoid include which is creating deadly embrace
+    template <equality_comparable_with<nullptr_t> T>
+    void ThrowIfNull (T p);
 }
 namespace Stroika::Foundation::Memory {
 

@@ -144,8 +144,14 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowIfNull (T p, const E& e)
     {
         if (p == nullptr) [[unlikely]] {
-            Throw (e, "ThrowIfNull (nullptr) - throwing bad_alloc");
+            Throw (e, "ThrowIfNull (nullptr) - throwing bad_alloc"); // todo fix trace message to depend on 'E'
         }
+    }
+    template <equality_comparable_with<nullptr_t> T>
+    inline void ThrowIfNull (T p)
+    {
+        static const bad_alloc kException_;
+        ThrowIfNull (p, kException_);
     }
 
 }

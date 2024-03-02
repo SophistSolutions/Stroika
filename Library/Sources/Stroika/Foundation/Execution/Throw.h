@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Execution {
      *  (essentially) all exception throws.
      *
      *  This is nearly always desirable, but in applications that do lots of exceptions (probably not a good idea), this can produce
-     *  alot of tracelog noise, and some people object to it.
+     *  a lot of trace log noise, and some people object to it.
      *
      *  Since this only affects calls to DbgTrace () - it only has effect if qStroika_Foundation_Debug_Trace_DefaultTracingOn is on.
      *
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  Utility to call a Trace message (hopefully an appropriate one) for an exception being
      *  thrown... But this function is also specialized to do call D::Throw() for several types -
-     *  which CAN translate the kind of exception throw. For example, for Platoform:Windows::Execption -
+     *  which CAN translate the kind of exception throw. For example, for Platform:Windows::Exception -
      *  ERROR_OUTOFMEMORY is translated to std::bad_alloc ().
      *
      *  ONLY the first variation (with no traceMessage) is template specialized. The overloads
@@ -92,8 +92,10 @@ namespace Stroika::Foundation::Execution {
     /**
      *  If the first argument is null, throw the second argument exception (which defaults to bad_alloc)
      */
-    template <equality_comparable_with<nullptr_t> T, typename E = bad_alloc>
-    void ThrowIfNull (T p, const E& e = E{});
+    template <equality_comparable_with<nullptr_t> T, typename E>
+    void ThrowIfNull (T p, const E& e);
+    template <equality_comparable_with<nullptr_t> T>
+    void ThrowIfNull (T p);
 
     /** 
      *  \def IgnoreExceptionsForCall - ignore all exceptions for the given argument call (evaluate arg)
