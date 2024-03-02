@@ -703,6 +703,24 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \brief shorthand for GetRootElement ().LookupOneElement (e) - so requires root element exists
+             */
+            nonvirtual Element::Ptr LookupOneElement (const XPath::Expression& e) const;
+
+        public:
+            /**
+             *  \brief shorthand for GetRootElement ().Lookup (e) - so requires root element exists
+             */
+            nonvirtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) const;
+
+        public:
+            /**
+             *  \brief shorthand for GetRootElement ().LookupElements (e) - so requires root element exists
+             */
+            nonvirtual Traversal::Iterable<Element::Ptr> LookupElements (const XPath::Expression& e) const;
+
+        public:
+            /**
              */
             nonvirtual Characters::String ToString () const;
 

@@ -400,6 +400,21 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         // Note this cannot be implemented using the existing Replace () mechanism for elements because the document could be created without a root.
         return GetRep ()->ReplaceRootElement (newEltName, childrenInheritNS);
     }
+    inline Element::Ptr Document::Ptr::LookupOneElement (const XPath::Expression& e) const
+    {
+        RequireNotNull (GetRootElement ());
+        return GetRootElement ().LookupOneElement (e);
+    }
+    inline Traversal::Iterable<XPath::Result> Document::Ptr::Lookup (const XPath::Expression& e) const
+    {
+        RequireNotNull (GetRootElement ());
+        return GetRootElement ().Lookup (e);
+    }
+    inline Traversal::Iterable<Element::Ptr> Document::Ptr::LookupElements (const XPath::Expression& e) const
+    {
+        RequireNotNull (GetRootElement ());
+        return GetRootElement ().LookupElements (e);
+    }
 
 }
 
