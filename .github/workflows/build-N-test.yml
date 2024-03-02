@@ -71,7 +71,7 @@ jobs:
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build System Info
         run: |
           lsb_release -d 2>/dev/null || true
@@ -160,7 +160,7 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ matrix.xcode }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build System Info
         run: |
           echo "CWD: `pwd`"
@@ -238,7 +238,9 @@ jobs:
       MAKEFLAGS: "--jobs=2 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          path: "c:/Stroika"
       # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
       - name: Extract branch name
         shell: bash
@@ -265,10 +267,6 @@ jobs:
           docker ps -a
           docker exec buildContainer systeminfo
           docker exec buildContainer df -h
-      - name: Git Checkout
-        shell: "bash"
-        run: |
-          docker exec --workdir c:/ buildContainer git clone https://github.com/SophistSolutions/Stroika.git --branch ${{ steps.extract_branch.outputs.branch }}
       - name: Configure
         shell: "bash"
         run: |
@@ -332,7 +330,7 @@ jobs:
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Install tools required to build Stroika
       run: |
         sudo apt-get update -y
