@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
 
 namespace Stroika::Foundation::Execution {
     template <>
-    inline void ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
+    inline void ThrowIfNull (const void* p, const HRESULT& hr)
     {
         ThrowIfNull (p, SystemErrorException{hr, Platform::Windows::HRESULT_error_category ()});
     }

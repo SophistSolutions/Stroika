@@ -140,32 +140,11 @@ namespace Stroika::Foundation::Execution {
      *************************** Execution::ThrowIfNull *****************************
      ********************************************************************************
      */
-    inline void ThrowIfNull (const void* p)
+    template <equality_comparable_with<nullptr_t> T, typename E>
+    inline void ThrowIfNull (T p, const E& e)
     {
         if (p == nullptr) [[unlikely]] {
-            Throw (bad_alloc{}, "ThrowIfNull (nullptr) - throwing bad_alloc");
-        }
-    }
-    template <typename E>
-    inline void ThrowIfNull (const void* p, const E& e)
-    {
-        static_assert (is_convertible_v<E*, exception*>);
-        if (p == nullptr) [[unlikely]] {
-            Throw (e, "ThrowIfNull (nullptr,X) - throwing X");
-        }
-    }
-    template <typename T>
-    inline void ThrowIfNull (const unique_ptr<T>& p)
-    {
-        if (p == nullptr) [[unlikely]] {
-            Throw (bad_alloc{}, "ThrowIfNull (unique_ptr<> (nullptr)) - throwing bad_alloc");
-        }
-    }
-    template <typename T>
-    inline void ThrowIfNull (const shared_ptr<T>& p)
-    {
-        if (p == nullptr) [[unlikely]] {
-            Throw (bad_alloc{}, "ThrowIfNull (shared_ptr<> (nullptr)) - throwing bad_alloc");
+            Throw (e, "ThrowIfNull (nullptr) - throwing bad_alloc");
         }
     }
 

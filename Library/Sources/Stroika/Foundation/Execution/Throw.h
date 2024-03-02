@@ -90,15 +90,10 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] void ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
 
     /**
-     *  If the first argument is null, throw the second argument exception (or if none, throw bad_alloc)
+     *  If the first argument is null, throw the second argument exception (which defaults to bad_alloc)
      */
-    template <typename E>
-    void ThrowIfNull (const void* p, const E& e = E{});
-    void ThrowIfNull (const void* p);
-    template <typename T>
-    void ThrowIfNull (const unique_ptr<T>& p);
-    template <typename T>
-    void ThrowIfNull (const shared_ptr<T>& p);
+    template <equality_comparable_with<nullptr_t> T, typename E = bad_alloc>
+    void ThrowIfNull (T p, const E& e = E{});
 
     /** 
      *  \def IgnoreExceptionsForCall - ignore all exceptions for the given argument call (evaluate arg)
