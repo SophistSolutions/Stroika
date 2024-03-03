@@ -93,6 +93,9 @@ namespace {
                 // No idea if that URI argument should be sysmtemID, publicID, or namespace???
                 optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
                     .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
+                if (not r) {
+                    DbgTrace ("Note ResolveMatch %s failed to find an entry in resolver.", URI);
+                }
                 return r.has_value ();
             }
             return 0;
@@ -108,9 +111,8 @@ namespace {
             if (sCurrent_) {
                 optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
                     .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
-
                 // I think we must allocate saved/returned object on the heap, and return ptr to it, and hope CLOSE function gets called
-                // I THINK thats the 'context' passed to read... That is because the API used by libxml2 appears to just be a 'plain C pointer' we need to provide
+                // I THINK that's the 'context' passed to read... That is because the API used by libxml2 appears to just be a 'plain C pointer' we need to provide
                 if (r.has_value ()) {
                     return new InputStream::Ptr<byte> (r->fData.As<InputStream::Ptr<byte>> ());
                 }
@@ -127,9 +129,9 @@ namespace {
          */
         static int ResolverClose_ (void* context)
         {
-            if (context == NULL)
-                return (-1);
-            AssertNotNull (sCurrent_);
+            if (context == nullptr)
+                return -1;
+            AssertNotNull (sCurrent_); // my read of API is that this cannot happen (cuz opens will fail first and must have live resolver object)
             delete reinterpret_cast<InputStream::Ptr<byte>*> (context);
             return 0;
         }
@@ -139,8 +141,6 @@ namespace {
          * @buffer: where to store data
          * @len: number of bytes to read
          *
-         * Implement an sql: query read.
-         *
          * Returns the number of bytes read or -1 in case of error
          */
         static int ResolverRead_ (void* context, char* buffer, int len)
@@ -148,7 +148,7 @@ namespace {
             AssertNotNull (sCurrent_);
             auto       inStream = reinterpret_cast<InputStream::Ptr<byte>*> (context);
             span<byte> r        = inStream->Read (as_writable_bytes (span{buffer, static_cast<size_t> (len)}));
-            return r.size ();
+            return static_cast<int> (r.size ());
         }
     };
 
