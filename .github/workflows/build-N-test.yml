@@ -269,16 +269,16 @@ jobs:
       - name: Configure
         shell: "bash"
         run: |
-          docker exec --workdir "$GITHUB_WORKSPACE" buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
-          docker exec --workdir "$GITHUB_WORKSPACE" buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
+          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
+          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
       - name: Build
         shell: "bash"
         run: |
-          docker exec --workdir "$GITHUB_WORKSPACE" --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
+          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
       - name: Run-Tests
         shell: "bash"
         run: |
-          docker exec --workdir "$GITHUB_WORKSPACE" --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
       - name: Build System Info
         shell: "bash"
         run: |
@@ -290,7 +290,7 @@ jobs:
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
         run: |
-          docker exec --workdir "$GITHUB_WORKSPACE" buildContainer sh -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
+          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` buildContainer sh -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
           docker stop buildContainer
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
