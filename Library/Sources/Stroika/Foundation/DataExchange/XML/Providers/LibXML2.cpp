@@ -61,15 +61,16 @@ namespace {
 
     struct RegisterResolver_ {
 
-        static inline thread_local RegisterResolver_    *sCurrent_ = nullptr;
-        const Resource::ResolverPtr fResolver_;
+        static inline thread_local RegisterResolver_* sCurrent_ = nullptr;
+        const Resource::ResolverPtr                   fResolver_;
 
         RegisterResolver_ (const Resource::ResolverPtr& resolver)
             : fResolver_{resolver}
         {
             sCurrent_ = this;
             if (resolver != nullptr) {
-                if (xmlRegisterInputCallbacks (sqlMatch, sqlOpen, sqlRead, sqlClose) < 0) {
+                // @todo ALSO need GLOBAL flag  - if this ever gets called, 2x at same time, from threads, xmlRegisterInputCallbacks not safe (though maybe OK if we are only ones ever using)?
+                if (xmlRegisterInputCallbacks (ResolverMatch_, ResolverOpen_, ResolverRead_, ResolverClose_) < 0) {
                     fprintf (stderr, "failed to register SQL handler\n");
                     exit (1);
                 }
@@ -79,91 +80,75 @@ namespace {
         ~RegisterResolver_ ()
         {
             sCurrent_ = nullptr;
+            // dont bother unregistering cuz there is no such api (I can find) and dont know old values to restore.
         }
 
-        /**
- * sqlMatch:
- * @URI: an URI to test
- *
- * Check for an sql: query
- *
- * Returns 1 if yes and 0 if another Input module should be used
- */
-        static int sqlMatch (const char* URI)
+        /*
+         * @URI: an URI to test
+         * Returns 1 if yes and 0 if another Input module should be used
+         */
+        static int ResolverMatch_ (const char* URI)
         {
-
-            optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{.fNamespace = String::FromUTF8 (URI)});
-
-            if ((URI != NULL) && (!strncmp (URI, "sql:", 4)))
-                return (1);
-            return (0);
-        }
-
-        /**
- * sqlOpen:
- * @URI: an URI to test
- *
- * Return a pointer to the sql: query handler, in this example simply
- * the current pointer...
- *
- * Returns an Input context or NULL in case or error
- */
-        static void* sqlOpen (const char* URI)
-        {
-            return nullptr;
-#if 0
-        if ((URI == NULL) || (strncmp (URI, "sql:", 4)))
-            return (NULL);
-        cur  = result;
-        rlen = strlen (result);
-        return ((void*)cur);
-#endif
-        }
-
-        /**
- * sqlClose:
- * @context: the read context
- *
- * Close the sql: query handler
- *
- * Returns 0 or -1 in case of error
- */
-        static int sqlClose (void* context)
-        {
-#if 0
-        if (context == NULL)
-            return (-1);
-        cur  = NULL;
-        rlen = 0;
-#endif
-            return (0);
-        }
-
-        /**
- * sqlRead:
- * @context: the read context
- * @buffer: where to store data
- * @len: number of bytes to read
- *
- * Implement an sql: query read.
- *
- * Returns the number of bytes read or -1 in case of error
- */
-        static int sqlRead (void* context, char* buffer, int len)
-        {
+            if (sCurrent_) {
+                // No idea if that URI argument should be sysmtemID, publicID, or namespace???
+                optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
+                    .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
+                return r.has_value ();
+            }
             return 0;
-#if 0
-        const char* ptr = (const char*)context;
+        }
 
-        if ((context == NULL) || (buffer == NULL) || (len < 0))
-            return (-1);
+        /**
+         * @URI: an URI to test
+         *
+         * Returns an Input context or NULL in case or error
+         */
+        static void* ResolverOpen_ (const char* URI)
+        {
+            if (sCurrent_) {
+                optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
+                    .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
 
-        if (len > rlen)
-            len = rlen;
-        memcpy (buffer, ptr, len);
-        rlen -= len;
-        return (len);
-#endif
+                // I think we must allocate saved/returned object on the heap, and return ptr to it, and hope CLOSE function gets called
+                // I THINK thats the 'context' passed to read... That is because the API used by libxml2 appears to just be a 'plain C pointer' we need to provide
+                if (r.has_value ()) {
+                    return new InputStream::Ptr<byte> (r->fData.As<InputStream::Ptr<byte>> ());
+                }
+            }
+            return nullptr;
+        }
+
+        /**
+         * @context: the read context
+         *
+         * Close the sql: query handler
+         *
+         * Returns 0 or -1 in case of error
+         */
+        static int ResolverClose_ (void* context)
+        {
+            if (context == NULL)
+                return (-1);
+            AssertNotNull (sCurrent_);
+            delete reinterpret_cast<InputStream::Ptr<byte>*> (context);
+            return 0;
+        }
+
+        /**
+         * @context: the read context
+         * @buffer: where to store data
+         * @len: number of bytes to read
+         *
+         * Implement an sql: query read.
+         *
+         * Returns the number of bytes read or -1 in case of error
+         */
+        static int ResolverRead_ (void* context, char* buffer, int len)
+        {
+            AssertNotNull (sCurrent_);
+            auto       inStream = reinterpret_cast<InputStream::Ptr<byte>*> (context);
+            span<byte> r        = inStream->Read (as_writable_bytes (span{buffer, static_cast<size_t> (len)}));
+            return r.size ();
         }
     };
 
