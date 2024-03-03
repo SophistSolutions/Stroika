@@ -256,6 +256,7 @@ jobs:
       - name: docker pull ${{ matrix.container_image }}
         run: docker pull ${{ matrix.container_image }}
       - name: Start docker build environment
+        shell: "bash"
         ### ash rebaseall nonsense to try and workaround sporadic failure on MSYS
         ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
         ### and with this hack, it hasn't happened in years --LGP 2024-03-03
@@ -286,8 +287,8 @@ jobs:
         run: |
           df -h
           docker exec buildContainer df -h
-          echo WORSPACEDIR:
-          ls -l ${GITHUB_WORKSPACE}
+          echo -n "WORSPACEDIR:"; ls -l "${GITHUB_WORKSPACE}"
+          echo -n "WORSPACEDIR in container:"; docker exec buildContainer --workdir c:/Stroika ls -l
       - name: Copy Build Artifacts
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
