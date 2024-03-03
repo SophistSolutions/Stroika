@@ -248,7 +248,7 @@ jobs:
         shell: "bash"
         run: |
           echo "CWD: `pwd`"
-          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
           df -h
           systeminfo
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
@@ -260,8 +260,8 @@ jobs:
         ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
         ### and with this hack, it hasn't happened in years --LGP 2024-03-03
         run: |
-          echo docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' -v "c:\Stroika:$GITHUB_WORKSPACE" --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
-          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' -v "c:\Stroika:$GITHUB_WORKSPACE" --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
+          echo docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' -v "c:\Stroika:${GITHUB_WORKSPACE}" --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
+          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' -v "c:\Stroika:${GITHUB_WORKSPACE}" --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
       - name: Print Info about docker system
         shell: "bash"
         run: |
