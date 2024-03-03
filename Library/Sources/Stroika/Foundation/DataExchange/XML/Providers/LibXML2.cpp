@@ -63,8 +63,8 @@ namespace {
     // the lack --LGP 2024-03-03
     //
     struct RegisterResolver_ {
-        static inline thread_local RegisterResolver_* sCurrent_ = nullptr;  // magic to workaround lack of 'context' / rentrancy support here in libxml2
-        const Resource::ResolverPtr                   fResolver_;
+        static inline thread_local RegisterResolver_* sCurrent_ = nullptr; // magic to workaround lack of 'context' / rentrancy support here in libxml2
+        const Resource::ResolverPtr fResolver_;
 
         RegisterResolver_ (const Resource::ResolverPtr& resolver)
             : fResolver_{resolver}
@@ -82,7 +82,7 @@ namespace {
         ~RegisterResolver_ ()
         {
             sCurrent_ = nullptr;
-            // don't bother unregistering cuz there is no such api (I can find) and don't know old values to restore.
+            // don't bother unregistering (xmlCleanupInputCallbacks ) cuz more likely to cause re-entrancy problems than solve them...
         }
 
         /*
