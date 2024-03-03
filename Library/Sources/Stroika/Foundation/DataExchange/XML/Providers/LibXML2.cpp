@@ -57,11 +57,13 @@ namespace {
 }
 
 namespace {
-    //http://www.xmlsoft.org/examples/io1.c
-
+    // I never found docs on how to do schema resolver. Closest I could find was:
+    //      http://www.xmlsoft.org/examples/io1.c
+    // But this has several serious defects - like VERY minmal re-entancy support. But hopefully I can do enough magic with thread_local to worakround
+    // the lack --LGP 2024-03-03
+    //
     struct RegisterResolver_ {
-
-        static inline thread_local RegisterResolver_* sCurrent_ = nullptr;
+        static inline thread_local RegisterResolver_* sCurrent_ = nullptr;  // magic to workaround lack of 'context' / rentrancy support here in libxml2
         const Resource::ResolverPtr                   fResolver_;
 
         RegisterResolver_ (const Resource::ResolverPtr& resolver)
@@ -80,7 +82,7 @@ namespace {
         ~RegisterResolver_ ()
         {
             sCurrent_ = nullptr;
-            // dont bother unregistering cuz there is no such api (I can find) and dont know old values to restore.
+            // don't bother unregistering cuz there is no such api (I can find) and don't know old values to restore.
         }
 
         /*
@@ -90,7 +92,7 @@ namespace {
         static int ResolverMatch_ (const char* URI)
         {
             if (sCurrent_) {
-                // No idea if that URI argument should be sysmtemID, publicID, or namespace???
+                // No idea if that URI argument should be systemID, publicID, or namespace???
                 optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
                     .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
                 if (not r) {
