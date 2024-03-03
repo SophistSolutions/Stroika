@@ -57,6 +57,119 @@ namespace {
 }
 
 namespace {
+    //http://www.xmlsoft.org/examples/io1.c
+
+    struct RegisterResolver_ {
+
+        static inline thread_local RegisterResolver_    *sCurrent_ = nullptr;
+        const Resource::ResolverPtr fResolver_;
+
+        RegisterResolver_ (const Resource::ResolverPtr& resolver)
+            : fResolver_{resolver}
+        {
+            sCurrent_ = this;
+            if (resolver != nullptr) {
+                if (xmlRegisterInputCallbacks (sqlMatch, sqlOpen, sqlRead, sqlClose) < 0) {
+                    fprintf (stderr, "failed to register SQL handler\n");
+                    exit (1);
+                }
+            }
+        }
+
+        ~RegisterResolver_ ()
+        {
+            sCurrent_ = nullptr;
+        }
+
+        /**
+ * sqlMatch:
+ * @URI: an URI to test
+ *
+ * Check for an sql: query
+ *
+ * Returns 1 if yes and 0 if another Input module should be used
+ */
+        static int sqlMatch (const char* URI)
+        {
+
+            optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{.fNamespace = String::FromUTF8 (URI)});
+
+            if ((URI != NULL) && (!strncmp (URI, "sql:", 4)))
+                return (1);
+            return (0);
+        }
+
+        /**
+ * sqlOpen:
+ * @URI: an URI to test
+ *
+ * Return a pointer to the sql: query handler, in this example simply
+ * the current pointer...
+ *
+ * Returns an Input context or NULL in case or error
+ */
+        static void* sqlOpen (const char* URI)
+        {
+            return nullptr;
+#if 0
+        if ((URI == NULL) || (strncmp (URI, "sql:", 4)))
+            return (NULL);
+        cur  = result;
+        rlen = strlen (result);
+        return ((void*)cur);
+#endif
+        }
+
+        /**
+ * sqlClose:
+ * @context: the read context
+ *
+ * Close the sql: query handler
+ *
+ * Returns 0 or -1 in case of error
+ */
+        static int sqlClose (void* context)
+        {
+#if 0
+        if (context == NULL)
+            return (-1);
+        cur  = NULL;
+        rlen = 0;
+#endif
+            return (0);
+        }
+
+        /**
+ * sqlRead:
+ * @context: the read context
+ * @buffer: where to store data
+ * @len: number of bytes to read
+ *
+ * Implement an sql: query read.
+ *
+ * Returns the number of bytes read or -1 in case of error
+ */
+        static int sqlRead (void* context, char* buffer, int len)
+        {
+            return 0;
+#if 0
+        const char* ptr = (const char*)context;
+
+        if ((context == NULL) || (buffer == NULL) || (len < 0))
+            return (-1);
+
+        if (len > rlen)
+            len = rlen;
+        memcpy (buffer, ptr, len);
+        rlen -= len;
+        return (len);
+#endif
+        }
+    };
+
+}
+
+namespace {
     struct SchemaRep_ : ILibXML2SchemaRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
@@ -65,7 +178,7 @@ namespace {
             : fResolver_{resolver}
             , fSchemaData{schemaData.ReadAll ()}
         {
-            // @todo - pay attention to argument resolver in parsing schema!!! (lowpri til we have one that needs it)
+            RegisterResolver_    registerResolver{resolver};
             xmlSchemaParserCtxt* schemaParseContext =
                 xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (fSchemaData.data ()), static_cast<int> (fSchemaData.size ()));
             fCompiledSchema = xmlSchemaParse (schemaParseContext);
