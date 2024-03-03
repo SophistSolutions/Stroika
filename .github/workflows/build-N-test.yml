@@ -252,14 +252,15 @@ jobs:
           df -h
           systeminfo
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+      # No actual need todo this step (would be done implicitly/automatically) - but do to track how long the step takes (13min)
       - name: docker pull ${{ matrix.container_image }}
         run: docker pull ${{ matrix.container_image }}
       - name: Start docker build environment
         ### ash rebaseall nonsense to try and workaround sporadic failure on MSYS
         ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
-        ### and with this hack, it hasn't happened in 5 tries --LGP 2022-01-26
+        ### and with this hack, it hasn't happened in years --LGP 2024-03-03
         run: |
-          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
+          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' -v "c:\Stroika:$GITHUB_WORKSPACE" --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
       - name: Print Info about docker system
         shell: "bash"
         run: |
@@ -269,16 +270,16 @@ jobs:
       - name: Configure
         shell: "bash"
         run: |
-          docker exec --workdir -v c:\Stroika:$GITHUB_WORKSPACE buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
-          docker exec --workdir -v c:\Stroika:$GITHUB_WORKSPACE buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
+          docker exec --workdir c:/Stroika buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
+          docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
       - name: Build
         shell: "bash"
         run: |
-          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
       - name: Run-Tests
         shell: "bash"
         run: |
-          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
       - name: Build System Info
         shell: "bash"
         run: |
@@ -290,7 +291,7 @@ jobs:
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
         run: |
-          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` buildContainer sh -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
+          docker exec --workdir c:/Stroika buildContainer sh -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
           docker stop buildContainer
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
