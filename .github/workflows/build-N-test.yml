@@ -269,8 +269,8 @@ jobs:
       - name: Configure
         shell: "bash"
         run: |
-          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
-          docker exec --workdir `cygpath -m $GITHUB_WORKSPACE` buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
+          docker exec --workdir -v c:\Stroika:$GITHUB_WORKSPACE buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
+          docker exec --workdir -v c:\Stroika:$GITHUB_WORKSPACE buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
       - name: Build
         shell: "bash"
         run: |
