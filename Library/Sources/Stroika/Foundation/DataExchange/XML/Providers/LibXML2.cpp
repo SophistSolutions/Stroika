@@ -578,7 +578,7 @@ namespace {
                     Execution::ThrowIfNull (fResultNodeList);
                 }
                 catch (...) {
-                    if (fResultNodeList ! = nullptr) {
+                    if (fResultNodeList != nullptr) {
                         xmlXPathFreeObject (fResultNodeList);
                         fResultNodeList = nullptr;
                     }
