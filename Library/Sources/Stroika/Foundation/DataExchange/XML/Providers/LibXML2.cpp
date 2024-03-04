@@ -59,11 +59,11 @@ namespace {
 namespace {
     // I never found docs on how to do schema resolver. Closest I could find was:
     //      http://www.xmlsoft.org/examples/io1.c
-    // But this has several serious defects - like VERY minmal re-entancy support. But hopefully I can do enough magic with thread_local to worakround
+    // But this has several serious defects - like VERY minimal reentrancy support. But hopefully I can do enough magic with thread_local to worakround
     // the lack --LGP 2024-03-03
     //
     struct RegisterResolver_ {
-        static inline thread_local RegisterResolver_* sCurrent_ = nullptr; // magic to workaround lack of 'context' / rentrancy support here in libxml2
+        static inline thread_local RegisterResolver_* sCurrent_ = nullptr; // magic to workaround lack of 'context' / reentrancy support here in libxml2
         const Resource::ResolverPtr fResolver_;
 
         RegisterResolver_ (const Resource::ResolverPtr& resolver)
@@ -73,8 +73,7 @@ namespace {
             if (resolver != nullptr) {
                 // @todo ALSO need GLOBAL flag  - if this ever gets called, 2x at same time, from threads, xmlRegisterInputCallbacks not safe (though maybe OK if we are only ones ever using)?
                 if (xmlRegisterInputCallbacks (ResolverMatch_, ResolverOpen_, ResolverRead_, ResolverClose_) < 0) {
-                    fprintf (stderr, "failed to register SQL handler\n");
-                    exit (1);
+                    AssertNotReached ();
                 }
             }
         }
