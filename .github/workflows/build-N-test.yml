@@ -286,8 +286,7 @@ jobs:
         run: |
           df -h
           docker exec buildContainer df -h
-          echo -n "WORSPACEDIR:"; ls -l "${GITHUB_WORKSPACE}"
-          echo -n "WORSPACEDIR in container:"; docker exec buildContainer --workdir c:/Stroika ls -l
+          echo -n "WORSPACEDIR(${GITHUB_WORKSPACE}): "; ls -l "${GITHUB_WORKSPACE}"
       - name: Copy Build Artifacts
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
