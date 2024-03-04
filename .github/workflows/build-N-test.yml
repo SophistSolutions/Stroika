@@ -298,13 +298,11 @@ jobs:
           echo "got this far1"
           docker exec buildContainer df -h
           echo "got this far1.1"
-          docker exec buildContainer "echo in container"
-          echo "got this far1.2"
-          docker exec --workdir c:/Stroika buildContainer sh -c "echo in container"
+          docker exec --workdir c:/Stroika buildContainer bash -c "echo in container"
           echo "got this far1.3"
-          docker exec --workdir c:/Stroika buildContainer sh -c "pwd in container `pwd`"
+          docker exec --workdir c:/Stroika buildContainer bash -c "pwd in container `pwd`"
           echo "got this far2"
-          docker exec --workdir c:/Stroika buildContainer sh -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/ || :'
+          docker exec --workdir c:/Stroika buildContainer bash -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/ || :'
           docker stop buildContainer
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
