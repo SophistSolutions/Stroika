@@ -579,6 +579,7 @@ namespace {
                 }
                 catch (...) {
                     xmlXPathFreeContext (fCtx);
+                    fCtx = nullptr;
                     Execution::ReThrow ();
                 }
             }
