@@ -66,7 +66,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Containers_KeyedCollection, original)
     {
         {
             using T1               = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
@@ -90,6 +90,22 @@ namespace {
         Test_KeyedCollectionTypeIndexUsesStdSet_::RunAll ();
 
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_KeyedCollection, thoughtISawBugWithThisCopyScenarioButSeemsFine)
+    {
+        struct A {
+            int f;
+        };
+        KeyedCollection<A, int> obj {[] (A e) { return e.f; }};
+        obj.Add (A{.f = 3});
+
+        auto objCopy = obj;
+        obj.Add (A{.f = 4});
+        obj = objCopy;
+        
     }
 }
 #endif
