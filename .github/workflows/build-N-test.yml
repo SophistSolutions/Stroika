@@ -296,8 +296,13 @@ jobs:
           docker images -q
           docker ps -a
           echo "got this far1"
-          docker exec --workdir c:/Stroika buildContainer "echo in container"
-          docker exec --workdir c:/Stroika buildContainer "pwd in container `pwd`"
+          docker exec buildContainer df -h
+          echo "got this far1.1"
+          docker exec buildContainer "echo in container"
+          echo "got this far1.2"
+          docker exec --workdir c:/Stroika buildContainer sh -c "echo in container"
+          echo "got this far1.3"
+          docker exec --workdir c:/Stroika buildContainer sh -c "pwd in container `pwd`"
           echo "got this far2"
           docker exec --workdir c:/Stroika buildContainer sh -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/ || :'
           docker stop buildContainer
