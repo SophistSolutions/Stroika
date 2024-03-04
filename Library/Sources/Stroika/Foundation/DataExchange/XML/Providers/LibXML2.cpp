@@ -578,17 +578,23 @@ namespace {
                     Execution::ThrowIfNull (fResultNodeList);
                 }
                 catch (...) {
-                    xmlXPathFreeContext (fCtx);
-                    fCtx = nullptr;
+                    if (fResultNodeList ! = nullptr) {
+                        xmlXPathFreeObject (fResultNodeList);
+                        fResultNodeList = nullptr;
+                    }
+                    if (fCtx != nullptr) {
+                        xmlXPathFreeContext (fCtx);
+                        fCtx = nullptr;
+                    }
                     Execution::ReThrow ();
                 }
             }
             ~XPathLookupHelper_ ()
             {
-                AssertNotNull (fCtx);
-                xmlXPathFreeContext (fCtx);
                 AssertNotNull (fResultNodeList);
                 xmlXPathFreeObject (fResultNodeList);
+                AssertNotNull (fCtx);
+                xmlXPathFreeContext (fCtx);
             }
             static optional<XPath::Result> ToResult (xmlNode* n)
             {
