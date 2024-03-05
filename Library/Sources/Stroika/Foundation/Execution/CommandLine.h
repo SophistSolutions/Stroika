@@ -87,6 +87,10 @@ namespace Stroika::Foundation::Execution {
      */
     class CommandLine {
     public:
+        /**
+         *  Unlike most other Stroika APIs, plain 'char' here for char*, is interpreted as being in the SDK code page (current locale - like SDKChar if narrow).
+         */
+        CommandLine () = delete;
         CommandLine (const String& cmdLine);
         CommandLine (int argc, char* argv[]);
         CommandLine (int argc, const char* argv[]);
@@ -119,9 +123,26 @@ namespace Stroika::Foundation::Execution {
              */
             bool fSupportsArgument{false};
 
-            bool fArgumentRequired{false};
+            /**
+             *  Typically, an option that takes an argument, that argument is required. But rarely - you might want an option that takes
+             *  an argument that is optional.
+             */
+            bool fIfSupportsArgumentThenRequired{true};
 
+            /**
+             *  If you can have the same option repeated multiple times. The only point of this would be for
+             *  things to gather multiple arguments. Note that this can be used with no fSingleCharName and no fLongName, meaning it captures
+             *  un-dash-decorated arguments.
+             */
             bool fRepeatable{false};
+
+            // If true, then Get () will throw if this option isn't found in the commandline
+            bool fRequired{false};
+
+            bool operator== (const Option&) const = default;
+            auto operator <=> (const Option&) const = default;
+
+            String GetArgumentDescription () const;
         };
 
     public:
@@ -159,9 +180,18 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+        *  overload with no arguments /0 - returns all commandline arguments.
         *  \req o.fSupportsArgument
          */
+        nonvirtual Sequence<String> GetArguments () const;
         nonvirtual Sequence<String> GetArguments (const Option& o) const;
+
+    private:
+        /*
+         *  This may throw, but NOT for not finding option o, just for finding o, but ill-formed.
+         *  Returns nullopt if Option 'o' not found at this point in sequence, or the result if it is found.
+         */
+        static optional<pair<bool, optional<String>>> ParseOneArg_ (const Option& o, Traversal::Iterator<String>* argi);
 
     private:
         Sequence<String> fArgs_;

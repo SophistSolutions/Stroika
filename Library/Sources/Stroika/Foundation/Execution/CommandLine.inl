@@ -17,24 +17,12 @@ namespace Stroika::Foundation::Execution {
      ********************************** CommandLine *********************************
      ********************************************************************************
      */
-    inline CommandLine::CommandLine (const String& cmdLine)
-        : fArgs_{ParseCommandLine (cmdLine)}
-    {
-    }
     inline CommandLine::CommandLine (int argc, char* argv[])
-        : fArgs_{ParseCommandLine (argc, argv)}
-    {
-    }
-    inline CommandLine::CommandLine (int argc, const char* argv[])
-        : fArgs_{ParseCommandLine (argc, argv)}
+        : CommandLine{argc, (const char**)argv}
     {
     }
     inline CommandLine::CommandLine (int argc, wchar_t* argv[])
-        : fArgs_{ParseCommandLine (argc, argv)}
-    {
-    }
-    inline CommandLine::CommandLine (int argc, const wchar_t* argv[])
-        : fArgs_{ParseCommandLine (argc, argv)}
+        : CommandLine{argc, (const wchar_t**)argv}
     {
     }
     inline bool CommandLine::Has (const Option& o) const
@@ -46,6 +34,10 @@ namespace Stroika::Foundation::Execution {
         Require (o.fSupportsArgument);
         auto r = get<Sequence<String>> (Get (o));
         return r.empty () ? optional<String>{} : r[0];
+    }
+    inline Sequence<String> CommandLine::GetArguments () const
+    {
+        return this->fArgs_;
     }
     inline Sequence<String> CommandLine::GetArguments (const Option& o) const
     {

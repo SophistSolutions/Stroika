@@ -3,13 +3,18 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Characters/Format.h"
 #include "../Characters/SDKString.h"
 #include "../Characters/StringBuilder.h"
+#include "../Containers/Set.h"
 
 #include "CommandLine.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Traversal;
 
 /*
  ********************************************************************************
@@ -173,57 +178,144 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<
 
 /*
  ********************************************************************************
+ ************************** CommandLine::Option *********************************
+ ********************************************************************************
+ */
+String CommandLine::Option::GetArgumentDescription () const
+{
+    if (fSingleCharName and fLongName) {
+        return Characters::Format (L"(%c|%s)", *fSingleCharName, fLongName->As<wstring> ().c_str ());
+    }
+    else if (this->fSingleCharName) {
+        return Characters::Format (L"%c", *fSingleCharName);
+    }
+    else if (fLongName) {
+        return *fLongName;
+    }
+    else {
+        return String{};
+    }
+}
+
+/*
+ ********************************************************************************
  ********************************** CommandLine *********************************
  ********************************************************************************
  */
+CommandLine::CommandLine (const String& cmdLine)
+    : fArgs_{ParseCommandLine (cmdLine)}
+{
+}
+CommandLine::CommandLine (int argc, const char* argv[])
+    : fArgs_{ParseCommandLine (argc, argv)}
+{
+}
+CommandLine::CommandLine (int argc, const wchar_t* argv[])
+    : fArgs_{ParseCommandLine (argc, argv)}
+{
+}
+
 void CommandLine::Validate (Iterable<Option> options) const
 {
-    // @todo
-    WeakAssertNotImplemented ();
+    Set<Option> all{options};
+    Set<Option> unused{all};
+    for (Iterator<String> argi = fArgs_.begin (); argi != fArgs_.end (); ++argi) {
+       if ( all.First ([&] (Option o) {
+            if (optional<pair<bool, optional<String>>> oRes = ParseOneArg_ (o, &argi)) {
+                unused.RemoveIf (o);
+                return true;
+            }
+                return false;
+        })) {
+        
+       }
+       else {
+           Execution::Throw (InvalidCommandLineArgument{"Unrecognized argument: "sv + *argi, *argi});
+       }
+    }
+    if (auto o = unused.First ([] (Option o) { return o.fRequired; })) {
+        Execution::Throw (InvalidCommandLineArgument{"Required command line argument "sv + o->GetArgumentDescription () + " was not provided"sv});
+    }
 }
 
 tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
 {
     bool             found = false;
     Sequence<String> arguments;
-    for (Traversal::Iterator<String> argi = fArgs_.begin (); argi != fArgs_.end (); ++argi) {
-        String ai = *argi;
-        if (o.fSingleCharName and ai.length () == 2 and ai[0] == '-' and ai[1] == o.fSingleCharName) {
-            found = true;
-            if (o.fSupportsArgument) {
-                ++argi;
-                if (argi != fArgs_.end ()) {
-                    arguments += *argi;
-                }
+    for (Iterator<String> argi = fArgs_.begin (); argi != fArgs_.end (); ++argi) {
+        if (optional<pair<bool, optional<String>>> oRes = ParseOneArg_ (o, &argi)) {
+            if (oRes->first) {
+                found = true;
             }
-        }
-        if (found and not o.fRepeatable) {
-            break; // no need to keep looking
-        }
-        if (o.fLongName and ai.length () >= 2 + o.fLongName->size () and ai[0] == '-' and ai[1] == '-' and
-            ai.SubString (2, o.fLongName->size ()) == o.fLongName) {
-            found = true;
-            if (o.fSupportsArgument) {
-                // see if '=' follows longname
-                String restOfArgi = ai.SubString (2 + o.fLongName->size ());
-                if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
-                    arguments += restOfArgi.SubString (1);
-                }
-                else {
-                    ++argi;
-                    if (argi != fArgs_.end ()) {
-                        arguments += *argi;
-                    }
-                }
+            if (oRes->second) {
+                arguments += *oRes->second;
             }
-        }
-        if (not o.fSingleCharName and not o.fLongName and o.fArgumentRequired and not ai.StartsWith ("-"sv)) {
-            // note we add the argument, but dont set 'found'
-            arguments += *argi;
         }
         if (found and not o.fRepeatable) {
             break; // no need to keep looking
         }
     }
+    if (o.fRequired and not found) {
+        Execution::Throw (InvalidCommandLineArgument{Characters::Format (L"Command line argument %s required but not provided",
+                                                                         o.GetArgumentDescription ().As<wstring> ().c_str ())});
+    }
+    if (found and o.fSupportsArgument and o.fIfSupportsArgumentThenRequired and arguments.empty ()) {
+        Execution::Throw (InvalidCommandLineArgument{Characters::Format (
+            L"Command line argument %s provided, but without required argument", o.GetArgumentDescription ().As<wstring> ().c_str ())});
+    }
     return make_tuple (found, arguments);
+}
+
+optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
+{
+    RequireNotNull (argi);
+    Require (not argi->Done ());
+
+    String ai = **argi;
+    if (o.fSingleCharName and ai.length () == 2 and ai[0] == '-' and ai[1] == o.fSingleCharName) {
+        if (o.fSupportsArgument) {
+            ++(*argi);
+            if ((*argi).Done ()) {
+                if (o.fIfSupportsArgumentThenRequired) {
+                    Execution::Throw (InvalidCommandLineArgument{
+                        "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
+                }
+                return make_pair (true, nullopt);
+            }
+            else {
+                return make_pair (true, **argi);
+            }
+        }
+        return make_pair (true, nullopt);
+    }
+    // this isn't right!!! - in case where no argument supported - must match all of string (and if next char not =)
+    if (o.fLongName and ai.length () >= 2 + o.fLongName->size () and ai[0] == '-' and ai[1] == '-' and
+        ai.SubString (2, o.fLongName->size ()) == o.fLongName) {
+        if (o.fSupportsArgument) {
+            // see if '=' follows longname
+            String restOfArgi = ai.SubString (2 + o.fLongName->size ());
+            if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
+                return make_pair (true, restOfArgi.SubString (1));
+            }
+            else {
+                ++(*argi);
+                if ((*argi).Done ()) {
+                    if (o.fIfSupportsArgumentThenRequired) {
+                        Execution::Throw (InvalidCommandLineArgument{
+                            "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
+                    }
+                    return make_pair (true, nullopt);
+                }
+                else {
+                    return make_pair (true, **argi);
+                }
+            }
+        }
+        return make_pair (true, nullopt);
+    }
+    if (not o.fSingleCharName and not o.fLongName and o.fSupportsArgument and not ai.StartsWith ("-"sv)) {
+        // note we add the argument, but don't set 'found'
+        return make_pair (false, **argi);
+    }
+    return nullopt;
 }
