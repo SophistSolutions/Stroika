@@ -190,7 +190,7 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
         String ai = *argi;
         if (o.fSingleCharName and ai.length () == 2 and ai[0] == '-' and ai[1] == o.fSingleCharName) {
             found = true;
-            if (not o.fSupportsArgument) {
+            if (o.fSupportsArgument) {
                 ++argi;
                 if (argi != fArgs_.end ()) {
                     arguments += *argi;
@@ -203,7 +203,7 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
         if (o.fLongName and ai.length () >= 2 + o.fLongName->size () and ai[0] == '-' and ai[1] == '-' and
             ai.SubString (2, o.fLongName->size ()) == o.fLongName) {
             found = true;
-            if (not o.fSupportsArgument) {
+            if (o.fSupportsArgument) {
                 // see if '=' follows longname
                 String restOfArgi = ai.SubString (2 + o.fLongName->size ());
                 if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
@@ -216,6 +216,10 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
                     }
                 }
             }
+        }
+        if (not o.fSingleCharName and not o.fLongName and o.fArgumentRequired and not ai.StartsWith ("-"sv)) {
+            // note we add the argument, but dont set 'found'
+            arguments += *argi;
         }
         if (found and not o.fRepeatable) {
             break; // no need to keep looking
