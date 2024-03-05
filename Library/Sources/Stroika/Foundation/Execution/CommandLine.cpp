@@ -170,3 +170,55 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<
     }
     return nullopt;
 }
+
+/*
+ ********************************************************************************
+ ********************************** CommandLine *********************************
+ ********************************************************************************
+ */
+void CommandLine::Validate (Iterable<Option> options) const
+{
+    // @todo
+    AssertNotImplemented ();
+}
+
+tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
+{
+    bool             found = false;
+    Sequence<String> arguments;
+    for (Traversal::Iterator<String> argi = fArgs_.begin (); argi != fArgs_.end (); ++argi) {
+        String ai = *argi;
+        if (o.fSingleCharName and ai.length () == 2 and ai[0] == '-' and ai[1] == o.fSingleCharName) {
+            found = true;
+            if (not o.fSupportsArgument) {
+                ++argi;
+                if (argi != fArgs_.end ()) {
+                    arguments += *argi;
+                }
+            }
+        }
+        if (not o.fRepeatable) {
+            break; // no need to keep looking
+        }
+        if (o.fLongName and ai.length () >= 2 + o.fLongName->size () and ai[0] == '-' and ai[1] == '-' and  ai.SubString (2, o.fLongName->size ()) == o.fLongName) {
+            found = true;
+            if (not o.fSupportsArgument) {
+                // see if '=' follows longname
+                String restOfArgi = ai.SubString ( 2 + o.fLongName->size ());
+                if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
+                    arguments += restOfArgi.SubString (1);
+                }
+                else {
+                    ++argi;
+                    if (argi != fArgs_.end ()) {
+                        arguments += *argi;
+                    }
+                }
+            }
+        }
+        if (not o.fRepeatable) {
+            break; // no need to keep looking
+        }
+    }
+    return make_tuple (found, arguments);
+}

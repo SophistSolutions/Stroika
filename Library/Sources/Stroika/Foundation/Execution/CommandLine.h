@@ -12,6 +12,10 @@
 #include "../Containers/Sequence.h"
 #include "../Execution/Exceptions.h"
 
+/*
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ */
+
 namespace Stroika::Foundation::Execution {
 
     using Characters::String;
@@ -76,6 +80,91 @@ namespace Stroika::Foundation::Execution {
         String fArgument;
     };
 
+    //NEW
+    // inspired partly by https://man7.org/linux/man-pages/man3/getopt.3.html
+    // DRAFT
+    /**
+     */
+    class CommandLine {
+    public:
+        CommandLine (const String& cmdLine);
+        CommandLine (int argc, char* argv[]);
+        CommandLine (int argc, const char* argv[]);
+        CommandLine (int argc, wchar_t* argv[]);
+        CommandLine (int argc, const wchar_t* argv[]);
+
+    public:
+        /**
+         *  \par Example Usage
+         *      \code
+         *          constexpr CommandLine::Option   kDashO = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true, .fArgumentRequired = true };
+         *      \endcode
+         * 
+         *  \note fSingleCharName is optional, and fLongName is also optional. Meaning its totally legal to supply no short name and no long-name (in which case its requried to support fSupportsArgument)
+         * 
+         *  \req fSingleCharName or fLongName or fSupportsArgument
+         *  \req not fRepeatable or fSupportsArgument
+         */
+        struct Option {
+            optional<char>   fSingleCharName; // for -s
+            optional<String> fLongName;       // for --long use
+
+            /**
+             *  Look for argument after option.
+             * 
+             *  if true, and long-form option, look for -OPT=XXX and copy out XXX as the argument
+             *  if true, and either form option given, if no =, look for next argi, and if there, use that as argument.
+             */
+            bool fSupportsArgument{false};
+
+            bool fArgumentRequired{false};
+
+            bool fRepeatable{false};
+        };
+
+    public:
+        /**
+         *  Throw InvalidCommandLineArgument if arguments not fit with options.
+         *  This checks for unrecognized arguments.
+         */
+        nonvirtual void Validate (Iterable<Option> options) const;
+
+    public:
+        /*
+         * return get<bool> true iff arg is present in command line.
+         * Either way, get<Sequence<String>>> returns same as GetArguments ();
+         */
+        nonvirtual tuple<bool, Sequence<String>> Get (const Option& o) const;
+
+    public:
+        /*
+         * Return true iff arguments (in this object) have that option set.
+         */
+        nonvirtual bool Has (const Option& o) const;
+
+    public:
+        /**
+        *  \req o.fSupportsArgument
+        * 
+         *  \par Example Usage
+         *      \code
+         *          constexpr CommandLine::Option   kOutFileOption_ = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true, .fArgumentRequired = true };
+         *          CommandLine cmdLine {argc, argv};
+         *          String file2Use = cmdLine.GetArgument (kOutFileOption_).value_or ("default-file-name.xml");
+         *      \endcode
+         */
+        nonvirtual optional<String> GetArgument (const Option& o) const;
+
+    public:
+        /**
+        *  \req o.fSupportsArgument
+         */
+        nonvirtual Sequence<String> GetArguments (const Option& o) const;
+
+    private:
+        Sequence<String> fArgs_;
+    };
+
 }
 
 /*
@@ -83,5 +172,6 @@ namespace Stroika::Foundation::Execution {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "CommandLine.inl"
 
 #endif /*_Stroika_Foundation_Execution_CommandLine_h_*/

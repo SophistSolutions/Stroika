@@ -3601,6 +3601,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Resource.inl">
       <Filter>Sources\DataExchange\XML</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />
