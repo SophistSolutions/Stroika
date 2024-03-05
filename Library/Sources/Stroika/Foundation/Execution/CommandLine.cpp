@@ -179,7 +179,7 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<
 void CommandLine::Validate (Iterable<Option> options) const
 {
     // @todo
-    AssertNotImplemented ();
+    WeakAssertNotImplemented ();
 }
 
 tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
@@ -197,14 +197,15 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
                 }
             }
         }
-        if (not o.fRepeatable) {
+        if (found and not o.fRepeatable) {
             break; // no need to keep looking
         }
-        if (o.fLongName and ai.length () >= 2 + o.fLongName->size () and ai[0] == '-' and ai[1] == '-' and  ai.SubString (2, o.fLongName->size ()) == o.fLongName) {
+        if (o.fLongName and ai.length () >= 2 + o.fLongName->size () and ai[0] == '-' and ai[1] == '-' and
+            ai.SubString (2, o.fLongName->size ()) == o.fLongName) {
             found = true;
             if (not o.fSupportsArgument) {
                 // see if '=' follows longname
-                String restOfArgi = ai.SubString ( 2 + o.fLongName->size ());
+                String restOfArgi = ai.SubString (2 + o.fLongName->size ());
                 if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
                     arguments += restOfArgi.SubString (1);
                 }
@@ -216,7 +217,7 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
                 }
             }
         }
-        if (not o.fRepeatable) {
+        if (found and not o.fRepeatable) {
             break; // no need to keep looking
         }
     }

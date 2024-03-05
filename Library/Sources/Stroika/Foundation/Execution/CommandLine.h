@@ -97,13 +97,15 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \par Example Usage
          *      \code
-         *          constexpr CommandLine::Option   kDashO = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true, .fArgumentRequired = true };
+         *          const CommandLine::Option   kDashO = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true, .fArgumentRequired = true };
          *      \endcode
          * 
          *  \note fSingleCharName is optional, and fLongName is also optional. Meaning its totally legal to supply no short name and no long-name (in which case its requried to support fSupportsArgument)
          * 
          *  \req fSingleCharName or fLongName or fSupportsArgument
          *  \req not fRepeatable or fSupportsArgument
+         * 
+         *  \todo figure out if I can make this a literal type, so can be defined constexpr when not using fLongName (or maybe even with using stringview)
          */
         struct Option {
             optional<char>   fSingleCharName; // for -s
