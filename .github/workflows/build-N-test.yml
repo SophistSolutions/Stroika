@@ -298,7 +298,9 @@ jobs:
           echo "Got here2"
           docker stop buildContainer
           echo "Got here3"
-          docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
+          # docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
+          echo docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
+          docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
           echo "Got here4"
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
           echo "Got here5"
