@@ -301,7 +301,7 @@ jobs:
           echo "got this far2.1x"
           docker exec --workdir c:/Stroika buildContainer bash -c 'cp $TEMP/Trace*.txt TRACE_LOGS/'
           echo "got this far2.2"
-          docker exec --workdir c:/Stroika buildContainer bash -c 'mkdir -p TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/ || :'
+          docker exec --workdir c:/Stroika buildContainer bash -c '(mkdir -p TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/) || :'
           docker stop buildContainer
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
