@@ -48,72 +48,82 @@ namespace {
         optional<Sequence<String>> fFiles2Add;
         optional<bool>             fNoFailOnMissingLibrary; // for regression tests
     };
+
+    using Execution::StandardCommandLineOptions::kHelp;
+
+    const Execution::CommandLine::Option kNoFailOnMissingO_{.fLongName       = "no-fail-on-missing-library"sv,
+                                                            .fHelpOptionText = "just warns when we fail because of missing library"sv};
+    const Execution::CommandLine::Option kListO_{.fLongName = "list"sv, .fHelpOptionText = "prints all the files in the argument archive"sv};
+    const Execution::CommandLine::Option kCreateO_{.fLongName       = "create"sv,
+                                                   .fHelpOptionText = "creates the argument ARCHIVE-FILE and adds the argument FILE(s) to it"sv};
+    const Execution::CommandLine::Option kExtractO_{
+        .fLongName = "extract"sv,
+        .fHelpOptionText = "extracts all the files from the argument ARCHIVE-FILE and to the output directory specified by --ouptutDirectory "sv};
+    const Execution::CommandLine::Option kUpdateO_{.fLongName       = "update"sv,
+                                                   .fHelpOptionText = "adds to the argument ARCHIVE-FILE and adds the argument FILE(s) to it "sv};
+    const Execution::CommandLine::Option kArchiveFileO_{
+        .fSupportsArgument = true,
+        .fRequired = true,
+        .fHelpArgName      = "ARCHIVE-FILE",
+        .fHelpOptionText = 
+"ARCHIVE-FILE can be the single character - to designate stdin"sv       // NYI stdin part...
+    };
+    const Execution::CommandLine::Option kOtherFilenamesO_{
+        .fSupportsArgument = true,
+        .fRepeatable       = true,
+        .fHelpArgName      = "FILE",
+    };
+    const Execution::CommandLine::Option kOutputDirO_{.fLongName = "outputDirectory"sv, .fSupportsArgument = true, .fHelpOptionText = "(defaulting to .)"sv};
+
+    const initializer_list<Execution::CommandLine::Option> kAllOptions_{
+        kHelp, kNoFailOnMissingO_, kListO_, kCreateO_, kExtractO_, kUpdateO_, kOutputDirO_, kArchiveFileO_, kOtherFilenamesO_,
+    };
+
     void Usage_ ()
     {
-        cerr << "Usage: ArchiveUtility (--help | -h) | (--no-fail-on-missing-library) | ((--list | --create | --extract |--update) "
-                "ARCHIVENAME [--outputDirectory D] [FILES])"
-             << endl;
-        cerr << "    --help prints this help" << endl;
-        cerr << "    -h prints this help" << endl;
-        cerr << "    --no-fail-on-missing-library just warns when we fail because of missing library" << endl;
-        cerr << "    --list prints all the files in the argument archive" << endl;
-        cerr << "    --create creates the argument ARHCIVE and adds the argument FILES to it" << endl;
-        cerr << "    --extract extracts all the files from the argument ARHCIVE and to the output directory specified by --ouptutDirectory "
-                "(defaulting to .)"
-             << endl;
-        cerr << "    --update adds to the argument ARHCIVE and adds the argument FILES to it" << endl;
-        cerr << "    ARCHIVENAME can be the single character - to designate stdin" << endl; // NYI
+        cerr << Execution::CommandLine::GenerateUsage ("ArchiveUtility", kAllOptions_).AsNarrowSDKString ();
     }
     // Emits errors to stderr, and Usage, etc, if needed, and not Optional<> has_value()
     optional<Options_> ParseOptions_ (int argc, const char* argv[])
     {
-        Options_                      result{};
-        Sequence<String>              args = Execution::ParseCommandLine (argc, argv);
-        optional<Options_::Operation> operation;
-        optional<String>              archiveName;
-        optional<bool>                noFailOnMissingLibrary;
-        for (auto argi = args.begin (); argi != args.end (); ++argi) {
-            if (argi == args.begin ()) {
-                continue; // skip argv[0] - command name
-            }
-            if (Execution::MatchesCommandLineArgument (*argi, "h"sv) or Execution::MatchesCommandLineArgument (*argi, "help"sv)) {
-                Usage_ ();
-                return optional<Options_>{};
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "no-fail-on-missing-library"sv)) {
-                noFailOnMissingLibrary = true;
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "list"sv)) {
-                operation = Options_::Operation::eList;
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "create"sv)) {
-                operation = Options_::Operation::eCreate;
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "extract"sv)) {
-                operation = Options_::Operation::eExtract;
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "update"sv)) {
-                operation = Options_::Operation::eUpdate;
-            }
-            else if (not archiveName.has_value ()) {
-                archiveName = *argi;
-            }
-            // else more cases todo
+        Options_               result{};
+        Execution::CommandLine cmdLine{argc, argv};
+
+        try {
+            cmdLine.Validate (kAllOptions_);
         }
-        if (not archiveName) {
-            cerr << "Missing name of archive" << endl;
+        catch (...) {
             Usage_ ();
             return optional<Options_>{};
         }
-        if (not operation) {
+        if (cmdLine.Has (kHelp)) {
+            Usage_ ();
+            return optional<Options_>{};
+        }
+
+        if (cmdLine.Has (kListO_)) {
+            result.fOperation = Options_::Operation::eList;
+        }
+        else if (cmdLine.Has (kCreateO_)) {
+            result.fOperation = Options_::Operation::eCreate;
+        }
+        else if (cmdLine.Has (kExtractO_)) {
+            result.fOperation = Options_::Operation::eExtract;
+        }
+        else if (cmdLine.Has (kUpdateO_)) {
+            result.fOperation = Options_::Operation::eUpdate;
+        }
+        else {
             cerr << "Missing operation" << endl;
             Usage_ ();
             return optional<Options_>{};
         }
-        result.fOperation       = *operation;
-        result.fArchiveFileName = IO::FileSystem::ToPath (*archiveName);
+        result.fArchiveFileName = IO::FileSystem::ToPath (Memory::ValueOf (cmdLine.GetArgument (kArchiveFileO_)));
+        if (auto o = cmdLine.GetArgument (kOutputDirO_)) {
+            result.fOutputDirectory = IO::FileSystem::ToPath (*o);
+        }
         // @todo add more.. - files etc
-        result.fNoFailOnMissingLibrary = noFailOnMissingLibrary;
+        result.fNoFailOnMissingLibrary = cmdLine.Has (kNoFailOnMissingO_);
         return result;
     }
 }
@@ -178,6 +188,12 @@ int main (int argc, const char* argv[])
                     cerr << "that option NYI" << endl;
                     break;
             }
+        }
+        catch (Execution::InvalidCommandLineArgument) {
+            String exceptMsg = Characters::ToString (current_exception ());
+            cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << endl;
+            Usage_ ();
+            return EXIT_FAILURE;
         }
         catch (...) {
             String exceptMsg = Characters::ToString (current_exception ());

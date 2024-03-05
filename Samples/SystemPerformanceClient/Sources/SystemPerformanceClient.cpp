@@ -214,72 +214,46 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    bool                    printUsage            = false;
-    bool                    mostRecentCaptureMode = false;
-    bool                    printNames            = false;
-    bool                    oneLineMode           = false;
-    Time::DurationSeconds   runFor                = 0s; // default to runfor 0, so we do each once.
-    Time::DurationSeconds   captureInterval       = 15s;
-    Set<InstrumentNameType> run;
-    Sequence<String>        args = Execution::ParseCommandLine (argc, argv);
-    for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, "h"sv) or Execution::MatchesCommandLineArgument (*argi, "help"sv)) {
-            printUsage = true;
-        }
-        if (Execution::MatchesCommandLineArgument (*argi, "l"sv)) {
-            printNames = true;
-        }
-        if (Execution::MatchesCommandLineArgument (*argi, "m"sv)) {
-            mostRecentCaptureMode = true;
-        }
-        if (Execution::MatchesCommandLineArgument (*argi, "o"sv)) {
-            oneLineMode = true;
-        }
-        if (Execution::MatchesCommandLineArgument (*argi, "r"sv)) {
-            ++argi;
-            if (argi != args.end ()) {
-                run.Add (*argi);
-            }
-            else {
-                cerr << "Expected arg to -r" << endl;
-                return EXIT_FAILURE;
-            }
-        }
-        if (Execution::MatchesCommandLineArgument (*argi, "t"sv)) {
-            ++argi;
-            if (argi != args.end ()) {
-                runFor = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*argi)};
-            }
-            else {
-                cerr << "Expected arg to -t" << endl;
-                return EXIT_FAILURE;
-            }
-        }
-        if (Execution::MatchesCommandLineArgument (*argi, "c"sv)) {
-            ++argi;
-            if (argi != args.end ()) {
-                captureInterval = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*argi)};
-            }
-            else {
-                cerr << "Expected arg to -c" << endl;
-                return EXIT_FAILURE;
-            }
-        }
+    using namespace Execution::StandardCommandLineOptions;
+    const Execution::CommandLine::Option kPrintNamesO_{.fSingleCharName = 'l', .fHelpOptionText = "prints only the instrument names"sv};
+    const Execution::CommandLine::Option kMostRecentO_{.fSingleCharName = 'm', .fHelpOptionText = "runs in most-recent-capture-mode"sv};
+    const Execution::CommandLine::Option kOneLineModeO_{.fSingleCharName = 'o', .fHelpOptionText = "prints instrument results (with newlines stripped)"sv};
+    const Execution::CommandLine::Option kRunInstrumentArg_{.fSingleCharName   = 'r',
+                                                            .fSupportsArgument = true,
+                                                            .fRepeatable       = true,
+                                                            .fHelpArgName      = "RUN-INSTRUMENT"sv,
+                                                            .fHelpOptionText   = "runs the given instrument (it can be repeated)"sv};
+    const Execution::CommandLine::Option kRunForO_{
+        .fSingleCharName = 't', .fSupportsArgument = true, .fHelpOptionText = "time to run for (if zero run each matching instrument once)"sv};
+    const Execution::CommandLine::Option kTimeBetweenCapturesO_{
+        .fSingleCharName = 'c', .fSupportsArgument = true, .fHelpArgName = "NSEC"sv, .fHelpOptionText = "time interval between captures"sv};
+
+    const initializer_list<Execution::CommandLine::Option> kAllOptions = {
+        kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_};
+
+    Execution::CommandLine cmdLine{argc, argv};
+    bool                   printUsage            = cmdLine.Has (kHelp);
+    bool                   mostRecentCaptureMode = cmdLine.Has (kMostRecentO_);
+    bool                   printNames            = cmdLine.Has (kPrintNamesO_);
+    bool                   oneLineMode           = cmdLine.Has (kOneLineModeO_);
+    Time::DurationSeconds  runFor                = 0s; // default to runfor 0, so we do each once.
+    if (auto o = cmdLine.GetArgument (kRunForO_)) {
+        runFor = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
     }
+    Time::DurationSeconds captureInterval = 15s;
+    if (auto o = cmdLine.GetArgument (kTimeBetweenCapturesO_)) {
+        captureInterval = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
+    }
+    Set<InstrumentNameType> run =
+        cmdLine.GetArguments (kRunInstrumentArg_).Map<Set<InstrumentNameType>> ([] (const String& s) { return InstrumentNameType{s}; });
+
     if (printUsage) {
-        cerr << "Usage: SystemPerformanceClient [--help] [-h] [-l] [-f] [-r RUN-INSTRUMENT]*" << endl;
-        cerr << "    --help prints this help" << endl;
-        cerr << "    -h prints this help" << endl;
-        cerr << "    -o prints instrument results (with newlines stripped)" << endl;
-        cerr << "    -l prints only the instrument names" << endl;
-        cerr << "    -m runs in most-recent-capture-mode" << endl;
-        cerr << "    -r runs the given instrument (it can be repeated)" << endl;
-        cerr << "    -t time to run for (if zero run each matching instrument once)" << endl;
-        cerr << "    -c time interval between captures" << endl;
+        cerr << Execution::CommandLine::GenerateUsage ("SystemPerformanceClient"sv, kAllOptions).AsNarrowSDKString ();
         return EXIT_SUCCESS;
     }
 
     try {
+        cmdLine.Validate ({kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_});
         if (printNames) {
             Demo_PrintInstruments_ ();
         }

@@ -17,6 +17,10 @@ namespace Stroika::Foundation::Execution {
      ********************************** CommandLine *********************************
      ********************************************************************************
      */
+    inline CommandLine::CommandLine (const Sequence<String>& cmdLine)
+        : fArgs_{cmdLine}
+    {
+    }
     inline CommandLine::CommandLine (int argc, char* argv[])
         : CommandLine{argc, (const char**)argv}
     {
@@ -44,6 +48,36 @@ namespace Stroika::Foundation::Execution {
         Require (o.fSupportsArgument);
         return get<Sequence<String>> (Get (o));
     }
+
+    ////---deprecated
+    inline [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] Sequence<String> ParseCommandLine (const String& cmdLine)
+    {
+        return CommandLine{cmdLine}.GetArguments ();
+    }
+    inline [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] Sequence<String> ParseCommandLine (int argc, char* argv[])
+    {
+        return CommandLine{argc, argv}.GetArguments ();
+    }
+    inline [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] Sequence<String> ParseCommandLine (int argc, const char* argv[])
+    {
+        return CommandLine{argc, argv}.GetArguments ();
+    }
+    inline [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] Sequence<String> ParseCommandLine (int argc, wchar_t* argv[])
+    {
+        return CommandLine{argc, argv}.GetArguments ();
+    }
+    inline [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] Sequence<String> ParseCommandLine (int argc, const wchar_t* argv[])
+    {
+        return CommandLine{argc, argv}.GetArguments ();
+    }
+
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] bool MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern);
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] bool MatchesCommandLineArgument (const Iterable<String>& argList,
+                                                                                                   const String& matchesArgPattern);
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] optional<String>
+    MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern);
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] optional<String>
+    MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern);
 
 }
 

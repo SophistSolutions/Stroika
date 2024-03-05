@@ -64,51 +64,35 @@ namespace {
  *********************** Service::Main::CommandArgs *****************************
  ********************************************************************************
  */
-Main::CommandArgs::CommandArgs (const Sequence<String>& args)
+Main::CommandArgs::CommandArgs (const Execution::CommandLine& cmdLine)
 {
-    bool didFirst = false;
-    for (Iterator<String> si = args.begin (); si != args.end (); ++si) {
-        if (not didFirst) {
-            // skip argv[0]
-            // @todo - nice to try args.SubSequence (1)....
-            didFirst = true;
-            continue;
-        }
-        static const pair<String, MajorOperation> kPairs_[] = {
-            pair<String, MajorOperation>{Main::CommandNames::kInstall, MajorOperation::eInstall},
-            pair<String, MajorOperation>{Main::CommandNames::kUnInstall, MajorOperation::eUnInstall},
-            pair<String, MajorOperation>{Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain},
-            pair<String, MajorOperation>{Main::CommandNames::kRunDirectly, MajorOperation::eRunDirectly},
-            pair<String, MajorOperation>{Main::CommandNames::kStart, MajorOperation::eStart},
-            pair<String, MajorOperation>{Main::CommandNames::kStop, MajorOperation::eStop},
-            pair<String, MajorOperation>{Main::CommandNames::kForcedStop, MajorOperation::eForcedStop},
-            pair<String, MajorOperation>{Main::CommandNames::kRestart, MajorOperation::eRestart},
-            pair<String, MajorOperation>{Main::CommandNames::kForcedRestart, MajorOperation::eForcedRestart},
-            pair<String, MajorOperation>{Main::CommandNames::kReloadConfiguration, MajorOperation::eReloadConfiguration},
-            pair<String, MajorOperation>{Main::CommandNames::kPause, MajorOperation::ePause},
-            pair<String, MajorOperation>{Main::CommandNames::kContinue, MajorOperation::eContinue},
-        };
-        bool found = false;
-        for (const auto& i : kPairs_) {
-            if (Execution::MatchesCommandLineArgument (*si, i.first)) {
-                if (found) {
-                    Execution::Throw (Execution::InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
-                }
-                found           = true;
-                fMajorOperation = i.second;
-            }
-        }
-        if (not found and Execution::MatchesCommandLineArgument (*si, "runFor")) {
-            ++si;
-            if (not si) {
-                Execution::Throw (Execution::RuntimeErrorException{"Bad arg to runFor"});
-            }
-            fRunFor = Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*si)};
-            found   = true;
-        }
-        if (not found) {
-            fUnusedArguments.push_back (*si);
-        }
+    static const Mapping<CommandLine::Option, MajorOperation> kMap2Major_{
+        {CommandOptions::kInstall, MajorOperation::eInstall},
+        {CommandOptions::kUnInstall, MajorOperation::eUnInstall},
+        {CommandOptions::kRunAsService, MajorOperation::eRunServiceMain},
+        {CommandOptions::kRunDirectly, MajorOperation::eRunDirectly},
+        {CommandOptions::kStart, MajorOperation::eStart},
+        {CommandOptions::kStop, MajorOperation::eStop},
+        {CommandOptions::kForcedStop, MajorOperation::eForcedStop},
+        {CommandOptions::kRestart, MajorOperation::eRestart},
+        {CommandOptions::kForcedRestart, MajorOperation::eForcedRestart},
+        {CommandOptions::kReloadConfiguration, MajorOperation::eReloadConfiguration},
+        {CommandOptions::kPause, MajorOperation::ePause},
+        {CommandOptions::kContinue, MajorOperation::eContinue},
+    };
+
+    Iterable<CommandLine::Option> allMajorsSet = kMap2Major_.Keys ().Where ([&] (CommandLine::Option o) { return cmdLine.Has (o); });
+    switch (allMajorsSet.size ()) {
+        case 0:
+            break; // current code doesn't throw here but maybe should?
+        case 1:
+            fMajorOperation = kMap2Major_[Memory::ValueOf (allMajorsSet.First ())];
+            break;
+        default:
+            Execution::Throw (Execution::InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
+    }
+    if (auto o = cmdLine.GetArgument (CommandOptions::kRunFor)) {
+        fRunFor = Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 }
 

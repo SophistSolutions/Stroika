@@ -1221,7 +1221,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
     filesystem::path exe;
     Sequence<String> args;
     {
-        Sequence<String> tmp{Execution::ParseCommandLine (commandLine)};
+        Sequence<String> tmp{Execution::CommandLine{commandLine}.GetArguments ()};
         if (tmp.size () == 0) [[unlikely]] {
             Execution::Throw (Execution::Exception{"invalid command argument to DetachedProcessRunner"sv});
         }

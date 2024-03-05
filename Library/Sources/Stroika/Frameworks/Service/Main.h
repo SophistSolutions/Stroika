@@ -13,6 +13,7 @@
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Containers/Sequence.h"
 #include "../../Foundation/Containers/Set.h"
+#include "../../Foundation/Execution/CommandLine.h"
 #include "../../Foundation/Execution/Logger.h"
 #include "../../Foundation/Execution/Process.h"
 #include "../../Foundation/Execution/Synchronized.h"
@@ -352,6 +353,9 @@ namespace Stroika::Frameworks::Service {
     public:
         struct CommandNames;
 
+    public:
+        struct CommandOptions;
+
     private:
         nonvirtual const IServiceIntegrationRep& GetServiceRep_ () const;
         nonvirtual IServiceIntegrationRep&       GetServiceRep_ ();
@@ -373,7 +377,12 @@ namespace Stroika::Frameworks::Service {
      */
     struct Main::CommandNames {
 
-        static inline constexpr string_view kInstall   = "Install"sv;
+        /**
+         */
+        static inline constexpr string_view kInstall = "Install"sv;
+
+        /**
+         */
         static inline constexpr string_view kUnInstall = "UnInstall"sv;
 
         /**
@@ -397,7 +406,7 @@ namespace Stroika::Frameworks::Service {
          */
         static inline constexpr string_view kRunDirectly = "Run-Directly"sv;
 
-        static inline constexpr string_view kRunDirectlyFor = "Run-Directly-For"sv;
+        //static inline constexpr string_view kRunDirectlyFor = "Run-Directly-For"sv;
 
         /*
          *  The kStart command tells the service to start running. It returns an error
@@ -429,6 +438,47 @@ namespace Stroika::Frameworks::Service {
 
         // SIGCONT
         static inline constexpr string_view kContinue = "Continue"sv;
+
+        static inline constexpr string_view kRunFor = "runFor"sv;
+        static inline constexpr string_view kStatus = "Status"sv;
+    };
+
+    struct Main::CommandOptions {
+        static inline const Execution::CommandLine::Option kInstall{.fLongName       = CommandNames::kInstall,
+                                                                    .fHelpOptionText = "Register the service as installed"sv};
+        static inline const Execution::CommandLine::Option kUnInstall{.fLongName       = CommandNames::kUnInstall,
+                                                                      .fHelpOptionText = "Unregister the service installation"sv};
+        static inline const Execution::CommandLine::Option kRunAsService{
+            .fLongName = CommandNames::kRunAsService, .fHelpOptionText = "Run as a service daemon - as of run by OS service manager"sv};
+        static inline const Execution::CommandLine::Option kRunDirectly{.fLongName = CommandNames::kRunDirectly};
+        // static inline const Execution::CommandLine::Option kRunDirectlyFor{.fLongName = CommandNames::kRunDirectlyFor, .fSupportsArgument = true};
+        static inline const Execution::CommandLine::Option kStart{.fLongName       = CommandNames::kStart,
+                                                                  .fHelpOptionText = "Request OS service manager start the service."sv};
+        static inline const Execution::CommandLine::Option kStop{.fLongName       = CommandNames::kStop,
+                                                                 .fHelpOptionText = "Request service manager stop the running service."sv};
+        static inline const Execution::CommandLine::Option kForcedStop{
+            .fLongName       = CommandNames::kForcedStop,
+            .fHelpOptionText = "Request service manager stop the running service (aggressively if it doesn't respond)."sv};
+        static inline const Execution::CommandLine::Option kRestart{.fLongName = CommandNames::kRestart, .fHelpOptionText = "Stop followed by Start."s};
+        static inline const Execution::CommandLine::Option kForcedRestart{.fLongName       = CommandNames::kForcedRestart,
+                                                                          .fHelpOptionText = "ForcedStop followed by Start."s};
+        static inline const Execution::CommandLine::Option kReloadConfiguration{.fLongName = CommandNames::kReloadConfiguration,
+                                                                                .fHelpOptionText = "Request service reload its configuration."sv};
+        static inline const Execution::CommandLine::Option kPause{.fLongName       = CommandNames::kPause,
+                                                                  .fHelpOptionText = "Request OS service manager pause a service."sv};
+        static inline const Execution::CommandLine::Option kContinue{.fLongName = CommandNames::kContinue,
+                                                                     .fHelpOptionText = "Request OS service manager continue a paused service."sv};
+
+        static inline const Execution::CommandLine::Option kRunFor{.fLongName         = CommandNames::kRunFor,
+                                                                   .fSupportsArgument = true,
+                                                                   .fHelpArgName      = "NSECONDS"sv,
+                                                                   .fHelpOptionText = "Run for the argument number of seconds, and quietly quit."sv};
+        static inline const Execution::CommandLine::Option kStatus{.fLongName       = CommandNames::kStatus,
+                                                                   .fHelpOptionText = "Check the status of the running service"sv};
+
+        static inline const initializer_list<Execution::CommandLine::Option> kAll{
+            kInstall, kUnInstall,     kRunAsService,        kRunDirectly, kStart,    kStop,   kForcedStop,
+            kRestart, kForcedRestart, kReloadConfiguration, kPause,       kContinue, kRunFor, kStatus};
     };
 
     /**
@@ -439,7 +489,7 @@ namespace Stroika::Frameworks::Service {
     struct Main::CommandArgs {
         /**
          */
-        CommandArgs (const Sequence<String>& args);
+        CommandArgs (const Execution::CommandLine& cmdLine);
 
         enum class MajorOperation {
             eInstall,
@@ -802,7 +852,6 @@ namespace Stroika::Frameworks::Service {
         shared_ptr<IApplicationRep> fAppRep_;
     };
 #endif
-
 }
 
 /*

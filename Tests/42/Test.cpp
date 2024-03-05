@@ -81,7 +81,7 @@ namespace {
     {
         {
             String           cmdLine = "/bin/sh -c \"a b c\"";
-            Sequence<String> l       = ParseCommandLine (cmdLine);
+            Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
             EXPECT_TRUE (l.size () == 3);
             EXPECT_TRUE (l[0] == "/bin/sh");
             EXPECT_TRUE (l[1] == "-c");
@@ -89,12 +89,12 @@ namespace {
         }
         {
             String           cmdLine = "";
-            Sequence<String> l       = ParseCommandLine (cmdLine);
+            Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
             EXPECT_TRUE (l.size () == 0);
         }
         {
             String           cmdLine = "/bin/sh -c \'a b c\'";
-            Sequence<String> l       = ParseCommandLine (cmdLine);
+            Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
             EXPECT_TRUE (l.size () == 3);
             EXPECT_TRUE (l[0] == "/bin/sh");
             EXPECT_TRUE (l[1] == "-c");
@@ -102,7 +102,7 @@ namespace {
         }
         {
             String           cmdLine = "/bin/sh\t b c     -d";
-            Sequence<String> l       = ParseCommandLine (cmdLine);
+            Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
             EXPECT_TRUE (l.size () == 4);
             EXPECT_TRUE (l[0] == "/bin/sh");
             EXPECT_TRUE (l[1] == "b");

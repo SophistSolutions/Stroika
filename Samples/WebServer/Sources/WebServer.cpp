@@ -134,34 +134,20 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    uint16_t              portNumber = 8080;
-    Time::DurationSeconds quitAfter  = Time::kInfinity;
-
-    Sequence<String> args = Execution::ParseCommandLine (argc, argv);
-    for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, "port"sv)) {
-            ++argi;
-            if (argi != args.end ()) {
-                portNumber = Characters::String2Int<uint16_t> (*argi);
-            }
-            else {
-                cerr << "Expected arg to -port" << endl;
-                return EXIT_FAILURE;
-            }
-        }
-        else if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
-            ++argi;
-            if (argi != args.end ()) {
-                quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*argi)};
-            }
-            else {
-                cerr << "Expected arg to -quit-after" << endl;
-                return EXIT_FAILURE;
-            }
-        }
-    }
+    const Execution::CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
+    const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
 
     try {
+        uint16_t               portNumber = 8080;
+        Time::DurationSeconds  quitAfter  = Time::kInfinity;
+        Execution::CommandLine cmdLine{argc, argv};
+        cmdLine.Validate ({kPortO_, kQuitAfterO_});
+        if (auto o = cmdLine.GetArgument (kPortO_)) {
+            portNumber = Characters::String2Int<uint16_t> (*o);
+        }
+        if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+            quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+        }
         MyWebServer_ myWebServer{portNumber};        // listen and dispatch while this object exists
         Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
     }

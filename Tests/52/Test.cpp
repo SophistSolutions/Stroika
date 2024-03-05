@@ -1568,16 +1568,15 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
+    const Execution::CommandLine::Option kShowO_{.fLongName = "show"sv};
+    const Execution::CommandLine::Option kTimeMultiplierO_{.fSingleCharName = 'x', .fSupportsArgument = true};
+
     // NOTE: run with --show or look for output in PERF-OUT.txt
     try {
-        Sequence<String> cmdLine = ParseCommandLine (argc, argv);
-        sShowOutput_             = MatchesCommandLineArgument (cmdLine, L"show");
-
-        {
-            optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
-            if (arg.has_value ()) {
-                sTimeMultiplier_ = FloatConversion::ToFloat<double> (*arg);
-            }
+        Execution::CommandLine cmdLine{argc, argv};
+        sShowOutput_ = cmdLine.Has (kShowO_);
+        if (auto o = cmdLine.GetArgument (kTimeMultiplierO_)) {
+            sTimeMultiplier_ = FloatConversion::ToFloat<double> (*o);
         }
     }
     catch (...) {

@@ -42,67 +42,57 @@ int main (int argc, const char* argv[])
     unsigned int          sampleCount = 3;
     static const Duration kInterSampleTime_{"PT.1S"}; // aka 1.5s
     size_t packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
-    auto usage = [] (const optional<String>& extraArg = {}) {
+    const Execution::CommandLine::Option kPingO_{.fLongName = "ping"sv, .fHelpOptionText = "Ping the target address"sv};
+    const Execution::CommandLine::Option kTraceRtO_{.fLongName = "traceroute"sv, .fHelpOptionText = "Trace the route to the target address"sv};
+    const Execution::CommandLine::Option kPacketSizeO_{
+        .fLongName = "packetSize"sv, .fSupportsArgument = true, .fHelpArgName = "N", .fHelpOptionText = "Number of bytes to send in each test packet"sv};
+    const Execution::CommandLine::Option kMaxHopsO_{
+        .fLongName = "maxHops"sv, .fSupportsArgument = true, .fHelpArgName = "N", .fHelpOptionText = "Max number of hops to get to the target address"sv};
+    const Execution::CommandLine::Option kSampleCntO_{
+        .fLongName         = "sampleCount"sv,
+        .fSupportsArgument = true,
+        .fHelpArgName      = "N"sv,
+        .fHelpOptionText = "(default 3) - if sampleCount is 1, exception details shown, otherwise just summary of number of exceptions"sv};
+    const Execution::CommandLine::Option kTargetAddress_{.fSupportsArgument = true, .fRequired = true, .fHelpArgName = "target-address"sv};
+
+    using namespace Execution::StandardCommandLineOptions;
+
+    const initializer_list<Execution::CommandLine::Option> kAllOptions_{kHelp,      kPingO_,      kTraceRtO_,     kPacketSizeO_,
+                                                                        kMaxHopsO_, kSampleCntO_, kTargetAddress_};
+
+    auto usage = [&] (const optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
         }
-        cerr << "traceroute [--ping][--traceroute][--packetSize NNN][--maxHops NNN][--sampleCount N]  target-address" << endl;
-        cerr << "   if sampleCount is 1, exception details shown, otherwise just summary of number of exceptions" << endl;
+        cerr << Execution::CommandLine::GenerateUsage ("traceroute", kAllOptions_).AsNarrowSDKString ();
     };
-    {
-        Sequence<String> args = Execution::ParseCommandLine (argc, argv);
-        for (auto argi = args.begin (); argi != args.end (); ++argi) {
-            if (Execution::MatchesCommandLineArgument (*argi, "ping"sv)) {
-                majorOp = MajorOp::ePing;
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "traceroute"sv)) {
-                majorOp = MajorOp::eTraceroute;
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "packetSize"sv)) {
-                ++argi;
-                if (argi != args.end ()) {
-                    packetSize = Characters::String2Int<unsigned int> (*argi);
-                }
-                else {
-                    usage ("Expected arg to -packetSize"sv);
-                    return EXIT_FAILURE;
-                }
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "maxHops"sv)) {
-                ++argi;
-                if (argi != args.end ()) {
-                    maxHops = Characters::String2Int<unsigned int> (*argi);
-                }
-                else {
-                    usage ("Expected arg to -maxHops"sv);
-                    return EXIT_FAILURE;
-                }
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "sampleCount"sv)) {
-                ++argi;
-                if (argi != args.end ()) {
-                    sampleCount = Characters::String2Int<unsigned int> (*argi);
-                }
-                else {
-                    usage ("Expected arg to -sampleCount"sv);
-                    return EXIT_FAILURE;
-                }
-            }
-            else if (Execution::MatchesCommandLineArgument (*argi, "help"sv) or Execution::MatchesCommandLineArgument (*argi, "h"sv)) {
-                usage ();
-                return EXIT_SUCCESS;
-            }
-            else if (argi->StartsWith ("-"sv)) {
-                usage ("unrecognized option: "sv + *argi);
-                return EXIT_FAILURE;
-            }
-            else {
-                targetAddress = *argi;
-            }
-        }
+
+    Execution::CommandLine cmdLine{argc, argv};
+    using namespace Execution::StandardCommandLineOptions;
+
+    if (cmdLine.Has (kPingO_)) {
+        majorOp = MajorOp::ePing;
     }
+    if (cmdLine.Has (kTraceRtO_)) {
+        majorOp = MajorOp::eTraceroute;
+    }
+    if (auto o = cmdLine.GetArgument (kPacketSizeO_)) {
+        packetSize = Characters::String2Int<unsigned int> (*o);
+    }
+    if (auto o = cmdLine.GetArgument (kMaxHopsO_)) {
+        maxHops = Characters::String2Int<unsigned int> (*o);
+    }
+    if (auto o = cmdLine.GetArgument (kSampleCntO_)) {
+        sampleCount = Characters::String2Int<unsigned int> (*o);
+    }
+    if (cmdLine.Has (kHelp)) {
+        usage ();
+        return EXIT_SUCCESS;
+    }
+    targetAddress = cmdLine.GetArgument (kTargetAddress_).value_or (String{});
 
     try {
+        cmdLine.Validate (kAllOptions_);
         Collection<InternetAddress> addrList = IO::Network::DNS::kThe.GetHostAddresses (targetAddress);
         if (addrList.empty ()) {
             Execution::Throw (Execution::Exception{"whoops no addrs"sv});

@@ -106,32 +106,20 @@ int main (int argc, const char* argv[])
     optional<String>      searchFor;
     Time::DurationSeconds quitAfter = Time::kInfinity;
 
-    Sequence<String> args = Execution::ParseCommandLine (argc, argv);
-    for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, "l"sv)) {
-            listen = true;
-        }
-        else if (Execution::MatchesCommandLineArgument (*argi, "s"sv)) {
-            ++argi;
-            if (argi != args.end ()) {
-                searchFor = *argi;
-            }
-            else {
-                cerr << "Expected arg to -s" << endl;
-                return EXIT_FAILURE;
-            }
-        }
-        else if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
-            ++argi;
-            if (argi != args.end ()) {
-                quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*argi)};
-            }
-            else {
-                cerr << "Expected arg to -quit-after" << endl;
-                return EXIT_FAILURE;
-            }
-        }
+    const Execution::CommandLine::Option kListenO_{
+        .fSingleCharName = 'l',
+    };
+    const Execution::CommandLine::Option kSearchO_{
+        .fSingleCharName = 's', .fSupportsArgument = true, .fHelpArgName = "SEARCHFOR"sv, .fHelpOptionText = "Search for the argument UPNP name"sv};
+    const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
+
+    Execution::CommandLine cmdLine{argc, argv};
+    listen    = cmdLine.Has (kListenO_);
+    searchFor = cmdLine.GetArgument (kSearchO_);
+    if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+        quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
+
     if (not listen and not searchFor.has_value ()) {
         cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR] [--quit-after N]" << endl;
         cerr << "   e.g. SSDPClient -l" << endl;

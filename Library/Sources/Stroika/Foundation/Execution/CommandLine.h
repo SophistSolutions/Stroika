@@ -13,7 +13,7 @@
 #include "../Execution/Exceptions.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Execution {
@@ -23,51 +23,7 @@ namespace Stroika::Foundation::Execution {
     using Containers::Sequence;
 
     /**
-     */
-    Sequence<String> ParseCommandLine (const String& cmdLine);
-    Sequence<String> ParseCommandLine (int argc, char* argv[]);
-    Sequence<String> ParseCommandLine (int argc, const char* argv[]);
-    Sequence<String> ParseCommandLine (int argc, wchar_t* argv[]);
-    Sequence<String> ParseCommandLine (int argc, const wchar_t* argv[]);
-
-    /**
-     *  This utility function takes a given 'matchesArgPattern' - which is basically what you declare your parameter to be, and returns
-     *  true if the given actual argument matches.
-     *
-     *  Some parameters have assocaited values. When this is done as a following parameter, this code doesn't help to find them. But when the
-     *  value is provided inline, in the form of a value after an '=' sign, the second overload will return that associated value, if any.
-     *
-     *  It is legal to call the 3-argument version (associatedArgResult) with a nullptr, if you don't wish the argument returned, just to test
-     *  for an '=' version of the argument.
-     *
-     *  Note also - these patterns are not really regexp patterns, but strings which are matched in a case-insensative manner, and with punctuation
-     *  squeezed out.
-     *
-     *  So - for example, you can call:
-     *           MatchesCommandLineArgument ("--runFast", "run-fast") and it will return true.
-     *
-     *  To use the second (associatedArgResult) overload, the caller MUST specify a pattern in matchesArgPattern that ends with '='
-     */
-    bool MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern);
-    bool MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern);
-
-    /**
-     *  \par Example Usage
-     *      \code
-     *          optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, "x");
-     *          if (arg.has_value ()) {
-     *              sTimeMultiplier_ = String2Float<double> (*arg);
-     *          }
-     *      \endcode
-     *
-     *      MyProgram.exe --x 3
-     *
-     */
-    optional<String> MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern);
-    optional<String> MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern);
-
-    /**
-     *  TODO - REFACTOR/CLEANUP/BETTER ORGNAIZE EXCEPTIONS!!!!
+     *  \todo Perhaps refactor slightly, so easy to tell one kind of issue from another.
      */
     class InvalidCommandLineArgument : public Execution::RuntimeErrorException<> {
     public:
@@ -80,18 +36,29 @@ namespace Stroika::Foundation::Execution {
         String fArgument;
     };
 
-    //NEW
-    // inspired partly by https://man7.org/linux/man-pages/man3/getopt.3.html
-    // DRAFT
     /**
+     *  Take in a 'command line' specification (typically from 'main'), and define 'Option' objects and lookup if given arguments
+     *  are 'present' in the commandline (and grab associated arguments).
+     * 
+     *  Supports repeated option elements. Supports -o and --output-file formats
+     *  Supports -o ARG and -o=ARG formats
+     *
+     *  inspired partly by https://man7.org/linux/man-pages/man3/getopt.3.html
+     * 
+     *  TODO:
+     *      o   \todo perahps add some mechanism to be able to help/generate 'usage' command output automatically.
+     *      o   \todo find some way to better handle std::filesystem::path arguments (hande quoting, normalizing paths so they work better cross platform if needed/helpful (e.g. /cygrdrive/c/???)
+     * 
      */
     class CommandLine {
     public:
         /**
          *  Unlike most other Stroika APIs, plain 'char' here for char*, is interpreted as being in the SDK code page (current locale - like SDKChar if narrow).
          */
-        CommandLine () = delete;
+        CommandLine ()                   = delete;
+        CommandLine (const CommandLine&) = default;
         CommandLine (const String& cmdLine);
+        CommandLine (const Sequence<String>& cmdLine);
         CommandLine (int argc, char* argv[]);
         CommandLine (int argc, const char* argv[]);
         CommandLine (int argc, wchar_t* argv[]);
@@ -101,10 +68,10 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \par Example Usage
          *      \code
-         *          const CommandLine::Option   kDashO = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true, .fArgumentRequired = true };
+         *          const CommandLine::Option   kDashO = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true };
          *      \endcode
          * 
-         *  \note fSingleCharName is optional, and fLongName is also optional. Meaning its totally legal to supply no short name and no long-name (in which case its requried to support fSupportsArgument)
+         *  \note fSingleCharName is optional, and fLongName is also optional. Meaning its totally legal to supply no short name and no long-name (in which case its required to support fSupportsArgument)
          * 
          *  \req fSingleCharName or fLongName or fSupportsArgument
          *  \req not fRepeatable or fSupportsArgument
@@ -139,10 +106,22 @@ namespace Stroika::Foundation::Execution {
             // If true, then Get () will throw if this option isn't found in the commandline
             bool fRequired{false};
 
-            bool operator== (const Option&) const = default;
-            auto operator <=> (const Option&) const = default;
+            /**
+             *  If provided, its the name used in generating help, for the argument to this option.
+             */
+            optional<String> fHelpArgName;
 
-            String GetArgumentDescription () const;
+            /**
+             *  If provided, its the name used in generating help, for this option.
+             */
+            optional<String> fHelpOptionText;
+
+            bool operator== (const Option&) const  = default;
+            auto operator<=> (const Option&) const = default;
+
+            String GetArgumentDescription (bool includeArg = false) const;
+
+            String ToString () const;
         };
 
     public:
@@ -151,6 +130,11 @@ namespace Stroika::Foundation::Execution {
          *  This checks for unrecognized arguments.
          */
         nonvirtual void Validate (Iterable<Option> options) const;
+
+    public:
+        /**
+         */
+        static String GenerateUsage (const String& exeName, Iterable<Option> options);
 
     public:
         /*
@@ -171,7 +155,7 @@ namespace Stroika::Foundation::Execution {
         * 
          *  \par Example Usage
          *      \code
-         *          constexpr CommandLine::Option   kOutFileOption_ = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true, .fArgumentRequired = true };
+         *          constexpr CommandLine::Option   kOutFileOption_ = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true };
          *          CommandLine cmdLine {argc, argv};
          *          String file2Use = cmdLine.GetArgument (kOutFileOption_).value_or ("default-file-name.xml");
          *      \endcode
@@ -180,8 +164,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-        *  overload with no arguments /0 - returns all commandline arguments.
-        *  \req o.fSupportsArgument
+         *  overload with no arguments /0 - returns all commandline arguments.
+         *  \req o.fSupportsArgument
          */
         nonvirtual Sequence<String> GetArguments () const;
         nonvirtual Sequence<String> GetArguments (const Option& o) const;
@@ -196,6 +180,11 @@ namespace Stroika::Foundation::Execution {
     private:
         Sequence<String> fArgs_;
     };
+
+    namespace StandardCommandLineOptions {
+        static inline const CommandLine::Option kHelp{.fSingleCharName = 'h', .fLongName = "help"sv, .fHelpOptionText = "Print out this help."sv};
+        static inline const CommandLine::Option kVersion{.fSingleCharName = 'v', .fLongName = "version"sv, .fHelpOptionText = "Print this application's version."sv};
+    }
 
 }
 

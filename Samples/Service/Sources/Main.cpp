@@ -185,7 +185,6 @@ int main (int argc, const char* argv[])
     /*
      *  Parse command line arguments, and start looking at options.
      */
-    Sequence<String>                         args                  = Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
 #if qUseLogger
     serviceIntegrationRep = make_shared<Main::LoggerServiceWrapper> (serviceIntegrationRep);
@@ -200,15 +199,25 @@ int main (int argc, const char* argv[])
      *  Run request.
      */
     try {
-        if (Execution::MatchesCommandLineArgument (args, "status"sv)) {
+        using Execution::CommandLine;
+        using Execution::StandardCommandLineOptions::kHelp;
+        using Execution::StandardCommandLineOptions::kVersion;
+
+        CommandLine cmdLine{argc, argv};
+
+        Sequence<CommandLine::Option> allMyOptions =
+            Sequence<CommandLine::Option>{Main::CommandOptions::kAll} + Sequence<CommandLine::Option>{kHelp, kVersion};
+        cmdLine.Validate (allMyOptions);
+
+        if (cmdLine.Has (Main::CommandOptions::kStatus)) {
             cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
             return EXIT_SUCCESS;
         }
-        else if (Execution::MatchesCommandLineArgument (args, "help"sv)) {
+        else if (cmdLine.Has (kHelp)) {
             ShowUsage_ (m);
             return EXIT_SUCCESS;
         }
-        else if (Execution::MatchesCommandLineArgument (args, "version"sv)) {
+        else if (cmdLine.Has (kVersion)) {
             cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "sv
                  << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
             return EXIT_SUCCESS;
@@ -217,7 +226,7 @@ int main (int argc, const char* argv[])
             /*
              *  Run the commands, and capture/display exceptions
              */
-            m.Run (args);
+            m.Run (cmdLine);
         }
     }
     catch (const Execution::InvalidCommandLineArgument& e) {

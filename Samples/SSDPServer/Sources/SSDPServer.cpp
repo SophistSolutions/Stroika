@@ -74,18 +74,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     Time::DurationSeconds quitAfter    = Time::kInfinity;
     uint16_t              portForOurWS = 8080;
 
-    Sequence<String> args = Execution::ParseCommandLine (argc, argv);
-    for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
-            ++argi;
-            if (argi != args.end ()) {
-                quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*argi)};
-            }
-            else {
-                cerr << "Expected arg to -quit-after" << endl;
-                return EXIT_FAILURE;
-            }
-        }
+    const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+
+    Execution::CommandLine cmdLine{argc, argv};
+    if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+        quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 
     Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by UPnP::BasicServer
