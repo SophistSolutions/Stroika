@@ -99,13 +99,12 @@ namespace {
         struct A {
             int f;
         };
-        KeyedCollection<A, int> obj {[] (A e) { return e.f; }};
+        KeyedCollection<A, int> obj{[] (A e) { return e.f; }};
         obj.Add (A{.f = 3});
 
         auto objCopy = obj;
         obj.Add (A{.f = 4});
         obj = objCopy;
-        
     }
 }
 #endif
