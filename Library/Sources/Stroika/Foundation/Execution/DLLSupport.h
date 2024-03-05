@@ -17,6 +17,10 @@
 #include "../Characters/SDKString.h"
 #include "../Execution/Exceptions.h"
 
+/*
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ */
+
 namespace Stroika::Foundation::Execution {
 
     using Characters::SDKChar;
