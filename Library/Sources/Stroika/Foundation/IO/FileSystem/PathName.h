@@ -30,6 +30,22 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     using Characters::String;
 
+    /*
+    * On windows, its helpful when mapping String to std::filesystem::pathname to map certain common name prefixes to things that will be found
+    * on Windows.
+    * 
+    * MSYS creates paths like /c/folder for c:/folder
+    * CYGWIN creates paths like /cygdrive/c/folder for c:/folder
+    * 
+    * Automatically map these (since Stroika v3.0d6) in ToPath
+    * 
+    *   \see https://www.msys2.org/docs/filesystem-paths/
+     */
+#ifndef qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
+#define qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin qPlatform_Windows
+#endif
+
+
 #if qPlatform_Windows
     constexpr wchar_t kPathComponentSeperator = '\\';
 #elif qPlatform_POSIX
@@ -40,7 +56,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      * This function presumes its argument is a directory, and makes sure it has a kPathComponentSeperator character
      * at the end. Use this when given a directory from some source that isn't so careful, so code can generally
      * operate with the assumption that directories have that trailing slash, so its easier to compose
-     * pathanmes.
+     * pathnames.
      */
     String AssureDirectoryPathSlashTerminated (const String& dirPath);
 
@@ -60,6 +76,8 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     /**
      *  Convert Stroika String to std::filesystem::path
+     * 
+     *  \note see qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
      */
     filesystem::path           ToPath (const String& p);
     optional<filesystem::path> ToPath (const optional<String>& p);

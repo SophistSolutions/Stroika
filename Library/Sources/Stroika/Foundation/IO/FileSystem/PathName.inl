@@ -18,7 +18,26 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     inline filesystem::path ToPath (const String& p)
     {
+#if qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
+        filesystem::path r = filesystem::path{p.As<wstring> ()};
+        if (r.is_absolute ()) {
+            if (r.root_name ().empty () and r.root_path () == "/cygdrive") {
+                /*
+                 * This case is easy, and probably pretty safe.
+                 */
+                r = r.relative_path ();
+            }
+            if (r.root_name ().empty () and r.root_path ().native ().length () == 2) {
+                /*
+                 * /a or /b etc... assume its a drive-letter (MSYS)
+                 */
+                r = r.relative_path ();
+            }
+        }
+        return r;
+#else
         return filesystem::path{p.As<wstring> ()};
+#endif
     }
     inline optional<filesystem::path> ToPath (const optional<String>& p)
     {
