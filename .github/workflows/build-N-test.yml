@@ -308,11 +308,12 @@ jobs:
           # (docker cp buildContainer:c:/Stroika/ $ARTIFACTS_DIR) || :
           # (docker cp buildContainer:c:\Stroika $ARTIFACTS_DIR) || :
 
-          # echo "Got here3..3333"
+          echo "Got here3..3333"
 
-          docker cp buildContainer:c:\Stroika\Builds\${{ matrix.config_name }}/ $ARTIFACTS_DIR
+          echo docker cp "buildContainer:c:\Stroika\Builds\${{ matrix.config_name }}/" $ARTIFACTS_DIR
+          docker cp "buildContainer:c:\Stroika\Builds\${{ matrix.config_name }}/" $ARTIFACTS_DIR
           echo "Got here4"
-          docker cp buildContainer:c:\Stroika\TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
+          docker cp "buildContainer:c:\Stroika\TRACE_LOGS" $ARTIFACTS_DIR 2> /dev/null
           echo "Got here4.1"
           # docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
           echo "Got here5"
