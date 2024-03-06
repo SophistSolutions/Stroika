@@ -147,8 +147,7 @@ namespace {
                                double warnIfPerformanceScoreHigherThan, Duration baselineTime, Duration compareWithTime)
     {
         ostream& outTo = GetOutStream_ ();
-        outTo << "Test " << testName << " (" << baselineTName << " vs "
-              << compareWithTName << ")" << endl;
+        outTo << "Test " << testName << " (" << baselineTName << " vs " << compareWithTName << ")" << endl;
         double         performanceScore = (baselineTime == 0s) ? 1000000 : compareWithTime.count () / baselineTime.count ();
         constexpr char kOneTab_[]       = "\t";
         {
@@ -1519,8 +1518,7 @@ namespace {
         Tester (L"Test_Optional_", Test_Optional_::DoRunPerfTest, L"Test_Optional_", 4875, 0.5, &failedTests);
         JSONTests_::Run ();
 
-        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint () << "]]]" << endl
-                         << endl;
+        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint () << "]]]" << endl << endl;
 
         // extra tests
         {
