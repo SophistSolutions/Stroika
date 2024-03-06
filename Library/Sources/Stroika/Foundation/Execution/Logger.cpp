@@ -63,9 +63,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     atomic<Time::DurationSeconds>                                         fMaxWindow_{};
     Cache::SynchronizedCallerStalenessCache<pair<Priority, String>, bool> fMsgSentMaybeSuppressed_;
 
-    Rep_ ()
-    {
-    }
+    Rep_ () = default;
     void FlushSuppressedDuplicates_ (bool forceEvenIfNotOutOfDate = false)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -390,7 +388,7 @@ void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
             RequireNotReached ();
     }
     // According to http://pubs.opengroup.org/onlinepubs/000095399/functions/xsh_chap02_09.html#tag_02_09_01 this is threadsafe
-    ::syslog (sysLogLevel, "%s", message.AsNarrowSDKString (eIgnoreErrors).c_str ());
+    ::syslog (sysLogLevel, "%s", message.AsNarrowSDKString (Characters::eIgnoreErrors).c_str ());
 }
 #endif
 
