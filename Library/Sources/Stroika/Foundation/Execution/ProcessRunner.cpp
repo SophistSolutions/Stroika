@@ -607,7 +607,7 @@ namespace {
         StackBuffer<char>  execDataArgsBuffer;
         StackBuffer<char*> execArgsPtrBuffer;
         {
-            Sequence<String> commandLine{Execution::CommandLine {cmdLine}.GetArguments ()};
+            Sequence<String> commandLine{Execution::CommandLine{cmdLine}.GetArguments ()};
             Sequence<size_t> argsIdx;
             size_t           bufferIndex{};
             execArgsPtrBuffer.GrowToSize_uninitialized (commandLine.size () + 1);

@@ -50,23 +50,23 @@ namespace Stroika::Foundation::Execution {
     }
 
     ////---deprecated
-     [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (const String& cmdLine)
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (const String& cmdLine)
     {
         return CommandLine{cmdLine}.GetArguments ();
     }
-     [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]]inline Sequence<String> ParseCommandLine (int argc, char* argv[])
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (int argc, char* argv[])
     {
         return CommandLine{argc, argv}.GetArguments ();
     }
-     [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (int argc, const char* argv[])
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (int argc, const char* argv[])
     {
         return CommandLine{argc, argv}.GetArguments ();
     }
-     [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (int argc, wchar_t* argv[])
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (int argc, wchar_t* argv[])
     {
         return CommandLine{argc, argv}.GetArguments ();
     }
-     [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (int argc, const wchar_t* argv[])
+    [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (int argc, const wchar_t* argv[])
     {
         return CommandLine{argc, argv}.GetArguments ();
     }
