@@ -170,7 +170,21 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_IO_FileSystem, ToPath)
+    {
+#if qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
+        EXPECT_EQ (IO::FileSystem::ToPath (String{"/c/Sandbox"}), filesystem::path{"c:/Sandbox"});
+        EXPECT_EQ (IO::FileSystem::ToPath (String{"/cygdrive/c/Sandbox"}), filesystem::path{"c:/Sandbox"});
+        EXPECT_EQ (IO::FileSystem::ToPath (String{"/dapper"}), filesystem::path{"/dapper"});
+        EXPECT_EQ (IO::FileSystem::ToPath (String{"c:/Sandbox"}), filesystem::path{"c:/Sandbox"});
+        EXPECT_EQ (IO::FileSystem::ToPath (String{"c:\\Sandbox"}), filesystem::path{"c:\\Sandbox"});
+        EXPECT_EQ (IO::FileSystem::ToPath (String{"\\\\foo/bar"}), filesystem::path{"\\\\foo/bar"});
+#endif
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_IO_FileSystem, all)
     {
         Test1_DirectoryIterator_ ();
         Test2_DirectoryIterable_ ();

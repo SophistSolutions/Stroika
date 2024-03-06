@@ -19,25 +19,28 @@ namespace Stroika::Foundation::IO::FileSystem {
     inline filesystem::path ToPath (const String& p)
     {
 #if qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
-        filesystem::path r = filesystem::path{p.As<wstring> ()};
-        if (r.is_absolute ()) {
-            if (r.root_name ().empty () and r.root_path () == "/cygdrive") {
-                /*
-                 * This case is easy, and probably pretty safe.
-                 */
-                r = r.relative_path ();
-            }
-            if (r.root_name ().empty () and r.root_path ().native ().length () == 2) {
-                /*
-                 * /a or /b etc... assume its a drive-letter (MSYS)
-                 */
-                r = r.relative_path ();
+        // CYGWIN creates paths like /cygdrive/c/folder for c:/folder
+        // MSYS creates paths like /c/folder for c:/folder
+        static const String kMSYSDrivePrefix_ = "/"sv;
+        static const String kCygrivePrefix_   = "/cygdrive/"sv;
+        if (p.StartsWith (kCygrivePrefix_)) {
+            String ss = p.SubString (kCygrivePrefix_.length ());
+            if (ss.length () > 1 and ss[0].IsASCII () and ss[0].IsAlphabetic () and ss[1] == '/') {
+                wstring w = ss.As<wstring> (); // now map c/folder to c:/folder
+                w.insert (w.begin () + 1, ':');
+                return filesystem::path{w};
             }
         }
-        return r;
-#else
-        return filesystem::path{p.As<wstring> ()};
+        if (p.StartsWith (kMSYSDrivePrefix_)) {
+            String ss = p.SubString (kMSYSDrivePrefix_.length ());
+            if (ss.length () > 1 and ss[0].IsASCII () and ss[0].IsAlphabetic () and ss[1] == '/') {
+                wstring w = ss.As<wstring> (); // now map c/folder to c:/folder
+                w.insert (w.begin () + 1, ':');
+                return filesystem::path{w};
+            }
+        }
 #endif
+        return filesystem::path{p.As<wstring> ()};
     }
     inline optional<filesystem::path> ToPath (const optional<String>& p)
     {

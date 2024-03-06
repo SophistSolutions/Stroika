@@ -45,7 +45,6 @@ namespace Stroika::Foundation::IO::FileSystem {
 #define qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin qPlatform_Windows
 #endif
 
-
 #if qPlatform_Windows
     constexpr wchar_t kPathComponentSeperator = '\\';
 #elif qPlatform_POSIX
@@ -78,6 +77,10 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  Convert Stroika String to std::filesystem::path
      * 
      *  \note see qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
+     *        this API is for getting strings from the commandline, or user input, or configuration files etc, where cygwin
+     *        or msys style paths maybe present. APIs that talk directly to the OS are more likely to more directly produce
+     *        filesystem::path than String. Anyhow - because of this, on windows, its probably more helpful than not to map
+     *        the MSYS/cygdrive crap to a path more likely to actually work right. --LGP 2024-03-06
      */
     filesystem::path           ToPath (const String& p);
     optional<filesystem::path> ToPath (const optional<String>& p);
