@@ -356,7 +356,7 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
         return make_pair (true, nullopt);
     }
     // anything that cannot be an option (-x or --y...) is skipped, but anything else - that could be a plain filename (even a bare '-') is matched as 'argument'
-    if (not o.fSingleCharName and not o.fLongName and o.fSupportsArgument and not (ai.size () >= 2 and ai.StartsWith ("-"sv))) {
+    if (not o.fSingleCharName and not o.fLongName and o.fSupportsArgument and not(ai.size () >= 2 and ai.StartsWith ("-"sv))) {
         // note we add the argument, but don't set 'found'
         return make_pair (false, **argi);
     }

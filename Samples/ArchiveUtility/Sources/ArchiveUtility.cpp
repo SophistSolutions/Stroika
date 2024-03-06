@@ -54,19 +54,18 @@ namespace {
     const Execution::CommandLine::Option kNoFailOnMissingO_{.fLongName       = "no-fail-on-missing-library"sv,
                                                             .fHelpOptionText = "just warns when we fail because of missing library"sv};
     const Execution::CommandLine::Option kListO_{.fLongName = "list"sv, .fHelpOptionText = "prints all the files in the argument archive"sv};
-    const Execution::CommandLine::Option kCreateO_{.fLongName       = "create"sv,
+    const Execution::CommandLine::Option kCreateO_{.fLongName = "create"sv,
                                                    .fHelpOptionText = "creates the argument ARCHIVE-FILE and adds the argument FILE(s) to it"sv};
     const Execution::CommandLine::Option kExtractO_{
         .fLongName = "extract"sv,
         .fHelpOptionText = "extracts all the files from the argument ARCHIVE-FILE and to the output directory specified by --ouptutDirectory "sv};
-    const Execution::CommandLine::Option kUpdateO_{.fLongName       = "update"sv,
+    const Execution::CommandLine::Option kUpdateO_{.fLongName = "update"sv,
                                                    .fHelpOptionText = "adds to the argument ARCHIVE-FILE and adds the argument FILE(s) to it "sv};
     const Execution::CommandLine::Option kArchiveFileO_{
         .fSupportsArgument = true,
-        .fRequired = true,
+        .fRequired         = true,
         .fHelpArgName      = "ARCHIVE-FILE",
-        .fHelpOptionText = 
-"ARCHIVE-FILE can be the single character - to designate stdin"sv       // NYI stdin part...
+        .fHelpOptionText   = "ARCHIVE-FILE can be the single character - to designate stdin"sv // NYI stdin part...
     };
     const Execution::CommandLine::Option kOtherFilenamesO_{
         .fSupportsArgument = true,
