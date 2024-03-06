@@ -295,20 +295,20 @@ jobs:
           docker exec --workdir c:/Stroika buildContainer mkdir -p TRACE_LOGS
           docker exec --workdir c:/Stroika buildContainer bash -c 'cp $TEMP/Trace*.txt TRACE_LOGS/ || :'
 
-          docker exec --workdir c:/Stroika buildContainer bash -c 'pwd'
-          docker exec --workdir c:/Stroika buildContainer bash -c 'ls -l'
+          # docker exec --workdir c:/Stroika buildContainer bash -c 'pwd'
+          # docker exec --workdir c:/Stroika buildContainer bash -c 'ls -l'
 
           docker stop buildContainer
-          echo "Got here3"
+          # echo "Got here3"
           # docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
-          echo docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
+          # echo docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
 
 
           # (docker cp buildContainer:c:/Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR) || :
           # (docker cp buildContainer:c:/Stroika/ $ARTIFACTS_DIR) || :
-          (docker cp buildContainer:c:\Stroika $ARTIFACTS_DIR) || :
+          # (docker cp buildContainer:c:\Stroika $ARTIFACTS_DIR) || :
 
-          echo "Got here3..3333"
+          # echo "Got here3..3333"
 
           docker cp buildContainer:c:\Stroika\Builds\${{ matrix.config_name }}/ $ARTIFACTS_DIR
           echo "Got here4"
