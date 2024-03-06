@@ -261,7 +261,7 @@ jobs:
         ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
         ### and with this hack, it hasn't happened in years --LGP 2024-03-03
         run: |
-          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
+          docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
       - name: Print Info about docker system
         shell: "bash"
         run: |
@@ -303,17 +303,17 @@ jobs:
           # docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           # echo docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
 
-
           # (docker cp buildContainer:c:/Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR) || :
           # (docker cp buildContainer:c:/Stroika/ $ARTIFACTS_DIR) || :
           # (docker cp buildContainer:c:\Stroika $ARTIFACTS_DIR) || :
 
           echo "Got here3..3333"
 
-          echo docker cp "buildContainer:c:\Stroika\Builds\${{ matrix.config_name }}/" $ARTIFACTS_DIR
-          docker cp "buildContainer:c:\Stroika\Builds\${{ matrix.config_name }}/" $ARTIFACTS_DIR
+          echo docker cp "buildContainer:c:\Stroika\Builds\${{ matrix.config_name }}\" $ARTIFACTS_DIR
+          (docker cp "buildContainer:c:\Stroika\Builds\${{ matrix.config_name }}\" $ARTIFACTS_DIR) || :
           echo "Got here4"
-          docker cp "buildContainer:c:\Stroika\TRACE_LOGS" $ARTIFACTS_DIR 2> /dev/null
+          (docker cp "buildContainer:c:\Stroika\TRACE_LOGS" $ARTIFACTS_DIR) || :
+          # (docker cp "buildContainer:c:\Stroika\TRACE_LOGS" $ARTIFACTS_DIR 2> /dev/null) || :
           echo "Got here4.1"
           # docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
           echo "Got here5"
