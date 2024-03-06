@@ -293,19 +293,21 @@ jobs:
         run: |
           # @todo debug why combining mkdir and cp fails?
           docker exec --workdir c:/Stroika buildContainer mkdir -p TRACE_LOGS
-          echo "Got here1"
           docker exec --workdir c:/Stroika buildContainer bash -c 'cp $TEMP/Trace*.txt TRACE_LOGS/ || :'
-          echo "Got here2"
 
           docker exec --workdir c:/Stroika buildContainer bash -c 'pwd'
-          echo "Got here3.1"
           docker exec --workdir c:/Stroika buildContainer bash -c 'ls -l'
-          echo "Got here3.2"
 
           docker stop buildContainer
           echo "Got here3"
           # docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           echo docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
+
+
+          (docker cp buildContainer:c:/Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR) || :
+
+          echo "Got here3..3333"
+
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
           echo "Got here4"
           docker cp buildContainer:c:/Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
