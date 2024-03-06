@@ -59,7 +59,7 @@ namespace {
     void FatalErrorHandler_ (const Characters::SDKChar* msg) noexcept
     {
 #if qTargetPlatformSDKUseswchar_t
-        cerr << "FAILED: " << Characters::String::FromSDKString (msg).AsNarrowSDKString () << endl;
+        cerr << "FAILED: " << Characters::String::FromSDKString (msg) << endl;
 #else
         cerr << "FAILED: " << msg << endl;
 #endif
@@ -68,7 +68,7 @@ namespace {
     }
     void FatalSignalHandler_ (Execution::SignalID signal) noexcept
     {
-        cerr << "FAILED: SIGNAL= " << Execution::SignalToName (signal).AsNarrowSDKString () << endl;
+        cerr << "FAILED: SIGNAL= " << Execution::SignalToName (signal) << endl;
         DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
         _Exit (EXIT_FAILURE); // skip
@@ -104,7 +104,7 @@ int Test::PrintPassOrFail (void (*regressionTest) ())
     }
     catch (...) {
         auto exc = current_exception ();
-        cerr << "FAILED: REGRESSION TEST DUE TO EXCEPTION: '" << Characters::ToString (exc).AsNarrowSDKString () << "'" << endl;
+        cerr << "FAILED: REGRESSION TEST DUE TO EXCEPTION: '" << Characters::ToString (exc) << "'" << endl;
         cout << "Failed" << endl;
         DbgTrace (L"FAILED: REGRESSION TEST (Exception): '%s", Characters::ToString (exc).c_str ());
         Debug::DropIntoDebuggerIfPresent ();

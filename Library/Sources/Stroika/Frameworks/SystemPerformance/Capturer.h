@@ -70,9 +70,9 @@ namespace Stroika::Frameworks::SystemPerformance {
      *              capturer.AddCaptureSet (cs);
      *          }
      *          capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
-     *              cout << "    Measured-At: " << ms.fMeasuredAt.ToString ().AsNarrowSDKString () << endl;
+     *              cout << "    Measured-At: " << ms.fMeasuredAt.ToString () << endl;
      *              for (Measurement mi : ms.fMeasurements) {
-     *                  cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
+     *                  cout << "    " << mi.fType.GetPrintName () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
      *              }
      *          });
      *          // run til timeout and then fall out...

@@ -1396,7 +1396,7 @@ namespace {
                             size_t   idx            = tmpFileNameStr.find (".xml");
                             String   newTmpFile     = tmpFileNameStr.substr (0, idx) + "_MSG.txt";
                             ofstream msgOut{newTmpFile.AsNarrowSDKString ().c_str ()};
-                            msgOut << "Reason:" << vf.GetDetails ().AsNarrowSDKString () << endl;
+                            msgOut << "Reason:" << vf.GetDetails () << endl;
                             optional<unsigned int> lineNum;
                             optional<unsigned int> colNumber;
                             optional<uint64_t>     fileOffset;

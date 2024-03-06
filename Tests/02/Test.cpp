@@ -1044,7 +1044,7 @@ namespace {
                     };
                     checkJapaneseNumbers ();
                     if (auto ln = Configuration::FindLocaleNameQuietly (L"ja", L"JP")) {
-                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
+                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
                         checkJapaneseNumbers ();
                     }
                 }
@@ -1054,13 +1054,13 @@ namespace {
                     // BROKEN - see https://stroika.atlassian.net/browse/STK-748
                     // See https://docs.oracle.com/cd/E19455-01/806-0169/overview-9/index.html
                     if (auto ln = Configuration::FindLocaleNameQuietly (L"en", L"US")) {
-                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
+                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
                         EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> ("100.1"), 100.1));
                         [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> ("967,295.01");
                         //EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));     -- https://stroika.atlassian.net/browse/STK-748
                     }
                     if (auto ln = Configuration::FindLocaleNameQuietly (L"es", L"ES")) {
-                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
+                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
                         //DbgTrace ("using locale %s", locale{}.name ().c_str ());
                         //DbgTrace (L"decimal separator: %c", std::use_facet<std::numpunct<char>> (locale{}).decimal_point ());
                         EXPECT_TRUE (std::use_facet<std::numpunct<char>> (locale{}).decimal_point () == ',');
@@ -1308,7 +1308,7 @@ namespace {
     void Test44_LocaleUNICODEConversions_ ()
     {
         Debug::TraceContextBumper ctx{"Test44_LocaleUNICODEConversions_"};
-        EXPECT_TRUE (String{"abcdefgjij"}.AsNarrowSDKString () == "abcdefgjij"); // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
+        EXPECT_TRUE (String{"abcdefgjij"}.AsNarrowSDKString (eIgnoreErrors) == "abcdefgjij"); // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
         auto testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
             bool initializedLocale = false;
             try {

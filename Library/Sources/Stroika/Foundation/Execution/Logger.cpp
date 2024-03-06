@@ -390,7 +390,7 @@ void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
             RequireNotReached ();
     }
     // According to http://pubs.opengroup.org/onlinepubs/000095399/functions/xsh_chap02_09.html#tag_02_09_01 this is threadsafe
-    ::syslog (sysLogLevel, "%s", message.AsNarrowSDKString (Characters::eIgnoreErrors).c_str ());
+    ::syslog (sysLogLevel, "%s", message.AsNarrowSDKString (eIgnoreErrors).c_str ());
 }
 #endif
 

@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Execution {
      *                  if (lastDesc != pm.GetCurrentTaskInfo ().fName) {
      *                      cout << "\r\n";
      *                      lastDesc = pm.GetCurrentTaskInfo ().fName;
-     *                      cout << "\t" << lastDesc.AsNarrowSDKString () << "\r\n";
+     *                      cout << "\t" << lastDesc << "\r\n";
      *                  }
      *                  if (lastProg != curProgPct) {
      *                      cout << "\r";

@@ -86,10 +86,10 @@ namespace {
     string pctFaster2String_ (double pct)
     {
         if (pct < 0) {
-            return Format (L"%.2f%% slower", -pct).AsNarrowSDKString ();
+            return Format (L"%.2f%% slower", -pct).AsNarrowSDKString (eIgnoreErrors);
         }
         else {
-            return Format (L"%.2f%% faster", pct).AsNarrowSDKString ();
+            return Format (L"%.2f%% faster", pct).AsNarrowSDKString (eIgnoreErrors);
         }
     }
 }
@@ -147,23 +147,23 @@ namespace {
                                double warnIfPerformanceScoreHigherThan, Duration baselineTime, Duration compareWithTime)
     {
         ostream& outTo = GetOutStream_ ();
-        outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs "
-              << compareWithTName.AsNarrowSDKString () << ")" << endl;
+        outTo << "Test " << testName << " (" << baselineTName << " vs "
+              << compareWithTName << ")" << endl;
         double         performanceScore = (baselineTime == 0s) ? 1000000 : compareWithTime.count () / baselineTime.count ();
         constexpr char kOneTab_[]       = "\t";
         {
             FloatConversion::ToStringOptions fo = FloatConversion::ToStringOptions{FloatConversion::eDontTrimZeros, FloatConversion::Precision{2}};
-            outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo).AsNarrowSDKString () << endl;
+            outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo) << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
         outTo << "[baseline test " << baselineTime.count () << " secs, and comparison " << compareWithTime.count ()
               << " sec, and warnIfPerfScore > " << warnIfPerformanceScoreHigherThan << ", and perfScore=" << performanceScore << "]" << endl;
         outTo << kOneTab_ << "                 " << kOneTab_;
         if (performanceScore < 1) {
-            outTo << compareWithTName.AsNarrowSDKString () << " is FASTER" << endl;
+            outTo << compareWithTName << " is FASTER" << endl;
         }
         else if (performanceScore > 1) {
-            outTo << compareWithTName.AsNarrowSDKString () << " is ***SLOWER***" << endl;
+            outTo << compareWithTName << " is ***SLOWER***" << endl;
         }
         if constexpr (kPrintOutIfFailsToMeetPerformanceExpectations_) {
             if (performanceScore > warnIfPerformanceScoreHigherThan) {
@@ -1368,7 +1368,7 @@ namespace {
         DateTime startedAt = DateTime::Now ();
         GetOutStream_ () << "Performance score 1.0 means both sides equal (ratio), and tests setup so lower is generally better" << endl
                          << endl;
-        GetOutStream_ () << "[[[Started testing at: " << startedAt.Format ().AsNarrowSDKString () << "]]]" << endl << endl;
+        GetOutStream_ () << "[[[Started testing at: " << startedAt.Format () << "]]]" << endl << endl;
         if (not Math::NearlyEquals (sTimeMultiplier_, 1.0)) {
             GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl << endl;
         }
@@ -1519,7 +1519,7 @@ namespace {
         Tester (L"Test_Optional_", Test_Optional_::DoRunPerfTest, L"Test_Optional_", 4875, 0.5, &failedTests);
         JSONTests_::Run ();
 
-        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]" << endl
+        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint () << "]]]" << endl
                          << endl;
 
         // extra tests
@@ -1581,7 +1581,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     }
     catch (...) {
         auto exc = current_exception ();
-        cerr << "Usage: " << Characters::ToString (exc).AsNarrowSDKString () << endl;
+        cerr << "Usage: " << Characters::ToString (exc) << endl;
         exit (EXIT_FAILURE);
     }
 

@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <compare>
+#include <iosfwd>
 #include <locale>
 #include <string>
 #include <string_view>
@@ -1623,10 +1624,17 @@ namespace Stroika::Foundation::Characters {
 
     private:
         [[noreturn]] static void ThrowInvalidAsciiException_ (); // avoid include
-
-    public:
-        friend wostream& operator<< (wostream& out, const String& s);
     };
+
+    /**
+     *  operator<< ostream adapters work as you would expect and allow writing Stroika strings easily to ostreams such as cout.
+     * 
+     *  The only catch - is that Stroika strings are UNICODE based, and so may not fit perfectly with 'char' based basic_ostream<>.
+     *  To address this, Stroika strings are mapped to 'narrow sdk strings' - ignoring any errors. As this is generally not a very
+     *  good practice to do (lossy) - and generally just done for debugging/diagnostic output, this was deemed acceptable (as of Stroika v3.0d6).
+     */
+    wostream& operator<< (wostream& out, const String& s);
+    ostream&  operator<< (ostream& out, const String& s);
 
     /**
      * Protected helper Rep class.

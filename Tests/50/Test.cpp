@@ -40,7 +40,7 @@ namespace {
         auto test_locale_time_get_date_order_no_order_Buggy = [] (const String& localeName) {
             TraceContextBumper ctx{"test_locale_time_get_date_order_no_order_Buggy"};
             try {
-                std::locale              l{localeName.AsNarrowSDKString ()};
+                std::locale              l{localeName.AsNarrowSDKString (Characters::eIgnoreErrors)};
                 const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
 #if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
                 VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
@@ -49,7 +49,7 @@ namespace {
 #endif
             }
             catch (...) {
-                // suppress macos warn here - just not such locale installed
+                // suppress macOS warn here - just not such locale installed
 #if !qPlatform_MacOS
                 Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale %s",
