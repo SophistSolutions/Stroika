@@ -305,6 +305,8 @@ jobs:
 
 
           (docker cp buildContainer:c:/Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR) || :
+          (docker cp buildContainer:c:/Stroika/ $ARTIFACTS_DIR) || :
+          (docker cp buildContainer:c:\Stroika $ARTIFACTS_DIR) || :
 
           echo "Got here3..3333"
 
