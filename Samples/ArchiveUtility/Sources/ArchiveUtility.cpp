@@ -188,7 +188,7 @@ int main (int argc, const char* argv[])
                     break;
             }
         }
-        catch (Execution::InvalidCommandLineArgument) {
+        catch (const Execution::InvalidCommandLineArgument&) {
             String exceptMsg = Characters::ToString (current_exception ());
             cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << endl;
             Usage_ ();
