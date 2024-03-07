@@ -24,7 +24,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - id: set-matrix
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
@@ -38,7 +38,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - id: set-matrix
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
@@ -52,7 +52,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - id: set-matrix
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
@@ -286,7 +286,6 @@ jobs:
         run: |
           df -h
           docker exec buildContainer df -h
-          echo -n "WORSPACEDIR(${GITHUB_WORKSPACE}): "; ls -l "${GITHUB_WORKSPACE}"
       - name: Copy Build Artifacts
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
@@ -295,25 +294,8 @@ jobs:
           # Just copy out from container the stuff in /tmp
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p /TRACE_LOGS; cp $TEMP/Trace*.txt /TRACE_LOGS/') || :
           (cp -r "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
-
-          # # docker exec --workdir c:/ buildContainer bash -c 'echo ROOTWROKDIR ; ls -l'
-          # # docker exec --workdir c:/ buildContainer bash -c 'echo TRACELOGS ; ls -l c:/Stroika/TRACE_LOGS/'
-
           docker stop buildContainer
-          # # docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
-          # # echo docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
-
-          # (docker cp "buildContainer:c:\\Stroika\\Builds\\${{ matrix.config_name }}\\" $ARTIFACTS_DIR) || :
-          # (docker cp "buildContainer:Stroika/Builds/${{ matrix.config_name }}" $ARTIFACTS_DIR) || :
-          # (docker cp "buildContainer:c:/Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
-          # (docker cp "buildContainer:Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
           (docker cp "buildContainer:/TRACE_LOGS/" $ARTIFACTS_DIR) || :
-          # (docker cp "buildContainer:/c/Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
-          # # (docker cp "buildContainer:." $ARTIFACTS_DIR) || :
-          # (docker cp "buildContainer:c:\\Stroika\\TRACE_LOGS" $ARTIFACTS_DIR) || :
-          # (docker cp "buildContainer:c:\\Stroika\\TRACE_LOGS\\" $ARTIFACTS_DIR) || :
-
-          (ls -l $ARTIFACTS_DIR) || :
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
       - name: Archive Log Results
         if: always()
@@ -370,7 +352,7 @@ jobs:
         make clean
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
         # If you wish to specify custom queries, you can do so here or in a config file.
@@ -380,4 +362,4 @@ jobs:
     - name: Make Stroika
       run: make all
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
