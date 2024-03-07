@@ -291,24 +291,27 @@ jobs:
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
         run: |
-          (docker exec --workdir c:/Stroika buildContainer bash -c 'mkdir -p TRACE_LOGS; cp $TEMP/Trace*.txt TRACE_LOGS/') || :
+          # Because of bind mount, no longer copy out of container, already built in outside filesystem
+          # Just copy out from container the stuff in /tmp
+          (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p TRACE_LOGS; cp $TEMP/Trace*.txt TRACE_LOGS/') || :
+          cp -r ${GITHUB_WORKSPACE}"/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
 
-          # docker exec --workdir c:/Stroika buildContainer bash -c 'pwd'
-          docker exec --workdir c:/Stroika buildContainer bash -c 'echo ROOTWROKDIR ; ls -l'
-          docker exec --workdir c:/Stroika buildContainer bash -c 'echo TRACELOGS ; ls -l c:/Stroika/TRACE_LOGS/'
+          # # docker exec --workdir c:/ buildContainer bash -c 'echo ROOTWROKDIR ; ls -l'
+          # # docker exec --workdir c:/ buildContainer bash -c 'echo TRACELOGS ; ls -l c:/Stroika/TRACE_LOGS/'
 
           docker stop buildContainer
-          # docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
-          # echo docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
+          # # docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
+          # # echo docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR
 
-          (docker cp "buildContainer:c:\\Stroika\\Builds\\${{ matrix.config_name }}\\" $ARTIFACTS_DIR) || :
-          (docker cp "buildContainer:Stroika/Builds/${{ matrix.config_name }}" $ARTIFACTS_DIR) || :
-          (docker cp "buildContainer:c:/Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
-          (docker cp "buildContainer:Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
-          (docker cp "buildContainer:c/Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
-          (docker cp "buildContainer:." $ARTIFACTS_DIR) || :
-          (docker cp "buildContainer:c:\\Stroika\\TRACE_LOGS" $ARTIFACTS_DIR) || :
-          (docker cp "buildContainer:c:\\Stroika\\TRACE_LOGS\\" $ARTIFACTS_DIR) || :
+          # (docker cp "buildContainer:c:\\Stroika\\Builds\\${{ matrix.config_name }}\\" $ARTIFACTS_DIR) || :
+          # (docker cp "buildContainer:Stroika/Builds/${{ matrix.config_name }}" $ARTIFACTS_DIR) || :
+          # (docker cp "buildContainer:c:/Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
+          # (docker cp "buildContainer:Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
+          (docker cp "buildContainer:c/TRACE_LOGS" $ARTIFACTS_DIR) || :
+          # (docker cp "buildContainer:/c/Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
+          # # (docker cp "buildContainer:." $ARTIFACTS_DIR) || :
+          # (docker cp "buildContainer:c:\\Stroika\\TRACE_LOGS" $ARTIFACTS_DIR) || :
+          # (docker cp "buildContainer:c:\\Stroika\\TRACE_LOGS\\" $ARTIFACTS_DIR) || :
 
           (ls -l $ARTIFACTS_DIR) || :
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
