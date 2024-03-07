@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Traversal {
      *  Somewhat inspired by, and at least influenced by, the definition in
      *      http://ruby-doc.org/core-2.0/Range.html
      *  However - where Ruby has one type "Range" - we have "Range" and DiscreteRange" - and some ruby Range methods/properties
-     *  are expressed only in DiscreteRange<>. Also Stroika Range has openneess as an optional/configurable
+     *  are expressed only in DiscreteRange<>. Also Stroika Range has openness as an optional/configurable
      *  feature of both endpoints, whereas in Ruby, the LHS is always closed and its RHS is optionally open.
      *
      *  Note - you can do Range<float>, but cannot do DiscreteRange<float> - but can do DiscreteRange<int>.
@@ -496,7 +496,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \req not empty ();
+         *  \req not empty ();      // special case - no upper/lower bound
          */
         constexpr T GetLowerBound () const;
 
@@ -507,7 +507,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \req not empty ();
+         *  \req not empty ();      // special case - no upper/lower bound
          */
         constexpr T GetUpperBound () const;
 
