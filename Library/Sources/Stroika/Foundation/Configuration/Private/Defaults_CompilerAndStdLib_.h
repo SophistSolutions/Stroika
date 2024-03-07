@@ -2561,7 +2561,24 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 
 #endif
 
-/*
+
+/* attempts to format a date outside the range -1900 to 8099 trigger an assertion erorr in vis studio runtime lib
+*/
+#ifndef qCompilerAndStdLib_FormatRangeRestriction_Buggy
+
+#if defined(_MSC_VER)
+// verified still broken in _MSC_VER_2k22_17Pt9_
+#define qCompilerAndStdLib_FormatRangeRestriction_Buggy                                                       \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt9_)
+#else
+#define qCompilerAndStdLib_FormatRangeRestriction_Buggy 0
+#endif
+
+#endif
+
+ 
+ 
+ /*
  *
  *      FAILED: REGRESSION TEST DUE TO EXCEPTION: 'Invalid Time Format'
  *      [Failed]  (0  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/clang++-7-release-libstdc++/Tests/Test31)
