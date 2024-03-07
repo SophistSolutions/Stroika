@@ -10,7 +10,7 @@ jobs:
   build-Linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build System Info
         shell: "bash"
         run: |
@@ -46,7 +46,7 @@ jobs:
           install: >-
             base-devel
             make
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build System Info
         shell: "bash"
         run: |
