@@ -1936,7 +1936,6 @@ namespace {
     }
 }
 
-
 namespace {
 
 #if 0

@@ -7,7 +7,9 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdarg>
+#if __cpp_lib_format >= 202207L
 #include <format>
+#endif
 #include <ios>
 #include <locale>
 #include <sstream>  //tmphack for my current formatter
@@ -64,14 +66,17 @@ namespace Stroika::Foundation::Characters {
     * SUPER EARLY EXPERIEMNTAL DRAFT OF c++20 format support
         // Problem with allowing 'string_format' is it generates format_string - which I don't think will handle args of unicode chars right...
      */
+#if __cpp_lib_format >= 202207L
     template <class... ARGS>
     [[nodiscard]] inline String Fmt (const wformat_string<ARGS...> f, ARGS&&... _Args)
     {
         return String{vformat (f.get (), make_wformat_args (_Args...))};
     }
+#endif
 
 }
 
+#if __cpp_lib_format >= 202207L
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <>
 struct std::formatter<Stroika::Foundation::Characters::String, wchar_t> {
@@ -102,6 +107,7 @@ struct std::formatter<Stroika::Foundation::Characters::String, wchar_t> {
         return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
     }
 };
+#endif
 
 /*
  ********************************************************************************
