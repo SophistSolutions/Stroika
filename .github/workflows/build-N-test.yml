@@ -295,7 +295,7 @@ jobs:
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p /TRACE_LOGS; cp $TEMP/Trace*.txt /TRACE_LOGS/') || :
           (cp -r "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
           docker stop buildContainer
-          (docker cp "buildContainer:/TRACE_LOGS/" $ARTIFACTS_DIR) || :
+          (docker cp "buildContainer:TRACE_LOGS/" $ARTIFACTS_DIR) || :
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
       - name: Archive Log Results
         if: always()
