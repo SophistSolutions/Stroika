@@ -10,6 +10,7 @@
 #include <format>
 #include <ios>
 #include <locale>
+#include <sstream>  //tmphack for my current formatter
 
 #include "../Configuration/Common.h"
 
