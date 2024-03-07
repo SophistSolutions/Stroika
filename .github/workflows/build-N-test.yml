@@ -123,7 +123,7 @@ jobs:
         run: |
           make tools samples
       - name: Archive Samples Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Sample apps (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -132,14 +132,14 @@ jobs:
       - name: Make Documentation
         run: make documentation
       - name: Archive Documentation Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Doxygen Documentation
           path: |
             Builds/Stroika-Doxygen-Help.tar.gz
       - name: Archive Log Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -211,7 +211,7 @@ jobs:
           df -h
       - name: Archive Log Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -220,7 +220,7 @@ jobs:
             /tmp/LOGS-ARCHIVE
             #${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Samples (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -299,7 +299,7 @@ jobs:
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
       - name: Archive Log Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -307,7 +307,7 @@ jobs:
             ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
             ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
       - name: Archive Sample Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Samples (${{ matrix.displayTargetName }})
           if-no-files-found: warn
