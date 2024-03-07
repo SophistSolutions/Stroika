@@ -2002,11 +2002,13 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"New_Format"};
 
+#if __cpp_lib_format >= 202207L
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
 
         String a3 = Fmt (L"{}", 3);
         String a4 = Fmt (L"{}", a3);
+        #endif
     }
 }
 #endif

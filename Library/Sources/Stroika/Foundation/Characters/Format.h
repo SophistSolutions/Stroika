@@ -7,12 +7,13 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdarg>
+// appears to require vis studio OR g++ >= 13 (not sure what clang version supports if any)
 #if __cpp_lib_format >= 202207L
 #include <format>
 #endif
 #include <ios>
 #include <locale>
-#include <sstream>  //tmphack for my current formatter
+#include <sstream> //tmphack for my current formatter
 
 #include "../Configuration/Common.h"
 
