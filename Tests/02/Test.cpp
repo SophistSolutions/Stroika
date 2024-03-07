@@ -1935,6 +1935,81 @@ namespace {
         Test58_CodeCVT_ ();
     }
 }
+
+
+namespace {
+
+#if 0
+    // this trick doesn't work cuz format uses format_string which is consteval ctor, and requires all the types so
+    //  you need to have both at same time - types args to format and the format string
+    namespace {
+        struct MyFmt {
+
+            string_view fFmt_;
+
+            constexpr MyFmt(string_view fmt)
+                : fFmt_{fmt}
+            {
+            }
+
+            template <typename ...ARGS>
+            string operator() (ARGS ...args) const
+            {
+                return format (fFmt_, args...);
+            }
+        };
+        [[nodiscard]] inline MyFmt operator"" _f (const char* str, size_t len)
+        {
+            return MyFmt{string_view{str, len}};
+        }
+    }
+#endif
+
+#if 0
+    namespace {
+
+        _EXPORT_STD template <output_iterator<const wchar_t&> _OutputIt>
+        _OutputIt MyVformat_to (_OutputIt _Out, const wstring_view _Fmt, const wformat_args _Args)
+        {
+            // Make `_Parse_format_string` type-dependent to defer instantiation:
+            using _Dependent_char = decltype ((void)_Out, wchar_t{});
+            if constexpr (is_same_v<_OutputIt, _Fmt_wit>) {
+                _Format_handler<_Dependent_char> _Handler (_Out, _Fmt, _Args);
+                _Parse_format_string (_Fmt, _Handler);
+                return _Out;
+            }
+            else {
+                _Fmt_iterator_buffer<_OutputIt, wchar_t> _Buf (_STD move (_Out));
+                _Format_handler<_Dependent_char>         _Handler (_Fmt_wit{_Buf}, _Fmt, _Args);
+                _Parse_format_string (_Fmt, _Handler);
+                return _Buf._Out ();
+            }
+        }
+
+        _EXPORT_STD template <int = 0> // improves throughput, see GH-2329
+        _NODISCARD string myVformat (const wstring_view _Fmt, const format_args _Args)
+        {
+            string _Str;
+            _Str.reserve (_Fmt.size () + _Args._Estimate_required_capacity ());
+            _STD vformat_to (back_insert_iterator{_Str}, _Fmt, _Args);
+            return _Str;
+        }
+
+
+    }
+#endif
+
+    GTEST_TEST (Foundation_Characters, New_Format)
+    {
+        Debug::TraceContextBumper ctx{"New_Format"};
+
+        string  a1 = format ("{}", 1);
+        wstring a2 = format (L"{}", 1);
+
+        String a3 = Fmt (L"{}", 3);
+        String a4 = Fmt (L"{}", a3);
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

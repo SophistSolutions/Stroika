@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdarg>
+#include <format>
 #include <ios>
 #include <locale>
 
@@ -57,7 +58,49 @@ namespace Stroika::Foundation::Characters {
     String FormatV (const wchar_t* format, va_list argsList);
     String Format (const wchar_t* format, ...);
 
+    /**
+    * 
+    * SUPER EARLY EXPERIEMNTAL DRAFT OF c++20 format support
+        // Problem with allowing 'string_format' is it generates format_string - which I don't think will handle args of unicode chars right...
+     */
+    template <class... ARGS>
+    [[nodiscard]] inline String Fmt (const wformat_string<ARGS...> f, ARGS&&... _Args)
+    {
+        return String{vformat (f.get (), make_wformat_args (_Args...))};
+    }
+
 }
+
+// SUPER PRIMITIVE ROUGH FIRST DRAFT
+template <>
+struct std::formatter<Stroika::Foundation::Characters::String, wchar_t> {
+    bool quoted = false;
+
+    template <class ParseContext>
+    constexpr ParseContext::iterator parse (ParseContext& ctx)
+    {
+        auto it = ctx.begin ();
+        if (it == ctx.end ())
+            return it;
+
+        if (*it == '#') {
+            quoted = true;
+            ++it;
+        }
+        if (*it != '}')
+            throw std::format_error ("Invalid format args for QuotableString.");
+
+        return it;
+    }
+
+    template <class FmtContext>
+    FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
+    {
+        std::wstringstream out;
+        out << s;
+        return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
+    }
+};
 
 /*
  ********************************************************************************
