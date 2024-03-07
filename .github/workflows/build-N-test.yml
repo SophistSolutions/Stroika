@@ -293,8 +293,8 @@ jobs:
         run: |
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # Just copy out from container the stuff in /tmp
-          (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p TRACE_LOGS; cp $TEMP/Trace*.txt TRACE_LOGS/') || :
-          cp -r ${GITHUB_WORKSPACE}"/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
+          (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p /TRACE_LOGS; cp $TEMP/Trace*.txt /TRACE_LOGS/') || :
+          (cp -r "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
 
           # # docker exec --workdir c:/ buildContainer bash -c 'echo ROOTWROKDIR ; ls -l'
           # # docker exec --workdir c:/ buildContainer bash -c 'echo TRACELOGS ; ls -l c:/Stroika/TRACE_LOGS/'
@@ -307,7 +307,7 @@ jobs:
           # (docker cp "buildContainer:Stroika/Builds/${{ matrix.config_name }}" $ARTIFACTS_DIR) || :
           # (docker cp "buildContainer:c:/Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
           # (docker cp "buildContainer:Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
-          (docker cp "buildContainer:c/TRACE_LOGS" $ARTIFACTS_DIR) || :
+          (docker cp "buildContainer:/TRACE_LOGS/" $ARTIFACTS_DIR) || :
           # (docker cp "buildContainer:/c/Stroika/TRACE_LOGS" $ARTIFACTS_DIR) || :
           # # (docker cp "buildContainer:." $ARTIFACTS_DIR) || :
           # (docker cp "buildContainer:c:\\Stroika\\TRACE_LOGS" $ARTIFACTS_DIR) || :
