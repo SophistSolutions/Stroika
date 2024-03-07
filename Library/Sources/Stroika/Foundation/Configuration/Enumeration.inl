@@ -205,8 +205,10 @@ namespace Stroika::Foundation::Configuration {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
         using IndexType = make_unsigned_t<underlying_type_t<ENUM_TYPE>>;
-        for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {
-            Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
+        if (not is_constant_evaluated ()) {
+            for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {
+                Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
+            }
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996);
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
