@@ -48,7 +48,7 @@ build-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-ubuntu2204-small sophistsolutionsinc/stroika-buildvm-ubuntu2310-small sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
-ifeq(${BUILD_DEV_IMAGES},1)
+ifeq (${BUILD_DEV_IMAGES},1)
 	${MAKE} --silent sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev-2204  sophistsolutionsinc/stroika-dev-2404
 endif
 endif
