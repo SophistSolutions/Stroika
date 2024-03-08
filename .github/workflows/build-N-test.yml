@@ -138,6 +138,7 @@ jobs:
           name: Doxygen Documentation
           path: |
             Builds/Stroika-Doxygen-Help.tar.gz
+          overwrite: true
       - name: Archive Log Results
         if: always()
         uses: actions/upload-artifact@v4
