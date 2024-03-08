@@ -5,6 +5,8 @@ STROIKA_VERSION_Final=$(shell ../ScriptsLib/ExtractVersionInformation ../STROIKA
 
 DETECTED_HOST_OS=$(shell ../ScriptsLib/DetectedHostOS)
 
+BUILD_DEV_IMAGES?=1
+
 help:
 	@echo "make docker-images to create the docker images on your computer"
 	@echo
@@ -46,7 +48,9 @@ build-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-ubuntu2204-small sophistsolutionsinc/stroika-buildvm-ubuntu2310-small sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
+ifeq(${BUILD_DEV_IMAGES},1)
 	${MAKE} --silent sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev-2204  sophistsolutionsinc/stroika-dev-2404
+endif
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
@@ -124,7 +128,6 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-regression-tests; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-small; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-regression-tests; ${DOCKER_TAG_LINE_}
-	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_TAG_LINE_}

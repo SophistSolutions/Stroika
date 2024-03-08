@@ -9,6 +9,8 @@ on:
 jobs:
   build-Linux:
     runs-on: ubuntu-latest
+    env:
+      "BUILD_DEV_IMAGES": "0" 
     steps:
       - uses: actions/checkout@v4
       - name: Build System Info
