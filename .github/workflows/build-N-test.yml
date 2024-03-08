@@ -128,7 +128,8 @@ jobs:
           name: Sample apps (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
-            Builds/${{ matrix.config_name }}/Samples-*
+            Builds/${{ matrix.config_name }}/*Samples-*
+          overwrite: true
       - name: Make Documentation
         run: make documentation
       - name: Archive Documentation Results
