@@ -1,4 +1,4 @@
-ARG BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests
+ARG BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
 
 FROM $BASED_ON_IMAGE
 

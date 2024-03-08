@@ -44,20 +44,38 @@ EXTRA_DOCKER_BUILD_ARGS +=	--network "${DOCKER_NETWORK}"
 endif
 build-images:
 ifeq (${DETECTED_HOST_OS},Linux)
-	docker build -f Ubuntu2004-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-small .
-	docker build -f Ubuntu2204-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-small .
-	docker build -f Ubuntu2310-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2310-small .
-	docker build -f Ubuntu2004-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
-	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
-	docker build -f Ubuntu2310-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests .
-	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
-	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2004 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
-	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2204 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
+	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-ubuntu2204-small sophistsolutionsinc/stroika-buildvm-ubuntu2310-small sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
+	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
+	${MAKE} --silent sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev-2204  sophistsolutionsinc/stroika-dev-2404
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
+
+
+sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:
+	docker build -f Ubuntu2204-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-small .
+
+sophistsolutionsinc/stroika-buildvm-ubuntu2310-small:
+	docker build -f Ubuntu2310-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2310-small .
+
+sophistsolutionsinc/stroika-buildvm-ubuntu2404-small:
+	docker build -f Ubuntu2404-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2404-small .
+
+sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:
+	# Sadly docker build doesn't work with symbolic links
+	cp ../ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
+	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
+	rm -f Ubuntu2204-RegressionTests/BuildGCC
+
+sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests:
+	docker build -f Ubuntu2310-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests .
+
+sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests:
+	docker build -f Ubuntu2404-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests .
+
+
 
 sophistsolutionsinc/stroika-buildvm-windows-vs2k22:
 	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 -t $@ .
@@ -67,6 +85,17 @@ sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/
 
 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
 	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
+
+
+sophistsolutionsinc/stroika-dev:
+	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
+
+sophistsolutionsinc/stroika-dev-2204:
+	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2204 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
+
+sophistsolutionsinc/stroika-dev-2404:
+	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2404 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests .
+
 
 
 stroika-dev-containers:
@@ -89,12 +118,12 @@ endif
 
 tag-images:
 ifeq (${DETECTED_HOST_OS},Linux)
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-small; ${DOCKER_TAG_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-regression-tests; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-small; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-regression-tests; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-small; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-regression-tests; ${DOCKER_TAG_LINE_}
 	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
@@ -120,12 +149,12 @@ endif
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
 ifeq (${DETECTED_HOST_OS},Linux)
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-small; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-small; ${DOCKER_PUSH_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-regression-tests; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-small; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-regression-tests; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-regression-tests; ${DOCKER_PUSH_LINE_}
 	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
