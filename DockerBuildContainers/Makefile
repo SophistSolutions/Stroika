@@ -44,21 +44,33 @@ EXTRA_DOCKER_BUILD_ARGS +=	--network "${DOCKER_NETWORK}"
 #EXTRA_DOCKER_BUILD_ARGS= --storage-opts "size 100GB" 
 #
 endif
-build-images:
+
+## NOTE: Since these can be slow/big, the IMAGES arg can be given on the commandline to override this
 ifeq (${DETECTED_HOST_OS},Linux)
-	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-ubuntu2204-small sophistsolutionsinc/stroika-buildvm-ubuntu2310-small sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
-	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
+IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
+IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2310-small
+IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
+IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests
+IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
 ifeq (${BUILD_DEV_IMAGES},1)
-	${MAKE} --silent sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev-2204  sophistsolutionsinc/stroika-dev-2404
+IMAGES+= sophistsolutionsinc/stroika-dev
+IMAGES+= sophistsolutionsinc/stroika-dev-2204
+IMAGES+= sophistsolutionsinc/stroika-dev-2404
 endif
 endif
+
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	# echo disabled cygwin temporarily while installer broken --LGP 2024-03-09
-	#${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
-	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+# echo disabled cygwin temporarily while installer broken --LGP 2024-03-09
+#IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
 
+build-images:
+	${MAKE} --silent ${IMAGES}
 
+
+## Detailed recipies for each image type
 sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:
 	docker build -f Ubuntu2204-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-small .
 
@@ -102,7 +114,6 @@ sophistsolutionsinc/stroika-dev-2404:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2404 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests .
 
 
-
 stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
@@ -111,57 +122,25 @@ ifeq (${DETECTED_HOST_OS},Linux)
 endif
 
 
-export DOCKER_TAG_LINE_=\
-	echo docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
-	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:v3;
-
-ifeq ($(STROIKA_VERSION_Final),true)
-DOCKER_TAG_LINE_+= \
-	echo docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
-	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION);
-endif
-
 tag-images:
-ifeq (${DETECTED_HOST_OS},Linux)
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_TAG_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_TAG_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-small; ${DOCKER_TAG_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-regression-tests; ${DOCKER_TAG_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-small; ${DOCKER_TAG_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-regression-tests; ${DOCKER_TAG_LINE_}
-endif
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	#@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_TAG_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_TAG_LINE_}
-endif
-
-
-
-
-export DOCKER_PUSH_LINE_=\
-	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:latest; \
-	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:latest; \
-	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
-	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:v3;
-
+	for image in "${IMAGES}"; do \
+		docker tag $${image} $${image}:v3; \
+	done
 ifeq ($(STROIKA_VERSION_Final),true)
-DOCKER_PUSH_LINE_+=\
-	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
-	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION);
+	for image in ${IMAGES}; do  \
+		docker tag $${image} $${image}:${STROIKA_VERSION}; \
+	done
 endif
+
 
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
-ifeq (${DETECTED_HOST_OS},Linux)
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_PUSH_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-small; ${DOCKER_PUSH_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-small; ${DOCKER_PUSH_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_PUSH_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-regression-tests; ${DOCKER_PUSH_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2404-regression-tests; ${DOCKER_PUSH_LINE_}
-	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
-endif
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	#@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_PUSH_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_PUSH_LINE_}
+	for image in ${IMAGES}; do \
+		docker push $${image}:latest; \
+		docker push $${image}:v3; \
+	done
+ifeq ($(STROIKA_VERSION_Final),true)
+	for image in ${IMAGES}; do  \
+		docker push $${image}:${STROIKA_VERSION}; \
+	done
 endif
