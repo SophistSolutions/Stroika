@@ -2028,7 +2028,7 @@ namespace {
         String a6 = Fmt (L"{}", IO::Network::CIDR{"192.168.244.0/24"});
         DbgTrace (L"a6=%s", Characters::ToString (a6).c_str ());
         String a7 = Fmt (L"{}", foo{});
-          DbgTrace (L"a7=%s", Characters::ToString (a7).c_str ());
+        DbgTrace (L"a7=%s", Characters::ToString (a7).c_str ());
         //   String a5 = Fmt (L"{}", foo{});
 #endif
     }
