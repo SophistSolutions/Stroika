@@ -33,6 +33,13 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
  iex ((New-Object System.Net.WebClient).DownloadString("$env:CHOCO_URL"));
 
+# The default version of CHOCO CYGWIN fails to install as of 2024-03-08
+# Adding specific version to install worked around the problem
+# ARG CHOCO_VERSION_ARG="--version 3.5.1"
+ARG CHOCO_VERSION_ARG=""
+#ARG CHOCO_VERSION_ARG = --version 3.5.1
+
+
 # install cygwin
 SHELL ["cmd", "/S", "/C"]
 RUN choco install -y cygwin cyg-get
