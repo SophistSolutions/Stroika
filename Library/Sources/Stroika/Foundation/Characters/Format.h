@@ -108,6 +108,41 @@ struct std::formatter<Stroika::Foundation::Characters::String, wchar_t> {
         return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
     }
 };
+template <>
+struct std::formatter<Stroika::Foundation::Characters::String, char> {
+    bool ignoreerrors{true}; // maybe set from thread-local variable, or parse() settings, or both
+
+    template <class ParseContext>
+    constexpr ParseContext::iterator parse (ParseContext& ctx)
+    {
+        auto it = ctx.begin ();
+        if (it == ctx.end ())
+            return it;
+
+        if (*it == '#') {
+            quoted = true;
+            ++it;
+        }
+        if (*it != '}')
+            throw std::format_error ("Invalid format args for QuotableString.");
+
+        return it;
+    }
+
+    template <class FmtContext>
+    FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
+    {
+        using namespace Stroika::Foundation::Characters;
+        //  wformat_context delegateCTX;
+        String dr{s}; // really want to delegate to wchar_t version (with vformat) but no documented easy way to extract format_args from ctx (though its in there)
+        if (ignoreerrors) {
+            return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
+        }
+        else {
+            return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
+        }
+    }
+};
 #endif
 
 /*

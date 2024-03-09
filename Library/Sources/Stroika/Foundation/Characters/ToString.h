@@ -131,6 +131,38 @@ namespace Stroika::Foundation::Characters {
             return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
         }
     };
+    template <Stroika::Foundation::Characters::IToString T>
+    struct ToStringFormatterASCII {
+
+        ToStringFormatter<T> fDelegate2_;
+        template <class ParseContext>
+        constexpr ParseContext::iterator parse (ParseContext& ctx)
+        {
+            auto it = ctx.begin ();
+            if (it == ctx.end ())
+                return it;
+
+            if (*it == '#') {
+                quoted = true;
+                ++it;
+            }
+            if (*it != '}')
+                throw std::format_error ("Invalid format args for QuotableString.");
+
+            return it;
+        }
+
+        template <class FmtContext>
+        FmtContext::iterator format (T s, FmtContext& ctx) const
+        {
+            using namespace Stroika::Foundation::Characters;
+            std::wstringstream out;
+            out << UnoverloadedToString (s);
+
+            // @todo delegate to string version so we can use its ignore errors code......
+            return std::ranges::copy (String{out.str ()}.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
+        }
+    };
 #endif
 
     template <typename T>
