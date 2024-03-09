@@ -15,8 +15,6 @@ on:
         required: false
         default: "true"
 
-## NB: JOBS section IDENTICAL between v3-Dev and 3-Release files EXCEPT that on v3-Dev file
-## comment out all entries marked with includeInDevBranchBuilds: false
 jobs:
   LinuxMatrixPrep:
     runs-on: ubuntu-latest
