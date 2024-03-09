@@ -381,13 +381,11 @@ namespace Stroika::Foundation::IO::Network {
 
 }
 
-namespace std {
-    template <>
-    class hash<Stroika::Foundation::IO::Network::URI> {
-    public:
-        size_t operator() (const Stroika::Foundation::IO::Network::URI& arg) const;
-    };
-}
+template <>
+class std::hash<Stroika::Foundation::IO::Network::URI> {
+public:
+    size_t operator() (const Stroika::Foundation::IO::Network::URI& arg) const;
+};
 
 /*
  ********************************************************************************
