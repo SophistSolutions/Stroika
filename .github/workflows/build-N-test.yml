@@ -137,7 +137,7 @@ jobs:
           name: Stroika-Doxygen-Help.tar.gz
           path: |
             Builds/Stroika-Doxygen-Help.tar.gz
-          #Dont name based on who built - sb all teh same
+          #Dont name based on who built - sb all the same
           overwrite: true
       - name: Archive Log Results
         if: always()

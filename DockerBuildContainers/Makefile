@@ -53,7 +53,8 @@ ifeq (${BUILD_DEV_IMAGES},1)
 endif
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+	# echo disabled cygwin temporarily while installer broken --LGP 2024-03-09
+	#${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
 
