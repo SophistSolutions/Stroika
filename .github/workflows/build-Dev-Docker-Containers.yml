@@ -4,9 +4,57 @@
 name: build-Dev-Docker-Containers
 
 on:
+  # push:
   workflow_dispatch:
+    inputs:
+      run_all:
+        description: "run all"
+        required: false
+        default: "true"
 
 jobs:
+  LinuxMatrixPrep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v4
+    - id: set-matrix
+      run: |
+        branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
+        matrix=$(jq --arg branchName "$branchName" 'map( 
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true") and (.run_on_branch!="never")) | select(.build_job=="Linux")
+        )' .github/workflows/build-N-test-Matrix.json)                
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+  MacOSMatrixPrep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v4
+    - id: set-matrix
+      run: |
+        branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
+        matrix=$(jq --arg branchName "$branchName" 'map( 
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true")) | select(.build_job=="MacOS")
+        )' .github/workflows/build-N-test-Matrix.json)                
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+  WindowsMatrixPrep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v4
+    - id: set-matrix
+      run: |
+        branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
+        matrix=$(jq --arg branchName "$branchName" 'map( 
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true")) | select(.build_job=="Windows")
+        )' .github/workflows/build-N-test-Matrix.json)                
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
   build-Linux:
     runs-on: ubuntu-latest
     env:
@@ -37,7 +85,10 @@ jobs:
           DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory push-images
 
   build-Windows:
-    runs-on: windows-latest
+    needs: WindowsMatrixPrep
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
     defaults:
       run:
         shell: msys2 {0}

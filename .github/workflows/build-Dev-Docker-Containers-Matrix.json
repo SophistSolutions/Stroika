@@ -1,0 +1,20 @@
+[
+    {
+        "comment": "Linux",
+        "comment2": "ubuntu 20.04"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-20.04-g++-11 (Debug)",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests"
+    },
+    {
+        "comment": "Windows"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22",
+        "runs_on": "windows-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22"
+    }
+]
