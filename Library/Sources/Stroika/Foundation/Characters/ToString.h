@@ -97,42 +97,55 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     String UnoverloadedToString (const T& t);
 
+#if __cpp_lib_format >= 202207L
+    // SUPER PRIMITIVE ROUGH FIRST DRAFT
+    // maybe wrong concept filter- maybe need to use specificatlly has ToString() method!!! Others count on stdlib handling?
+    // test stuff like vector<IO::Network::InternetAddress>
+    template <Stroika::Foundation::Characters::IToString T>
+    struct ToStringFormatter {
+        bool quoted = false;
+
+        template <class ParseContext>
+        constexpr ParseContext::iterator parse (ParseContext& ctx)
+        {
+            auto it = ctx.begin ();
+            if (it == ctx.end ())
+                return it;
+
+            if (*it == '#') {
+                quoted = true;
+                ++it;
+            }
+            if (*it != '}')
+                throw std::format_error ("Invalid format args for QuotableString.");
+
+            return it;
+        }
+
+        template <class FmtContext>
+        FmtContext::iterator format (T s, FmtContext& ctx) const
+        {
+            using namespace Stroika::Foundation::Characters;
+            std::wstringstream out;
+            out << UnoverloadedToString (s);
+            return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
+        }
+    };
+#endif
+
+    template <typename T>
+    concept IToStringxxx = requires (T t) {
+        {
+            t.ToString ()
+        } -> convertible_to<Characters::String>;
+    };
+
 }
 
-#if __cpp_lib_format >= 202207L && 0
+#if __cpp_lib_format >= 202207L
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
-// maybe wrong concept filter- maybe need to use specificatlly has ToString() method!!! Others count on stdlib handling?
-// test stuff like vector<IO::Network::InternetAddress>
-template <Stroika::Foundation::Characters::IToString T>
-struct std::formatter<T, wchar_t> {
-    bool quoted = false;
-
-    template <class ParseContext>
-    constexpr ParseContext::iterator parse (ParseContext& ctx)
-    {
-        auto it = ctx.begin ();
-        if (it == ctx.end ())
-            return it;
-
-        if (*it == '#') {
-            quoted = true;
-            ++it;
-        }
-        if (*it != '}')
-            throw std::format_error ("Invalid format args for QuotableString.");
-
-        return it;
-    }
-
-    template <class FmtContext>
-    FmtContext::iterator format (T s, FmtContext& ctx) const
-    {
-        using namespace Stroika::Foundation::Characters;
-        std::wstringstream out;
-        out << UnoverloadedToString (s);
-        return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
-    }
-};
+template <Stroika::Foundation::Characters::IToStringxxx T>
+struct std::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 #endif
 
 /*

@@ -43,6 +43,10 @@ using std::byte;
 
 #define qPrintTimings 0
 
+//tmphack while experimenting with new std format code
+#include "Stroika/Foundation/IO/Network/CIDR.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+
 #if qHasFeature_GoogleTest
 /**
  * TODO:
@@ -2007,6 +2011,10 @@ namespace {
             {
                 return "foo as a string"sv;
             }
+#if 0
+            template <>
+            struct std::formatter<foo, wchar_t> : ToStringFormatter<foo> {};
+#endif
         };
 
 #if __cpp_lib_format >= 202207L
@@ -2015,6 +2023,12 @@ namespace {
 
         String a3 = Fmt (L"{}", 3);
         String a4 = Fmt (L"{}", a3);
+        String a5 = Fmt (L"{}", IO::Network::URI{"http://www.sophists.com"});
+        DbgTrace (L"a5=%s", Characters::ToString (a5).c_str ());
+        String a6 = Fmt (L"{}", IO::Network::CIDR{"192.168.244.0/24"});
+        DbgTrace (L"a6=%s", Characters::ToString (a6).c_str ());
+        String a7 = Fmt (L"{}", foo{});
+          DbgTrace (L"a7=%s", Characters::ToString (a7).c_str ());
         //   String a5 = Fmt (L"{}", foo{});
 #endif
     }
