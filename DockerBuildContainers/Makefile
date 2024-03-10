@@ -124,7 +124,7 @@ endif
 
 tag-images:
 	for image in "${IMAGES}"; do \
-		docker tag $${image} ${image}:v3; \
+		docker tag $${image} $${image}:v3; \
 	done
 ifeq ($(STROIKA_VERSION_Final),true)
 	for image in ${IMAGES}; do  \
