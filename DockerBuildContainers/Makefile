@@ -128,7 +128,7 @@ tag-images:
 	done
 ifeq ($(STROIKA_VERSION_Final),true)
 	for image in ${IMAGES}; do  \
-		docker tag $${image} ${image}:${STROIKA_VERSION}; \
+		docker tag $${image} $${image}:${STROIKA_VERSION}; \
 	done
 endif
 
