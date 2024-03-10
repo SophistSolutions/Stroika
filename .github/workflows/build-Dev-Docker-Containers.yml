@@ -56,7 +56,10 @@ jobs:
         )' .github/workflows/build-Dev-Docker-Containers-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
   build-Linux:
-    runs-on: ubuntu-latest
+    needs: LinuxMatrixPrep
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
     env:
       "BUILD_DEV_IMAGES": "0" 
     steps:
@@ -73,8 +76,8 @@ jobs:
           DEBIAN_FRONTEND=noninteractive sudo apt-get install dos2unix
       - name: Build Linux Container Images
         run: |
-          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory build-images
-          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory tag-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" build-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" tag-images
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -82,7 +85,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Push Linux Container Images
         run: |
-          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory push-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" push-images
 
   build-Windows:
     needs: WindowsMatrixPrep
