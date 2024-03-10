@@ -27,20 +27,6 @@ jobs:
             . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true") and (.run_on_branch!="never")) | select(.build_job=="Linux")
         )' .github/workflows/build-Dev-Docker-Containers-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
-  MacOSMatrixPrep:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
-    - id: set-matrix
-      run: |
-        branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
-        matrix=$(jq --arg branchName "$branchName" 'map( 
-            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true")) | select(.build_job=="MacOS")
-        )' .github/workflows/build-Dev-Docker-Containers-Matrix.json)                
-        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
   WindowsMatrixPrep:
     runs-on: ubuntu-latest
     outputs:
@@ -59,7 +45,7 @@ jobs:
     needs: LinuxMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
-      matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
+      matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
     env:
       "BUILD_DEV_IMAGES": "0" 
     steps:
@@ -76,8 +62,8 @@ jobs:
           DEBIAN_FRONTEND=noninteractive sudo apt-get install dos2unix
       - name: Build Linux Container Images
         run: |
-          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" build-images
-          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" tag-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_images }}" build-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_images }}" tag-images
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -85,7 +71,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Push Linux Container Images
         run: |
-          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" push-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_images }}" push-images
 
   build-Windows:
     needs: WindowsMatrixPrep
@@ -121,10 +107,10 @@ jobs:
           make --directory DockerBuildContainers --no-print-directory sophistsolutionsinc/stroika-buildvm-windows-vs2k22
       - name: Build Windows Container Images
         run: |
-          make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" build-images
+          make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_images }}" build-images
       - name: Tag Windows Container Images
         run: |
-          make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" tag-images
+          make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_images }}" tag-images
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -132,4 +118,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Push Windows Container Images
         run: |
-          make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_image }}" push-images
+          make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_images }}" push-images
