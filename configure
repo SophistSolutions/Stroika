@@ -2911,6 +2911,7 @@ if ($onlyGenerateIfCompilerExists) {
 	# if flag to use libc++ - check if right version is available (but not on XCode)
 	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		my $ubuntuVersion = getUbuntuVersion();
 		if ($itsVersion <  14.0) {
 			$generate = false;
 			$generateBecause = "clang++-13 with libc++ doesn't support modern enough c++, and with libstdc++, some versions (ubuntu 22.04) work, and others (libg++ 13 and later) dont compile";
@@ -2926,6 +2927,10 @@ if ($onlyGenerateIfCompilerExists) {
 			# PERHAPS should fine tune this check to make sure we are looking at g++ lib 13
 			$generate = false;
 			$generateBecause = "clang++-16 with libcstd++ (g++13 lib) doesn't support c++23 mode";
+		}
+		if ( $itsVersion <= 16.0 && $STDCXXLIB eq "libc++" && $ubuntuVersion == 24.04) {
+			$generate = false;
+			$generateBecause = "Libc++ only supports Clang 16 and later on ubuntu 24.04";
 		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
