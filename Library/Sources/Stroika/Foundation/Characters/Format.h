@@ -69,6 +69,13 @@ namespace Stroika::Foundation::Characters {
      */
 #if __cpp_lib_format >= 202207L
     template <class... ARGS>
+    [[nodiscard]] inline String Fmt (const format_string<ARGS...> f, ARGS&&... _Args)
+    {
+        // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
+        // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
+        return String{vformat (f.get (), make_format_args (_Args...))};
+    }
+    template <class... ARGS>
     [[nodiscard]] inline String Fmt (const wformat_string<ARGS...> f, ARGS&&... _Args)
     {
         return String{vformat (f.get (), make_wformat_args (_Args...))};
@@ -120,7 +127,7 @@ struct std::formatter<Stroika::Foundation::Characters::String, char> {
             return it;
 
         if (*it == '#') {
-            quoted = true;
+            //quoted = true;
             ++it;
         }
         if (*it != '}')

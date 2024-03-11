@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Characters {
                 return it;
 
             if (*it == '#') {
-                quoted = true;
+                //  quoted = true;
                 ++it;
             }
             if (*it != '}')
@@ -178,6 +178,8 @@ namespace Stroika::Foundation::Characters {
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <Stroika::Foundation::Characters::IToStringxxx T>
 struct std::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
+template <Stroika::Foundation::Characters::IToStringxxx T>
+struct std::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 #endif
 
 /*
