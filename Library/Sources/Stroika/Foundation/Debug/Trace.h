@@ -242,13 +242,18 @@ namespace Stroika::Foundation::Debug {
      *         So you can call this freely without worrying about Throw (ThreadAbortException) etc
      *         (though beware of passing arguments to DbgTrace() which may be cancelation points)
      */
-#ifndef DbgTrace
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
 #define DbgTrace Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage
 #else
 #define DbgTrace _NoOp_
 #endif
+
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#define DbgTrace2 Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage2
+#else
+#define DbgTrace2 _NoOp_
 #endif
+
 }
 
 /*

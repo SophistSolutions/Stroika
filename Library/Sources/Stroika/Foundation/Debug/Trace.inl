@@ -48,6 +48,30 @@ namespace Stroika::Foundation::Debug {
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
 
+#if __cpp_lib_format >= 202207L
+        nonvirtual void EmitTraceMessageRaw2 (wstring_view users_fmt, wformat_args&& args) noexcept;
+        nonvirtual void EmitTraceMessageRaw2 (string_view users_fmt, format_args&& args) noexcept;
+        template <typename... Args>
+        nonvirtual void EmitTraceMessage2 (wstring_view users_fmt, Args&&... args) noexcept
+        {
+            try {
+                EmitTraceMessageRaw2 (users_fmt, make_wformat_args (args...));
+            }
+            catch (...) {
+            }
+        }
+        template <typename... Args>
+        nonvirtual void EmitTraceMessage2 (string_view users_fmt, Args&&... args) noexcept
+        {
+            try {
+                EmitTraceMessageRaw2 (users_fmt, make_format_args (args...));
+            }
+            catch (...) {
+            }
+        }
+#endif
+        nonvirtual void EmitTraceMessageRaw (const wstring& raw) noexcept;
+
     public:
         // if the last write matches the given token (no writes since then) and the timestamp is unchanged, abandon
         // the buffered characters and return true. Else flush(write) them, and return false.

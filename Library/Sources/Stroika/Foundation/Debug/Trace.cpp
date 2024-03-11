@@ -351,6 +351,44 @@ auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const 
     }
 }
 
+#if __cpp_lib_format >= 202207L
+void Debug::Private_::Emitter::EmitTraceMessageRaw2 (wstring_view users_fmt, wformat_args&& args) noexcept
+{
+    try {
+        EmitTraceMessageRaw (vformat (users_fmt, args));
+    }
+    catch (...) {
+    }
+}
+void Debug::Private_::Emitter::EmitTraceMessageRaw2 (string_view users_fmt, format_args&& args) noexcept
+{
+    try {
+        Debug::Private_::Emitter::EmitTraceMessageRaw (Characters::String::FromNarrowSDKString (vformat (users_fmt, args)).As<wstring> ());
+    }
+    catch (...) {
+    }
+}
+#endif
+
+void Debug::Private_::Emitter::EmitTraceMessageRaw (const wstring& raw) noexcept
+{
+    if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
+        return;
+    }
+    Thread::SuppressInterruptionInContext suppressAborts;
+    try {
+        wstring tmp = raw;
+        SquishBadCharacters_ (&tmp);
+        AssureHasLineTermination (&tmp);
+        DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
+    }
+    catch (...) {
+        WeakAssert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
+        DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
+    }
+}
+
 namespace {
     // .first is true iff added, and false if already present
     // .second is the threadid to display
