@@ -2032,27 +2032,25 @@ namespace {
         //   String a5 = Fmt (L"{}", foo{});
         DbgTrace2 (L"yippie: {}", foo{});
 
-
         DbgTrace2 (L"t2:  cidr= {}, s1={}, s2={}", IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});
         //DbgTrace2 ("t2:  cidr= {}, s1={}, s2={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"});
 
         // @todo allow mixing string/wstring here - for fmt - unlike stdc++??? maybe???
 
-
-//        DbgTrace2 (L"t2:  s1={}, s2={}, s3={}",  "s1", String{"s2"}, string{"s3"});
+        //        DbgTrace2 (L"t2:  s1={}, s2={}, s3={}",  "s1", String{"s2"}, string{"s3"});
         //DbgTrace2 ("t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
-       // DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
+        // DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
 #endif
     }
-    }
+}
 #endif
 
-    int main (int argc, const char* argv[])
-    {
-        Test::Setup (argc, argv);
+int main (int argc, const char* argv[])
+{
+    Test::Setup (argc, argv);
 #if qHasFeature_GoogleTest
-        return RUN_ALL_TESTS ();
+    return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
-    }
+}
