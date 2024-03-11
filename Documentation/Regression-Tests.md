@@ -41,19 +41,6 @@ checkin from one spot.
       ./ScriptsLib/RegressionTests
   ```
 
-- \$TEST_TARGET=Ubuntu2004_x86_64
-
-  (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
-
-  ```bash
-  RUN_IN_DOCKER=1 \
-      USE_TEST_BASENAME=Ubuntu2004_x86_64 \
-      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests \
-      MACHINE=Hercules \
-      ./ScriptsLib/RunRemoteRegressionTests
-  ```
-
 - \$TEST_TARGET=Ubuntu2204_x86_64
 
   (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
@@ -76,6 +63,19 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu2310_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests \
+      MACHINE=Hercules \
+      ./ScriptsLib/RunRemoteRegressionTests
+  ```
+
+- \$TEST_TARGET=Ubuntu2404_x86_64
+
+  (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+
+  ```bash
+  RUN_IN_DOCKER=1 \
+      USE_TEST_BASENAME=Ubuntu2404_x86_64 \
+      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
@@ -111,7 +111,7 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
   ```
 
-- WSL (tested on Ubuntu 20.04) test
+- WSL (tested on Ubuntu 22.04) test
   (inside WSL2 bash prompt)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
 
