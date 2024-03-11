@@ -61,8 +61,7 @@ endif
 endif
 
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-##cygwin still broken installing from chocolety--LGP 2024-03-10
-##IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
 
