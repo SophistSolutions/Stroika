@@ -68,6 +68,7 @@ my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_UseStaticTPP;
 my $STATIC_LINK_GCCRUNTIME = 1;
 my $COMPILER_DRIVER_C = "";
 my $COMPILER_DRIVER_CPlusPlus = "";
@@ -176,6 +177,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_sqlite = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_sqlite");
 	$FEATUREFLAG_boost = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_boost");
 	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LZMA");
+	$FEATUREFLAG_fmtlib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_fmtlib");
 	$gAssertionsEnabled = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "AssertionsEnabled"));
 	$INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
 	$LinkerArgs_LibPath = GetConfigurationParameter($activeConfiguration, "LinkerArgs_LibPath");
@@ -310,6 +312,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_GoogleTest");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LibCurl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LZMA");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_fmtlib");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL_ExtraArgs");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_sqlite");

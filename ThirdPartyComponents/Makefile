@@ -30,6 +30,9 @@ endif
 ifeq ($(qFeatureFlag_LZMA), use)
 	BUILD_lzma=1
 endif
+ifeq ($(qFeatureFlag_fmtlib), use)
+	BUILD_fmtlib=1
+endif
 ifeq ($(qFeatureFlag_OpenSSL), use)
 	BUILD_openssl=1
 endif
@@ -63,6 +66,9 @@ ifeq ($(BUILD_boost), 1)
 endif
 ifeq ($(BUILD_curl), 1)
 	SubDirs+= curl
+endif
+ifeq ($(BUILD_fmtlib), 1)
+	SubDirs+= fmtlib
 endif
 ifeq ($(BUILD_lzma), 1)
 	SubDirs+= lzma

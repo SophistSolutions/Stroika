@@ -172,6 +172,7 @@ my $FEATUREFLAG_GoogleTest = undef;
 my $FEATUREFLAG_ZLib = undef;
 my $FEATUREFLAG_sqlite = undef;
 my $FEATUREFLAG_LZMA = undef;
+my $FEATUREFLAG_fmtlib = undef;
 my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
 my $TargettingValgrind = undef;
@@ -241,6 +242,7 @@ sub	DoSetThirdPartyComponents_
 		$FEATUREFLAG_libxml2 = undef;
 		$FEATUREFLAG_Xerces = undef;
 		$FEATUREFLAG_LZMA = undef;
+		$FEATUREFLAG_fmtlib = undef;
 		$FEATUREFLAG_OpenSSL = undef;
 		$FEATUREFLAG_sqlite = undef;
 		$FEATUREFLAG_WinHTTP = undef;
@@ -314,6 +316,7 @@ sub	DoSetThirdPartyComponents_
 		$FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
@@ -556,7 +559,8 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
+			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
 			push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`) . "/";
 		}
@@ -588,7 +592,8 @@ sub     FillDefaultLibsPathIfNeeded_
 			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
+			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
 			push @LinkerArgs_LibPath_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
 		}
@@ -1568,6 +1573,11 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$FEATUREFLAG_LZMA = $var;
 		}
+		elsif ((lc ($var) eq "-fmtlib") or (lc ($var) eq "--fmtlib")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_fmtlib = $var;
+		}
 		elsif ((lc ($var) eq "-default-third-party-components") or (lc ($var) eq "--default-third-party-components")) {
 			DoSetThirdPartyComponents_ ('default');
 		}
@@ -2186,6 +2196,7 @@ sub GetDefaultCZZFLAGS_flags_
 			push @flags, $dashFlag . "qHasFeature_GoogleTest=" . ZERO_OR_1_ (($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_fmtlib=" . ZERO_OR_1_ (($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
 			if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 				push @flags, $dashFlag . "qStroika_Foundation_Debug_Trace_TraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
@@ -2721,6 +2732,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_GoogleTest>$FEATUREFLAG_GoogleTest</qFeatureFlag_GoogleTest>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
+	print (OUT "    <qFeatureFlag_fmtlib>$FEATUREFLAG_fmtlib</qFeatureFlag_fmtlib>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	if (not ($FEATUREFLAG_OpenSSLExtraArgs eq "")) {
 		if ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) {
