@@ -662,7 +662,6 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 
 #endif
 
-
 /*
 /usr/bin/ld: /tmp/cchyvHxb.ltrans6.ltrans.o: in function `Stroika::Foundation::Debug::BackTrace::Capture[abi:cxx11](Stroika::Foundation::Debug::BackTrace::Options const&) [clone .constprop.0]':
 /usr/include/c++/13/stacktrace:196:(.text+0x844e): undefined reference to `__glibcxx_backtrace_pcinfo'
@@ -677,8 +676,8 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 /usr/include/c++/13/stacktrace:259:(.text+0x2f9): undefined reference to `__glibcxx_backtrace_simple'
 /usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x344): undefined reference to `__glibcxx_backtrace_create_state'
 collect2: error: ld returned 1 exit status
-				#	https://gcc.gnu.org/pipermail/gcc-bugs/2022-May/787733.html 
-				#		says use '-lstdc++_libbacktrace' but doesn't exist on ubuntu 24.04 -LGP 24.04
+                #   https://gcc.gnu.org/pipermail/gcc-bugs/2022-May/787733.html 
+                #       says use '-lstdc++_libbacktrace' but doesn't exist on ubuntu 24.04 -LGP 24.04
 */
 #ifndef qCompilerAndStdLib_stacktraceLinkError_Buggy
 
@@ -690,7 +689,6 @@ collect2: error: ld returned 1 exit status
 #endif
 
 #endif
-
 
 /*
  Symptom if broken - is that for sanitizer=undefined builds, we still get kBuiltWithUndefinedBehaviorSanitizer == false
