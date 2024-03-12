@@ -2020,9 +2020,9 @@ namespace {
 #if __cpp_lib_format >= 202207L
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
-        String a3 = Fmt (L"{}", 3);
-        String a4 = Fmt (L"{}", a3);
-        String a5 = Fmt (L"{}", IO::Network::URI{"http://www.sophists.com"});
+        String  a3 = Fmt (L"{}", 3);
+        String  a4 = Fmt (L"{}", a3);
+        String  a5 = Fmt (L"{}", IO::Network::URI{"http://www.sophists.com"});
         DbgTrace (L"a5=%s", Characters::ToString (a5).c_str ());
         String a5a = Fmt ("{}", IO::Network::URI{"http://www.sophists.com"});
         DbgTrace (L"a5a=%s", Characters::ToString (a5).c_str ());
@@ -2033,8 +2033,8 @@ namespace {
         DbgTrace2 (L"yippie: {}", foo{});
         DbgTrace2 (L"t2:  cidr= {}, s1={}, s2={}", IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});
         DbgTrace2 ("t2:  cidr= {}, s1={}, s2={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"});
-// @todo add mapping for wstring/string even for std  case using my ToString mechansim (details elude me - must be careful to avoid introducing ambiguity)
-//        DbgTrace2 (L"t2:  s1={}, s2={}, s3={}",  "s1", String{"s2"}, string{"s3"});
+        // @todo add mapping for wstring/string even for std  case using my ToString mechansim (details elude me - must be careful to avoid introducing ambiguity)
+        //        DbgTrace2 (L"t2:  s1={}, s2={}, s3={}",  "s1", String{"s2"}, string{"s3"});
         DbgTrace2 ("t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
 //         DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
 #endif
