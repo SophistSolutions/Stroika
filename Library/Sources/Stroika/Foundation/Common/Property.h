@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Common {
      * 
      *  \note see base class ReadOnlyProperty and WriteOnlyProperty for details on APIs to read/write the underlying data.
      * 
-     *  \note New Stroika NAMING CONVENTION intruduced for instance variables of type Property<...>, which is to prepend a 'p'. This
+     *  \note New Stroika NAMING CONVENTION introduced for instance variables of type Property<...>, which is to prepend a 'p'. This
      *        convention is to emphasize that these names DONT work QUITE like fields, but only somewhat like fields.
      * 
      *  \par Example Usage
@@ -387,7 +387,7 @@ namespace Stroika::Foundation::Common {
      *          Assert (h2.contentLength1 == 4);
      *      \endcode
      *
-     *      \note when using Properties, its often helpful to combine (for threadsafety checking) with 
+     *      \note when using Properties, its often helpful to combine (for thread safety checking) with 
      *            Debug::AssertExternallySynchronizedMutex and SetAssertExternallySynchronizedMutexContext ()
      * 
      *      \see See the example usage (above outlined) in Frameworks/WebServer/Request.h, Message.h, Response.h, and Foundation/IO/Network/HTTP/Headers
@@ -492,8 +492,8 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      *
      *  \note   it would be HIGHLY DESIRABLE if C++ allowed operator. overloading, as accessing one of these
-     *          values without assinging to a temporary first - means that you cannot directly call its methods.
-     *          Thats a bit awkward.
+     *          values without assigning to a temporary first - means that you cannot directly call its methods.
+     *          That's a bit awkward.
      *
      *          So if you have a type T, with method m(), and variable of type T t.
      *          Your starter code might be:
