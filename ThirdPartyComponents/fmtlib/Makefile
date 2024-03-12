@@ -24,7 +24,6 @@ endif
 # https://github.com/fmtlib/fmt/releases
 VERSION:=10.2.1
 
-
 ZIPPEDFILE:=../Origs-Cache/fmtlib-$(VERSION).zip
 
 FETCHURLS:=
@@ -62,21 +61,21 @@ endif
 .PHONY:	all clean clobber check
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-SQLITE3LIB=libfmtlib.a
+FMTLIB=libfmt.a
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-SQLITE3LIB=fmtlib.lib
+FMTLIB=libfmt.lib
 endif
 TARGETDIR			:=	$(PER_CONFIGURATION_BUILDS_DIR)bin/
 TARGETEXE			:=	$(TARGETDIR)fmtlib${EXE_SUFFIX}
 
 ObjDir:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/
 
-LibObjs:=\
-	$(ObjDir)fmtlib3${OBJ_SUFFIX}\
+# LibObjs:=\
+# 	$(ObjDir)fmtlib3${OBJ_SUFFIX}\
 
-Objs:=\
-	$(LibObjs)\
-	$(ObjDir)shell${OBJ_SUFFIX}\
+# Objs:=\
+# 	$(LibObjs)\
+# 	$(ObjDir)shell${OBJ_SUFFIX}\
 
 # Use the stroika link macro (DEFAULT_LINK_LINE), but omit the stroika lib itself, and other injected depepdencies
 # for sqlite executable
@@ -87,9 +86,8 @@ LinkerArgs_LibDependencies:=-lpthread
 endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/fmtlib/fmtlib3.h	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB) \
-	$(TARGETEXE)
+	$(PER_CONFIGURATION_BUILDS_DIR)include/fmt/core.h	\
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(FMTLIB)
 
 
 $(ZIPPEDFILE):
@@ -116,7 +114,14 @@ endif
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
-ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
+COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/fmtlib/CURRENT)
+
+
+ 
+CMAKE_ARGS+=	-D FMT_TEST="NO"
+
+
+ORIGs CURRENT:	$(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "fmtlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@unzip -q $(ZIPPEDFILE) 
 	@mv fmt-${VERSION}/ $@
@@ -124,20 +129,34 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 
 # trick of using word 1 is to get this triggered just once
 $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt && touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt
-	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-	@$(MAKE) --no-print-directory $(Objs) ECHO_BUILD_LINES=1 >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-	@$(call DEFAULT_LIBRARY_GEN_LINE,$(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB),$(LibObjs)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)bin >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE,$(TARGETEXE))';\
-	fi
-	@$(call DEFAULT_LINK_LINE,$(TARGETEXE)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
+	@${MAKE} --silent CURRENT
 
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "fmtlib ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
+	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"
+	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
+	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "fmtlib ${VERSION} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"   --build . --config=${CMAKE_BUILD_TYPE_} ${CMAKE_XTRA_BLD_FLAGS_}  > BUILD-OUT.txt 2>&1
+else
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"  --build .  > BUILD-OUT.txt 2>&1
+endif
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "fmtlib ${VERSION} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
+	@# Match what .pc file generates with --msvc pkg-config option with symbolic link to avoid having to patch .pc file
+# ifeq ($(DETECTED_HOST_OS),Cygwin)
+# 	@#cygwin seems to (sometimes) generate junction instead of symbolic link?
+# 	@cp "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/fmtlibs${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
+# else
+# 	@ln -s -f "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/fmtlibs${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
+# endif
+	@#existing produced .pc file bad in several ways for windows, and want to try to use pkg-config so hopefully this hack adequate
+	@cp PatchReplacements/libxml-2.0.pc "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/
+else
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
+endif
 
 #
 # NOTE: It appears to be OK to define these CFLAGS here, and not in the CONFIGURATION because these appear to only 
@@ -145,19 +164,19 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 #	@todo	Find docs/reference assuring this will always be so -- LGP 2021-04-28
 #
 
-CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
-# Important - soon to be used in Stroika (at least experimentally) - https://www.sqlite.org/json1.html
-CFLAGS	+= -DSQLITE_ENABLE_JSON1
+# CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
+# # Important - soon to be used in Stroika (at least experimentally) - https://www.sqlite.org/json1.html
+# CFLAGS	+= -DSQLITE_ENABLE_JSON1
 
-# See https://stroika.atlassian.net/browse/STK-753 and https://sqlite.org/forum/forumpost/cc6668e7b3 - avoid TSAN/Valgrind issues 
-ifeq (1,$(AssertionsEnabled))
-ifeq (,$(findstring qStroika_FeatureSupported_Valgrind,$(CPPFLAGS)))
-ifeq (,$(findstring thread,$(SanitizerFlags)))
-CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
-CFLAGS	+= -DSQLITE_DEBUG
-endif
-endif
-endif
+# # See https://stroika.atlassian.net/browse/STK-753 and https://sqlite.org/forum/forumpost/cc6668e7b3 - avoid TSAN/Valgrind issues 
+# ifeq (1,$(AssertionsEnabled))
+# ifeq (,$(findstring qStroika_FeatureSupported_Valgrind,$(CPPFLAGS)))
+# ifeq (,$(findstring thread,$(SanitizerFlags)))
+# CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
+# CFLAGS	+= -DSQLITE_DEBUG
+# endif
+# endif
+# endif
 
 ifeq (1,$(qCompiler_HasNoMisleadingIndentation_Flag))
 CFLAGS	+= -Wno-misleading-indentation
@@ -176,23 +195,23 @@ $(ObjDir)%${OBJ_SUFFIX} : %.c
 
 
 check-prerequisite-tools:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "sqlite $(VERSION) - Checking Prerequisite tools ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "fmtlib $(VERSION) - Checking Prerequisite tools ... "
 	@{ type unzip > /dev/null; } || { $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaRoot)ScriptsLib/GetMessageForMissingTool unzip && exit 1; }
 	@$(ECHO) "done";
 
 
 check:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "sqlite $(VERSION) - Checking ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "fmtlib $(VERSION) - Checking ... "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(ECHO) " Stroika/ThirdPartyComponents/sqlite -  [Succeeded]";
+	@$(ECHO) " Stroika/ThirdPartyComponents/fmtlib -  [Succeeded]";
 
 
 clobber::	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
-	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/sqlite $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*sqlite.*
+	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/fmtlib $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/libfmt.*
 else
-	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/fmt
 endif
 
 

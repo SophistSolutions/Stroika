@@ -288,6 +288,9 @@ sub	DoSetThirdPartyComponents_
 		if (!defined $FEATUREFLAG_LZMA) {
 			$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 		}
+		if (!defined $FEATUREFLAG_fmtlib) {
+			$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_No;	# soon make more nuanced choice - gcc < 13, for example, or clang < 16
+		}
 		if (!defined $FEATUREFLAG_OpenSSL) {
 			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 		}
