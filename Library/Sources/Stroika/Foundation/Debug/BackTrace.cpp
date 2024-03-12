@@ -51,7 +51,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
 
     [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
 
-#if __cpp_lib_stacktrace >= 202011
+#if __cpp_lib_stacktrace >= 202011 && !qCompilerAndStdLib_stacktraceLinkError_Buggy
     auto         st = std::stacktrace::current ();
     stringstream o;
     bool         firstEntry = true;

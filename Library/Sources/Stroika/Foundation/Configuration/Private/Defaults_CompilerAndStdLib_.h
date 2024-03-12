@@ -662,6 +662,36 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 
 #endif
 
+
+/*
+/usr/bin/ld: /tmp/cchyvHxb.ltrans6.ltrans.o: in function `Stroika::Foundation::Debug::BackTrace::Capture[abi:cxx11](Stroika::Foundation::Debug::BackTrace::Options const&) [clone .constprop.0]':
+/usr/include/c++/13/stacktrace:196:(.text+0x844e): undefined reference to `__glibcxx_backtrace_pcinfo'
+/usr/bin/ld: /usr/include/c++/13/stacktrace:196:(.text+0x84cd): undefined reference to `__glibcxx_backtrace_pcinfo'
+/usr/bin/ld: /tmp/cchyvHxb.ltrans6.ltrans.o:/usr/include/c++/13/stacktrace:206:(.text+0x8914): undefined reference to `__glibcxx_backtrace_syminfo'
+/usr/bin/ld: /tmp/cchyvHxb.ltrans6.ltrans.o: in function `Stroika::Foundation::Debug::BackTrace::Capture[abi:cxx11](Stroika::Foundation::Debug::BackTrace::Options const&) [clone .constprop.0]':
+/usr/include/c++/13/stacktrace:196:(.text+0x89b0): undefined reference to `__glibcxx_backtrace_pcinfo'
+/usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x8a83): undefined reference to `__glibcxx_backtrace_create_state'
+/usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x8c8e): undefined reference to `__glibcxx_backtrace_create_state'
+/usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x8d41): undefined reference to `__glibcxx_backtrace_create_state'
+/usr/bin/ld: /tmp/cchyvHxb.ltrans7.ltrans.o: in function `std::basic_stacktrace<std::allocator<std::stacktrace_entry> >::current(std::allocator<std::stacktrace_entry> const&) [clone .isra.0]':
+/usr/include/c++/13/stacktrace:259:(.text+0x2f9): undefined reference to `__glibcxx_backtrace_simple'
+/usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x344): undefined reference to `__glibcxx_backtrace_create_state'
+collect2: error: ld returned 1 exit status
+				#	https://gcc.gnu.org/pipermail/gcc-bugs/2022-May/787733.html 
+				#		says use '-lstdc++_libbacktrace' but doesn't exist on ubuntu 24.04 -LGP 24.04
+*/
+#ifndef qCompilerAndStdLib_stacktraceLinkError_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// Only SEEN BROKEN IN GCC 13, Ubuntu 24.04, but cannot test for that right easily...
+#define qCompilerAndStdLib_stacktraceLinkError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13)
+#else
+#define qCompilerAndStdLib_stacktraceLinkError_Buggy 0
+#endif
+
+#endif
+
+
 /*
  Symptom if broken - is that for sanitizer=undefined builds, we still get kBuiltWithUndefinedBehaviorSanitizer == false
  especially relevant in tests for qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy workarounds!
