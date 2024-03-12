@@ -265,6 +265,16 @@ namespace {
             EXPECT_TRUE ((BLOB::FromBase64 ("aGVsbG8=") == BLOB{'h', 'e', 'l', 'l', 'o'}));
             EXPECT_TRUE ((BLOB{'h', 'e', 'l', 'l', 'o'}.AsBase64 () == "aGVsbG8="));
         }
+        {
+            using Memory::BLOB;
+            constexpr char kRawBytes_[] = "jwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAA/45JREFU\r\n"
+                                          "eF5M/XeTpPl1pQlmFcAWM99tbeavWZvtXRsba8EeatUECRIgAEKLKqC0zqpKrTNDeoRrLUNmVoGa\r\n"
+                                          "7Nk12w8wa9PdBOrd5znXAzYkg1Hp4f4qf3/nPffcc+996ezsefNF8/K15pcvXXv55V9c++LlL13j\r\n";
+            auto           b1           = BLOB::FromBase64 (kRawBytes_);
+            auto           b2s          = b1.AsBase64 ();
+            auto           b2           = BLOB::FromBase64 (b2s);
+            EXPECT_EQ (b1, b2);
+        }
     }
 }
 

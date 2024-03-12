@@ -34,6 +34,10 @@ namespace Stroika::Foundation::Characters {
     class String;
 }
 
+namespace Stroika::Foundation::Cryptography::Encoding::Algorithm::Base64 {
+    struct Options;
+}
+
 namespace Stroika::Foundation::Memory {
 
     using namespace Configuration;
@@ -281,6 +285,12 @@ namespace Stroika::Foundation::Memory {
          */
         template <typename STRING_TYPE = Characters::String>
         nonvirtual STRING_TYPE AsBase64 () const
+#if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+            requires (same_as<Characters::String, STRING_TYPE>)
+#endif
+        ;
+        template <typename STRING_TYPE = Characters::String>
+        nonvirtual STRING_TYPE AsBase64 (const Cryptography::Encoding::Algorithm::Base64::Options& o) const
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
             requires (same_as<Characters::String, STRING_TYPE>)
 #endif

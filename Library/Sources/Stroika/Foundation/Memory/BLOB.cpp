@@ -339,7 +339,12 @@ Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToSh
 template <>
 Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 () const
 {
-    return Cryptography::Encoding::Algorithm::Base64::Encode (*this);
+    return AsBase64 ({});
+}
+template <>
+Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 (const Cryptography::Encoding::Algorithm::Base64::Options& o) const
+{
+    return Cryptography::Encoding::Algorithm::Base64::Encode (*this, o);
 }
 
 BLOB BLOB::Repeat (unsigned int count) const

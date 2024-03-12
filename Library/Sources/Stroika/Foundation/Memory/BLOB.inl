@@ -18,6 +18,11 @@
 
 namespace Stroika::Foundation::Memory {
 
+    template <>
+    Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 () const;
+    template <>
+    Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 (const Cryptography::Encoding::Algorithm::Base64::Options& o) const;
+
     struct BLOB::BasicRep_ final : public _IRep, public Memory::UseBlockAllocationIfAppropriate<BasicRep_> {
         //  really not sure what size to use???
         //  May not be any universal, good answer...
