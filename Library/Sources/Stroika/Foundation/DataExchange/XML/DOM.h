@@ -668,6 +668,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             bool operator== (nullptr_t) const;
 
         public:
+            nonvirtual bool GetStandalone () const;
+
+        public:
+            nonvirtual void SetStandalone (bool standalone);
+
+        public:
             /**
              */
             nonvirtual void   Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options = {}) const;
@@ -745,6 +751,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
          *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.
+         * 
+         *  If not otherwise specified (e..g if not read from stream where specified otherwise), XML documents default to standalone (=yes)
          */
         Ptr New (const Providers::IDOMProvider& p);
         Ptr New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName);
@@ -766,8 +774,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         /**
          */
         struct IRep {
-            virtual ~IRep ()                                            = default;
-            virtual const Providers::IDOMProvider* GetProvider () const = 0;
+            virtual ~IRep ()                                                       = default;
+            virtual const Providers::IDOMProvider* GetProvider () const            = 0;
+            virtual bool                           GetStandalone () const          = 0;
+            virtual void                           SetStandalone (bool standalone) = 0;
             virtual Element::Ptr                   ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS)   = 0;
             virtual void                Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;

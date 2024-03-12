@@ -1259,6 +1259,16 @@ namespace {
         {
             return &Providers::Xerces::kDefaultProvider;
         }
+        virtual bool GetStandalone () const
+        {
+            AssertNotNull (fXMLDoc);
+            return fXMLDoc->getXmlStandalone ();
+        }
+        virtual void SetStandalone (bool standalone)
+        {
+            AssertNotNull (fXMLDoc);
+            fXMLDoc->setXmlStandalone (standalone);
+        }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};

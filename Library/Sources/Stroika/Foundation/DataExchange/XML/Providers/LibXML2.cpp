@@ -667,7 +667,8 @@ namespace {
         DocRep_ (const Streams::InputStream::Ptr<byte>& in)
         {
             if (in == nullptr) {
-                fLibRep_ = xmlNewDoc (BAD_CAST "1.0");
+                fLibRep_             = xmlNewDoc (BAD_CAST "1.0");
+                fLibRep_->standalone = true;
             }
             else {
                 xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
@@ -719,13 +720,21 @@ namespace {
             --sLiveCnt;
 #endif
         }
+        virtual xmlDoc* GetLibXMLDocRep () override
+        {
+            return fLibRep_;
+        }
         virtual const Providers::IDOMProvider* GetProvider () const override
         {
             return &Providers::LibXML2::kDefaultProvider;
         }
-        virtual xmlDoc* GetLibXMLDocRep () override
+        virtual bool GetStandalone () const
         {
-            return fLibRep_;
+            return !!fLibRep_->standalone;
+        }
+        virtual void SetStandalone (bool standalone)
+        {
+            fLibRep_->standalone = standalone;
         }
         virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) override
         {

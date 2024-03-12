@@ -370,6 +370,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return fRep_ == nullptr;
     }
+    inline bool Document::Ptr::GetStandalone () const
+    {
+        return GetRep ()->GetStandalone ();
+    }
+    inline void Document::Ptr::SetStandalone (bool standalone)
+    {
+        GetRep ()->SetStandalone (standalone);
+    }
     inline void Document::Ptr::Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const
     {
         GetRep ()->Write (to, options);
