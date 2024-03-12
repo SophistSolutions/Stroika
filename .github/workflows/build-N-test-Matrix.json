@@ -1,31 +1,5 @@
 [
     {
-        "comment": "Linux",
-        "comment2": "ubuntu 20.04"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-20.04-g++-11 (Debug)",
-        "compiler": "g++-11",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3",
-        "cpp_version": "c++2a",
-        "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
-        "run_on_branch": "always"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-20.04-g++-11",
-        "compiler": "g++-11",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3",
-        "cpp_version": "c++2a",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release"
-    },
-    {
         "comment": "ubuntu 22.04"
     },
     {
