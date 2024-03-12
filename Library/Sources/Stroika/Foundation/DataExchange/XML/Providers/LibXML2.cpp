@@ -388,7 +388,16 @@ namespace {
         virtual void SetValue (const String& v) override
         {
             AssertNotNull (fNode_);
-            xmlNodeSetContent (fNode_, BAD_CAST v.AsUTF8 ().c_str ());
+            // @todo could optimize and avoid xmlEncodeSpecialChars for most cases, by scanning for &<> etc... Maybe imporve logic in WriterUtils.h! - so can use that
+            bool mustEncode = true;
+            if (mustEncode) {
+                xmlChar*                p       = xmlEncodeSpecialChars (fNode_->doc, BAD_CAST v.AsUTF8 ().c_str ());
+                [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (p); });
+                xmlNodeSetContent (fNode_, p);
+            }
+            else {
+                xmlNodeSetContent (fNode_, BAD_CAST v.AsUTF8 ().c_str ());
+            }
         }
         virtual void DeleteNode () override
         {
