@@ -7,9 +7,10 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdarg>
-// appears to require vis studio OR g++ >= 13 (not sure what clang version supports if any)
-#if __cpp_lib_format >= 202207L
+#if __cpp_lib_format >= 201907
 #include <format>
+#elif qHasFeature_fmtlib
+#include <fmt/format.h>
 #endif
 #include <ios>
 #include <locale>
@@ -25,13 +26,32 @@
  *      @todo   Consdier if we should have variants of these funtions taking a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
  *              But DOCUMENT in all cases!!! And maybe implement variants...
- *
- *      @todo   See if I can come up with a more flexibe and/or typesafe variant of Format using
- *              variadic templates? Maybe using a nicer syntax widely done in ruby/C# etc, like
- *              Format ("{1}{3}", "x", 3);??? VERY INCHOATE THOUGHTS HERE...
  */
 
 namespace Stroika::Foundation::Characters {
+
+#if !(qHasFeature_fmtlib || __cpp_lib_format >= 201907)
+    static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, configure --fmtlib use");
+#endif
+
+/**
+ *  To allow interop between std::format and fmt(fmtlib)::format, publish the names into the namespace 'Stroika::Foundation::Characters' and use those.
+ *  Lose this once I can fully depend upon std::format... --LGP 2024-03-12
+ */
+#if __cpp_lib_format >= 201907
+using std::vformat;
+using std::format;
+using std::format_string;
+using std::wformat_string;
+using std::make_format_args;
+#elif qHasFeature_fmtlib
+using fmt::vformat;
+using fmt::format;
+using fmt::format_string;
+//using fmt::wformat_string;
+using fmt::make_format_args;
+//using fmt::make_wformat_args;
+#endif
 
     /*
      * Format is the Stroika wrapper on sprintf().
@@ -63,8 +83,8 @@ namespace Stroika::Foundation::Characters {
     String Format (const wchar_t* format, ...);
 
     /**
-    * 
-    * SUPER EARLY EXPERIEMNTAL DRAFT OF c++20 format support
+     * 
+     * SUPER EARLY EXPERIEMNTAL DRAFT OF c++20 format support
         // Problem with allowing 'string_format' is it generates format_string - which I don't think will handle args of unicode chars right...
      */
 #if __cpp_lib_format >= 202207L
