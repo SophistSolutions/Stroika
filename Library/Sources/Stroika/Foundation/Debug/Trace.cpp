@@ -351,7 +351,7 @@ auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const 
     }
 }
 
-#if __cpp_lib_format >= 201907 
+#if __cpp_lib_format >= 201907
 void Debug::Private_::Emitter::EmitTraceMessageRaw2 (wstring_view users_fmt, wformat_args&& args) noexcept
 {
     try {

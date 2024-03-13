@@ -2017,7 +2017,7 @@ namespace {
 #endif
         };
 
-#if __cpp_lib_format >= 201907 
+#if __cpp_lib_format >= 201907
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
         String  a3 = Fmt (L"{}", 3);
@@ -2036,7 +2036,11 @@ namespace {
         // @todo add mapping for wstring/string even for std  case using my ToString mechansim (details elude me - must be careful to avoid introducing ambiguity)
         //        DbgTrace2 (L"t2:  s1={}, s2={}, s3={}",  "s1", String{"s2"}, string{"s3"});
         DbgTrace2 ("t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
-//         DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
+        //         DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
+
+        auto ppf = "{}"_f;
+        auto pp  = "{}"_f(1);
+        DbgTrace (L"pp=%s", Characters::ToString (pp).c_str ());
 #endif
     }
 }

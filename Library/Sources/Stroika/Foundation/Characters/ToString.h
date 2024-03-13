@@ -9,6 +9,7 @@
 #include <ios>
 
 #include "../Configuration/Concepts.h"
+#include "Format.h"
 
 #include "String.h"
 
@@ -97,7 +98,7 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     String UnoverloadedToString (const T& t);
 
-#if __cpp_lib_format >= 201907 
+    //#if __cpp_lib_format >= 201907
     // SUPER PRIMITIVE ROUGH FIRST DRAFT
     // maybe wrong concept filter- maybe need to use specificatlly has ToString() method!!! Others count on stdlib handling?
     // test stuff like vector<IO::Network::InternetAddress>
@@ -163,7 +164,7 @@ namespace Stroika::Foundation::Characters {
             return std::ranges::copy (String{out.str ()}.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
         }
     };
-#endif
+    //#endif
 
     template <typename T>
     concept IToStringxxx = requires (T t) {
@@ -174,13 +175,13 @@ namespace Stroika::Foundation::Characters {
 
 }
 
-#if __cpp_lib_format >= 201907 
+//#if __cpp_lib_format >= 201907
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <Stroika::Foundation::Characters::IToStringxxx T>
-struct std::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 template <Stroika::Foundation::Characters::IToStringxxx T>
-struct std::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
-#endif
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
+//#endif
 
 /*
  ********************************************************************************

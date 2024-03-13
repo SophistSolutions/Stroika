@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Debug {
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
 
-#if __cpp_lib_format >= 201907 
+#if __cpp_lib_format >= 201907
         nonvirtual void EmitTraceMessageRaw2 (wstring_view users_fmt, wformat_args&& args) noexcept;
         nonvirtual void EmitTraceMessageRaw2 (string_view users_fmt, format_args&& args) noexcept;
         template <typename... Args>
