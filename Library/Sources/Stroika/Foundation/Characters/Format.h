@@ -63,27 +63,23 @@ namespace Stroika::Foundation::Characters {
     // EXPERIMENTAL NEW v3d6...
     [[nodiscard]] inline String VFormat (std::string_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args args)
     {
-        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
         // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
         // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{vformat (fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt}, args)};
     }
     [[nodiscard]] inline String VFormat (std::wstring_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
     {
-        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
-        return String{vformat (fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt}, args)};
     }
     [[nodiscard]] inline String VFormat (const std::locale& loc, std::string_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args args)
     {
-        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
         // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
         // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{vformat (loc, fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt}, args)};
     }
     [[nodiscard]] inline String VFormat (const std::locale& loc, std::wstring_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
     {
-        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
-        return String{vformat (loc, fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt}, args)};
     }
 
     /**
