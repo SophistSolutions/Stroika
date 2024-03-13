@@ -10,10 +10,28 @@
 #include <filesystem>
 #include <mutex>
 
+#if __has_include (<format>)
+#include <format>
+#elif qHasFeature_fmtlib
+#include <fmt/format.h>
+#include <fmt/xchar.h>
+#endif
+
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_Trace_TraceToFile);
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qStroika_Foundation_Debug_Trace_DefaultTracingOn);
 
 #include "../Time/Clock.h"
+
+
+
+#if __has_include (<format>)
+#define qStroika_Foundation_Characters_FMT_PREFIX_ std
+#elif qHasFeature_fmtlib
+#define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
+#else
+        static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, "
+                              "configure --fmtlib use");
+#endif
 
 namespace Stroika::Foundation::Debug {
 
@@ -48,14 +66,14 @@ namespace Stroika::Foundation::Debug {
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
 
-#if __cpp_lib_format >= 201907
-        nonvirtual void EmitTraceMessageRaw2 (wstring_view users_fmt, wformat_args&& args) noexcept;
-        nonvirtual void EmitTraceMessageRaw2 (string_view users_fmt, format_args&& args) noexcept;
+//#if __cpp_lib_format >= 201907
+        nonvirtual void EmitTraceMessageRaw2 (wstring_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args&& args) noexcept;
+        nonvirtual void EmitTraceMessageRaw2 (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept;
         template <typename... Args>
         nonvirtual void EmitTraceMessage2 (wstring_view users_fmt, Args&&... args) noexcept
         {
             try {
-                EmitTraceMessageRaw2 (users_fmt, make_wformat_args (args...));
+                EmitTraceMessageRaw2 (users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
             }
             catch (...) {
             }
@@ -64,12 +82,12 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void EmitTraceMessage2 (string_view users_fmt, Args&&... args) noexcept
         {
             try {
-                EmitTraceMessageRaw2 (users_fmt, make_format_args (args...));
+                EmitTraceMessageRaw2 (users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
             }
             catch (...) {
             }
         }
-#endif
+//#endif
         nonvirtual void EmitTraceMessageRaw (const wstring& raw) noexcept;
 
     public:

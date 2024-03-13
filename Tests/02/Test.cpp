@@ -2017,7 +2017,7 @@ namespace {
 #endif
         };
 
-#if __cpp_lib_format >= 201907
+//#if __cpp_lib_format >= 201907
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
         String  a3 = Fmt (L"{}", 3);
@@ -2041,7 +2041,7 @@ namespace {
         auto ppf = "{}"_f;
         auto pp  = "{}"_f(1);
         DbgTrace (L"pp=%s", Characters::ToString (pp).c_str ());
-#endif
+//#endif
     }
 }
 #endif

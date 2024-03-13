@@ -7,7 +7,9 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdarg>
-#if __cpp_lib_format >= 201907
+
+// NOT SURE WHY ON MACOS XCODE check #if __cpp_lib_format >= 201907 or similar - not working...
+#if __has_include (<format>)
 #include <format>
 #elif qHasFeature_fmtlib
 #include <fmt/format.h>
@@ -32,7 +34,7 @@
 namespace Stroika::Foundation::Characters {
 
     inline namespace FmtSupport {
-#if __cpp_lib_format >= 201907
+#if __has_include (<format>)
 #define qStroika_Foundation_Characters_FMT_PREFIX_ std
 #elif qHasFeature_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
@@ -82,25 +84,25 @@ namespace Stroika::Foundation::Characters {
     String Format (const wchar_t* format, ...);
 
     // EXPERIMENTAL NEW v3d6...
-    [[nodiscard]] inline String VFormat (std::string_view fmt, std::format_args args)
+    [[nodiscard]] inline String VFormat (std::string_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args args)
     {
         // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
         // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{vformat (fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (fmt, args)};
     }
-    [[nodiscard]] inline String VFormat (std::wstring_view fmt, std::wformat_args args)
+    [[nodiscard]] inline String VFormat (std::wstring_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
     {
-        return String{vformat (fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (fmt, args)};
     }
-    [[nodiscard]] inline String VFormat (const std::locale& loc, std::string_view fmt, std::format_args args)
+    [[nodiscard]] inline String VFormat (const std::locale& loc, std::string_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args args)
     {
         // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
         // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{vformat (loc, fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, fmt, args)};
     }
-    [[nodiscard]] inline String VFormat (const std::locale& loc, std::wstring_view fmt, std::wformat_args args)
+    [[nodiscard]] inline String VFormat (const std::locale& loc, std::wstring_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
     {
-        return String{vformat (loc, fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, fmt, args)};
     }
 
     /**

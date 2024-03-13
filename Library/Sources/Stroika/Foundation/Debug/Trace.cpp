@@ -14,6 +14,7 @@
 #include "../Characters/Format.h"
 #include "../Characters/LineEndings.h"
 #include "../Characters/ToString.h"
+#include "../Characters/Format.h"
 #include "../Debug/Sanitizer.h"
 #include "../Debug/Valgrind.h"
 #include "../Execution/Common.h"
@@ -351,8 +352,8 @@ auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const 
     }
 }
 
-#if __cpp_lib_format >= 201907
-void Debug::Private_::Emitter::EmitTraceMessageRaw2 (wstring_view users_fmt, wformat_args&& args) noexcept
+//#if __cpp_lib_format >= 201907
+void Debug::Private_::Emitter::EmitTraceMessageRaw2 (wstring_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args&& args) noexcept
 {
     try {
         EmitTraceMessageRaw (vformat (users_fmt, args));
@@ -360,7 +361,7 @@ void Debug::Private_::Emitter::EmitTraceMessageRaw2 (wstring_view users_fmt, wfo
     catch (...) {
     }
 }
-void Debug::Private_::Emitter::EmitTraceMessageRaw2 (string_view users_fmt, format_args&& args) noexcept
+void Debug::Private_::Emitter::EmitTraceMessageRaw2 (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept
 {
     try {
         Debug::Private_::Emitter::EmitTraceMessageRaw (Characters::String::FromNarrowSDKString (vformat (users_fmt, args)).As<wstring> ());
@@ -368,7 +369,7 @@ void Debug::Private_::Emitter::EmitTraceMessageRaw2 (string_view users_fmt, form
     catch (...) {
     }
 }
-#endif
+//#endif
 
 void Debug::Private_::Emitter::EmitTraceMessageRaw (const wstring& raw) noexcept
 {
