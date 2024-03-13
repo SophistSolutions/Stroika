@@ -1035,6 +1035,15 @@ sub	SetDefaultForCompilerDriver_
 			$sanitizerFlagsIsDefined = true;
 		}
 
+		if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+			# For <format> support - in clang++15 - appears good enuf, just disabled... --LGP 2024-03-13
+			if ($itsVersion < 16) {
+				push @CXXFLAGS, "-fexperimental-library";
+				$LinkerArgs_ExtraSuffix .= " -fexperimental-library";
+			}
+		}
+
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 1;
 		}
