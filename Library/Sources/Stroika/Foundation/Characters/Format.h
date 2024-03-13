@@ -166,7 +166,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
     bool quoted = false;
 
     template <typename ParseContext>
-    constexpr ParseContext::iterator parse (ParseContext& ctx)
+    constexpr typename ParseContext::iterator parse (ParseContext& ctx)
     {
         auto it = ctx.begin ();
         if (it == ctx.end ())
@@ -183,7 +183,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
     }
 
     template <typename FmtContext>
-    FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
+    typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
     {
         std::wstringstream out;
         out << s;
@@ -195,7 +195,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
     bool ignoreerrors{true}; // maybe set from thread-local variable, or parse() settings, or both
 
     template <typename ParseContext>
-    constexpr ParseContext::iterator parse (ParseContext& ctx)
+    constexpr typename ParseContext::iterator parse (ParseContext& ctx)
     {
         auto it = ctx.begin ();
         if (it == ctx.end ())
@@ -212,7 +212,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
     }
 
     template <typename FmtContext>
-    FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
+    typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
     {
         using namespace Stroika::Foundation::Characters;
         //  wformat_context delegateCTX;

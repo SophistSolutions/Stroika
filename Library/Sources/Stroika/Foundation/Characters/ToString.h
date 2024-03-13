@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Characters {
         bool quoted = false;
 
         template <class ParseContext>
-        constexpr ParseContext::iterator parse (ParseContext& ctx)
+        constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
             auto it = ctx.begin ();
             if (it == ctx.end ())
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Characters {
         }
 
         template <class FmtContext>
-        FmtContext::iterator format (T s, FmtContext& ctx) const
+        typename FmtContext::iterator format (T s, FmtContext& ctx) const
         {
             using namespace Stroika::Foundation::Characters;
             std::wstringstream out;
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Characters {
 
         ToStringFormatter<T> fDelegate2_;
         template <class ParseContext>
-        constexpr ParseContext::iterator parse (ParseContext& ctx)
+        constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
             auto it = ctx.begin ();
             if (it == ctx.end ())
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Characters {
         }
 
         template <class FmtContext>
-        FmtContext::iterator format (T s, FmtContext& ctx) const
+        typename FmtContext::iterator format (T s, FmtContext& ctx) const
         {
             using namespace Stroika::Foundation::Characters;
             std::wstringstream out;
