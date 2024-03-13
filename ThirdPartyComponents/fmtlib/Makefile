@@ -103,7 +103,7 @@ CMAKE_ARGS+=	-D FMT_TEST="NO"
 
 ORIGs CURRENT:	$(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "fmtlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
-	@rm -f fmt-${VERSION}/
+	@rm -rf fmt-${VERSION}/
 	@unzip -q $(ZIPPEDFILE)
 	@mv fmt-${VERSION}/ $@
 
