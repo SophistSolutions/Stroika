@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <mutex>
 
-#if __has_include (<format>)
+#if __has_include(<format>)
 #include <format>
 #elif qHasFeature_fmtlib
 #include <fmt/format.h>
@@ -22,15 +22,13 @@ CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qS
 
 #include "../Time/Clock.h"
 
-
-
-#if __has_include (<format>)
+#if __has_include(<format>)
 #define qStroika_Foundation_Characters_FMT_PREFIX_ std
 #elif qHasFeature_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
 #else
-        static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, "
-                              "configure --fmtlib use");
+static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, "
+                      "configure --fmtlib use");
 #endif
 
 namespace Stroika::Foundation::Debug {
@@ -66,7 +64,7 @@ namespace Stroika::Foundation::Debug {
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
 
-//#if __cpp_lib_format >= 201907
+        //#if __cpp_lib_format >= 201907
         nonvirtual void EmitTraceMessageRaw2 (wstring_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args&& args) noexcept;
         nonvirtual void EmitTraceMessageRaw2 (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept;
         template <typename... Args>
@@ -87,7 +85,7 @@ namespace Stroika::Foundation::Debug {
             catch (...) {
             }
         }
-//#endif
+        //#endif
         nonvirtual void EmitTraceMessageRaw (const wstring& raw) noexcept;
 
     public:

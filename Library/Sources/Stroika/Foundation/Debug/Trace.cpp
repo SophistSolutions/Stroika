@@ -14,7 +14,6 @@
 #include "../Characters/Format.h"
 #include "../Characters/LineEndings.h"
 #include "../Characters/ToString.h"
-#include "../Characters/Format.h"
 #include "../Debug/Sanitizer.h"
 #include "../Debug/Valgrind.h"
 #include "../Execution/Common.h"

@@ -9,7 +9,7 @@
 #include <cstdarg>
 
 // NOT SURE WHY ON MACOS XCODE check #if __cpp_lib_format >= 201907 or similar - not working...
-#if __has_include (<format>)
+#if __has_include(<format>)
 #include <format>
 #elif qHasFeature_fmtlib
 #include <fmt/format.h>
@@ -34,7 +34,7 @@
 namespace Stroika::Foundation::Characters {
 
     inline namespace FmtSupport {
-#if __has_include (<format>)
+#if __has_include(<format>)
 #define qStroika_Foundation_Characters_FMT_PREFIX_ std
 #elif qHasFeature_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
