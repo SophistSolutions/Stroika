@@ -363,7 +363,8 @@ void Debug::Private_::Emitter::EmitTraceMessageRaw2 (wstring_view users_fmt, qSt
 void Debug::Private_::Emitter::EmitTraceMessageRaw2 (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept
 {
     try {
-        Debug::Private_::Emitter::EmitTraceMessageRaw (Characters::String::FromNarrowSDKString (vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{users_fmt}, args)).As<wstring> ());
+        Debug::Private_::Emitter::EmitTraceMessageRaw (
+            Characters::String::FromNarrowSDKString (vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{users_fmt}, args)).As<wstring> ());
     }
     catch (...) {
     }

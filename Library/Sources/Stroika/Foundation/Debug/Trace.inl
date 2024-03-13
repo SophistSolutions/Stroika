@@ -10,11 +10,11 @@
 #include <filesystem>
 #include <mutex>
 
-#if __has_include(<format>)
-#include <format>
-#elif qHasFeature_fmtlib
+#if qHasFeature_fmtlib
 #include <fmt/format.h>
 #include <fmt/xchar.h>
+#elif __has_include(<format>)
+#include <format>
 #endif
 
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_Trace_TraceToFile);
@@ -22,10 +22,10 @@ CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qS
 
 #include "../Time/Clock.h"
 
-#if __has_include(<format>)
-#define qStroika_Foundation_Characters_FMT_PREFIX_ std
-#elif qHasFeature_fmtlib
+#if qHasFeature_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
+#elif __has_include(<format>)
+#define qStroika_Foundation_Characters_FMT_PREFIX_ std
 #else
 static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, "
                       "configure --fmtlib use");

@@ -8,12 +8,17 @@
 
 #include <cstdarg>
 
+// Various kooky constraints
+//      (1) clang++15/16 don't set __cpp_lib_format, so cannot check __cpp_lib_format >= 201907 instead check __has_include(<format>)
+//      (2) has_include <format> false positives on some versions of XCode, and no reason to even build qHasFeature_fmtlib unless
+//          its needed, so check it first
+
 // NOT SURE WHY ON MACOS XCODE check #if __cpp_lib_format >= 201907 or similar - not working...
-#if __has_include(<format>)
-#include <format>
-#elif qHasFeature_fmtlib
+#if qHasFeature_fmtlib
 #include <fmt/format.h>
 #include <fmt/xchar.h>
+#elif __has_include(<format>)
+#include <format>
 #endif
 #include <ios>
 #include <locale>
@@ -24,20 +29,18 @@
 #include "String.h"
 
 /**
- * TODO:
+ *  \file
  *
- *      @todo   Consdier if we should have variants of these funtions taking a locale, or
- *              always using C/currnet locale. For the most part - I find it best to use the C locale.
- *              But DOCUMENT in all cases!!! And maybe implement variants...
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::Characters {
 
     inline namespace FmtSupport {
-#if __has_include(<format>)
-#define qStroika_Foundation_Characters_FMT_PREFIX_ std
-#elif qHasFeature_fmtlib
+#if qHasFeature_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
+#elif __has_include(<format>)
+#define qStroika_Foundation_Characters_FMT_PREFIX_ std
 #else
         static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, "
                               "configure --fmtlib use");
@@ -48,36 +51,39 @@ namespace Stroika::Foundation::Characters {
          *  Lose this once I can fully depend upon std::format... --LGP 2024-03-12
          */
         using qStroika_Foundation_Characters_FMT_PREFIX_::format;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::format_error;
         using qStroika_Foundation_Characters_FMT_PREFIX_::format_string;
         using qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args;
         using qStroika_Foundation_Characters_FMT_PREFIX_::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
-         using qStroika_Foundation_Characters_FMT_PREFIX_::format_error;
     }
 
-
-
-
+    /**
+     */
     // EXPERIMENTAL NEW v3d6...
     [[nodiscard]] inline String VFormat (std::string_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args args)
     {
+        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
         // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
         // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt}, args)};
+        return String{vformat (fmt, args)};
     }
-    [[nodiscard]] inline String VFormat (std::wstring_view f, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
+    [[nodiscard]] inline String VFormat (std::wstring_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
     {
-        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f}, args)};
+        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
+        return String{vformat (fmt, args)};
     }
     [[nodiscard]] inline String VFormat (const std::locale& loc, std::string_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args args)
     {
+        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
         // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
         // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt}, args)};
+        return String{vformat (loc, fmt, args)};
     }
     [[nodiscard]] inline String VFormat (const std::locale& loc, std::wstring_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
     {
-        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt}, args)};
+        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
+        return String{vformat (loc, fmt, args)};
     }
 
     /**
@@ -90,22 +96,22 @@ namespace Stroika::Foundation::Characters {
     template <typename... ARGS>
     [[nodiscard]] inline String Fmt (const qStroika_Foundation_Characters_FMT_PREFIX_::format_string<ARGS...> f, ARGS&&... args)
     {
-        return vformat (f.get(), qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
+        return vformat (f.get (), qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
     }
     template <typename... ARGS>
     [[nodiscard]] inline String Fmt (const qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string<ARGS...> f, ARGS&&... args)
     {
-        return vformat (f.get(), qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
+        return vformat (f.get (), qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
     }
     template <typename... ARGS>
     [[nodiscard]] inline String Fmt (const std::locale& loc, const qStroika_Foundation_Characters_FMT_PREFIX_::format_string<ARGS...> f, ARGS&&... args)
     {
-        return vformat (loc, f.get(), qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
+        return vformat (loc, f.get (), qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
     }
     template <typename... ARGS>
     [[nodiscard]] inline String Fmt (const std::locale& loc, const qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string<ARGS...> f, ARGS&&... args)
     {
-        return vformat (loc, f.get(), qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
+        return vformat (loc, f.get (), qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
     }
 
     // MAYBE CAN MAKE OPERATOR _f stuff wokr!!!
@@ -124,12 +130,13 @@ namespace Stroika::Foundation::Characters {
         template <class... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args)
         {
+            using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
             if constexpr (same_as<CHAR_T, char>) {
                 // @todo fixup the characterset handling here...
-                return vformat (sv, qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
+                return vformat (sv, make_format_args (args...));
             }
             else if constexpr (same_as<CHAR_T, wchar_t>) {
-                return vformat (sv, qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
+                return vformat (sv, make_wformat_args (args...));
             }
         }
     };
@@ -141,10 +148,6 @@ namespace Stroika::Foundation::Characters {
     {
         return FormatString<wchar_t>{.sv = wstring_view{str, len}};
     }
-
-
-
-
 
     /*
      * Format is the Stroika wrapper on sprintf().
@@ -174,23 +177,20 @@ namespace Stroika::Foundation::Characters {
      */
     String FormatV (const wchar_t* format, va_list argsList);
     String Format (const wchar_t* format, ...);
-
-
-
-    
-    // @todo overload of Format/FormatV taking FormatString!!!! - PERFECT BACKWAWRD COMAT STRATEGY... - use Format with _f string to get new behavior, and regualr string to get old!!!
+    // @todo overload of Format/FormatV taking myfmt!!!! - PERFECT BACKWAWRD COMAT STRATEGY... - use Format with _f string to get new behavior, and regualr string to get old!!!
     /// ETC - DO MORE... like this... - then dont need Fmt lowercase anymore!!!
     template <typename... ARGS>
-    inline String Format(FormatString<char> f, ARGS&&... args)
+    inline String Format (FormatString<char> f, ARGS&&... args)
     {
+        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
         return VFormat (f, make_format_args (args...));
     }
     template <typename... ARGS>
-    inline String Format(FormatString<wchar_t> f, ARGS&&... args)
+    inline String Format (FormatString<wchar_t> f, ARGS&&... args)
     {
+        using namespace qStroika_Foundation_Characters_FMT_PREFIX_;
         return VFormat (f, make_wformat_args (args...));
     }
-
 
 }
 
@@ -211,7 +211,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
             ++it;
         }
         if (*it != '}')
-            throw format_error ("Invalid format args for QuotableString.");
+            throw format_error{"Invalid format args for QuotableString."};
 
         return it;
     }
@@ -240,7 +240,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
             ++it;
         }
         if (*it != '}')
-            throw format_error ("Invalid format args for QuotableString.");
+            throw format_error{"Invalid format args for QuotableString."};
 
         return it;
     }
