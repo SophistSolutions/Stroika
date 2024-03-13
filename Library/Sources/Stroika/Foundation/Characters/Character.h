@@ -15,6 +15,10 @@
 #include "../Memory/StackBuffer.h"
 
 /**
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *
  * TODO:
  *
  *      @todo   ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single chararcter.
@@ -42,14 +46,14 @@ namespace Stroika::Foundation::Characters {
      * 
      *  This using declaration just documents that fact, without really enforcing anything.
      *  Prior to Stroika v3, the Stroika String classes basically prohibited the use of char
-     *  because it was always UNCLEAR what characterset to interpret it as.
+     *  because it was always UNCLEAR what character set to interpret it as.
      * 
      *  But a safe (and quite useful) assumption, is just that it is ASCII. If you assume its
-     *  always ASCII, you can simplify alot of pragmatic usage. So Stroika v3 does that,
+     *  always ASCII, you can simplify a lot of pragmatic usage. So Stroika v3 does that,
      *  with checks to enforce.
      * 
      *  So generally - Stroika String (and Character) APIs - if given a 'char' REQUIRE that it be
-     *  ASCII (unless otherwise documented in that API). Use u8string, or something else if you dont want
+     *  ASCII (unless otherwise documented in that API). Use u8string, or something else if you don't want
      *  to assume ASCII.
      */
     using ASCII = char;
@@ -59,7 +63,7 @@ namespace Stroika::Foundation::Characters {
      *  However, most Stroika public APIs don't expose this, because this is not any kind of standard for APIs.
      *  APIs use char8_t, char16_t, char32_t, ASCII (aka char).
      * 
-     *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
+     *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE character code point
      *  less than U+00FF.
      * 
      *  \note Considered using Latin1 = uint8_t; But this is better since less likely accidentally used.
