@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     String UnoverloadedToString (const T& t);
 
-#if __cpp_lib_format >= 202207L
+#if __cpp_lib_format >= 201907 
     // SUPER PRIMITIVE ROUGH FIRST DRAFT
     // maybe wrong concept filter- maybe need to use specificatlly has ToString() method!!! Others count on stdlib handling?
     // test stuff like vector<IO::Network::InternetAddress>
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Characters {
 
 }
 
-#if __cpp_lib_format >= 202207L
+#if __cpp_lib_format >= 201907 
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <Stroika::Foundation::Characters::IToStringxxx T>
 struct std::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};

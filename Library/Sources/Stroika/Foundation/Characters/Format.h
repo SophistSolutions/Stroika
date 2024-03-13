@@ -31,30 +31,25 @@
 
 namespace Stroika::Foundation::Characters {
 
-#if !(qHasFeature_fmtlib || __cpp_lib_format >= 201907)
-    static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, "
-                          "configure --fmtlib use");
+    inline namespace FmtSupport {
+#if __cpp_lib_format >= 201907
+#define qStroika_Foundation_Characters_FMT_PREFIX_ std
+#elif qHasFeature_fmtlib
+#define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
+#else
+        static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, "
+                              "configure --fmtlib use");
 #endif
 
-    inline namespace FmtSupport {
-/**
+        /**
  *  To allow interop between std::format and fmt(fmtlib)::format, publish the names into the namespace 'Stroika::Foundation::Characters' and use those.
  *  Lose this once I can fully depend upon std::format... --LGP 2024-03-12
  */
-#if __cpp_lib_format >= 201907
-        using std::format;
-        using std::format_string;
-        using std::make_format_args;
-        using std::vformat;
-        using std::wformat_string;
-#elif qHasFeature_fmtlib
-        using fmt::format;
-        using fmt::format_string;
-        using fmt::make_format_args;
-        using fmt::make_wformat_args;
-        using fmt::vformat;
-        using fmt::wformat_string;
-#endif
+        using qStroika_Foundation_Characters_FMT_PREFIX_::format;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::format_string;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::vformat;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
     }
 
     /*
@@ -86,22 +81,54 @@ namespace Stroika::Foundation::Characters {
     String FormatV (const wchar_t* format, va_list argsList);
     String Format (const wchar_t* format, ...);
 
+    // EXPERIMENTAL NEW v3d6...
+    [[nodiscard]] inline String VFormat (std::string_view fmt, std::format_args args)
+    {
+        // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
+        // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
+        return String{vformat (fmt, args)};
+    }
+    [[nodiscard]] inline String VFormat (std::wstring_view fmt, std::wformat_args args)
+    {
+        return String{vformat (fmt, args)};
+    }
+    [[nodiscard]] inline String VFormat (const std::locale& loc, std::string_view fmt, std::format_args args)
+    {
+        // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
+        // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
+        return String{vformat (loc, fmt, args)};
+    }
+    [[nodiscard]] inline String VFormat (const std::locale& loc, std::wstring_view fmt, std::wformat_args args)
+    {
+        return String{vformat (loc, fmt, args)};
+    }
+
     /**
      * 
      * SUPER EARLY EXPERIEMNTAL DRAFT OF c++20 format support
         // Problem with allowing 'string_format' is it generates format_string - which I don't think will handle args of unicode chars right...
+
+            @todo rename this to Format once we've fully removed all references to legacy "Format" API
      */
-    template <class... ARGS>
-    [[nodiscard]] inline String Fmt (const format_string<ARGS...> f, ARGS&&... _Args)
+    template <typename... ARGS>
+    [[nodiscard]] inline String Fmt (const format_string<ARGS...> f, ARGS&&... args)
     {
-        // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
-        // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{vformat (f.get (), make_format_args (_Args...))};
+        return VFormat (f.get (), make_format_args (args...));
     }
-    template <class... ARGS>
-    [[nodiscard]] inline String Fmt (const wformat_string<ARGS...> f, ARGS&&... _Args)
+    template <typename... ARGS>
+    [[nodiscard]] inline String Fmt (const wformat_string<ARGS...> f, ARGS&&... args)
     {
-        return String{vformat (f.get (), make_wformat_args (_Args...))};
+        return VFormat (f.get (), make_wformat_args (args...));
+    }
+    template <typename... ARGS>
+    [[nodiscard]] inline String Fmt (const std::locale& loc, const format_string<ARGS...> f, ARGS&&... args)
+    {
+        return VFormat (loc, f.get (), make_format_args (args...));
+    }
+    template <typename... ARGS>
+    [[nodiscard]] inline String Fmt (const std::locale& loc, const wformat_string<ARGS...> f, ARGS&&... args)
+    {
+        return VFormat (loc, f.get (), make_wformat_args (args...));
     }
 
     // MAYBE CAN MAKE OPERATOR _f stuff wokr!!!
@@ -122,22 +149,21 @@ namespace Stroika::Foundation::Characters {
     };
     inline myfmt<char> operator"" _f (const char* str, size_t len)
     {
-        return myfmt{.sv = string_view{str, len}};
+        return myfmt<char>{.sv = string_view{str, len}};
     }
     inline myfmt<wchar_t> operator"" _f (const wchar_t * str, size_t len)
     {
-        return myfmt{.sv = wstring_view{str, len}};
+        return myfmt<wchar_t>{.sv = wstring_view{str, len}};
     }
 
 }
 
-#if __cpp_lib_format >= 202207L
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <>
-struct std::formatter<Stroika::Foundation::Characters::String, wchar_t> {
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, wchar_t> {
     bool quoted = false;
 
-    template <class ParseContext>
+    template <typename ParseContext>
     constexpr ParseContext::iterator parse (ParseContext& ctx)
     {
         auto it = ctx.begin ();
@@ -154,7 +180,7 @@ struct std::formatter<Stroika::Foundation::Characters::String, wchar_t> {
         return it;
     }
 
-    template <class FmtContext>
+    template <typename FmtContext>
     FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
     {
         std::wstringstream out;
@@ -163,10 +189,10 @@ struct std::formatter<Stroika::Foundation::Characters::String, wchar_t> {
     }
 };
 template <>
-struct std::formatter<Stroika::Foundation::Characters::String, char> {
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, char> {
     bool ignoreerrors{true}; // maybe set from thread-local variable, or parse() settings, or both
 
-    template <class ParseContext>
+    template <typename ParseContext>
     constexpr ParseContext::iterator parse (ParseContext& ctx)
     {
         auto it = ctx.begin ();
@@ -183,7 +209,7 @@ struct std::formatter<Stroika::Foundation::Characters::String, char> {
         return it;
     }
 
-    template <class FmtContext>
+    template <typename FmtContext>
     FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
     {
         using namespace Stroika::Foundation::Characters;
@@ -197,7 +223,6 @@ struct std::formatter<Stroika::Foundation::Characters::String, char> {
         }
     }
 };
-#endif
 
 /*
  ********************************************************************************

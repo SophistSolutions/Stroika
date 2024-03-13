@@ -2017,7 +2017,7 @@ namespace {
 #endif
         };
 
-#if __cpp_lib_format >= 202207L
+#if __cpp_lib_format >= 201907 
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
         String  a3 = Fmt (L"{}", 3);
