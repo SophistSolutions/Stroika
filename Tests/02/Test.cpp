@@ -1953,7 +1953,6 @@ namespace {
             }
         };
 
-        //#if __cpp_lib_format >= 201907
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
         EXPECT_EQ (a1, "1");
@@ -1977,9 +1976,8 @@ namespace {
         //         DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
 
         auto pp  = "{}"_f(1);
-        DbgTrace (L"pp=%s", Characters::ToString (pp).c_str ());
+        DbgTrace2 (L"pp={}", pp);
         EXPECT_EQ (pp, "1");
-        //#endif
     }
 }
 #endif
