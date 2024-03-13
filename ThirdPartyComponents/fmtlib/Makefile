@@ -35,7 +35,7 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 #lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/fmtlib)
 
-OUTPUT_WORKDIR_PRETTYNAME:="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
+OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
 
@@ -56,8 +56,6 @@ endif
 
 
 
-
-
 .PHONY:	all clean clobber check
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -65,30 +63,15 @@ FMTLIB=libfmt.a
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 FMTLIB=libfmt.lib
 endif
-TARGETDIR			:=	$(PER_CONFIGURATION_BUILDS_DIR)bin/
-TARGETEXE			:=	$(TARGETDIR)fmtlib${EXE_SUFFIX}
+# TARGETDIR			:=	$(PER_CONFIGURATION_BUILDS_DIR)bin/
+# TARGETEXE			:=	$(TARGETDIR)fmtlib${EXE_SUFFIX}
 
 ObjDir:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/
 
-# LibObjs:=\
-# 	$(ObjDir)fmtlib3${OBJ_SUFFIX}\
-
-# Objs:=\
-# 	$(LibObjs)\
-# 	$(ObjDir)shell${OBJ_SUFFIX}\
-
-# Use the stroika link macro (DEFAULT_LINK_LINE), but omit the stroika lib itself, and other injected depepdencies
-# for sqlite executable
-LinkerArgs_LibDependencies:=
-StroikaLibs:=
-ifeq (Unix,$(ProjectPlatformSubdir))
-LinkerArgs_LibDependencies:=-lpthread
-endif
-
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/fmt/core.h	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(FMTLIB)
-
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(FMTLIB)		\
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/pkgconfig/fmt.pc
 
 $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
@@ -107,9 +90,6 @@ endif
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@#make zippedfile even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(ZIPPEDFILE)
-ifneq ($(QUICK_BUILD), 1)
-	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CURRENT
-endif
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
@@ -123,7 +103,8 @@ CMAKE_ARGS+=	-D FMT_TEST="NO"
 
 ORIGs CURRENT:	$(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "fmtlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
-	@unzip -q $(ZIPPEDFILE) 
+	@rm -f fmt-${VERSION}/
+	@unzip -q $(ZIPPEDFILE)
 	@mv fmt-${VERSION}/ $@
 
 
@@ -158,40 +139,20 @@ else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
 endif
 
-#
-# NOTE: It appears to be OK to define these CFLAGS here, and not in the CONFIGURATION because these appear to only 
-# be used in the .c file, not in the .h file for sqlite
-#	@todo	Find docs/reference assuring this will always be so -- LGP 2021-04-28
-#
-
-# CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
-# # Important - soon to be used in Stroika (at least experimentally) - https://www.sqlite.org/json1.html
-# CFLAGS	+= -DSQLITE_ENABLE_JSON1
-
-# # See https://stroika.atlassian.net/browse/STK-753 and https://sqlite.org/forum/forumpost/cc6668e7b3 - avoid TSAN/Valgrind issues 
-# ifeq (1,$(AssertionsEnabled))
-# ifeq (,$(findstring qStroika_FeatureSupported_Valgrind,$(CPPFLAGS)))
-# ifeq (,$(findstring thread,$(SanitizerFlags)))
-# CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
-# CFLAGS	+= -DSQLITE_DEBUG
+# ifeq (1,$(qCompiler_HasNoMisleadingIndentation_Flag))
+# CFLAGS	+= -Wno-misleading-indentation
 # endif
-# endif
-# endif
-
-ifeq (1,$(qCompiler_HasNoMisleadingIndentation_Flag))
-CFLAGS	+= -Wno-misleading-indentation
-endif
 
 
 vpath %c $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 
 
-$(ObjDir)%${OBJ_SUFFIX} : %.c
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CC_LINE,$<,$@)';\
-	fi
-	@mkdir -p `dirname $@`
-	@$(call DEFAULT_CC_LINE,$<,$@)
+# $(ObjDir)%${OBJ_SUFFIX} : %.c
+# 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+# 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CC_LINE,$<,$@)';\
+# 	fi
+# 	@mkdir -p `dirname $@`
+# 	@$(call DEFAULT_CC_LINE,$<,$@)
 
 
 check-prerequisite-tools:
@@ -218,7 +179,7 @@ endif
 clean::
 	@rm -rf $(AMALGAMATION_WITH_VERSION)
 ifeq ($(CONFIGURATION),)
-	@rm -rf  $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/sqlite
+	@rm -rf  $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/libfmt
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 endif
