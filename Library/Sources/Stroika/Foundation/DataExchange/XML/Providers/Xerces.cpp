@@ -1259,12 +1259,12 @@ namespace {
         {
             return &Providers::Xerces::kDefaultProvider;
         }
-        virtual bool GetStandalone () const
+        virtual bool GetStandalone () const override
         {
             AssertNotNull (fXMLDoc);
             return fXMLDoc->getXmlStandalone ();
         }
-        virtual void SetStandalone (bool standalone)
+        virtual void SetStandalone (bool standalone) override
         {
             AssertNotNull (fXMLDoc);
             fXMLDoc->setXmlStandalone (standalone);

@@ -737,11 +737,11 @@ namespace {
         {
             return &Providers::LibXML2::kDefaultProvider;
         }
-        virtual bool GetStandalone () const
+        virtual bool GetStandalone () const override
         {
             return !!fLibRep_->standalone;
         }
-        virtual void SetStandalone (bool standalone)
+        virtual void SetStandalone (bool standalone) override
         {
             fLibRep_->standalone = standalone;
         }
