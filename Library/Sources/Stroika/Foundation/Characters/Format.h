@@ -11,6 +11,7 @@
 #include <format>
 #elif qHasFeature_fmtlib
 #include <fmt/format.h>
+#include <fmt/xchar.h>
 #endif
 #include <ios>
 #include <locale>
@@ -48,9 +49,9 @@ using std::make_format_args;
 using fmt::vformat;
 using fmt::format;
 using fmt::format_string;
-//using fmt::wformat_string;
+using fmt::wformat_string;
 using fmt::make_format_args;
-//using fmt::make_wformat_args;
+using fmt::make_wformat_args;
 #endif
 
     /*
@@ -87,7 +88,6 @@ using fmt::make_format_args;
      * SUPER EARLY EXPERIEMNTAL DRAFT OF c++20 format support
         // Problem with allowing 'string_format' is it generates format_string - which I don't think will handle args of unicode chars right...
      */
-#if __cpp_lib_format >= 202207L
     template <class... ARGS>
     [[nodiscard]] inline String Fmt (const format_string<ARGS...> f, ARGS&&... _Args)
     {
@@ -100,7 +100,6 @@ using fmt::make_format_args;
     {
         return String{vformat (f.get (), make_wformat_args (_Args...))};
     }
-#endif
 
 }
 
