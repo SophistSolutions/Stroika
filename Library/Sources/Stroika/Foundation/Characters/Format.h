@@ -32,27 +32,30 @@
 namespace Stroika::Foundation::Characters {
 
 #if !(qHasFeature_fmtlib || __cpp_lib_format >= 201907)
-    static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, configure --fmtlib use");
+    static_assert (false, "Stroika v3 requires some std::format compatible library - if building with one lacking builtin std::format, "
+                          "configure --fmtlib use");
 #endif
 
+    inline namespace FmtSupport {
 /**
  *  To allow interop between std::format and fmt(fmtlib)::format, publish the names into the namespace 'Stroika::Foundation::Characters' and use those.
  *  Lose this once I can fully depend upon std::format... --LGP 2024-03-12
  */
 #if __cpp_lib_format >= 201907
-using std::vformat;
-using std::format;
-using std::format_string;
-using std::wformat_string;
-using std::make_format_args;
+        using std::format;
+        using std::format_string;
+        using std::make_format_args;
+        using std::vformat;
+        using std::wformat_string;
 #elif qHasFeature_fmtlib
-using fmt::vformat;
-using fmt::format;
-using fmt::format_string;
-using fmt::wformat_string;
-using fmt::make_format_args;
-using fmt::make_wformat_args;
+        using fmt::format;
+        using fmt::format_string;
+        using fmt::make_format_args;
+        using fmt::make_wformat_args;
+        using fmt::vformat;
+        using fmt::wformat_string;
 #endif
+    }
 
     /*
      * Format is the Stroika wrapper on sprintf().
@@ -99,6 +102,31 @@ using fmt::make_wformat_args;
     [[nodiscard]] inline String Fmt (const wformat_string<ARGS...> f, ARGS&&... _Args)
     {
         return String{vformat (f.get (), make_wformat_args (_Args...))};
+    }
+
+    // MAYBE CAN MAKE OPERATOR _f stuff wokr!!!
+    template <typename CHAR_T>
+    struct myfmt {
+        basic_string_view<CHAR_T> sv;
+
+        template <class... ARGS>
+        [[nodiscard]] inline String operator() (ARGS&&... _Args)
+        {
+            if constexpr (same_as<CHAR_T, char>) {
+                return vformat (sv, make_format_args (_Args...));
+            }
+            else if constexpr (same_as<CHAR_T, wchar_t>) {
+                return vformat (sv, make_wformat_args (_Args...));
+            }
+        }
+    };
+    inline myfmt<char> operator"" _f (const char* str, size_t len)
+    {
+        return myfmt{.sv = string_view{str, len}};
+    }
+    inline myfmt<wchar_t> operator"" _f (const wchar_t * str, size_t len)
+    {
+        return myfmt{.sv = wstring_view{str, len}};
     }
 
 }
