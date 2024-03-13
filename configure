@@ -297,7 +297,9 @@ sub	DoSetThirdPartyComponents_
 			}
 			elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 				my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-				if ($itsVersion < 16.0) {
+				# I thought docs someplace said clang++16 supported, but 
+				# ubuntu-23.10-clang++-16-debug-libc++-c++23, clang++-16,... failed, so wait for 17 to test (maybe cuz of clang lib version - didnt dig yet)
+				if ($itsVersion < 17.0) {
 					$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_UseStaticTPP;
 				}
 			}
