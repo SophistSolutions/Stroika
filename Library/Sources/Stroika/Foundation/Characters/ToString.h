@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
             }
             if (*it != '}')
-                throw std::format_error ("Invalid format args for QuotableString.");
+                throw format_error ("Invalid format args for QuotableString.");
 
             return it;
         }
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
             }
             if (*it != '}')
-                throw std::format_error ("Invalid format args for QuotableString.");
+                throw format_error ("Invalid format args for QuotableString.");
 
             return it;
         }

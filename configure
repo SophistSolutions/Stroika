@@ -707,6 +707,14 @@ sub     FillDefaultLibDependencies_
 			}
 		}
 
+		if ($FEATUREFLAG_fmtlib ne $LIBFEATUREFLAG_No) {
+			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+				#???dont thnik needed cuz of pragma comment link...
+			}
+			else {
+				push (@packageCfgNames, "fmt");
+			}
+		}
 
 		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
 			PortablyAddLibToLibDependencies_("lzma");

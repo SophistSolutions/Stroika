@@ -52,6 +52,7 @@ namespace Stroika::Foundation::Characters {
         using qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args;
         using qStroika_Foundation_Characters_FMT_PREFIX_::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
+         using qStroika_Foundation_Characters_FMT_PREFIX_::format_error;
     }
 
 
@@ -62,21 +63,21 @@ namespace Stroika::Foundation::Characters {
     {
         // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
         // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt}, args)};
     }
-    [[nodiscard]] inline String VFormat (std::wstring_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
+    [[nodiscard]] inline String VFormat (std::wstring_view f, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
     {
-        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f}, args)};
     }
     [[nodiscard]] inline String VFormat (const std::locale& loc, std::string_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args args)
     {
         // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
         // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt}, args)};
     }
     [[nodiscard]] inline String VFormat (const std::locale& loc, std::wstring_view fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args args)
     {
-        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, fmt, args)};
+        return String{qStroika_Foundation_Characters_FMT_PREFIX_::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt}, args)};
     }
 
     /**
@@ -87,49 +88,58 @@ namespace Stroika::Foundation::Characters {
             @todo rename this to Format once we've fully removed all references to legacy "Format" API
      */
     template <typename... ARGS>
-    [[nodiscard]] inline String Fmt (const format_string<ARGS...> f, ARGS&&... args)
+    [[nodiscard]] inline String Fmt (const qStroika_Foundation_Characters_FMT_PREFIX_::format_string<ARGS...> f, ARGS&&... args)
     {
-        return VFormat (f.get (), make_format_args (args...));
+        return vformat (f.get(), qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
     }
     template <typename... ARGS>
-    [[nodiscard]] inline String Fmt (const wformat_string<ARGS...> f, ARGS&&... args)
+    [[nodiscard]] inline String Fmt (const qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string<ARGS...> f, ARGS&&... args)
     {
-        return VFormat (f.get (), make_wformat_args (args...));
+        return vformat (f.get(), qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
     }
     template <typename... ARGS>
-    [[nodiscard]] inline String Fmt (const std::locale& loc, const format_string<ARGS...> f, ARGS&&... args)
+    [[nodiscard]] inline String Fmt (const std::locale& loc, const qStroika_Foundation_Characters_FMT_PREFIX_::format_string<ARGS...> f, ARGS&&... args)
     {
-        return VFormat (loc, f.get (), make_format_args (args...));
+        return vformat (loc, f.get(), qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
     }
     template <typename... ARGS>
-    [[nodiscard]] inline String Fmt (const std::locale& loc, const wformat_string<ARGS...> f, ARGS&&... args)
+    [[nodiscard]] inline String Fmt (const std::locale& loc, const qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string<ARGS...> f, ARGS&&... args)
     {
-        return VFormat (loc, f.get (), make_wformat_args (args...));
+        return vformat (loc, f.get(), qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
     }
 
     // MAYBE CAN MAKE OPERATOR _f stuff wokr!!!
+    /**
+     * Simple wrapper on basic_string_view, but specifically for the purpose of treating a string_view as a format string.
+     * Many of the (c++-20) format APIs just take a ?string_view as argument. But for purposes of overloading and differentiating
+     * behavior, using a more specific type in some contexts is helpful.
+     * 
+     *  For example, when you use the operator"" _f (), it allows its result to unambiguously be treated as a (new format)
+     *  format string.
+    */
     template <typename CHAR_T>
-    struct myfmt {
+    struct FormatString {
         basic_string_view<CHAR_T> sv;
 
         template <class... ARGS>
-        [[nodiscard]] inline String operator() (ARGS&&... _Args)
+        [[nodiscard]] inline String operator() (ARGS&&... args)
         {
             if constexpr (same_as<CHAR_T, char>) {
-                return vformat (sv, make_format_args (_Args...));
+                // @todo fixup the characterset handling here...
+                return vformat (sv, qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
             }
             else if constexpr (same_as<CHAR_T, wchar_t>) {
-                return vformat (sv, make_wformat_args (_Args...));
+                return vformat (sv, qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
             }
         }
     };
-    inline myfmt<char> operator"" _f (const char* str, size_t len)
+    inline FormatString<char> operator"" _f (const char* str, size_t len)
     {
-        return myfmt<char>{.sv = string_view{str, len}};
+        return FormatString<char>{.sv = string_view{str, len}};
     }
-    inline myfmt<wchar_t> operator"" _f (const wchar_t * str, size_t len)
+    inline FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len)
     {
-        return myfmt<wchar_t>{.sv = wstring_view{str, len}};
+        return FormatString<wchar_t>{.sv = wstring_view{str, len}};
     }
 
 
@@ -168,12 +178,17 @@ namespace Stroika::Foundation::Characters {
 
 
     
-    // @todo overload of Format/FormatV taking myfmt!!!! - PERFECT BACKWAWRD COMAT STRATEGY... - use Format with _f string to get new behavior, and regualr string to get old!!!
+    // @todo overload of Format/FormatV taking FormatString!!!! - PERFECT BACKWAWRD COMAT STRATEGY... - use Format with _f string to get new behavior, and regualr string to get old!!!
     /// ETC - DO MORE... like this... - then dont need Fmt lowercase anymore!!!
     template <typename... ARGS>
-    inline String Format(myfmt<char> f, ARGS&&... args)
+    inline String Format(FormatString<char> f, ARGS&&... args)
     {
         return VFormat (f, make_format_args (args...));
+    }
+    template <typename... ARGS>
+    inline String Format(FormatString<wchar_t> f, ARGS&&... args)
+    {
+        return VFormat (f, make_wformat_args (args...));
     }
 
 
@@ -196,7 +211,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
             ++it;
         }
         if (*it != '}')
-            throw std::format_error ("Invalid format args for QuotableString.");
+            throw format_error ("Invalid format args for QuotableString.");
 
         return it;
     }
@@ -225,7 +240,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
             ++it;
         }
         if (*it != '}')
-            throw std::format_error ("Invalid format args for QuotableString.");
+            throw format_error ("Invalid format args for QuotableString.");
 
         return it;
     }
