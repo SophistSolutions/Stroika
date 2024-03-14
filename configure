@@ -1042,7 +1042,16 @@ sub	SetDefaultForCompilerDriver_
 			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
 				$runtimeStackProtectorFlag = true;
 			}
-			if (!$sanitizerFlagsNoneSet) {
+
+			# Buidling problems with libcurl and building on ubyung 22.04 and clang++15, and 16.. Dont bother debugging now- just disable cuz not important
+			# --LGP 2024-03-14
+			my $skipSanDefaults = false;
+			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && getUbuntuVersion () == 22.04) {
+				$sanitizerFlagsIsDefined = true;
+				$skipSanDefaults = true;
+			}
+
+			if (!$skipSanDefaults && !$sanitizerFlagsNoneSet) {
 				my %already = map { $_ => 1 } @sanitizerFlags;
 				if(!exists($already{'address'})) {
 					push @sanitizerFlags, 'address';
