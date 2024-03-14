@@ -145,6 +145,7 @@ jobs:
           if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            IntermediateFiles/Debug/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
             /tmp/Trace*.txt
 
   build-n-test-MacOS:
