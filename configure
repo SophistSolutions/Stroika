@@ -566,8 +566,8 @@ sub     NeedsFmtLib_
 {
 	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		my $xcodeVer = getXCodeVersion_ ();
 		if ("$^O" eq "darwin") {
+			my $xcodeVer = getXCodeVersion_ ();
 			return $xcodeVer < 15.3;	## seems to work as of xcode 15.3, but not 15.2
 		}
 		else {
