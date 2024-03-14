@@ -351,27 +351,25 @@ auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const 
     }
 }
 
-//#if __cpp_lib_format >= 201907
-void Debug::Private_::Emitter::EmitTraceMessageRaw2 (wstring_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args&& args) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage_ (wstring_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args&& args) noexcept
 {
     try {
-        EmitTraceMessageRaw (vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{users_fmt}, args));
+        EmitTraceMessage_ (vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{users_fmt}, args));
     }
     catch (...) {
     }
 }
-void Debug::Private_::Emitter::EmitTraceMessageRaw2 (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage_ (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept
 {
     try {
-        Debug::Private_::Emitter::EmitTraceMessageRaw (
+        Debug::Private_::Emitter::EmitTraceMessage_ (
             Characters::String::FromNarrowSDKString (vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{users_fmt}, args)).As<wstring> ());
     }
     catch (...) {
     }
 }
-//#endif
 
-void Debug::Private_::Emitter::EmitTraceMessageRaw (const wstring& raw) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage_ (const wstring& raw) noexcept
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
         return;

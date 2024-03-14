@@ -1966,19 +1966,26 @@ namespace {
         DbgTrace (L"a5a=%s", Characters::ToString (a5).c_str ());
         String a6 = Fmt (L"{}", IO::Network::CIDR{"192.168.244.0/24"});
         DbgTrace (L"a6=%s", Characters::ToString (a6).c_str ());
+        {
+            auto url = IO::Network::URI{"http://www.sophists.com"};
+            DbgTrace (L"u = %s", Characters::ToString (url).c_str ());
+            DbgTrace (L"u = {}"_f, url);
+            DbgTrace ("u = {}"_f, url);
+            // Each will output "u = http://www.sophists.com
+        }
         String a7 = Fmt (L"{}", foo{});
         DbgTrace (L"a7=%s", Characters::ToString (a7).c_str ());
-        DbgTrace2 (L"yippie: {}", foo{});
+        DbgTrace (L"yippie: {}"_f, foo{});
         EXPECT_EQ (a7, "foo as a string"sv);
-        DbgTrace2 (L"t2:  cidr= {}, s1={}, s2={}", IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});
-        DbgTrace2 ("t2:  cidr= {}, s1={}, s2={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"});
+        DbgTrace (L"t2:  cidr= {}, s1={}, s2={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});
+        DbgTrace ("t2:  cidr= {}, s1={}, s2={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"});
         // @todo add mapping for wstring/string even for std  case using my ToString mechansim (details elude me - must be careful to avoid introducing ambiguity)
         //        DbgTrace2 (L"t2:  s1={}, s2={}, s3={}",  "s1", String{"s2"}, string{"s3"});
-        DbgTrace2 ("t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
+        DbgTrace ("t2: cidr= {}, s1={}, s2={}, s3={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
         //         DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
 
         auto pp = "{}"_f(1);
-        DbgTrace2 (L"pp={}", pp);
+        DbgTrace (L"pp={}"_f, pp);
         EXPECT_EQ (pp, "1");
     }
 }

@@ -241,17 +241,21 @@ namespace Stroika::Foundation::Debug {
      *   \note ***Not Cancelation Point*** - and uses  noexcept
      *         So you can call this freely without worrying about Throw (ThreadAbortException) etc
      *         (though beware of passing arguments to DbgTrace() which may be cancelation points)
+     * 
+     *  \note - DbgTrace can take either printf style format strings, or _f format strings.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          auto url = IO::Network::URI{"http://www.sophists.com"};
+     *          DbgTrace (L"u = %s", Characters::ToString (url).c_str ());      // Each will output "u = 'http://www.sophists.com'"
+     *          DbgTrace (L"u = {}"_f, url);
+     *          DbgTrace ("u = {}"_f, url);
+     *      \endcode
      */
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
 #define DbgTrace Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage
 #else
 #define DbgTrace _NoOp_
-#endif
-
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-#define DbgTrace2 Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage2
-#else
-#define DbgTrace2 _NoOp_
 #endif
 
 }

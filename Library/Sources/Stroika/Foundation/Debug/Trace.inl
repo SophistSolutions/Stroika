@@ -31,6 +31,11 @@ static_assert (false, "Stroika v3 requires some std::format compatible library -
                       "configure --fmtlib use");
 #endif
 
+namespace Stroika::Foundation::Characters {
+    template <typename CHAR_T>
+    struct FormatString;
+}
+
 namespace Stroika::Foundation::Debug {
 
     namespace Private_ {
@@ -61,32 +66,28 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void EmitTraceMessage (const char* format, ...) noexcept;
         nonvirtual void EmitTraceMessage (const wchar_t* format, ...) noexcept;
 
+        template <typename CHAR_T, typename... Args>
+        nonvirtual void EmitTraceMessage (Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
+        {
+            try {
+                if constexpr (same_as<CHAR_T, char>) {
+                    EmitTraceMessage_ (fmt.sv, qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
+                }
+                else if constexpr (same_as<CHAR_T, wchar_t>) {
+                    EmitTraceMessage_ (fmt.sv, qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
+                }
+            }
+            catch (...) {
+            }
+        }
+
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
 
-        //#if __cpp_lib_format >= 201907
-        nonvirtual void EmitTraceMessageRaw2 (wstring_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args&& args) noexcept;
-        nonvirtual void EmitTraceMessageRaw2 (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept;
-        template <typename... Args>
-        nonvirtual void EmitTraceMessage2 (wstring_view users_fmt, Args&&... args) noexcept
-        {
-            try {
-                EmitTraceMessageRaw2 (users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::make_wformat_args (args...));
-            }
-            catch (...) {
-            }
-        }
-        template <typename... Args>
-        nonvirtual void EmitTraceMessage2 (string_view users_fmt, Args&&... args) noexcept
-        {
-            try {
-                EmitTraceMessageRaw2 (users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args (args...));
-            }
-            catch (...) {
-            }
-        }
-        //#endif
-        nonvirtual void EmitTraceMessageRaw (const wstring& raw) noexcept;
+    private:
+        nonvirtual void EmitTraceMessage_ (wstring_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args&& args) noexcept;
+        nonvirtual void EmitTraceMessage_ (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept;
+        nonvirtual void EmitTraceMessage_ (const wstring& raw) noexcept;
 
     public:
         // if the last write matches the given token (no writes since then) and the timestamp is unchanged, abandon
