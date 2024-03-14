@@ -543,7 +543,7 @@ sub getUbuntuVersion
 
 sub getXCodeVersion_
 {
-	my $a =  trim (`pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print \$2}'`) ;
+	my $a =  trim (`pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print \$2}' | grep -E -o '[0-9]+\.[0-9]' | head -1`) ;
 	if ($a eq "") {
 		return 0;
 	}
@@ -566,12 +566,9 @@ sub     NeedsFmtLib_
 {
 	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		##my $xcodeVer = getXCodeVersion_ ();
-		##rint ("XCODE: $xcodeVer\n");
+		my $xcodeVer = getXCodeVersion_ ();
 		if ("$^O" eq "darwin") {
-			### tricky - need util for this ...
-			### pkgutil --pkg-info=com.apple.pkg.CLTools_Executables
-			return true;	## for now assume cuz have to get working with this anyhow...
+			return $xcodeVer < 15.3;	## seems to work as of xcode 15.3, but not 15.2
 		}
 		else {
 			# For <format> support - in clang++15 - appears good enuf (if you enable --experimental...)
