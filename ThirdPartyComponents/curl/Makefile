@@ -55,11 +55,11 @@ endif
 
 # For some weird reason, configure fails in this case, only on ubuntu 22.04, and only when running as container as part of github actions (not when I run locally)
 # --LGP 2024-03-14
-ifeq $(${CXX},clang++-15)
+ifeq (${CXX},clang++-15)
 CFLAGS:=$(filter-out -fsanitize=address,undefined, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=address,undefined, $(CXXFLAGS))
 endif
-ifeq $(${CXX},clang++-16)
+ifeq (${CXX},clang++-16)
 CFLAGS:=$(filter-out -fsanitize=address,undefined, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=address,undefined, $(CXXFLAGS))
 endif
