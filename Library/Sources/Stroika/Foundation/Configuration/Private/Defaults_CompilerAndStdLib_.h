@@ -1930,10 +1930,7 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 */
 #ifndef qCompilerAndStdLib_to_chars_FP_Buggy
 
-#if defined(__GNUC__) && !defined(__clang__)
-// according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
-#define qCompilerAndStdLib_to_chars_FP_Buggy 0
-#elif defined(__clang__) && defined(__APPLE__)
+#if defined(__clang__) && defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // still broken in XCode 14
 // still broken in XCode 15
@@ -1946,7 +1943,8 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 // _LIBCPP_VERSION <= 15007
 // _LIBCPP_VERSION ==160000 (so say < 170000)
 // 170002 also seems broken, (at least with clang++-14)
-#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 180000))
+// 180100 also seems broken with clang++-15 on ununtu 24.04
+#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 190000))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
@@ -2004,7 +2002,6 @@ int main ()
 #endif
 
 /*
- ion_Factory.h:123:
 In file included from ./../Characters/../Containers/Factory/KeyedCollection_Factory.inl:16:
 In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCollection_stdset.h:136:
 ./../Characters/../Containers/Concrete/KeyedCollection_stdset.inl:60:22: error: no viable constructor or deduction guide for deduction of template arguments of 'SetInOrderComparer'
@@ -2260,10 +2257,11 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 // Broken in _LIBCPP_VERSION  15007
 // Broken in _LIBCPP_VERSION  160000
 // Broken broken in 170002
+// 180100 also seems broken with clang++-15 on ununtu 24.04
 #if defined(__APPLE__)
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 180000))
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 190000))
 #else
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 180000))
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 190000))
 #endif
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
