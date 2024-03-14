@@ -741,7 +741,7 @@ namespace {
                 String stringWithCRLFs = "abc\r\ndef\r\n";
 #if !qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
                 String replaced = stringWithCRLFs.ReplaceAll (RegularExpression{"[\r\n]*"}, "");
-                EXPECT_TRUE (replaced == "abcdef");
+                EXPECT_EQ (replaced, "abcdef");
 #endif
             }
 #if 0
