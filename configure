@@ -571,8 +571,8 @@ sub     NeedsFmtLib_
 			return $xcodeVer < 15.3;	## seems to work as of xcode 15.3, but not 15.2
 		}
 		else {
-			# For <format> support - in clang++15 - appears good enuf (if you enable --experimental...)
-			if ($itsVersion < 15.0) {
+			# For <format> support - in clang++15 - appears good enuf (if you enable --experimental...) - but that is sometimes unvailable, so dont count on it
+			if ($itsVersion < 16.0) {
 				return true;
 			}
 		}
@@ -1069,16 +1069,18 @@ sub	SetDefaultForCompilerDriver_
 			$sanitizerFlagsIsDefined = true;
 		}
 
-		if (!NeedsFmtLib_()) {
-			if (not (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
-				my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-				# For <format> support - in (non-macos) clang++15 - appears good enuf, just disabled... --LGP 2024-03-13
-				if ($itsVersion < 16) {
-					push @CXXFLAGS, "-fexperimental-library";
-					$LinkerArgs_ExtraSuffix .= " -fexperimental-library";
-				}
-			}
-		}
+		# if (!NeedsFmtLib_()) {
+		# 	if (not (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
+		# 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		# 		# For <format> support - in (non-macos) clang++15 - appears good enuf, just disabled... --LGP 2024-03-13
+		# 		# NOTE - this -fexperimental hack requires lots of companion hacks to thirdpartycomponetns makefiles, so be sure to lose those when
+		# 		# we can lose this hack (or maybe not worth it - and better to use fmtlib???) --LGP 2024-03-14
+		# 		if ($itsVersion < 16) {
+		# 			push @CXXFLAGS, "-fexperimental-library";
+		# 			$LinkerArgs_ExtraSuffix .= " -fexperimental-library";
+		# 		}
+		# 	}
+		# }
 
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 1;
@@ -2248,20 +2250,20 @@ sub GetDefaultCZZFLAGS_flags_
 			#		--LGP 2019-02-10
 			my $dashFlag="-D";
 			push @flags, $dashFlag . "qDebug=" . ZERO_OR_1_ ($gAssertionsEnabled);
-			push @flags, $dashFlag . "qHasFeature_LibCurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_WinHTTP=" . ZERO_OR_1_ ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem);
 			if (defined $FEATUREFLAG_ATLMFC) {
 				push @flags, $dashFlag . "qHasFeature_ATLMFC=" . ZERO_OR_1_ ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem);
 			}
+			push @flags, $dashFlag . "qHasFeature_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_LibCurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_fmtlib=" . ZERO_OR_1_ (($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_GoogleTest=" . ZERO_OR_1_ (($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_WinHTTP=" . ZERO_OR_1_ ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem);
 			push @flags, $dashFlag . "qHasFeature_Xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_libxml2=" . ZERO_OR_1_ (($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_ZLib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_GoogleTest=" . ZERO_OR_1_ (($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_fmtlib=" . ZERO_OR_1_ (($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
 			if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 				push @flags, $dashFlag . "qStroika_Foundation_Debug_Trace_TraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
 				#override the default (true iff qDebug) - if set the trace2file option set 
@@ -2793,10 +2795,10 @@ sub	WriteConfigFile_
 		print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
 	}
 	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
-	print (OUT "    <qFeatureFlag_GoogleTest>$FEATUREFLAG_GoogleTest</qFeatureFlag_GoogleTest>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
-	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_fmtlib>$FEATUREFLAG_fmtlib</qFeatureFlag_fmtlib>\n");
+	print (OUT "    <qFeatureFlag_GoogleTest>$FEATUREFLAG_GoogleTest</qFeatureFlag_GoogleTest>\n");
+	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	if (not ($FEATUREFLAG_OpenSSLExtraArgs eq "")) {
 		if ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) {
