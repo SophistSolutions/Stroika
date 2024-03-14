@@ -1953,6 +1953,8 @@ namespace {
             }
         };
 
+          using qStroika_Foundation_Characters_FMT_PREFIX_::format;
+
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
         EXPECT_EQ (a1, "1");

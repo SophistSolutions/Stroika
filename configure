@@ -289,21 +289,10 @@ sub	DoSetThirdPartyComponents_
 			$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 		if (!defined $FEATUREFLAG_fmtlib) {
-			if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-				my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
-				if ($itsVersion < 13.0) {
-					$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_UseStaticTPP;
-				}
+			if (NeedsFmtLib_ ()) {
+				$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_UseStaticTPP;
 			}
-			elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-				my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-				# I thought docs someplace said clang++16 supported, but 
-				# ubuntu-23.10-clang++-16-debug-libc++-c++23, clang++-16,... failed, so wait for 17 to test (maybe cuz of clang lib version - didnt dig yet)
-				if ($itsVersion < 17.0) {
-					$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_UseStaticTPP;
-				}
-			}
-			if (!defined $FEATUREFLAG_fmtlib) {
+			else {
 				$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_No;
 			}
 		}
@@ -552,6 +541,16 @@ sub getUbuntuVersion
 }
 
 
+sub getXCodeVersion_
+{
+	my $a =  trim (`pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print \$2}'`) ;
+	if ($a eq "") {
+		return 0;
+	}
+	else {
+		return $a + 0;	## convert to a number
+	}
+}
 
 sub     IsTargettingASAN_
 {
@@ -561,6 +560,36 @@ sub     IsTargettingASAN_
 	}
 	return false;
 }
+
+
+sub     NeedsFmtLib_
+{
+	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		##my $xcodeVer = getXCodeVersion_ ();
+		##rint ("XCODE: $xcodeVer\n");
+		if ("$^O" eq "darwin") {
+			### tricky - need util for this ...
+			### pkgutil --pkg-info=com.apple.pkg.CLTools_Executables
+			return true;	## for now assume cuz have to get working with this anyhow...
+		}
+		else {
+			# For <format> support - in clang++15 - appears good enuf (if you enable --experimental...)
+			if ($itsVersion < 15.0) {
+				return true;
+			}
+		}
+	}
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		# Builtin supports works for gcc as of gcc 13
+		if ($itsVersion < 13.0) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 
 
@@ -1043,12 +1072,14 @@ sub	SetDefaultForCompilerDriver_
 			$sanitizerFlagsIsDefined = true;
 		}
 
-		if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-			# For <format> support - in clang++15 - appears good enuf, just disabled... --LGP 2024-03-13
-			if ($itsVersion < 16) {
-				push @CXXFLAGS, "-fexperimental-library";
-				$LinkerArgs_ExtraSuffix .= " -fexperimental-library";
+		if (!NeedsFmtLib_()) {
+			if (not (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
+				my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+				# For <format> support - in (non-macos) clang++15 - appears good enuf, just disabled... --LGP 2024-03-13
+				if ($itsVersion < 16) {
+					push @CXXFLAGS, "-fexperimental-library";
+					$LinkerArgs_ExtraSuffix .= " -fexperimental-library";
+				}
 			}
 		}
 

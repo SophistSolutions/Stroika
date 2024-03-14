@@ -97,6 +97,7 @@ ORIGs CURRENT:	$(ZIPPEDFILE)
 	@rm -rf fmt-${VERSION}/ $@
 	@unzip -q $(ZIPPEDFILE)
 	@mv fmt-${VERSION}/ $@
+	@touch CURRENT ### so not built twice
 
 
 # trick of using word 1 is to get this triggered just once
