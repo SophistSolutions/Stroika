@@ -342,8 +342,9 @@ jobs:
         sudo apt-get install -y g++
     - name: Configure
       # NOTE - disable optimizer due bugs/errors in optimizer (link errors) - but no matter, cuz also slows down analysis (I think)
+      # --debug-symbols false to save space and cuz no need
       run: |
-        ./configure Release --compiler-driver g++ --apply-default-release-flags --lto disable --append-CXXFLAGS -O0
+        ./configure Release --compiler-driver g++ --apply-default-release-flags --lto disable --append-CXXFLAGS -O0 --debug-symbols false
         cat ConfigurationFiles/Release.xml
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
     # to show the summary time for each part
