@@ -54,17 +54,6 @@ PRODUCED_OUTPUT_ARTIFACTS=\
 endif
 
 
-
-
-## hack to test workaround/failure on clang++15 only repro when run from github actions???
-## https://github.com/SophistSolutions/Stroika/actions/runs/8282856809/job/22664698040
-## --LGP 2024-03-14
-ifeq ($(LINKER),clang++-15)
-LinkerArgs_ExtraSuffix:=$(filter-out -fexperimental-library, $(LinkerArgs_ExtraSuffix))
-CXXFLAGS:=$(filter-out -fexperimental-library, $(CXXFLAGS))
-endif
-
-
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/libcurl $(VERSION) Build {$(CONFIGURATION)}:"

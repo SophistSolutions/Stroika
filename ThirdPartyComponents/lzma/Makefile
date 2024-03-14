@@ -67,7 +67,6 @@ endif
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-
 #
 # For now needed beacuse we don't pass in proper LDFLAGS so test apps dont know about extra linker flags needed for sanitizers
 # -- LGP 2019-09-25

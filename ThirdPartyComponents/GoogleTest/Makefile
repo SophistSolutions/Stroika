@@ -28,7 +28,6 @@ FETCHURLS_=
 FETCHURLS_+= https://github.com/google/googletest/archive/refs/tags/v${GOOGLETEST_VERSION_}.tar.gz
 
 
-
 PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/${CONFIGURATION}/ThirdPartyComponents/)/
 
 #lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)

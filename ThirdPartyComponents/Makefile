@@ -18,9 +18,6 @@ APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ../ScriptsLib/GetConfigurations --c
 
 ifneq ($(CONFIGURATION),)
 
-ifeq ($(qFeatureFlag_StrawberryPerl), use)
-	BUILD_StrawberryPerl=1
-endif
 ifeq ($(qFeatureFlag_boost), use)
 	BUILD_boost=1
 endif
@@ -33,23 +30,26 @@ endif
 ifeq ($(qFeatureFlag_fmtlib), use)
 	BUILD_fmtlib=1
 endif
+ifeq ($(qFeatureFlag_GoogleTest), use)
+	BUILD_GoogleTest=1
+endif
 ifeq ($(qFeatureFlag_OpenSSL), use)
 	BUILD_openssl=1
 endif
 ifeq ($(qFeatureFlag_sqlite), use)
 	BUILD_sqlite=1
 endif
-ifeq ($(qFeatureFlag_GoogleTest), use)
-	BUILD_GoogleTest=1
+ifeq ($(qFeatureFlag_StrawberryPerl), use)
+	BUILD_StrawberryPerl=1
+endif
+ifeq ($(qFeatureFlag_WIX), use)
+	BUILD_WIX=1
 endif
 ifeq ($(qFeatureFlag_Xerces), use)
 	BUILD_Xerces=1
 endif
 ifeq ($(qFeatureFlag_libxml2), use)
 	BUILD_libxml2=1
-endif
-ifeq ($(qFeatureFlag_WIX), use)
-	BUILD_WIX=1
 endif
 ifeq ($(qFeatureFlag_ZLib), use)
 	BUILD_zlib=1
@@ -58,9 +58,6 @@ endif
 
 
 SubDirs=
-ifeq ($(BUILD_StrawberryPerl), 1)
-	SubDirs+= StrawberryPerl
-endif
 ifeq ($(BUILD_boost), 1)
 	SubDirs+= boost
 endif
@@ -69,6 +66,9 @@ ifeq ($(BUILD_curl), 1)
 endif
 ifeq ($(BUILD_fmtlib), 1)
 	SubDirs+= fmtlib
+endif
+ifeq ($(BUILD_GoogleTest), 1)
+	SubDirs+= GoogleTest
 endif
 ifeq ($(BUILD_lzma), 1)
 	SubDirs+= lzma
@@ -79,17 +79,17 @@ endif
 ifeq ($(BUILD_sqlite), 1)
 	SubDirs+= sqlite
 endif
-ifeq ($(BUILD_GoogleTest), 1)
-	SubDirs+= GoogleTest
+ifeq ($(BUILD_StrawberryPerl), 1)
+	SubDirs+= StrawberryPerl
+endif
+ifeq ($(BUILD_WIX), 1)
+	SubDirs+= WIX
 endif
 ifeq ($(BUILD_Xerces), 1)
 	SubDirs+= Xerces
 endif
 ifeq ($(BUILD_libxml2), 1)
 	SubDirs+= libxml2
-endif
-ifeq ($(BUILD_WIX), 1)
-	SubDirs+= WIX
 endif
 ifeq ($(BUILD_zlib), 1)
 	SubDirs+= zlib
