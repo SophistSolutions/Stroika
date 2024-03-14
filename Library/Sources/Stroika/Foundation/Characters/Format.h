@@ -36,6 +36,10 @@
 
 namespace Stroika::Foundation::Characters {
 
+
+    /**
+     *   only needed while supporting fmtlib/ cuz not std::format not available
+    */
     inline namespace FmtSupport {
 #if qHasFeature_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
