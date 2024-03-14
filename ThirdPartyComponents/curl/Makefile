@@ -53,6 +53,17 @@ PRODUCED_OUTPUT_ARTIFACTS=\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/curl/curl.h
 endif
 
+# For some weird reason, configure fails in this case, only on ubuntu 22.04, and only when running as container as part of github actions (not when I run locally)
+# --LGP 2024-03-14
+ifeq $(${CXX},clang++-15)
+CFLAGS:=$(filter-out -fsanitize=address,undefined, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=address,undefined, $(CXXFLAGS))
+endif
+ifeq $(${CXX},clang++-16)
+CFLAGS:=$(filter-out -fsanitize=address,undefined, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=address,undefined, $(CXXFLAGS))
+endif
+
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
@@ -143,13 +154,13 @@ else
 LIBCURL_CONFIGURE += --with-zlib
 endif
 LIBCURL_CONFIGURE += --disable-shared
-LIBCURL_CONFIGURE += --without-cyassl
+#LIBCURL_CONFIGURE += --without-cyassl
 LIBCURL_CONFIGURE += --without-librtmp
 ### for now - I think we want this one!
-LIBCURL_CONFIGURE += --without-libidn
+# LIBCURL_CONFIGURE += --without-libidn
 LIBCURL_CONFIGURE += --without-libssh2
 LIBCURL_CONFIGURE += --without-nghttp2
-LIBCURL_CONFIGURE += --without-axtls
+# LIBCURL_CONFIGURE += --without-axtls
 LIBCURL_CONFIGURE += --disable-smtp
 LIBCURL_CONFIGURE += --disable-ldap --disable-ldaps
 LIBCURL_CONFIGURE += --disable-manual
