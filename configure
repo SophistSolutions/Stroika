@@ -2380,7 +2380,7 @@ sub PostProcessOptions_ ()
 
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		if ("$^O" eq "linux") {
+		if ("$^O" eq "linux" && 22.04 == $ubuntuVersion) {
 			# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
 			#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
 			#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
