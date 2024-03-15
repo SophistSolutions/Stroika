@@ -2382,10 +2382,20 @@ sub PostProcessOptions_ ()
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
 		my $ubuntuVersion = getUbuntuVersion();
-		if ("$^O" eq "linux" && 22.04 == $ubuntuVersion) {
+		if ("$^O" eq "linux" && (22.04 == $ubuntuVersion or 24.04 == $ubuntuVersion)) {
 			# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
 			#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
 			#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
+			#
+			# On Ubuntu 24.04 and clang++16 I get this: -- LGP 2024-03-15
+			# /usr/bin/ld: /tmp/lto-llvm-8f9b5e.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream::Ptr<std::byte> const&)':
+			# ld-temp.o:(.text._ZN7Stroika10Foundation12DataExchange7Variant4JSON6Reader9BoostRep_4ReadERKNS0_7Streams11InputStream3PtrISt4byteEE[_ZN7Stroika10Foundation12DataExchange7Variant4JSON6Reader9BoostRep_4ReadERKNS0_7Streams11InputStream3PtrISt4byteEE]+0x2ab): undefined reference to `boost::json::detail::error_code_category'
+			# /usr/bin/ld: /tmp/lto-llvm-8f9b5e.o: in function `boost::system::detail::failed_impl(int, boost::system::error_category const&)':
+			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Builds/clang++-16-release-libstdc++/ThirdPartyComponents/include/boost/system/detail/error_category.hpp:211:(.text._ZN5boost4json12basic_parserIN12_GLOBAL__N_116BoostSAXHandler_EE10write_someEbPKcmRNS_6system10error_codeE+0x4c): undefined reference to `boost::json::detail::error_code_category'
+			# /usr/bin/ld: /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Builds/clang++-16-release-libstdc++/ThirdPartyComponents/include/boost/system/detail/error_category.hpp:211:(.text._ZN5boost4json12basic_parserIN12_GLOBAL__N_116BoostSAXHandler_EE10write_someEbPKcmRNS_6system10error_codeE+0x4b5): undefined reference to `boost::json::detail::error_code_category'
+			# /usr/bin/ld: /tmp/lto-llvm-8f9b5e.o: in function `boost::json::basic_parser<(anonymous namespace)::BoostSAXHandler_>::~basic_parser()':
+			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Builds/clang++-16-release-libstdc++/ThirdPartyComponents/include/boost/json/basic_parser.hpp:499:(.text._ZN5boost4json12basic_parserIN12_GLOBAL__N_116BoostSAXHandler_EED2Ev+0x36): undefined reference to `boost::json::detail::stack::~stack()'
+			#
 			$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 		}
 		if ("$^O" eq "darwin")  {
