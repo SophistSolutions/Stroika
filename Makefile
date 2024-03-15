@@ -513,6 +513,9 @@ basic-unix-test-configurations_g++_versions_:
 	# g++-13
 	./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
 	./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
+	# g++-14
+	./configure g++-14-debug --config-tag Unix --compiler-driver g++-14 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
+	./configure g++-14-release++2b --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
 
 basic-unix-test-configurations_clang++_versions_:
 	# clang-14
@@ -528,6 +531,16 @@ basic-unix-test-configurations_clang++_versions_:
 	./configure clang++-16-release-libstdc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
 	./configure clang++-16-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
 	./configure clang++-16-release-libc++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
+	# clang-17
+	./configure clang++-17-debug-libc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
+	./configure clang++-17-release-libstdc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
+	./configure clang++-17-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+	./configure clang++-17-release-libc++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+	# clang-18
+	./configure clang++-18-debug-libc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
+	./configure clang++-18-release-libstdc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
+	./configure clang++-18-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+	./configure clang++-18-release-libc++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
 
 basic-unix-test-configurations_sanitizer_configs_:
 	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
