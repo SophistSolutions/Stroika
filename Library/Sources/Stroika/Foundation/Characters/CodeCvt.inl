@@ -580,6 +580,7 @@ namespace Stroika::Foundation::Characters {
 #endif
     }
 
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     /*
      ********************************************************************************
      ************************* CodeCvt<CHAR_T>::Options *****************************
@@ -591,6 +592,7 @@ namespace Stroika::Foundation::Characters {
     {
         return Options{.fInvalidCharacterReplacement = o.fInvalidCharacterReplacement};
     }
+    #endif
 
     /*
      ********************************************************************************
