@@ -31,7 +31,6 @@ SLINKDIRNAME=$(BASENAME)
 #
 
 FETCHURLS=
-FETCHURLS+=https://curl.haxx/download/curl-$(VERSION).tar.gz
 FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
 FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
