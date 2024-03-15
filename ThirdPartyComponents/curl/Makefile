@@ -19,9 +19,6 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 VERSION=8.6.0
-#VERSION=8.5.0
-#VERSION=8.4.0		# Fails to build on Ubuntu  - so wait for next release and hope fixed
-#VERSION=8.3.0
 #VERSION=7.86.0
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
@@ -52,17 +49,6 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 else
 PRODUCED_OUTPUT_ARTIFACTS=\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/curl/curl.h
-endif
-
-# For some weird reason, configure fails in this case, only on ubuntu 22.04, and only when running as container as part of github actions (not when I run locally)
-# --LGP 2024-03-14
-ifeq (${CXX},clang++-15)
-CFLAGS:=$(filter-out -fsanitize=address,undefined, $(CFLAGS))
-CXXFLAGS:=$(filter-out -fsanitize=address,undefined, $(CXXFLAGS))
-endif
-ifeq (${CXX},clang++-16)
-CFLAGS:=$(filter-out -fsanitize=address,undefined, $(CFLAGS))
-CXXFLAGS:=$(filter-out -fsanitize=address,undefined, $(CXXFLAGS))
 endif
 
 
