@@ -554,6 +554,43 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
+
+/*
+ ile included from Statistics.cpp:6:
+In file included from ./../Characters/Format.h:30:
+In file included from ./../Characters/String.h:17:
+In file included from ./../Characters/../Containers/Set.h:629:
+In file included from ./../Characters/../Containers/Set.inl:10:
+In file included from ./../Characters/../Containers/Factory/Set_Factory.h:114:
+In file included from ./../Characters/../Containers/Factory/Set_Factory.inl:14:
+In file included from ./../Characters/../Containers/Factory/../Concrete/Set_Array.h:124:
+./../Characters/../Containers/Factory/../Concrete/Set_Array.inl:36:15: error: type constraint differs in template redeclaration
+   36 |     template <IEqualsComparer<T> EQUALS_COMPARER>
+   
+   */
+
+#ifndef qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+// first noticed broken in apply clang 18
+#define qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 18))
+#else
+#define qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy 0
+#endif
+
+#endif
+
+#if qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
+#define ContraintInMemberClassSeparateDeclare_BWA_Helper_(CONSTRAINT) typename
+#else
+#define ContraintInMemberClassSeparateDeclare_BWA_Helper_(CONSTRAINT) CONSTRAINT
+#endif
+
+
+
+
+
 #ifndef qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)

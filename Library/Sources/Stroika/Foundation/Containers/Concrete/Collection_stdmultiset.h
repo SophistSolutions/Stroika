@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <IInOrderComparer<T> INORDER_COMPARER>
+        template <ContraintInMemberClassSeparateDeclare_BWA_Helper_(IInOrderComparer<T>) INORDER_COMPARER>
         class Rep_;
 
     private:

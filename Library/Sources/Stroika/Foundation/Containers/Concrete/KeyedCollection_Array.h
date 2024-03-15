@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRep_;
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+        template <ContraintInMemberClassSeparateDeclare_BWA_Helper_(IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
         class Rep_;
 
     private:

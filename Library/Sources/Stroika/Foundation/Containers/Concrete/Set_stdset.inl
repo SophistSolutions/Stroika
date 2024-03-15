@@ -26,8 +26,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER>
-    class Set_stdset<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
+    template <ContraintInMemberClassSeparateDeclare_BWA_Helper_(IInOrderComparer<T>) INORDER_COMPARER>
+    class Set_stdset<T>::Rep_ : public  IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
     private:
         using inherited = IImplRepBase_;
 

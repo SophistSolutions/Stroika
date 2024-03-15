@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
+    template <ContraintInMemberClassSeparateDeclare_BWA_Helper_(IEqualsComparer<DOMAIN_TYPE>)  DOMAIN_EQUALS_COMPARER, ContraintInMemberClassSeparateDeclare_BWA_Helper_(IEqualsComparer<RANGE_TYPE>) RANGE_EQUALS_COMPARER>
     class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Rep_
         : public IImplRepBase_,
           public Memory::UseBlockAllocationIfAppropriate<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> {
