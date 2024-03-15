@@ -146,6 +146,7 @@ jobs:
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             IntermediateFiles/Debug/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
+            IntermediateFiles/Debug/ThirdPartyComponents/curl/config.log
             /tmp/Trace*.txt
 
   build-n-test-MacOS:
