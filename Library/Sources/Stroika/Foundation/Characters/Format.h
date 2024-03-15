@@ -40,6 +40,7 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *   only needed while supporting fmtlib/ cuz not std::format not available
+     *          @todo renatme FmtSupport FmtLibCompat
     */
     inline namespace FmtSupport {
 #if qHasFeature_fmtlib
@@ -61,6 +62,7 @@ namespace Stroika::Foundation::Characters {
         using qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args;
         using qStroika_Foundation_Characters_FMT_PREFIX_::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::format_to;
     }
 
     /**
@@ -261,14 +263,14 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
         #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
         #else
-        return format_to (ctx.out (), L"{}", dr.AsNarrowSDKString (eIgnoreErrors));
+        return format_to (ctx.out (), "{}", dr.AsNarrowSDKString (eIgnoreErrors));
         #endif
         }
         else {
         #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
         #else
-        return format_to (ctx.out (), L"{}", dr.AsNarrowSDKString ());
+        return format_to (ctx.out (), "{}", dr.AsNarrowSDKString ());
         #endif
         }
     }
