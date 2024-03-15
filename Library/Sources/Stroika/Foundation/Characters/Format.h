@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdarg>
+#include <ranges>
 
 // Various kooky constraints
 //      (1) clang++15/16 don't set __cpp_lib_format, so cannot check __cpp_lib_format >= 201907 instead check __has_include(<format>)
@@ -221,7 +222,12 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
     {
         std::wstringstream out;
         out << s;
+        // NOT sure magic# for lib_ranges right here but ranges::copy doesnt exist on clang++15 for ubuntu 22.04
+        #if __cpp_lib_ranges >= 202207L
         return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
+        #else
+        return format_to (ctx.out (), L"{}", out.str ());
+        #endif
     }
 };
 template <>
@@ -252,10 +258,18 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
         //  wformat_context delegateCTX;
         String dr{s}; // really want to delegate to wchar_t version (with vformat) but no documented easy way to extract format_args from ctx (though its in there)
         if (ignoreerrors) {
+        #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
+        #else
+        return format_to (ctx.out (), L"{}", dr.AsNarrowSDKString (eIgnoreErrors));
+        #endif
         }
         else {
+        #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
+        #else
+        return format_to (ctx.out (), L"{}", dr.AsNarrowSDKString ());
+        #endif
         }
     }
 };

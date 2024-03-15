@@ -98,10 +98,6 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     String UnoverloadedToString (const T& t);
 
-    //#if __cpp_lib_format >= 201907
-    // SUPER PRIMITIVE ROUGH FIRST DRAFT
-    // maybe wrong concept filter- maybe need to use specificatlly has ToString() method!!! Others count on stdlib handling?
-    // test stuff like vector<IO::Network::InternetAddress>
     template <Stroika::Foundation::Characters::IToString T>
     struct ToStringFormatter {
         bool quoted = false;
@@ -118,7 +114,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
             }
             if (*it != '}')
-                throw format_error ("Invalid format args for QuotableString.");
+                throw format_error {"Invalid format args for QuotableString."};
 
             return it;
         }
@@ -129,7 +125,11 @@ namespace Stroika::Foundation::Characters {
             using namespace Stroika::Foundation::Characters;
             std::wstringstream out;
             out << UnoverloadedToString (s);
+        #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
+            #else
+        return format_to (ctx.out (), L"{}", String{out.str ()});
+            #endif
         }
     };
     template <Stroika::Foundation::Characters::IToString T>
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
             }
             if (*it != '}')
-                throw format_error ("Invalid format args for QuotableString.");
+                throw format_error {"Invalid format args for QuotableString."};
 
             return it;
         }
@@ -161,10 +161,13 @@ namespace Stroika::Foundation::Characters {
             out << UnoverloadedToString (s);
 
             // @todo delegate to string version so we can use its ignore errors code......
+        #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (String{out.str ()}.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
+            #else
+        return format_to (ctx.out (), "{}", String{out.str ()}.AsNarrowSDKString (eIgnoreErrors));
+            #endif
         }
     };
-    //#endif
 
     template <typename T>
     concept IToStringxxx = requires (T t) {
@@ -175,13 +178,11 @@ namespace Stroika::Foundation::Characters {
 
 }
 
-//#if __cpp_lib_format >= 201907
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <Stroika::Foundation::Characters::IToStringxxx T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 template <Stroika::Foundation::Characters::IToStringxxx T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
-//#endif
 
 /*
  ********************************************************************************
