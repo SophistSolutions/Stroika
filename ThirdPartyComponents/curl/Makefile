@@ -18,8 +18,8 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
-#VERSION=8.6.0		# fails to build on ubuntu - configure: error: libpsl was not found
-VERSION=8.5.0
+VERSION=8.6.0
+#VERSION=8.5.0
 #VERSION=8.4.0		# Fails to build on Ubuntu  - so wait for next release and hope fixed
 #VERSION=8.3.0
 #VERSION=7.86.0
@@ -34,6 +34,7 @@ SLINKDIRNAME=$(BASENAME)
 #
 
 FETCHURLS=
+FETCHURLS+=https://curl.haxx/download/curl-$(VERSION).tar.gz
 FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
 FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
@@ -160,6 +161,7 @@ LIBCURL_CONFIGURE += --without-librtmp
 # LIBCURL_CONFIGURE += --without-libidn
 LIBCURL_CONFIGURE += --without-libssh2
 LIBCURL_CONFIGURE += --without-nghttp2
+LIBCURL_CONFIGURE += --without-libpsl 
 # LIBCURL_CONFIGURE += --without-axtls
 LIBCURL_CONFIGURE += --disable-smtp
 LIBCURL_CONFIGURE += --disable-ldap --disable-ldaps
