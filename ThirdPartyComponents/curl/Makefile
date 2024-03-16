@@ -207,12 +207,20 @@ else ifeq ($(LINKER), clang++-15)
 LIBCURL_CONFIGURE += --without-brotli
 
 ##TMPHACK TO TEST
+# checking whether we are cross compiling... configure: error: in `/__w/Stroika/Stroika/IntermediateFiles/Debug/ThirdPartyComponents/curl':
+# configure: error: cannot run C compiled programs.
+# If you meant to cross compile, use `--host'.
+# See `config.log' for more details
+
 LIBCURL_CONFIGURE += --without-zstd  
+LIBCURL_CONFIGURE += --without-zlib
 
 else ifeq ($(LINKER), clang++-16)
 LIBCURL_CONFIGURE += --without-brotli
+
 ##TMPHACK TO TEST
 LIBCURL_CONFIGURE += --without-zstd  
+LIBCURL_CONFIGURE += --without-zlib
 endif
 endif
 endif
