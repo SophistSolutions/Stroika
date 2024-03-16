@@ -195,11 +195,11 @@ ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 #		ld: symbol(s) not found for architecture x86_64
 #
 # BUT THEN got cross-compiling for raspberry pi on Ubuntu 22.04, so try a more sophisticated check
-# ifneq ($(LINKER),)
+ifneq ($(LINKER),)
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
 else ifeq ($(LINKER), clang++-15)
-# SOMEHOW brotli  causes issue, maybe 
+# SOMEHOW brotli  causes issue, maybe (BUT ONLY WHEN BUILDING AS PART OF GITHUB ACTION - VERY HARD TO DEBUG/CONFUSING...)
 # 		curl 8.6.0 - Configure (see IntermediateFiles/Debug/ThirdPartyComponents/curl/CONFIGURE-OUT.txt) ...
 #		make[6]: *** [Makefile:224: doBuilds_] Error 1
 #		make[5]: *** [Makefile:83: /__w/Stroika/Stroika/Builds/Debug/ThirdPartyComponents/lib/libcurl.a] Error 2
@@ -207,14 +207,7 @@ else ifeq ($(LINKER), clang++-15)
 LIBCURL_CONFIGURE += --without-brotli
 endif
 endif
-# endif
-
-# $(info $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon)
-# $(info "RESULT=" $(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon))
-# $(info $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlidec)
-# $(info "RESULT=" $(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlidec))
-# $(info $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlienc)
-# $(info "RESULT=" $(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlienc))
+endif
 
 
 ifeq ($(DETECTED_HOST_OS), Darwin)
