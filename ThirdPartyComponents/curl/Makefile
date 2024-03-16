@@ -169,14 +169,6 @@ LIBCURL_CONFIGURE += --enable-optimize
 LIBCURL_CONFIGURE += --disable-curldebug
 endif
 
-#configure: error: one or more libs available at link-time are not available run-time. Libs used at link-time: -lssl -lcrypto -lssl -lcrypto  -lzstd  -lbrotlidec  -lz  
-###TMPHACK TO DEBUG WHY FAIL TO BUILD
-### --LGP 2024-03-15 - failing on github actions only
-# LIBCURL_CONFIGURE += --without-zlib
-# LIBCURL_CONFIGURE += --without-ssl
-LIBCURL_CONFIGURE += --without-brotli
-# LIBCURL_CONFIGURE += --without-zstd  
-
 
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # https://stroika.atlassian.net/browse/STK-759
@@ -203,13 +195,17 @@ ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 #		ld: symbol(s) not found for architecture x86_64
 #
 # BUT THEN got cross-compiling for raspberry pi on Ubuntu 22.04, so try a more sophisticated check
-ifneq ($(LINKER),)
+# ifneq ($(LINKER),)
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
 endif
-endif
+# endif
 
+$(info $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon)
+$(info "RESULT=" $(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon))
+#configure: error: one or more libs available at link-time are not available run-time. Libs used at link-time: -lssl -lcrypto -lssl -lcrypto  -lzstd  -lbrotlidec  -lz  
+LIBCURL_CONFIGURE += --without-brotli
 
 
 ifeq ($(DETECTED_HOST_OS), Darwin)
