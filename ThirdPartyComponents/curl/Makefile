@@ -174,7 +174,7 @@ endif
 ### --LGP 2024-03-15 - failing on github actions only
 LIBCURL_CONFIGURE += --without-zlib
 LIBCURL_CONFIGURE += --without-ssl
-# LIBCURL_CONFIGURE += --without-brotli
+LIBCURL_CONFIGURE += --without-brotli
 # LIBCURL_CONFIGURE += --without-zstd  
 
 
