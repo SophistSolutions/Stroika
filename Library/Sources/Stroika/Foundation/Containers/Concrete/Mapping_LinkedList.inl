@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <ContraintInMemberClassSeparateDeclare_BWA_Helper_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
+    template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
     class Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
                                                                   public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
     private:

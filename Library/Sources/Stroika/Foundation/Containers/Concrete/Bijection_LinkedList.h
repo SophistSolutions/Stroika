@@ -80,8 +80,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <ContraintInMemberClassSeparateDeclare_BWA_Helper_ (IEqualsComparer<DOMAIN_TYPE>) DOMAIN_EQUALS_COMPARER,
-                  ContraintInMemberClassSeparateDeclare_BWA_Helper_ (IEqualsComparer<RANGE_TYPE>) RANGE_EQUALS_COMPARER>
+        template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<DOMAIN_TYPE>) DOMAIN_EQUALS_COMPARER,
+                  BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<RANGE_TYPE>) RANGE_EQUALS_COMPARER>
         class Rep_;
 
     private:

@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename HASH, ContraintInMemberClassSeparateDeclare_BWA_Helper_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
+        template <typename HASH, BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
         class Rep_;
 
     private:

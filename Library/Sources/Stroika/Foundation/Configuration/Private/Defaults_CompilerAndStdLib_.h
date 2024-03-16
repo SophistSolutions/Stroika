@@ -580,9 +580,9 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/Set_Arra
 #endif
 
 #if qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-#define ContraintInMemberClassSeparateDeclare_BWA_Helper_(ConstrainedTypeName) typename
+#define BWA_Helper_ContraintInMemberClassSeparateDeclare_(ConstrainedTypeName) typename
 #else
-#define ContraintInMemberClassSeparateDeclare_BWA_Helper_(ConstrainedTypeName) ConstrainedTypeName
+#define BWA_Helper_ContraintInMemberClassSeparateDeclare_(ConstrainedTypeName) ConstrainedTypeName
 #endif
 
 #ifndef qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
