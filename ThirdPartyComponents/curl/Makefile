@@ -205,6 +205,8 @@ else ifeq ($(LINKER), clang++-15)
 #		make[5]: *** [Makefile:83: /__w/Stroika/Stroika/Builds/Debug/ThirdPartyComponents/lib/libcurl.a] Error 2
 #		configure: error: one or more libs available at link-time are not available run-time. Libs used at link-time: -lssl -lcrypto -lssl -lcrypto  -lzstd  -lbrotlidec  -lz  
 LIBCURL_CONFIGURE += --without-brotli
+else ifeq ($(LINKER), clang++-16)
+LIBCURL_CONFIGURE += --without-brotli
 endif
 endif
 endif
