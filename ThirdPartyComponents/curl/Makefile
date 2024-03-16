@@ -126,19 +126,19 @@ endif
 LIBCURL_CONFIGURE =
 LIBCURL_CONFIGURE += $(CONFIGURE_ARGS)
 LIBCURL_CONFIGURE += --enable-static
-# ifeq ($(qFeatureFlag_OpenSSL), no)
-# LIBCURL_CONFIGURE += --without-ssl
-# else
-# #finds right one through PKG_CONFIG_PATH
-# LIBCURL_CONFIGURE += --with-ssl
-# endif
-# ifeq ($(qFeatureFlag_ZLib), no)
-# LIBCURL_CONFIGURE += --without-zlib
-# else
-# #LIBCURL_CONFIGURE += --with-zlib=$(PER_CONFIGURATION_BUILDS_DIR)
-# #finds right one through PKG_CONFIG_PATH
-# LIBCURL_CONFIGURE += --with-zlib
-# endif
+ifeq ($(qFeatureFlag_OpenSSL), no)
+LIBCURL_CONFIGURE += --without-ssl
+else
+#finds right one through PKG_CONFIG_PATH
+LIBCURL_CONFIGURE += --with-ssl
+endif
+ifeq ($(qFeatureFlag_ZLib), no)
+LIBCURL_CONFIGURE += --without-zlib
+else
+#LIBCURL_CONFIGURE += --with-zlib=$(PER_CONFIGURATION_BUILDS_DIR)
+#finds right one through PKG_CONFIG_PATH
+LIBCURL_CONFIGURE += --with-zlib
+endif
 LIBCURL_CONFIGURE += --disable-shared
 #LIBCURL_CONFIGURE += --without-cyassl
 LIBCURL_CONFIGURE += --without-librtmp
@@ -172,8 +172,8 @@ endif
 #configure: error: one or more libs available at link-time are not available run-time. Libs used at link-time: -lssl -lcrypto -lssl -lcrypto  -lzstd  -lbrotlidec  -lz  
 ###TMPHACK TO DEBUG WHY FAIL TO BUILD
 ### --LGP 2024-03-15 - failing on github actions only
-LIBCURL_CONFIGURE += --without-zlib
-LIBCURL_CONFIGURE += --without-ssl
+# LIBCURL_CONFIGURE += --without-zlib
+# LIBCURL_CONFIGURE += --without-ssl
 LIBCURL_CONFIGURE += --without-brotli
 # LIBCURL_CONFIGURE += --without-zstd  
 
