@@ -382,7 +382,7 @@ namespace {
         }
 
     private:
-        static size_t s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+        static size_t s_ResponseWriteHandler_ (char* ptr, size_t size, size_t nmemb, void* userP)
         {
 #if qStroika_FeatureSupported_Valgrind
             VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
@@ -397,7 +397,7 @@ namespace {
         }
 
     private:
-        static size_t s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+        static size_t s_ResponseHeaderWriteHandler_ (char* ptr, size_t size, size_t nmemb, void* userP)
         {
 #if qStroika_FeatureSupported_Valgrind
             VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
