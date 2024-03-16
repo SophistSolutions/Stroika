@@ -38,6 +38,13 @@ OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVaria
 COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/GoogleTest/CURRENT)
 
 
+### FAILS TO BUILD WITH CLANG++-17 and Ubuntu 24.04 and c++23 - filter more specifically
+ifeq (${GOOGLETEST_VERSION_},1.14.0)
+ifeq (${CXX},clang++-17)
+CXXFLAGS:=$(filter-out --std=c++23, $(CXXFLAGS))
+endif
+endif
+
 
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
