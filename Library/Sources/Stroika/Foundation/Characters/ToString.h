@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
             }
             if (*it != '}')
-                throw format_error{"Invalid format args for QuotableString."};
+                throw StdCompat::format_error{"Invalid format args for QuotableString."};
 
             return it;
         }
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
 #else
-            return format_to (ctx.out (), L"{}", String{out.str ()});
+            return StdCompat::format_to (ctx.out (), L"{}", String{out.str ()});
 #endif
         }
     };
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
             }
             if (*it != '}')
-                throw format_error{"Invalid format args for QuotableString."};
+                throw StdCompat::format_error{"Invalid format args for QuotableString."};
 
             return it;
         }
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (String{out.str ()}.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
 #else
-            return format_to (ctx.out (), "{}", String{out.str ()}.AsNarrowSDKString (eIgnoreErrors));
+            return StdCompat::format_to (ctx.out (), "{}", String{out.str ()}.AsNarrowSDKString (eIgnoreErrors));
 #endif
         }
     };
