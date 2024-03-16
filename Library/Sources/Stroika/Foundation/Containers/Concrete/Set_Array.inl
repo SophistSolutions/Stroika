@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T>
-    template <ContraintInMemberClassSeparateDeclare_BWA_Helper_(IEqualsComparer<T>) EQUALS_COMPARER>
+    template <ContraintInMemberClassSeparateDeclare_BWA_Helper_ (IEqualsComparer<T>) EQUALS_COMPARER>
     class Set_Array<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
     private:
         using inherited = IImplRepBase_;

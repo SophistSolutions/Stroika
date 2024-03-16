@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    template <ContraintInMemberClassSeparateDeclare_BWA_Helper_(IEqualsComparer<T>) EQUALS_COMPARER>
+    template <ContraintInMemberClassSeparateDeclare_BWA_Helper_ (IEqualsComparer<T>) EQUALS_COMPARER>
     class MultiSet_LinkedList<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
     private:
         using inherited = IImplRepBase_;

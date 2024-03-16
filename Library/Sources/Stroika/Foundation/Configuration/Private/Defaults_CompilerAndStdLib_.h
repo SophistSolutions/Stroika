@@ -554,7 +554,6 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
-
 /*
  ile included from Statistics.cpp:6:
 In file included from ./../Characters/Format.h:30:
@@ -573,8 +572,7 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/Set_Arra
 
 #if defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 18
-#define qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 18))
+#define qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 18))
 #else
 #define qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy 0
 #endif
@@ -582,14 +580,10 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/Set_Arra
 #endif
 
 #if qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-#define ContraintInMemberClassSeparateDeclare_BWA_Helper_(CONSTRAINT) typename
+#define ContraintInMemberClassSeparateDeclare_BWA_Helper_(ConstrainedTypeName) typename
 #else
-#define ContraintInMemberClassSeparateDeclare_BWA_Helper_(CONSTRAINT) CONSTRAINT
+#define ContraintInMemberClassSeparateDeclare_BWA_Helper_(ConstrainedTypeName) ConstrainedTypeName
 #endif
-
-
-
-
 
 #ifndef qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
 

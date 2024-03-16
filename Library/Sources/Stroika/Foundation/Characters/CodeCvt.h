@@ -129,13 +129,13 @@ namespace Stroika::Foundation::Characters {
              */
             template <IUNICODECanAlwaysConvertTo FROM_CHAR_T_OPTIONS>
             static constexpr inline Options New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o)
-            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-             {
-        return Options{.fInvalidCharacterReplacement = o.fInvalidCharacterReplacement};
-    }
-            #else
-            ;
-            #endif
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            {
+                return Options{.fInvalidCharacterReplacement = o.fInvalidCharacterReplacement};
+            }
+#else
+                ;
+#endif
 
             /**
              *  if fInvalidCharacterReplacement is nullopt (the default) - conversion APIs throw on invalid characters, and

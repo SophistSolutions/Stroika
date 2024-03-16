@@ -592,7 +592,7 @@ namespace Stroika::Foundation::Characters {
     {
         return Options{.fInvalidCharacterReplacement = o.fInvalidCharacterReplacement};
     }
-    #endif
+#endif
 
     /*
      ********************************************************************************

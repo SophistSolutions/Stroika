@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
             }
             if (*it != '}')
-                throw format_error {"Invalid format args for QuotableString."};
+                throw format_error{"Invalid format args for QuotableString."};
 
             return it;
         }
@@ -125,11 +125,11 @@ namespace Stroika::Foundation::Characters {
             using namespace Stroika::Foundation::Characters;
             std::wstringstream out;
             out << UnoverloadedToString (s);
-        #if __cpp_lib_ranges >= 202207L
+#if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
-            #else
-        return format_to (ctx.out (), L"{}", String{out.str ()});
-            #endif
+#else
+            return format_to (ctx.out (), L"{}", String{out.str ()});
+#endif
         }
     };
     template <Stroika::Foundation::Characters::IToString T>
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
             }
             if (*it != '}')
-                throw format_error {"Invalid format args for QuotableString."};
+                throw format_error{"Invalid format args for QuotableString."};
 
             return it;
         }
@@ -161,11 +161,11 @@ namespace Stroika::Foundation::Characters {
             out << UnoverloadedToString (s);
 
             // @todo delegate to string version so we can use its ignore errors code......
-        #if __cpp_lib_ranges >= 202207L
+#if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (String{out.str ()}.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
-            #else
-        return format_to (ctx.out (), "{}", String{out.str ()}.AsNarrowSDKString (eIgnoreErrors));
-            #endif
+#else
+            return format_to (ctx.out (), "{}", String{out.str ()}.AsNarrowSDKString (eIgnoreErrors));
+#endif
         }
     };
 

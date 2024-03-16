@@ -37,7 +37,6 @@
 
 namespace Stroika::Foundation::Characters {
 
-
     /**
      *   only needed while supporting fmtlib/ cuz not std::format not available
      *          @todo renatme FmtSupport FmtLibCompat
@@ -59,10 +58,10 @@ namespace Stroika::Foundation::Characters {
         using qStroika_Foundation_Characters_FMT_PREFIX_::format;
         using qStroika_Foundation_Characters_FMT_PREFIX_::format_error;
         using qStroika_Foundation_Characters_FMT_PREFIX_::format_string;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::format_to;
         using qStroika_Foundation_Characters_FMT_PREFIX_::make_format_args;
         using qStroika_Foundation_Characters_FMT_PREFIX_::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
-        using qStroika_Foundation_Characters_FMT_PREFIX_::format_to;
     }
 
     /**
@@ -224,12 +223,12 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
     {
         std::wstringstream out;
         out << s;
-        // NOT sure magic# for lib_ranges right here but ranges::copy doesnt exist on clang++15 for ubuntu 22.04
-        #if __cpp_lib_ranges >= 202207L
+// NOT sure magic# for lib_ranges right here but ranges::copy doesnt exist on clang++15 for ubuntu 22.04
+#if __cpp_lib_ranges >= 202207L
         return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
-        #else
+#else
         return format_to (ctx.out (), L"{}", out.str ());
-        #endif
+#endif
     }
 };
 template <>
@@ -260,18 +259,18 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
         //  wformat_context delegateCTX;
         String dr{s}; // really want to delegate to wchar_t version (with vformat) but no documented easy way to extract format_args from ctx (though its in there)
         if (ignoreerrors) {
-        #if __cpp_lib_ranges >= 202207L
+#if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
-        #else
-        return format_to (ctx.out (), "{}", dr.AsNarrowSDKString (eIgnoreErrors));
-        #endif
+#else
+            return format_to (ctx.out (), "{}", dr.AsNarrowSDKString (eIgnoreErrors));
+#endif
         }
         else {
-        #if __cpp_lib_ranges >= 202207L
+#if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
-        #else
-        return format_to (ctx.out (), "{}", dr.AsNarrowSDKString ());
-        #endif
+#else
+            return format_to (ctx.out (), "{}", dr.AsNarrowSDKString ());
+#endif
         }
     }
 };
