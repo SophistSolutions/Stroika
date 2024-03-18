@@ -203,6 +203,15 @@
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components",
         "run_on_branch": "v3-Release"
     },
+    {
+        "build_job": "MacOS",
+        "displayTargetName": "MacOS-14-XCode-15.2-Debug",
+        "runs_on": "macos-14",
+        "xcode": "15.2",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable",
+        "run_on_branch": "always"
+    },
     {},
     {
         "comment": "Windows"
