@@ -200,33 +200,16 @@ ifneq ($(LINKER),)
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
 else ifeq ($(LINKER), clang++-15)
-# SOMEHOW brotli  causes issue, maybe (BUT ONLY WHEN BUILDING AS PART OF GITHUB ACTION - VERY HARD TO DEBUG/CONFUSING...)
-# 		curl 8.6.0 - Configure (see IntermediateFiles/Debug/ThirdPartyComponents/curl/CONFIGURE-OUT.txt) ...
-#		make[6]: *** [Makefile:224: doBuilds_] Error 1
-#		make[5]: *** [Makefile:83: /__w/Stroika/Stroika/Builds/Debug/ThirdPartyComponents/lib/libcurl.a] Error 2
-#		configure: error: one or more libs available at link-time are not available run-time. Libs used at link-time: -lssl -lcrypto -lssl -lcrypto  -lzstd  -lbrotlidec  -lz  
-LIBCURL_CONFIGURE += --without-brotli
+else ifeq ($(LINKER), clang++-16)
+endif
+endif
+endif
 
 ##TMPHACK TO TEST
 # checking whether we are cross compiling... configure: error: in `/__w/Stroika/Stroika/IntermediateFiles/Debug/ThirdPartyComponents/curl':
 # configure: error: cannot run C compiled programs.
 # If you meant to cross compile, use `--host'.
 # See `config.log' for more details
-
-# LIBCURL_CONFIGURE += --without-zstd  
-# LIBCURL_CONFIGURE += --without-zlib
-
-else ifeq ($(LINKER), clang++-16)
-LIBCURL_CONFIGURE += --without-brotli
-
-# ##TMPHACK TO TEST
-# LIBCURL_CONFIGURE += --without-zstd  
-# LIBCURL_CONFIGURE += --without-zlib
-endif
-endif
-endif
-
-
 
 ## --LGP 2024-03-17 - failing on github actions only
 LIBCURL_CONFIGURE += --without-zlib
