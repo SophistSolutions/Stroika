@@ -112,8 +112,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests:v3",
         "cpp_version": "c++2b",
         "config_name": "Debug",
-        "COMEN-3": "curl  no to test tmphack",
-        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --libcurl no",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
         "run_on_branch": "always"
     },
     {
