@@ -91,7 +91,7 @@
         "cpp_version": "c++2b",
         "config_name": "Debug",
         "COMEN-3": "curl  no to test tmphack",
-        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --curl no",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --libcurl no",
         "run_on_branch": "always"
     },
     {
@@ -136,7 +136,7 @@
         "cpp_version": "c++2b",
         "config_name": "Debug",
         "COMEN-3": "curl  no to test tmphack",
-        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --curl no",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --libcurl no",
         "run_on_branch": "always"
     },
     {
