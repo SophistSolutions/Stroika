@@ -84,29 +84,6 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-clang++-15-debug-libc++-c++23",
-        "compiler": "clang++-15",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
-        "cpp_version": "c++2b",
-        "config_name": "Debug",
-        "COMEN-3": "curl  no to test tmphack",
-        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --libcurl no",
-        "run_on_branch": "always"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-clang++-15-release-libstdc++-c++23",
-        "compiler": "clang++-15",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
-        "cpp_version": "c++2b",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --stdlib libstdc++ --trace2file enable",
-        "run_on_branch": "v3-Release"
-    },
-    {
-        "build_job": "Linux",
         "displayTargetName": "ubuntu-23.10-g++-13",
         "compiler": "g++-13",
         "runs_on": "ubuntu-latest",

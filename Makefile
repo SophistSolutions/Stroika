@@ -524,8 +524,6 @@ basic-unix-test-configurations_clang++_versions_:
 	# clang-15
 	./configure clang++-15-debug-libc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
 	./configure clang++-15-release-libstdc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-15-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-15-release-libc++23 --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
 	# clang-16
 	./configure clang++-16-debug-libc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
 	./configure clang++-16-release-libstdc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
