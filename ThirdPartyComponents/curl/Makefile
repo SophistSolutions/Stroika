@@ -170,12 +170,6 @@ LIBCURL_CONFIGURE += --disable-curldebug
 endif
 
 
-## --LGP 2024-03-17 - failing on github actions only
-LIBCURL_CONFIGURE += --without-zlib
-# LIBCURL_CONFIGURE += --without-ssl
-# LIBCURL_CONFIGURE += --without-brotli
-# LIBCURL_CONFIGURE += --without-zstd  
-
 
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # https://stroika.atlassian.net/browse/STK-759
@@ -219,18 +213,26 @@ LIBCURL_CONFIGURE += --without-brotli
 # If you meant to cross compile, use `--host'.
 # See `config.log' for more details
 
-LIBCURL_CONFIGURE += --without-zstd  
-LIBCURL_CONFIGURE += --without-zlib
+# LIBCURL_CONFIGURE += --without-zstd  
+# LIBCURL_CONFIGURE += --without-zlib
 
 else ifeq ($(LINKER), clang++-16)
 LIBCURL_CONFIGURE += --without-brotli
 
-##TMPHACK TO TEST
-LIBCURL_CONFIGURE += --without-zstd  
+# ##TMPHACK TO TEST
+# LIBCURL_CONFIGURE += --without-zstd  
+# LIBCURL_CONFIGURE += --without-zlib
+endif
+endif
+endif
+
+
+
+## --LGP 2024-03-17 - failing on github actions only
 LIBCURL_CONFIGURE += --without-zlib
-endif
-endif
-endif
+# LIBCURL_CONFIGURE += --without-ssl
+LIBCURL_CONFIGURE += --without-brotli
+LIBCURL_CONFIGURE += --without-zstd  
 
 
 ifeq ($(DETECTED_HOST_OS), Darwin)
