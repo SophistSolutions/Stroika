@@ -74,7 +74,7 @@ namespace {
             FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.generic_string ().c_str (), O_RDONLY), fileName);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"opened fd: %d", fFD_);
+            DbgTrace ("opened fd: {}"_f, fFD_);
 #endif
         }
         Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
@@ -83,7 +83,7 @@ namespace {
             , fAdoptFDPolicy_{adoptFDPolicy}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"attached fd: %d", fFD_);
+            DbgTrace ("attached fd: {}"_f, fFD_);
 #endif
         }
         ~Rep_ ()

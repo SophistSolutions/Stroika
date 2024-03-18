@@ -53,10 +53,6 @@ namespace {
 #else
             DbgTrace (L"cipher: %p (name: %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str ());
 #endif
-#if 0
-            int flags = ::EVP_CIPHER_flags (ciph);
-            DbgTrace ("flags=%x", flags);
-#endif
 #endif
             ciphers->Add (CipherAlgorithm{ciph}.pName ());
         }

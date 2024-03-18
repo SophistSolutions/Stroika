@@ -313,7 +313,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
             // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
             fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, ".txt"sv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries",
+            DbgTrace (L"succeeded with {} fSuffix2MediaTypeMap entries, and {} fMediaType2PreferredSuffixMap entries"_f,
                       fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
         }
@@ -432,7 +432,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             }
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap_ entries, and %d fMediaType2PreferredSuffixMap entries",
+            DbgTrace ("succeeded with {} fSuffix2MediaTypeMap_ entries, and {} fMediaType2PreferredSuffixMap entries"_f,
                       fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
         }
@@ -663,8 +663,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                             }
                             catch (...) {
                                 // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                                DbgTrace (L"Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (),
-                                          Characters::ToString (current_exception ()).c_str ());
+                                DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, o, Characters::ToString (current_exception ()));
                                 continue;
                             }
                             if (ct.GetType () == imt.GetType () and ct.GetSubType () == imt.GetSubType ()) {

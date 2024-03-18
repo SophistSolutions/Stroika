@@ -93,7 +93,7 @@ errno_t Execution::SendSignal ([[maybe_unused]] std::thread::native_handle_type 
     errno_t e = ::pthread_kill (target, signal);
     Verify (e == 0 or e == ESRCH);
     if (e != 0) {
-        DbgTrace ("pthread_kill returned error %d", e); // ESRCH can be OK, for example if abort sent to thread that already terminated
+        DbgTrace ("pthread_kill returned error {}"_f, e); // ESRCH can be OK, for example if abort sent to thread that already terminated
     }
     return e;
 #else

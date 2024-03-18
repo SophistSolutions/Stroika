@@ -141,9 +141,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
                     resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantValueType));
                 }
                 catch (...) {
-                    DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: %s", fi.fName.As<wstring> ().c_str (),
-                              Characters::ToString (current_exception ()).c_str ());
-                    throw; // dont call Execution::ReThrow () to avoid extra log entry - above enuf
+                    DbgTrace ("IN ORM::Schema::Table::MapToDB for field {}: {}"_f, fi.fName, Characters::ToString (current_exception ()));
+                    throw; // don't call Execution::ReThrow () to avoid extra log entry - above enuf
                 }
             }
             else {
@@ -211,7 +210,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
         // @todo maybe check fNamedFields contains all the actual fields??? Maybe OK to not check
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"resultFields=%s", Characters::ToString (resultFields).c_str ());
+    DbgTrace ("resultFields={}"_f, Characters::ToString (resultFields));
 #endif
     return resultFields;
 }

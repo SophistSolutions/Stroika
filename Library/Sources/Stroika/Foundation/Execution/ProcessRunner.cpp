@@ -595,7 +595,7 @@ namespace {
         Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
         Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
         Assert (jStderr[0] >= 3 and jStderr[1] >= 3);
-        DbgTrace ("jStdout[0-CHILD] = %d and jStdout[1-PARENT] = %d", jStdout[0], jStdout[1]);
+        DbgTrace ("jStdout[0-CHILD] = {} and jStdout[1-PARENT] = {}"_f, jStdout[0], jStdout[1]);
 
         /*
          *  Note: Important to do all this code before the fork, because once we fork, we, lose other threads
@@ -640,7 +640,7 @@ namespace {
             if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
                 errno_t e = errno; // save in case overwritten
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
+                DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, thisEXEPath_cstr);
 #endif
                 auto            activity = LazyEvalActivity ([&] () -> String {
                     return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());

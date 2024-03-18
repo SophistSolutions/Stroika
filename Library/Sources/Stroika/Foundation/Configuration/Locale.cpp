@@ -85,7 +85,7 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Configuration::FindLocaleName"};
-    DbgTrace (L"(%s,%s)", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ());
+    DbgTrace ("(%s,%s)"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode);
 #endif
 
     // This is a HORRIBLE way - but I know of no better (especially no better portable way).
@@ -118,7 +118,7 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
             for (const auto& i3 : part3) {
                 for (const auto& i4 : part4) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"***trying locale (i1 + i2 + i3 + i4).AsUTF8 ().c_str ()=%s", (i1 + i2 + i3 + i4).c_str ());
+                    DbgTrace ("***trying locale (i1 + i2 + i3 + i4)={}"_f, i1 + i2 + i3 + i4);
 #endif
                     IgnoreExceptionsForCall (return String::FromNarrowSDKString (locale{(i1 + i2 + i3 + i4).AsNarrowSDKString ().c_str ()}.name ()));
                 }

@@ -701,11 +701,11 @@ namespace Stroika::Foundation::Characters {
          *          optional<String>               query;
          *          optional<String>               fragment;
          *          if (rawURL.Matches (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
-         *              DbgTrace (L"***good - scehme=%s", Characters::ToString (scheme).c_str ());
-         *              DbgTrace (L"***good - authority=%s", Characters::ToString (authority).c_str ());
-         *              DbgTrace (L"***good - path=%s", Characters::ToString (path).c_str ());
-         *              DbgTrace (L"***good - query=%s", Characters::ToString (query).c_str ());
-         *              DbgTrace (L"***good - fragment=%s", Characters::ToString (fragment).c_str ());
+         *              DbgTrace ("***good - scehme={}"_f, scheme);
+         *              DbgTrace ("***good - authority={}"_f, authority);
+         *              DbgTrace ("***good - path={}"_f, path);
+         *              DbgTrace ("***good - query={}"_f, query);
+         *              DbgTrace ("***good - fragment={}"_f, fragment);
          *          }
          *      \endcode
          *

@@ -8,6 +8,7 @@
 #include <new>
 #include <set>
 
+#include "../Characters/Format.h"
 #include "../Debug/Debugger.h"
 #include "../Execution/Common.h"
 #include "../Execution/Throw.h"
@@ -17,6 +18,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
 
 using Debug::TraceContextBumper;
@@ -291,12 +293,12 @@ namespace {
                  */
                 if (psi == prevSizes.end ()) {
                     // then we have 'leak' - new sizes
-                    DbgTrace ("Leak: new size bucket %d", *si);
+                    DbgTrace ("Leak: new size bucket {}"_f, *si);
                     ++si;
                 }
                 else {
                     if (*si < *psi) {
-                        DbgTrace ("Leak: new size bucket %d", *si);
+                        DbgTrace ("Leak: new size bucket {}"_f, *si);
                         ++si;
                     }
                     else if (*si == *psi) {

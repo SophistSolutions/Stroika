@@ -510,6 +510,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*)
     {
+        using namespace Characters;
         using Containers::Bijection;
         FromObjectMapperType<Bijection<DOMAIN_TYPE, RANGE_TYPE>> fromObjectMapper =
             [] (const ObjectVariantMapper& mapper, const Bijection<DOMAIN_TYPE, RANGE_TYPE>* fromObjOfTypeT) -> VariantValue {
@@ -535,8 +536,8 @@ namespace Stroika::Foundation::DataExchange {
             for (const VariantValue& encodedPair : s) {
                 Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                 if (p.size () != 2) [[unlikely]] {
-                    DbgTrace (L"Bijection ('%s') element with item count (%d) other than 2",
-                              Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)).c_str (), static_cast<int> (p.size ()));
+                    DbgTrace ("Bijection ('{}') element with item count (%d) other than 2"_f,
+                              Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)), static_cast<int> (p.size ()));
                     Execution::Throw (BadFormatException{"Mapping element with item count other than 2"sv});
                 }
                 intoObjOfTypeT->Add (mapper.ToObject<DOMAIN_TYPE> (domainMapper, p[0]), mapper.ToObject<RANGE_TYPE> (rangeMapper, p[1]));

@@ -577,14 +577,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
         }
         catch (const AbortException&) {
             SuppressInterruptionInContext suppressCtx;
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: %s",
-                      thisThreadRep->ToString ().c_str ());
+            DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {}"_f, thisThreadRep->ToString ());
             thisThreadRep->fThreadDoneAndCanJoin_.Set ();
         }
         catch (...) {
             SuppressInterruptionInContext suppressCtx;
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (due to EXCEPTION) for thread: %s",
-                      thisThreadRep->ToString ().c_str ());
+            DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (due to EXCEPTION) for thread: {}"_f, thisThreadRep->ToString ());
             thisThreadRep->fThreadDoneAndCanJoin_.Set ();
         }
     }

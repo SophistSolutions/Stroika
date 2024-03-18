@@ -151,7 +151,7 @@ namespace {
                 if constexpr (qCompilerAndStdLib_valgrind_fpclassify_check_Buggy && qDebug) {
                     if (Debug::IsRunningUnderValgrind ()) {
                         if (isinf (f)) {
-                            DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
+                            DbgTrace ("fpclassify ({}) = {}"_f, (double)f, fpclassify (f));
                             static const String kNEG_INF_STR_{"-INF"_k};
                             static const String kINF_STR_{"INF"_k};
                             return f > 0 ? kINF_STR_ : kNEG_INF_STR_;

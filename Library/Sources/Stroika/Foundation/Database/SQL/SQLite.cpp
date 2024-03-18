@@ -48,11 +48,11 @@ namespace {
         }
         switch (errCode) {
             case SQLITE_BUSY: {
-                DbgTrace (L"SQLITE_BUSY"); //  The database file is locked
+                DbgTrace ("SQLITE_BUSY"); //  The database file is locked
                 Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
             } break;
             case SQLITE_LOCKED: {
-                DbgTrace (L"SQLITE_LOCKED"); //  A table in the database is locked
+                DbgTrace ("SQLITE_LOCKED"); //  A table in the database is locked
                 Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
             } break;
             case SQLITE_CONSTRAINT: {
@@ -69,7 +69,7 @@ namespace {
                 Execution::Throw (kEx_);
             } break;
             case SQLITE_FULL: {
-                DbgTrace (L"SQLITE_FULL");
+                DbgTrace ("SQLITE_FULL");
                 Execution::Throw (system_error{make_error_code (errc::no_space_on_device)});
             } break;
             case SQLITE_READONLY: {
@@ -95,7 +95,7 @@ namespace {
                 }
             } break;
             case SQLITE_NOMEM: {
-                DbgTrace (L"SQLITE_NOMEM translated to bad_alloc");
+                DbgTrace ("SQLITE_NOMEM translated to bad_alloc");
                 Execution::Throw (bad_alloc{});
             } break;
         }

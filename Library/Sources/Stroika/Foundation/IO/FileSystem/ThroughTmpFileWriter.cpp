@@ -54,7 +54,7 @@ ThroughTmpFileWriter::ThroughTmpFileWriter (const filesystem::path& realFileName
 ThroughTmpFileWriter::~ThroughTmpFileWriter ()
 {
     if (not fTmpFilePath_.empty ()) {
-        DbgTrace (L"ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to %s", Characters::ToString (fRealFilePath_).c_str ());
+        DbgTrace ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to {}"_f, Characters::ToString (fRealFilePath_));
         // ignore errors on unlink, cuz nothing to be done in DTOR anyhow...(@todo perhaps should at least tracelog)
 #if qPlatform_POSIX
         (void)::unlink (fTmpFilePath_.c_str ());

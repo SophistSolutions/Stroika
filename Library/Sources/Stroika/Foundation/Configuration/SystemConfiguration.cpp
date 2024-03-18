@@ -362,7 +362,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         for (const String& line :
              TextReader::New (IO::FileSystem::FileInputStream::New (kProcCPUInfoFileName_, IO::FileSystem::FileInputStream::eNotSeekable)).ReadLines ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
+            DbgTrace ("in Configuration::GetSystemConfiguration_CPU capture_ line={}"_f, line);
 #endif
             static const String kOldProcessorLabel_{"Processor"sv};
             static const String kProcessorIDLabel_{"processor"sv};
@@ -465,7 +465,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                     ++processorPackageCount;
                     break;
                 default:
-                    DbgTrace ("Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n");
+                    DbgTrace ("Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.");
                     break;
             }
             byteOffset += sizeof (SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
@@ -563,7 +563,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             tmp.fMajorMinorVersionString    = p.fUnnamedSection.fProperties.LookupValue ("VERSION_ID"sv);
         }
         catch (...) {
-            DbgTrace (L"Failure reading /etc/os-release: %s", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("Failure reading /etc/os-release: {}"_f, Characters::ToString (current_exception ()));
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
@@ -576,7 +576,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
                 }
             }
             catch (...) {
-                DbgTrace (L"Failure reading /etc/centos-release %s", Characters::ToString (current_exception ()).c_str ());
+                DbgTrace ("Failure reading /etc/centos-release {}"_f, Characters::ToString (current_exception ()));
             }
         }
         if (tmp.fShortPrettyName.empty ()) {
@@ -590,7 +590,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
                 }
             }
             catch (...) {
-                DbgTrace (L"Failure reading /etc/redhat-release %s", Characters::ToString (current_exception ()).c_str ());
+                DbgTrace ("Failure reading /etc/redhat-release {}"_f, Characters::ToString (current_exception ()));
             }
         }
         if (tmp.fShortPrettyName.empty ()) {
@@ -733,7 +733,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             }
         }
         catch (...) {
-            DbgTrace (L"Exception suppressed looking up windows version in registry: %s", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("Exception suppressed looking up windows version in registry: {}"_f, Characters::ToString (current_exception ()));
         }
 
         if (tmp.fShortPrettyName.empty ()) {
