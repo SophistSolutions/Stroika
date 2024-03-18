@@ -173,8 +173,8 @@ endif
 ## --LGP 2024-03-17 - failing on github actions only
 LIBCURL_CONFIGURE += --without-zlib
 # LIBCURL_CONFIGURE += --without-ssl
-LIBCURL_CONFIGURE += --without-brotli
-LIBCURL_CONFIGURE += --without-zstd  
+# LIBCURL_CONFIGURE += --without-brotli
+# LIBCURL_CONFIGURE += --without-zstd  
 
 
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
