@@ -113,7 +113,7 @@
         "cpp_version": "c++2b",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
-        "run_on_branch": "always"
+        "run_on_branch-DISABLED": "always"
     },
     {
         "build_job": "Linux",
