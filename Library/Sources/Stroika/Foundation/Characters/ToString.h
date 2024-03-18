@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
 #else
-            return Configuration::Configuration::StdCompat::format_to (ctx.out (), L"{}", String{out.str ()});
+            return Configuration::StdCompat::format_to (ctx.out (), L"{}", String{out.str ()});
 #endif
         }
     };
