@@ -205,11 +205,11 @@
     },
     {
         "build_job": "MacOS",
-        "displayTargetName": "MacOS-14-XCode-15.2-Debug",
+        "displayTargetName": "MacOS-14-XCode-15.3-Debug",
         "runs_on": "macos-14",
-        "xcode": "15.2",
+        "xcode": "15.3",
         "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --curl no",
         "run_on_branch": "always"
     },
     {},
