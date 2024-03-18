@@ -510,12 +510,12 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  utility to compare an array of characters, like strcmp (), except with param saying if case sensative or insensitative.
+         *  utility to compare an array of characters, like strcmp (), except with param saying if case sensitive or insensitive.
          *
          *  \todo   Consider if this should be somehow packaged with Character::ThreeWayComparer?
          */
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-        static constexpr strong_ordering Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept;
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T, size_t E1, size_t E2>
+        static constexpr strong_ordering Compare (span<const CHAR_T, E1> lhs, span<const CHAR_T, E2> rhs, CompareOptions co) noexcept;
 
     public:
         [[deprecated ("Since Stroika 3.0d1, use span based Compare")]] static strong_ordering

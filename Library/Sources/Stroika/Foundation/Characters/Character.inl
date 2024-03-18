@@ -22,8 +22,8 @@
 namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-        constexpr strong_ordering Compare_CS_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T, size_t E1, size_t E2>
+        constexpr strong_ordering Compare_CS_ (span<const CHAR_T, E1> lhs, span<const CHAR_T, E2> rhs)
         {
             size_t        lLen   = lhs.size ();
             size_t        rLen   = rhs.size ();
@@ -65,8 +65,8 @@ namespace Stroika::Foundation::Characters {
             }
             return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
         }
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-        constexpr strong_ordering Compare_CI_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T, size_t E1, size_t E2>
+        constexpr strong_ordering Compare_CI_ (span<const CHAR_T, E1> lhs, span<const CHAR_T, E2> rhs)
         {
             size_t        lLen   = lhs.size ();
             size_t        rLen   = rhs.size ();
@@ -538,8 +538,8 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
-    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    constexpr strong_ordering Character::Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T, size_t E1, size_t E2>
+    constexpr strong_ordering Character::Compare (span<const CHAR_T, E1> lhs, span<const CHAR_T, E2> rhs, CompareOptions co) noexcept
     {
         Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
         switch (co) {
