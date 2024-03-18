@@ -2181,6 +2181,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Resource.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StdCompat.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3603,6 +3606,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StdCompat.inl">
+      <Filter>Sources\Configuration</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

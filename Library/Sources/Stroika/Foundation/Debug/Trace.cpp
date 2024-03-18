@@ -351,7 +351,7 @@ auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const 
     }
 }
 
-void Debug::Private_::Emitter::EmitTraceMessage_ (wstring_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args&& args) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage_ (wstring_view users_fmt, Configuration::StdCompat::wformat_args&& args) noexcept
 {
     try {
         EmitTraceMessage_ (vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{users_fmt}, args));
@@ -359,7 +359,7 @@ void Debug::Private_::Emitter::EmitTraceMessage_ (wstring_view users_fmt, qStroi
     catch (...) {
     }
 }
-void Debug::Private_::Emitter::EmitTraceMessage_ (string_view users_fmt, qStroika_Foundation_Characters_FMT_PREFIX_::format_args&& args) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage_ (string_view users_fmt, Configuration::StdCompat::format_args&& args) noexcept
 {
     try {
         Debug::Private_::Emitter::EmitTraceMessage_ (
