@@ -138,13 +138,13 @@ public:
                     Thread::CheckForInterruption ();
                     waitForNextSig_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("fRecievedSig_ wait complete (either arrival or timeout): fLastSignalRecieved_ = %d", fLastSignalRecieved_.load ());
+                    DbgTrace ("fRecievedSig_ wait complete (either arrival or timeout): fLastSignalRecieved_ = {}"_f, fLastSignalRecieved_.load ());
 #endif
                     if (fLastSignalRecieved_ < NSIG) {
                     Again:
                         for (int i = 0; i < NSIG; ++i) {
                             while (fIncomingSignalCounts_[i] > 0) {
-                                DbgTrace (L"fIncomingSignalCounts_[%d] = %d", i, fIncomingSignalCounts_[i].load ());
+                                DbgTrace ("fIncomingSignalCounts_[{}] = {}"_f, i, fIncomingSignalCounts_[i].load ());
                                 fIncomingSignalCounts_[i]--;
                                 Debug::TraceContextBumper trcCtx2{"Invoking SAFE signal handlers"};
                                 for (SignalHandler sh : fHandlers_.rwget ()->LookupValue (i)) {
