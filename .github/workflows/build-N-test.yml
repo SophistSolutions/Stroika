@@ -147,7 +147,15 @@ jobs:
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
             /tmp/Trace*.txt
-
+      - name: Archive Core-Dumps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoreDumps (${{ matrix.displayTargetName }})
+          if-no-files-found: ignore
+          path: |
+            *core*
+  
   build-n-test-MacOS:
     needs: MacOSMatrixPrep
     runs-on: ${{ matrix.runs_on }}
