@@ -624,4 +624,14 @@ namespace Stroika::Foundation::Characters {
 
 }
 
+namespace Stroika::Foundation::Configuration {
+    template <typename ENUM_TYPE>
+    class EnumNames;
+    template <>
+    constexpr EnumNames<Characters::CompareOptions> DefaultNames<Characters::CompareOptions>::k{{{
+        {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
+        {Characters::CompareOptions::eWithCase, L"With-Case"},
+    }}};
+}
+
 #endif /*_Stroika_Foundation_Characters_Character_inl_*/
