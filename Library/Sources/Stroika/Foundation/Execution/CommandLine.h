@@ -83,6 +83,11 @@ namespace Stroika::Foundation::Execution {
             optional<String> fLongName;       // for --long use
 
             /**
+             * refers to long-name only - being case sensitive; defaults to eCaseInsensitive (appropriate for long names, less appropriate default for short - one letter - options).
+             */
+            Characters::CompareOptions fLongNameCaseSensitive{Characters::eCaseInsensitive};
+
+            /**
              *  Look for argument after option.
              * 
              *  if true, and long-form option, look for -OPT=XXX and copy out XXX as the argument

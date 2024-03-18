@@ -153,24 +153,25 @@ String CommandLine::Option::GetArgumentDescription (bool includeArg) const
 String CommandLine::Option::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fSingleCharName) {
-        sb << "fSingleCharName: " << *fSingleCharName << ","sv;
+        sb << "fSingleCharName: "sv << *fSingleCharName << ","sv;
     }
     if (fLongName) {
-        sb << "fLongName: " << *fLongName << ","sv;
+        sb << "fLongName: "sv << *fLongName << ","sv;
     }
-    sb << "fSupportsArgument: " << fSupportsArgument << ","sv;
-    sb << "fIfSupportsArgumentThenRequired: " << fIfSupportsArgumentThenRequired << ","sv;
-    sb << "fSupportsArgument: " << fSupportsArgument << ","sv;
-    sb << "fRepeatable: " << fRepeatable << ","sv;
+    sb << "CaseSensitive: "sv << fLongNameCaseSensitive << ","sv;
+    sb << "SupportsArgument: "sv << fSupportsArgument << ","sv;
+    sb << "IfSupportsArgumentThenRequired: "sv << fIfSupportsArgumentThenRequired << ","sv;
+    sb << "SupportsArgument: "sv << fSupportsArgument << ","sv;
+    sb << "Repeatable: "sv << fRepeatable << ","sv;
     if (fHelpArgName) {
-        sb << "fHelpArgName: " << *fHelpArgName << ","sv;
+        sb << "HelpArgName: "sv << *fHelpArgName << ","sv;
     }
     if (fHelpOptionText) {
-        sb << "fHelpOptionText: " << *fHelpOptionText << ","sv;
+        sb << "HelpOptionText: "sv << *fHelpOptionText << ","sv;
     }
-    sb << "}";
+    sb << "}"sv;
     return sb;
 }
 
@@ -332,7 +333,7 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
     // this isn't right!!! - in case where no argument supported - must match all of string (and if next char not =)
     // but its CLOSE--LGP 2024-03-05
     if (o.fLongName and ai.length () >= 2 + o.fLongName->size () and ai[0] == '-' and ai[1] == '-' and
-        ai.SubString (2, o.fLongName->size () + 2) == o.fLongName) {
+        String::EqualsComparer{o.fLongNameCaseSensitive}(ai.SubString (2, o.fLongName->size () + 2), *o.fLongName)) {
         if (o.fSupportsArgument) {
             // see if '=' follows longname
             String restOfArgi = ai.SubString (2 + o.fLongName->size ());
