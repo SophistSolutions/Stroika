@@ -218,6 +218,10 @@ my $TOOLS_PATH_ADDITIONS = undef;
 my $lsb_release = trim (`lsb_release -rs 2>/dev/null`);
 
 
+
+my $DoSetThirdPartyComponentsParameterFromCommandLine = 'fill-in-defaults';
+
+
 #
 # DoSetThirdPartyComponents_ ('all-available')
 # DoSetThirdPartyComponents_ ('default')
@@ -1646,13 +1650,13 @@ sub	ParseCommandLine_Remaining_
 			$FEATUREFLAG_fmtlib = $var;
 		}
 		elsif ((lc ($var) eq "-default-third-party-components") or (lc ($var) eq "--default-third-party-components")) {
-			DoSetThirdPartyComponents_ ('default');
+			$DoSetThirdPartyComponentsParameterFromCommandLine = 'default';
 		}
 		elsif ((lc ($var) eq "-all-available-third-party-components") or (lc ($var) eq "--all-available-third-party-components")) {
-			DoSetThirdPartyComponents_ ('all-available');
+			$DoSetThirdPartyComponentsParameterFromCommandLine = 'all-available';
 		}
 		elsif ((lc ($var) eq "-no-third-party-components") or (lc ($var) eq "--no-third-party-components")) {
-			DoSetThirdPartyComponents_ ('none');
+			$DoSetThirdPartyComponentsParameterFromCommandLine = 'none';
 		}
 		elsif ((lc ($var) eq "-trace2file") or (lc ($var) eq "--trace2file")) {
 			$i++;
@@ -2101,7 +2105,7 @@ sub	ParseCommandLine_
 
 	SetDefaultForCompilerDriver_();
 
-	DoSetThirdPartyComponents_ ('fill-in-defaults');
+	DoSetThirdPartyComponents_ ($DoSetThirdPartyComponentsParameterFromCommandLine);
 
 	CHECK_OPTIONS_ ();
 }
