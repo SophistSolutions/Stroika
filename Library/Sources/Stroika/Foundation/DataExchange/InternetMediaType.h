@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_DataExchange_InternetMediaType_h_
 #define _Stroika_Foundation_DataExchange_InternetMediaType_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/String.h"
-#include "../Containers/Mapping.h"
-#include "../DataExchange/Atom.h"
-#include "../DataExchange/DefaultSerializer.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/Atom.h"
+#include "Stroika/Foundation/DataExchange/DefaultSerializer.h"
 
 /**
  *  \file

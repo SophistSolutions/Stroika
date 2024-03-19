@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Traversal_BidirectionalIterator_h_
 #define _Stroika_Foundation_Traversal_BidirectionalIterator_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iterator>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "Iterator.h"
 

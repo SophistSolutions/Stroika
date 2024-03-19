@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Configuration_Concept_h_
 #define _Stroika_Foundation_Configuration_Concept_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <chrono>
 #include <concepts>
@@ -12,7 +12,7 @@
 #include <iterator>   // needed for std::begin/std::end calls
 #include <optional>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "ConceptsBase.h"
 

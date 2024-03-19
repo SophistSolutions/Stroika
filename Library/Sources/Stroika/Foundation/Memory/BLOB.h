@@ -4,18 +4,18 @@
 #ifndef _Stroika_Foundation_Memory_BLOB_h_
 #define _Stroika_Foundation_Memory_BLOB_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
 #include <compare>
 #include <memory>
 #include <vector>
 
-#include "../Configuration/Common.h"
-#include "../Configuration/Concepts.h"
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/Common.h"
-#include "../Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
 
 /**
  *  \file

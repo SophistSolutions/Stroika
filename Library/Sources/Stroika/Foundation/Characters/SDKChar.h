@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Characters_SDKChar_h_
 #define _Stroika_Foundation_Characters_SDKChar_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <type_traits>
 
@@ -12,7 +12,7 @@
 #include <tchar.h>
 #endif
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  *  Each platform SDK has its own policy for representing characters. Some use narrow characters (char),

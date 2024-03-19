@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Execution_Sleep_h_
 #define _Stroika_Foundation_Execution_Sleep_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Configuration/Common.h"
-#include "../Time/Duration.h"
-#include "../Time/Realtime.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 /**
  * TODO

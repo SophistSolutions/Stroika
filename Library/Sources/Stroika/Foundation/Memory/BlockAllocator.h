@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Memory_BlockAllocator_h_
 #define _Stroika_Foundation_Memory_BlockAllocator_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstddef>
 
-#include "../Configuration/Common.h"
-#include "../Debug/Assertions.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 /**
  *  \file

@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Traversal_FunctionalApplication_h_
 #define _Stroika_Foundation_Traversal_FunctionalApplication_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <limits>
 #include <optional>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "Iterator.h"
 

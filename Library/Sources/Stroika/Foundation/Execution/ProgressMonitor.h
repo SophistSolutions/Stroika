@@ -4,16 +4,17 @@
 #ifndef _Stroika_Foundation_Execution_ProgressMonitor_h_
 #define _Stroika_Foundation_Execution_ProgressMonitor_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <mutex>
 #include <string>
 
-#include "../Configuration/Common.h"
-#include "../Containers/Sequence.h"
-#include "../DataExchange/VariantValue.h"
-#include "../Execution/Function.h"
-#include "../Streams/InputStream.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+
 #include "Thread.h"
 
 /**

@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_Cache_CallerStalenessCache_h_
 #define _Stroika_Foundation_Cache_CallerStalenessCache_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Containers/Mapping.h"
-#include "../Time/Realtime.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 /**
  *      \file

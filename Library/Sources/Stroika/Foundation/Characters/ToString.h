@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Characters_ToString_h_
 #define _Stroika_Foundation_Characters_ToString_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <ios>
 
-#include "../Configuration/Concepts.h"
 #include "Format.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
 
 #include "String.h"
 

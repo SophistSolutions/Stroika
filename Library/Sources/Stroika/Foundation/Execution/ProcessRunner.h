@@ -4,18 +4,18 @@
 #ifndef _Stroika_Foundation_Execution_ProcessRunner_h_
 #define _Stroika_Foundation_Execution_ProcessRunner_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 #include <optional>
 
-#include "../Characters/String.h"
-#include "../Configuration/Common.h"
-#include "../Containers/Sequence.h"
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/BLOB.h"
-#include "../Streams/InputStream.h"
-#include "../Streams/OutputStream.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 #include "Process.h"
 #include "ProgressMonitor.h"

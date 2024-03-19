@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Configuration_SDKString_h_
 #define _Stroika_Foundation_Configuration_SDKString_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <span>
 #include <string>

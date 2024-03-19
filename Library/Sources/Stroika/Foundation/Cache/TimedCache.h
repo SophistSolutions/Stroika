@@ -4,19 +4,19 @@
 #ifndef _Stroika_Foundation_Cache_TimedCache_h_
 #define _Stroika_Foundation_Cache_TimedCache_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <map>
 #include <mutex>
 #include <optional>
 
-#include "../Common/Compare.h"
-#include "../Configuration/Common.h"
-#include "../Configuration/TypeHints.h"
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Debug/Assertions.h"
-#include "../Time/Duration.h"
-#include "../Time/Realtime.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Statistics.h"
 

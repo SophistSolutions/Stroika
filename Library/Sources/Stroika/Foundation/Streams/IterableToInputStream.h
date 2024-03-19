@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Streams_IterableToInputStream_h_
 #define _Stroika_Foundation_Streams_IterableToInputStream_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Traversal/Iterable.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
 
 #include "InputStream.h"
 

@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_Characters_Character_h_
 #define _Stroika_Foundation_Characters_Character_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <span>
 #include <type_traits>
 
-#include "../Common/Compare.h"
-#include "../Configuration/Enumeration.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 /**
  *  \file

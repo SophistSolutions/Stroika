@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_DataExchange_ObjectVariantMapper_h_
 #define _Stroika_Foundation_DataExchange_ObjectVariantMapper_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 
@@ -13,28 +13,28 @@
 #include <typeindex>
 #include <variant>
 
-#include "../Characters/String.h"
-#include "../Characters/ToString.h"
-#include "../Common/GUID.h"
-#include "../Configuration/Enumeration.h"
-#include "../Containers/Bijection.h"
-#include "../Containers/Collection.h"
-#include "../Containers/KeyedCollection.h"
-#include "../Containers/Mapping.h"
-#include "../Containers/MultiSet.h"
-#include "../Containers/Sequence.h"
-#include "../Containers/Set.h"
-#include "../Containers/SortedCollection.h"
-#include "../Containers/SortedKeyedCollection.h"
-#include "../Containers/SortedMapping.h"
-#include "../Containers/SortedMultiSet.h"
-#include "../Containers/SortedSet.h"
-#include "../Debug/Sanitizer.h"
-#include "../Execution/Synchronized.h"
-#include "../Memory/Common.h"
-#include "../Memory/Optional.h"
-#include "../Traversal/DiscreteRange.h"
-#include "../Traversal/Range.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Containers/Bijection.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/MultiSet.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Containers/SortedCollection.h"
+#include "Stroika/Foundation/Containers/SortedKeyedCollection.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/Containers/SortedMultiSet.h"
+#include "Stroika/Foundation/Containers/SortedSet.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 #include "StructFieldMetaInfo.h"
 #include "VariantValue.h"

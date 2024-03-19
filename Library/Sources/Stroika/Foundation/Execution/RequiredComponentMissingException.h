@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Execution_RequiredComponentMissingException_h_
 #define _Stroika_Foundation_Execution_RequiredComponentMissingException_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/String.h"
+#include "Stroika/Foundation/Characters/String.h"
 
 #include "Exceptions.h"
 

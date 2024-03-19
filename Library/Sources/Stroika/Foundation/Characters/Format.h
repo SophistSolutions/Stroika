@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Characters_Format_h_
 #define _Stroika_Foundation_Characters_Format_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdarg>
 #include <ios>
@@ -12,8 +12,8 @@
 #include <ranges>
 #include <sstream> //tmphack for my current formatter
 
-#include "../Configuration/Common.h"
-#include "../Configuration/StdCompat.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/StdCompat.h"
 
 #include "String.h"
 

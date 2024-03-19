@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_DataExchange_StructFieldMetaInfo_h_
 #define _Stroika_Foundation_DataExchange_StructFieldMetaInfo_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <type_traits>
 #include <typeindex>
 
-#include "../Characters/String.h"
-#include "../Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 /**
  *

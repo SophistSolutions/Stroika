@@ -4,17 +4,17 @@
 #ifndef _Stroika_Foundation_Containers_Sequence_h_
 #define _Stroika_Foundation_Containers_Sequence_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <limits>
 
-#include "../Common/Compare.h"
-#include "../Configuration/Common.h"
-#include "../Configuration/Concepts.h"
-#include "../Memory/SharedByValue.h"
-#include "../Traversal/Iterable.h"
-#include "../Traversal/RandomAccessIterator.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Memory/SharedByValue.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
+#include "Stroika/Foundation/Traversal/RandomAccessIterator.h"
 
 #include "Common.h"
 

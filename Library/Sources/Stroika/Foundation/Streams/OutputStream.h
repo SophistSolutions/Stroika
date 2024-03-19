@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Streams_OutputStream_h_
 #define _Stroika_Foundation_Streams_OutputStream_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <memory>
 
-#include "../Characters/Character.h"
-#include "../Configuration/Common.h"
-#include "../Memory/Common.h"
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 #include "Stream.h"
 

@@ -4,11 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_Queue_h_
 #define _Stroika_Foundation_Containers_Queue_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Common/Compare.h"
-#include "../Execution/Synchronized.h"
-#include "../Traversal/Iterable.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
+
 #include "Common.h"
 
 /**

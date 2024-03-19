@@ -4,22 +4,22 @@
 #ifndef _Stroika_Foundation_Traversal_Iterable_h_
 #define _Stroika_Foundation_Traversal_Iterable_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <functional>
 #include <ranges>
 #include <vector>
 
-#include "../Common/Compare.h"
-#include "../Common/TemplateUtilities.h"
-#include "../Configuration/Common.h"
-#include "../Configuration/Concepts.h"
-#include "../Configuration/TypeHints.h"
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Execution/Common.h"
-#include "../Memory/BlockAllocated.h"
-#include "../Memory/SharedByValue.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/SharedByValue.h"
 
 #include "Iterator.h"
 

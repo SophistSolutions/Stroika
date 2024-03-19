@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Characters_RegularExpression_h_
 #define _Stroika_Foundation_Characters_RegularExpression_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <regex>
 
-#include "../Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 
 #include "String.h"
 

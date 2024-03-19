@@ -4,7 +4,7 @@
 #ifndef _Stroia_Foundation_Execution_Exceptions_h_
 #define _Stroia_Foundation_Execution_Exceptions_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cerrno>
 #include <exception>
@@ -12,7 +12,7 @@
 #include <string>
 #include <system_error>
 
-#include "../Characters/String.h"
+#include "Stroika/Foundation/Characters/String.h"
 
 #include "Activity.h"
 #include "Throw.h"

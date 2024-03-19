@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_WaitableEvent_h_
 #define _Stroika_Foundation_Execution_WaitableEvent_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <forward_list>
 #include <set>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "ConditionVariable.h"
 #include "SpinLock.h"

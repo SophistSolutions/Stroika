@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Memory_VariantValue_h_
 #define _Stroika_Foundation_Memory_VariantValue_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <map>
@@ -16,13 +16,13 @@ DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflo
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
 #endif
 
-#include "../Characters/String.h"
-#include "../Configuration/Common.h"
-#include "../Configuration/Enumeration.h"
-#include "../Containers/Mapping.h"
-#include "../Containers/Sequence.h"
-#include "../Memory/BLOB.h"
-#include "../Time/DateTime.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 /**
  *  \file

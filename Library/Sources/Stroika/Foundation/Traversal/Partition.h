@@ -4,9 +4,10 @@
 #ifndef _Stroika_Foundation_Traversal_Partition_h_
 #define _Stroika_Foundation_Traversal_Partition_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Math/Common.h"
+
 #include "Iterable.h"
 
 /**

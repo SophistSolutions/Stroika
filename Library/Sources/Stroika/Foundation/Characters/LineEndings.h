@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Characters_LineEndings_h_
 #define _Stroika_Foundation_Characters_LineEndings_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <string>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "Character.h"
 

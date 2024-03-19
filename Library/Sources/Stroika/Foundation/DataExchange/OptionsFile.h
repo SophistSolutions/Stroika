@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_DataExchange_OptionsFile_h_
 #define _Stroika_Foundation_DataExchange_OptionsFile_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 #include <optional>
 
-#include "../Characters/String.h"
-#include "../Configuration/Version.h"
-#include "../Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Version.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Variant/Reader.h"
 #include "Variant/Writer.h"

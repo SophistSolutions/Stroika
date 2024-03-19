@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_Time_Timezone_h_
 #define _Stroika_Foundation_Time_Timezone_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <ctime>
 #include <optional>
 
-#include "../Characters/String.h"
-#include "../DataExchange/ValidationStrategy.h"
-#include "../Traversal/Range.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/DataExchange/ValidationStrategy.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 /**
  *  \file

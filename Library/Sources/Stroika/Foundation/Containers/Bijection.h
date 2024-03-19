@@ -4,17 +4,18 @@
 #ifndef _Stroika_Foundation_Containers_Bijection_h_
 #define _Stroika_Foundation_Containers_Bijection_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <utility>
 
-#include "../Common/Compare.h"
-#include "../Common/KeyValuePair.h"
-#include "../Configuration/Common.h"
-#include "../Configuration/Concepts.h"
-#include "../DataExchange/ValidationStrategy.h"
-#include "../Execution/Exceptions.h"
-#include "../Traversal/Iterable.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Common/KeyValuePair.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/DataExchange/ValidationStrategy.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
+
 #include "Common.h"
 
 /*

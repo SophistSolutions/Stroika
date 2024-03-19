@@ -4,12 +4,12 @@
 #ifndef _Stroika_Frameworks_Led_BiDiLayoutEngine_h_
 #define _Stroika_Frameworks_Led_BiDiLayoutEngine_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <compare>
 #include <memory>
 
-#include "../../Foundation/Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
 
 /*
 @MODULE:    BiDiLayout

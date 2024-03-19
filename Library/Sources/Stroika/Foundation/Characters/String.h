@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Characters_String_h_
 #define _Stroika_Foundation_Characters_String_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <iosfwd>
@@ -12,13 +12,14 @@
 #include <string>
 #include <string_view>
 
-#include "../Common/Compare.h"
-#include "../Containers/Sequence.h"
-#include "../Containers/Set.h"
-#include "../Execution/Synchronized.h"
-#include "../Memory/SharedByValue.h"
-#include "../Memory/StackBuffer.h"
-#include "../Traversal/Iterable.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Memory/SharedByValue.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
+
 #include "SDKString.h"
 
 #include "Character.h"

@@ -4,12 +4,13 @@
 #ifndef _Stroika_Foundation_Containers_Collection_h_
 #define _Stroika_Foundation_Containers_Collection_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Common/Compare.h"
-#include "../Configuration/Concepts.h"
-#include "../Memory/SharedByValue.h"
-#include "../Traversal/Iterable.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Memory/SharedByValue.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
+
 #include "Common.h"
 
 /**

@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_ModuleInit_h_
 #define _Stroika_Foundation_Execution_ModuleInit_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdint>
 
-#include "../Configuration/Common.h"
-#include "../Memory/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  */
