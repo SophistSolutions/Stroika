@@ -7,11 +7,13 @@
 #include "../../../Foundation/Characters/StringBuilder.h"
 #include "../../../Foundation/Characters/ToString.h"
 #include "../../../Foundation/Containers/Mapping.h"
+#include "../../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "../../../Foundation/Streams/MemoryStream.h"
 
 #include "Specification.h"
+
+using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
@@ -26,22 +28,32 @@ namespace {
     const String kURLElt_     = "url"sv;
 }
 
+namespace {
+    VariantValue rd_ (const Streams::InputStream::Ptr<byte>& b, const optional<DataExchange::InternetMediaType>& mediaType)
+    {
+        if (mediaType) { // only check if specifed, else assume its right
+            if (not InternetMediaTypeRegistry::Get ().IsA (kMediaType, *mediaType)) {
+                Execution::Throw (Execution::RuntimeErrorException{"Unrecognized media type"sv});
+            }
+        }
+        return DataExchange::Variant::JSON::Reader{}.Read (b);
+    }
+}
+
 /*
  ********************************************************************************
  *********************************** Specification ******************************
  ********************************************************************************
  */
 Specification::Specification (const Streams::InputStream::Ptr<byte>& b, const optional<DataExchange::InternetMediaType>& mediaType)
-    : Specification{DataExchange::Variant::JSON::Reader{}.Read (b)}
+    : Specification{rd_ (b, mediaType)}
 {
 }
 
 Memory::BLOB Specification::As (const DataExchange::InternetMediaType& mediaType)
 {
     if (mediaType == kMediaType) {
-        Streams::MemoryStream::Ptr<byte> b = Streams::MemoryStream::New<byte> ();
-        DataExchange::Variant::JSON::Writer{}.WriteAsBLOB (fValue_);
-        return b.As<Memory::BLOB> ();
+        return DataExchange::Variant::JSON::Writer{}.WriteAsBLOB (fValue_);
     }
     else {
         Execution::Throw (Execution::RuntimeErrorException{"Type not supported"sv});

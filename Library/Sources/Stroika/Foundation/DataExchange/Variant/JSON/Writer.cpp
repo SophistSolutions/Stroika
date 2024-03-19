@@ -259,7 +259,7 @@ public:
     {
         return ".json"sv;
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) const override
     {
         TextWriter::Ptr textOut = TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
         PrettyPrint_ (fOptions_, v, textOut, 0);
@@ -267,7 +267,7 @@ public:
             textOut.Write ("\n"sv); // a single elt not LF terminated, but the entire doc should be.
         }
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Character>& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Character>& out) const override
     {
         PrettyPrint_ (fOptions_, v, out, 0);
     }

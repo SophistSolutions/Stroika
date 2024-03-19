@@ -37,11 +37,11 @@ public:
     {
         return ".ini"sv;
     }
-    virtual void Write (const VariantValue& v, const OutputStream::Ptr<byte>& out) override
+    virtual void Write (const VariantValue& v, const OutputStream::Ptr<byte>& out) const override
     {
         Write (v, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
     }
-    virtual void Write (const VariantValue& v, const OutputStream::Ptr<Character>& out) override
+    virtual void Write (const VariantValue& v, const OutputStream::Ptr<Character>& out) const override
     {
         Write (Convert (v), out);
     }

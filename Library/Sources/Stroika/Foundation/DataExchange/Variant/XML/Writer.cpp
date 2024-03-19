@@ -154,7 +154,7 @@ public:
     {
         return ".xml"sv;
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) const override
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::eMap);
@@ -166,7 +166,7 @@ public:
             PrettyPrint_ (VariantValue{v2}, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude), 0);
         }
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Character>& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Character>& out) const override
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::eMap);

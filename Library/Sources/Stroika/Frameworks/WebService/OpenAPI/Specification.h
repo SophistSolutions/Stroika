@@ -56,6 +56,9 @@ namespace Stroika::Frameworks::WebService::OpenAPI {
         /**
          * So far only kMediaType supported.
          */
+        template <typename T>
+        nonvirtual T As () const
+            requires (same_as<T, VariantValue>);
         nonvirtual Memory::BLOB As (const DataExchange::InternetMediaType& mediaType);
 
     private:

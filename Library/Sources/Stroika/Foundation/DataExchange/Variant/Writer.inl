@@ -34,19 +34,19 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         return fRep_->GetDefaultFileSuffix ();
     }
-    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out)
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) const
     {
         fRep_->Write (v, out);
     }
-    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out)
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out) const
     {
         fRep_->Write (v, out);
     }
-    inline void Variant::Writer::Write (const VariantValue& v, ostream& out)
+    inline void Variant::Writer::Write (const VariantValue& v, ostream& out) const
     {
         Write (v, _WrapBinaryOutput (out));
     }
-    inline void Variant::Writer::Write (const VariantValue& v, wostream& out)
+    inline void Variant::Writer::Write (const VariantValue& v, wostream& out) const
     {
         Write (v, _WrapTextOutput (out));
     }

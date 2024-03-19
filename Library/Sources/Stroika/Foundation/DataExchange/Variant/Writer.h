@@ -58,24 +58,26 @@ namespace Stroika::Foundation::DataExchange::Variant {
          *
          *  @see WriteAsBLOB
          *  @see WriteAsString
+         * 
+         *  \note const methods because these don't change the state of the writer, but rather the underlying output stream (argument)
          */
-        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out);
-        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out);
-        nonvirtual void Write (const VariantValue& v, ostream& out);
-        nonvirtual void Write (const VariantValue& v, wostream& out);
+        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) const;
+        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out) const;
+        nonvirtual void Write (const VariantValue& v, ostream& out) const;
+        nonvirtual void Write (const VariantValue& v, wostream& out) const;
 
     public:
         /**
          *  Take the given variant value, and convert it to JSON, and return that JSON as a BLOB.
          */
-        nonvirtual Memory::BLOB WriteAsBLOB (const VariantValue& v);
+        [[nodiscard]] nonvirtual Memory::BLOB WriteAsBLOB (const VariantValue& v) const;
 
     public:
         /**
          *  Take the given variant value, and Serialize (according to the subtype of Writer constructed), 
          *  and return that JSON as a String.
          */
-        nonvirtual String WriteAsString (const VariantValue& v);
+        [[nodiscard]] nonvirtual String WriteAsString (const VariantValue& v) const;
 
     protected:
         nonvirtual _IRep&       _GetRep ();
@@ -130,11 +132,11 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     class Writer::_IRep {
     public:
-        virtual ~_IRep ()                                                                                                  = default;
-        virtual _SharedPtrIRep Clone () const                                                                              = 0;
-        virtual String         GetDefaultFileSuffix () const                                                               = 0;
-        virtual void           Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out)                  = 0;
-        virtual void           Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out) = 0;
+        virtual ~_IRep ()                                                                                                        = default;
+        virtual _SharedPtrIRep Clone () const                                                                                    = 0;
+        virtual String         GetDefaultFileSuffix () const                                                                     = 0;
+        virtual void           Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) const                  = 0;
+        virtual void           Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out) const = 0;
     };
 
 }

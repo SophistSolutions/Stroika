@@ -36,11 +36,11 @@ public:
     {
         return ".txt"sv;
     }
-    virtual void Write (const VariantValue& v, const OutputStream::Ptr<byte>& out) override
+    virtual void Write (const VariantValue& v, const OutputStream::Ptr<byte>& out) const override
     {
         Write (v, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
     }
-    virtual void Write (const VariantValue& v, const OutputStream::Ptr<Character>& out) override
+    virtual void Write (const VariantValue& v, const OutputStream::Ptr<Character>& out) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::Write"};

@@ -108,7 +108,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
         };
 
     public:
-        Writer (const Options& options = Options{});
+        Writer (const Options& options = {});
 
     private:
         nonvirtual shared_ptr<Rep_> GetRep_ () const;

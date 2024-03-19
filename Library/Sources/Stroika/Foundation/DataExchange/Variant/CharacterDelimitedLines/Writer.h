@@ -87,14 +87,14 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
          *  @See Variant::Writer::WriteAsString, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsString;
-        nonvirtual String WriteAsString (const Traversal::Iterable<Sequence<String>>& m);
+        [[nodiscard]] nonvirtual String WriteAsString (const Traversal::Iterable<Sequence<String>>& m);
 
     public:
         /**
          *  @See Variant::Writer::WriteAsBLOB, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsBLOB;
-        nonvirtual Memory::BLOB WriteAsBLOB (const Traversal::Iterable<Sequence<String>>& m);
+        [[nodiscard]] nonvirtual Memory::BLOB WriteAsBLOB (const Traversal::Iterable<Sequence<String>>& m);
 
     private:
         nonvirtual shared_ptr<Rep_> GetRep_ () const;

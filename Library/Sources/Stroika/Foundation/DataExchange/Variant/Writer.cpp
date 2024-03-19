@@ -44,12 +44,12 @@ Streams::OutputStream::Ptr<Characters::Character> Variant::Writer::_WrapTextOutp
     return Streams::iostream::OutputStreamFromStdOStream::New<Characters::Character> (out);
 }
 
-Memory::BLOB Variant::Writer::WriteAsBLOB (const VariantValue& v)
+Memory::BLOB Variant::Writer::WriteAsBLOB (const VariantValue& v) const
 {
     return _WriteAsBLOBHelper ([&v, this] (const Streams::OutputStream::Ptr<byte>& out) { Write (v, out); });
 }
 
-String Variant::Writer::WriteAsString (const VariantValue& v)
+String Variant::Writer::WriteAsString (const VariantValue& v) const
 {
     return _WriteAsStringHelper ([&v, this] (const Streams::OutputStream::Ptr<Characters::Character>& out) { Write (v, out); });
 }
