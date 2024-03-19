@@ -7,7 +7,6 @@
 #include "../../../Foundation/Characters/StringBuilder.h"
 #include "../../../Foundation/Characters/ToString.h"
 #include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
@@ -53,7 +52,7 @@ Sequence<URI> Specification::GetServers () const
 {
     // @todo store in better internal rep assuring structure already has all these fields... - so the below cannot fail (as is it can)
     return fValue_.As<Mapping<String, VariantValue>> ().LookupValue (kServersElt_, {}).As<Sequence<VariantValue>> ().Map<Sequence<URI>> ([] (auto vv) {
-        return URI{vv.As<Mapping<String, VariantValue>> ().LookupValue (kURLElt_).template As<String> ()};
+        return URI{vv.template As<Mapping<String, VariantValue>> ().LookupValue (kURLElt_).template As<String> ()};
     });
 }
 
