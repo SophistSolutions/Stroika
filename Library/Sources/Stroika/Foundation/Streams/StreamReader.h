@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Streams_StreamReader_h_
 #define _Stroika_Foundation_Streams_StreamReader_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <memory>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "InputStream.h"
 
