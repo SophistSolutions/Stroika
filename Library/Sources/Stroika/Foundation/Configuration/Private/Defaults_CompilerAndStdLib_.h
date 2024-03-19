@@ -94,7 +94,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 13
+#if __GNUC__ > 14
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -459,6 +459,31 @@ C :\Sandbox\Stroika\DevRoot\Tests\50\Test.cpp : 750
 #endif
 
 /*
+     Compiling Library/Sources/Stroika/Frameworks/Led/BiDiLayoutEngine.cpp ... 
+In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
+                 from /usr/include/c++/14/climits:41,
+                 from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_CompilerAndStdLib_.h:46,
+                 from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h:18,
+                 from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/StroikaPreComp.h:7,
+                 from ../StroikaPreComp.h:7,
+                 from BiDiLayoutEngine.cpp:4:
+/usr/include/c++/14/pstl/algorithm_impl.h: In function ‘_RandomAccessIterator __pstl::__internal::__brick_unique(_RandomAccessIterator, _RandomAccessIterator, _BinaryPredicate, std::true_type)’:
+/usr/include/c++/14/pstl/algorithm_impl.h:1219:5: note: ‘#pragma message:  [Parallel STL message]: "Vectorized algorithm unimplemented, redirected to serial"’
+ 1219 |     _PSTL_PRAGMA_MESSAGE("Vectorized algorithm unimplemented, redirected to serial");
+      |     ^~~~~~~~~~~~~~~~~~~~
+/
+*/
+#ifndef qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+#define qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy ((__GNUC__ == 14))
+#else
+#define qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy 0
+#endif
+
+#endif
+
+/*
 *  on Windows DEBUG x86 builds only...
 ==2736==ERROR: AddressSanitizer: container-overflow on address 0x0110ed9d at pc 0x0020f13a bp 0x0110df2c sp 0x0110db0c
 READ of size 6 at 0x0110ed9d thread T0
@@ -615,6 +640,26 @@ I don't understand why we need the explicit String version and requires not same
             1>        ]
             1>C:\Sandbox\Stroika\TMPV3\Library\Sources\Stroika\Foundation\Characters\String.inl(1124): note: or 'bool Stroika::Foundation::Characters::String::operator ==<Stroika::Foundation::Characters::String>(T &&) const' [synthesized expression 'y == x']
 * 
+
+
+
+                 from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ProcessRunner.h:21,
+                 from SystemConfiguration.cpp:48:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ProgressMonitor.inl: In member function ‘void Stroika::Foundation::Execution::ProgressMonitor::Updater::SetCurrentTaskInfo(const Stroika::Foundation::Execution::ProgressMonitor::CurrentTaskInfo&)’:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ProgressMonitor.inl:149:68: error: use of deleted function ‘constexpr bool Stroika::Foundation::Execution::ProgressMonitor::CurrentTaskInfo::operator==(const Stroika::Foundation::Execution::ProgressMonitor::CurrentTaskInfo&) const’
+  149 |             bool changed             = fRep_->fCurrentTaskInfo_ != taskInfo;
+      |                                                                    ^~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ProgressMonitor.h:245:25: note: ‘constexpr bool Stroika::Foundation::Execution::ProgressMonitor::CurrentTaskInfo::operator==(const Stroika::Foundation::Execution::ProgressMonitor::CurrentTaskInfo&) const’ is implicitly deleted because the default definition would be ill-formed:
+  245 |         nonvirtual bool operator== (const CurrentTaskInfo& rhs) const = default;
+      |                         ^~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ProgressMonitor.h:245:25: warning: C++20 says that these are ambiguous, even though the second is reversed:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.h:1885,
+                 from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/FloatConversion.h:15,
+                 from SystemConfiguration.cpp:24:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.inl:1131:17: note: candidate 1: ‘bool Stroika::Foundation::Characters::String::operator==(T&&) const [with T = Stroika::Foundation::Characters::String&]’
+ 1131 |     inline bool String::operator== (T&& rhs) const
+      |                 ^~~~~~
+
 */
 #ifndef qCompilerAndStdLib_CompareOpReverse_Buggy
 
@@ -626,7 +671,8 @@ I don't understand why we need the explicit String version and requires not same
 #define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 13 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
-#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13)
+// Still broken in GCC 14
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13 || __GNUC__ == 14)
 #elif defined(_MSC_VER)
 // Still Broken in _MSC_VER_2k22_17Pt9_
 #define qCompilerAndStdLib_CompareOpReverse_Buggy                                                                                          \
@@ -713,8 +759,9 @@ collect2: error: ld returned 1 exit status
 #ifndef qCompilerAndStdLib_stacktraceLinkError_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-// Only SEEN BROKEN IN GCC 13, Ubuntu 24.04, but cannot test for that right easily...
-#define qCompilerAndStdLib_stacktraceLinkError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13)
+// Only SEEN BROKEN IN GCC 13, Ubuntu 24.04, but cannot test for that right easily... (ALSO - PRE-RELEASE UBUTNU - SO TRY AGAIN WHEN RELEASED)
+// Same issue on GCC-14 and Ubuntu 24.04
+#define qCompilerAndStdLib_stacktraceLinkError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13 || __GNUC__ == 14)
 #else
 #define qCompilerAndStdLib_stacktraceLinkError_Buggy 0
 #endif
@@ -1170,7 +1217,8 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 // VERIFIED BROKEN IN GCC 11
 // VERIFIED BROKEN IN GCC 12
 // VERIFIED BROKEN IN GCC 13
-#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
+// VERIFIED BROKEN IN GCC 14
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
 #endif
@@ -1205,8 +1253,9 @@ In file included from ../Characters/StringBuilder.h:273,
 #elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 12
 // VERIFIED BROKEN IN GCC 13
+// VERIFIED BROKEN IN GCC 14
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
 #elif defined(__clang__) && defined(__APPLE__)
 // Noticed broken in crapple-clang++14
 // appears fixed in xcode 15
@@ -1530,8 +1579,9 @@ make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
 // First noticed in g++-11
 // still broken in g++-12
 // still broken in g++-13
+// still broken in g++-14
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
 #elif defined(__clang__) && defined(__APPLE__)
 // First noticed in clang++-14
 // Reproduced in clang++-15
@@ -1582,7 +1632,8 @@ In file included from ../Characters/Format.h:15,
 #if defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEEN BROKEN IN GCC 12
 // BROKEN IN GCC 13
-#define qCompilerAndStdLib_templateConstructorSpecialization_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
+// BROKEN IN GCC 14
+#define qCompilerAndStdLib_templateConstructorSpecialization_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
 #else
 #define qCompilerAndStdLib_templateConstructorSpecialization_Buggy 0
 #endif
@@ -1944,7 +1995,8 @@ In file included from ../Execution/../Characters/../Containers/Sequence.h:16,
 
 #if defined(__GNUC__) && !defined(__clang__)
 // Issue (just warning) in GCC 13
-#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
+// and GCC 14
+#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
 #else
 #define qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy 0
 #endif
@@ -2961,6 +3013,17 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #endif
 
 #endif /*defined(__cplusplus)*/
+
+/*
+ * DEFINING #define PSTL_USAGE_WARNINGS 0
+#define _PSTL_USAGE_WARNINGS 0
+*   Doesn't appear to work - not sure why...
+*/
+#if qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy
+#include <bits/c++config.h>
+#undef _PSTL_PRAGMA_MESSAGE
+#define _PSTL_PRAGMA_MESSAGE(x)
+#endif
 
 #if qCompilerAndStdLib_need_ciso646_Buggy
 #include <ciso646>
