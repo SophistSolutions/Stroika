@@ -1,8 +1,7 @@
-# Stroika::[Frameworks](../../)::[WebService](../)::Server
+# Stroika::[Frameworks](../../)::[WebService](../)::OpenAPI
 
-This Folder contains the [Frameworks](../../)::[WebService](../)::Server source code.
+This Folder contains the [Frameworks](../../)::[WebService](../)::OpenAPI source code.
 
 ## Modules
 
-- [Basic.h](Basic.h)
-- [VariantValue.h](VariantValue.h)
+- [Specification.h](Specification.h)
