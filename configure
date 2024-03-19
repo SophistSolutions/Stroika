@@ -2386,8 +2386,8 @@ sub PostProcessOptions_ ()
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
 		my $ubuntuVersion = getUbuntuVersion();
-		if ("$^O" eq "linux" && (22.04 == $ubuntuVersion or 24.04 == $ubuntuVersion)) {
-			# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
+		if ("$^O" eq "linux" && (22.04 <= $ubuntuVersion and  $ubuntuVersion <= 24.04)) {
+			# As of 2023-09-26 -  seen with clang++-15 Ubuntu 22.04 and with boost library
 			#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
 			#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
 			#
@@ -2400,6 +2400,7 @@ sub PostProcessOptions_ ()
 			# /usr/bin/ld: /tmp/lto-llvm-8f9b5e.o: in function `boost::json::basic_parser<(anonymous namespace)::BoostSAXHandler_>::~basic_parser()':
 			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Builds/clang++-16-release-libstdc++/ThirdPartyComponents/include/boost/json/basic_parser.hpp:499:(.text._ZN5boost4json12basic_parserIN12_GLOBAL__N_116BoostSAXHandler_EED2Ev+0x36): undefined reference to `boost::json::detail::stack::~stack()'
 			#
+			# AND saw on ubuntu 23.10 with clang++-16
 			$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 		}
 		if ("$^O" eq "darwin")  {
