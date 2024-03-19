@@ -1953,7 +1953,7 @@ namespace {
             }
         };
 
-        using namespace Configuration::StdCompat; // only needed while supporting fmtlib/ cuz not std::format not available
+        using Configuration::StdCompat::format;          // only needed while supporting fmtlib/ cuz not std::format not available
 
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
