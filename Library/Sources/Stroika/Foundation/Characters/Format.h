@@ -93,7 +93,9 @@ namespace Stroika::Foundation::Characters {
         template <class... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args)
         {
-            using namespace Configuration::StdCompat;
+            using Configuration::StdCompat::make_format_args;
+            using Configuration::StdCompat::make_wformat_args;
+            using Configuration::StdCompat::vformat;
             if constexpr (same_as<CHAR_T, char>) {
                 // @todo fixup the characterset handling here...
                 return vformat (sv, make_format_args (args...));
