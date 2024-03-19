@@ -32,9 +32,7 @@ namespace {
     VariantValue rd_ (const Streams::InputStream::Ptr<byte>& b, const optional<DataExchange::InternetMediaType>& mediaType)
     {
         if (mediaType) { // only check if specifed, else assume its right
-            if (not InternetMediaTypeRegistry::Get ().IsA (kMediaType, *mediaType)) {
-                Execution::Throw (Execution::RuntimeErrorException{"Unrecognized media type"sv});
-            }
+            InternetMediaTypeRegistry::Get ().CheckIsA (kMediaType, *mediaType);
         }
         return DataExchange::Variant::JSON::Reader{}.Read (b);
     }

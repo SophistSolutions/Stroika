@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 
 #include "InternetMediaType.h"
+#include "InternetMediaTypeNotSupportedException.h"
 
 /**
  *  \file
@@ -306,6 +307,13 @@ namespace Stroika::Foundation::DataExchange {
          *  above with HELATHFRAME PHR format.
          */
         nonvirtual bool IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const;
+
+    public:
+        /** 
+         */
+        template <typename EXCEPTION = InternetMediaTypeNotSupportedException>
+        nonvirtual void CheckIsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType,
+                                  const EXCEPTION& throwIfNot = InternetMediaTypeNotSupportedException::kThe) const;
     };
 
     /**

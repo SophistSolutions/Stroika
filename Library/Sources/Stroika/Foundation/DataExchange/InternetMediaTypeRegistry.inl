@@ -37,6 +37,14 @@ namespace Stroika::Foundation::DataExchange {
     {
         return GetAssociatedContentType (IO::FileSystem::FromPath (fileSuffix));
     }
+    template <typename EXCEPTION>
+    inline void InternetMediaTypeRegistry::CheckIsA (const InternetMediaType& moreGeneralType,
+                                                         const InternetMediaType& moreSpecificType, const EXCEPTION& throwIfNot)const
+    {
+        if (not IsA (moreGeneralType, moreSpecificType)) {
+            Execution::Throw (throwIfNot);
+        }
+    }
 
 }
 

@@ -476,6 +476,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h" />
@@ -938,6 +939,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl" />
