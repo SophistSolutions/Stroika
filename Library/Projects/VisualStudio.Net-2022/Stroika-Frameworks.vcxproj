@@ -373,6 +373,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Client\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Makefile" />
@@ -380,11 +383,13 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\ToDo.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.h" />
   </ItemGroup>

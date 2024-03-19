@@ -256,6 +256,15 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Makefile">
       <Filter>Led\Platform</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Makefile">
+      <Filter>WebService\OpenAPI</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\ReadMe.md">
+      <Filter>WebService\OpenAPI</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.inl">
+      <Filter>WebService\OpenAPI</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
@@ -454,6 +463,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\ArchtypeClasses.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.h">
+      <Filter>WebService\OpenAPI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Led">
@@ -509,6 +521,9 @@
     </Filter>
     <Filter Include="Test">
       <UniqueIdentifier>{9d3d7bab-6549-4b1d-8903-d0df2afa8815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebService\OpenAPI">
+      <UniqueIdentifier>{b6e24fce-eec6-4695-91eb-d771d3e27737}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -712,6 +727,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\ArchtypeClasses.cpp">
       <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.cpp">
+      <Filter>WebService\OpenAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

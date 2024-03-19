@@ -17,6 +17,7 @@ endif
 
 SubDirs	:=	\
 	Client	\
+	OpenAPI	\
 	Server	\
 
 
