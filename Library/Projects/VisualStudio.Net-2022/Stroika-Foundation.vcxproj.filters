@@ -2187,6 +2187,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\LazyInitialized.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3615,6 +3618,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.inl">
       <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\LazyInitialized.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
