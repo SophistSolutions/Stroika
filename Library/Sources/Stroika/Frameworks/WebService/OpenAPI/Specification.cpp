@@ -53,7 +53,7 @@ Sequence<URI> Specification::GetServers () const
 {
     // @todo store in better internal rep assuring structure already has all these fields... - so the below cannot fail (as is it can)
     return fValue_.As<Mapping<String, VariantValue>> ().LookupValue (kServersElt_, {}).As<Sequence<VariantValue>> ().Map<Sequence<URI>> ([] (auto vv) {
-        return URI{vv.As<Mapping<String, VariantValue>> ().LookupValue (kURLElt_).As<String> ()};
+        return URI{vv.As<Mapping<String, VariantValue>> ().LookupValue (kURLElt_).template As<String> ()};
     });
 }
 
