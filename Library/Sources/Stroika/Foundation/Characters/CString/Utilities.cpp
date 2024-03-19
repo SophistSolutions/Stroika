@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdarg>
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wformat-truncation\""); // for g++-13 g++-release-sanitize_address_undefined x86_64-linux-gnu/bits/stdio2.h:68:36: warning: null format string [-Wformat-truncation=]
@@ -16,11 +16,11 @@ DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wformat-truncation\
 #endif
 
 #if qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
-#include "../../Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #endif
-#include "../../Math/Common.h"
-#include "../../Memory/StackBuffer.h"
-#include "../CodePage.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "Utilities.h"
 

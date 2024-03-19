@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Common_CountedValue_inl_
 #define _Stroika_Foundation_Common_CountedValue_inl_ 1
 
-#include "../Configuration/Concepts.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
 
 #include "Compare.h"
 

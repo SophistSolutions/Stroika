@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "../Queue.h"
 
@@ -15,7 +15,7 @@
  *
  *  TODO:
  *      @todo   Add "MAX ENTRIES" feature - so throws/crashes when exceeded. Useful for a variety
- *              of queues, but I'm thinking mostly of Queue of incoming singals and need to avoid
+ *              of queues, but I'm thinking mostly of Queue of incoming signals and need to avoid
  *              malloc call.
  *
  *      @todo   Redo using circular array strategy (we have this code in OLD stroika!!!)

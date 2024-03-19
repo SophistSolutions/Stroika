@@ -13,11 +13,11 @@
 #include <windows.h>
 #endif
 
-#include "../Debug/Assertions.h"
-#include "../Memory/Bits.h"
-//#include "../Memory/BlockAllocated.h" // causes include embrace problems
-#include "../Memory/Span.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/Bits.h"
+//#include "Stroika/Foundation/Memory/BlockAllocated.h" // causes include embrace problems
+#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
 

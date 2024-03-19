@@ -1,18 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <algorithm>
 #include <mutex>
 #include <set>
 
-#include "../Common/Common.h"
-#include "../Configuration/Common.h"
-#include "../Containers/Common.h"
-#include "../Execution/Common.h"
-#include "../Execution/Exceptions.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "CString/Utilities.h"
 #include "Format.h"

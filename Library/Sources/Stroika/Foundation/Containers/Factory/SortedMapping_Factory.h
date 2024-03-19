@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_h_
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 /**
  *  \file

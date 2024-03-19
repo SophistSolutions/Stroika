@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_Containers_DataStructures_LinkedList_h_
 #define _Stroika_Foundation_Containers_DataStructures_LinkedList_h_
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Common/Compare.h"
-#include "../../Configuration/Common.h"
-#include "../../Configuration/TypeHints.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "../Common.h"
 

@@ -6,8 +6,8 @@
 
 #include <random>
 
-#include "../../Debug/Assertions.h"
-#include "../../Debug/Cast.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Cast.h"
 
 namespace Stroika::Foundation::Containers::Private {
 

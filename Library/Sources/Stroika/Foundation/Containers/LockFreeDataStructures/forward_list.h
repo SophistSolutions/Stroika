@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Containers_LockFreeDataStructures_forward_list_h_
 #define _Stroika_Foundation_Containers_LockFreeDataStructures_forward_list_h_
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <atomic>
 #include <optional>

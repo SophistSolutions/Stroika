@@ -12,8 +12,8 @@
 
 #include <bit>
 
-#include "../Debug/Assertions.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "TextConvert.h"
 #include "UTFConvert.h"

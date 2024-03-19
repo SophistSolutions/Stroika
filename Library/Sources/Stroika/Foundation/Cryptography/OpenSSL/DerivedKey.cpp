@@ -1,22 +1,22 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qHasFeature_OpenSSL
 #include <openssl/evp.h>
 #endif
 
-#include "../../Characters/StringBuilder.h"
-#include "../../Characters/ToString.h"
-#include "../../Containers/Common.h"
-#include "../../Cryptography/Digest/Algorithm/MD5.h"
-#include "../../Cryptography/Digest/Digester.h"
-#include "../../Cryptography/Digest/Hash.h"
-#include "../../Debug/Assertions.h"
-#include "../../Execution/Common.h"
-#include "../../Execution/Synchronized.h"
-#include "../../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
+#include "Stroika/Foundation/Cryptography/Digest/Digester.h"
+#include "Stroika/Foundation/Cryptography/Digest/Hash.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "Exception.h"
 

@@ -11,10 +11,10 @@
  */
 #include <cmath>
 
-#include "../Characters/StringBuilder.h"
-#include "../Debug/Assertions.h"
-#include "../Execution/Exceptions.h"
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 namespace Stroika::Foundation::Cache {
 

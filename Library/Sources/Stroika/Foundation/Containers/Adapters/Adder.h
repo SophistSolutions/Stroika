@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Adapters_Adder_h_
 #define _Stroika_Foundation_Containers_Adapters_Adder_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

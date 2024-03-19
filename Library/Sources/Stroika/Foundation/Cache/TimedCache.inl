@@ -7,9 +7,9 @@
 #ifndef _Stroika_Foundation_Cache_TimedCache_inl_
 #define _Stroika_Foundation_Cache_TimedCache_inl_ 1
 
-#include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
-#include "../Execution/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Common.h"
 
 namespace Stroika::Foundation::Cache {
 

@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Containers_STL_Utilities_h_
 #define _Stroika_Foundation_Containers_STL_Utilities_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <set>
 #include <vector>
 
-#include "../../Common/Compare.h"
-#include "../../Configuration/Common.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
 *  \file

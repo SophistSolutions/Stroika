@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <algorithm>
 #include <climits>
@@ -10,19 +10,19 @@
 #include <regex>
 #include <string>
 
-#include "../Characters/CString/Utilities.h"
-#include "../Configuration/Empty.h"
-#include "../Containers/Set.h"
-#include "../Containers/Support/ReserveTweaks.h"
-#include "../Cryptography/Digest/Algorithm/SuperFastHash.h"
-#include "../Debug/Cast.h"
-#include "../Execution/Exceptions.h"
-#include "../Execution/Throw.h"
-#include "../Math/Common.h"
-#include "../Memory/BlockAllocated.h"
-#include "../Memory/Common.h"
-#include "../Memory/Span.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Configuration/Empty.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "RegularExpression.h"
 #include "SDKString.h"

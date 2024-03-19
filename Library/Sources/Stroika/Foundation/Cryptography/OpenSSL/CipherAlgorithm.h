@@ -4,17 +4,17 @@
 #ifndef _Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_h_
 #define _Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qHasFeature_OpenSSL
 #include <openssl/evp.h>
 #endif
 
-#include "../../Characters/ToString.h"
-#include "../../Common/Property.h"
-#include "../../Configuration/Common.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Memory/Common.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  *  \file

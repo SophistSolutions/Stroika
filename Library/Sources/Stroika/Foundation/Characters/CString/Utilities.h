@@ -4,15 +4,14 @@
 #ifndef _Stroika_Foundation_Characters_CString_Utilities_h_
 #define _Stroika_Foundation_Characters_CString_Utilities_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdarg>
 #include <cstring>
 #include <string>
 
-#include "../../Configuration/Common.h"
-
-#include "../Character.h"
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  *  \file

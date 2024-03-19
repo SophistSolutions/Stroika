@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <climits>
 #include <filesystem>
@@ -21,32 +21,32 @@
 #include <intrin.h>
 #endif
 
-#include "../Characters/FloatConversion.h"
-#include "../Characters/Format.h"
-#include "../Characters/SDKString.h"
-#include "../Characters/String2Int.h"
-#include "../Characters/StringBuilder.h"
-#include "../Characters/ToString.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/SDKString.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #if qPlatform_Windows
-#include "../Configuration/Platform/Windows/Registry.h"
+#include "Stroika/Foundation/Configuration/Platform/Windows/Registry.h"
 #endif
-#include "../Containers/Sequence.h"
-#include "../Containers/Set.h"
-#include "../Execution/Exceptions.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #if qPlatform_Windows
-#include "../Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "../IO/FileSystem/FileInputStream.h"
-#include "../IO/FileSystem/FileSystem.h"
-#include "../Memory/StackBuffer.h"
-#include "../Streams/TextReader.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "SystemConfiguration.h"
 
 #if qPlatform_POSIX
-#include "../DataExchange/Variant/INI/Reader.h"
-#include "../Execution/ProcessRunner.h"
-#include "../Streams/iostream/FStreamSupport.h"
+#include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/Streams/iostream/FStreamSupport.h"
 #endif
 
 using namespace Stroika::Foundation;

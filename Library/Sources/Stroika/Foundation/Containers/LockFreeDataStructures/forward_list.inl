@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "../../Debug/Assertions.h"
-#include "../../Debug/Valgrind.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 

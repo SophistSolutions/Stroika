@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_Containers_DataStructures_Array_h_
 #define _Stroika_Foundation_Containers_DataStructures_Array_h_
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Common/Compare.h"
-#include "../../Configuration/Common.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Execution/Common.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Common.h"
 
 #include "../Common.h"
 
@@ -40,7 +40,7 @@
  *
  *  C++/StandardC arrays and segmented architectures: ((@todo DOCS OBSOLETE))
  *
- *      Our iterators use address arithmatic since that is faster than
+ *      Our iterators use address arithmetic since that is faster than
  *  array indexing, but that requires care in the presence of patching,
  *  and in iterating backwards.
  *
@@ -51,12 +51,12 @@
  *
  *      The next possible trick is for backwards iteration always point one
  *  past the one you mean, and have it.Current () subtract one before
- *  dereferncing. This works pretty well, but makes source code sharing between
+ *  dereferencing. This works pretty well, but makes source code sharing between
  *  the forwards and backwards cases difficult.
  *
  *      The next possible trick, and the one we use for now, is to have
  *  fCurrent point to the current item, and in the Next() code, when
- *  going backwards, reset fCurrent to _fEnd - bizzare as this may seem
+ *  going backwards, reset fCurrent to _fEnd - bizarre as this may seem
  *  then the test code can be shared among the forwards and backwards
  *  implementations, all the patching code can be shared, with only this
  *  one minor check. Other potential choices are presented in the TODO

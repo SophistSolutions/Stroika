@@ -9,10 +9,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/String.h"
-#include "../Containers/Common.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
 

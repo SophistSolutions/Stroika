@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "CharacterEncodingException.h"
 

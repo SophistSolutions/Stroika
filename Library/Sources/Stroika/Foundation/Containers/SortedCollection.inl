@@ -4,7 +4,8 @@
 #ifndef _Stroika_Foundation_Containers_SortedCollection_inl_
 #define _Stroika_Foundation_Containers_SortedCollection_inl_
 
-#include "../Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+
 #include "Factory/SortedCollection_Factory.h"
 
 namespace Stroika::Foundation::Containers {

@@ -11,7 +11,7 @@
  */
 #include <wchar.h>
 
-#include "../Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Configuration {
 

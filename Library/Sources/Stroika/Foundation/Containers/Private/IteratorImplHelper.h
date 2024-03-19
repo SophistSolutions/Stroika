@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Private_IteratorImplHelper_h_
 #define _Stroika_Foundation_Containers_Private_IteratorImplHelper_h_
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "../Common.h"
 

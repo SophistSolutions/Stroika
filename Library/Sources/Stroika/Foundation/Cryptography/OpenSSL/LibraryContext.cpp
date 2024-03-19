@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qHasFeature_OpenSSL
 #include <openssl/evp.h>
@@ -10,8 +10,8 @@
 #endif
 #endif
 
-#include "../../Debug/Assertions.h"
-#include "../../Execution/Exceptions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "LibraryContext.h"
 
