@@ -4,15 +4,14 @@
 #ifndef _Stroika_Foundation_Debug_Trace_h_
 #define _Stroika_Foundation_Debug_Trace_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <array>
 #include <filesystem>
 #include <thread>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Time/Realtime.h"
-
+#include "../Configuration/Common.h"
+#include "../Time/Realtime.h"
 #include "CompileTimeFlagChecker.h"
 
 /**

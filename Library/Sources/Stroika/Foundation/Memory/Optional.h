@@ -4,19 +4,18 @@
 #ifndef _Stroika_Foundation_Memory_Optional_h_
 #define _Stroika_Foundation_Memory_Optional_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <mutex>
 #include <optional>
 #include <shared_mutex>
 
-#include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Empty.h"
-#include "Stroika/Foundation/Containers/Adapters/Adder.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "Stroika/Foundation/Execution/NullMutex.h"
-
+#include "../Common/Compare.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Empty.h"
+#include "../Containers/Adapters/Adder.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
+#include "../Execution/NullMutex.h"
 #include "BlockAllocated.h"
 #include "Common.h"
 

@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Execution_WhenTimeExceeded_h_
 #define _Stroika_Foundation_Execution_WhenTimeExceeded_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Time/Realtime.h"
+#include "../Time/Realtime.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

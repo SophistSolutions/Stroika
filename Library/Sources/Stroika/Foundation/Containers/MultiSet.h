@@ -4,18 +4,17 @@
 #ifndef _Stroika_Foundation_Containers_MultiSet_h_
 #define _Stroika_Foundation_Containers_MultiSet_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <set>
 
-#include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Common/CountedValue.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
-#include "Stroika/Foundation/Memory/SharedByValue.h"
-#include "Stroika/Foundation/Traversal/Iterable.h"
-
+#include "../Common/Compare.h"
+#include "../Common/CountedValue.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
 #include "Common.h"
 #include "DefaultTraits/MultiSet.h"
 

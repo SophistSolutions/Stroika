@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Math_Common_h_
 #define _Stroika_Foundation_Math_Common_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <algorithm>
 #include <cmath> // though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h

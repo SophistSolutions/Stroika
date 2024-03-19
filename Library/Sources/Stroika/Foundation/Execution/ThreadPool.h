@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_ThreadPool_h_
 #define _Stroika_Foundation_Execution_ThreadPool_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <list>
 #include <mutex>
 
-#include "Stroika/Foundation/Containers/Collection.h"
+#include "../Containers/Collection.h"
 
 #include "Function.h"
 #include "Thread.h"

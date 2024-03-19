@@ -4,17 +4,17 @@
 #ifndef _Stroika_Foundation_Execution_Thread_h_
 #define _Stroika_Foundation_Execution_Thread_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <functional>
 #include <map>
 #include <optional>
 #include <thread>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "Stroika/Foundation/Time/Realtime.h"
-#include "Stroika/Foundation/Traversal/Iterable.h"
+#include "../Configuration/Common.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
+#include "../Time/Realtime.h"
+#include "../Traversal/Iterable.h"
 
 #include "Exceptions.h"
 #include "Signals.h"

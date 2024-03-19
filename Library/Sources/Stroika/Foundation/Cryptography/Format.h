@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_Cryptography_Format_h_
 #define _Stroika_Foundation_Cryptography_Format_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <array>
 #include <cstdint>
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Streams/InputStream.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Streams/InputStream.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

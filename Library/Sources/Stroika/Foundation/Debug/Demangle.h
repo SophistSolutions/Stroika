@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Debug_Demangle_h_
 #define _Stroika_Foundation_Debug_Demangle_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/String.h"
+#include "../Characters/String.h"
 
 namespace Stroika::Foundation::Debug {
 

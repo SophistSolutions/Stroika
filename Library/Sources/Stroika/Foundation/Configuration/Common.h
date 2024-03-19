@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Configuration_Common_h_
 #define _Stroika_Foundation_Configuration_Common_h_ 1
 
-#include "Stroika/Foundation/Common/Common.h"
+#include "../Common/Common.h"
 
 namespace Stroika::Foundation::Configuration {
 

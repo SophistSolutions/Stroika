@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_DataExchange_RecordNotFoundException_h_
 #define _Stroika_Foundation_DataExchange_RecordNotFoundException_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <optional>
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "../Characters/String.h"
+#include "../Execution/Exceptions.h"
 
 namespace Stroika::Foundation::DataExchange {
 

@@ -4,13 +4,12 @@
 #ifndef _Stroika_Foundation_Configuration_Locale_h_
 #define _Stroika_Foundation_Configuration_Locale_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <locale>
 #include <vector>
 
-#include "Stroika/Foundation/Characters/String.h"
-
+#include "../Characters/String.h"
 #include "Common.h"
 
 /**

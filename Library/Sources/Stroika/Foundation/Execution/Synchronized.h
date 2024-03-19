@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Execution_Synchronized_h_
 #define _Stroika_Foundation_Execution_Synchronized_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <compare>
 #include <functional>
@@ -13,9 +13,9 @@
 #include <shared_mutex>
 #include <type_traits>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Empty.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Empty.h"
+#include "../Configuration/TypeHints.h"
 
 #include "Common.h"
 #include "Finally.h"

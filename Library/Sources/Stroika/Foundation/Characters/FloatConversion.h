@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Characters_FloatConversion_h_
 #define _Stroika_Foundation_Characters_FloatConversion_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <ios>
 #include <locale>
 #include <optional>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Configuration/Common.h"
 
 #include "String.h"
 

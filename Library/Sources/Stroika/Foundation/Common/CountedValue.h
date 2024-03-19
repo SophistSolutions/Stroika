@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_Common_CountedValue_h_
 #define _Stroika_Foundation_Common_CountedValue_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <compare>
 #include <utility>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Configuration/TypeHints.h"
 
 /**
  * TODO:

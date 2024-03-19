@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Math_ReBin_h_
 #define _Stroika_Foundation_Math_ReBin_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Traversal/DiscreteRange.h"
-#include "Stroika/Foundation/Traversal/Range.h"
+#include "../Containers/Sequence.h"
+#include "../Containers/Set.h"
+#include "../Traversal/DiscreteRange.h"
+#include "../Traversal/Range.h"
 
 /**
  *  \file

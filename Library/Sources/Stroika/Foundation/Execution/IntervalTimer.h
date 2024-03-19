@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Execution_IntervalTimer_h_
 #define _Stroika_Foundation_Execution_IntervalTimer_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Containers/KeyedCollection.h"
-#include "Stroika/Foundation/Execution/Function.h"
-#include "Stroika/Foundation/Time/Duration.h"
-#include "Stroika/Foundation/Time/Realtime.h"
+#include "../Configuration/Common.h"
+#include "../Containers/KeyedCollection.h"
+#include "../Execution/Function.h"
+#include "../Time/Duration.h"
+#include "../Time/Realtime.h"
 
 /**
  *  \file

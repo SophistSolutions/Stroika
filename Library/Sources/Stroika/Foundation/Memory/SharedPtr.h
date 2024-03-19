@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_Memory_SharedPtr_h_
 #define _Stroika_Foundation_Memory_SharedPtr_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <atomic>
 #include <compare>
 #include <cstdint>
 #include <type_traits>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Configuration/Common.h"
 
 /**
  *  \file

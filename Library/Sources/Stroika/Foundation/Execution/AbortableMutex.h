@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_AbortableMutex_h_
 #define _Stroika_Foundation_Execution_AbortableMutex_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <memory>
 #include <mutex>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Configuration/Common.h"
 
 /*
  *

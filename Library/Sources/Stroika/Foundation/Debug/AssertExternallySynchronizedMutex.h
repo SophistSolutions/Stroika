@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Debug_AssertExternallySynchronizedMutex_h_
 #define _Stroika_Foundation_Debug_AssertExternallySynchronizedMutex_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <algorithm>
 #include <array>
@@ -16,7 +16,7 @@
 #include <shared_mutex>
 #include <thread>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Configuration/Common.h"
 
 #include "Assertions.h"
 #include "Sanitizer.h"

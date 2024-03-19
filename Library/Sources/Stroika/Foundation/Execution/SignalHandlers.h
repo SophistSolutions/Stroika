@@ -4,15 +4,14 @@
 #ifndef _Stroika_Foundation_Execution_SignalHandlers_h_
 #define _Stroika_Foundation_Execution_SignalHandlers_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <compare>
 #include <csignal>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
-#include "Stroika/Foundation/Containers/Set.h"
-
+#include "../Configuration/Common.h"
+#include "../Containers/Mapping.h"
+#include "../Containers/Set.h"
 #include "Function.h"
 #include "Signals.h"
 

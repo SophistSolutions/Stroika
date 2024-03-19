@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Time_Realtime_h_
 #define _Stroika_Foundation_Time_Realtime_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <chrono>
 
-#include "Stroika/Foundation/Traversal/Common.h"
+#include "../Traversal/Common.h"
 
 #include "Clock.h"
 

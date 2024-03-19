@@ -4,15 +4,14 @@
 #ifndef _Stroika_Foundation_Containers_Stack_h_
 #define _Stroika_Foundation_Containers_Stack_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <ranges>
 
-#include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
-#include "Stroika/Foundation/Traversal/Iterable.h"
-
+#include "../Common/Compare.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Traversal/Iterable.h"
 #include "Common.h"
 
 /**

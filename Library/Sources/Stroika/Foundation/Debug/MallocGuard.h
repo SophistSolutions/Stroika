@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Debug_MallocGuard_h_
 #define _Stroika_Foundation_Debug_MallocGuard_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <windows.h>
@@ -13,11 +13,10 @@
 #endif
 #include <array>
 
-#include "Stroika/Foundation/Characters/SDKChar.h"
-#include "Stroika/Foundation/Characters/SDKString.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Time/Realtime.h"
-
+#include "../Characters/SDKChar.h"
+#include "../Characters/SDKString.h"
+#include "../Configuration/Common.h"
+#include "../Time/Realtime.h"
 #include "CompileTimeFlagChecker.h"
 
 /**

@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_Common_KeyValuePair_h_
 #define _Stroika_Foundation_Common_KeyValuePair_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <compare>
 
 #include <type_traits>
 #include <utility>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Configuration/Common.h"
 
 /**
  * TODO:

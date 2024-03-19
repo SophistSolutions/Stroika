@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_Streams_Stream_h_
 #define _Stroika_Foundation_Streams_Stream_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <memory>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "Stroika/Foundation/Memory/Common.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
+#include "../Memory/Common.h"
 
 /**
  *  \file

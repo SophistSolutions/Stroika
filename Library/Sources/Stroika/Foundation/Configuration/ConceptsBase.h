@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Configuration_ConceptsBase_h_
 #define _Stroika_Foundation_Configuration_ConceptsBase_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <type_traits>
 

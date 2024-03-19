@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Characters_CodeCvt_h_
 #define _Stroika_Foundation_Characters_CodeCvt_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <bit>
 #include <locale>

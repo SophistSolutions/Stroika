@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Streams_TextReader_h_
 #define _Stroika_Foundation_Streams_TextReader_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <optional>
 
-#include "Stroika/Foundation/Characters/CodeCvt.h"
-#include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "../Characters/CodeCvt.h"
+#include "../Characters/UTFConvert.h"
 
 #include "InputStream.h"
 

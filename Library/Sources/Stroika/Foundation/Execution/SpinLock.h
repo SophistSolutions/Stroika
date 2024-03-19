@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Execution_SpinLock_h_
 #define _Stroika_Foundation_Execution_SpinLock_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <atomic>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Time/Realtime.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Time/Realtime.h"
 
 /**
  *  \file

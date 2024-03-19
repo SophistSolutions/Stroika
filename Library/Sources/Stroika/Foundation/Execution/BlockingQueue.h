@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_Execution_BlockingQueue_h_
 #define _Stroika_Foundation_Execution_BlockingQueue_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Containers/Queue.h"
+#include "../Configuration/Common.h"
+#include "../Containers/Queue.h"
 
 #include "ConditionVariable.h"
 

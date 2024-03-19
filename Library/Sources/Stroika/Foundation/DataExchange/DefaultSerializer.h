@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_DataExchange_DefaultSerializer_h_
 #define _Stroika_Foundation_DataExchange_DefaultSerializer_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <cstdint>
 
-#include "Stroika/Foundation/Memory/BLOB.h"
+#include "../Memory/BLOB.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

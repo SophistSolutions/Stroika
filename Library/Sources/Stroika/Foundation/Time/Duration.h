@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Time_Duration_h_
 #define _Stroika_Foundation_Time_Duration_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <chrono>
 #include <climits>
@@ -16,10 +16,10 @@
 #include <Winsock2.h>
 #endif
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Execution/Exceptions.h"
-#include "Stroika/Foundation/Traversal/Range.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Execution/Exceptions.h"
+#include "../Traversal/Range.h"
 
 #include "Common.h"
 #include "Realtime.h"

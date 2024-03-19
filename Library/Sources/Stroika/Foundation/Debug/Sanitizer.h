@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Debug_Sanitizer_h_
 #define _Stroika_Foundation_Debug_Sanitizer_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #if qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy
 #define __sanitizer_annotate_contiguous_container __BWA__sanitizer_annotate_contiguous_container

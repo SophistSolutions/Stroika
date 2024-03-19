@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Memory_StackBuffer_h_
 #define _Stroika_Foundation_Memory_StackBuffer_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include "InlineBuffer.h"
 

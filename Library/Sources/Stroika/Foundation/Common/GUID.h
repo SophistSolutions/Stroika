@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Common_GUID_h_
 #define _Stroika_Foundation_Common_GUID_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <compare>
 
@@ -12,9 +12,9 @@
 #include <guiddef.h>
 #endif
 
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "../Characters/ToString.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 
 /**
  */

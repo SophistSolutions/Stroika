@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Execution_Process_h_
 #define _Stroika_Foundation_Execution_Process_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <mutex>
 
@@ -16,7 +16,7 @@
 #include <process.h>
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Configuration/Common.h"
 
 #if !defined(qHas_pid_t)
 #error "qHas_pid_t must  be defined in StroikaConfig.h"

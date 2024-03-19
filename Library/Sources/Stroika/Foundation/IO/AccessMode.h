@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_IO_AccessMode_h_
 #define _Stroika_Foundation_IO_AccessMode_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "../Configuration/Enumeration.h"
 
 namespace Stroika::Foundation::IO {
 

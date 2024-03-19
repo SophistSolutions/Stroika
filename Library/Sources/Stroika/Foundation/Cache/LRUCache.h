@@ -4,18 +4,18 @@
 #ifndef _Stroika_Foundation_Cache_LRUCache_h_
 #define _Stroika_Foundation_Cache_LRUCache_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <optional>
 #include <vector>
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "Stroika/Foundation/Memory/InlineBuffer.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Configuration/TypeHints.h"
+#include "../Containers/Mapping.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
+#include "../Memory/InlineBuffer.h"
 
 #include "Statistics.h"
 

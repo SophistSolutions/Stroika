@@ -4,16 +4,16 @@
 #ifndef _Stroika_Foundation_Cache_BloomFilter_h_
 #define _Stroika_Foundation_Cache_BloomFilter_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <type_traits>
 
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
-#include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Cryptography/Digest/Hash.h"
+#include "../Characters/ToString.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/TypeHints.h"
+#include "../Containers/Sequence.h"
+#include "../Containers/Set.h"
+#include "../Cryptography/Digest/Hash.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

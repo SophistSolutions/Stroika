@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_SortedKeyedCollection_h_
 #define _Stroika_Foundation_Containers_SortedKeyedCollection_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "../Configuration/Concepts.h"
 
 #include "KeyedCollection.h"
 

@@ -4,7 +4,7 @@
 #ifndef _Stroia_Foundation_Execution_DLLSupport_h_
 #define _Stroia_Foundation_Execution_DLLSupport_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <filesystem>
 
@@ -14,8 +14,8 @@
 #include <dlfcn.h>
 #endif
 
-#include "Stroika/Foundation/Characters/SDKString.h"
-#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "../Characters/SDKString.h"
+#include "../Execution/Exceptions.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

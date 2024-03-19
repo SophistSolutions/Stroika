@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Execution_RequiredComponentVersionMismatchException_h_
 #define _Stroika_Foundation_Execution_RequiredComponentVersionMismatchException_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/String.h"
+#include "../Characters/String.h"
 
 #include "Exceptions.h"
 

@@ -4,7 +4,7 @@
 #ifndef _Stroia_Foundation_Execution_SilentException_h_
 #define _Stroia_Foundation_Execution_SilentException_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <exception>
 

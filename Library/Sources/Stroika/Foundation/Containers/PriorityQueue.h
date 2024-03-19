@@ -4,13 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_PriorityQueue_h_
 #define _Stroika_Foundation_Containers_PriorityQueue_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
-#include "Stroika/Foundation/Memory/SharedByValue.h"
-#include "Stroika/Foundation/Traversal/Iterable.h"
-
+#include "../Configuration/Common.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
 #include "Common.h"
 
 /**

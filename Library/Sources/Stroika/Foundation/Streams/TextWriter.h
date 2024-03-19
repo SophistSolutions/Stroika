@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_Streams_TextWriter_h_
 #define _Stroika_Foundation_Streams_TextWriter_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/CodeCvt.h"
-#include "Stroika/Foundation/Characters/TextConvert.h"
+#include "../Characters/CodeCvt.h"
+#include "../Characters/TextConvert.h"
 
 #include "OutputStream.h"
 

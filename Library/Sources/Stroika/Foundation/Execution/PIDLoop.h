@@ -4,15 +4,14 @@
 #ifndef _Stroika_Foundation_Execution_PIDLoop_h_
 #define _Stroika_Foundation_Execution_PIDLoop_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <compare>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Configuration/Common.h"
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Time/Realtime.h"
-
+#include "../Characters/String.h"
+#include "../Time/Realtime.h"
 #include "Synchronized.h"
 #include "Thread.h"
 

@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Execution_Common_h_
 #define _Stroika_Foundation_Execution_Common_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <execution>
 
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "../Configuration/Enumeration.h"
 
 namespace Stroika::Foundation::Execution {
 

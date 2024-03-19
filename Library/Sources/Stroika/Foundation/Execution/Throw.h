@@ -4,15 +4,15 @@
 #ifndef _Stroia_Foundation_Execution_Throw_h_
 #define _Stroia_Foundation_Execution_Throw_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <exception>
 #include <memory>
 #include <stdexcept>
 #include <system_error>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Debug/Trace.h"
+#include "../Configuration/Common.h"
+#include "../Debug/Trace.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

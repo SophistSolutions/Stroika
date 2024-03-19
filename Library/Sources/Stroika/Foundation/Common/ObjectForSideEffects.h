@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Common_ObjectForSideEffects_h_
 #define _Stroika_Foundation_Common_ObjectForSideEffects_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <functional>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Configuration/Common.h"
 
 namespace Stroika::Foundation::Common {
 

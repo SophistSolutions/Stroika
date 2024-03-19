@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_
 #define _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <mutex>
 #include <vector>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Memory/BLOB.h"
+#include "../Configuration/Common.h"
+#include "../Memory/BLOB.h"
 
 #include "ExternallyOwnedSpanInputStream.h"
 

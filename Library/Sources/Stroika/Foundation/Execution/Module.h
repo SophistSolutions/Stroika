@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Execution_Module_h_
 #define _Stroika_Foundation_Execution_Module_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <filesystem>
 
@@ -12,8 +12,8 @@
 #include <unistd.h>
 #endif
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
 
 #if !defined(qHas_pid_t)
 #error "qHas_pid_t must  be defined in StroikaConfig.h"

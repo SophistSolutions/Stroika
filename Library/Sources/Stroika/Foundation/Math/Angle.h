@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Math_Angle_h_
 #define _Stroika_Foundation_Math_Angle_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <compare>
 
-#include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "../Common/Compare.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
 
 /**
  *  \file

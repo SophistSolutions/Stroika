@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Common_TemplateUtilities_h_
 #define _Stroika_Foundation_Common_TemplateUtilities_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <type_traits>
 #include <variant>

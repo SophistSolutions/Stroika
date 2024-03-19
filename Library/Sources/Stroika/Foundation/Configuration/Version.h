@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Configuration_Version_h_
 #define _Stroika_Foundation_Configuration_Version_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <compare>
 #include <cstdint>
 
-#include "Stroika/Foundation/Characters/String.h"
+#include "../Characters/String.h"
 
 #include "VersionDefs.h"
 

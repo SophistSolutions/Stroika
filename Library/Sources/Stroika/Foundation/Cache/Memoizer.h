@@ -4,16 +4,15 @@
 #ifndef _Stroika_Foundation_Cache_Memoizer_h_
 #define _Stroika_Foundation_Cache_Memoizer_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <optional>
 #include <vector>
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
-
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/TypeHints.h"
+#include "../Containers/Mapping.h"
 #include "LRUCache.h"
 
 /**

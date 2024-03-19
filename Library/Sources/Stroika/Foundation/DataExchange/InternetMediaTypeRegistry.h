@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_DataExchange_InternetMediaTypeRegistry_h_
 #define _Stroika_Foundation_DataExchange_InternetMediaTypeRegistry_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <filesystem>
 #include <optional>
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
-#include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Memory/SharedByValue.h"
+#include "../Characters/String.h"
+#include "../Containers/Mapping.h"
+#include "../Containers/Set.h"
+#include "../Memory/SharedByValue.h"
 
 #include "InternetMediaType.h"
 

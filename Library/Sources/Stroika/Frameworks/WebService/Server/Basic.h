@@ -4,11 +4,11 @@
 #ifndef _Stroika_Framework_WebService_Server_Basic_h_
 #define _Stroika_Framework_WebService_Server_Basic_h_ 1
 
-#include "Stroika/Frameworks/StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include "Stroika/Frameworks/WebServer/Request.h"
-#include "Stroika/Frameworks/WebServer/RequestHandler.h"
-#include "Stroika/Frameworks/WebServer/Response.h"
+#include "../../WebServer/Request.h"
+#include "../../WebServer/RequestHandler.h"
+#include "../../WebServer/Response.h"
 
 #include "../Basic.h"
 #include "../OpenAPI/Specification.h"

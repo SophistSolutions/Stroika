@@ -4,16 +4,16 @@
 #ifndef _Stroika_Foundation_Traversal_Range_h_
 #define _Stroika_Foundation_Traversal_Range_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <limits>
 #include <optional>
 #include <type_traits>
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Common/TemplateUtilities.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Characters/String.h"
+#include "../Characters/ToString.h"
+#include "../Common/TemplateUtilities.h"
+#include "../Configuration/Common.h"
 
 #include "Common.h"
 

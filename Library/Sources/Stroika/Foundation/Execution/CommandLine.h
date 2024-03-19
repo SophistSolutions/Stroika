@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Execution_CommandLine_h_
 #define _Stroika_Foundation_Execution_CommandLine_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/SDKChar.h"
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "../Characters/SDKChar.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Containers/Sequence.h"
+#include "../Execution/Exceptions.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

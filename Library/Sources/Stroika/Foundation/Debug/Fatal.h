@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_Debug_Fatal_h_
 #define _Stroika_Foundation_Debug_Fatal_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/SDKChar.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "../Characters/SDKChar.h"
+#include "../Configuration/Common.h"
 
 /*
  * TODO:
