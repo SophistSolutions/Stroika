@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Memory_InlineBuffer_h_
 #define _Stroika_Foundation_Memory_InlineBuffer_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <span>
 
-#include "../Configuration/Common.h"
-#include "../Configuration/Concepts.h"
-#include "../Configuration/TypeHints.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Configuration/TypeHints.h"
 
 #include "Common.h"
 

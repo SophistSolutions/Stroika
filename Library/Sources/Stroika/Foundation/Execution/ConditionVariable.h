@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_ConditionVariable_h_
 #define _Stroika_Foundation_Execution_ConditionVariable_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <condition_variable>
 #include <mutex>
 
-#include "../Time/Realtime.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_ModuleGetterSetter_h_
 #define _Stroika_Foundation_Execution_ModuleGetterSetter_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../Configuration/Common.h"
-#include "../Memory/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

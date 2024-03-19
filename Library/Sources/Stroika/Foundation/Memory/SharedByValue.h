@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Memory_SharedByValue_h_
 #define _Stroika_Foundation_Memory_SharedByValue_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <memory>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  *  \file

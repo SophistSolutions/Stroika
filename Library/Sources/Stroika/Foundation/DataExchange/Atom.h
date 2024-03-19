@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_DataExchange_Atom_h_
 #define _Stroika_Foundation_DataExchange_Atom_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 
-#include "../Characters/String.h"
-#include "../Common/Compare.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Compare.h"
 
 /**
  *  \file

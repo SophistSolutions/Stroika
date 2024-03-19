@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Configuration_SystemConfiguration_h_
 #define _Stroika_Foundation_Configuration_SystemConfiguration_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/String.h"
-#include "../Containers/Sequence.h"
-#include "../Time/DateTime.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Common.h"
 

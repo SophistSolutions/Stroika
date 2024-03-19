@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Execution_Signals_h_
 #define _Stroika_Foundation_Execution_Signals_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <csignal>
 #include <thread>
 
-#include "../Characters/String.h"
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  * Description:

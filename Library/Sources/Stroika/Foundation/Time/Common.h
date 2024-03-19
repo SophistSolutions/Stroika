@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Time_Common_h_
 #define _Stroika_Foundation_Time_Common_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <chrono>
 #include <ctime>

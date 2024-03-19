@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_Characters_StringBuilder_h_
 #define _Stroika_Foundation_Characters_StringBuilder_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
 
 #include "String.h"
 

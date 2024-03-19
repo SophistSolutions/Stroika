@@ -4,11 +4,11 @@
 #ifndef _Stroika_Framework_WebService_Basic_h_
 #define _Stroika_Framework_WebService_Basic_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Containers/Sequence.h"
-#include "../../Foundation/Containers/Set.h"
-#include "../../Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

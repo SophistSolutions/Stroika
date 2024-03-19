@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_Common_Property_h_
 #define _Stroika_Foundation_Common_Property_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <forward_list>
 #include <functional>
 #include <mutex>
 #include <optional>
 
-#include "../Configuration/Common.h"
-#include "../Configuration/TypeHints.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/TypeHints.h"
 
 /**
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

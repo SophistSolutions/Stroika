@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Execution_TimeOutException_h_
 #define _Stroika_Foundation_Execution_TimeOutException_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <condition_variable> // for cv_status
 
-#include "../Time/Realtime.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Exceptions.h"
 

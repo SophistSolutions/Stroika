@@ -4,19 +4,19 @@
 #ifndef _Stroika_Foundation_Time_Date_h_
 #define _Stroika_Foundation_Time_Date_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <chrono>
 #include <climits>
 #include <compare>
 #include <string>
 
-#include "../Characters/String.h"
-#include "../Configuration/Common.h"
-#include "../Configuration/Enumeration.h"
-#include "../DataExchange/ValidationStrategy.h"
-#include "../Execution/Exceptions.h"
-#include "../Traversal/Range.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/DataExchange/ValidationStrategy.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 #include "Common.h"
 

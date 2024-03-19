@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Characters_CharacterEncodingException_h_
 #define _Stroika_Foundation_Characters_CharacterEncodingExceptionm_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 /**
  *  \file

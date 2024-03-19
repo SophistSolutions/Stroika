@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_Debug_TimingTrace_h_
 #define _Stroika_Foundation_Debug_TimingTrace_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/String.h"
-#include "../Execution/WhenTimeExceeded.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Execution/WhenTimeExceeded.h"
 
 /**
  *  \file

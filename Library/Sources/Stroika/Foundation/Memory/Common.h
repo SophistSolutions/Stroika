@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_Memory_Common_h_
 #define _Stroika_Foundation_Memory_Common_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <bit>
 #include <compare>
 #include <memory>
 #include <span>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  */

@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_Execution_WaitForIOReady_h_
 #define _Stroika_Foundation_Execution_WaitForIOReady_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Configuration/Common.h"
-#include "../Containers/Collection.h"
-#include "../Containers/Set.h"
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Execution/Synchronized.h"
-#include "../IO/Network/Socket.h"
-#include "../Time/Duration.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 /**
  *  \file

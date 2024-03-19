@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Traversal_Iterator_h_
 #define _Stroika_Foundation_Traversal_Iterator_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <iterator>
@@ -12,9 +12,8 @@
 #include <optional>
 #include <string>
 
-#include "../Configuration/Common.h"
-
-#include "../Memory/SharedByValue.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Memory/SharedByValue.h"
 
 /**
  *

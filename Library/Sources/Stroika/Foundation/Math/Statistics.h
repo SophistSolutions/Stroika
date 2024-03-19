@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Math_Statistics_h_
 #define _Stroika_Foundation_Math_Statistics_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  *  \file

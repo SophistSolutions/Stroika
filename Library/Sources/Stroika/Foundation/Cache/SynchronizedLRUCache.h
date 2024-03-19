@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Cache_SynchronizedLRUCache_h_
 #define _Stroika_Foundation_Cache_SynchronizedLRUCache_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <mutex>
 #include <shared_mutex>

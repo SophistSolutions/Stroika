@@ -4,17 +4,18 @@
 #ifndef _Stroika_Foundation_Execution_Logger_h_
 #define _Stroika_Foundation_Execution_Logger_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdarg>
 #include <filesystem>
 
-#include "../Characters/String.h"
-#include "../Configuration/Common.h"
-#include "../Configuration/Enumeration.h"
-#include "../Debug/Assertions.h"
-#include "../Streams/OutputStream.h"
-#include "../Time/Duration.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
+#include "Stroika/Foundation/Time/Duration.h"
+
 #include "Synchronized.h"
 
 /**

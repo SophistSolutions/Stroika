@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Execution_TimedLockGuard_h_
 #define _Stroika_Foundation_Execution_TimedLockGuard_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <mutex>
 
-#include "../Time/Duration.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "TimeOutException.h"
 

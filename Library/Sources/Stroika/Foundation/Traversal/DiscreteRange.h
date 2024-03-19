@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Traversal_DiscreteRange_h_
 #define _Stroika_Foundation_Traversal_DiscreteRange_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Iterable.h"
 #include "Range.h"

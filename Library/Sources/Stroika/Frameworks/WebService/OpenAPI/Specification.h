@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_WebService_OpenAPI_Basic_h_
 #define _Stroika_Framework_WebService_OpenAPI_Basic_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"

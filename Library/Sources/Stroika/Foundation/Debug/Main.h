@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Debug_Main_h_
 #define _Stroika_Foundation_Debug_Main_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 namespace Stroika::Foundation::Debug {
 
