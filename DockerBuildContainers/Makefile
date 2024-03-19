@@ -56,6 +56,7 @@ IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
 ifeq (${BUILD_DEV_IMAGES},1)
 IMAGES+= sophistsolutionsinc/stroika-dev
 IMAGES+= sophistsolutionsinc/stroika-dev-2204
+IMAGES+= sophistsolutionsinc/stroika-dev-2310
 IMAGES+= sophistsolutionsinc/stroika-dev-2404
 endif
 endif
@@ -109,6 +110,9 @@ sophistsolutionsinc/stroika-dev:
 sophistsolutionsinc/stroika-dev-2204:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2204 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 
+sophistsolutionsinc/stroika-dev-2310:
+	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2310 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests .
+
 sophistsolutionsinc/stroika-dev-2404:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2404 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests .
 
@@ -117,6 +121,7 @@ stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2310 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2310 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 endif
 
