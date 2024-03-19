@@ -11,6 +11,7 @@
 #include "../../WebServer/Response.h"
 
 #include "../Basic.h"
+#include "../OpenAPI/Specification.h"
 
 /*
  */
@@ -42,15 +43,18 @@ namespace Stroika::Frameworks::WebService::Server {
     /**
      */
     struct DocsOptions {
-        String                  fH1Text           = "Operations";
-        String                  fIntroductoryText = ""; // div section of introductory text about operations
-        Mapping<String, String> fVariables2Substitute;
-        String                  fCSSSection = kDefaultCSSSection;
-        static const String     kDefaultCSSSection;
+        String                           fH1Text           = "Operations";
+        String                           fIntroductoryText = ""; // div section of introductory text about operations
+        Mapping<String, String>          fVariables2Substitute;
+        String                           fCSSSection = kDefaultCSSSection;
+        static const String              kDefaultCSSSection;
+        optional<OpenAPI::Specification> fOpenAPISpecification;
+        optional<IO::Network::URI>       fOpenAPISpecificationURI;
     };
+
     /**
      */
-    void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions = DocsOptions{});
+    void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions = {});
 
 }
 

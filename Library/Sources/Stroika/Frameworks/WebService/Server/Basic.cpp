@@ -78,6 +78,10 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     response->writeln (L"<body>");
     response->printf (L"<h1>%s</h1>", docsOptions.fH1Text.As<wstring> ().c_str ());
     response->printf (L"<div class='introduction'>%s</div>", docsOptions.fIntroductoryText.As<wstring> ().c_str ());
+
+    if (docsOptions.fOpenAPISpecification and docsOptions.fOpenAPISpecificationURI) {
+        response->printf (L"<div class='mainDocs'><a href=%s>%OpenAPI File</a></div>", docsOptions.fOpenAPISpecificationURI->As<String> ().As<wstring> ().c_str ());
+    }
     response->writeln (L"<ul>");
     auto substVars = [=] (const String& origStr) {
         String str = origStr;
