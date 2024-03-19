@@ -98,10 +98,10 @@ namespace Stroika::Foundation::Characters {
             using Configuration::StdCompat::vformat;
             if constexpr (same_as<CHAR_T, char>) {
                 // @todo fixup the characterset handling here...
-                return vformat (sv, make_format_args (args...));
+                return vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{sv}, make_format_args (args...));
             }
             else if constexpr (same_as<CHAR_T, wchar_t>) {
-                return vformat (sv, make_wformat_args (args...));
+                return vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{sv}, make_wformat_args (args...));
             }
         }
     };
