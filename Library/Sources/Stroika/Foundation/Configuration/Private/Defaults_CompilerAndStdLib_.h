@@ -978,9 +978,6 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 
 #endif
 
-
-
-
 /***
  *     Compiling Library/Sources/Stroika/Foundation/Debug/BackTrace.cpp ... 
 In file included from BackTrace.cpp:24:
@@ -996,15 +993,14 @@ In file included from BackTrace.cpp:24:
 */
 #ifndef qCompilerAndStdLib_StdBacktraceCompile_Buggy
 
-#if defined(__clang__) && !defined(__APPLE__) && defined (__GLIBCXX__)
-// broken in clang++-18 with 
+#if defined(__clang__) && !defined(__APPLE__) && defined(__GLIBCXX__)
+// broken in clang++-18 with
 #define qCompilerAndStdLib_StdBacktraceCompile_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_StdBacktraceCompile_Buggy 0
 #endif
 
 #endif
-
 
 /**
  *
