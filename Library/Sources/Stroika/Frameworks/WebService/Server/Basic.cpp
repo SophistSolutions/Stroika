@@ -82,7 +82,7 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     response->printf (L"<div class='introduction'>%s</div>\n", docsOptions.fIntroductoryText.As<wstring> ().c_str ());
 
     if (docsOptions.fOpenAPISpecificationURI) {
-        response->printf (L"<div class='OpenAPI'><a href=%s>OpenAPI File</a></div>\n",
+        response->printf (L"<div class='OpenAPI'>Download <a href=%s>OpenAPI File</a></div>\n",
                           docsOptions.fOpenAPISpecificationURI->As<String> ().As<wstring> ().c_str ());
     }
     response->writeln (L"<ul>");
