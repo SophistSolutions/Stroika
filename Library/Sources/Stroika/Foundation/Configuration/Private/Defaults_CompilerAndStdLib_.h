@@ -81,9 +81,9 @@
     "Warning: Stroika v3 does not support versions prior to clang++ 14 (non-apple); note that Stroika v2.1 supports earlier clang "        \
     "versions"
 #endif
-#if (__clang_major__ > 16)
+#if (__clang_major__ > 17)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Info: Stroika untested with this version of clang++ - (>16.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+    "Info: Stroika untested with this version of clang++ - (>17.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -558,6 +558,12 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Co
                                                             ^~~~~~~~~~~~~~~~~~
 2 errors generated.
 make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /Sandbox/Stroika-Dev/IntermediateFiles/clang++-10-debug/
+
+ file included from ./CodeCvt.h:469:
+./CodeCvt.inl:591:53: error: out-of-line definition of 'New' does not match any declaration in 'Stroika::Foundation::Characters::CodeCvt::Options'
+  591 |     constexpr inline auto CodeCvt<CHAR_T>::Options::New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o) -> Options
+      |                                                     ^~~
+1 e
 */
 
 #ifndef qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -571,8 +577,9 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 // first noticed broken in apply clang 14
 // still broken in clang++ 15
 // still broken in clang++ 16
+// still broken in clang++ 17
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #else
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy 0
 #endif
@@ -610,6 +617,25 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/Set_Arra
 #define BWA_Helper_ContraintInMemberClassSeparateDeclare_(ConstrainedTypeName) ConstrainedTypeName
 #endif
 
+
+
+/**
+ *  Library/Sources/Stroika/Foundation/Characters/String.cpp ... 
+In file included from String.cpp:17:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h:11:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/../Digester.h:12:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/BLOB.h:454:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/BLOB.inl:22:59: error: out-of-line declaration of 'AsBase64' does not match any declaration in 'Stroika::Foundation::Memory::BLOB'
+   22 |     Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 () const;
+      |                                                           ^~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/BLOB.inl:24:59: error: out-of-line declaration of 'AsBase64' does not match any declaration in 'Stroika::Foundation::Memory::BLOB'
+   24 |     Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 (const Cryptography::Encoding::Algorithm::Base64::Options& o) const;
+      |                                                           ^~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/BLOB.inl:201:43: error: out-of-line declaration of 'As' does not match any declaration in 'Stroika::Foundation::Memory::BLOB'
+  201 |     Streams::InputStream::Ptr<byte> BLOB::As () const;
+      |                                           ^~
+
+*/
 #ifndef qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -618,8 +644,9 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/Set_Arra
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 16
+// first noticed broken in apply clang 17
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #else
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy 0
 #endif
@@ -660,6 +687,11 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
  1131 |     inline bool String::operator== (T&& rhs) const
       |                 ^~~~~~
 
+
+ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (with operand types 'String' and 'String') to be ambiguous despite there being a unique best viable function [-Wambiguous-reversed-operator]
+ 1073 |     Ensure (sb.str () == SubString (0, from) + replacement + SubString (to));
+      |             ~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/
 */
 #ifndef qCompilerAndStdLib_CompareOpReverse_Buggy
 
@@ -668,7 +700,8 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__)
 // reproduced in clang 16
-#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+// reproduced in clang 17
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 13 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
 // Still broken in GCC 14
@@ -1576,7 +1609,8 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../includ
 #ifndef qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
 
 #if defined(__clang__)
-#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
+// also broken in clang++-17
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 17)
 #else
 #define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy 0
 #endif
@@ -1688,8 +1722,9 @@ make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
 // First noticed in clang++-14
 // broken in clang++-15
 // broken in clang++-16
+// broken in clang++-17
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #else
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
 #endif
@@ -2200,7 +2235,8 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
 // appears still broken in clang++-14
 // appears still broken in clang++-15
 // appears still broken in clang++-16
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+// appears still broken in clang++-17
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(_MSC_VER)
 // Newly broken in _MSC_VER_2k22_17Pt2_ - wonder if that means this is my bug not vs2k22/clang?
 // broken in _MSC_VER_2k22_17Pt3_
@@ -2294,7 +2330,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-14
 // still broken in clang++-15
 // still broken in clang++-16
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+// still broken in clang++-17
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
@@ -2357,8 +2394,9 @@ Test.cpp:173:31: error: template template argument has different template parame
 // verified still broken in clang++-14
 // verified still broken in clang++-15
 // verified still broken in clang++-16
+// verified still broken in clang++-17
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
