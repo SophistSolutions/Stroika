@@ -62,12 +62,12 @@ void WebService::Server::ExpectedMethod (const Request& request, const WebServic
  ********************************************************************************
  */
 const String WebService::Server::DocsOptions::kDefaultCSSSection =
-    "div.mainDocs {margin-left: .3in; margin-right: .3in; }"sv
-    "div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }"sv
-    "div.OpenAPI { padding-top: 6pt; padding-bottom: 6pt; }"sv
-    "div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}"sv
-    "div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }"sv
-    "div.introduction div { padding-top: 2pt; padding-bottom: 2pt; }"sv;
+    "div.mainDocs {margin-left: .3in; margin-right: .3in; }\n"
+    "div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }\n"
+    "div.OpenAPI { padding-top: 6pt; padding-bottom: 6pt; }\n"
+    "div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}\n"
+    "div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }\n"
+    "div.introduction div { padding-top: 2pt; padding-bottom: 2pt; }\n"sv;
 
 void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions)
 {
@@ -78,10 +78,10 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     response->writeln (L"</style>");
     response->writeln (L"<body>");
     response->printf (L"<h1>%s</h1>", docsOptions.fH1Text.As<wstring> ().c_str ());
-    response->printf (L"<div class='introduction'>%s</div>", docsOptions.fIntroductoryText.As<wstring> ().c_str ());
+    response->printf (L"<div class='introduction'>%s</div>\n", docsOptions.fIntroductoryText.As<wstring> ().c_str ());
 
-    if (docsOptions.fOpenAPISpecification and docsOptions.fOpenAPISpecificationURI) {
-        response->printf (L"<div class='OpenAPI'><a href=%s>%OpenAPI File</a></div>",
+    if (docsOptions.fOpenAPISpecificationURI) {
+        response->printf (L"<div class='OpenAPI'><a href=%s>OpenAPI File</a></div>\n",
                           docsOptions.fOpenAPISpecificationURI->As<String> ().As<wstring> ().c_str ());
     }
     response->writeln (L"<ul>");
