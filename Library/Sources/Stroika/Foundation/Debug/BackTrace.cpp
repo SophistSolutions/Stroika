@@ -20,7 +20,7 @@
 #define BOOST_STACKTRACE_USE_WINDBG_CACHED 1
 #endif
 
-#if __cpp_lib_stacktrace >= 202011
+#if __cpp_lib_stacktrace >= 202011 && !qCompilerAndStdLib_StdBacktraceCompile_Buggy
 #include <stacktrace>
 #endif
 
@@ -51,7 +51,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
 
     [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
 
-#if __cpp_lib_stacktrace >= 202011 && !qCompilerAndStdLib_stacktraceLinkError_Buggy
+#if __cpp_lib_stacktrace >= 202011 && !qCompilerAndStdLib_stacktraceLinkError_Buggy && !qCompilerAndStdLib_StdBacktraceCompile_Buggy
     auto         st = std::stacktrace::current ();
     stringstream o;
     bool         firstEntry = true;

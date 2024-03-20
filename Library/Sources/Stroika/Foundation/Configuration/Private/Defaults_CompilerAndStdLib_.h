@@ -961,7 +961,6 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f3d1d978520]
 /usr/lib/llvm-15/bin/../lib/libclang-cpp.so.15(+0xda0b
 */
-
 #ifndef qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -978,6 +977,34 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 #endif
 
 #endif
+
+
+
+
+/***
+ *     Compiling Library/Sources/Stroika/Foundation/Debug/BackTrace.cpp ... 
+In file included from BackTrace.cpp:24:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stacktrace:595:3: error: no matching function for call to 'operator delete'
+  595 |                 _GLIBCXX_OPERATOR_DELETE (static_cast<void*>(_M_frames),
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  596 |                                           _M_capacity * sizeof(value_type));
+      |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stacktrace:550:35: note: expanded from macro '_GLIBCXX_OPERATOR_DELETE'
+  550 | # define _GLIBCXX_OPERATOR_DELETE __builtin_operator_delete
+      |                                   ^
+
+*/
+#ifndef qCompilerAndStdLib_StdBacktraceCompile_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__) && defined (__GLIBCXX__)
+// broken in clang++-18 with 
+#define qCompilerAndStdLib_StdBacktraceCompile_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
+#else
+#define qCompilerAndStdLib_StdBacktraceCompile_Buggy 0
+#endif
+
+#endif
+
 
 /**
  *
