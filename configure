@@ -3018,12 +3018,12 @@ if ($onlyGenerateIfCompilerExists) {
 				$generateBecause = "$COMPILER_DRIVER_CPlusPlus with libstdc++ doesn't work with more recent versions of libstdc++";
 			}
 		}
-		if (16.0 <= $itsVersion && $itsVersion < 17.0 && $STDCXXLIB eq "libstdc++" && $CPPSTD_VERSION_FLAG eq "--std=c++2b") {
+		if (16.0 <= $itsVersion && $itsVersion < 18.0 && $STDCXXLIB eq "libstdc++" && ($CPPSTD_VERSION_FLAG eq "--std=c++2b" || $CPPSTD_VERSION_FLAG eq "--std=c++23")) {
 			# PERHAPS should fine tune this check to make sure we are looking at g++ lib 13
 			$generate = false;
-			$generateBecause = "clang++-16 with libcstd++ (g++13 lib) doesn't support c++23 mode";
+			$generateBecause = "clang++-16/17 with libcstd++ doesn't support c++23 mode";
 		}
-		if ( $itsVersion <= 16.0 && $STDCXXLIB eq "libc++" && $ubuntuVersion == 24.04) {
+		if ($itsVersion <= 16.0 && $STDCXXLIB eq "libc++" && $ubuntuVersion == 24.04) {
 			$generate = false;
 			$generateBecause = "Libc++ only supports Clang 16 and later on ubuntu 24.04";
 		}
