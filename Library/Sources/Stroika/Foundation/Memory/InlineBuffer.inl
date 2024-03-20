@@ -537,7 +537,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::Deallocate_ (byte* bytes) noexcept
     {
-        if (bytes != nullptr) {
+        if (bytes != nullptr) [[likely]] {
             ::free (bytes);
         }
     }
