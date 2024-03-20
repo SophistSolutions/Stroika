@@ -64,7 +64,7 @@ void WebService::Server::ExpectedMethod (const Request& request, const WebServic
 const String WebService::Server::DocsOptions::kDefaultCSSSection =
     "div.mainDocs {margin-left: .3in; margin-right: .3in; }\n"
     "div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }\n"
-    "div.OpenAPI { padding-top: 6pt; padding-bottom: 6pt; }\n"
+    "div.OpenAPI { padding-top: 12pt; padding-bottom: 12pt; }\n"
     "div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans "
     "Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}\n"
     "div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }\n"
