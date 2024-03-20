@@ -1439,12 +1439,12 @@ In file included from ./SignalHandlers.h:15:
 // reproduced in xcode 15
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
-#elif defined(__clang__) && !defined(__APPLE__)
+#elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
 // Noticed broken in -clang++14
 // noticed broken in clang++15 with LIBC++
-
+// noticed broken in clang++17 with LIBC++
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 17)
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
