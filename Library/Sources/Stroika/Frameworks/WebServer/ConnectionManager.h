@@ -279,6 +279,7 @@ namespace Stroika::Frameworks::WebServer {
          *  For now minimal, but perhaps expand....
          */
         struct Statistics {
+            size_t                            fThreadPoolSize{};
             Execution::ThreadPool::Statistics fThreadPoolStatistics;
 
             /**

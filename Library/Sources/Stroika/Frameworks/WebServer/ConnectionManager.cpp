@@ -66,7 +66,8 @@ Characters::String WebServer::ConnectionManager::Statistics::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "ThreadPool-Statistics"sv << Characters::ToString (fThreadPoolStatistics) << ", "sv;
+    sb << "ThreadPool-Size: "sv << fThreadPoolSize << ", "sv;
+    sb << "ThreadPool-Statistics: "sv << fThreadPoolStatistics << ", "sv;
     sb << "}"sv;
     return sb.str ();
 }
@@ -198,7 +199,8 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , pStatistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pStatistics);
         Require (thisObj->fEffectiveOptions_.fCollectStatistics);
-        return Statistics{.fThreadPoolStatistics = thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()};
+        return Statistics{.fThreadPoolSize       = thisObj->fActiveConnectionThreads_.GetPoolSize (),
+                          .fThreadPoolStatistics = thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()};
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
