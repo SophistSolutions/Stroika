@@ -108,21 +108,21 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
             else {
-                //  fData_.insert_or_assign (tuple<INDEXES...>{indexes...}, v);        // clang++-17 libstdc++ fails on this...
-                // fData_.emplace (make_pair(tuple<INDEXES...>{indexes...}, v));    // compiles but wrong semantivcs
-                //fData_.insert (make_pair(tuple<INDEXES...>{indexes...}, v));// compiles but wrong semantivcs
-                //fData_[tuple<INDEXES...>{indexes...}] = v;// clang++-17 libstdc++ fails on this...
-                //fData_[make_tuple (indexes...)] = v;
-                #if qCompilerAndStdLib_template_map_tuple_insert_Buggy
-                    if (not fData_.insert (make_pair(tuple<INDEXES...>{indexes...}, v)).second) {
-                        // then its there and find works...
-                        auto i = fData_.find (tuple<INDEXES...>{indexes...});
-                        Assert (i != fData_.end ());
-                        i->second = v;
-                    }
-                #else
-                    fData_.insert_or_assign (tuple<INDEXES...>{indexes...}, v);
-                #endif
+//  fData_.insert_or_assign (tuple<INDEXES...>{indexes...}, v);        // clang++-17 libstdc++ fails on this...
+// fData_.emplace (make_pair(tuple<INDEXES...>{indexes...}, v));    // compiles but wrong semantivcs
+//fData_.insert (make_pair(tuple<INDEXES...>{indexes...}, v));// compiles but wrong semantivcs
+//fData_[tuple<INDEXES...>{indexes...}] = v;// clang++-17 libstdc++ fails on this...
+//fData_[make_tuple (indexes...)] = v;
+#if qCompilerAndStdLib_template_map_tuple_insert_Buggy
+                if (not fData_.insert (make_pair (tuple<INDEXES...>{indexes...}, v)).second) {
+                    // then its there and find works...
+                    auto i = fData_.find (tuple<INDEXES...>{indexes...});
+                    Assert (i != fData_.end ());
+                    i->second = v;
+                }
+#else
+                fData_.insert_or_assign (tuple<INDEXES...>{indexes...}, v);
+#endif
             }
             fChangeCounts_.PerformedChange ();
         }

@@ -617,8 +617,6 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/Set_Arra
 #define BWA_Helper_ContraintInMemberClassSeparateDeclare_(ConstrainedTypeName) ConstrainedTypeName
 #endif
 
-
-
 /**
  *  Library/Sources/Stroika/Foundation/Characters/String.cpp ... 
 In file included from String.cpp:17:
@@ -1300,8 +1298,6 @@ In file included from ../Characters/StringBuilder.h:273,
 
 #endif
 
-
-
 /**
 In file included from Test.cpp:12:
 In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h:6:
@@ -1385,17 +1381,13 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../includ
 */
 #ifndef qCompilerAndStdLib_template_map_tuple_insert_Buggy
 
-#if defined(__clang__) && defined (__GLIBCXX__)
-#define qCompilerAndStdLib_template_map_tuple_insert_Buggy  CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ == 17)
+#if defined(__clang__) && defined(__GLIBCXX__)
+#define qCompilerAndStdLib_template_map_tuple_insert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ == 17)
 #else
 #define qCompilerAndStdLib_template_map_tuple_insert_Buggy 0
 #endif
 
 #endif
-
-
-
-
 
 /**
  */
