@@ -1267,6 +1267,103 @@ In file included from ../Characters/StringBuilder.h:273,
 
 #endif
 
+
+
+/**
+In file included from Test.cpp:12:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h:6:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/../SparseDataHyperRectangle.h:78:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/../SparseDataHyperRectangle.inl:7:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/../Factory/SparseDataHyperRectangle_Factory.h:109:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/../Factory/SparseDataHyperRectangle_Factory.inl:14:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h:74:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.inl:116:21: warning: macro expansion producing 'defined' has undefined behavior [-Wexpansion-to-defined]
+  116 |                 #if qCompilerAndStdLib_template_map_tuple_insert_Buggy && 0
+      |                     ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_CompilerAndStdLib_.h:1278:132: note: expanded from macro 'qCompilerAndStdLib_template_map_tuple_insert_Buggy'
+ 1278 | #define qCompilerAndStdLib_template_map_tuple_insert_Buggy  CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ == 17) and defined (__GLIBCXX__)
+      |                                                                                                                                    ^
+In file included from Test.cpp:8:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/iostream:41:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/ostream:40:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/ios:44:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/ios_base.h:41:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/locale_classes.h:40:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/string:58:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/memory_resource.h:41:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/uses_allocator_args.h:38:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:691:2: error: pack expansion contains parameter pack '_UTypes' that has a different length (1 vs. 2) from outer parameter packs
+  691 |         using __convertible = __and_<is_convertible<_UTypes, _Types>...>;
+      |         ^~~~~
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:853:27: note: in instantiation of template type alias '__convertible' requested here
+  853 |           = _TCC<true>::template __convertible<_Args...>::value;
+      |                                  ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:948:12: note: in instantiation of static data member 'std::tuple<std::tuple<unsigned long, unsigned long> &&>::__convertible<unsigned long &, unsigned long &>' requested here
+  948 |         explicit(!__convertible<_UElements&...>)
+      |                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:2000:36: note: while substituting deduced template arguments into function template 'tuple' [with _UElements = <unsigned long, unsigned long>]
+ 2000 |     { return tuple<_Elements&&...>(std::forward<_Elements>(__args)...); }
+      |                                    ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:992:11: note: in instantiation of function template specialization 'std::forward_as_tuple<std::tuple<unsigned long, unsigned long>>' requested here
+  992 |                                  std::forward_as_tuple(std::move(__k)),
+      |                                       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/debug/map.h:406:24: note: in instantiation of function template specialization 'std::__cxx1998::map<std::tuple<unsigned long, unsigned long>, int>::insert_or_assign<int &>' requested here
+  406 |           auto __res = _Base::insert_or_assign(std::move(__k),
+      |                               ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.inl:124:28: note: (skipping 5 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all)
+  124 |                     fData_.insert_or_assign (tuple<INDEXES...>{indexes...}, v);
+      |                            ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:464:4: note: in instantiation of function template specialization 'std::__shared_ptr<Stroika::Foundation::Containers::Concrete::SparseDataHyperRectangle_stdmap<int, unsigned long, unsigned long>::Rep_>::__shared_ptr<Stroika::Foundation::Memory::BlockAllocator<Stroika::Foundation::Containers::Concrete::SparseDataHyperRectangle_stdmap<int, unsigned long, unsigned long>::Rep_>, int &>' requested here
+  464 |         : __shared_ptr<_Tp>(__tag, std::forward<_Args>(__args)...)
+      |           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:992:14: note: in instantiation of function template specialization 'std::shared_ptr<Stroika::Foundation::Containers::Concrete::SparseDataHyperRectangle_stdmap<int, unsigned long, unsigned long>::Rep_>::shared_ptr<Stroika::Foundation::Memory::BlockAllocator<Stroika::Foundation::Containers::Concrete::SparseDataHyperRectangle_stdmap<int, unsigned long, unsigned long>::Rep_>, int &>' requested here
+  992 |       return shared_ptr<_Tp>(_Sp_alloc_shared_tag<_Alloc>{__a},
+      |              ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/BlockAllocated.inl:63:20: note: in instantiation of function template specialization 'std::allocate_shared<Stroika::Foundation::Containers::Concrete::SparseDataHyperRectangle_stdmap<int, unsigned long, unsigned long>::Rep_, Stroika::Foundation::Memory::BlockAllocator<Stroika::Foundation::Containers::Concrete::SparseDataHyperRectangle_stdmap<int, unsigned long, unsigned long>::Rep_>, int &>' requested here
+   63 |             return allocate_shared<T> (BlockAllocator<T>{}, forward<ARGS_TYPE> (args)...);
+      |                    ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.inl:207:29: note: in instantiation of function template specialization 'Stroika::Foundation::Memory::MakeSharedPtr<Stroika::Foundation::Containers::Concrete::SparseDataHyperRectangle_stdmap<int, unsigned long, unsigned long>::Rep_, int &>' requested here
+  207 |         : inherited{Memory::MakeSharedPtr<Rep_> (defaultItem)}
+      |                             ^
+Test.cpp:51:49: note: in instantiation of member function 'Stroika::Foundation::Containers::Concrete::SparseDataHyperRectangle_stdmap<int, unsigned long, unsigned long>::SparseDataHyperRectangle_stdmap' requested here
+   51 |                 DataHyperRectangleN<int, 2> x = Concrete::SparseDataHyperRectangle_stdmapN<int, 2>{};
+      |                                                 ^
+In file included from Test.cpp:8:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/iostream:41:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/ostream:40:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/ios:44:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/ios_base.h:41:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/locale_classes.h:40:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/string:58:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/memory_resource.h:41:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/uses_allocator_args.h:38:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:691:2: error: pack expansion contains parameter pack '_UTypes' that has a different length (1 vs. 2) from outer parameter packs
+  691 |         using __convertible = __and_<is_convertible<_UTypes, _Types>...>;
+      |         ^~~~~
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:853:27: note: in instantiation of template type alias '__convertible' requested here
+  853 |           = _TCC<true>::template __convertible<_Args...>::value;
+      |                                  ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:959:12: note: in instantiation of static data member 'std::tuple<std::tuple<unsigned long, unsigned long> &&>::__convertible<const unsigned long, const unsigned long>' requested here
+  959 |         explicit(!__convertible<const _UElements...>)
+      |                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:2000:36: note: while substituting deduced template arguments into function template 'tuple' [with _UElements = <unsigned long, unsigned long>]
+ 2000 |     { return tuple<_Elements&&...>(std::forward<_Elements>(__args)...); }
+ 
+*/
+#ifndef qCompilerAndStdLib_template_map_tuple_insert_Buggy
+
+#if defined(__clang__) && defined (__GLIBCXX__)
+#define qCompilerAndStdLib_template_map_tuple_insert_Buggy  CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ == 17)
+#else
+#define qCompilerAndStdLib_template_map_tuple_insert_Buggy 0
+#endif
+
+#endif
+
+
+
+
+
 /**
  */
 #ifndef qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy

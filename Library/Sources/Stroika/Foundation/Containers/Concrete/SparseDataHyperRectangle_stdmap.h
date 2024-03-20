@@ -11,9 +11,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Draft">Draft</a>
- *
- *  TODO:
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::Containers::Concrete {
@@ -33,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using value_type = typename inherited::value_type;
 
     public:
-/**
+        /**
          *  \brief STDMAP is std::map<> that can be used inside SparseDataHyperRectangle_stdmap
          */
 #if 0
