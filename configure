@@ -2401,7 +2401,9 @@ sub PostProcessOptions_ ()
 			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Builds/clang++-16-release-libstdc++/ThirdPartyComponents/include/boost/json/basic_parser.hpp:499:(.text._ZN5boost4json12basic_parserIN12_GLOBAL__N_116BoostSAXHandler_EED2Ev+0x36): undefined reference to `boost::json::detail::stack::~stack()'
 			#
 			# AND saw on ubuntu 23.10 with clang++-16
-			$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
+			if ($itsVersion < 17.0) {
+				$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
+			}
 		}
 		if ("$^O" eq "darwin")  {
 			if ($itsVersion >= 14.0) {
