@@ -45,7 +45,7 @@ HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesir
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper trcCtx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::OpenPath_", L"parentKey=%p, path='%s'", parentKey, path.c_str ())};
+        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::OpenPath_", L"parentKey={}, path='{}'"_f, parentKey, path)};
 #endif
     Require (parentKey != nullptr);
     Require (parentKey != INVALID_HANDLE_VALUE);
@@ -104,7 +104,7 @@ namespace {
 String RegistryKey::GetFullPathOfKey () const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::GetFullPathOfKey")};
+    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::RegistryKey::GetFullPathOfKey")};
 #endif
     // Based on https://stackoverflow.com/questions/937044/determine-path-to-registry-key-from-hkey-handle-in-c
 

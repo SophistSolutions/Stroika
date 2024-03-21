@@ -22,6 +22,11 @@
  *
  */
 
+namespace Stroika::Foundation::Characters {
+    template <typename CHAR_T>
+    struct FormatString;
+}
+
 namespace Stroika::Foundation::Debug {
 
     /**
@@ -157,6 +162,8 @@ namespace Stroika::Foundation::Debug {
         TraceContextBumper () noexcept;
         TraceContextBumper (const char* contextName) noexcept;
         TraceContextBumper (const wchar_t* contextName) noexcept;
+        template <typename CHAR_T, typename... Args>
+        TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept;
         TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept;
         TraceContextBumper (const TraceContextBumper&) = delete;
 

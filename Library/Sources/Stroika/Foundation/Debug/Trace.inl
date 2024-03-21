@@ -13,13 +13,8 @@
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_Trace_TraceToFile);
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qStroika_Foundation_Debug_Trace_DefaultTracingOn);
 
-#include "../Configuration/StdCompat.h"
-#include "../Time/Clock.h"
-
-namespace Stroika::Foundation::Characters {
-    template <typename CHAR_T>
-    struct FormatString;
-}
+#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Time/Clock.h"
 
 namespace Stroika::Foundation::Debug {
 
@@ -119,8 +114,41 @@ namespace Stroika::Foundation::Debug {
         IncCount_ ();
 #endif
     }
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+    template <typename CHAR_T, typename... Args>
+    TraceContextBumper::TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
+        : TraceContextBumper{contextName}
+    {
+        try {
+// @todo cleanup - can be much simpler...
+#if qPlatform_Windows
+            constexpr size_t kEOLSize = 2;
+#else
+            constexpr size_t kEOLSize = 1;
+#endif
+            //            constexpr size_t kEOLSize = strlen (Characters::GetEOL<char> ());
+
+            if constexpr (same_as<CHAR_T, char>) {
+                fLastWriteToken_ = Private_::Emitter::Get ().EmitTraceMessage (
+                    3 + kEOLSize, "<%s (%s)> {", contextName,
+                    Configuration::StdCompat::vformat (fmt.sv, Configuration::StdCompat::make_format_args (args...)).c_str ());
+            }
+            else if constexpr (same_as<CHAR_T, wchar_t>) {
+                fLastWriteToken_ = Private_::Emitter::Get ().EmitTraceMessage (
+                    3 + kEOLSize, L"<%s (%s)> {", contextName,
+                    Configuration::StdCompat::vformat (fmt.sv, Configuration::StdCompat::make_wformat_args (args...)).c_str ());
+            }
+        }
+        catch (...) {
+        }
+    }
+#endif
 #if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
     inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName) noexcept
+    {
+    }
+    template <typename CHAR_T, typename... Args>
+    inline TraceContextBumper::TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
     {
     }
     inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName, [[maybe_unused]] const wchar_t* extraFmt, ...) noexcept

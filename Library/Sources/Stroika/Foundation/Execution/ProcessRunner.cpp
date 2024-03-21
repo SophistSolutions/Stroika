@@ -560,10 +560,11 @@ namespace {
                                 const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
                                 const Streams::OutputStream::Ptr<byte>& err, const String& effectiveCmdLine)
     {
-        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-            L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (),
-            currentDir == nullptr ? L"nullptr"
-                                  : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight).c_str ())};
+        TraceContextBumper ctx{
+            "{}::Process_Runner_POSIX_",
+            Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                "...,cmdLine='{}',currentDir={},..."_f, cmdLine.As<wstring> ().c_str (),
+                currentDir == nullptr ? "nullptr"_k : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
         // track the last few bytes of stderr to include in possible exception messages
         char   trailingStderrBuf[256];
@@ -918,10 +919,11 @@ namespace {
                                   const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
                                   const Streams::OutputStream::Ptr<byte>& err, const String& effectiveCmdLine)
     {
-        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-            L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (),
-            currentDir == nullptr ? L"nullptr"
-                                  : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight).c_str ())};
+        TraceContextBumper ctx{
+            "{}::Process_Runner_Windows_",
+            Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
+                currentDir == nullptr ? "nullptr"_k : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
         /*
          *  o   Build directory into which we can copy the JAR file plugin,
@@ -1184,7 +1186,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
                                                   Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
+    TraceContextBumper ctx{"ProcessRunner::CreateRunnable_"};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     String                                         cmdLine          = fCommandLine_.value_or (String{});
@@ -1233,9 +1235,9 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
 
 pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args)
 {
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s",
-                                                                          Characters::ToString (executable).c_str (),
-                                                                          Characters::ToString (args).c_str ())};
+    TraceContextBumper ctx{"Execution::DetachedProcessRunner",
+                           Stroika_Foundation_Debug_OptionalizeTraceArgs ("executable={}, args={}"_f, Characters::ToString (executable),
+                                                                          Characters::ToString (args))};
 
     // @todo Consider rewriting below launch code so more in common with ::Run / CreateRunnable code in ProcessRunner
 
