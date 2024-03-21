@@ -95,7 +95,7 @@ namespace {
                 optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
                     .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
                 if (not r) {
-                    DbgTrace ("Note ResolveMatch %s failed to find an entry in resolver.", URI);
+                    DbgTrace ("Note ResolveMatch {} failed to find an entry in resolver."_f, URI);
                 }
                 return r.has_value ();
             }
@@ -768,8 +768,6 @@ namespace {
             }
             xmlDocSetRootElement (fLibRep_, n);
             auto r = WrapLibXML2NodeInStroikaNode_ (n);
-            DbgTrace (L"newEltName=%s", Characters::ToString (newEltName).c_str ());
-            DbgTrace (L"r.GetName ()=%s", Characters::ToString (r.GetName ()).c_str ());
             Ensure (r.GetName () == newEltName);
             return r;
         }
