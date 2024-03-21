@@ -563,7 +563,7 @@ namespace {
         TraceContextBumper ctx{
             "{}::Process_Runner_POSIX_",
             Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                "...,cmdLine='{}',currentDir={},..."_f, cmdLine.As<wstring> ().c_str (),
+                "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
                 currentDir == nullptr ? "nullptr"_k : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
         // track the last few bytes of stderr to include in possible exception messages
