@@ -749,6 +749,12 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 /usr/bin/ld: /Sandbox/Stroika-Dev/Builds/valgrind-release-SSLPurify-NoBlockAlloc/Stroika-Foundation.a(WaitableEvent.o): in function `Stroika::Foundation::Execution::ConditionVariable<std::mutex, std::_V2::condition_variable_any>::wait_until(std::unique_lock<std::mutex>&, double)':
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ConditionVaria
 
+
+
+   Linking Test Builds/c/Tests/Test04 (Foundation::Configuration) ... 
+/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/c/Stroika-Foundation.a(WaitableEvent.o): in function `Stroika::Foundation::Execution::ConditionVariable<std::__1::mutex, std::__1::condition_variable_any>::wait_until(std::__1::unique_lock<std::__1::mutex>&, std::__1::chrono::time_point<std::__1::chrono::steady_clock, std::__1::chrono::duration<double, std::__1::ratio<1l, 1l> > >)':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/./ConditionVariable.inl:84:(.text._ZN7Stroika10Foundation9Execution17ConditionVariableINSt3__15mutexENS3_22condition_variable_anyEE10wait_untilERNS3_11unique_lockIS4_EENS3_6chrono10time_pointINSA_12steady_clockENSA_8durationIdNS3_5ratioILl1ELl1EEEEEEE[_ZN7Stroika10Foundation9Execution17ConditionVariableINSt3__15mutexENS3_22condition_variable_anyEE10wait_untilERNS3_11unique_lockIS4_EENS3_6chrono10time_pointINSA_12steady_clockENSA_8durationIdNS3_5ratioILl1ELl1EEEEEEE]+0x3e): undefined reference to `Stroika::Foundation::Execution::Thread::IsCurrentThreadInterruptible()'
+
 */
 #ifndef qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 
@@ -760,7 +766,8 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 // first noticed broken in apply clang 14
 // replicated in clang 15.
 // reproduced in clang 16
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+// reproduced in clang 17
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
