@@ -178,8 +178,8 @@ public:
 public:
     ~Rep_ ()
     {
-        Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_",
-                                         Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
+        Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_",
+                                         Stroika_Foundation_Debug_OptionalizeTraceArgs ("this={}"_f, static_cast<const void*> (this))};
         Thread::SuppressInterruptionInContext suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
         tell2WakeAfterDataUpdate_ ();
@@ -357,9 +357,9 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const SignalHand
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
-    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        L"Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers", L"signal: %s, handlers: %s",
-        SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ())};
+    Debug::TraceContextBumper trcCtx{
+        Stroika_Foundation_Debug_OptionalizeTraceArgs ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers",
+                                                       "signal: {}, handlers: {}"_f, SignalToName (signal), Characters::ToString (handlers))};
 
     Set<SignalHandler> directHandlers;
     Set<SignalHandler> safeHandlers;

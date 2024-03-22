@@ -108,9 +108,9 @@ Socket::Type Socket::Ptr::GetType () const
 
 void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s",
-                                                                                 Characters::ToString (sockAddr).c_str (),
-                                                                                 Characters::ToString (bindFlags.fSO_REUSEADDR).c_str ())};
+    Debug::TraceContextBumper ctx{
+        Stroika_Foundation_Debug_OptionalizeTraceArgs ("IO::Network::Socket::Bind", "sockAddr={} bindFlags.fReUseAddr={}"_f,
+                                                       Characters::ToString (sockAddr), Characters::ToString (bindFlags.fSO_REUSEADDR))};
     Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 

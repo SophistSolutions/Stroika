@@ -189,12 +189,12 @@ ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
 
 ScopedTmpDir::~ScopedTmpDir ()
 {
-    Debug::TraceContextBumper ctx{L"ScopedTmpDir::~ScopedTmpDir", L"readfilename=%s", Characters::ToString (fTmpDir_).c_str ()};
+    Debug::TraceContextBumper ctx{"ScopedTmpDir::~ScopedTmpDir", "readfilename={}"_f, Characters::ToString (fTmpDir_)};
     try {
         remove_all (fTmpDir_);
     }
     catch (...) {
-        DbgTrace ("Ingoring exception DTOR: %s", Characters::ToString (current_exception ()).c_str ());
+        DbgTrace ("Ignoring exception DTOR: {}"_f, Characters::ToString (current_exception ()));
     }
 }
 
@@ -214,6 +214,6 @@ ScopedTmpFile::~ScopedTmpFile ()
         remove (fTmpFile_);
     }
     catch (...) {
-        DbgTrace ("Ingoring exception clearing file in ScopedTmpFile::~ScopedTmpFile: %s", Characters::ToString (current_exception ()).c_str ());
+        DbgTrace ("Ignoring exception clearing file in ScopedTmpFile::~ScopedTmpFile: {}"_f, Characters::ToString (current_exception ()));
     }
 }

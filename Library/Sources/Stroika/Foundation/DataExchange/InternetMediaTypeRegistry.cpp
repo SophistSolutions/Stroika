@@ -390,7 +390,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             auto loadGlobsFromFile = [&] (const filesystem::path& fn) {
                 if (filesystem::exists (fn)) {
                     Debug::TraceContextBumper ctx1{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                        L"UsrShareMIMERep_::CTOR::loadGlobsFromFile", L"exists=true,fn=%s", Characters::ToString (fn).c_str ())};
+                        "UsrShareMIMERep_::CTOR::loadGlobsFromFile", "exists=true,fn={}"_f, Characters::ToString (fn))};
                     try {
                         for (Sequence<String> line :
                              DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {
@@ -405,8 +405,8 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                     imt = InternetMediaType{line[0]};
                                 }
                                 catch (...) {
-                                    DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s",
-                                              Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
+                                    DbgTrace ("Ignoring exception looking parsing potential media type entry ({}): {}"_f,
+                                              Characters::ToString (line[0]), Characters::ToString (current_exception ()));
                                 }
                                 fSuffix2MediaTypeMap_.Add (glob, imt, AddReplaceMode::eAddIfMissing);
                                 fMediaType2PreferredSuffixMap_.Add (imt, glob, AddReplaceMode::eAddIfMissing);

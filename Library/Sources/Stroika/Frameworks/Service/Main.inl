@@ -43,35 +43,38 @@ namespace Stroika::Frameworks::Service {
     }
     inline void Main::Install ()
     {
-        Debug::TraceContextBumper            traceCtx{"Stroika::Frameworks::Service::Main::Install"};
+        Debug::TraceContextBumper            ctx{"Stroika::Frameworks::Service::Main::Install"};
         static constexpr Execution::Activity kInstallingService_{"installing service"sv};
         Execution::DeclareActivity           activity{&kInstallingService_};
         GetServiceRep_ ()._Install ();
     }
     inline void Main::UnInstall ()
     {
-        Debug::TraceContextBumper            traceCtx{"Stroika::Frameworks::Service::Main::UnInstall"};
+        Debug::TraceContextBumper            ctx{"Stroika::Frameworks::Service::Main::UnInstall"};
         static constexpr Execution::Activity kUnInstallingService_{"uninstalling service"sv};
         Execution::DeclareActivity           activity{&kUnInstallingService_};
         GetServiceRep_ ()._UnInstall ();
     }
     inline void Main::Start (Time::DurationSeconds timeout)
     {
-        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout.count ()};
+        using namespace Characters;
+        Debug::TraceContextBumper            ctx{"Stroika::Frameworks::Service::Main::Start", "timeout = {}"_f, timeout.count ()};
         static constexpr Execution::Activity kStartingService_{"staring service"sv};
         Execution::DeclareActivity           activity{&kStartingService_};
         GetServiceRep_ ()._Start (timeout);
     }
     inline void Main::Stop (Time::DurationSeconds timeout)
     {
-        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::Stop", L"timeout = %e", timeout.count ()};
+        using namespace Characters;
+        Debug::TraceContextBumper            ctx{"Stroika::Frameworks::Service::Main::Stop", "timeout = {}"_f, timeout.count ()};
         static constexpr Execution::Activity kStoppingService_{"stopping service"sv};
         Execution::DeclareActivity           activity{&kStoppingService_};
         GetServiceRep_ ()._Stop (timeout);
     }
     inline void Main::ForcedStop (Time::DurationSeconds timeout)
     {
-        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::ForcedStop", L"timeout = %e", timeout.count ()};
+        using namespace Characters;
+        Debug::TraceContextBumper            ctx{"Stroika::Frameworks::Service::Main::ForcedStop", "timeout = {}"_f, timeout.count ()};
         static constexpr Execution::Activity kForcedStoppingService_{"forced stopping service"sv};
         Execution::DeclareActivity           activity{&kForcedStoppingService_};
         GetServiceRep_ ()._ForcedStop (timeout);

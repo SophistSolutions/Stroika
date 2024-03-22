@@ -16,6 +16,7 @@
 #include "LibraryContext.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
 using namespace Stroika::Foundation::Debug;
@@ -205,8 +206,7 @@ LibraryContext ::~LibraryContext ()
 
 void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::LoadProvider", L"%s",
-                                                                                 providerName.As<wstring> ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OpenSSL::LibraryContext::LoadProvider", "{}"_f, providerName)};
     Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 #if OPENSSL_VERSION_MAJOR >= 3
     auto p = fLoadedProviders_.LookupOneValue (providerName);
@@ -225,8 +225,7 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 
 void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerName)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::UnLoadProvider", L"%s",
-                                                                                 providerName.As<wstring> ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OpenSSL::LibraryContext::UnLoadProvider", "{}"_f, providerName)};
     Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 #if OPENSSL_VERSION_MAJOR >= 3
     Require (fLoadedProviders_.ContainsKey (providerName));

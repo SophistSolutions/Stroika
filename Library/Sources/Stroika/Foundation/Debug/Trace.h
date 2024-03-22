@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
-#include <filesystem>
+#include <span>
 #include <thread>
 
 #include "Stroika/Foundation/Configuration/Common.h"
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Debug {
      *    //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
      *    define.
      *
-     *    This is often not enabled by default because it could produce lots of unintersting noise in logfiles
+     *    This is often not enabled by default because it could produce lots of uninteresting noise in logfiles
      *    (when tracing on).
      *
      *    Turn per-module USE_NOISY_TRACE_IN_THIS_MODULE_ flags on selectively just to enable extra detailed logging on a per module basis.
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Debug {
 
     /**
      * \brief if true, emit a much shorter thread ID, making - I suspect (testing) for terser and clearer tracelogs. 
-     *        Only downside is that you must find first occurence of that index to find real threadId, and use that in waits, etc.
+     *        Only downside is that you must find first occurrence of that index to find real threadId, and use that in waits, etc.
      *
      *  This is defined as a #define, so you can turn it off when building Stroika. I'm unsure if the showing of thread indexes
      *  helps readability of the tracelog, but I think it does.
@@ -136,10 +136,10 @@ namespace Stroika::Foundation::Debug {
      *          struct X {
      *              // ... lots of data members - and you get a crash between constructor or destruction of some of them
      *              // ... use this trick to see dbgmessages BETWEEN construction and destruction of each member
-     *              ComplexObject fComplexObjec1;
-     *              TraceContextBumper tmpNoteAfterComplexObj1 {"after fComplexObjec1"};
-     *              ComplexObject fComplexObjec2;
-     *              TraceContextBumper tmpNoteAfterComplexObj2 {"after fComplexObjec2"};
+     *              ComplexObject fComplexObject1;
+     *              TraceContextBumper tmpNoteAfterComplexObj1 {"after fComplexObject1"};
+     *              ComplexObject fComplexObject2;
+     *              TraceContextBumper tmpNoteAfterComplexObj2 {"after fComplexObject2"};
      *          };
      *      \endcode
      *
@@ -148,6 +148,9 @@ namespace Stroika::Foundation::Debug {
     class TraceContextBumper final {
     public:
         /**
+        * 
+        *   @todo REDO ALL THESE DOCS --- AS OF 2024-03-22
+        * 
          *  If constructor taking const char* used, the argument must be ASCII characters.
          *
          *  The constructor with 'extraFmt', emits the extra data in the heading of the trace message, but
@@ -155,20 +158,42 @@ namespace Stroika::Foundation::Debug {
          *  calling usage.
          *
          *  For TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) usage, @see Stroika_Foundation_Debug_OptionalizeTraceArgs
-         *  to optionally supress side-effects.
+         *  to optionally suppress side-effects.
          *
          *  \note ***Not Cancelation Point*** - and uses noexcept
          */
         TraceContextBumper () noexcept;
-        TraceContextBumper (const char* contextName) noexcept;
-        TraceContextBumper (const wchar_t* contextName) noexcept;
-        template <typename CHAR_T, typename... Args>
-        TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept;
-        TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept;
+        template <typename CHAR_T>
+        TraceContextBumper (const CHAR_T* contextName) noexcept
+            requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>);
+        template <typename CHAR_T, typename FCHAR_T, typename... ARGS>
+        TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<FCHAR_T> fmt, ARGS&&... args) noexcept
+            requires ((same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>) and (same_as<FCHAR_T, char> or same_as<FCHAR_T, wchar_t>));
         TraceContextBumper (const TraceContextBumper&) = delete;
 
     public:
+        // legacy API
+        [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] TraceContextBumper (const wchar_t* contextName,
+                                                                                            const wchar_t* extraFmt, ...) noexcept;
+
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+    private:
+        // Nothing too important about this constant, but not so long as to be hard to read
+        static constexpr size_t kMaxContextNameLen_{80};
+
+        using CHAR_ARRAY_T = array<wchar_t, kMaxContextNameLen_ + 1>; // enforce always nul-terminated strings - but can copy by value
+
+    private:
+        // spans are outer bounds of strings - also look for NUL-term to find string length - require they are nul-terminated (so not sure why span is useful - @todo rethink)
+        TraceContextBumper (CHAR_ARRAY_T mainName, CHAR_ARRAY_T extraTextAtTop = {}) noexcept;
+#endif
+
+    public:
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         ~TraceContextBumper ();
+#else
+        ~TraceContextBumper () = default;
+#endif
 
     public:
         nonvirtual TraceContextBumper& operator= (const TraceContextBumper&) = delete;
@@ -181,15 +206,17 @@ namespace Stroika::Foundation::Debug {
         static unsigned int GetCount ();
 
     private:
-        // Nothing too important about this constant, but not so long as to be hard to read
-        static constexpr size_t kMaxContextNameLen_{80};
-
-    private:
-        wchar_t fSavedContextName_[kMaxContextNameLen_]{};
+        CHAR_ARRAY_T fSavedContextName_{};
         Private_::TraceLastBufferedWriteTokenType fLastWriteToken_{}; // used to COMBINE items into a single line if they happen quickly enuf
 
     private:
-        static array<wchar_t, kMaxContextNameLen_ + 1> mkwtrfromascii_ (const char* contextName);
+        template <typename CHAR_T>
+        static CHAR_ARRAY_T cvt2WChartArrayTrunc_ (span<const CHAR_T> contextName);
+        template <typename CHAR_T>
+        static CHAR_ARRAY_T cvt2WChartArrayTrunc_ (const CHAR_T* contextName);
+        template <typename CHAR_T, typename... ARGS>
+        CHAR_ARRAY_T ProcessFmtString_ (Characters::FormatString<CHAR_T> fmt, ARGS&&... args) noexcept
+            requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>);
 
     private:
         static void IncCount_ () noexcept;

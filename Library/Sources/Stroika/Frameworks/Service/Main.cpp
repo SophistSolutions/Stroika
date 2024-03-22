@@ -318,7 +318,7 @@ Main::ServiceDescription Main::GetServiceDescription () const
 
 void Main::Restart (Time::DurationSeconds timeout)
 {
-    Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::Restart", L"timeout = %e", timeout};
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::Service::Main::Restart", "timeout = {}"_f, Characters::ToString (timeout)};
 
     /////// @TODO FIX - WRONG HANDLING OF TIMEOUT
     Stop (timeout);
@@ -866,7 +866,7 @@ void Main::WindowsService::_RunDirectly (const optional<Time::Duration>& runFor)
 void Main::WindowsService::_Start (Time::DurationSeconds timeout)
 {
     // @todo - timeout not supported
-    Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::WindowsService::Start", L"timeout = %e", timeout};
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::Start", "timeout = {}"_f, timeout};
 
     const DWORD kServiceMgrAccessPrivs = SERVICE_START;
     SC_HANDLE   hSCM                   = ::OpenSCManager (nullptr, nullptr, kServiceMgrAccessPrivs);

@@ -472,8 +472,8 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
 void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep); // NOTE - since shared_ptr<> is NOT a const reference, this holds the bumped reference count til the end of ThreadMain_ scope
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::Ptr::Rep_::ThreadMain_", L"thisThreadRep=%s",
-                                                                          Characters::ToString (thisThreadRep).c_str ())};
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Execution::Thread::Ptr::Rep_::ThreadMain_", "thisThreadRep={}"_f,
+                                                                          Characters::ToString (thisThreadRep))};
 #if qDebug
     Require (Debug::AppearsDuringMainLifetime ());
     [[maybe_unused]] auto&& cleanupCheckMain = Finally ([] () noexcept { Require (Debug::AppearsDuringMainLifetime ()); });
@@ -734,7 +734,7 @@ Characters::String Thread::Ptr::ToString () const
 void Thread::Ptr::Start () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"*this=%s", ToString ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::Start", L"*this=%s"_f, ToString ())};
     RequireNotNull (fRep_);
     Require (not fRep_->fStartEverInitiated_);
 #if qDebug
@@ -813,7 +813,7 @@ void Thread::Ptr::Start (WaitUntilStarted) const
 
 void Thread::Ptr::Abort () const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this=%s", ToString ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::Abort", "*this={}"_f, ToString ())};
     Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 
@@ -852,8 +852,8 @@ void Thread::Ptr::Abort () const
 
 void Thread::Ptr::AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil",
-                                                                                 L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::AbortAndWaitForDoneUntil", "*this={}, timeoutAt={}"_f,
+                                                                                 ToString (), Characters::ToString (timeoutAt))};
     RequireNotNull (*this);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
 
@@ -864,8 +864,8 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) co
 void Thread::Ptr::ThrowIfDoneWithException () const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::ThrowIfDoneWithException", L"*this=%s",
-                                                                                 Characters::ToString (*this).c_str ())};
+    Debug::TraceContextBumper ctx{
+        Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::ThrowIfDoneWithException", "*this={}"_f, Characters::ToString (*this))};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (fRep_ and fRep_->IsDone_ () and fRep_->fSavedException_.load () != nullptr) {
@@ -876,8 +876,8 @@ void Thread::Ptr::ThrowIfDoneWithException () const
 
 void Thread::Ptr::WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"*this=%s, timeoutAt=%e",
-                                                                                 ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::WaitForDoneUntil", "*this={}, timeoutAt={}"_f,
+                                                                                 ToString (), Characters::ToString (timeoutAt))};
     if (not WaitForDoneUntilQuietly (timeoutAt)) {
         Throw (TimeOutException::kThe);
     }
@@ -886,8 +886,8 @@ void Thread::Ptr::WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntilQuietly",
-                                                                                 L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::WaitForDoneUntilQuietly",
+                                                                                 "*this={}, timeoutAt={}"_f, ToString (), timeoutAt)};
 #endif
     Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -896,12 +896,12 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) con
         /*
          *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
          *  This really only has effect #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
-         *  because thats the only time we have an imporant side effect of the threads finalizing.
+         *  because that's the only time we have an important side effect of the threads finalizing.
          *
          *  @see https://stroika.atlassian.net/browse/STK-496
          *
          *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
-         *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)
+         *  longer access fThread_ (and therefore not lock fAccessSTDThreadMutex_)
          */
         if (fRep_->fThreadValid_ and fRep_->fThread_.joinable ()) {
             // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long

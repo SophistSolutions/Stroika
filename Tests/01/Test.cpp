@@ -543,9 +543,10 @@ namespace {
                 using Traversal::DiscreteRange;
 
                 auto runTest = [] (CIDR cidr, double runToProbOfFalsePositive, double runToFractionFull, double bitSizeFactor = 1.0) {
-                    Debug::TraceContextBumper                 ctx{L"runTest",
-                                                  L"cidr=%s, runToProbOfFalsePositive=%f, runToFractionFull=%f, bitSizeFactor=%f",
-                                                  Characters::ToString (cidr).c_str (),
+                    using namespace Characters;
+                    Debug::TraceContextBumper                 ctx{"runTest",
+                                                  "cidr={}, runToProbOfFalsePositive={}, runToFractionFull={}, bitSizeFactor={}"_f,
+                                                  Characters::ToString (cidr),
                                                   runToProbOfFalsePositive,
                                                   runToFractionFull,
                                                   bitSizeFactor};

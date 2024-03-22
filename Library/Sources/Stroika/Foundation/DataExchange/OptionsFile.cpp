@@ -171,15 +171,15 @@ OptionsFile::OptionsFile (const String& modName, const ObjectVariantMapper& mapp
 
 BLOB OptionsFile::ReadRaw () const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFile::ReadRaw", L"readfilename=%s",
-                                                                                 Characters::ToString (GetReadFilePath_ ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OptionsFile::ReadRaw", L"readfilename={}"_f,
+                                                                                 Characters::ToString (GetReadFilePath_ ()))};
     return IO::FileSystem::FileInputStream::New (GetReadFilePath_ ()).ReadAll ();
 }
 
 void OptionsFile::WriteRaw (const BLOB& blob)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFile::WriteRaw", L"writefilename=%s",
-                                                                                 Characters::ToString (GetWriteFilePath_ ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OptionsFile::WriteRaw", L"writefilename={}"_f,
+                                                                                 Characters::ToString (GetWriteFilePath_ ()))};
     if (GetReadFilePath_ () == GetWriteFilePath_ ()) {
         try {
             if (ReadRaw () == blob) {
@@ -187,7 +187,7 @@ void OptionsFile::WriteRaw (const BLOB& blob)
             }
         }
         catch (...) {
-            // No matter why we fail, nevermind. Just fall through and write.
+            // No matter why we fail, never-mind. Just fall through and write.
         }
     }
     try {

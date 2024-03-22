@@ -638,33 +638,41 @@ string Debug::GetDbgTraceThreadName_A (thread::id threadID)
  ********************************************************************************
  */
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
+TraceContextBumper::TraceContextBumper (CHAR_ARRAY_T mainName, CHAR_ARRAY_T extraTextAtTop) noexcept
     : fDoEndMarker{true}
 {
-    fLastWriteToken_ = Private_::Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", contextName);
-    size_t len       = min (Memory::NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
-    char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
-    if (len >= Memory::NEltsOf (fSavedContextName_) - 1) {
-        char_traits<wchar_t>::copy (&fSavedContextName_[len - 3], L"...", 3);
+    Require (char_traits<wchar_t>::length (mainName.data ()) <= kMaxContextNameLen_); // assert NUL-terminated
+    if (extraTextAtTop.empty () or extraTextAtTop[0] == '\0') {
+        fLastWriteToken_ = Private_::Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", mainName.data ());
     }
-    *(std::end (fSavedContextName_) - 1) = '\0';
+    else {
+        fLastWriteToken_ =
+            Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", mainName.data (), extraTextAtTop.data ());
+    }
+    size_t len = char_traits<wchar_t>::length (mainName.data ());
+    char_traits<wchar_t>::copy (fSavedContextName_.data (), mainName.data (), len);
+    if (len >= kMaxContextNameLen_ - 1) {
+        char_traits<wchar_t>::copy (&fSavedContextName_.data ()[len - 3], L"...", 3);
+    }
     fSavedContextName_[len]              = '\0';
+    *(std::end (fSavedContextName_) - 1) = '\0';
     IncCount_ ();
 }
 
 TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept
     : fDoEndMarker{true}
 {
+    // ********************** DEPRECATED API *********************
     try {
         va_list argsList;
         va_start (argsList, extraFmt);
         fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", contextName,
                                                              Characters::CString::FormatV (extraFmt, argsList).c_str ());
         va_end (argsList);
-        size_t len = min (Memory::NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
-        char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
-        if (len >= Memory::NEltsOf (fSavedContextName_) - 1) {
-            char_traits<wchar_t>::copy (&fSavedContextName_[len - 3], L"...", 3);
+        size_t len = min (kMaxContextNameLen_ - 1, char_traits<wchar_t>::length (contextName));
+        char_traits<wchar_t>::copy (fSavedContextName_.data (), contextName, len);
+        if (len >= kMaxContextNameLen_ - 1) {
+            char_traits<wchar_t>::copy (&fSavedContextName_.data ()[len - 3], L"...", 3);
         }
         *(std::end (fSavedContextName_) - 1) = '\0';
         fSavedContextName_[len]              = '\0';
@@ -672,11 +680,6 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
     }
     catch (...) {
     }
-}
-
-TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
-    : TraceContextBumper{mkwtrfromascii_ (contextName).data ()}
-{
 }
 
 unsigned int TraceContextBumper::GetCount ()
@@ -708,25 +711,5 @@ TraceContextBumper::~TraceContextBumper ()
             Emitter::Get ().EmitTraceMessage (L"} </%s>", fSavedContextName_);
         }
     }
-}
-
-auto TraceContextBumper::mkwtrfromascii_ (const char* contextName) -> array<wchar_t, kMaxContextNameLen_ + 1>
-{
-    // Return item with max size kMaxContextNameLen_+1 so we can tell if we need to add elipsis
-    array<wchar_t, kMaxContextNameLen_ + 1> r;
-    auto                                    ci = contextName;
-    for (; *ci != '\0'; ++ci) {
-        Require (isascii (*ci));
-        size_t i = ci - contextName;
-        if (i < kMaxContextNameLen_) {
-            r[i] = *ci;
-        }
-        else {
-            break;
-        }
-    }
-    Assert (ci - contextName <= kMaxContextNameLen_);
-    r[ci - contextName] = '\0';
-    return r;
 }
 #endif

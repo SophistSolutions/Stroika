@@ -17,11 +17,9 @@
 #include "ThreadPool.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
-
-using Characters::String;
-using Characters::StringBuilder;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -94,7 +92,7 @@ public:
             catch (...) {
                 // other exceptions WARNING WITH DEBUG MESSAGE - but otherwise - EAT/IGNORE
                 if constexpr (kEmitDbgTraceOnThreadPoolEntryExceptions_ and qStroika_Foundation_Debug_Trace_DefaultTracingOn) {
-                    DbgTrace (L"in threadpool, ignoring exception running task: %s", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace ("in threadpool, ignoring exception running task: {}"_f, Characters::ToString (current_exception ()));
                 }
             }
         }
@@ -117,9 +115,9 @@ Characters::String ThreadPool::Statistics::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "fNumberOfTasksAdded: "sv << fNumberOfTasksAdded << ", "sv;
-    sb << "fNumberOfTasksCompleted: "sv << fNumberOfTasksCompleted << ", "sv;
-    sb << "fTotalTimeConsumed: "sv << fTotalTimeConsumed << ", "sv;
+    sb << "NumberOfTasksAdded: "sv << fNumberOfTasksAdded << ", "sv;
+    sb << "NumberOfTasksCompleted: "sv << fNumberOfTasksCompleted << ", "sv;
+    sb << "TotalTimeConsumed: "sv << fTotalTimeConsumed << ", "sv;
     sb << "}"sv;
     return sb.str ();
 }
@@ -152,7 +150,7 @@ unsigned int ThreadPool::GetPoolSize () const
 
 void ThreadPool::SetPoolSize (unsigned int poolSize)
 {
-    Debug::TraceContextBumper ctx{L"ThreadPool::SetPoolSize", L"poolSize=%d", poolSize};
+    Debug::TraceContextBumper ctx{"ThreadPool::SetPoolSize", "poolSize={}"_f, poolSize};
     Require (not fAborted_);
     [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     DbgTrace (L"fThreads_.size ()=%d", fThreads_.size ());
@@ -216,7 +214,7 @@ auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::Stri
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         fPendingTasks_.push_back (PendingTaskInfo_{.fTask = task, .fName = name});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
-        DbgTrace (L"fPendingTasks.size () now = %d", (int)fPendingTasks_.size ());
+        DbgTrace ("fPendingTasks.size () now = {}"_f, (int)fPendingTasks_.size ());
 #endif
         ++fCollectedTaskStats_.fNumberOfTasksAdded;
     }
@@ -451,8 +449,8 @@ auto ThreadPool::GetCurrentStatistics () const -> Statistics
 
 void ThreadPool::Abort_ () noexcept
 {
-    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... don't be half-way aborted
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
+    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our sub-threads - even if our thread is aborting... don't be half-way aborted
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ThreadPool::Abort_", "*this={}"_f, ToString ())};
     Debug::TimingTrace        tt{1.0s};
     fAborted_ = true; // No race, because fAborted never 'unset'
                       // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
@@ -470,8 +468,8 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
 {
     Thread::SuppressInterruptionInContext suppressCtx; // cuz we must shutdown owned threads
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone_",
-                                                                                 L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ThreadPool::AbortAndWaitForDone_",
+                                                                                 "*this={}, timeoutAt={}"_f, ToString (), timeoutAt)};
     Debug::TimingTrace        tt{1.0s};
 #endif
     try {

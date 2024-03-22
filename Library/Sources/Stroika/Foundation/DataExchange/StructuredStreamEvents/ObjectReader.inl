@@ -683,8 +683,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         if constexpr (qDebug) {
             if (not fFactories_.ContainsKey (ti)) {
-                Debug::TraceContextBumper ctx{L"Registry::MakeContextReader", L"FAILED TO FIND READER! (forTypeInfo = %s) - Use of UnRegistered Type!",
-                                              Characters::ToString (ti).c_str ()};
+                using namespace Characters;
+                Debug::TraceContextBumper ctx{"Registry::MakeContextReader", "FAILED TO FIND READER! (forTypeInfo = {}) - Use of UnRegistered Type!"_f,
+                                              Characters::ToString (ti)};
             }
         }
         ReaderFromVoidStarFactory factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
@@ -710,11 +711,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         if constexpr (qDebug) {
             for (const auto& kv : fieldDescriptions) {
                 if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.GetTypeInfo ())) {
-                    Debug::TraceContextBumper ctx{L"Registry::AddCommonReader_Class",
-                                                  L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!",
-                                                  Characters::ToString (typeid (CLASS)).c_str (),
-                                                  Characters::ToString (kv.fFieldMetaInfo.GetTypeInfo ()).c_str (),
-                                                  Characters::ToString (kv.fSerializedFieldName).c_str ()};
+                    using namespace Characters;
+                    Debug::TraceContextBumper ctx{"Registry::AddCommonReader_Class",
+                                                  "CLASS={} field-TypeInfo-not-found = {}, for field named '{}' - UnRegistered Type!"_f,
+                                                  Characters::ToString (typeid (CLASS)), Characters::ToString (kv.fFieldMetaInfo.GetTypeInfo ()),
+                                                  Characters::ToString (kv.fSerializedFieldName)};
                     RequireNotReached ();
                 }
             }

@@ -27,11 +27,11 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
 using namespace IO::FileSystem;
 
-using Characters::SDKString;
 using Containers::Mapping;
 using Time::Duration;
 
@@ -269,7 +269,7 @@ void Logger::Log_ (Priority logLevel, const String& msg)
 
 void Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
-    Debug::TraceContextBumper ctx{L"Logger::SetBufferingEnabled", L"logBufferingEnabled=%d", logBufferingEnabled};
+    Debug::TraceContextBumper ctx{"Logger::SetBufferingEnabled", "logBufferingEnabled={}"_f, logBufferingEnabled};
     RequireNotNull (fRep_);
     if (fRep_->fBufferingEnabled_ != logBufferingEnabled) {
         fRep_->fBufferingEnabled_ = logBufferingEnabled;
@@ -298,8 +298,8 @@ optional<Time::Duration> Logger::GetSuppressDuplicates () const
 
 void Logger::SetSuppressDuplicates (const optional<Duration>& suppressDuplicatesThreshold)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%s", Characters::ToString (suppressDuplicatesThreshold).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Logger::SetSuppressDuplicates", "suppressDuplicatesThreshold={}"_f,
+                                                                                 Characters::ToString (suppressDuplicatesThreshold))};
     Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0s);
     RequireNotNull (fRep_); // not destroyed
     [[maybe_unused]] lock_guard critSec{fRep_->fSuppressDuplicatesThreshold_};

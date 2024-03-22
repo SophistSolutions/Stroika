@@ -117,9 +117,8 @@ namespace {
         }
         virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
         {
-            Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (),
-                Characters::ToString (onInterface).c_str ())};
+            Debug::TraceContextBumper                       ctx{"IO::Network::Socket::JoinMulticastGroup",
+                                          Stroika_Foundation_Debug_OptionalizeTraceArgs ("iaddr={} onInterface={}"_f, iaddr, onInterface)};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
             auto                       activity = Execution::LazyEvalActivity{[&] () -> Characters::String {
@@ -145,9 +144,9 @@ namespace {
         }
         virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
         {
-            Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (),
-                Characters::ToString (onInterface).c_str ())};
+            Debug::TraceContextBumper ctx{
+                Stroika_Foundation_Debug_OptionalizeTraceArgs ("IO::Network::Socket::LeaveMulticastGroup", L"iaddr={} onInterface={}"_f,
+                                                               Characters::ToString (iaddr), Characters::ToString (onInterface))};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             switch (iaddr.GetAddressFamily ()) {
                 case InternetAddress::AddressFamily::V4: {

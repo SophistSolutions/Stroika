@@ -532,10 +532,10 @@ namespace {
                 BLOB::FromRaw (kKey2_, Memory::NEltsOf (kKey2_) - 1),
             };
 
-            const char kSrc1_[] = "This is a very good test of a very good test";
-            const char kSrc2_[] = "";
-            const char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
-            const char kSrc4_[] = "0123456789";
+            constexpr char kSrc1_[] = "This is a very good test of a very good test";
+            constexpr char kSrc2_[] = "";
+            constexpr char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
+            constexpr char kSrc4_[] = "0123456789";
 
             static const BLOB kTestMessages_[] = {
                 BLOB::FromRaw (kSrc1_, Memory::NEltsOf (kSrc1_) - 1), BLOB::FromRaw (kSrc2_, Memory::NEltsOf (kSrc2_) - 1),
@@ -546,8 +546,8 @@ namespace {
                 providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
             }
             for (String provider : providers2Try) {
-                Debug::TraceContextBumper ctxp{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"trying provider", L"provider=%s",
-                                                                                              Characters::ToString (provider).c_str ())};
+                Debug::TraceContextBumper ctxp{
+                    Stroika_Foundation_Debug_OptionalizeTraceArgs ("trying provider", "provider={}"_f, Characters::ToString (provider))};
                 shared_ptr<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
                 try {
 #if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
@@ -561,9 +561,8 @@ namespace {
 #endif
                 }
                 catch (...) {
-                    if (provider == L"legacy") {
-                        DbgTrace (L"Skipping provider=%s, due to exception: %s", provider.c_str (),
-                                  Characters::ToString (current_exception ()).c_str ());
+                    if (provider == "legacy"sv) {
+                        DbgTrace ("Skipping provider={}, due to exception: {}"_f, provider, Characters::ToString (current_exception ()));
                     }
                     else {
                         Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s",

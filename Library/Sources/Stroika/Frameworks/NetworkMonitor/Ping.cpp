@@ -98,15 +98,15 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
 
 Pinger::ResultType Pinger::RunOnce (const optional<unsigned int>& ttl)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Ping::Pinger::RunOnce",
-                                                                                 L"ttl=%s", Characters::ToString (ttl).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Frameworks::NetworkMonitor::Ping::Pinger::RunOnce",
+                                                                                 "ttl={}"_f, Characters::ToString (ttl))};
     return RunOnce_ICMP_ (ttl.value_or (fOptions_.fMaxHops.value_or (Options::kDefaultMaxHops)));
 }
 
 Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 {
     Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Ping::Pinger::RunOnce_ICMP_", L"ttl=%d", ttl)};
+        Stroika_Foundation_Debug_OptionalizeTraceArgs ("Frameworks::NetworkMonitor::Ping::Pinger::RunOnce_ICMP_", "ttl={}"_f, ttl)};
     fSocket_.setsockopt (IPPROTO_IP, IP_TTL, ttl); // max # of hops
 
     ICMP::V4::PacketHeader pingRequest = [&] () {
@@ -256,8 +256,8 @@ String SampleResults::ToString () const
 SampleResults NetworkMonitor::Ping::Sample (const InternetAddress& addr, const SampleOptions& sampleOptions, const Options& options)
 {
     Debug::TraceContextBumper         ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        L"Frameworks::NetworkMonitor::Ping::Sample", L"addr=%s, sampleOptions=%s, options=%s", Characters::ToString (addr).c_str (),
-        Characters::ToString (sampleOptions).c_str (), Characters::ToString (options).c_str ())};
+        "Frameworks::NetworkMonitor::Ping::Sample", "addr={}, sampleOptions={}, options={}"_f, Characters::ToString (addr),
+        Characters::ToString (sampleOptions), Characters::ToString (options))};
     Pinger                            pinger{addr, options};
     Collection<Time::DurationSeconds> sampleTimes;
     Collection<unsigned int>          sampleHopCounts;

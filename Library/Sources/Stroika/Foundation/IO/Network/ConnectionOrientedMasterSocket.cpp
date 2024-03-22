@@ -30,8 +30,7 @@ namespace {
         }
         virtual void Listen (unsigned int backlog) override
         {
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s",
-                                                                                         Characters::ToString ((int)backlog).c_str ())};
+            Debug::TraceContextBumper                       ctx{"IO::Network::Socket::Listen", "backlog={}"_f, backlog};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
 #if qPlatform_POSIX
             Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });

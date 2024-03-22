@@ -164,8 +164,9 @@ namespace {
                 int     ret      = ::select (0, NULL, &setW, &setE, &time_out);
                 if (ret <= 0) {
                     // select() failed or connection timed out
-                    if (ret == 0)
+                    if (ret == 0) {
                         WSASetLastError (WSAETIMEDOUT);
+                    }
                     Execution::ThrowSystemErrNo (::WSAGetLastError ()); // connection failed
                 }
                 // Check the errno value returned...
@@ -180,9 +181,8 @@ namespace {
         }
         virtual void Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const override
         {
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s, timeout=%s", Characters::ToString (sockAddr).c_str (),
-                Characters::ToString (timeout).c_str ())};
+            Debug::TraceContextBumper ctx{"ConnectionOrientedStreamSocket_IMPL_::Connect", "sockAddr={}, timeout={}"_f,
+                                          Characters::ToString (sockAddr), Characters::ToString (timeout)};
             if (timeout) {
                 Connect_AsyncWTimeout_ (sockAddr, *timeout);
             }

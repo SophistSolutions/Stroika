@@ -103,6 +103,13 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept;
     };
 
+    namespace Private_ {
+        template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
+        inline constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
+        {
+            return SIZE_OF_ARRAY;
+        }
+    }
     /*
      ********************************************************************************
      ******************************* TraceContextBumper *****************************
@@ -114,53 +121,78 @@ namespace Stroika::Foundation::Debug {
         IncCount_ ();
 #endif
     }
+    template <typename CHAR_T>
+    inline TraceContextBumper::TraceContextBumper (const CHAR_T* contextName) noexcept
+        requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>)
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-    template <typename CHAR_T, typename... Args>
-    TraceContextBumper::TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
-        : TraceContextBumper{contextName}
+        : TraceContextBumper{cvt2WChartArrayTrunc_ (contextName)}
+#endif
     {
-        try {
-// @todo cleanup - can be much simpler...
-#if qPlatform_Windows
-            constexpr size_t kEOLSize = 2;
-#else
-            constexpr size_t kEOLSize = 1;
-#endif
-            //            constexpr size_t kEOLSize = strlen (Characters::GetEOL<char> ());
-
-            if constexpr (same_as<CHAR_T, char>) {
-                fLastWriteToken_ = Private_::Emitter::Get ().EmitTraceMessage (
-                    3 + kEOLSize, "<%s (%s)> {", contextName,
-                    Configuration::StdCompat::vformat (fmt.sv, Configuration::StdCompat::make_format_args (args...)).c_str ());
-            }
-            else if constexpr (same_as<CHAR_T, wchar_t>) {
-                fLastWriteToken_ = Private_::Emitter::Get ().EmitTraceMessage (
-                    3 + kEOLSize, L"<%s (%s)> {", contextName,
-                    Configuration::StdCompat::vformat (fmt.sv, Configuration::StdCompat::make_wformat_args (args...)).c_str ());
-            }
-        }
-        catch (...) {
-        }
     }
+    template <typename CHAR_T, typename FCHAR_T, typename... ARGS>
+    TraceContextBumper::TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<FCHAR_T> fmt, ARGS&&... args) noexcept
+        requires ((same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>) and (same_as<FCHAR_T, char> or same_as<FCHAR_T, wchar_t>))
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        : TraceContextBumper{cvt2WChartArrayTrunc_ (contextName), ProcessFmtString_ (fmt, forward<ARGS> (args)...)}
 #endif
+    {
+    }
 #if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
-    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName) noexcept
-    {
-    }
-    template <typename CHAR_T, typename... Args>
-    inline TraceContextBumper::TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
-    {
-    }
     inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName, [[maybe_unused]] const wchar_t* extraFmt, ...) noexcept
     {
     }
-    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const char* contextName) noexcept
-    {
-    }
-    inline TraceContextBumper::~TraceContextBumper ()
-    {
-    }
 #endif
+    template <typename CHAR_T, typename... ARGS>
+    auto TraceContextBumper::ProcessFmtString_ (Characters::FormatString<CHAR_T> fmt, ARGS&&... args) noexcept -> CHAR_ARRAY_T
+        requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>)
+    {
+        try {
+            basic_string<CHAR_T> r;
+            if constexpr (same_as<CHAR_T, wchar_t>) {
+                r = Configuration::StdCompat::vformat (fmt.sv, Configuration::StdCompat::make_wformat_args (args...));
+            }
+            else {
+                r = Configuration::StdCompat::vformat (fmt.sv, Configuration::StdCompat::make_format_args (args...));
+            }
+            size_t       len = min<size_t> (r.size (), kMaxContextNameLen_);
+            CHAR_ARRAY_T result;
+            // Dont call Memory::Span util here - but reproduce in loop to avoid deadly embrace
+            //char_traits<CHAR_T>::copy (result.data (), r.data (), len);
+            for (size_t i = 0; i < len; ++i) {
+                result[i] = static_cast<wchar_t> (r[i]);
+            }
+            result[len] = '\0';
+            return result;
+        }
+        catch (...) {
+            // we are already deep in the guys of DbgTrace stuff - so not much chance of 'logging' this issue ;-)
+            return {};
+        }
+    }
+    template <typename CHAR_T>
+    auto TraceContextBumper::cvt2WChartArrayTrunc_ (span<const CHAR_T> contextName) -> CHAR_ARRAY_T
+    {
+        // Return item with max size kMaxContextNameLen_+1 so we can tell if we need to add elipsis
+        array<wchar_t, kMaxContextNameLen_ + 1> r;
+        auto                                    ci = contextName.begin ();
+        for (; ci != contextName.end (); ++ci) {
+            size_t i = ci - contextName.begin ();
+            if (i < kMaxContextNameLen_) {
+                r[i] = *ci;
+            }
+            else {
+                break;
+            }
+        }
+        Assert (ci - contextName.begin () <= kMaxContextNameLen_);
+        r[ci - contextName.begin ()] = '\0';
+        return r;
+    }
+    template <typename CHAR_T>
+    auto TraceContextBumper::cvt2WChartArrayTrunc_ (const CHAR_T* contextName) -> CHAR_ARRAY_T
+    {
+        return cvt2WChartArrayTrunc_ (span{contextName, char_traits<CHAR_T>::length (contextName)});
+    }
 
     /*
      ********************************************************************************

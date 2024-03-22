@@ -105,9 +105,8 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
 
 void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void (Hop)> perHopCallback, const Options& options)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Traceroute::Run",
-                                                                                 L"addr=%s, options=%s", Characters::ToString (addr).c_str (),
-                                                                                 Characters::ToString (options).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        "Frameworks::NetworkMonitor::Traceroute::Run", L"addr={}, options={}"_f, Characters::ToString (addr), Characters::ToString (options))};
     unsigned int              maxTTL = options.fMaxHops.value_or (Options::kDefaultMaxHops);
 
     Ping::Options pingOptions{};

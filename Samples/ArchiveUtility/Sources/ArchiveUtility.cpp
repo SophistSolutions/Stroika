@@ -173,7 +173,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
+        "main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
     if (optional<Options_> o = ParseOptions_ (argc, argv)) {
         try {
             switch (o->fOperation) {
