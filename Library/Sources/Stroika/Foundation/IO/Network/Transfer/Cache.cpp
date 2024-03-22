@@ -55,7 +55,7 @@ namespace {
             nonvirtual String ToString () const
             {
                 StringBuilder sb = Element::ToString ().SubString (0, -1);
-                sb << ", fExpiresDefault: "sv << Characters::ToString (fExpiresDefault);
+                sb << ", ExpiresDefault: "sv << Characters::ToString (fExpiresDefault);
                 sb << "}"sv;
                 return sb.str ();
             }
@@ -72,8 +72,8 @@ namespace {
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{
-                Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch",
-                                                               L"schemeAndAuthority=%s", Characters::ToString (schemeAndAuthority).c_str ())};
+                Stroika_Foundation_Debug_OptionalizeTraceArgs ("IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch",
+                                                               "schemeAndAuthority={}"_f, Characters::ToString (schemeAndAuthority))};
 #endif
             if (request->fMethod == HTTP::Methods::kGet) {
                 try {
@@ -119,8 +119,8 @@ namespace {
         virtual void OnAfterFetch (const EvalContext& context, Response* response) noexcept override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DefaultCacheRep_::OnAfterFetch", L"context.fFullURI=%s",
-                                                                                         Characters::ToString (context.fFullURI).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("DefaultCacheRep_::OnAfterFetch", "context.fFullURI={}"_f,
+                                                                                         Characters::ToString (context.fFullURI))};
 #endif
             RequireNotNull (response);
             switch (response->GetStatus ()) {
