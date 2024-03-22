@@ -2402,7 +2402,8 @@ sub PostProcessOptions_ ()
 			#
 			# AND saw on ubuntu 23.10 with clang++-16
 			# AND saw on ubuntu 23.10 with clang++-17
-			if ($itsVersion < 18.0) {
+			# AND saw on ubuntu 24.04(prerelease) with clang++-18
+			if ($itsVersion < 19.0) {
 				$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 			}
 		}
