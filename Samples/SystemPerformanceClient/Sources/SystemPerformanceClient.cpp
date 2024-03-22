@@ -210,8 +210,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Execution::CommandLine cmdLine{argc, argv};
-    Debug::TraceContextBumper ctx{  "main", "argv={}"_f, cmdLine};
+    Execution::CommandLine    cmdLine{argc, argv};
+    Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
@@ -232,11 +232,11 @@ int main (int argc, const char* argv[])
     const initializer_list<Execution::CommandLine::Option> kAllOptions = {
         kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_};
 
-    bool                   printUsage            = cmdLine.Has (kHelp);
-    bool                   mostRecentCaptureMode = cmdLine.Has (kMostRecentO_);
-    bool                   printNames            = cmdLine.Has (kPrintNamesO_);
-    bool                   oneLineMode           = cmdLine.Has (kOneLineModeO_);
-    Time::DurationSeconds  runFor                = 0s; // default to runfor 0, so we do each once.
+    bool                  printUsage            = cmdLine.Has (kHelp);
+    bool                  mostRecentCaptureMode = cmdLine.Has (kMostRecentO_);
+    bool                  printNames            = cmdLine.Has (kPrintNamesO_);
+    bool                  oneLineMode           = cmdLine.Has (kOneLineModeO_);
+    Time::DurationSeconds runFor                = 0s; // default to runfor 0, so we do each once.
     if (auto o = cmdLine.GetArgument (kRunForO_)) {
         runFor = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
     }
