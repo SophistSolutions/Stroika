@@ -53,8 +53,6 @@ namespace Stroika::Foundation::Execution {
         return Characters::ToString (this->fArgs_);
     }
 
-
-
     ////---deprecated
     [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (const String& cmdLine)
     {
