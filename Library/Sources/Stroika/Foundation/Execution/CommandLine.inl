@@ -48,6 +48,12 @@ namespace Stroika::Foundation::Execution {
         Require (o.fSupportsArgument);
         return get<Sequence<String>> (Get (o));
     }
+    inline String CommandLine::ToString () const
+    {
+        return Characters::ToString (this->fArgs_);
+    }
+
+
 
     ////---deprecated
     [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (const String& cmdLine)

@@ -181,6 +181,12 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Sequence<String> GetArguments () const;
         nonvirtual Sequence<String> GetArguments (const Option& o) const;
 
+    public:
+        /**
+         * 
+        */
+        nonvirtual String ToString () const;
+
     private:
         /*
          *  This may throw, but NOT for not finding option o, just for finding o, but ill-formed.

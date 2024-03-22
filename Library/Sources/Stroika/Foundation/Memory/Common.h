@@ -136,13 +136,13 @@ namespace Stroika::Foundation::Memory {
 
     inline namespace Literals {
         /**
-     *  \brief A utility for declaring constant bytes (byte literals).
-     * 
-     *  \req b <= 0xff
-     * 
-     *  \see https://stackoverflow.com/questions/75411756/how-do-i-declare-and-initialize-an-array-of-bytes-in-c
-     */
-        constexpr byte operator""_b (unsigned long long b);
+         *  \brief A utility for declaring constant bytes (byte literals).
+         * 
+         *  \req b <= 0xff
+         * 
+         *  \see https://stackoverflow.com/questions/75411756/how-do-i-declare-and-initialize-an-array-of-bytes-in-c
+         */
+        constexpr byte operator"" _b (unsigned long long b);
     }
 
     /**
@@ -182,6 +182,7 @@ namespace Stroika::Foundation::Memory {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Warray-bounds\"");
     }
 #endif
+
 }
 
 /*
