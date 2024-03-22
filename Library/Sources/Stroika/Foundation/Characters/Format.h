@@ -107,14 +107,14 @@ namespace Stroika::Foundation::Characters {
     };
 
     inline namespace Literals {
-    inline FormatString<char> operator"" _f (const char* str, size_t len)
-    {
-        return FormatString<char>{.sv = string_view{str, len}};
-    }
-    inline FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len)
-    {
-        return FormatString<wchar_t>{.sv = wstring_view{str, len}};
-    }
+        inline FormatString<char> operator"" _f (const char* str, size_t len)
+        {
+            return FormatString<char>{.sv = string_view{str, len}};
+        }
+        inline FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len)
+        {
+            return FormatString<wchar_t>{.sv = wstring_view{str, len}};
+        }
     }
 
     /*

@@ -135,14 +135,14 @@ namespace Stroika::Foundation::Memory {
     using UninitializedConstructorFlag::eUninitialized;
 
     inline namespace Literals {
-    /**
+        /**
      *  \brief A utility for declaring constant bytes (byte literals).
      * 
      *  \req b <= 0xff
      * 
      *  \see https://stackoverflow.com/questions/75411756/how-do-i-declare-and-initialize-an-array-of-bytes-in-c
      */
-    constexpr byte operator""_b (unsigned long long b);
+        constexpr byte operator""_b (unsigned long long b);
     }
 
     /**

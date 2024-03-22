@@ -101,15 +101,15 @@ namespace Stroika::Foundation::Math {
     constexpr Angle operator/ (const Angle& lhs, Angle::RepType rhs);
 
     inline namespace Literals {
-    /**
+        /**
      */
-    constexpr Angle operator"" _deg (long double n) noexcept;
-    constexpr Angle operator"" _deg (unsigned long long int n) noexcept;
+        constexpr Angle operator"" _deg (long double n) noexcept;
+        constexpr Angle operator"" _deg (unsigned long long int n) noexcept;
 
-    /**
+        /**
      */
-    constexpr Angle operator"" _rad (long double n) noexcept;
-    constexpr Angle operator"" _rad (unsigned long long int n) noexcept;
+        constexpr Angle operator"" _rad (long double n) noexcept;
+        constexpr Angle operator"" _rad (unsigned long long int n) noexcept;
     }
 
     /**
