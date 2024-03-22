@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Time {
      ******************** Literals::operator "" _duration ***************************
      ********************************************************************************
      */
-    namespace Literals {
+    inline namespace Literals {
         [[nodiscard]] inline Duration operator"" _duration (const char* str, size_t len)
         {
             return Duration{string{str, str + len}};

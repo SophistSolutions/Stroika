@@ -339,7 +339,7 @@ namespace Stroika::Foundation::Time {
     };
     inline const Duration::FormatException Duration::FormatException::kThe;
 
-    inline namespace Literal {
+    inline namespace Literals {
 
         /**
      *  \brief user defined literal for Duration, specified in ISO8601 format.

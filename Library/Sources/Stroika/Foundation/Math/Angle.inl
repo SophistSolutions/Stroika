@@ -94,21 +94,29 @@ namespace Stroika::Foundation::Math {
     {
         return Angle (lhs.AsRadians () * rhs.AsRadians (), Angle::eRadians);
     }
-    constexpr Angle operator""_deg (long double n) noexcept
-    {
-        return Angle{static_cast<Angle::RepType> (n), Angle::eDegrees};
-    }
-    constexpr Angle operator""_deg (unsigned long long int n) noexcept
-    {
-        return Angle{static_cast<Angle::RepType> (n), Angle::eDegrees};
-    }
-    constexpr Angle operator""_rad (long double n) noexcept
-    {
-        return Angle{static_cast<Angle::RepType> (n), Angle::eRadians};
-    }
-    constexpr Angle operator""_rad (unsigned long long int n) noexcept
-    {
-        return Angle{static_cast<Angle::RepType> (n), Angle::eRadians};
+
+    /*
+     ********************************************************************************
+     ****************************** Math::Literals **********************************
+     ********************************************************************************
+     */
+    inline namespace Literals {
+        constexpr Angle operator""_deg (long double n) noexcept
+        {
+            return Angle{static_cast<Angle::RepType> (n), Angle::eDegrees};
+        }
+        constexpr Angle operator""_deg (unsigned long long int n) noexcept
+        {
+            return Angle{static_cast<Angle::RepType> (n), Angle::eDegrees};
+        }
+        constexpr Angle operator""_rad (long double n) noexcept
+        {
+            return Angle{static_cast<Angle::RepType> (n), Angle::eRadians};
+        }
+        constexpr Angle operator""_rad (unsigned long long int n) noexcept
+        {
+            return Angle{static_cast<Angle::RepType> (n), Angle::eRadians};
+        }
     }
 
     /*

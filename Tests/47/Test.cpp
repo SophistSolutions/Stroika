@@ -31,8 +31,8 @@ namespace {
     void Test2_Round_ ()
     {
         // really could use more cases!!!
-        EXPECT_TRUE (RoundUpTo (2, 10) == 10);
-        EXPECT_TRUE (RoundDownTo (2, 10) == 0);
+        EXPECT_EQ(RoundUpTo (2, 10) , 10);
+        EXPECT_EQ (RoundDownTo (2, 10), 0);
         EXPECT_TRUE (RoundUpTo (2, 2) == 2);
         EXPECT_TRUE (RoundDownTo (2, 2) == 2);
         EXPECT_TRUE (Round<int> (2.2) == 2);

@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Characters {
      *  \note - if encountering invalid data in the input (invalid characters) - this will 'THROW' and not just fill in special bogus replacement
      *          characters.
      * 
-     *  \note - the BINARY format character is OPAQUE given this API (you get/set bytes). Thie CHAR_T in the template argument
+     *  \note - the BINARY format character is OPAQUE given this API (you get/set bytes). The CHAR_T in the template argument
      *          refers to the 'CHARACTER' format you map to/from binary format (so typically wchar_t, or char32_t maybe).
      *
      *  Enhancements over std::codecvt:
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Characters {
      *              the UTF code conversion, hopefully enuf faster to make up for the virtual call overhead this
      *              class introduces).
      *      o   Don't support 'partial' conversion.
-     *          If there is insufficient space in the target buffer, this is an ASSERTION erorr - UNSUPPORTED.
+     *          If there is insufficient space in the target buffer, this is an ASSERTION error - UNSUPPORTED.
      *          ALL 'srcSpan' CHARACTER data MUST be consumed/converted (for byte data; we allow
      *          only a single partial character at the end for Bytes2Characters takes ptr to span and updates span
      *          to reflect remaining bytes).
