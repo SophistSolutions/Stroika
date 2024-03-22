@@ -288,32 +288,32 @@ namespace Stroika::Foundation::Time {
      ******************** Literals::operator "" _duration ***************************
      ********************************************************************************
      */
- namespace Literals {  
-      [[nodiscard]] inline Duration operator"" _duration (const char* str, size_t len)
-    {
-        return Duration{string{str, str + len}};
+    namespace Literals {
+        [[nodiscard]] inline Duration operator"" _duration (const char* str, size_t len)
+        {
+            return Duration{string{str, str + len}};
+        }
+        [[nodiscard]] inline Duration operator"" _duration (const wchar_t* str, size_t len)
+        {
+            return Duration{Characters::String{span{str, len}}};
+        }
+        [[nodiscard]] inline Duration operator"" _duration (const char8_t* str, size_t len)
+        {
+            return Duration{Characters::String{span{str, len}}};
+        }
+        [[nodiscard]] inline Duration operator"" _duration (const char16_t* str, size_t len)
+        {
+            return Duration{Characters::String{span{str, len}}};
+        }
+        [[nodiscard]] inline Duration operator"" _duration (const char32_t* str, size_t len)
+        {
+            return Duration{Characters::String{span{str, len}}};
+        }
+        [[nodiscard]] inline Duration operator"" _duration (long double _Val) noexcept
+        {
+            return Duration{_Val};
+        }
     }
-    [[nodiscard]] inline Duration operator"" _duration (const wchar_t* str, size_t len)
-    {
-        return Duration{Characters::String{span{str, len}}};
-    }
-    [[nodiscard]] inline Duration operator"" _duration (const char8_t* str, size_t len)
-    {
-        return Duration{Characters::String{span{str, len}}};
-    }
-    [[nodiscard]] inline Duration operator"" _duration (const char16_t* str, size_t len)
-    {
-        return Duration{Characters::String{span{str, len}}};
-    }
-    [[nodiscard]] inline Duration operator"" _duration (const char32_t* str, size_t len)
-    {
-        return Duration{Characters::String{span{str, len}}};
-    }
-    [[nodiscard]] inline Duration operator"" _duration (long double _Val) noexcept
-    {
-        return Duration{_Val};
-    }
- }
 
     /*
      ********************************************************************************

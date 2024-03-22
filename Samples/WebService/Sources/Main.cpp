@@ -32,8 +32,8 @@ using namespace StroikaSample::WebServices;
 
 int main (int argc, const char* argv[])
 {
-        Execution::CommandLine cmdLine{argc, argv};
-    Debug::TraceContextBumper                            ctx{  "main", "argv={}"_f, cmdLine};
+    Execution::CommandLine                               cmdLine{argc, argv};
+    Debug::TraceContextBumper                            ctx{"main", "argv={}"_f, cmdLine};
     Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);

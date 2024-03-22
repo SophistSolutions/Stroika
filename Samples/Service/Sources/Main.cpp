@@ -129,7 +129,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    CommandLine cmdLine{argc, argv};
+    CommandLine               cmdLine{argc, argv};
     Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics

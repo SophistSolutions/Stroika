@@ -3,9 +3,9 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
 
 #include "AppConfiguration.h"
 #include "MoreConfiguration.h"

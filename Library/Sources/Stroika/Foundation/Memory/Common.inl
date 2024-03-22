@@ -287,13 +287,13 @@ namespace Stroika::Foundation::Memory {
      ********************* Memory::Literals::operator""_b ***************************
      ********************************************************************************
      */
- inline namespace Literals {
+    inline namespace Literals {
         constexpr byte operator""_b (unsigned long long b)
-    {
-        Require (b <= 0xff);
-        return static_cast<byte> (b);
+        {
+            Require (b <= 0xff);
+            return static_cast<byte> (b);
+        }
     }
- }
 
     ////////////////////// DEPRECATED .//////////////////////////
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
