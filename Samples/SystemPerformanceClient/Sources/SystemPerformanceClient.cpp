@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Process.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #if qPlatform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
@@ -210,7 +211,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        L"main", L"argv=%s", Characters::ToString (vector<const char*> (argv, argv + argc)).c_str ())};
+        "main", "argv={}"_f, Characters::ToString (vector<const char*> (argv, argv + argc)).c_str ())};
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif

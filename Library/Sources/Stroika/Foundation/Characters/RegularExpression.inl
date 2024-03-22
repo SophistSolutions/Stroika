@@ -40,10 +40,10 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     **************************** operator "" _RegEx ********************************
+     *********************** Literals::operator "" _RegEx ***************************
      ********************************************************************************
      */
-    inline RegularExpression operator"" _RegEx (const char* str, size_t len)
+ inline namespace Literals {    inline RegularExpression operator"" _RegEx (const char* str, size_t len)
     {
         return RegularExpression{String::FromStringConstant (span{str, len})};
     }
@@ -63,6 +63,7 @@ namespace Stroika::Foundation::Characters {
     {
         return RegularExpression{String{span{str, len}}};
     }
+ }
 
 }
 

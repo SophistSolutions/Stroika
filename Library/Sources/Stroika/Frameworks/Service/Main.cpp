@@ -574,7 +574,7 @@ void Main::BasicUNIXServiceImpl::_RunDirectly (const optional<Time::Duration>& r
 
 void Main::BasicUNIXServiceImpl::_Start (Time::DurationSeconds timeout)
 {
-    Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout};
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::Start", "timeout = {}"_f, Characters::ToString (timeout)};
 
     Time::TimePointSeconds timeoutAt = Time::GetTickCount () + timeout;
 
@@ -683,12 +683,12 @@ void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 {
     // NOTE - this is only safe due to the use of SignalHandlerRegistry::SafeSignalsManager
     Debug::TraceContextBumper traceCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", L"signal = %s", Execution::SignalToName (signum).c_str ())};
+        "Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", "signal = {}"_f, Execution::SignalToName (signum))};
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
         case SIGINT:
         case SIGTERM: {
-            DbgTrace (L"Calling sigHandlerThread2Abort (thread: %s).Abort ()", fRunThread_.load ().ToString ().c_str ());
+            DbgTrace ("Calling sigHandlerThread2Abort (thread: {}).Abort ()"_f, fRunThread_.load ().ToString ());
             fRunThread_.load ().Abort ();
         } break;
         case kSIG_ReReadConfiguration: {

@@ -144,6 +144,7 @@ namespace Stroika::Foundation::Debug {
      *      \endcode
      *
      *  \note ***Not Cancelation Point*** - and uses  noexcept
+     *  \note safe to call and does nothing if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
      */
     class TraceContextBumper final {
     public:
@@ -257,8 +258,11 @@ namespace Stroika::Foundation::Debug {
     /**
      * \def Stroika_Foundation_Debug_OptionalizeTraceArgs
      *
-     *   This is meant to be used with the 2+ argument Debug::TraceContextBumper constructor, to optionally suppress side-effects
-     *   of trace arguments when tracing is disabled (at compile time)
+     *   This is meant to be used with the 2+ argument Debug::TraceContextBumper constructor (_f format string), to optionally suppress side-effects
+     *   of trace arguments when tracing is disabled (at compile time).
+     * 
+     *  \note this may still be useful in Stroika v3 and later, but was mostly useful in before, switching to use of variadic templates, since now
+     *        the compiler can see the variadic and format parameters are unused for anything, so probably is able to optimize them away.
      */
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
 #define Stroika_Foundation_Debug_OptionalizeTraceArgs(...) __VA_ARGS__

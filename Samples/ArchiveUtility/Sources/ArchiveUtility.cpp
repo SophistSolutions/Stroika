@@ -25,12 +25,12 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 #if qHasFeature_LZMA || qHasFeature_ZLib
 using namespace Stroika::Foundation::DataExchange;
 #endif
 using namespace Stroika::Foundation::Streams;
 
-using Characters::String;
 using Containers::Sequence;
 using Memory::BLOB;
 
@@ -172,8 +172,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        "main", "argv={}"_f, Exeuction::CommandLine{argc, argv})};
     if (optional<Options_> o = ParseOptions_ (argc, argv)) {
         try {
             switch (o->fOperation) {

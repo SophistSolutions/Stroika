@@ -3,6 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 
@@ -12,6 +13,7 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 
 using namespace StroikaSample;
 using namespace StroikaSample::AppSettings;

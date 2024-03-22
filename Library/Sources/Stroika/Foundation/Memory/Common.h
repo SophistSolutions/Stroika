@@ -134,6 +134,7 @@ namespace Stroika::Foundation::Memory {
      */
     using UninitializedConstructorFlag::eUninitialized;
 
+    inline namespace Literals {
     /**
      *  \brief A utility for declaring constant bytes (byte literals).
      * 
@@ -142,6 +143,7 @@ namespace Stroika::Foundation::Memory {
      *  \see https://stackoverflow.com/questions/75411756/how-do-i-declare-and-initialize-an-array-of-bytes-in-c
      */
     constexpr byte operator""_b (unsigned long long b);
+    }
 
     /**
      *  Workaround absence of bit_cast in MacOS XCode 14 (which we support with Stroika v3)

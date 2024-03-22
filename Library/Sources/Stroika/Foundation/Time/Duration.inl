@@ -285,10 +285,11 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
-     ************************** operator "" _duration *******************************
+     ******************** Literals::operator "" _duration ***************************
      ********************************************************************************
      */
-    [[nodiscard]] inline Duration operator"" _duration (const char* str, size_t len)
+ namespace Literals {  
+      [[nodiscard]] inline Duration operator"" _duration (const char* str, size_t len)
     {
         return Duration{string{str, str + len}};
     }
@@ -312,6 +313,7 @@ namespace Stroika::Foundation::Time {
     {
         return Duration{_Val};
     }
+ }
 
     /*
      ********************************************************************************

@@ -339,6 +339,8 @@ namespace Stroika::Foundation::Time {
     };
     inline const Duration::FormatException Duration::FormatException::kThe;
 
+    inline namespace Literal {
+
     /**
      *  \brief user defined literal for Duration, specified in ISO8601 format.
      */
@@ -348,6 +350,7 @@ namespace Stroika::Foundation::Time {
     [[nodiscard]] Duration operator"" _duration (const char16_t* str, size_t len);
     [[nodiscard]] Duration operator"" _duration (const char32_t* str, size_t len);
     [[nodiscard]] Duration operator"" _duration (long double _Val) noexcept;
+    }
 
     /**
      *  Return the sum of the two durations.

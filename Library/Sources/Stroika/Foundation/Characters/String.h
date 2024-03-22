@@ -1798,6 +1798,7 @@ namespace Stroika::Foundation::Characters {
     };
     static_assert (Common::IInOrderComparer<String::LessComparer, String>);
 
+    inline namespace Literals {
     /**
      *  \brief shorthand for String::FromStringConstant { ARGUMENT }
      *
@@ -1815,6 +1816,7 @@ namespace Stroika::Foundation::Characters {
      */
     String operator"" _k (const char* s, size_t len);
     String operator"" _k (const wchar_t* s, size_t len);
+    }
 
     /**
      *  Basic operator overload with the obvious meaning, and simply indirect to @String::Concatenate (const String& rhs)

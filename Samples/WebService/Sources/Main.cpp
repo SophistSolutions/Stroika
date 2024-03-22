@@ -23,6 +23,7 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 
 using Characters::String;
 using Containers::Sequence;
@@ -31,8 +32,8 @@ using namespace StroikaSample::WebServices;
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+        Execution::CommandLine cmdLine{argc, argv};
+    Debug::TraceContextBumper                            ctx{  "main", "argv={}"_f, cmdLine};
     Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
@@ -44,7 +45,6 @@ int main (int argc, const char* argv[])
     const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
 
     try {
-        Execution::CommandLine cmdLine{argc, argv};
         cmdLine.Validate ({kPortO_, kQuitAfterO_});
 
         if (auto o = cmdLine.GetArgument (kPortO_)) {

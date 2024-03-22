@@ -21,10 +21,10 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
 
-using Characters::String;
 using Client::Listener;
 using Client::Search;
 using Containers::Sequence;

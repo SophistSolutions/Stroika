@@ -1136,16 +1136,18 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     ******************************** operator"" _k *********************************
+     *************************** Literals::operator"" _k ****************************
      ********************************************************************************
      */
-    inline String operator"" _k (const char* s, size_t len)
-    {
-        return String::FromStringConstant (span<const char>{s, len});
-    }
-    inline String operator"" _k (const wchar_t* s, size_t len)
-    {
-        return String::FromStringConstant (span<const wchar_t>{s, len});
+    inline namespace Literals {
+        inline String operator"" _k (const char* s, size_t len)
+        {
+            return String::FromStringConstant (span<const char>{s, len});
+        }
+        inline String operator"" _k (const wchar_t* s, size_t len)
+        {
+            return String::FromStringConstant (span<const wchar_t>{s, len});
+        }
     }
 
     /*

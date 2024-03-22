@@ -119,6 +119,7 @@ namespace Stroika::Foundation::Characters {
         Containers::Sequence<String> fSubMatches_;
     };
 
+    inline namespace Literals {
     /**
      *  \brief user defined literal for RegularExpression. These are always of type RegularExpression::SyntaxType::eDEFAULT (ie eECMAScript)
      * 
@@ -129,6 +130,7 @@ namespace Stroika::Foundation::Characters {
     RegularExpression operator"" _RegEx (const char8_t* str, size_t len);
     RegularExpression operator"" _RegEx (const char16_t* str, size_t len);
     RegularExpression operator"" _RegEx (const char32_t* str, size_t len);
+    }
 
 }
 

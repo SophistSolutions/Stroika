@@ -43,6 +43,7 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Frameworks::Service;
 
@@ -128,8 +129,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+    CommandLine cmdLine{argc, argv};
+    Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
     [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
@@ -202,8 +203,6 @@ int main (int argc, const char* argv[])
         using Execution::CommandLine;
         using Execution::StandardCommandLineOptions::kHelp;
         using Execution::StandardCommandLineOptions::kVersion;
-
-        CommandLine cmdLine{argc, argv};
 
         Sequence<CommandLine::Option> allMyOptions =
             Sequence<CommandLine::Option>{Main::CommandOptions::kAll} + Sequence<CommandLine::Option>{kHelp, kVersion};
