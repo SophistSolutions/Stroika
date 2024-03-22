@@ -307,6 +307,11 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
     return make_tuple (found, arguments);
 }
 
+String CommandLine::ToString () const
+{
+    return Characters::ToString (this->fArgs_);
+}
+
 optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
 {
     RequireNotNull (argi);
