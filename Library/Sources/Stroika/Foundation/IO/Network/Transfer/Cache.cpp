@@ -71,9 +71,8 @@ namespace {
         virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{
-                Stroika_Foundation_Debug_OptionalizeTraceArgs ("IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch",
-                                                               "schemeAndAuthority={}"_f, Characters::ToString (schemeAndAuthority))};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                "IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch", "schemeAndAuthority={}"_f, Characters::ToString (schemeAndAuthority))};
 #endif
             if (request->fMethod == HTTP::Methods::kGet) {
                 try {
