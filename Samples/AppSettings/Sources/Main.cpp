@@ -18,8 +18,8 @@ using namespace StroikaSample::AppSettings;
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        "main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+    Debug::TraceContextBumper ctx{
+        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
 
     // Simplest example
     [[maybe_unused]] uint16_t usePort = gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default);

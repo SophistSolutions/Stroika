@@ -128,8 +128,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        "main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+    Debug::TraceContextBumper ctx{
+        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
 
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
     [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
