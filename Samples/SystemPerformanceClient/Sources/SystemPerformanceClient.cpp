@@ -30,6 +30,7 @@ using namespace std;
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 
@@ -209,8 +210,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        "main", "argv={}"_f, Characters::ToString (vector<const char*> (argv, argv + argc)).c_str ())};
+    Execution::CommandLine cmdLine{argc, argv};
+    Debug::TraceContextBumper ctx{  "main", "argv={}"_f, cmdLine};
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
@@ -231,7 +232,6 @@ int main (int argc, const char* argv[])
     const initializer_list<Execution::CommandLine::Option> kAllOptions = {
         kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_};
 
-    Execution::CommandLine cmdLine{argc, argv};
     bool                   printUsage            = cmdLine.Has (kHelp);
     bool                   mostRecentCaptureMode = cmdLine.Has (kMostRecentO_);
     bool                   printNames            = cmdLine.Has (kPrintNamesO_);
