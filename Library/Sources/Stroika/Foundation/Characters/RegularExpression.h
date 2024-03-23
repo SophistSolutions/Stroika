@@ -70,8 +70,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *   Predefined regular expression that matches nothing.
          *
-         *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
-         *   \note Equivilent to
+         *   \note Since this is a static object, beware, it cannot be (safely) used before or after main
+         *   \note Equivalent to
          *       \code
          *           const  RegularExpression   kMatchNone ("(?!)");   // OR
          *           const  RegularExpression   kMatchNoneAlternative{};
@@ -121,10 +121,10 @@ namespace Stroika::Foundation::Characters {
 
     inline namespace Literals {
         /**
-     *  \brief user defined literal for RegularExpression. These are always of type RegularExpression::SyntaxType::eDEFAULT (ie eECMAScript)
-     * 
-     *  \req FOR 'char' overload, argument REQUIRES all text is ASCII (uses String::FromStringConstant)
-     */
+         *  \brief user defined literal for RegularExpression. These are always of type RegularExpression::SyntaxType::eDEFAULT (ie eECMAScript)
+         * 
+         *  \req FOR 'char' overload, argument REQUIRES all text is ASCII (uses String::FromStringConstant)
+         */
         RegularExpression operator"" _RegEx (const char* str, size_t len);
         RegularExpression operator"" _RegEx (const wchar_t* str, size_t len);
         RegularExpression operator"" _RegEx (const char8_t* str, size_t len);
