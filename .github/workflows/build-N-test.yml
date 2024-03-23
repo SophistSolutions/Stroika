@@ -227,6 +227,7 @@ jobs:
           if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            Builds/${{ matrix.config_name }}/Tests/Test01
             /tmp/LOGS-ARCHIVE
             #${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
@@ -298,6 +299,7 @@ jobs:
           docker exec buildContainer df -h
       - name: Copy Build Artifacts
         shell: "bash"
+        if: always()
         # due to flaws in docker (windows must stop) - and cp no wildcards
         run: |
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
