@@ -106,6 +106,14 @@ jobs:
       - name: Make libraries
         run: |
           make libraries
+      - name: Save space
+        run: |
+          echo "Before save space"
+          df -h
+          du -hs Builds/*/* IntermediateFiles/*/*
+          make --directory ThirdPartyComponents clean
+          df -h
+          du -hs Builds/*/* IntermediateFiles/*/*
       - name: Run Tests
         run: |
           make run-tests
