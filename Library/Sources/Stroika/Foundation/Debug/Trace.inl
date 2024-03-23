@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Debug {
                 r = Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt.sv}, Configuration::StdCompat::make_wformat_args (args...));
             }
             else {
-                r = Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt.sv, Configuration::StdCompat::make_format_args (args...));
+                r = Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt.sv}, Configuration::StdCompat::make_format_args (args...));
             }
             size_t       len = min<size_t> (r.size (), kMaxContextNameLen_);
             CHAR_ARRAY_T result;
