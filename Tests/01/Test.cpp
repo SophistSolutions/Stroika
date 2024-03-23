@@ -30,6 +30,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cache;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Frameworks;
 
 #if qHasFeature_GoogleTest
@@ -44,13 +45,13 @@ namespace {
                 tmp.Add ("c", "3");
                 tmp.Add ("d", "4");
                 EXPECT_TRUE (not tmp.Lookup ("a").has_value ());
-                EXPECT_TRUE (tmp.Lookup ("b") == "2");
-                EXPECT_TRUE (tmp.Lookup ("d") == "4");
+                EXPECT_EQ (tmp.Lookup ("b"), "2");
+                EXPECT_EQ (tmp.Lookup ("d"), "4");
 
                 LRUCache<string, string> tmp2 = tmp;
                 EXPECT_TRUE (not tmp2.Lookup ("a").has_value ());
-                EXPECT_TRUE (tmp2.Lookup ("b") == "2");
-                EXPECT_TRUE (tmp2.Lookup ("d") == "4");
+                EXPECT_EQ (tmp2.Lookup ("b"), "2");
+                EXPECT_EQ (tmp2.Lookup ("d"), "4");
             }
             void T2_ ()
             {
@@ -67,8 +68,8 @@ namespace {
 
                 CACHE tmp2 = tmp;
                 EXPECT_TRUE (not tmp2.Lookup ("a").has_value () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
-                EXPECT_TRUE (tmp2.Lookup ("b") == "2");
-                EXPECT_TRUE (tmp2.Lookup ("d") == "4");
+                EXPECT_EQ (tmp2.Lookup ("b"), "2");
+                EXPECT_EQ (tmp2.Lookup ("d"), "4");
             }
             void T3_ ()
             {
@@ -90,8 +91,8 @@ namespace {
 
                 LRUCache tmp2 = tmp;
                 EXPECT_TRUE (not tmp2.Lookup ("a").has_value () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
-                EXPECT_TRUE (tmp2.Lookup ("b") == "2");
-                EXPECT_TRUE (tmp2.Lookup ("d") == "4");
+                EXPECT_EQ (tmp2.Lookup ("b"), "2");
+                EXPECT_EQ (tmp2.Lookup ("d"), "4");
             }
         }
         void DoIt ()
@@ -384,7 +385,6 @@ namespace {
         namespace Private_ {
             void SimpleBasic ()
             {
-                using namespace Characters::Literals;
                 Debug::TraceContextBumper ctx{"SimpleBasic"};
                 constexpr int             kTotalEntries_{1000};
                 BloomFilter<int>          f{BloomFilter<int>{kTotalEntries_}};
@@ -406,12 +406,12 @@ namespace {
                 }
                 auto falsePositivesMax = kTotalEntries_ / 2; // total number that should be false
                 DbgTrace ("stats: {}"_f, Characters::ToString (f.GetStatistics ()));
-                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (kTotalEntries_));
-                DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
+                DbgTrace ("Probability of false positives = {}"_f, f.ProbabilityOfFalsePositive (kTotalEntries_));
+                DbgTrace ("false positives: {}, expected: {}"_f, falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
                 VerifyTestResultWarning (falsePositives < 100); // last measured was 75 (was 60 with old hash function) no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (kTotalEntries_);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
-                DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
+                DbgTrace ("expectedFalsePositiveRange: {}"_f, Characters::ToString (expectedFalsePositiveRange));
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleInternetAddressTest ()
@@ -444,13 +444,13 @@ namespace {
                 }
                 auto totalEntries      = cidr.GetRange ().GetNumberOfContainedPoints ();
                 auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
-                DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
-                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
-                DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace ("stats: {}"_f, Characters::ToString (f.GetStatistics ()));
+                DbgTrace ("Probability of false positives = {}"_f, f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace ("false positives: {}, expected: {}"_f, falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
-                DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
+                DbgTrace ("expectedFalsePositiveRange: {}"_f, Characters::ToString (expectedFalsePositiveRange));
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleInternetAddressTestWithExplicitHash ()
@@ -484,13 +484,13 @@ namespace {
                 }
                 auto totalEntries      = cidr.GetRange ().GetNumberOfContainedPoints ();
                 auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
-                DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
-                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
-                DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace ("stats: {}"_f, Characters::ToString (f.GetStatistics ()));
+                DbgTrace ("Probability of false positives = {}"_f, f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace ("false positives: %d, expected: {}"_f, falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
-                DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
+                DbgTrace ("expectedFalsePositiveRange: {}"_f, Characters::ToString (expectedFalsePositiveRange));
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleBloomTestWithStroikaDigester ()
@@ -527,13 +527,13 @@ namespace {
                 }
                 auto totalEntries      = cidr.GetRange ().GetNumberOfContainedPoints ();
                 auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
-                DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
-                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
-                DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace ("stats: {}"_f, Characters::ToString (f.GetStatistics ()));
+                DbgTrace ("Probability of false positives = {}"_f, f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace ("false positives: {}, expected: {}"_f, falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically around 14 (now 20)
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
-                DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
+                DbgTrace ("expectedFalsePositiveRange: {}"_f, Characters::ToString (expectedFalsePositiveRange));
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void TestSuggestionsForFilterSize ()
@@ -544,7 +544,6 @@ namespace {
                 using Traversal::DiscreteRange;
 
                 auto runTest = [] (CIDR cidr, double runToProbOfFalsePositive, double runToFractionFull, double bitSizeFactor = 1.0) {
-                    using namespace Characters;
                     Debug::TraceContextBumper                 ctx{"runTest",
                                                   "cidr={}, runToProbOfFalsePositive={}, runToFractionFull={}, bitSizeFactor={}"_f,
                                                   Characters::ToString (cidr),
@@ -580,11 +579,10 @@ namespace {
                             oracle.Add (ia);
                         }
                         else {
-                            DbgTrace (
-                                L"Completed full scan: nIterations=%d, nActualCollisions=%d, nContainsMistakes=%d, pctActualCoverage=%f", nLoopIterations,
-                                nActualCollisions, nContainsMistakes, double (oracle.size ()) / scanAddressRange.GetNumberOfContainedPoints ());
-                            DbgTrace (L"addressesProbablyUsed.GetStatistics ()=%s",
-                                      Characters::ToString (addressesProbablyUsed.GetStatistics ()).c_str ());
+                            DbgTrace ("Completed full scan: nIterations={}, nActualCollisions={}, nContainsMistakes={}, pctActualCoverage={}"_f,
+                                      nLoopIterations, nActualCollisions, nContainsMistakes,
+                                      double (oracle.size ()) / scanAddressRange.GetNumberOfContainedPoints ());
+                            DbgTrace ("addressesProbablyUsed.GetStatistics ()={}"_f, Characters::ToString (addressesProbablyUsed.GetStatistics ()));
                             break;
                         }
                     }
