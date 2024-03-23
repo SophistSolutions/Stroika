@@ -191,9 +191,9 @@ namespace Stroika::Foundation::Debug {
 
     public:
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-        ~TraceContextBumper ();
+        ~TraceContextBumper () noexcept;
 #else
-        ~TraceContextBumper () = default;
+        ~TraceContextBumper () noexcept = default;
 #endif
 
     public:

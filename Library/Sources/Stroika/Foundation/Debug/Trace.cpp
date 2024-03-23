@@ -694,18 +694,23 @@ void TraceContextBumper::DecrCount_ () noexcept
     --tTraceContextDepth_;
 }
 
-TraceContextBumper::~TraceContextBumper ()
+TraceContextBumper::~TraceContextBumper () noexcept
 {
     DecrCount_ ();
     if (fDoEndMarker) {
         RequireNotNull (sModuleData_);
-        [[maybe_unused]] lock_guard critSec{sModuleData_->fModuleMutex};
-        if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
-            Emitter::Get ().EmitUnadornedText ("/>");
-            Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
+        try {
+            [[maybe_unused]] lock_guard critSec{sModuleData_->fModuleMutex};
+            if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
+                Emitter::Get ().EmitUnadornedText ("/>");
+                Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
+            }
+            else {
+                Emitter::Get ().EmitTraceMessage (L"} </%s>", fSavedContextName_.data ());
+            }
         }
-        else {
-            Emitter::Get ().EmitTraceMessage (L"} </%s>", fSavedContextName_);
+        catch (...) {
+            // not much of a chance of successfully reporting a problem here, but DTOR mustbe noexcept
         }
     }
 }

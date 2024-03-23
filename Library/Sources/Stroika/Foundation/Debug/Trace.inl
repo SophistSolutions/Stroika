@@ -51,10 +51,12 @@ namespace Stroika::Foundation::Debug {
         {
             try {
                 if constexpr (same_as<CHAR_T, char>) {
-                    EmitTraceMessage_ (fmt.sv, Configuration::StdCompat::make_format_args (args...));
+                    EmitTraceMessage_ (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt.sv},
+                                       Configuration::StdCompat::make_format_args (args...));
                 }
                 else if constexpr (same_as<CHAR_T, wchar_t>) {
-                    EmitTraceMessage_ (fmt.sv, Configuration::StdCompat::make_wformat_args (args...));
+                    EmitTraceMessage_ (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt.sv},
+                                       Configuration::StdCompat::make_wformat_args (args...));
                 }
             }
             catch (...) {
