@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Debug {
             return result;
         }
         catch (...) {
-            // we are already deep in the guys of DbgTrace stuff - so not much chance of 'logging' this issue ;-)
+            // we are already deep in the guts of DbgTrace stuff - so not much chance of 'logging' this issue ;-)
             return {};
         }
     }
