@@ -114,6 +114,9 @@ jobs:
           make --directory ThirdPartyComponents clean
           df -h
           du -hs Builds/*/* IntermediateFiles/*/*
+          rm -f Builds/${{ matrix.config_name }}/ThirdPartyComponents/bin/*
+          df -h
+          du -hs Builds/*/* IntermediateFiles/*/*
       - name: Run Tests
         run: |
           make run-tests
