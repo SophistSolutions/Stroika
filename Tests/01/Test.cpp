@@ -384,6 +384,7 @@ namespace {
         namespace Private_ {
             void SimpleBasic ()
             {
+                using namespace Characters::Literals;
                 Debug::TraceContextBumper ctx{"SimpleBasic"};
                 constexpr int             kTotalEntries_{1000};
                 BloomFilter<int>          f{BloomFilter<int>{kTotalEntries_}};
@@ -404,7 +405,7 @@ namespace {
                     }
                 }
                 auto falsePositivesMax = kTotalEntries_ / 2; // total number that should be false
-                DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
+                DbgTrace ("stats: {}"_f, Characters::ToString (f.GetStatistics ()));
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (kTotalEntries_));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
                 VerifyTestResultWarning (falsePositives < 100); // last measured was 75 (was 60 with old hash function) no matter how things change

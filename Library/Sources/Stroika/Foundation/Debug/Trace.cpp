@@ -155,22 +155,18 @@ auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
     auto emitFirstTime = [] () {
         // Cannot call DbgTrace or TraceContextBumper in this code (else hang cuz calls back to Emitter::Get ())
         // which is why this function takes Emitter as argument!
-        sModuleData_->fEmitter.EmitTraceMessage (L"***Starting TraceLog***");
-        sModuleData_->fEmitter.EmitTraceMessage (L"Starting at %s", Time::DateTime::Now ().Format ().c_str ());
+        sModuleData_->fEmitter.EmitTraceMessage ("***Starting TraceLog***");
+        sModuleData_->fEmitter.EmitTraceMessage ("Starting at {}"_f, Time::DateTime::Now ().Format ());
 #if qStroika_Foundation_Debug_Trace_TraceToFile
-        sModuleData_->fEmitter.EmitTraceMessage (L"TraceFileName: %s", Characters::ToString (Emitter::GetTraceFileName ()).c_str ());
+        sModuleData_->fEmitter.EmitTraceMessage ("TraceFileName: {}"_f, Characters::ToString (Emitter::GetTraceFileName ()));
 #endif
-        sModuleData_->fEmitter.EmitTraceMessage (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
-        sModuleData_->fEmitter.EmitTraceMessage (L"<debug-state {>");
-        sModuleData_->fEmitter.EmitTraceMessage (L"  Debug::kBuiltWithAddressSanitizer = %s",
-                                                 Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
-        sModuleData_->fEmitter.EmitTraceMessage (L"  Debug::kBuiltWithThreadSanitizer = %s",
-                                                 Characters::ToString (Debug::kBuiltWithThreadSanitizer).c_str ());
-        sModuleData_->fEmitter.EmitTraceMessage (L"  Debug::kBuiltWithUndefinedBehaviorSanitizer = %s(?)",
-                                                 Characters::ToString (Debug::kBuiltWithUndefinedBehaviorSanitizer).c_str ()); // warning maybe falsely reported as false on gcc
-        sModuleData_->fEmitter.EmitTraceMessage (L"  Debug::IsRunningUnderValgrind () = %s",
-                                                 Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
-        sModuleData_->fEmitter.EmitTraceMessage (L"</debug-state>");
+        sModuleData_->fEmitter.EmitTraceMessage ("EXEPath={}"_f, Characters::ToString (Execution::GetEXEPath ()));
+        sModuleData_->fEmitter.EmitTraceMessage ("<debug-state {>");
+        sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithAddressSanitizer = {}"_f, Debug::kBuiltWithAddressSanitizer);
+        sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithThreadSanitizer = {}"_f, Debug::kBuiltWithThreadSanitizer);
+        sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithUndefinedBehaviorSanitizer = {}(?)"_f, Debug::kBuiltWithUndefinedBehaviorSanitizer); // warning maybe falsely reported as false on gcc
+        sModuleData_->fEmitter.EmitTraceMessage ("  Debug::IsRunningUnderValgrind () = {}"_f, Debug::IsRunningUnderValgrind ());
+        sModuleData_->fEmitter.EmitTraceMessage ("</debug-state>");
     };
     static once_flag sOnceFlag_;
     call_once (sOnceFlag_, [=] () { emitFirstTime (); });

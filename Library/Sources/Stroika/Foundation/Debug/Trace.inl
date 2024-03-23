@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Debug {
     }
     template <typename CHAR_T, typename FCHAR_T, typename... ARGS>
     TraceContextBumper::TraceContextBumper ([[maybe_unused]] const CHAR_T*                     contextName,
-                                            [[maybe_unused]] Characters::FormatString<FCHAR_T> fmt, ARGS&&... args) noexcept
+                                            [[maybe_unused]] Characters::FormatString<FCHAR_T> fmt, [[maybe_unused]] ARGS&&... args) noexcept
         requires ((same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>) and (same_as<FCHAR_T, char> or same_as<FCHAR_T, wchar_t>))
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         : TraceContextBumper{cvt2WChartArrayTrunc_ (contextName), ProcessFmtString_ (fmt, forward<ARGS> (args)...)}
