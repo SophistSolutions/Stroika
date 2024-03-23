@@ -538,7 +538,8 @@ namespace Stroika::Foundation::DataExchange {
                 if (p.size () != 2) [[unlikely]] {
                     DbgTrace ("Bijection ('{}') element with item count (%d) other than 2"_f,
                               Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)), static_cast<int> (p.size ()));
-                    Execution::Throw (BadFormatException{"Mapping element with item count other than 2"sv});
+                    static const auto kException_ = BadFormatException{"Mapping element with item count other than 2"sv};
+                    Execution::Throw (kException_);
                 }
                 intoObjOfTypeT->Add (mapper.ToObject<DOMAIN_TYPE> (domainMapper, p[0]), mapper.ToObject<RANGE_TYPE> (rangeMapper, p[1]));
             }
@@ -662,7 +663,8 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<pair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, pair<T1, T2>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 2) {
-                    Execution::Throw (BadFormatException{"Array size out of range for pair"sv});
+                    static const auto kException_ = BadFormatException{"Array size out of range for pair"sv};
+                    Execution::Throw (kException_);
                 };
                 *intoObj = make_pair (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
             }}};
@@ -680,7 +682,8 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, CountedValue* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 2) {
-                    Execution::Throw (BadFormatException{"Array size out of range for CountedValue"sv});
+                    static const auto kException_ = BadFormatException{"Array size out of range for CountedValue"sv};
+                    Execution::Throw (kException_);
                 };
                 *intoObj = CountedValue{mapper.ToObject<T> (s[0]), mapper.ToObject<CounterType> (s[1])};
             }}};
@@ -698,7 +701,8 @@ namespace Stroika::Foundation::DataExchange {
                 [] (const ObjectVariantMapper& mapper, const VariantValue& d, Common::KeyValuePair<T1, T2>* intoObj) -> void {
                     Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                     if (s.size () < 2) {
-                        Execution::Throw (BadFormatException{"Array size out of range for KeyValuePair"sv});
+                        static const auto kException_ = BadFormatException{"Array size out of range for KeyValuePair"sv};
+                        Execution::Throw (kException_);
                     };
                     *intoObj = Common::KeyValuePair<T1, T2>{mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1])};
                 }}};
@@ -714,7 +718,8 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<tuple<T1>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 1) {
-                    Execution::Throw (BadFormatException{"Array size out of range for tuple/1"sv});
+                    static const auto kException_ = BadFormatException{"Array size out of range for tuple/1"sv};
+                    Execution::Throw (kException_);
                 };
                 *intoObj = make_tuple (mapper.ToObject<T1> (s[0]));
             }}};
@@ -731,7 +736,8 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<tuple<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 2) {
-                    Execution::Throw (BadFormatException{"Array size out of range for tuple/2"sv});
+                    static const auto kException_ = BadFormatException{"Array size out of range for tuple/2"sv};
+                    Execution::Throw (kException_);
                 };
                 *intoObj = make_tuple (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
             }}};
@@ -749,7 +755,8 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<tuple<T1, T2, T3>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2, T3>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 3) {
-                    Execution::Throw (BadFormatException{"Array size out of range for tuple/3"sv});
+                    static const auto kException_ = BadFormatException{"Array size out of range for tuple/3"sv};
+                    Execution::Throw (kException_);
                 };
                 *intoObj = make_tuple (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]), mapper.ToObject<T3> (s[2]));
             }}};
@@ -806,6 +813,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T, size_t SZ>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
     {
+        using namespace Characters::Literals;
         // @todo - see https://stroika.atlassian.net/browse/STK-581 - to switch from generic to 'T' based mapper.
         auto fromObjectMapper = [] (const ObjectVariantMapper& mapper, const void* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
@@ -822,8 +830,9 @@ namespace Stroika::Foundation::DataExchange {
             Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
             T*                     actualMember{reinterpret_cast<T*> (intoObjOfTypeT)};
             if (s.size () > SZ) [[unlikely]] {
-                DbgTrace (L"Array ('%s') actual size %d out of range", Characters::ToString (typeid (T[SZ])).c_str (), static_cast<int> (s.size ()));
-                Execution::Throw (BadFormatException{"Array size out of range"sv});
+                DbgTrace ("Array ('{}') actual size {} out of range"_f, Characters::ToString (typeid (T[SZ])), static_cast<int> (s.size ()));
+                static const auto kException_ = BadFormatException{"Array size out of range"sv};
+                Execution::Throw (kException_);
             }
             ToObjectMapperType<T> valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
             size_t idx = 0;
@@ -869,9 +878,10 @@ namespace Stroika::Foundation::DataExchange {
                 Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                 if (p.size () != 2) [[unlikely]] {
                     using namespace Characters;
-                    DbgTrace (L"Container with Key/Value pair ('%s') element with item count (%d) other than 2",
-                              Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)).c_str (), static_cast<int> (p.size ()));
-                    Execution::Throw (BadFormatException{"Container with Key/Value pair element with item count other than 2"_k});
+                    DbgTrace ("Container with Key/Value pair ('{}') element with item count ({}) other than 2"_f,
+                              Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)), static_cast<int> (p.size ()));
+                    static const auto kException_ = BadFormatException{"Container with Key/Value pair element with item count other than 2"_k};
+                    Execution::Throw (kException_);
                 }
                 intoObjOfTypeT->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p[0]), mapper.ToObject<VALUE_TYPE> (valueMapper, p[1]));
             }
@@ -881,6 +891,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename ENUM_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
     {
+        using namespace Characters::Literals;
         static_assert (is_enum_v<ENUM_TYPE>, "MakeCommonSerializer_NamedEnumerations only works for enum types");
         using SerializeAsType = typename underlying_type<ENUM_TYPE>::type;
         static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
@@ -896,8 +907,9 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (intoObjOfTypeT);
             auto optVal = nameMap.InverseLookup (d.As<String> ());
             if (not optVal.has_value ()) [[unlikely]] {
-                DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), d.As<String> ().c_str ());
-                Execution::Throw (BadFormatException{"Enumeration value out of range"sv});
+                DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, Characters::ToString (typeid (ENUM_TYPE)), d);
+                static const auto kException_ = BadFormatException{"Enumeration value out of range"sv};
+                Execution::Throw (kException_);
             }
             *intoObjOfTypeT = *optVal;
         };
@@ -934,9 +946,9 @@ namespace Stroika::Foundation::DataExchange {
             Assert (static_cast<SerializeAsType> (*intoObjOfTypeT) == d.As<SerializeAsType> ()); // no round-trip loss
             if (not(ENUM_TYPE::eSTART <= *intoObjOfTypeT and *intoObjOfTypeT < ENUM_TYPE::eEND)) [[unlikely]] {
                 using namespace Characters;
-                DbgTrace (L"Enumeration ('%s') value %d out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (),
-                          static_cast<int> (*intoObjOfTypeT));
-                Execution::Throw (BadFormatException{"Enumeration value out of range"_k});
+                DbgTrace ("Enumeration ('{}') value {} out of range"_f, Characters::ToString (typeid (ENUM_TYPE)), static_cast<int> (*intoObjOfTypeT));
+                static const auto kException_ = BadFormatException{"Enumeration value out of range"_k};
+                Execution::Throw (kException_);
             }
         };
         return TypeMappingDetails{typeid (ENUM_TYPE), fromObjectMapper, toObjectMapper};
@@ -977,18 +989,19 @@ namespace Stroika::Foundation::DataExchange {
     template <typename RANGE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ (const RangeSerializerOptions& options)
     {
+        using namespace Characters::Literals;
         static const String kLowerBoundLabel_{"LowerBound"sv};
         static const String kUpperBoundLabel_{"UpperBound"sv};
         String              lowerBoundLabel = options.fLowerBoundFieldName.value_or (kLowerBoundLabel_);
         String              upperBoundLabel = options.fUpperBoundFieldName.value_or (kUpperBoundLabel_);
         FromObjectMapperType<RANGE_TYPE> fromObjectMapper = [=] (const ObjectVariantMapper& mapper, const RANGE_TYPE* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
-            using value_type = typename RANGE_TYPE::value_type;
             Mapping<String, VariantValue> m;
             if (fromObjOfTypeT->empty ()) {
                 return VariantValue{};
             }
             else {
+                using value_type = typename RANGE_TYPE::value_type;
                 FromObjectMapperType<value_type> valueMapper{mapper.FromObjectMapper<value_type> ()};
                 m.Add (lowerBoundLabel, mapper.FromObject<value_type> (valueMapper, fromObjOfTypeT->GetLowerBound ()));
                 m.Add (upperBoundLabel, mapper.FromObject<value_type> (valueMapper, fromObjOfTypeT->GetUpperBound ()));
@@ -997,24 +1010,27 @@ namespace Stroika::Foundation::DataExchange {
         };
         ToObjectMapperType<RANGE_TYPE> toObjectMapper = [=] (const ObjectVariantMapper& mapper, const VariantValue& d, RANGE_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
-            using value_type = typename RANGE_TYPE::value_type;
             Mapping<String, VariantValue> m{d.As<Mapping<String, VariantValue>> ()};
             if (m.empty ()) {
                 *intoObjOfTypeT = RANGE_TYPE{}; // empty maps to empty
             }
             else {
                 if (m.size () != 2) [[unlikely]] {
-                    DbgTrace (L"Range ('%s') element needs LowerBound and UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                    Execution::Throw (BadFormatException{"Range needs LowerBound and UpperBound"sv});
+                    DbgTrace ("Range ('{}') element needs LowerBound and UpperBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
+                    static const auto kException_ = BadFormatException{"Range needs LowerBound and UpperBound"sv};
+                    Execution::Throw (kException_);
                 }
                 if (not m.ContainsKey (lowerBoundLabel)) [[unlikely]] {
-                    DbgTrace (L"Range ('%s') element needs LowerBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                    Execution::Throw (BadFormatException{"Range needs 'LowerBound' element"sv});
+                    DbgTrace ("Range ('{}') element needs LowerBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
+                    static const auto kException_ = BadFormatException{"Range needs 'LowerBound' element"sv};
+                    Execution::Throw (kException_);
                 }
                 if (not m.ContainsKey (upperBoundLabel)) [[unlikely]] {
-                    DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                    Execution::Throw (BadFormatException{"Range needs 'UpperBound' element"sv});
+                    DbgTrace ("Range ('{}') element needs UpperBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
+                    static const auto kException_ = BadFormatException{"Range needs 'UpperBound' element"sv};
+                    Execution::Throw (kException_);
                 }
+                using value_type = typename RANGE_TYPE::value_type;
                 ToObjectMapperType<value_type> valueMapper{mapper.ToObjectMapper<value_type> ()};
                 value_type                     from{mapper.ToObject<value_type> (valueMapper, *m.Lookup (lowerBoundLabel))};
                 value_type                     to{mapper.ToObject<value_type> (valueMapper, *m.Lookup (upperBoundLabel))};
@@ -1063,7 +1079,7 @@ namespace Stroika::Foundation::DataExchange {
             }
             for (const auto& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"fieldname = %s, offset=%s", i.fSerializedFieldName.c_str (), Characters::ToString (i.fFieldMetaInfo).c_str ());
+                DbgTrace ("fieldname = {}, offset={}"_f, i.fSerializedFieldName, Characters::ToString (i.fFieldMetaInfo));
 #endif
                 VariantValue vv = [&] () {
                     const byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (fromObjOfTypeT)
@@ -1095,8 +1111,7 @@ namespace Stroika::Foundation::DataExchange {
             for (const auto& i : fields) {
                 optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"fieldname = %s, offset=%s, present=%d", i.fSerializedFieldName.c_str (),
-                          Characters::ToString (i.fFieldMetaInfo).c_str (), o.has_value ());
+                DbgTrace ("fieldname = {}, offset={}, present={}"_f, i.fSerializedFieldName, Characters::ToString (i.fFieldMetaInfo), o.has_value ());
 #endif
                 if (o) {
                     byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (intoObjOfTypeT) : reinterpret_cast<byte*> (intoObjOfTypeT);
