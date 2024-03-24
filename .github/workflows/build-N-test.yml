@@ -238,7 +238,6 @@ jobs:
           if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
-            Builds/${{ matrix.config_name }}/Tests/Test01
             /tmp/LOGS-ARCHIVE
             #${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
