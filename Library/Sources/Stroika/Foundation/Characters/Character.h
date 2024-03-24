@@ -21,7 +21,7 @@
  *
  * TODO:
  *
- *      @todo   ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single chararcter.
+ *      @todo   ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single character.
  *              We COULD change return value, or simply document that issue here and define ToLower() of STRING todo
  *              the right thing for queer cases like this, and use this API for the most common cases.
  * 
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Characters {
      *      o   Character       added in IUNICODECanAlwaysConvertTo
      *  \note all these types are <= 4 bytes (size of char32_t)
      * 
-     *  \note - ASCII and Latin1 are NOT included here becuase - though these strings
+     *  \note - ASCII and Latin1 are NOT included here because - though these strings
      *          can be unambiguously converted to UNICODE, the REVERSE is not true (since for example
      *          not all UNICODE strings are ascii).
      */
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Characters {
      *      o   char32_t            ""
      *      o   wchar_t             ""
      *      o   Character           added
-     *      o   ASCII               added               (NOTE - this is a typedef for char - so CHAR* interpretted as ASCII ONLY)
+     *      o   ASCII               added               (NOTE - this is a typedef for char - so CHAR* interpreted as ASCII ONLY)
      *      o   Latin1              added
      * 
      *  \note IUNICODECanUnambiguouslyConvertFrom means any 'basic character type' - size <= 4 bytes, which
@@ -302,7 +302,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief Return true iff the given character (or all in span) is (are) in the ascii/iso-latin range [0..0xff]
          * 
-         *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
+         *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE character code point
          *  less than U+00FF.
          * 
          *  \note this pays close attention to the CHAR_T, and checks differently (especially for
@@ -330,10 +330,10 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Combines check for IsASCII and IsLatin1 in one call (performance). Returns flag indicating
-         *  most specific possible answer for the entire span. So if all characters ascii, thats returned.
-         *  If not, but all characters latin1, thats returned. Else returned none.
+         *  most specific possible answer for the entire span. So if all characters ascii, that's returned.
+         *  If not, but all characters latin1, that's returned. Else returned none.
          * 
-         *  \note, if CHAR_T == Latin1 or ASCII, then this will NEVER return none. Its equivilent to
+         *  \note, if CHAR_T == Latin1 or ASCII, then this will NEVER return none. Its equivalent to
          *         IsASCII. If CHAR_T==ASCII. we do like IsASCII(): and actually check the bytes in the
          *         ASCII change, despite the ASCII designation (rationale in IsASCII).
          */
@@ -415,7 +415,7 @@ namespace Stroika::Foundation::Characters {
          * character.
          *
          *      It is not necessary to first check
-         * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the
+         * if the argument character is uppercase or alphabetic. ToLowerCase () just returns the
          * original character if there is no sensible conversion.
          * 
          *  \todo @todo See https://www.open-std.org/JTC1/SC35/WG5/docs/30112d10.pdf
@@ -434,7 +434,7 @@ namespace Stroika::Foundation::Characters {
          * character.
          *
          *      It is not necessary to first check
-         * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the
+         * if the argument character is lowercase or alphabetic. ToUpperCase () just returns the
          * original character if there is no sensible conversion.
          * 
          *  \todo @todo See https://www.open-std.org/JTC1/SC35/WG5/docs/30112d10.pdf
@@ -488,7 +488,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  \req IsSurrogatePair
-         *  returns the high/low psudo-characters of the character
+         *  returns the high/low pseudo-characters of the character
          */
         constexpr pair<char16_t, char16_t> GetSurrogatePair () const;
 
@@ -533,7 +533,7 @@ namespace Stroika::Foundation::Characters {
      */
     struct Character::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         /**
-         *  optional CompareOptions to CTOR allows for case insensative compares
+         *  optional CompareOptions to CTOR allows for case insensitive compares
          */
         constexpr EqualsComparer (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase) noexcept;
 
@@ -549,7 +549,7 @@ namespace Stroika::Foundation::Characters {
      */
     struct Character::ThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         /**
-         *  optional CompareOptions to CTOR allows for case insensative compares
+         *  optional CompareOptions to CTOR allows for case insensitive compares
          */
         constexpr ThreeWayComparer (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase) noexcept;
 
