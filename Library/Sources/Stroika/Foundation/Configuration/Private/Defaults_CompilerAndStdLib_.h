@@ -81,9 +81,9 @@
     "Warning: Stroika v3 does not support versions prior to clang++ 14 (non-apple); note that Stroika v2.1 supports earlier clang "        \
     "versions"
 #endif
-#if (__clang_major__ > 17)
+#if (__clang_major__ > 18)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Info: Stroika untested with this version of clang++ - (>17.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+    "Info: Stroika untested with this version of clang++ - (>18.x) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -548,6 +548,16 @@ READ of size 6 at 0x0110ed9d thread T0
 #endif
 
 /*
+
+
+./../DataExchange/XML/Schema.inl:40:34: error: out-of-line declaration of 'As' does not match any declaration in 'Stroika::Foundation::DataExchange::XML::Schema::Ptr'
+   40 |     XML::DOM::Document::Ptr Ptr::As ();
+      |                                  ^~
+./../DataExchange/XML/Schema.inl:68:34: error: out-of-line declaration of 'As' does not match any declaration in 'Stroika::Foundation::DataExchange::XML::Schema::Ptr'
+   68 |     XML::DOM::Document::Ptr Ptr::As (const Providers::IDOMProvider& p);
+
+
+
 In file included from Test.cpp:16:
 In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h:157:
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/Mapping_stdhashmap.inl:267:61: error: out-of-line definition of 'Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>' does not match any declaration in 'Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>'
@@ -578,8 +588,9 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 // still broken in clang++ 15
 // still broken in clang++ 16
 // still broken in clang++ 17
+// still broken in clang++ 18
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy 0
 #endif
@@ -642,9 +653,10 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 16
-// first noticed broken in apply clang 17
+//  broken in  clang 17
+// broken in  clang 18
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy 0
 #endif
@@ -699,7 +711,8 @@ ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (w
 #elif defined(__clang__)
 // reproduced in clang 16
 // reproduced in clang 17
-#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+// reproduced in clang 18
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 13 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
 // Still broken in GCC 14
@@ -767,6 +780,7 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 // replicated in clang 15.
 // reproduced in clang 16
 // reproduced in clang 17
+// appears fixed in clang++18 on ubuntu 24.04
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
@@ -953,6 +967,11 @@ See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
 #endif
 
 /*
+
+./../../Containers/Association.h:647:9: error: type constraint differs in template redeclaration
+
+
+
     Compiling Tests/11/Test.cpp ...
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
 Stack dump:
@@ -978,7 +997,8 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 // first noticed broken in apply clang 14
 // broken in clang 15
 // appears fixed in clang++16
-#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// broken in clang++18
+#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) || (__clang_major__ == 18))
 #else
 #define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy 0
 #endif
@@ -1465,8 +1485,9 @@ In file included from ./SignalHandlers.h:15:
 // Noticed broken in -clang++14
 // noticed broken in clang++15 with LIBC++
 // noticed broken in clang++17 with LIBC++
+//  clang++18 with LIBC++
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 17)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 18)
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
@@ -1564,6 +1585,38 @@ make[4]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedBuildRules-Default.mk:30: /S
 make[3]: *** [Makefile:100: DataExchange] Interrupt
 make[2]: *** [Makefile:107: all_objs_] Interrupt
 make[1]: *** [Makefile:20: 
+
+
+
+  Compiling Library/Sources/Stroika/Foundation/Cache/Statistics.cpp ... 
+In file included from Statistics.cpp:6:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:18:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.h:16:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Sequence.h:16:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:1603:9: error: type constraint differs in template redeclaration
+ 1603 |         Common::IEqualsComparer<T>
+      |         ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:442:13: note: previous template declaration is here
+  442 |             Common::IEqualsComparer<T>
+      |             ^
+In file included from Statistics.cpp:6:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:18:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.h:16:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Sequence.h:16:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:1634:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.inl:1198:28: error: incomplete type 'SequentialEqualsComparer' named in nested name specifier
+ 1198 |     constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer,
+      |               ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.inl:1212:75: error: out-of-line definition of 'operator()' from class 'SequentialEqualsComparer<T_EQUALS_COMPARER>' without definition
+ 1212 |     inline bool Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.inl:1214:34: error: use of undeclared identifier 'lhs'
+ 1214 |         return SequentialEquals (lhs, rhs, fElementComparer, fUseIterableSize);
+      |                                  ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.inl:1214:39: error: use of undeclared identifier 'rhs'
+ 1214 |         return SequentialEquals (lhs, rhs, fElementComparer, fUseIterableSiz
+
+
  */
 #ifndef qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
 
@@ -1576,8 +1629,9 @@ make[1]: *** [Makefile:20:
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
 // fixed in clang++16
+// broken in clang++16
 #define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
 #else
 #define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy 0
 #endif
@@ -1632,7 +1686,8 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../includ
 
 #if defined(__clang__)
 // also broken in clang++-17
-#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 17)
+// also broken in clang++-18
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 18)
 #else
 #define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy 0
 #endif
@@ -1745,8 +1800,9 @@ make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
 // broken in clang++-15
 // broken in clang++-16
 // broken in clang++-17
+// broken in clang++-18
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
 #endif
@@ -2244,6 +2300,21 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
 ./../Characters/../Containers/Concrete/KeyedCollection_stdset.inl:60:22: error: no viable constructor or deduction guide for deduction of template arguments of 'SetInOrderComparer'
             , fData_{SetInOrderComparer{keyExtractor, inorderComparer}}
                      ^
+
+
+
+  Compiling Library/Sources/Stroika/Foundation/Execution/IntervalTimer.cpp ... 
+In file included from IntervalTimer.cpp:18:
+In file included from ./IntervalTimer.h:10:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/KeyedCollection.h:594:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/KeyedCollection.inl:14:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Factory/KeyedCollection_Factory.h:123:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Factory/KeyedCollection_Factory.inl:16:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/KeyedCollection_stdset.h:148:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/KeyedCollection_stdset.inl:59:22: error: no viable constructor or deduction guide for deduction of template arguments of 'SetInOrderComparer'
+   59 |             , fData_{SetInOrderComparer{keyExtractor, inorderComparer}}
+      |                      ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__memory/construct_at.h:41:46: note: in instantiation of member function 'Stroika::Foundation::Containers::Concrete::KeyedCollection_stdset<Stroika::Foundation::Execution::IntervalTimer::RegisteredTask, Stroika::Foundation::Execution::Function<void ()>, Stroika::Foundation::Containers::KeyedCollection_DefaultTraits<Stroika::Foundation::Execution::IntervalTimer::RegisteredTask, Stroika::Foundation::Execution::Function<void ()>, 
                      */
 #ifndef qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
 
@@ -2258,7 +2329,8 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
 // appears still broken in clang++-15
 // appears still broken in clang++-16
 // appears still broken in clang++-17
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+// appears still broken in clang++-18
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #elif defined(_MSC_VER)
 // Newly broken in _MSC_VER_2k22_17Pt2_ - wonder if that means this is my bug not vs2k22/clang?
 // broken in _MSC_VER_2k22_17Pt3_
@@ -2353,7 +2425,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-15
 // still broken in clang++-16
 // still broken in clang++-17
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+// still broken in clang++-18
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
@@ -2417,8 +2490,9 @@ Test.cpp:173:31: error: template template argument has different template parame
 // verified still broken in clang++-15
 // verified still broken in clang++-16
 // verified still broken in clang++-17
+// verified still broken in clang++-18
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -2441,6 +2515,19 @@ Test.cpp:173:31: error: template template argument has different template parame
 #endif
 
 /*
+
+
+ng Stroika Library {clang++-18-debug-libc++}:
+   Building Stroika Foundation Objs {clang++-18-debug-libc++}:
+      Compiling Library/Sources/Stroika/Foundation/Characters/CodeCvt.cpp ... 
+In file included from CodeCvt.cpp:11:
+In file included from ./CodeCvt.h:469:
+./CodeCvt.inl:69:15: error: type constraint differs in template redeclaration
+   69 |     template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
+      |               ^
+
+
+
          Compiling Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.cpp ... 
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
 Stack dump:
@@ -2469,7 +2556,8 @@ Stack dump:
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-15
 // appears fixed in clang++16
-#define qCompilerAndStdLib_template_second_concept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// appears broken in clang++-18
+#define qCompilerAndStdLib_template_second_concept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
 #else
 #define qCompilerAndStdLib_template_second_concept_Buggy 0
 #endif
