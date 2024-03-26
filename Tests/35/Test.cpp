@@ -65,12 +65,12 @@ namespace {
             bool               fEnabled = false;
             optional<DateTime> fLastSynchronizedAt;
         };
-        OptionsFile of{L"MyModule",
+        OptionsFile of{"MyModule"sv,
                        [] () -> ObjectVariantMapper {
                            ObjectVariantMapper mapper;
                            mapper.AddClass<MyData_> ({
-                               {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
-                               {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
+                               {"Enabled"sv, StructFieldMetaInfo{&MyData_::fEnabled}},
+                               {"Last-Synchronized-At"sv, StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
                            });
                            return mapper;
                        }(),
