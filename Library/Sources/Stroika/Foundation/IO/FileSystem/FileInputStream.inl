@@ -20,9 +20,11 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
     {
         return New (fileName, kSeekableFlag_DEFAULT, bufferFlag);
     }
-    inline Streams::InputStream::Ptr<byte> New (FileDescriptorType fd, BufferFlag bufferFlag)
+
+    /// /////////////DEPRECATED
+    [[deprecated ("Since Stroika v3.0d6 - need adoptfdpolicy flag")]] inline Ptr New (FileDescriptorType fd, BufferFlag bufferFlag)
     {
-        return New (fd, AdoptFDPolicy::eDEFAULT, SeekableFlag::eSeekable, bufferFlag);
+        return New (fd, AdoptFDPolicy::eCloseOnDestruction, SeekableFlag::eSeekable, bufferFlag);
     }
 
 }

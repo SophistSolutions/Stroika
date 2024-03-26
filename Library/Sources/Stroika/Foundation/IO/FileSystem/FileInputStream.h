@@ -79,20 +79,25 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
      *
      *  \par Example Usage
      *      \code
+     *          static const filesystem::path kProcCPUInfoFileName_{"/proc/cpuinfo"sv};
      *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          Ptr stdinStream = FileInputStream::New (0, AdoptFDPolicy::eDisconnectOnDestruction);
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     Ptr New (const filesystem::path& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-    Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+    Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable = kSeekableFlag_DEFAULT);
     Ptr New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-    Ptr New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd,
-             AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+    Ptr New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy,
+             SeekableFlag seekable = kSeekableFlag_DEFAULT);
     Ptr New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
     Ptr New (const filesystem::path& fileName, BufferFlag bufferFlag);
     Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
-    Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
 
 }
 

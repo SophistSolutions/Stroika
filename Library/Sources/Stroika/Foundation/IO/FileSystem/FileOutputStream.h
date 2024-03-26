@@ -109,16 +109,21 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
      *          tw.PrintF (L"Hello %s\n", L"World");
      *      \endcode
      *
+     *  \par Example Usage
+     *      \code
+     *          Ptr stdoutStream = FileOutputStream::New (1, AdoptFDPolicy::eDisconnectOnDestruction);
+     *      \endcode
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     Ptr New (const filesystem::path& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
     Ptr New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-    Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT,
-             SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+    Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag = kSeekableFlag_DEFAULT,
+             FlushFlag flushFlag = FlushFlag::eDEFAULT);
     Ptr New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
     Ptr New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, AppendFlag appendFlag,
              FlushFlag flushFlag = FlushFlag::eDEFAULT);
-    Ptr New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT,
+    Ptr New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy,
              SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
     Ptr New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
     Ptr New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
