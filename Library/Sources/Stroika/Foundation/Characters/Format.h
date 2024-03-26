@@ -117,6 +117,35 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
+    template <typename CHAR_T, typename... ARGS>
+    [[nodiscard]] inline String VFormat (const FormatString<CHAR_T> f, ARGS&&... args)
+        requires (Configuration::IAnyOf<CHAR_T, char, wchar_t>)
+    {
+        if constexpr (same_as<CHAR_T, char>) {
+            // @todo decide how to handle ASCII stuff - this fails if non ascii - consider...
+            return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{f.sv},
+                                                             Configuration::StdCompat::make_format_args (args...))};
+        }
+        else if constexpr (same_as<CHAR_T, wchar_t>) {
+            return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.sv},
+                                                             Configuration::StdCompat::make_wformat_args (args...))};
+        }
+    }
+    template <typename CHAR_T, typename... ARGS>
+    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<CHAR_T> f, ARGS&&... args)
+        requires (Configuration::IAnyOf<CHAR_T, char, wchar_t>)
+    {
+        if constexpr (same_as<CHAR_T, char>) {
+            // @todo decide how to handle ASCII stuff - this fails if non ascii - consider...
+            return String{Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::string_view{f.sv},
+                                                             Configuration::StdCompat::make_format_args (args...))};
+        }
+        else if constexpr (same_as<CHAR_T, wchar_t>) {
+            return String{Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.sv},
+                                                             Configuration::StdCompat::make_wformat_args (args...))};
+        }
+    }
+
     /*
      * Format is the Stroika wrapper on sprintf().
      * The main differences between sprintf () and Format are:
