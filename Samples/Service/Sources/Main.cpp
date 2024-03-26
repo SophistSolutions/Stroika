@@ -177,7 +177,7 @@ int main (int argc, const char* argv[])
         .fLogBufferingEnabled         = true,
         .fSuppressDuplicatesThreshold = 15s,
     }};
-    bool              dockerContainerFlag = false;  // get from command-line???
+    bool              dockerContainerFlag = false; // get from command-line???
     if (dockerContainerFlag) {
         using namespace IO::FileSystem;
         Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (1/*STDOUT_FILENO*/, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
