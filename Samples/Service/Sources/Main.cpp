@@ -180,7 +180,7 @@ int main (int argc, const char* argv[])
     bool              dockerContainerFlag = false;  // get from command-line???
     if (dockerContainerFlag) {
         using namespace IO::FileSystem;
-        Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (1/*STDOUT_FILENO*/, FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
+        Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (1/*STDOUT_FILENO*/, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
     }
     else {
 #if qHas_Syslog
