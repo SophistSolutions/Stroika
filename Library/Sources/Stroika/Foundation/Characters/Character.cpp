@@ -19,7 +19,7 @@ using namespace Stroika::Foundation::Characters;
  */
 void Characters::Private_::ThrowSurrogatesOutOfRange_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException<out_of_range>{"UNICODE char16_t surrogates out of range"};
+    static const auto kException_ = Execution::RuntimeErrorException<out_of_range>{"UNICODE char16_t surrogates out of range"sv};
     Execution::Throw (kException_);
 }
 
@@ -30,7 +30,7 @@ void Characters::Private_::ThrowSurrogatesOutOfRange_ ()
  */
 void Characters::Private_::ThrowNotIsASCII_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException{"Argument not valid ASCII"};
+    static const auto kException_ = Execution::RuntimeErrorException{"Argument not valid ASCII"sv};
     Execution::Throw (kException_);
 }
 
@@ -41,7 +41,7 @@ void Characters::Private_::ThrowNotIsASCII_ ()
  */
 void Characters::Private_::ThrowNotIsLatin1_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException{"Argument not valid Latin1 (UNICODE code point > U+00ff)"};
+    static const auto kException_ = Execution::RuntimeErrorException{"Argument not valid Latin1 (UNICODE code point > U+00ff)"sv};
     Execution::Throw (kException_);
 }
 
