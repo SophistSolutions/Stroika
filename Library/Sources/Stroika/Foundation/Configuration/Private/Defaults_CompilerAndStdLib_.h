@@ -998,7 +998,8 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 // broken in clang 15
 // appears fixed in clang++16
 // broken in clang++18
-#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) || (__clang_major__ == 18))
+#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy                                                                         \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) || (__clang_major__ == 18))
 #else
 #define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy 0
 #endif
@@ -2557,7 +2558,8 @@ Stack dump:
 // verified still broken in clang++-15
 // appears fixed in clang++16
 // appears broken in clang++-18
-#define qCompilerAndStdLib_template_second_concept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
+#define qCompilerAndStdLib_template_second_concept_Buggy                                                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
 #else
 #define qCompilerAndStdLib_template_second_concept_Buggy 0
 #endif

@@ -65,9 +65,28 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          Logger::sThe.Log (Logger::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+     *          // Usually near the top of 'main()'
+     *          Logger::Activator loggerActivation{Logger::Options{
+     *              .fLogBufferingEnabled         = true,
+     *              .fSuppressDuplicatesThreshold = 15s,
+     *          }};
+     *          if (dockerContainerFlag) {
+     *              Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, AdoptFDPolicy::eDisconnectOnDestruction));
+     *          }
+     *          else {
+     *              #if qHas_Syslog
+     *                  Logger::sThe.AddAppender (make_shared<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
+     *              #elif qPlatform_Windows
+     *                  Logger::sThe.AddAppender (make_shared<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
+     *              #endif
+     *          }
      *      \endcode
      *
+     *  \par Example Usage
+     *      \code
+     *          Logger::sThe.Log (Logger::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+     *      \endcode
+     * 
      *  @see DbgTrace
      */
     class Logger final {
