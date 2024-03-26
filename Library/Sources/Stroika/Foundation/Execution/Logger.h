@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Execution {
      *              .fSuppressDuplicatesThreshold = 15s,
      *          }};
      *          if (dockerContainerFlag) {
-     *              Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, AdoptFDPolicy::eDisconnectOnDestruction));
+     *              Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, AdoptFDPolicy::eDisconnectOnDestruction)));
      *          }
      *          else {
      *              #if qHas_Syslog
