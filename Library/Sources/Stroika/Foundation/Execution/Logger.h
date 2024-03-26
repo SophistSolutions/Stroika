@@ -9,6 +9,7 @@
 #include <cstdarg>
 #include <filesystem>
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
@@ -84,7 +85,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          Logger::sThe.Log (Logger::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+     *          Logger::sThe.Log (Logger::eError, "Failed to correct something important in file {}"_f, fileName);
      *      \endcode
      * 
      *  @see DbgTrace
@@ -162,7 +163,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  However, user-defined appenders are assumed internally synchronized (threadsafe).
          * 
-         *  \note require all appenders != nullptr, but if a single rep given, that can be nullptr (and interpretted as removing all).
+         *  \note require all appenders != nullptr, but if a single rep given, that can be nullptr (and interpreted as removing all).
          */
         nonvirtual void SetAppenders (const shared_ptr<IAppenderRep>& rep);
         nonvirtual void SetAppenders (const Traversal::Iterable<shared_ptr<IAppenderRep>>& appenders);
@@ -314,10 +315,12 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          Logger::sThe.Log (Logger::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+         *          Logger::sThe.Log (Logger::eError, "Failed to correct something important in file {}"_f, fileName);
          *      \endcode
          */
-        nonvirtual void Log (Priority logLevel, const wchar_t* format, ...); // varargs logger
+        [[deprecated ("Since Stroika v3.0d6 - use _f strings for Logging")]] void Log (Priority logLevel, const wchar_t* format, ...);
+        template <typename CHAR_T, typename... ARGS>
+        nonvirtual void Log (Priority logLevel, Characters::FormatString<CHAR_T> fmt, ARGS&&... args);
 
     private:
         nonvirtual void Log_ (Priority logLevel, const String& msg);

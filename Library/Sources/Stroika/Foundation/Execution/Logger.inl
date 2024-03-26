@@ -43,6 +43,21 @@ namespace Stroika::Foundation::Execution {
         }
     }
 #endif
+    template <typename CHAR_T, typename... ARGS>
+    inline void Logger::Log (Priority logLevel, Characters::FormatString<CHAR_T> fmt, ARGS&&... args)
+    {
+        using namespace Characters::Literals;
+        if (WouldLog (logLevel)) {
+            String msg = Characters::VFormat (fmt, args...);
+            DbgTrace ("Logger::Log ({}, \"{}\")"_f, Characters::ToString (logLevel), msg);
+            Log_ (logLevel, msg);
+        }
+        else {
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+            DbgTrace ("...suppressed by WouldLog: {}"_f, Characters::VFormat (fmt, args...));
+#endif
+        }
+    }
 
 }
 
