@@ -111,7 +111,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
      *
      *  \par Example Usage
      *      \code
-     *          Ptr stdoutStream = FileOutputStream::New (1, AdoptFDPolicy::eDisconnectOnDestruction);
+     *          Ptr<byte> stdoutStream = FileOutputStream::New (1, AdoptFDPolicy::eDisconnectOnDestruction);
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
