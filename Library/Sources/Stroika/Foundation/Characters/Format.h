@@ -25,6 +25,7 @@
 
 namespace Stroika::Foundation::Characters {
 
+#if 0
     /**
      */
     // EXPERIMENTAL NEW v3d6...
@@ -48,6 +49,7 @@ namespace Stroika::Foundation::Characters {
     {
         return String{Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt}, args)};
     }
+#endif
 
     /**
      * 
@@ -123,8 +125,17 @@ namespace Stroika::Foundation::Characters {
     {
         if constexpr (same_as<CHAR_T, char>) {
             // @todo decide how to handle ASCII stuff - this fails if non ascii - consider...
-            return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{f.sv},
-                                                             Configuration::StdCompat::make_format_args (args...))};
+            // DECIDED - but dont know how todo yet.
+            // Becaues format string is ASCII says NITHING about resulting string being ascii. DONT ASSUME THAT.
+            try {
+                return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{f.sv},
+                                                                 Configuration::StdCompat::make_format_args (args...))};
+            }
+            catch (...) {
+                //tmphack -
+                // WeakAssertNotReached ();
+                return "BAD"sv;
+            }
         }
         else if constexpr (same_as<CHAR_T, wchar_t>) {
             return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.sv},
