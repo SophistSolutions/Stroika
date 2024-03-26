@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline bool Logger::WouldLog (Priority logLevel) const
     {
-        return logLevel >= fMinLogLevel_ and GetAppender () != nullptr;
+        return logLevel >= fMinLogLevel_ and not GetAppenders ().empty ();
     }
 #if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
     inline void Logger::Log (Priority logLevel, const wchar_t* format, ...)

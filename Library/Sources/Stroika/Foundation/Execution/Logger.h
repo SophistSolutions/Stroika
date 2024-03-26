@@ -22,11 +22,6 @@
  *  \file
  *
  *  TODO:
- *      @todo   Consider allowingmultiple loggers (with different configs/params).
- *              Still wish to retain the magic singleton, but then you use Logger::sThe
- *
- *              Then make possible to create (construct) own logger objects (possibly for various purposes)... like one to file, and one to syslog?
- *
  *      @todo   Finish support for Windows Event Manager Log Appender -- WindowsEventLogAppender. Its
  *              printing some data, but very minimally and wrongly handling categories etc. Probably could get close
  *              by specifying hardwired/hacked values in the CTOR args.
@@ -83,7 +78,7 @@ namespace Stroika::Foundation::Execution {
         class IAppenderRep;
 
     public:
-        using IAppenderRepPtr = shared_ptr<IAppenderRep>;
+        using IAppenderRepPtr [[deprecated ("Since Stroika v3.0d6 - just use shared_ptr<IAppenderRep>")]] = shared_ptr<IAppenderRep>;
 
     public:
 #if qHas_Syslog
@@ -125,18 +120,39 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     public:
+        [[deprecated ("Since Stroika v3.0d6 use GetAppenders - plural")]] nonvirtual shared_ptr<IAppenderRep> GetAppender () const
+        {
+            return GetAppenders ().FirstValue (nullptr);
+        }
+
+    public:
+        [[deprecated ("Since Stroika v3.0d6 use SetAppenders - plural")]] nonvirtual void SetAppender (const shared_ptr<IAppenderRep>& rep)
+        {
+            SetAppenders (rep);
+        }
+
+    public:
         /**
          *  Note - all Stroika provided appenders are internally synchronized.
          */
-        nonvirtual IAppenderRepPtr GetAppender () const;
+        nonvirtual Traversal::Iterable<shared_ptr<IAppenderRep>> GetAppenders () const;
 
     public:
         /**
          *  Note - all Stroika provided appenders are internally synchronized.
          *
          *  However, user-defined appenders are assumed internally synchronized (threadsafe).
+         * 
+         *  \note require all appenders != nullptr, but if a single rep given, that can be nullptr (and interpretted as removing all).
          */
-        nonvirtual void SetAppender (const IAppenderRepPtr& rep);
+        nonvirtual void SetAppenders (const shared_ptr<IAppenderRep>& rep);
+        nonvirtual void SetAppenders (const Traversal::Iterable<shared_ptr<IAppenderRep>>& appenders);
+
+    public:
+        /**
+         *  As if calls GetAppenders/SetAppenders
+         */
+        nonvirtual void AddAppender (const shared_ptr<IAppenderRep>& rep);
 
     public:
         /**
@@ -201,12 +217,12 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *      Log bufffering is DISABLED by default, since it has some cost. But if enabled, Log () calls
+         *      Log buffering is DISABLED by default, since it has some cost. But if enabled, Log () calls
          *  queue an internal message, which another thread wakes up to write. This CAN be critical for performance
          *  reasons, so the caller can freely log things, and not have their thread blocked.
          *
          *      Beware, this feature CAN mean that something you log, wont make it out of the application if
-         *  the appliaction terminates before the log can be flushed.
+         *  the application terminates before the log can be flushed.
          *
          *  \par Example Usage
          *      \code

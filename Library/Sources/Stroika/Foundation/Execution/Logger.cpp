@@ -7,14 +7,16 @@
 #include <syslog.h>
 #endif
 
-#include "../Cache/SynchronizedCallerStalenessCache.h"
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/Format.h"
-#include "../Characters/ToString.h"
-#include "../Debug/Trace.h"
-#include "../IO/FileSystem/FileOutputStream.h"
-#include "../Streams/TextWriter.h"
-#include "../Time/DateTime.h"
+#include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+
 #include "BlockingQueue.h"
 #include "Common.h"
 #include "Process.h"
@@ -28,8 +30,10 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Traversal;
 using namespace IO::FileSystem;
 
 using Containers::Mapping;
@@ -45,9 +49,9 @@ using Time::Duration;
  */
 struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     using PriorityAndMessageType_ = pair<Logger::Priority, String>;
-    bool                                   fBufferingEnabled_{false};
-    Synchronized<IAppenderRepPtr>          fAppender_;
-    BlockingQueue<PriorityAndMessageType_> fOutMsgQ_;
+    bool                                               fBufferingEnabled_{false};
+    Synchronized<Collection<shared_ptr<IAppenderRep>>> fAppenders_;
+    BlockingQueue<PriorityAndMessageType_>             fOutMsgQ_;
     // @todo FIX - fOutQMaybeNeedsFlush_ setting can cause race - maybe lose this optimization - pretty harmless, but can lose a message
     // race at end of Flush_()
     bool                             fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
@@ -69,8 +73,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Logger::Rep_::FlushSuppressedDuplicates_"};
 #endif
-        shared_ptr<IAppenderRep> tmp            = fAppender_; // avoid races and critical sections (appender internally threadsafe)
-        auto                     lastMsgsLocked = fLastMessages_.rwget ();
+        auto lastMsgsLocked = fLastMessages_.rwget ();
         /**
          *  @todo restructure so we dont hold the lock while we call the tmp->Log() - since that append could in principle do something calling us back/deadlock
          *        Maybe queue up the messages/and push them at the end of the loop. Advantage of no deadlock, but disavantage of
@@ -86,11 +89,17 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                         case 0:
                             break; // nothing to write
                         case 1:
-                            tmp->Log (i->fKey.first, i->fKey.second);
+                            // avoid races and critical sections (appender internally threadsafe)
+                            for (shared_ptr<IAppenderRep> tmp : fAppenders_.load ()) {
+                                tmp->Log (i->fKey.first, i->fKey.second);
+                            }
                             break;
                         default:
-                            tmp->Log (i->fKey.first, Characters::Format (L"[%d duplicates suppressed]: %s", i->fValue.fRepeatCount_ - 1,
-                                                                         i->fKey.second.As<wstring> ().c_str ()));
+                            // avoid races and critical sections (appender internally threadsafe)
+                            for (shared_ptr<IAppenderRep> tmp : fAppenders_.load ()) {
+                                tmp->Log (i->fKey.first, Characters::Format (L"[%d duplicates suppressed]: %s", i->fValue.fRepeatCount_ - 1,
+                                                                             i->fKey.second.As<wstring> ().c_str ()));
+                            }
                             break;
                     }
                     lastMsgsLocked->Remove (i, &i);
@@ -106,12 +115,14 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Logger::Rep_::Flush_"};
 #endif
-        shared_ptr<IAppenderRep> tmp = fAppender_; // avoid races and critical sections (between check and invoke)
-        if (tmp != nullptr) {
+        if (not fAppenders_.cget ()->empty ()) {
             while (true) {
                 optional<PriorityAndMessageType_> p = fOutMsgQ_.RemoveHeadIfPossible ();
                 if (p.has_value ()) {
-                    tmp->Log (p->first, p->second);
+                    // avoid races and critical sections (between check and invoke)
+                    for (shared_ptr<IAppenderRep> tmp : fAppenders_.load ()) {
+                        tmp->Log (p->first, p->second);
+                    }
                 }
                 else {
                     return; // no more entries
@@ -145,8 +156,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                             Duration time2Wait = max<Duration> (2s, suppressDuplicatesThreshold); // never wait less than this
                             useRepInThread->FlushSuppressedDuplicates_ ();
                             if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
-                                shared_ptr<IAppenderRep> tmp = useRepInThread->fAppender_; // avoid races and critical sections (between check and invoke)
-                                if (tmp != nullptr) {
+                                // avoid races and critical sections (between check and invoke)
+                                for (shared_ptr<IAppenderRep> tmp : useRepInThread->fAppenders_.load ()) {
                                     IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));
                                 }
                             }
@@ -161,8 +172,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                         while (true) {
                             AssertNotNull (useRepInThread);
                             auto p = useRepInThread->fOutMsgQ_.RemoveHead ();
-                            shared_ptr<IAppenderRep> tmp = useRepInThread->fAppender_; // avoid races and critical sections (between check and invoke)
-                            if (tmp != nullptr) {
+                            // avoid races and critical sections (between check and invoke)
+                            for (shared_ptr<IAppenderRep> tmp : useRepInThread->fAppenders_.load ()) {
                                 tmp->Log (p.first, p.second);
                             }
                         }
@@ -222,23 +233,34 @@ void Logger::Shutdown_ ()
     Ensure (fRep_->fBookkeepingThread_.load () == nullptr);
 }
 
-auto Logger::GetAppender () const -> IAppenderRepPtr
+auto Logger::GetAppenders () const -> Traversal::Iterable<shared_ptr<IAppenderRep>>
 {
     AssertNotNull (fRep_); // must be called while Logger::Activator exists
-    return fRep_->fAppender_;
+    return fRep_->fAppenders_;
 }
 
-void Logger::SetAppender (const IAppenderRepPtr& rep)
+void Logger::SetAppenders (const shared_ptr<IAppenderRep>& rep)
+{
+    SetAppenders (rep == nullptr ? Collection<shared_ptr<IAppenderRep>>{} : Collection<shared_ptr<IAppenderRep>>{rep});
+}
+
+void Logger::SetAppenders (const Iterable<shared_ptr<IAppenderRep>>& reps)
 {
     AssertNotNull (fRep_); // must be called while Logger::Activator exists
-    fRep_->fAppender_ = rep;
+    fRep_->fAppenders_ = Collection<shared_ptr<IAppenderRep>>{reps};
+}
+
+void Logger::AddAppender (const shared_ptr<IAppenderRep>& rep)
+{
+    RequireNotNull (rep);
+    AssertNotNull (fRep_); // must be called while Logger::Activator exists
+    fRep_->fAppenders_.rwget ()->Add (rep);
 }
 
 void Logger::Log_ (Priority logLevel, const String& msg)
 {
-    AssertNotNull (fRep_);                            // must be called while Logger::Activator exists
-    shared_ptr<IAppenderRep> tmp = fRep_->fAppender_; // avoid races/deadlocks and critical sections (between check and invoke)
-    if (tmp != nullptr) {
+    AssertNotNull (fRep_); // must be called while Logger::Activator exists
+    if (not fRep_->fAppenders_->empty ()) {
         auto p = make_pair (logLevel, msg);
         if (fRep_->fSuppressDuplicatesThreshold_.cget ()->has_value ()) {
             auto lastMsgLocked = fRep_->fLastMessages_.rwget ();
@@ -262,7 +284,10 @@ void Logger::Log_ (Priority logLevel, const String& msg)
             if (fRep_->fOutQMaybeNeedsFlush_) {
                 fRep_->Flush_ (); // in case recently disabled
             }
-            tmp->Log (p.first, p.second);
+            // avoid races/deadlocks and critical sections (between check and invoke)
+            for (shared_ptr<IAppenderRep> tmp : fRep_->fAppenders_.load ()) {
+                tmp->Log (p.first, p.second);
+            }
         }
     }
 }
