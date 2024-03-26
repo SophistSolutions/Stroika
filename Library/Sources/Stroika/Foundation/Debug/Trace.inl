@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Debug {
     template <typename CHAR_T>
     auto TraceContextBumper::cvt2WChartArrayTrunc_ (span<const CHAR_T> contextName) -> CHAR_ARRAY_T
     {
-        // Return item with max size kMaxContextNameLen_+1 so we can tell if we need to add elipsis
+        // Return item with max size kMaxContextNameLen_+1 so we can tell if we need to add ellipsis
         array<wchar_t, kMaxContextNameLen_ + 1> r;
         auto                                    ci = contextName.begin ();
         for (; ci != contextName.end (); ++ci) {
