@@ -367,56 +367,52 @@ Main::State Main::LoggerServiceWrapper::_GetState () const
 
 void Main::LoggerServiceWrapper::_Install ()
 {
-    Logger::sThe.Log (Logger::eNotice, L"Installing service...");
+    Logger::sThe.Log (Logger::eNotice, "Installing service..."_f);
     try {
         fDelegateTo_->_Install ();
     }
     catch (...) {
-        String exceptMsg = Characters::ToString (current_exception ());
-        Logger::sThe.Log (Logger::eError, L"Failed to install - %s - aborting...", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, "Failed to install - {} - aborting..."_f, Characters::ToString (current_exception ()));
         Execution::ReThrow ();
     }
 }
 
 void Main::LoggerServiceWrapper::_UnInstall ()
 {
-    Logger::sThe.Log (Logger::eNotice, L"UnInstalling service...");
+    Logger::sThe.Log (Logger::eNotice, "UnInstalling service..."_f);
     try {
         fDelegateTo_->_UnInstall ();
     }
     catch (...) {
-        String exceptMsg = Characters::ToString (current_exception ());
-        Logger::sThe.Log (Logger::eError, L"Failed to uninstall - %s - aborting...", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, "Failed to uninstall - {} - aborting..."_f, Characters::ToString (current_exception ()));
         Execution::ReThrow ();
     }
 }
 
 void Main::LoggerServiceWrapper::_RunAsService ()
 {
-    Logger::sThe.Log (Logger::eInfo, L"Service starting..."); // only info level cuz inside app RunAs
+    Logger::sThe.Log (Logger::eInfo, "Service starting..."_f); // only info level cuz inside app RunAs
     try {
         fDelegateTo_->_RunAsService ();
     }
     catch (...) {
-        String exceptMsg = Characters::ToString (current_exception ());
-        Logger::sThe.Log (Logger::eError, L"Exception running service - %s - aborting...", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, L"Exception running service - {} - aborting..."_f, Characters::ToString (current_exception ()));
         Execution::ReThrow ();
     }
-    Logger::sThe.Log (Logger::eNotice, L"Service stopped normally");
+    Logger::sThe.Log (Logger::eNotice, "Service stopped normally"_f);
 }
 
 void Main::LoggerServiceWrapper::_RunDirectly (const optional<Time::Duration>& runFor)
 {
-    Logger::sThe.Log (Logger::eNotice, L"Service starting in Run-Direct (non service) mode.");
+    Logger::sThe.Log (Logger::eNotice, "Service starting in Run-Direct (non service) mode."_f);
     try {
         fDelegateTo_->_RunDirectly (runFor);
     }
     catch (...) {
-        String exceptMsg = Characters::ToString (current_exception ());
-        Logger::sThe.Log (Logger::eError, L"Exception running service service - %s - aborting...", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, "Exception running service in direct mode - {} - aborting..."_f, Characters::ToString (current_exception ()));
         Execution::ReThrow ();
     }
-    Logger::sThe.Log (Logger::eNotice, L"Service stopped normally");
+    Logger::sThe.Log (Logger::eNotice, "Service stopped normally"_f);
 }
 
 void Main::LoggerServiceWrapper::_Start (Time::DurationSeconds timeout)

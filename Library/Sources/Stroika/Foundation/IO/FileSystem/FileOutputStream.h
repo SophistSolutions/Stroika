@@ -94,7 +94,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
      *
      *  \par Example Usage
      *      \code
-     *          IO::FileSystem::FileOutputStream::New (L"/tmp/foo").Write (Memory::BLOB {0x3});
+     *          IO::FileSystem::FileOutputStream::New ("/tmp/foo").Write (Memory::BLOB {0x3});
      *      \endcode
      *
      *  \par Example Usage
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
      *
      *  \par Example Usage
      *      \code
-     *          Ptr<byte> stdoutStream = FileOutputStream::New (1, AdoptFDPolicy::eDisconnectOnDestruction);
+     *          Ptr<byte> stdoutStream = FileOutputStream::New (1, FileStream::AdoptFDPolicy::eDisconnectOnDestruction);
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>

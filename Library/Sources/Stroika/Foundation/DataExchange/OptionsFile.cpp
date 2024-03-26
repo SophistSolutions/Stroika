@@ -115,7 +115,7 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger = [] (const LoggerMess
             priority = Logger::eCriticalError;
             break;
     }
-    Logger::sThe.Log (priority, L"%s", message.FormatMessage ().c_str ());
+    Logger::sThe.Log (priority, "{}"_f, message.FormatMessage ());
 };
 
 OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
@@ -210,7 +210,7 @@ optional<VariantValue> OptionsFile::Read ()
         optional<VariantValue> r = fReader_.Read (MemoryStream::New<byte> (ReadRaw ()));
         if (r.has_value ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"present: upgrading module %s", fModuleName_.c_str ());
+            DbgTrace ("present: upgrading module {}"_f, fModuleName_);
 #endif
             r = fModuleDataUpgrader_ (fModuleNameToFileVersionMapper_ (fModuleName_), *r);
         }
@@ -218,7 +218,7 @@ optional<VariantValue> OptionsFile::Read ()
     }
     catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"exception");
+        DbgTrace ("exception");
 #endif
         // @todo - check different exception cases and for some - like file not found - just no warning...
         fLogger_ (LoggerMessage{LoggerMessage::Msg::eFailedToReadFile, GetReadFilePath_ (), Characters::ToString (current_exception ())});

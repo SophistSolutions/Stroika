@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
 #endif
+#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Frameworks/Service/Main.h"
 
 #include "AppVersion.h"
@@ -61,10 +62,10 @@ namespace {
         Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
 #if qUseLogger
-        Logger::sThe.Log (Logger::eCriticalError, L"Fatal Error: %s; Aborting...", String::FromSDKString (msg).c_str ());
-        Logger::sThe.Log (Logger::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
+        Logger::sThe.Log (Logger::eCriticalError, "Fatal Error: {}; Aborting..."_f, String::FromSDKString (msg));
+        Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Characters::ToString (Debug::BackTrace::Capture ()));
         if (std::exception_ptr exc = std::current_exception ()) {
-            Logger::sThe.Log (Logger::eCriticalError, L"Uncaught exception: %s", Characters::ToString (exc).c_str ());
+            Logger::sThe.Log (Logger::eCriticalError, "Uncaught exception: {}"_f, Characters::ToString (exc));
         }
         Logger::sThe.Flush ();
 #endif
@@ -73,10 +74,10 @@ namespace {
     void FatalSignalHandler_ (Execution::SignalID signal) noexcept
     {
         Thread::SuppressInterruptionInContext suppressCtx;
-        DbgTrace (L"Fatal Signal encountered: %s", Execution::SignalToName (signal).c_str ());
+        DbgTrace ("Fatal Signal encountered: {}"_f, Execution::SignalToName (signal));
 #if qUseLogger
-        Logger::sThe.Log (Logger::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
-        Logger::sThe.Log (Logger::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
+        Logger::sThe.Log (Logger::eCriticalError, "Fatal Signal: {}; Aborting..."_f, Execution::SignalToName (signal));
+        Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Characters::ToString (Debug::BackTrace::Capture ()));
         Logger::sThe.Flush ();
 #endif
         std::_Exit (EXIT_FAILURE); // skip
@@ -176,11 +177,18 @@ int main (int argc, const char* argv[])
         .fLogBufferingEnabled         = true,
         .fSuppressDuplicatesThreshold = 15s,
     }};
+    bool              dockerContainerFlag = false;  // get from command-line???
+    if (dockerContainerFlag) {
+        using namespace IO::FileSystem;
+        Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (1/*STDOUT_FILENO*/, FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
+    }
+    else {
 #if qHas_Syslog
-    Logger::sThe.SetAppender (make_shared<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
+        Logger::sThe.SetAppenders (make_shared<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
 #elif qPlatform_Windows
-    Logger::sThe.SetAppender (make_shared<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
+        Logger::sThe.SetAppenders (make_shared<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
 #endif
+    }
 #endif
 
     /*
@@ -234,7 +242,7 @@ int main (int argc, const char* argv[])
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
 #if qUseLogger
-        Logger::sThe.Log (Logger::eError, L"%s", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, "{}"_f, exceptMsg);
 #endif
         cerr << "FAILED: " << exceptMsg.AsNarrowSDKString () << endl;
         return EXIT_FAILURE;

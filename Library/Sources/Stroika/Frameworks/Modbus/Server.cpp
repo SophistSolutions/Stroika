@@ -403,8 +403,8 @@ namespace {
                         DbgTrace (L"UNREGONIZED FunctionCode (NYI probably) - %d - so echo ILLEGAL_FUNCTION code",
                                   Characters::ToString (requestHeader.fFunctionCode).c_str ());
                         if (options.fLogger) {
-                            options.fLogger.value ()->Log (Logger::eWarning, L"ModbusTCP unrecognized function code '%s'- rejected as ILLEGAL_FUNCTION",
-                                                           Characters::ToString (requestHeader.fFunctionCode).c_str ());
+                            options.fLogger.value ()->Log (Logger::eWarning, "ModbusTCP unrecognized function code '{}'- rejected as ILLEGAL_FUNCTION"_f,
+                                                           Characters::ToString (requestHeader.fFunctionCode));
                         }
                         MBAPHeaderIsh_ responseHeader = requestHeader;
                         responseHeader.fFunctionCode = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
@@ -425,8 +425,8 @@ namespace {
         catch (...) {
             // Anytime we leave the loop due to an exception, thats worth a log note
             if (options.fLogger) {
-                options.fLogger.value ()->Log (Logger::eWarning, L"ModbusTCP connection ended abnormally: %s",
-                                               Characters::ToString (current_exception ()).c_str ());
+                options.fLogger.value ()->Log (Logger::eWarning, "ModbusTCP connection ended abnormally: {}"_f,
+                                               Characters::ToString (current_exception ()));
             }
             ReThrow ();
         }
@@ -456,7 +456,7 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
 #endif
             uint16_t usingPortNumber = options.fListenPort.value_or (502);
             if (options.fLogger) {
-                options.fLogger.value ()->Log (Logger::eInfo, L"Listening for ModbusTCP requests on port %d", usingPortNumber);
+                options.fLogger.value ()->Log (Logger::eInfo, "Listening for ModbusTCP requests on port {}"_f, usingPortNumber);
             }
             WaitableEvent{}.Wait (); // forever (til thread abort)
         },
