@@ -1168,7 +1168,21 @@ sub	SetDefaultForCompilerDriver_
 				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
 				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-odr ';
 				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-lto-type-mismatch ';
+
+				### this suppression doesnt seem eneeded for g++-14...--LGP 2024-03-26
 				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-tsan ';
+			}
+			if (14.0 <= $itsVersion && $itsVersion < 14.1) {
+				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
+				# are hard to figure out what todo about --LGP 2023-10-04
+
+				# TEST AGAIN with the official g++-14 release (still experimental) --LGP 2024-03-26
+
+				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-odr ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-lto-type-mismatch ';
+
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-stringop-overflow ';
 			}
 
 			# MOSTLY UNRELATED ISSUE
