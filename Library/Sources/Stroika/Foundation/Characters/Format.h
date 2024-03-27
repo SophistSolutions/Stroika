@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Characters {
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     //requires (Configuration::IAnyOf<CHAR_T,char,wchar_t>)
     struct FormatString {
-        static_assert (Configuration::IAnyOf<CHAR_T, char, wchar_t>);   // not sure why this works but reqiores/concept applied in template not working...
+        static_assert (Configuration::IAnyOf<CHAR_T, char, wchar_t>); // not sure why this works but reqiores/concept applied in template not working...
 
     private:
         wstring_view fSV_; // maybe SB wformat_string here??
@@ -116,13 +116,21 @@ namespace Stroika::Foundation::Characters {
      *      \endcode
      */
     inline namespace Literals {
-        FormatString<char> operator"" _f (const char* str, size_t len);
-        FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len);
+#if qCompilerAndStdLib_vector_constexpr_Buggy
+        inline
+#else
+        constexpr
+#endif
+            FormatString<char>
+            operator"" _f (const char* str, size_t len);
+        constexpr FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len);
     }
 
     /**
      *  Same as vformat, except always produces valid UNICODE Stroika String...
      *   \brief same as std::vformat, except always uses wformat_args, and produces Stroika String (and maybe more - soon - ??? - add extra conversions if I can find how?)
+     * 
+     *  \note FormatString typically created with _f, as in "foo={}"_f
      */
     template <typename CHAR_T>
     [[nodiscard]] String VFormat (const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args);

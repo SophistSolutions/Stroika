@@ -94,11 +94,17 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     inline namespace Literals {
-        inline FormatString<char> operator"" _f (const char* str, size_t len)
+#if qCompilerAndStdLib_vector_constexpr_Buggy
+        inline
+#else
+        constexpr
+#endif
+            FormatString<char>
+            operator"" _f (const char* str, size_t len)
         {
             return FormatString<char>{string_view{str, len}};
         }
-        inline FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len)
+        constexpr FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len)
         {
             return FormatString<wchar_t>{wstring_view{str, len}};
         }
