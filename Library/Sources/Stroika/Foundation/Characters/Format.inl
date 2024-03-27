@@ -48,12 +48,18 @@ namespace Stroika::Foundation::Characters {
         using Configuration::StdCompat::vformat;
         return vformat (loc, getx (), make_wformat_args (args...));
     }
-    constexpr FormatString<char>::FormatString (const FormatString& src)
+     #if !qCompilerAndStdLib_vector_constexpr_Buggy
+        constexpr 
+        #endif
+     FormatString<char>::FormatString (const FormatString& src)
         : fStringData_{src.fStringData_}
         , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}}
     {
     }
-    constexpr FormatString<char>::FormatString (basic_string_view<char> s)
+     #if !qCompilerAndStdLib_vector_constexpr_Buggy
+        constexpr 
+        #endif
+         FormatString<char>::FormatString (const basic_string_view<char>& s)
         : fStringData_{s.begin (), s.end ()}
         , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}}
     {

@@ -2296,6 +2296,31 @@ int main ()
 #endif
 
 /*
+
+ ...  Stroika/ThirdPartyComponents/libxml2 -    [Succeeded]
+Building Stroika Library {g++-11-debug}:
+   Building Stroika Foundation Objs {g++-11-debug}:
+      Compiling Library/Sources/Stroika/Foundation/Cache/Statistics.cpp ... 
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:241,
+                 from Statistics.cpp:6:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.inl: In copy constructor ‘constexpr Stroika::Foundation::Characters::FormatString<char>::FormatString(const Stroika::Foundation::Characters::FormatString<char>&)’:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.inl:52:11: error: call to non-‘constexpr’ function ‘std::__debug::vector<_Tp, _Allocator>::vector(const std::__debug::vector<_Tp, _Allocator>&) [with _Tp = wchar_t; _Allocator = std::allocator<wchar_t>]’
+   52 |         : fStringData_{src.fStringData_}
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/11/vector:76,
+                 from /usr/include/c++/11/functional:62,
+                 
+*/
+#ifndef qCompilerAndStdLib_vector_constexpr_Buggy
+#if defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_vector_constexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 11)
+#else
+#define qCompilerAndStdLib_vector_constexpr_Buggy 0
+#endif
+#endif
+
+
+/*
 In file included from ./../Characters/../Containers/Factory/KeyedCollection_Factory.inl:16:
 In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCollection_stdset.h:136:
 ./../Characters/../Containers/Concrete/KeyedCollection_stdset.inl:60:22: error: no viable constructor or deduction guide for deduction of template arguments of 'SetInOrderComparer'

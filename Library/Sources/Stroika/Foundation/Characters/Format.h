@@ -83,8 +83,14 @@ namespace Stroika::Foundation::Characters {
 
     public:
         FormatString () = delete;
-        constexpr FormatString (const FormatString& src);
-        constexpr FormatString (basic_string_view<char> s);
+        #if !qCompilerAndStdLib_vector_constexpr_Buggy
+        constexpr 
+        #endif
+        FormatString (const FormatString& src);
+         #if !qCompilerAndStdLib_vector_constexpr_Buggy
+        constexpr 
+        #endif
+         FormatString (const basic_string_view<char>& s);
 
         constexpr wstring_view                                             get () const;
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx () const;
