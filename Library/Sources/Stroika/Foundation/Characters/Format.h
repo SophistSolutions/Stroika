@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Characters {
                     //////////////mmaybe fixed?// @todo fixup the characterset handling here...
                     // @todo redo with SmallStackBuffer<>
                     vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
-                    return vformat (wstring_view{wideFormatString.begin (), wideFormatString.end ()}, make_wformat_args (args...));
+                    return vformat (wstring_view{wideFormatString.data (), wideFormatString.size ()}, make_wformat_args (args...));
                 }
                 catch (...) {
                     //tmphack -
