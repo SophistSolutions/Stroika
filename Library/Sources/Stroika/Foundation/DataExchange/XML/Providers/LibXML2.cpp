@@ -95,7 +95,7 @@ namespace {
                 optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
                     .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
                 if (not r) {
-                    DbgTrace ("Note ResolveMatch {} failed to find an entry in resolver."_f, URI);
+                    DbgTrace ("Note ResolveMatch {} failed to find an entry in resolver."_f, String::FromUTF8 (URI));
                 }
                 return r.has_value ();
             }

@@ -44,8 +44,8 @@ void AssertExternallySynchronizedMutex::lock_ () noexcept
                     L"ATTEMPT TO modify (lock for write) an object which is already in use (debuglocked) in another thread (thisthread=%s)",
                     Characters::ToString (this_thread::get_id ()).c_str ());
                 DbgTrace ("Original thread holding lock: threadID={}, and DbgTraceThreadName={}"_f,
-                          Execution::Thread::FormatThreadID_A (sharedContext->fThreadWithFullLock_).c_str (),
-                          Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_).c_str ());
+                          Characters::ToString (Execution::Thread::FormatThreadID_A (sharedContext->fThreadWithFullLock_)),
+                          Characters::ToString (Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_)));
             }
             Require (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());
         }
@@ -80,8 +80,8 @@ void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
                 DbgTrace (
                     "ATTEMPT TO shared_lock (lock for READ) an object which is already in use (debuglocked for WRITE) in another thread");
                 DbgTrace ("Original thread holding (write) lock: threadID={}, and DbgTraceThreadName={}"_f,
-                          Execution::Thread::FormatThreadID_A (sharedContext->fThreadWithFullLock_),
-                          Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_));
+                          Characters::ToString (Execution::Thread::FormatThreadID_A (sharedContext->fThreadWithFullLock_)),
+                          Characters::ToString (Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_)));
             }
             Require (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());
         }

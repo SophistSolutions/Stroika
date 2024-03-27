@@ -50,13 +50,7 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void EmitTraceMessage (Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
         {
             try {
-                // try fmt (args...)
-                if constexpr (same_as<CHAR_T, char>) {
-                    EmitTraceMessage_ (fmt.sv, Configuration::StdCompat::make_format_args (args...));
-                }
-                else if constexpr (same_as<CHAR_T, wchar_t>) {
-                    EmitTraceMessage_ (fmt.sv, Configuration::StdCompat::make_wformat_args (args...));
-                }
+                EmitTraceMessage_ (fmt.get (), Configuration::StdCompat::make_wformat_args (args...));
             }
             catch (...) {
             }
@@ -150,15 +144,8 @@ namespace Stroika::Foundation::Debug {
         requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>)
     {
         try {
-            basic_string<CHAR_T> r;
-            if constexpr (same_as<CHAR_T, wchar_t>) {
-                r = Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt.sv},
-                                                       Configuration::StdCompat::make_wformat_args (args...));
-            }
-            else {
-                r = Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt.sv},
-                                                       Configuration::StdCompat::make_format_args (args...));
-            }
+            wstring      r   = Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt.get ()},
+                                                                  Configuration::StdCompat::make_wformat_args (args...));
             size_t       len = min<size_t> (r.size (), kMaxContextNameLen_);
             CHAR_ARRAY_T result;
             // Dont call Memory::Span here - but reproduce in loop to avoid deadly embrace

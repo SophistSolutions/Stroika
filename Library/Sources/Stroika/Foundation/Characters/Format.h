@@ -62,11 +62,31 @@ namespace Stroika::Foundation::Characters {
      * behavior, using a more specific type in some contexts is helpful.
      * 
      *  For example, when you use the operator"" _f (), it allows its result to unambiguously be treated as a (new format)
+     * 
+     * 
      *  format string.
+     * 
+     *  Somewhat like wformat_string, except that templated, and can take input ASCII 'char' string as well, and just maps it to wstring.
     */
     template <typename CHAR_T>
     struct FormatString {
+    private:
         basic_string_view<CHAR_T> sv;
+
+    public:
+        FormatString ()                    = delete;
+        FormatString (const FormatString&) = default;
+        constexpr FormatString (basic_string_view<CHAR_T> s)
+        {
+            sv = s;
+        }
+
+        /**
+         */
+        constexpr basic_string_view<wchar_t> get () const
+        {
+            return sv;
+        }
 
         /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
 
@@ -119,15 +139,56 @@ namespace Stroika::Foundation::Characters {
             }
         }
     };
+    template <>
+    struct FormatString<char> {
+    private:
+        vector<wchar_t>       sv;
+        FormatString<wchar_t> fs;
+
+    public:
+        FormatString () = delete;
+        FormatString (const FormatString& src)
+            : sv{src.sv}
+            , fs{basic_string_view<wchar_t>{sv.data (), sv.size ()}}
+        {
+        }
+        FormatString (basic_string_view<char> s)
+            : sv{s.begin (), s.end ()}
+            , fs{basic_string_view<wchar_t>{sv.data (), sv.size ()}}
+        {
+            // @todo REQWUIRE s ISASCII
+            // require arg - lifetime forever - string-view - no way to check...
+        }
+
+        /**
+         */
+        constexpr basic_string_view<wchar_t> get () const
+        {
+            return fs.get ();
+        }
+
+        /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
+
+        template <typename... ARGS>
+        [[nodiscard]] inline String operator() (ARGS&&... args) const
+        {
+            return fs (args...);
+        }
+        template <typename... ARGS>
+        [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const
+        {
+            return fs (loc, args...);
+        }
+    };
 
     inline namespace Literals {
         inline FormatString<char> operator"" _f (const char* str, size_t len)
         {
-            return FormatString<char>{.sv = string_view{str, len}};
+            return FormatString<char>{string_view{str, len}};
         }
         inline FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len)
         {
-            return FormatString<wchar_t>{.sv = wstring_view{str, len}};
+            return FormatString<wchar_t>{wstring_view{str, len}};
         }
     }
 
@@ -138,7 +199,8 @@ namespace Stroika::Foundation::Characters {
     {
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-        vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
+        auto            sv = f.get ();
+        vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
         //        return vformat (string_view{f.sv}, args);
         return Configuration::StdCompat::vformat (
             qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{wideFormatString.data (), wideFormatString.size ()}, args);
@@ -147,19 +209,20 @@ namespace Stroika::Foundation::Characters {
     {
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-        return Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.sv}, args);
+        return Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.get ()}, args);
     }
     [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<char> f, const Configuration::StdCompat::wformat_args& args)
     {
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-        vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
+        auto            sv = f.get ();
+        vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
         return Configuration::StdCompat::vformat (
             loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{wideFormatString.data (), wideFormatString.size ()}, args);
     }
     [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<wchar_t> f, const Configuration::StdCompat::wformat_args& args)
     {
-        return Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.sv}, args);
+        return Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.get ()}, args);
     }
 
     /*
