@@ -48,7 +48,7 @@ public:
         // @todo fix - inefficient implementation - LGP 2023-12-30
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{
-            Stroika_Foundation_Debug_OptionalizeTraceArgs ("MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable")};
+            "MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable"};
 #endif
         this->SeekRead (Whence::eFromStart, 0);
         Character c;

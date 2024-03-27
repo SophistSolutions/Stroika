@@ -57,7 +57,7 @@ void WaitableEvent::WE_::WaitUntil (Time::TimePointSeconds timeoutAt)
 auto WaitableEvent::WE_::WaitUntilQuietly (Time::TimePointSeconds timeoutAt) -> WaitStatus
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"WaitableEvent::WE_::WaitUntilQuietly", L"timeout = %e", timeoutAt};
+    Debug::TraceContextBumper ctx{L"WaitableEvent::WE_::WaitUntilQuietly", "timeout = {}"_f, timeoutAt};
 #endif
     Thread::CheckForInterruption ();
     unique_lock<mutex> lock{fConditionVariable.fMutex};
