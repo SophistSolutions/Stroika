@@ -149,11 +149,11 @@ namespace Stroika::Foundation::Debug {
             size_t       len = min<size_t> (r.size (), kMaxContextNameLen_);
             CHAR_ARRAY_T result;
             // Dont call Memory::Span here - but reproduce in loop to avoid deadly embrace
-            //char_traits<CHAR_T>::copy (result.data (), r.data (), len);
-            for (size_t i = 0; i < len; ++i) {
-                result[i] = static_cast<wchar_t> (r[i]);
-            }
-            result[len] = '\0';
+            char_traits<wchar_t>::copy (result.data (), r.data (), len);
+            // for (size_t i = 0; i < len; ++i) {
+            //     result[i] = static_cast<wchar_t> (r[i]);
+            // }
+            result[len] = '\0'; //char_traits::copy doesn't appear to NUL-terminate
             return result;
         }
         catch (...) {

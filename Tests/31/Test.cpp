@@ -213,17 +213,18 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                EXPECT_TRUE (Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) ==
-                             kEncodedVal);
+                EXPECT_TRUE (Cryptography::Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (
+                                 (const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
+            }
+            {
+                int    tmp = 3;
+                string digestStr =
+                    Cryptography::Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (Streams::iostream::SerializeItemToBLOB (tmp)));
+                EXPECT_EQ (digestStr, "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
             {
                 int tmp = 3;
-                string digestStr = Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (Streams::iostream::SerializeItemToBLOB (tmp)));
-                EXPECT_TRUE (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
-            }
-            {
-                int tmp = 3;
-                EXPECT_TRUE ((Digest::Hash<int, DIGESTER_, string>{}(tmp) == "edcfae989540fd42e4b8556d5b723bb6"));
+                EXPECT_EQ ((Digest::Hash<int, DIGESTER_, string>{}(tmp)), "edcfae989540fd42e4b8556d5b723bb6");
             }
         }
     }
