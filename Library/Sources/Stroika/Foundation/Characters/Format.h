@@ -156,28 +156,28 @@ namespace Stroika::Foundation::Characters {
     /**
     *  Same as vformat, except always produces valid UNICODE Stroika String...
      */
-    inline [[nodiscard]] String VFormat (const FormatString<char> f, const format_args args)
+   [[nodiscard]]   inline String VFormat (const FormatString<char> f, const format_args args)
     {
         using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         return vformat (string_view{f.sv}, args);
     }
-    inline [[nodiscard]] String VFormat (const FormatString<wchar_t> f, const wformat_args args)
+     [[nodiscard]] inline String VFormat (const FormatString<wchar_t> f, const wformat_args args)
     {
         using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         return vformat (wstring_view{f.sv}, args);
     }
-    inline [[nodiscard]] String VFormat (const locale& loc, const FormatString<char> f, const format_args args)
+    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<char> f, const format_args args)
     {
         using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         return vformat (loc, string_view{f.sv}, args);
     }
-    inline [[nodiscard]] String VFormat (const locale& loc, const FormatString<wchar_t> f, const wformat_args args)
+   [[nodiscard]] inline  String VFormat (const locale& loc, const FormatString<wchar_t> f, const wformat_args args)
     {
         using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
