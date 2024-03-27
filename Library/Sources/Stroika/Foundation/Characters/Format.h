@@ -94,6 +94,8 @@ namespace Stroika::Foundation::Characters {
     struct FormatString {
         basic_string_view<CHAR_T> sv;
 
+        /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
+
         template <typename... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const
         {
@@ -162,7 +164,6 @@ namespace Stroika::Foundation::Characters {
      */
     [[nodiscard]] inline String VFormat (const FormatString<char> f, const wformat_args& args)
     {
-        using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
@@ -171,14 +172,12 @@ namespace Stroika::Foundation::Characters {
     }
     [[nodiscard]] inline String VFormat (const FormatString<wchar_t> f, const wformat_args& args)
     {
-        using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         return vformat (wstring_view{f.sv}, args);
     }
     [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<char> f, const wformat_args& args)
     {
-        using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
@@ -186,7 +185,6 @@ namespace Stroika::Foundation::Characters {
     }
     [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<wchar_t> f, const wformat_args& args)
     {
-        using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         return vformat (loc, wstring_view{f.sv}, args);
