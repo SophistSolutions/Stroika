@@ -153,6 +153,39 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
+    /**
+    *  Same as vformat, except always produces valid UNICODE Stroika String...
+     */
+    inline [[nodiscard]] String VFormat (const FormatString<char> f, const format_args args)
+    {
+        using Configuration::StdCompat::make_format_args;
+        using Configuration::StdCompat::vformat;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+        return vformat (string_view{f.sv}, args);
+    }
+    inline [[nodiscard]] String VFormat (const FormatString<wchar_t> f, const wformat_args args)
+    {
+        using Configuration::StdCompat::make_format_args;
+        using Configuration::StdCompat::vformat;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+        return vformat (wstring_view{f.sv}, args);
+    }
+    inline [[nodiscard]] String VFormat (const locale& loc, const FormatString<char> f, const format_args args)
+    {
+        using Configuration::StdCompat::make_format_args;
+        using Configuration::StdCompat::vformat;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+        return vformat (loc, string_view{f.sv}, args);
+    }
+    inline [[nodiscard]] String VFormat (const locale& loc, const FormatString<wchar_t> f, const wformat_args args)
+    {
+        using Configuration::StdCompat::make_format_args;
+        using Configuration::StdCompat::vformat;
+        using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+        return vformat (loc, wstring_view{f.sv}, args);
+    }
+
+#if 0
     template <typename CHAR_T, typename... ARGS>
     [[nodiscard]] inline String VFormat (const FormatString<CHAR_T> f, ARGS&&... args)
         requires (Configuration::IAnyOf<CHAR_T, char, wchar_t>)
@@ -165,6 +198,7 @@ namespace Stroika::Foundation::Characters {
     {
         return f (loc, args...);
     }
+#endif
 
     /*
      * Format is the Stroika wrapper on sprintf().

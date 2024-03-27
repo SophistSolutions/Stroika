@@ -1958,13 +1958,16 @@ namespace {
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
         EXPECT_EQ (a1, "1");
-        String a3 = Fmt (L"{}", 3);
-        String a4 = Fmt (L"{}", a3);
-        String a5 = Fmt (L"{}", IO::Network::URI{"http://www.sophists.com"});
+
+        EXPECT_EQ ("a{}a"_f(3), "a3a");
+
+        String a3 = Format ("{}"_f, 3);
+        String a4 = Format ("{}"_f, a3);
+        String a5 = Format (L"{}"_f, IO::Network::URI{"http://www.sophists.com"});
         DbgTrace (L"a5=%s", Characters::ToString (a5).c_str ());
-        String a5a = Fmt ("{}", IO::Network::URI{"http://www.sophists.com"});
+        String a5a = Format ("{}"_f, IO::Network::URI{"http://www.sophists.com"});
         DbgTrace (L"a5a=%s", Characters::ToString (a5).c_str ());
-        String a6 = Fmt (L"{}", IO::Network::CIDR{"192.168.244.0/24"});
+        String a6 = Format (L"{}"_f, IO::Network::CIDR{"192.168.244.0/24"});
         DbgTrace (L"a6=%s", Characters::ToString (a6).c_str ());
         {
             auto url = IO::Network::URI{"http://www.sophists.com"};
@@ -1973,7 +1976,7 @@ namespace {
             DbgTrace ("u = {}"_f, url);
             // Each will output "u = http://www.sophists.com
         }
-        String a7 = Fmt (L"{}", foo{});
+        String a7 = Format ("{}"_f, foo{});
         DbgTrace (L"a7=%s", Characters::ToString (a7).c_str ());
         DbgTrace (L"yippie: {}"_f, foo{});
         EXPECT_EQ (a7, "foo as a string"sv);

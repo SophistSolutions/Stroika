@@ -48,13 +48,13 @@ namespace Stroika::Foundation::Execution {
     {
         using namespace Characters::Literals;
         if (WouldLog (logLevel)) {
-            String msg = Characters::VFormat (fmt, args...);
+            String msg = Characters::Format (fmt, args...);
             DbgTrace ("Logger::Log ({}, \"{}\")"_f, Characters::ToString (logLevel), msg);
             Log_ (logLevel, msg);
         }
         else {
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-            DbgTrace ("...suppressed by WouldLog: {}"_f, Characters::VFormat (fmt, args...));
+            DbgTrace ("...suppressed by WouldLog: {}"_f, Characters::Format (fmt, args...));
 #endif
         }
     }
