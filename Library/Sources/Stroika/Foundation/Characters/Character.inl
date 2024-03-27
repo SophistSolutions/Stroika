@@ -257,14 +257,19 @@ namespace Stroika::Foundation::Characters {
 #endif
     }
     template <IPossibleCharacterRepresentation CHAR_T>
-    inline void Character::CheckASCII (span<const CHAR_T> s)
+    constexpr void Character::CheckASCII (span<const CHAR_T> s)
     {
         if (not IsASCII (s)) [[unlikely]] {
-            Private_::ThrowNotIsASCII_ ();
+            if (is_constant_evaluated ()) {
+                throw "Argument not valid ASCII";
+            }
+            else {
+                Private_::ThrowNotIsASCII_ (); // not constexpr so can go in CPP file
+            }
         }
     }
     template <IPossibleCharacterRepresentation CHAR_T>
-    inline void Character::CheckASCII (span<CHAR_T> s)
+    constexpr void Character::CheckASCII (span<CHAR_T> s)
     {
         CheckASCII (Memory::ConstSpan (s));
     }

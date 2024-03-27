@@ -294,9 +294,9 @@ namespace Stroika::Foundation::Characters {
          *  \brief if not IsASCII (arg) throw RuntimeException...
          */
         template <IPossibleCharacterRepresentation CHAR_T>
-        static void CheckASCII (span<const CHAR_T> s);
+        static constexpr void CheckASCII (span<const CHAR_T> s);
         template <IPossibleCharacterRepresentation CHAR_T>
-        static void CheckASCII (span<CHAR_T> s);
+        static constexpr void CheckASCII (span<CHAR_T> s);
 
     public:
         /**
