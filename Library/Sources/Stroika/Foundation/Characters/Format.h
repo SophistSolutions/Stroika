@@ -59,22 +59,24 @@ namespace Stroika::Foundation::Characters {
             @todo rename this to Format once we've fully removed all references to legacy "Format" API
      */
     template <typename... ARGS>
-    [[nodiscard]] inline String Fmt (const Configuration::StdCompat::format_string<ARGS...> f, ARGS&&... args)
+    [[deprecated ("Use Format")]] [[nodiscard]] inline String Fmt (const Configuration::StdCompat::format_string<ARGS...> f, ARGS&&... args)
     {
         return vformat (f.get (), Configuration::StdCompat::make_format_args (args...));
     }
     template <typename... ARGS>
-    [[nodiscard]] inline String Fmt (const Configuration::StdCompat::wformat_string<ARGS...> f, ARGS&&... args)
+    [[deprecated ("Use Format")]] [[nodiscard]] inline String Fmt (const Configuration::StdCompat::wformat_string<ARGS...> f, ARGS&&... args)
     {
         return vformat (f.get (), Configuration::StdCompat::make_wformat_args (args...));
     }
     template <typename... ARGS>
-    [[nodiscard]] inline String Fmt (const std::locale& loc, const Configuration::StdCompat::format_string<ARGS...> f, ARGS&&... args)
+    [[deprecated ("Use Format")]] [[nodiscard]] inline String Fmt (const std::locale&                                     loc,
+                                                                   const Configuration::StdCompat::format_string<ARGS...> f, ARGS&&... args)
     {
         return vformat (loc, f.get (), Configuration::StdCompat::make_format_args (args...));
     }
     template <typename... ARGS>
-    [[nodiscard]] inline String Fmt (const std::locale& loc, const Configuration::StdCompat::wformat_string<ARGS...> f, ARGS&&... args)
+    [[deprecated ("Use Format")]] [[nodiscard]] inline String Fmt (const std::locale& loc,
+                                                                   const Configuration::StdCompat::wformat_string<ARGS...> f, ARGS&&... args)
     {
         return vformat (loc, f.get (), Configuration::StdCompat::make_wformat_args (args...));
     }
@@ -92,18 +94,50 @@ namespace Stroika::Foundation::Characters {
     struct FormatString {
         basic_string_view<CHAR_T> sv;
 
-        template <class... ARGS>
-        [[nodiscard]] inline String operator() (ARGS&&... args)
+        template <typename... ARGS>
+        [[nodiscard]] inline String operator() (ARGS&&... args) const
         {
             using Configuration::StdCompat::make_format_args;
             using Configuration::StdCompat::make_wformat_args;
             using Configuration::StdCompat::vformat;
+            using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+            using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view;
             if constexpr (same_as<CHAR_T, char>) {
-                // @todo fixup the characterset handling here...
-                return vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{sv}, make_format_args (args...));
+                try {
+                    // @todo fixup the characterset handling here...
+                    return vformat (string_view{sv}, make_format_args (args...));
+                }
+                catch (...) {
+                    //tmphack -
+                    // WeakAssertNotReached ();
+                    return "BAD"sv;
+                }
             }
             else if constexpr (same_as<CHAR_T, wchar_t>) {
-                return vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{sv}, make_wformat_args (args...));
+                return vformat (wstring_view{sv}, make_wformat_args (args...));
+            }
+        }
+        template <typename... ARGS>
+        [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const
+        {
+            using Configuration::StdCompat::make_format_args;
+            using Configuration::StdCompat::make_wformat_args;
+            using Configuration::StdCompat::vformat;
+            using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+            using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view;
+            if constexpr (same_as<CHAR_T, char>) {
+                try {
+                    // @todo fixup the characterset handling here...
+                    return vformat (loc, string_view{sv}, make_format_args (args...));
+                }
+                catch (...) {
+                    //tmphack -
+                    // WeakAssertNotReached ();
+                    return "BAD"sv;
+                }
+            }
+            else if constexpr (same_as<CHAR_T, wchar_t>) {
+                return vformat (loc, wstring_view{sv}, make_wformat_args (args...));
             }
         }
     };
@@ -123,38 +157,13 @@ namespace Stroika::Foundation::Characters {
     [[nodiscard]] inline String VFormat (const FormatString<CHAR_T> f, ARGS&&... args)
         requires (Configuration::IAnyOf<CHAR_T, char, wchar_t>)
     {
-        if constexpr (same_as<CHAR_T, char>) {
-            // @todo decide how to handle ASCII stuff - this fails if non ascii - consider...
-            // DECIDED - but dont know how todo yet.
-            // Becaues format string is ASCII says NITHING about resulting string being ascii. DONT ASSUME THAT.
-            try {
-                return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{f.sv},
-                                                                 Configuration::StdCompat::make_format_args (args...))};
-            }
-            catch (...) {
-                //tmphack -
-                // WeakAssertNotReached ();
-                return "BAD"sv;
-            }
-        }
-        else if constexpr (same_as<CHAR_T, wchar_t>) {
-            return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.sv},
-                                                             Configuration::StdCompat::make_wformat_args (args...))};
-        }
+        return f (args...);
     }
     template <typename CHAR_T, typename... ARGS>
     [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<CHAR_T> f, ARGS&&... args)
         requires (Configuration::IAnyOf<CHAR_T, char, wchar_t>)
     {
-        if constexpr (same_as<CHAR_T, char>) {
-            // @todo decide how to handle ASCII stuff - this fails if non ascii - consider...
-            return String{Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::string_view{f.sv},
-                                                             Configuration::StdCompat::make_format_args (args...))};
-        }
-        else if constexpr (same_as<CHAR_T, wchar_t>) {
-            return String{Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.sv},
-                                                             Configuration::StdCompat::make_wformat_args (args...))};
-        }
+        return f (loc, args...);
     }
 
     /*
@@ -185,19 +194,18 @@ namespace Stroika::Foundation::Characters {
      */
     String FormatV (const wchar_t* format, va_list argsList);
     String Format (const wchar_t* format, ...);
+
     // @todo overload of Format/FormatV taking myfmt!!!! - PERFECT BACKWAWRD COMAT STRATEGY... - use Format with _f string to get new behavior, and regualr string to get old!!!
     /// ETC - DO MORE... like this... - then dont need Fmt lowercase anymore!!!
     template <typename... ARGS>
     inline String Format (FormatString<char> f, ARGS&&... args)
     {
-        using namespace Configuration::StdCompat;
-        return VFormat (f, make_format_args (args...));
+        return VFormat (f, Configuration::StdCompat::make_format_args (args...));
     }
     template <typename... ARGS>
     inline String Format (FormatString<wchar_t> f, ARGS&&... args)
     {
-        using namespace Configuration::StdCompat;
-        return VFormat (f, make_wformat_args (args...));
+        return VFormat (f, Configuration::StdCompat::make_wformat_args (args...));
     }
 
 }

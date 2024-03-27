@@ -50,6 +50,7 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void EmitTraceMessage (Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
         {
             try {
+                // try fmt (args...)
                 if constexpr (same_as<CHAR_T, char>) {
                     EmitTraceMessage_ (fmt.sv, Configuration::StdCompat::make_format_args (args...));
                 }
