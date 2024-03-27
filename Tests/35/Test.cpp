@@ -90,12 +90,12 @@ namespace {
     };
     struct ModuleGetterSetter_Implementation_MyData_ {
         ModuleGetterSetter_Implementation_MyData_ ()
-            : fOptionsFile_{L"MyModule",
+            : fOptionsFile_{"MyModule"sv,
                             [] () -> ObjectVariantMapper {
                                 ObjectVariantMapper mapper;
                                 mapper.AddClass<MyData_> ({
-                                    {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
-                                    {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
+                                    {"Enabled"sv, StructFieldMetaInfo{&MyData_::fEnabled}},
+                                    {"Last-Synchronized-At"sv, StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
                                 });
                                 return mapper;
                             }(),

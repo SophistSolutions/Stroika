@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Configuration/StdCompat.h"
 
+#include "Character.h"
 #include "String.h"
 
 /**
@@ -29,7 +30,10 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief Roughly equivalent to std::wformat_string, except that it can be constructed from 'char' string
      * 
+     *  \note - the lifetime of the string argument to FormatString is application-lifetime - because the string
+     *        is typically saved by reference. This is meant to be used with "foo={}"_f syntax - with constant c strings.
      * 
+     *        Sadly, I know of no way to check the lifetime of the argument, so this goes un-enforced.
      * 
      * /olddocs
      * Simple wrapper on basic_string_view, but specifically for the purpose of treating a string_view as a format string.
@@ -44,8 +48,10 @@ namespace Stroika::Foundation::Characters {
      *  Somewhat like wformat_string, except that templated, and can take input ASCII 'char' string as well, and just maps it to wstring.
     */
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    //  requires (Configuration::IAnyOf<CHAR_T,char,wchar_t>)
+    //requires (Configuration::IAnyOf<CHAR_T,char,wchar_t>)
     struct FormatString {
+        //static_assert (Configuration::IAnyOf<CHAR_T, char, wchar_t>);
+
     private:
         wstring_view fSV_; // maybe SB wformat_string here??
         /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
@@ -67,7 +73,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Hack for interfacing with fmtlib - dont use unless you need to interact directly with fmtlib
          */
-        constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx () const;
+        constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
 
     public:
         template <typename... ARGS>
@@ -83,18 +89,17 @@ namespace Stroika::Foundation::Characters {
 
     public:
         FormatString () = delete;
-        #if !qCompilerAndStdLib_vector_constexpr_Buggy
-        constexpr 
-        #endif
-        FormatString (const FormatString& src);
-         #if !qCompilerAndStdLib_vector_constexpr_Buggy
-        constexpr 
-        #endif
-         FormatString (const basic_string_view<char>& s);
+#if !qCompilerAndStdLib_vector_constexpr_Buggy
+        constexpr
+#endif
+            FormatString (const FormatString& src);
+#if !qCompilerAndStdLib_vector_constexpr_Buggy
+        constexpr
+#endif
+            FormatString (const basic_string_view<char>& s);
 
         constexpr wstring_view                                             get () const;
-        constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx () const;
-
+        constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
         template <typename... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
         template <typename... ARGS>
@@ -102,6 +107,13 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     * \brief Create a format-string (see std::wformat_string or Stroika FormatString, or python 'f' strings
+     * 
+     *  \par Example Usage
+     *      \code
+     *          String a = "provider={}"_f (provider);
+     *          DbgTrace ("provider={}"_f , provider);
+     *      \endcode
      */
     inline namespace Literals {
         FormatString<char> operator"" _f (const char* str, size_t len);

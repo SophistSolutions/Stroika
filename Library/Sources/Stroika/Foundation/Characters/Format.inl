@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Characters {
         return fSV_;
     }
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view FormatString<CHAR_T>::getx () const
+    constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view FormatString<CHAR_T>::getx_ () const
     {
         return qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fSV_.data (), fSV_.size ()};
     }
@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Characters {
     {
         using Configuration::StdCompat::make_wformat_args;
         using Configuration::StdCompat::vformat;
-        return vformat (getx (), make_wformat_args (args...));
+        return vformat (getx_ (), make_wformat_args (args...));
     }
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     template <typename... ARGS>
@@ -46,37 +46,36 @@ namespace Stroika::Foundation::Characters {
     {
         using Configuration::StdCompat::make_wformat_args;
         using Configuration::StdCompat::vformat;
-        return vformat (loc, getx (), make_wformat_args (args...));
+        return vformat (loc, getx_ (), make_wformat_args (args...));
     }
-     #if !qCompilerAndStdLib_vector_constexpr_Buggy
-        constexpr 
-        #else
-        inline
-        #endif
-     FormatString<char>::FormatString (const FormatString& src)
+#if qCompilerAndStdLib_vector_constexpr_Buggy
+    inline
+#else
+    constexpr
+#endif
+        FormatString<char>::FormatString (const FormatString& src)
         : fStringData_{src.fStringData_}
         , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}}
     {
     }
-     #if !qCompilerAndStdLib_vector_constexpr_Buggy
-        constexpr 
-        #else
-        inline
-        #endif
-         FormatString<char>::FormatString (const basic_string_view<char>& s)
+#if qCompilerAndStdLib_vector_constexpr_Buggy
+    inline
+#else
+    constexpr
+#endif
+        FormatString<char>::FormatString (const basic_string_view<char>& s)
         : fStringData_{s.begin (), s.end ()}
         , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}}
     {
-        // @todo REQWUIRE s ISASCII
-        // require arg - lifetime forever - string-view - no way to check...
+        Character::CheckASCII (span{s});
     }
     constexpr wstring_view FormatString<char>::get () const
     {
         return fFmtStr_.get ();
     }
-    constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view FormatString<char>::getx () const
+    constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view FormatString<char>::getx_ () const
     {
-        return fFmtStr_.getx ();
+        return fFmtStr_.getx_ ();
     }
     template <typename... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (ARGS&&... args) const
@@ -113,12 +112,12 @@ namespace Stroika::Foundation::Characters {
     template <typename CHAR_T>
     [[nodiscard]] inline String VFormat (const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args)
     {
-        return Configuration::StdCompat::vformat (f.getx (), args);
+        return Configuration::StdCompat::vformat (f.getx_ (), args);
     }
     template <typename CHAR_T>
     [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args)
     {
-        return Configuration::StdCompat::vformat (loc, f.getx (), args);
+        return Configuration::StdCompat::vformat (loc, f.getx_ (), args);
     }
 
     /*
