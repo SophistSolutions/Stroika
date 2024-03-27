@@ -25,32 +25,6 @@
 
 namespace Stroika::Foundation::Characters {
 
-#if 0
-    /**
-     */
-    // EXPERIMENTAL NEW v3d6...
-    [[nodiscard]] inline String VFormat (std::string_view fmt, Configuration::StdCompat::format_args args)
-    {
-        // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
-        // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt}, args)};
-    }
-    [[nodiscard]] inline String VFormat (std::wstring_view fmt, Configuration::StdCompat::wformat_args args)
-    {
-        return String{Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt}, args)};
-    }
-    [[nodiscard]] inline String VFormat (const std::locale& loc, std::string_view fmt, Configuration::StdCompat::format_args args)
-    {
-        // @todo decide if this should ignore errors or not... FOR NOW NO, but document rationale carefully
-        // probably std::format - will do same thign as this - but produce eIgnoreErrors SDK string...
-        return String{Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::string_view{fmt}, args)};
-    }
-    [[nodiscard]] inline String VFormat (const std::locale& loc, std::wstring_view fmt, Configuration::StdCompat::wformat_args args)
-    {
-        return String{Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt}, args)};
-    }
-#endif
-
     /**
      * 
      * SUPER EARLY EXPERIEMNTAL DRAFT OF c++20 format support
@@ -126,7 +100,7 @@ namespace Stroika::Foundation::Characters {
         {
             using Configuration::StdCompat::make_wformat_args;
             using Configuration::StdCompat::vformat;
-            using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view;  // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+            using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
             if constexpr (same_as<CHAR_T, char>) {
                 try {
                     //////////////mmaybe fixed?// @todo fixup the characterset handling here...
@@ -166,7 +140,8 @@ namespace Stroika::Foundation::Characters {
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
         //        return vformat (string_view{f.sv}, args);
-        return Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{wideFormatString.data (), wideFormatString.size ()}, args);
+        return Configuration::StdCompat::vformat (
+            qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{wideFormatString.data (), wideFormatString.size ()}, args);
     }
     [[nodiscard]] inline String VFormat (const FormatString<wchar_t> f, const Configuration::StdCompat::wformat_args& args)
     {
@@ -179,7 +154,8 @@ namespace Stroika::Foundation::Characters {
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
-        return Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{wideFormatString.data (), wideFormatString.size ()}, args);
+        return Configuration::StdCompat::vformat (
+            loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{wideFormatString.data (), wideFormatString.size ()}, args);
     }
     [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<wchar_t> f, const Configuration::StdCompat::wformat_args& args)
     {
