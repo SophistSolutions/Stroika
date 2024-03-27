@@ -26,40 +26,12 @@
 
 namespace Stroika::Foundation::Characters {
 
-#if 0
     /**
+     *  \brief Roughly equivalent to std::wformat_string, except that it can be constructed from 'char' string
      * 
-     * SUPER EARLY EXPERIEMNTAL DRAFT OF c++20 format support
-        // Problem with allowing 'string_format' is it generates format_string - which I don't think will handle args of unicode chars right...
-
-            @todo rename this to Format once we've fully removed all references to legacy "Format" API
-     */
-    template <typename... ARGS>
-    [[deprecated ("Use Format")]] [[nodiscard]] inline String Fmt (const Configuration::StdCompat::format_string<ARGS...> f, ARGS&&... args)
-    {
-        return vformat (f.get (), Configuration::StdCompat::make_format_args (args...));
-    }
-    template <typename... ARGS>
-    [[deprecated ("Use Format")]] [[nodiscard]] inline String Fmt (const Configuration::StdCompat::wformat_string<ARGS...> f, ARGS&&... args)
-    {
-        return vformat (f.get (), Configuration::StdCompat::make_wformat_args (args...));
-    }
-    template <typename... ARGS>
-    [[deprecated ("Use Format")]] [[nodiscard]] inline String Fmt (const std::locale&                                     loc,
-                                                                   const Configuration::StdCompat::format_string<ARGS...> f, ARGS&&... args)
-    {
-        return vformat (loc, f.get (), Configuration::StdCompat::make_format_args (args...));
-    }
-    template <typename... ARGS>
-    [[deprecated ("Use Format")]] [[nodiscard]] inline String Fmt (const std::locale& loc,
-                                                                   const Configuration::StdCompat::wformat_string<ARGS...> f, ARGS&&... args)
-    {
-        return vformat (loc, f.get (), Configuration::StdCompat::make_wformat_args (args...));
-    }
-#endif
-
-    // MAYBE CAN MAKE OPERATOR _f stuff wokr!!!
-    /**
+     * 
+     * 
+     * /olddocs
      * Simple wrapper on basic_string_view, but specifically for the purpose of treating a string_view as a format string.
      * Many of the (c++-20) format APIs just take a ?string_view as argument. But for purposes of overloading and differentiating
      * behavior, using a more specific type in some contexts is helpful.
@@ -75,159 +47,75 @@ namespace Stroika::Foundation::Characters {
     //  requires (Configuration::IAnyOf<CHAR_T,char,wchar_t>)
     struct FormatString {
     private:
-        basic_string_view<CHAR_T> sv; // maybe SB wformat_string here??
+        wstring_view fSV_; // maybe SB wformat_string here??
         /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
 
     public:
+        /**
+         */
         FormatString ()                    = delete;
         FormatString (const FormatString&) = default;
-        constexpr FormatString (basic_string_view<CHAR_T> s)
-        {
-            sv = s;
-        }
+        constexpr FormatString (const basic_string_view<CHAR_T>& s);
 
     public:
         /**
+         *  This retrieves the underlying string data - for the format string itself (regardless of how created, as a wstring_view).
          */
-        constexpr basic_string_view<wchar_t> get () const
-        {
-            return sv;
-        }
+        constexpr wstring_view get () const;
 
     public:
         /**
-        *  Hack for interfacing with fmtlib
+         *  Hack for interfacing with fmtlib - dont use unless you need to interact directly with fmtlib
          */
-        constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx () const
-        {
-            return qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{sv.data (), sv.size ()};
-        }
+        constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx () const;
 
     public:
         template <typename... ARGS>
-        [[nodiscard]] inline String operator() (ARGS&&... args) const
-        {
-            using Configuration::StdCompat::make_wformat_args;
-            using Configuration::StdCompat::vformat;
-            using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-            return vformat (wstring_view{sv}, make_wformat_args (args...));
-        }
+        [[nodiscard]] inline String operator() (ARGS&&... args) const;
         template <typename... ARGS>
-        [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const
-        {
-            using Configuration::StdCompat::make_wformat_args;
-            using Configuration::StdCompat::vformat;
-            using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-            return vformat (loc, wstring_view{sv}, make_wformat_args (args...));
-        }
+        [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
     };
     template <>
     struct FormatString<char> {
     private:
-        vector<wchar_t>       sv;
-        FormatString<wchar_t> fs;
+        vector<wchar_t>       fStringData_;
+        FormatString<wchar_t> fFmtStr_;
 
     public:
         FormatString () = delete;
-        FormatString (const FormatString& src)
-            : sv{src.sv}
-            , fs{basic_string_view<wchar_t>{sv.data (), sv.size ()}}
-        {
-        }
-        FormatString (basic_string_view<char> s)
-            : sv{s.begin (), s.end ()}
-            , fs{basic_string_view<wchar_t>{sv.data (), sv.size ()}}
-        {
-            // @todo REQWUIRE s ISASCII
-            // require arg - lifetime forever - string-view - no way to check...
-        }
+        constexpr FormatString (const FormatString& src);
+        constexpr FormatString (basic_string_view<char> s);
 
-        constexpr basic_string_view<wchar_t> get () const
-        {
-            return fs.get ();
-        }
-        constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx () const
-        {
-            return fs.getx ();
-        }
-
-        /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
+        constexpr wstring_view                                             get () const;
+        constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx () const;
 
         template <typename... ARGS>
-        [[nodiscard]] inline String operator() (ARGS&&... args) const
-        {
-            return fs (args...);
-        }
+        [[nodiscard]] inline String operator() (ARGS&&... args) const;
         template <typename... ARGS>
-        [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const
-        {
-            return fs (loc, args...);
-        }
+        [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
     };
 
+    /**
+     */
     inline namespace Literals {
-        inline FormatString<char> operator"" _f (const char* str, size_t len)
-        {
-            return FormatString<char>{string_view{str, len}};
-        }
-        inline FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len)
-        {
-            return FormatString<wchar_t>{wstring_view{str, len}};
-        }
+        FormatString<char> operator"" _f (const char* str, size_t len);
+        FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len);
     }
 
     /**
-    *  Same as vformat, except always produces valid UNICODE Stroika String...
-    *   \brief same as std::vformat, except always uses wformat_args, and produces Stroika String (and maybe more - soon - ??? - add extra conversions if I can find how?)
+     *  Same as vformat, except always produces valid UNICODE Stroika String...
+     *   \brief same as std::vformat, except always uses wformat_args, and produces Stroika String (and maybe more - soon - ??? - add extra conversions if I can find how?)
      */
     template <typename CHAR_T>
     [[nodiscard]] String VFormat (const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args);
     template <typename CHAR_T>
     [[nodiscard]] String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args);
-#if 1
-    template <typename CHAR_T>
-    [[nodiscard]] inline String VFormat (const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args)
-    {
-        return Configuration::StdCompat::vformat (f.getx (), args);
-    }
-    template <typename CHAR_T>
-    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args)
-    {
-        return Configuration::StdCompat::vformat (loc, f.getx (), args);
-    }
-#else
-    [[nodiscard]] inline String VFormat (const FormatString<char> f, const Configuration::StdCompat::wformat_args& args)
-    {
-        using Configuration::StdCompat::vformat;
-        using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-        auto            sv = f.get ();
-        vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
-        //        return vformat (string_view{f.sv}, args);
-        return Configuration::StdCompat::vformat (
-            qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{wideFormatString.data (), wideFormatString.size ()}, args);
-    }
-    [[nodiscard]] inline String VFormat (const FormatString<wchar_t> f, const Configuration::StdCompat::wformat_args& args)
-    {
-        using Configuration::StdCompat::vformat;
-        using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-        return Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.get ()}, args);
-    }
-    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<char> f, const Configuration::StdCompat::wformat_args& args)
-    {
-        using Configuration::StdCompat::vformat;
-        using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-        auto            sv = f.get ();
-        vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
-        return Configuration::StdCompat::vformat (
-            loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{wideFormatString.data (), wideFormatString.size ()}, args);
-    }
-    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<wchar_t> f, const Configuration::StdCompat::wformat_args& args)
-    {
-        return Configuration::StdCompat::vformat (loc, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{f.get ()}, args);
-    }
-#endif
 
     /*
+    * 
+    *   &&& SOON TO BE OSBOLETE &&&& - NOT SURE IF/HOW MUCH WE WANT TO MAINTAIN THIS FUNCTIONALITY???
+    *   MAYBE OK - since probbaly not intrindically confusing?
+    * 
      * Format is the Stroika wrapper on sprintf().
      * The main differences between sprintf () and Format are:
      *      (1)     No need for buffer management. ANY sized buffer will be automatically allocated internally and returned as a
@@ -256,13 +144,13 @@ namespace Stroika::Foundation::Characters {
     String FormatV (const wchar_t* format, va_list argsList);
     String Format (const wchar_t* format, ...);
 
-    // @todo overload of Format/FormatV taking myfmt!!!! - PERFECT BACKWAWRD COMAT STRATEGY... - use Format with _f string to get new behavior, and regualr string to get old!!!
-    /// ETC - DO MORE... like this... - then dont need Fmt lowercase anymore!!!
+    /**
+     *  \brief Like std::format, except returning stroika String, and taking _f (FormatString) string as argument (which can be ASCII, but still produce UNICODE output).
+     */
     template <typename CHAR_T, typename... ARGS>
-    inline String Format (const FormatString<CHAR_T>& f, ARGS&&... args)
-    {
-        return VFormat (f, Configuration::StdCompat::make_wformat_args (args...));
-    }
+    String Format (const FormatString<CHAR_T>& f, ARGS&&... args);
+    template <typename CHAR_T, typename... ARGS>
+    String Format (const locale& l, const FormatString<CHAR_T>& f, ARGS&&... args);
 
 }
 
