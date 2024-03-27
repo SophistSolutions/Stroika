@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Characters {
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     //requires (Configuration::IAnyOf<CHAR_T,char,wchar_t>)
     struct FormatString {
-        //static_assert (Configuration::IAnyOf<CHAR_T, char, wchar_t>);
+        static_assert (Configuration::IAnyOf<CHAR_T, char, wchar_t>);   // not sure why this works but reqiores/concept applied in template not working...
 
     private:
         wstring_view fSV_; // maybe SB wformat_string here??
