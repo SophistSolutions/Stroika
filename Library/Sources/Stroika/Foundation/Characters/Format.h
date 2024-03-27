@@ -124,17 +124,15 @@ namespace Stroika::Foundation::Characters {
         template <typename... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const
         {
-            using Configuration::StdCompat::make_format_args;
             using Configuration::StdCompat::make_wformat_args;
             using Configuration::StdCompat::vformat;
-            using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-            using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view;
+            using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view;  // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
             if constexpr (same_as<CHAR_T, char>) {
                 try {
                     //////////////mmaybe fixed?// @todo fixup the characterset handling here...
                     // @todo redo with SmallStackBuffer<>
                     vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
-                    return vformat (loc, wstring_view{wideFormatString.begin (), wideFormatString.end ()}, make_wformat_args (args...));
+                    return vformat (loc, wstring_view{wideFormatString.data (), wideFormatString.size ()}, make_wformat_args (args...));
                 }
                 catch (...) {
                     //tmphack -
