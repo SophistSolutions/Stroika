@@ -104,8 +104,10 @@ namespace Stroika::Foundation::Characters {
             using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view;
             if constexpr (same_as<CHAR_T, char>) {
                 try {
-                    // @todo fixup the characterset handling here...
-                    return vformat (string_view{sv}, make_format_args (args...));
+                    //////////////mmaybe fixed?// @todo fixup the characterset handling here...
+                    // @todo redo with SmallStackBuffer<>
+                    vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
+                    return vformat (wstring_view{span{wideFormatString}}, make_wformat_args (args...));
                 }
                 catch (...) {
                     //tmphack -
@@ -127,8 +129,10 @@ namespace Stroika::Foundation::Characters {
             using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view;
             if constexpr (same_as<CHAR_T, char>) {
                 try {
-                    // @todo fixup the characterset handling here...
-                    return vformat (loc, string_view{sv}, make_format_args (args...));
+                    //////////////mmaybe fixed?// @todo fixup the characterset handling here...
+                    // @todo redo with SmallStackBuffer<>
+                    vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
+                    return vformat (loc, wstring_view{span{wideFormatString}}, make_wformat_args (args...));
                 }
                 catch (...) {
                     //tmphack -
@@ -156,49 +160,37 @@ namespace Stroika::Foundation::Characters {
     /**
     *  Same as vformat, except always produces valid UNICODE Stroika String...
      */
-   [[nodiscard]]   inline String VFormat (const FormatString<char> f, const format_args args)
+    [[nodiscard]] inline String VFormat (const FormatString<char> f, const wformat_args& args)
     {
         using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
-        using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-        return vformat (string_view{f.sv}, args);
+        using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+        vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
+        //        return vformat (string_view{f.sv}, args);
+        return vformat (wstring_view{span{wideFormatString}}, args);
     }
-     [[nodiscard]] inline String VFormat (const FormatString<wchar_t> f, const wformat_args args)
+    [[nodiscard]] inline String VFormat (const FormatString<wchar_t> f, const wformat_args& args)
     {
         using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         return vformat (wstring_view{f.sv}, args);
     }
-    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<char> f, const format_args args)
+    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<char> f, const wformat_args& args)
     {
         using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
-        using qStroika_Foundation_Characters_FMT_PREFIX_::string_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
-        return vformat (loc, string_view{f.sv}, args);
+        using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
+        vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
+        return vformat (loc, wstring_view{span{wideFormatString}}, args);
     }
-   [[nodiscard]] inline  String VFormat (const locale& loc, const FormatString<wchar_t> f, const wformat_args args)
+    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<wchar_t> f, const wformat_args& args)
     {
         using Configuration::StdCompat::make_format_args;
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         return vformat (loc, wstring_view{f.sv}, args);
     }
-
-#if 0
-    template <typename CHAR_T, typename... ARGS>
-    [[nodiscard]] inline String VFormat (const FormatString<CHAR_T> f, ARGS&&... args)
-        requires (Configuration::IAnyOf<CHAR_T, char, wchar_t>)
-    {
-        return f (args...);
-    }
-    template <typename CHAR_T, typename... ARGS>
-    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<CHAR_T> f, ARGS&&... args)
-        requires (Configuration::IAnyOf<CHAR_T, char, wchar_t>)
-    {
-        return f (loc, args...);
-    }
-#endif
 
     /*
      * Format is the Stroika wrapper on sprintf().
@@ -234,7 +226,7 @@ namespace Stroika::Foundation::Characters {
     template <typename... ARGS>
     inline String Format (FormatString<char> f, ARGS&&... args)
     {
-        return VFormat (f, Configuration::StdCompat::make_format_args (args...));
+        return VFormat (f, Configuration::StdCompat::make_wformat_args (args...));
     }
     template <typename... ARGS>
     inline String Format (FormatString<wchar_t> f, ARGS&&... args)
