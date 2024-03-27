@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Characters {
                     //////////////mmaybe fixed?// @todo fixup the characterset handling here...
                     // @todo redo with SmallStackBuffer<>
                     vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
-                    return vformat (wstring_view{span{wideFormatString}}, make_wformat_args (args...));
+                    return vformat (wstring_view{wideFormatString.begin(), wideFormatString.end ()}, make_wformat_args (args...));
                 }
                 catch (...) {
                     //tmphack -
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Characters {
                     //////////////mmaybe fixed?// @todo fixup the characterset handling here...
                     // @todo redo with SmallStackBuffer<>
                     vector<wchar_t> wideFormatString{sv.begin (), sv.end ()};
-                    return vformat (loc, wstring_view{span{wideFormatString}}, make_wformat_args (args...));
+                    return vformat (loc, wstring_view{wideFormatString.begin (), wideFormatString.end ()}, make_wformat_args (args...));
                 }
                 catch (...) {
                     //tmphack -
@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Characters {
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
         //        return vformat (string_view{f.sv}, args);
-        return vformat (wstring_view{span{wideFormatString}}, args);
+        return vformat (wstring_view{wideFormatString.begin (), wideFormatString. end()}, args);
     }
     [[nodiscard]] inline String VFormat (const FormatString<wchar_t> f, const wformat_args& args)
     {
@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Characters {
         using Configuration::StdCompat::vformat;
         using qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view; // cannot import into StdCompat cuz only 'fmtlib' uses this funky version of string_view
         vector<wchar_t> wideFormatString{f.sv.begin (), f.sv.end ()};
-        return vformat (loc, wstring_view{span{wideFormatString}}, args);
+        return vformat (loc, wstring_view{wideFormatString.begin (), wideFormatString.end ()}, args);
     }
     [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<wchar_t> f, const wformat_args& args)
     {
