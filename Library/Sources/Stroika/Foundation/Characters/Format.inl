@@ -50,6 +50,8 @@ namespace Stroika::Foundation::Characters {
     }
      #if !qCompilerAndStdLib_vector_constexpr_Buggy
         constexpr 
+        #else
+        inline
         #endif
      FormatString<char>::FormatString (const FormatString& src)
         : fStringData_{src.fStringData_}
@@ -58,6 +60,8 @@ namespace Stroika::Foundation::Characters {
     }
      #if !qCompilerAndStdLib_vector_constexpr_Buggy
         constexpr 
+        #else
+        inline
         #endif
          FormatString<char>::FormatString (const basic_string_view<char>& s)
         : fStringData_{s.begin (), s.end ()}
