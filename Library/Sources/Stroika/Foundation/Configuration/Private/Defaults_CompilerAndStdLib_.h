@@ -2319,6 +2319,36 @@ In file included from /usr/include/c++/11/vector:76,
 #endif
 #endif
 
+
+/*
+ - Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Stroika/ThirdPartyComponents/libxml2 Build 2.12.5 {g++-13-debug}:
+      libxml2 2.12.5 - Checking ...  Stroika/ThirdPartyComponents/libxml2 -    [Succeeded]
+Building Stroika Library {g++-13-debug}:
+   Computing /Sandbox/Stroika-Dev/IntermediateFiles/g++-13-debug/Library/Foundation/cached-list-objs
+   Building Stroika Foundation Objs {g++-13-debug}:
+      Compiling Library/Sources/Stroika/Foundation/Cache/Statistics.cpp ... 
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:267,
+                 from Statistics.cpp:6:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.inl: In copy constructor ‘constexpr Stroika::Foundation::Characters::FormatString<char>::FormatString(const Stroika::Foundation::Characters::FormatString<char>&)’:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.inl:57:11: warning: call to non-‘constexpr’ function ‘std::__debug::vector<_Tp, _Allocator>::vector(const std::__debug::vector<_Tp, _Allocator>&) [with _Tp = wchar_t; _Allocator = std::allocator<wchar_t>]’ [-Winvalid-constexpr]
+   57 |         : fStringData_{src.fStringData_}
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/vector:76,
+                 from /usr/include/c++/13/chrono:47,
+                 from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/Concepts.h:9,
+                 from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:16:
+/usr/include/c++/13/debug/vector:212:7: note: ‘std::__debug::vector<_Tp, _Allocator>::vector(const std::__debug::vector<_Tp, _Allocator>&) [with _Tp = wchar_t; _Allocator = std::allocator<wchar_t>]’ is not usable as a ‘constexpr’ function because:
+
+*/
+#ifndef qCompilerAndStdLib_vector_constexpr_warning_Buggy
+#if defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_vector_constexpr_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 13)
+#else
+#define qCompilerAndStdLib_vector_constexpr_warning_Buggy 0
+#endif
+#endif
+
 /*
 In file included from ./../Characters/../Containers/Factory/KeyedCollection_Factory.inl:16:
 In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCollection_stdset.h:136:

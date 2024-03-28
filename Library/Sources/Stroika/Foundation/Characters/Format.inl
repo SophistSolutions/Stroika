@@ -48,6 +48,9 @@ namespace Stroika::Foundation::Characters {
         using Configuration::StdCompat::vformat;
         return vformat (loc, getx_ (), make_wformat_args (args...));
     }
+    #if qCompilerAndStdLib_vector_constexpr_warning_Buggy
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-constexpr\"");
+    #endif
 #if qCompilerAndStdLib_vector_constexpr_Buggy
     inline
 #else
@@ -109,6 +112,9 @@ namespace Stroika::Foundation::Characters {
             return FormatString<wchar_t>{wstring_view{str, len}};
         }
     }
+    #if qCompilerAndStdLib_vector_constexpr_warning_Buggy
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-constexpr\"");
+    #endif
 
     /*
      ********************************************************************************
