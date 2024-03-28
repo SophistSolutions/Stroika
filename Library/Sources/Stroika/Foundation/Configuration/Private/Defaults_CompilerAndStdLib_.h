@@ -2319,7 +2319,6 @@ In file included from /usr/include/c++/11/vector:76,
 #endif
 #endif
 
-
 /*
  - Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
    Stroika/ThirdPartyComponents/libxml2 Build 2.12.5 {g++-13-debug}:
