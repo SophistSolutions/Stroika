@@ -271,15 +271,34 @@ template <IIterableOf<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUA
   is still there: the difference is just in the error message and POSSIBLY RARELY in confusing selection
   of an overload. This probably just happens with Constructors, and maybe not at all.
 
-## Rejected Ideas
 
----
+## Possible Future Changes/Ideas
+
+- [Bag\<T>]()
+  - The idea is to mimic that of a black bag (not like SmallTalk Bag\<T> which Stroika Collection<> is closest to) - but randomized collection.
+  - So far idea rejected, because I dont have a clear use case of where this would be helpful. MAYBE in game/simulation? Need a more concrete use case though to be sure this is helpful, and not more easily done another way
+  - Seriously consider renaming this file to RandomizedCollection<>. Maybe can             even SUBCLASS from Collection.
+  - Method shake creates new randomized collection from same items (or updates in place)
+
+- [SequenceSet\<T>]()
+
+  This would be a 'Set' - in that entries can only appear once, but where you can specify the ordering
+  not by 'Sorted' function - but by explicitly preserving the order as added (and move methods etc).
+
+  The use case I have in mind - is a set of URLs (like OpenAPI server urls). You probably want to not
+  have (allow) dups, but probably want to specify which one is top/first. So very minor, not sure worth
+  the effort. Need more use cases (and datastructure backend idea that make is helpful).
 
 - Make KEYs a UNIFYING concept for containers
   - Think about somehow making KEYs a UNIFYING concept for containers?
     Special case of unsticky keys -
     like array indexes? In that sense, a KEY is almost like an ITERATOR. In fact,
     an interator is somewhat better than a key.
+
+## Rejected Ideas
+
+---
+
 - We may want a[i] or some rough analog for sequnces to get a sequence - offset by I.
   - **Reason Rejected**:
     This really only applies to randomly accessed containers (so not stack, deque etc).
@@ -338,9 +357,3 @@ template <IIterableOf<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUA
     ```
       s.RemoveAll ([] (view* v) { return v->visible; });
     ```
-
-- [Bag\<T>](Bag.h)
-  - The idea is to mimic that of a black bag (not like SmallTalk Bag\<T> which Stroika Collection<> is closest to) - but randomized collection.
-  - So far idea rejected, because I dont have a clear use case of where this would be helpful. MAYBE in game/simulation? Need a more concrete use case though to be sure this is helpful, and not more easily done another way
-  - Seriously consider renaming this file to RandomizedCollection<>. Maybe can             even SUBCLASS from Collection.
-  - Method shake creates new randomized collection from same items (or updates in place)
