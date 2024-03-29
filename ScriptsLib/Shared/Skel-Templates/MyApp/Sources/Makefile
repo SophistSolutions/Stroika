@@ -34,7 +34,7 @@ VERSION_FILE_IN=$(TOP_ROOT)VERSION
 VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/${APP_NAME}/AppVersion.h
 $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
 	@mkdir -p $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/${APP_NAME}
-	@$(StroikaRoot)ScriptsLib/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion kAppVersion __${APP_NAME}_AppVersion_H__
+	@$(StroikaRoot)ScriptsLib/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion
 
 $(ObjDir)Main${OBJ_SUFFIX} $(ObjDir)Service${OBJ_SUFFIX}:		$(VERSION_FILE_OUT)
 
