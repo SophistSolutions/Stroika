@@ -2342,7 +2342,7 @@ In file included from /usr/include/c++/13/vector:76,
 */
 #ifndef qCompilerAndStdLib_vector_constexpr_warning_Buggy
 #if defined(_GLIBCXX_RELEASE)
-#define qCompilerAndStdLib_vector_constexpr_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 13)
+#define qCompilerAndStdLib_vector_constexpr_warning_Buggy (_GLIBCXX_RELEASE == 13)
 #else
 #define qCompilerAndStdLib_vector_constexpr_warning_Buggy 0
 #endif
