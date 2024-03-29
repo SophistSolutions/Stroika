@@ -52,9 +52,10 @@ ARG VS_17_9_1=https://download.visualstudio.microsoft.com/download/pr/63fee7e3-b
 ARG VS_17_9_2=https://download.visualstudio.microsoft.com/download/pr/5e7b923b-7d89-4e14-95b8-a84ab168e243/96b21d216c7954aaf606c6d7ba59a3de991884a8a86c578c767ba349c23188a9/vs_BuildTools.exe
 ARG VS_17_9_3=https://download.visualstudio.microsoft.com/download/pr/472cc819-3436-4b61-a313-56f28c0243cc/4b19ecb2868ed96b49214937ce4b8a1916d81444203bbb70ee0516721e1e3026/vs_BuildTools.exe
 ARG VS_17_9_4=https://download.visualstudio.microsoft.com/download/pr/9b646c0b-a685-43ee-afa9-d8a12417dffd/d772a325302319628da424e7c9a9d8ad0223006994c6171c122fe65afddff915/vs_BuildTools.exe
+ARG VS_17_9_5=https://download.visualstudio.microsoft.com/download/pr/1afa33fc-e800-4714-9e19-31b928ea2572/37c03f9c6910a82640094dba06eeebe6cc50d7a6fe5f1090a8ad5c90c1715de6/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_9_4" \
+RUN Invoke-WebRequest "$env:VS_17_9_5" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 ## ALTERNATE COMPONENT LINES TO CONSIDER
