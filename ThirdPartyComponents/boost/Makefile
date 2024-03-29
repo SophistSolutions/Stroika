@@ -33,6 +33,9 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 #OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}Inter.../Thir.../boost/"
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
+##
+## Check latest release: https://www.boost.org/users/download/
+##
 
 VERSION:=1_84_0
 #VERSION=1_83_0

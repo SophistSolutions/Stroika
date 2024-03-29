@@ -23,7 +23,6 @@ endif
 ZLIB_VERSION_=1.3.1
 #ZLIB_VERSION_=1.3
 #ZLIB_VERSION_=1.2.13
-#ZLIB_VERSION_=1.2.12
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/zlib-${ZLIB_VERSION_}.tar.gz
 
@@ -75,7 +74,6 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${OUTPUT_LIB_}		\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/zlib.h			\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/zconf.h
-
 
 
 # For some reason, comes out as share by default for zlib
