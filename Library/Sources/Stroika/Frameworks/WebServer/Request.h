@@ -52,8 +52,10 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual Request& operator= (const Request&) = delete;
 
     public:
-        // Quicky impl. Need to improve this significantly.
-        // Can call multiple times - but first time it blcoks fetching data
+        /**
+         * Quicky impl. Need to improve this significantly.
+         * Can call multiple times - but first time it blocks fetching data
+         */
         nonvirtual Memory::BLOB GetBody ();
 
     public:
