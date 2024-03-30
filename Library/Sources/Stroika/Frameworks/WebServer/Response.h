@@ -40,6 +40,7 @@ namespace Stroika::Frameworks::WebServer {
     using namespace Stroika::Foundation;
     using namespace Stroika::Foundation::IO::Network;
 
+    using Characters::FormatString;
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
@@ -75,7 +76,9 @@ namespace Stroika::Frameworks::WebServer {
                   const optional<HTTP::Headers>& initialHeaders = nullopt);
 
     public:
-        // Reponse must be completed (OK to Abort ()) before being destroyed
+        /**
+         * Response must be completed (OK to Abort ()) before being destroyed
+         */
         ~Response () = default;
 
     public:
@@ -116,8 +119,8 @@ namespace Stroika::Frameworks::WebServer {
          *  \note SEE https://stroika.atlassian.net/browse/STK-983
          * 
          * \note - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
-         *         the characterset will be automatically folded into the used contentType. To avoid this, 
-         *         Use UpdateHeader() to mdofiy teh contenttype field directly.
+         *         the character set will be automatically folded into the used contentType. To avoid this, 
+         *         Use UpdateHeader() to modify the contenttype field directly.
          * 
          *  \req this->headersCanBeSet() to set property
          */
@@ -130,7 +133,7 @@ namespace Stroika::Frameworks::WebServer {
          *  \req this->headersCanBeSet() to set property
          * 
          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (contentType), then
-         *  the characterset will be automatically folded into the used contentType (on WRITES to the property - not reads).
+         *  the character set will be automatically folded into the used contentType (on WRITES to the property - not reads).
          */
 
     public:
@@ -152,7 +155,7 @@ namespace Stroika::Frameworks::WebServer {
          *  The state may be changed by calls to Flush (), Abort (), Redirect (), and End (), and more...
          *  
          *  \note as the design of the HTTP server changes, the list of States may change, so better to check properties
-         *        like headersCanBeSet, or responseStatusSent, rathern than checking the state explicitly.
+         *        like headersCanBeSet, or responseStatusSent, rather than checking the state explicitly.
          */
         Common::ReadOnlyProperty<State> state;
 
@@ -199,7 +202,7 @@ namespace Stroika::Frameworks::WebServer {
          * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
          * IFF you first set the respose.transferEncoding mode to TransferEncoding::eChunked.
          *
-         * This does NOT End the repsonse, and it CAN be called arbitrarily many times (even after the response has completed - though
+         * This does NOT End the response, and it CAN be called arbitrarily many times (even after the response has completed - though
          * its pointless then).
          * 
          *  This can be called in any state.
@@ -257,12 +260,14 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void write (const wchar_t* e);
         nonvirtual void write (const wchar_t* s, const wchar_t* e);
         nonvirtual void write (const String& e);
+        template <typename CHAR_T, typename... ARGS>
+        void write (const FormatString<CHAR_T>& f, ARGS&&... args);
 
     public:
         /**
          *  Creates a string, and indirects to write ()
          */
-        nonvirtual void printf (const wchar_t* format, ...);
+        [[deprecated ("Since Stroika v3.0d6 - use write with _f strings")]] void printf (const wchar_t* format, ...);
 
     public:
         /**

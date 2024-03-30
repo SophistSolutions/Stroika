@@ -15,14 +15,13 @@
 #include "Basic.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebService;
 
-using Characters::CompareOptions;
-using Characters::StringBuilder;
 using IO::Network::HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -73,17 +72,16 @@ const String WebService::Server::DocsOptions::kDefaultCSSSection =
 void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions)
 {
     response->contentType = DataExchange::InternetMediaTypes::kHTML;
-    response->writeln (L"<html>");
-    response->writeln (L"<style type=\"text/css\">");
+    response->writeln ("<html>"sv);
+    response->writeln ("<style type=\"text/css\">"sv);
     response->writeln (docsOptions.fCSSSection);
-    response->writeln (L"</style>");
-    response->writeln (L"<body>");
-    response->printf (L"<h1>%s</h1>", docsOptions.fH1Text.As<wstring> ().c_str ());
-    response->printf (L"<div class='introduction'>%s</div>\n", docsOptions.fIntroductoryText.As<wstring> ().c_str ());
+    response->writeln ("</style>"sv);
+    response->writeln ("<body>"sv);
+    response->write ("<h1>{}</h1>"_f, docsOptions.fH1Text);
+    response->write ("<div class='introduction'>{}</div>\n"_f, docsOptions.fIntroductoryText);
 
     if (docsOptions.fOpenAPISpecificationURI) {
-        response->printf (L"<div class='OpenAPI'>Download <a href=%s>OpenAPI File</a></div>\n",
-                          docsOptions.fOpenAPISpecificationURI->As<String> ().As<wstring> ().c_str ());
+        response->write ("<div class='OpenAPI'>Download <a href={}>OpenAPI File</a></div>\n"_f, *docsOptions.fOpenAPISpecificationURI);
     }
     response->writeln (L"<ul>");
     auto substVars = [=] (const String& origStr) {
@@ -94,24 +92,24 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
         return str;
     };
     auto writeDocs = [=] (const String& methodName, const String& docs, const String& exampleCall) {
-        response->writeln (L"<li>");
-        response->printf (L"<a href=\"/%s\">%s</a>", methodName.As<wstring> ().c_str (), methodName.As<wstring> ().c_str ());
-        response->printf (L"<div class='mainDocs'>%s</div>", docs.As<wstring> ().c_str ());
-        response->printf (L"<div class='curlExample'>%s</div>", exampleCall.As<wstring> ().c_str ());
-        response->writeln (L"</li>");
+        response->writeln ("<li>"sv);
+        response->write ("<a href=\"/{}\">{}</a>"_f, methodName, methodName);
+        response->write ("<div class='mainDocs'>{}</div>"_f, docs);
+        response->write ("<div class='curlExample'>{}</div>"_f, exampleCall);
+        response->writeln ("</li>"sv);
     };
     for (const WebServiceMethodDescription& i : operations) {
         StringBuilder tmpDocs;
         if (i.fDetailedDocs) {
-            i.fDetailedDocs->Apply ([&] (const String& i) { tmpDocs << "<div>" << substVars (i) << "</div>"; });
+            i.fDetailedDocs->Apply ([&] (const String& i) { tmpDocs << "<div>"sv << substVars (i) << "</div>"sv; });
         }
         StringBuilder tmpCurl;
         if (i.fCurlExample) {
-            i.fCurlExample->Apply ([&] (const String& i) { tmpCurl << "<div>" << substVars (i) << "</div>"; });
+            i.fCurlExample->Apply ([&] (const String& i) { tmpCurl << "<div>"sv << substVars (i) << "</div>"sv; });
         }
-        writeDocs (i.fOperation, tmpDocs.str (), tmpCurl.str ());
+        writeDocs (i.fOperation, tmpDocs, tmpCurl);
     }
-    response->writeln (L"</ul>");
-    response->writeln (L"</body>");
-    response->writeln (L"</html>");
+    response->writeln ("</ul>"sv);
+    response->writeln ("</body>"sv);
+    response->writeln ("</html>"sv);
 }

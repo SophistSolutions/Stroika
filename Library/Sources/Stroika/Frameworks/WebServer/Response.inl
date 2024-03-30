@@ -33,6 +33,11 @@ namespace Stroika::Frameworks::WebServer {
             write (Containers::Start (tmp), Containers::End (tmp));
         }
     }
+    template <typename CHAR_T, typename... ARGS>
+    inline void Response::write (const FormatString<CHAR_T>& f, ARGS&&... args)
+    {
+        write (f (args...));
+    }
     inline void Response::writeln (const wchar_t* e)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
