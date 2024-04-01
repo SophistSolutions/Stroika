@@ -34,6 +34,7 @@
 #include "Network.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
@@ -268,7 +269,7 @@ namespace {
                                                                  *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
                 }
                 else {
-                    DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
+                    DbgTrace ("Line {} bad in file {}"_f, nLine, Characters::ToString (kProcFileName_));
                 }
             }
         }

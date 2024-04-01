@@ -1147,7 +1147,7 @@ namespace {
                 }
                 Sequence<String> l = i.Tokenize ();
                 if (l.size () < kColCountIncludingCmd_) {
-                    DbgTrace ("skipping line cuz len=%d", l.size ());
+                    DbgTrace ("skipping line cuz len={}"_f, l.size ());
                     continue;
                 }
                 ProcessType processDetails;

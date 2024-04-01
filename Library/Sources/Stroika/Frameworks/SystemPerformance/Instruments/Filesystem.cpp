@@ -376,7 +376,7 @@ namespace {
                 _fContext.rwget ().rwref ()->fDiskPerfStats_ = diskStats;
             }
             catch (...) {
-                DbgTrace ("Exception gathering procfs disk io stats");
+                DbgTrace ("Exception gathering procfs disk io stats"_f);
             }
         }
 
@@ -417,7 +417,7 @@ namespace {
                         _fContext.rwget ().rwref ()->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
-                        DbgTrace (L"Unknown error reading %s", fn.c_str ());
+                        DbgTrace ("Unknown error reading {}"_f, Characters::ToString(fn));
                         // ignore
                     }
                 }
@@ -450,7 +450,7 @@ namespace {
                 }
                 Sequence<String> l = i.Tokenize (Set<Characters::Character>{' '});
                 if (l.size () < 6) {
-                    DbgTrace ("skipping line cuz len=%d", l.size ());
+                    DbgTrace ("skipping line cuz len={}"_f, l.size ());
                     continue;
                 }
                 MountedFilesystemInfoType v;
@@ -512,7 +512,7 @@ namespace {
                 }
                 Sequence<String> l = i.Tokenize (Set<Characters::Character>{' '});
                 if (l.size () < (includeFSTypes ? 7 : 6)) {
-                    DbgTrace ("skipping line cuz len=%d", l.size ());
+                    DbgTrace ("skipping line cuz len={}"_f, l.size ());
                     continue;
                 }
                 MountedFilesystemInfoType v;

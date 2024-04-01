@@ -27,6 +27,7 @@
 #include "Memory.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
@@ -140,7 +141,7 @@ namespace {
                 Read_ProcVMStat_ (&result);
             }
             catch (...) {
-                DbgTrace (L"Ignoring error in Read_ProcVMStat_: %s", Characters::ToString (current_exception ()).c_str ());
+                DbgTrace ("Ignoring error in Read_ProcVMStat_: {}"_f, Characters::ToString (current_exception ()));
             }
             _NoteCompletedCapture ();
             return result;

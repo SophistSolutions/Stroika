@@ -57,10 +57,10 @@ namespace Stroika::Foundation::Debug {
         }
 
     private:
-        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage_ (size_t bufferLastNChars, wstring_view users_fmt,
+        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage_ (size_t bufferLastNChars, wstring_view format,
                                                                       Configuration::StdCompat::wformat_args&& args) noexcept;
-        nonvirtual void EmitTraceMessage_ (wstring_view users_fmt, Configuration::StdCompat::wformat_args&& args) noexcept;
-        nonvirtual void EmitTraceMessage_ (string_view users_fmt, Configuration::StdCompat::format_args&& args) noexcept;
+        nonvirtual void EmitTraceMessage_ (wstring_view format, Configuration::StdCompat::wformat_args&& args) noexcept;
+        nonvirtual void EmitTraceMessage_ (string_view format, Configuration::StdCompat::format_args&& args) noexcept;
         nonvirtual void EmitTraceMessage_ (const wstring& raw) noexcept;
 
     public:
