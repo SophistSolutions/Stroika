@@ -32,8 +32,9 @@ namespace {
             DbgTrace ("{} ({}) failed in '{}'; {}:{}"_f, assertCategory == nullptr ? L"Unknown assertion" : assertCategory,
                       String{assertionText == nullptr ? "" : assertionText}, String{functionName == nullptr ? "" : functionName},
                       String{fileName == nullptr ? "" : fileName}, lineNum);
-#if qPlatform_POSIX
-            fprintf (stderr, "%s (%s) failed in '%s'; %s:%d\n", assertCategory == nullptr ? "Unknown assertion" : assertCategory,
+#if qPlatform_POSIX && 0
+//tmphack til we fix and switch to fwprintf
+            fprintf (stderr, "%s (%s) failed in '%s'; %s:%d\n", assertCategory == nullptr ? L"Unknown assertion" : assertCategory,
                      assertionText == nullptr ? "" : assertionText, functionName == nullptr ? "" : functionName,
                      fileName == nullptr ? "" : fileName, lineNum);
 #endif
