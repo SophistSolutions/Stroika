@@ -49,7 +49,7 @@ void XML::SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::I
     Schema::Ptr useSchema = schema;
     if (useSchema != nullptr) {
         if (static_cast<const Providers::IProvider*> (schema.GetRep ()->GetProvider ()) != &saxProvider) {
-            WeakAsserteNotReached (); // not necessarily a bug, but if this is done regularly, fix so they match
+            WeakAssertNotReached (); // not necessarily a bug, but if this is done regularly, fix so they match
             useSchema = useSchema.As<Schema::Ptr> (
                 *dynamic_cast<const Providers::ISchemaProvider*> (static_cast<const Providers::IProvider*> (&saxProvider)));
         }
