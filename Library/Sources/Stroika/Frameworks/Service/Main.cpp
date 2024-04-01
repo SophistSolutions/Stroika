@@ -688,7 +688,7 @@ void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
             fRunThread_.load ().Abort ();
         } break;
         case kSIG_ReReadConfiguration: {
-            DbgTrace ("Invoking fAppRep->OnReReadConfigurationRequest ()"_);
+            DbgTrace ("Invoking fAppRep->OnReReadConfigurationRequest ()"_f);
             fAppRep_.load ()->OnReReadConfigurationRequest ();
         } break;
     }

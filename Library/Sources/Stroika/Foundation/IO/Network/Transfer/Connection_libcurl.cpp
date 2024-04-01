@@ -322,7 +322,7 @@ namespace {
                     struct sigaction oldact;
                     (void)::sigaction (SIGPIPE, NULL, &oldact);
                     if (oldact.sa_handler == SIG_DFL) {
-                        DbgTrace (L"Warning: no override of SIGPIPE. This is a risk factor with curl. Often just ignore");
+                        DbgTrace ("Warning: no override of SIGPIPE. This is a risk factor with curl. Often just ignore"_f);
                     }
                 }
 #endif
