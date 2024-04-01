@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept;
 
     private:
-        friend class TraceContextBumper;
+        friend class Debug::TraceContextBumper;
     };
 
     namespace Private_ {

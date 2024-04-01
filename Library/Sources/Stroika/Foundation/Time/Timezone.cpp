@@ -219,7 +219,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
         result.fID = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/timezone"sv)).ReadAll ().Trim ();
     }
     catch (...) {
-        DbgTrace ("Ignoring missing ID from /etc/timezone");
+        DbgTrace ("Ignoring missing ID from /etc/timezone"_f);
     }
 #if 0
     //
@@ -238,7 +238,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
             }
         }
         catch (...) {
-            DbgTrace ("Missing Zone ID from /etc/sysconfig/clock");
+            DbgTrace ("Missing Zone ID from /etc/sysconfig/clock"_f);
         }
     }
 #endif

@@ -337,7 +337,7 @@ namespace {
                         }
                     }
                     catch (...) {
-                        DbgTrace (L"got exception converting gateway to address (dns): %s", Characters::ToString (current_exception ()).c_str ()); // should work...
+                        DbgTrace ("got exception converting gateway to address (dns): {}"_f, Characters::ToString (current_exception ())); // should work...
                     }
                 }
 #endif

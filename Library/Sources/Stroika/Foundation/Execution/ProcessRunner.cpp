@@ -110,7 +110,7 @@ namespace {
          */
         Assert (result > 5);               // sanity check - no real requirement
         Assert (result < 4 * 1024 * 1024); // ""  (if too big, looping to close all costly)
-        DbgTrace ("::sysconf (_SC_OPEN_MAX) = %d", result);
+        DbgTrace ("::sysconf (_SC_OPEN_MAX) = {}"_f, result);
         return result;
     }();
 }
@@ -892,7 +892,7 @@ namespace {
             }
             else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message
-                DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status,
+                DbgTrace ("childPID={}, result={}, status={}, WIFEXITED={}, WEXITSTATUS={}, WIFSIGNALED={}"_f, childPID, result, status,
                           WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
                 if (processResult == nullptr) {
                     StringBuilder stderrMsg;

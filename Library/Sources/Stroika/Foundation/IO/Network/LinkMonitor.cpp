@@ -165,7 +165,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
         // Since this is used only to filter the list of addresses, if we get an error, don't throw but
         // return 0
         if (r < 0) {
-            DbgTrace ("ioctl on getFlags returned %d, errno=%d", r, errno);
+            DbgTrace ("ioctl on getFlags returned {}, errno={}"_f, r, errno);
             return 0;
         }
         Assert (r == 0);

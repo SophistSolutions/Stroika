@@ -553,7 +553,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             tmp.fTokenName = Execution::ProcessRunner{"uname"}.Run (String{}).Trim ();
         }
         catch (...) {
-            DbgTrace ("Failure running uname");
+            DbgTrace ("Failure running uname"_f);
         }
         try {
             DataExchange::Variant::INI::Profile p =
@@ -624,7 +624,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 #else
         // could be a C+++ const - let it not compile if not available, and we'll dig...
         //tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
-        DbgTrace ("_SC_V6_LP64_OFF64/_POSIX_V6_LP64_OFF64 not available - so assuming 32-bit...");
+        DbgTrace ("_SC_V6_LP64_OFF64/_POSIX_V6_LP64_OFF64 not available - so assuming 32-bit..."_f);
 #endif
 
         using Characters::CompareOptions;
