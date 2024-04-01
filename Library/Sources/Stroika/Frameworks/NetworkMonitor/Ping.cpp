@@ -167,7 +167,8 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
             } break;
         }
         if (echoedID and echoedID != pingRequest.id) {
-            DbgTrace ("echoedID ({} != pingRequest.id (0x{:x}) so ignoring this reply"_f, Characters::ToString (echoedID), static_cast<int> (pingRequest.id));
+            DbgTrace ("echoedID ({} != pingRequest.id (0x{:x}) so ignoring this reply"_f, Characters::ToString (echoedID),
+                      static_cast<int> (pingRequest.id));
             // Must be a reply for another pinger running locally, so just
             // ignore it.
             continue;
