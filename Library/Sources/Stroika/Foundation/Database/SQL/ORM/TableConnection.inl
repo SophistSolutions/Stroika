@@ -226,7 +226,8 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         [] (Operation op, const TableConnection* tableConn, const Statement* s) {
             if (op == Operation::eStartingRead or op == Operation::eStartingWrite) {
                 if (s != nullptr) {
-                    DbgTrace (L"SQL: %s", s->GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+                    using namespace Characters::Literals;
+                    DbgTrace ("SQL: {}"_f, s->GetSQL (Statement::WhichSQLFlag::eExpanded));
                 }
             }
         };

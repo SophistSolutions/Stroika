@@ -60,7 +60,7 @@ namespace {
     void FatalErorrHandler_ (const Characters::SDKChar* msg) noexcept
     {
         Thread::SuppressInterruptionInContext suppressCtx;
-        DbgTrace ("Fatal Error {} encountered"_f, msg);
+        DbgTrace ("Fatal Error {} encountered"_f, String::FromSDKString (msg));
 #if qUseLogger
         Logger::sThe.Log (Logger::eCriticalError, "Fatal Error: {}; Aborting..."_f, String::FromSDKString (msg));
         Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Characters::ToString (Debug::BackTrace::Capture ()));
