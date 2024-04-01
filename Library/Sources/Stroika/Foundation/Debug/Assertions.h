@@ -25,6 +25,16 @@
 
 namespace Stroika::Foundation::Debug {
 
+    /**
+     *  \brief Stroika_Foundation_Debug_Widen is used mostly internally to expand macros like __FILE__ into UNICODE SAFE strings (so debug messages work properly if run on locale with charset other than matching filesystem)
+     *  Idea from https://stackoverflow.com/questions/3291047/how-do-i-print-the-string-which-file-expands-to-correctly
+     */
+#define Stroika_Foundation_Debug_Widen2_ L##x
+#define Stroika_Foundation_Debug_Widen (x) Stroika_Foundation_Debug_Widen2_ (x)
+
+    //#define Stroika_Foundation_Debug_Str2_ (s) #s
+    //#define Stroika_Foundation_Debug_Str_ (s) Stroika_Foundation_Debug_Str2_ (s)
+
 #if qDebug || defined(__Doxygen__)
     /**
      *  Note: Some any parameters may be null, if no suitable value is available.
@@ -35,20 +45,8 @@ namespace Stroika::Foundation::Debug {
      *
      *          Assertion handlers typically just print a debug message, and then exit the program. They are fatal, and must not return/throw.
      */
-    using AssertionHandlerType = void (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
+    using AssertionHandlerType = void (*) (const wchar_t* assertCategory, const char* assertionText, const char* fileName, int lineNum,
                                            const char* functionName) noexcept;
-
-    /**
-     *  Note: Some any parameters may be null, if no suitable value is available.
-     *
-     *  \note   AssertionHandlers shall NOT throw an exception (but I don't think we can declare typedef as noexcept)
-     *          The reason for this is so that assertions can be used safely in circumstances that don't expect
-     *          exceptions.
-     *
-     *          Weak assertion handlers typically just print a debug message. They are NOT fatal, and allow the program to continue.
-     */
-    using WeakAssertionHandlerType = void (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
-                                               const char* functionName) noexcept;
 
     /**
      *  Stroika makes very heavy use of assertions (to some extent inspired and
@@ -147,31 +145,35 @@ namespace Stroika::Foundation::Debug {
      *  then this merely selects the default assertion handler.
      */
     void SetAssertionHandler (AssertionHandlerType assertionHandler);
+    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
+    SetAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
+                                                const char* functionName) noexcept);
 
     /**
      */
-    WeakAssertionHandlerType GetWeakAssertionHandler ();
+    AssertionHandlerType GetWeakAssertionHandler ();
 
     /**
     */
-    WeakAssertionHandlerType GetDefaultWeakAssertionHandler ();
+    AssertionHandlerType GetDefaultWeakAssertionHandler ();
 
     /**
      *  See @'GetAssertionHandler'. If SetAssertionHandler() is called with nullptr,
      *  then this merely selects the default assertion handler.
      */
-    void SetWeakAssertionHandler (WeakAssertionHandlerType assertionHandler);
+    void SetWeakAssertionHandler (AssertionHandlerType assertionHandler);
+    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
+    SetWeakAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName,
+                                                    int lineNum, const char* functionName) noexcept);
 
     namespace Private_ {
-        void Weak_Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
+        void Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const char* assertionText, const char* fileName, int lineNum,
                                               const char* functionName) noexcept; // don't call directly - implementation detail...
-        [[noreturn]] void Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
+        [[noreturn]] void Assertion_Failure_Handler_ (const wchar_t* assertCategory, const char* assertionText, const char* fileName, int lineNum,
                                                       const char* functionName) noexcept; // don't call directly - implementation detail...
-    }
-
-/**
- * Private implementation utility macro
- */
+                                                                                          /**
+         * Private implementation utility macro
+         */
 #if !defined(__Doxygen__)
 #if qCompilerAndStdLib_Support__PRETTY_FUNCTION__
 #define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __PRETTY_FUNCTION__
@@ -183,52 +185,56 @@ namespace Stroika::Foundation::Debug {
 #define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ ""
 #endif
 #endif
+    }
+#endif
 
 /**
  *  \def AssertExpression(c)
  *
  *  Like Assert(), but without [[assume]] support, and in the form of an expression (since https://en.cppreference.com/w/cpp/language/attributes/assume - can only be applied to a statement)
  */
-#define AssertExpression(c)                                                                                                                \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
-
-/**
- *  \def Assert(c)
- *
- *  \note   logically
- *          if (!(c)) {
- *              Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
- *          }
- *
- *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
- *        build, they must be syntactic (new requirement in Stroika v3.0).
- * 
- *  @see GetAssertionHandler
- *
- *  \hideinitializer
- */
-#define Assert(c) AssertExpression (c);
-
-/**
- *  \def EnsureExpression(c) - alias for AssertExpression(), but with a different message, and used to declare an assertion promised about the state at the end of a function.
- */
-#define EnsureExpression(c)                                                                                                                \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
-
-/**
- *  \def Ensure(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion promised about the state at the end of a function.
- *
- *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
- *        build, they must be syntactic (new requirement in Stroika v3.0).
- */
-#define Ensure(c) EnsureExpression (c);
-
-/**
- *  \def RequireExpression(c) - alias for AssertExpression(), but with a different message: used at the start of a function to declare calling conventions - expected arguments to the function
- */
-#define RequireExpression(c)                                                                                                                                  \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
+#if qDebug
+#define AssertExpression(c)                                                                                                                                   \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
                false))
+#else
+#define AssertExpression (c) ((void)0)
+#endif
+
+    /**
+     *  \def Assert(c)
+     *
+     *  \note   logically
+     *          if (!(c)) {
+     *              Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
+     *          }
+     *
+     *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
+     *        build, they must be syntactic (new requirement in Stroika v3.0).
+     * 
+     *  @see GetAssertionHandler
+     *
+     *  \hideinitializer
+     */
+#if qDebug
+#define Assert(c) AssertExpression (c)
+#else
+#define Assert (c) _ASSUME_ATTRIBUTE_ (c)
+#endif
+
+    /**
+     *  \def RequireExpression(c) - alias for AssertExpression(), but with a different message: used at the start of a function to declare calling conventions - expected arguments to the function
+     *  in debug builds (qDebug true) - check the given requirement and trigger GetAssertionHandler () if false (terminates program); 
+     *
+     *  result is EXPRESSION;
+     */
+#if qDebug
+#define RequireExpression(c)                                                                                                                                   \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
+               false))
+#else
+#define RequireExpression(c) ((void)0)
+#endif
 
 /**
  *  \def Require(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion about the incoming contract - arguments to a function.
@@ -236,50 +242,46 @@ namespace Stroika::Foundation::Debug {
  *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
  *        build, they must be syntactic (new requirement in Stroika v3.0).
  */
+#if qDebug
 #define Require(c) RequireExpression (c);
+#else
+#define Require(c) _ASSUME_ATTRIBUTE_ (c);
+#endif
 
 /**
- *  \brief  A WeakAssert() is for things that arent guaranteed to be true, but are overwhelmingly likely to be true. Use this so you see debug logs of rare events you way want to dig into, but don't want to fail/crash the program just because it fails.
- *
- *  \def WeakAssert(c)
- *
- *  \note   logically
- *          if (!(c)) {
- *              Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
- *          }
- *          But using funny !! and || syntax to allow use in expressions
- *
- *  @see GetWeakAssertionHandler
- *
- *  \hideinitializer
+ *  \def EnsureExpression(c) - alias for AssertExpression(), but with a different message, and used to declare an assertion promised about the state at the end of a function.
  */
-#define WeakAssert(c)                                                                                                                                                 \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
+#if qDebug
+#define EnsureExpression(c)                                                                                                                                   \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
                false))
-
 #else
-
-#define WeakAssert(c) ((void)0)
-#define AssertExpression(c) ((void)0)
-#define Assert(c) _ASSUME_ATTRIBUTE_ (c);
-#define RequireExpression(c) ((void)0)
-#define Require(c) _ASSUME_ATTRIBUTE_ (c);
 #define EnsureExpression(c) ((void)0)
-#define Ensure(c) _ASSUME_ATTRIBUTE_ (c);
+#endif
 
+/**
+ *  \def Ensure(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion promised about the state at the end of a function.
+ *
+ *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
+ *        build, they must be syntactic (new requirement in Stroika v3.0).
+ */
+#if qDebug
+#define Ensure(c) EnsureExpression (c);
+#else
+#define Ensure(c) _ASSUME_ATTRIBUTE_ (c);
 #endif
 
 /**
  *  \def AssertMember(p,c)
  *
- *  @see GetAssertionHandler
+ *  Simple wrapper on Assert () - checking p is a member of class c (with dynamic_cast)
  */
 #define AssertMember(p, c) Assert (dynamic_cast<const c*> (p) != nullptr)
 
 /**
  *  \def EnsureMember(p,c)
  *
- *  @see GetAssertionHandler
+ *  Simple wrapper on Ensure () - checking p is a member of class c (with dynamic_cast)
  */
 #define EnsureMember(p, c) Ensure (dynamic_cast<const c*> (p) != nullptr)
 
@@ -289,13 +291,6 @@ namespace Stroika::Foundation::Debug {
  *  @see GetAssertionHandler
  */
 #define RequireMember(p, c) Require (dynamic_cast<const c*> (p) != nullptr)
-
-/**
- *  \def WeakAssertMember(p,c)
- *
- *  @see AssertMember
- */
-#define WeakAssertMember(p, c) WeakAssert (dynamic_cast<const c*> (p) != nullptr)
 
 /**
  *  \def AssertNotNull(p)
@@ -319,23 +314,20 @@ namespace Stroika::Foundation::Debug {
 #define RequireNotNull(p) Require (p != nullptr)
 
 /**
- *  \def WeakAssertNotNull(p)
- *
- *  @see GetAssertionHandler
- */
-#define WeakAssertNotNull(p) WeakAssert (p != nullptr)
-
-#if qDebug
-
-/**
  *  \def AssertNotReached(p)
  *
  *  @see GetAssertionHandler
  *
  *  \hideinitializer
  */
+#if qDebug
 #define AssertNotReached()                                                                                                                 \
-    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#elif __cpp_lib_unreachable < 202202
+#define AssertNotReached()
+#else
+#define AssertNotReached() unreachable ()
+#endif
 
 /**
  *  \def EnsureNotReached(p)
@@ -344,74 +336,50 @@ namespace Stroika::Foundation::Debug {
  *
  *  \hideinitializer
  */
+#if qDebug
 #define EnsureNotReached()                                                                                                                 \
-    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
-
-/**
- *  \def RequireNotReached(p)
- *
- *  @see GetAssertionHandler
- *
- *  \hideinitializer
- */
-#define RequireNotReached()                                                                                                                \
-    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
-
-/**
- *  \def RequireNotReached(p)
- *
- *  @see GetAssertionHandler
- *
- *  \hideinitializer
- */
-#define WeakAsserteNotReached()                                                                                                            \
-    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
-
-/**
- *  \def AssertNotImplemented()
- *
- *  Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
- *  makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
- *
- *  \hideinitializer
- */
-#define AssertNotImplemented()                                                                                                             \
-    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
-
-/**
- *  \def AssertNotImplemented()
- *
- *  Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
- *  makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
- *
- *  \hideinitializer
- */
-#define WeakAssertNotImplemented()                                                                                                         \
-    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", "Not Implemented", __FILE__, __LINE__,            \
-                                                                           ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
-
-#else
-
-#if __cpp_lib_unreachable < 202202
-#define AssertNotReached()
+    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#elif __cpp_lib_unreachable < 202202
 #define EnsureNotReached()
+#else
+#define EnsureNotReached() unreachable ()
+#endif
+
+/**
+ *  \def RequireNotReached(p)
+ *
+ *  @see GetAssertionHandler
+ *
+ *  \hideinitializer
+ */
+#if qDebug
+#define RequireNotReached()                                                                                                                \
+    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#elif __cpp_lib_unreachable < 202202
 #define RequireNotReached()
 #else
-#define AssertNotReached() unreachable ()
-#define EnsureNotReached() unreachable ()
 #define RequireNotReached() unreachable ()
 #endif
-#define WeakAsserteNotReached()
 
+/**
+ *  \def AssertNotImplemented()
+ *
+ *  Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
+ *  makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
+ *
+ *  \hideinitializer
+ */
+#if qDebug
+#define AssertNotImplemented()                                                                                                             \
+    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#else
 #define AssertNotImplemented()
-#define WeakAssertNotImplemented()
-
 #endif
 
 /**
  *  \def Verify(c)
  *
- *  Verify () is an assertion like Assert, except its argument is ALWAYS
+ *  Verify () is an 'assertion' like Assert, except its argument is ALWAYS
  *  EVALUATED, even if debug is OFF. This is useful for cases where you just want
  *  todo an assertion about the result of a function, but don't want to keep the
  *  result in a temporary just to look at it for this one assertion test...
@@ -422,6 +390,73 @@ namespace Stroika::Foundation::Debug {
 #define Verify(c) Assert (c)
 #else
 #define Verify(c) ((void)(c))
+#endif
+
+/**
+ *  \brief  A WeakAssert() is for things that aren't guaranteed to be true, but are overwhelmingly likely to be true. Use this so you see debug logs of rare events you way want to dig into, but don't want to fail/crash the program just because it fails.
+ *
+ *  \def WeakAssert(c)
+ *
+ *  \note   logically
+ *          if (!(c)) {
+ *              Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
+ *          }
+ *          But using funny !! and || syntax to allow use in expressions
+ *
+ *  @see GetWeakAssertionHandler
+ *
+ *  \hideinitializer
+ */
+#if qDebug
+#define WeakAssert(c)                                                                                                                                                  \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"WeakAssert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
+               false))
+#else
+#define WeakAssert (c) ((void)0)
+#endif
+
+    /**
+ *  \def WeakAssertMember(p,c)
+ *
+ *  @see AssertMember
+ */
+#define WeakAssertMember(p, c) WeakAssert (dynamic_cast<const c*> (p) != nullptr)
+
+/**
+ *  \def WeakAssertNotNull(p)
+ *
+ *  @see GetAssertionHandler
+ */
+#define WeakAssertNotNull(p) WeakAssert (p != nullptr)
+
+/**
+ *  \def WeakAssertNotReached(p)
+ *
+ *  @see GetAssertionHandler
+ *
+ *  \hideinitializer
+ */
+#if qDebug
+#define WeakAssertNotReached()                                                                                                             \
+    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"WeakAssert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#else
+#define WeakAssertNotReached()
+#endif
+
+/**
+ *  \def WeakAssertNotImplemented()
+ *
+ *  Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
+ *  makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
+ *
+ *  \hideinitializer
+ */
+#if qDebug
+#define WeakAssertNotImplemented()                                                                                                         \
+    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"WeakAssert", "Not Implemented", __FILE__, __LINE__,           \
+                                                                           ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#else
+#define WeakAssertNotImplemented()
 #endif
 
 /**
