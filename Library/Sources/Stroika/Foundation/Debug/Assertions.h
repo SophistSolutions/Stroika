@@ -160,10 +160,12 @@ namespace Stroika::Foundation::Debug {
     namespace Private_ {
         // don't call directly - implementation detail...
         // NOTE - take strings as wchar_t so no lose UNICODE, but functionName as char* since I cannot figure out so far how to get UNICODE filename
-        [[noreturn]] void Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,   const char* functionName) noexcept;
-         // don't call directly - implementation detail...
+        [[noreturn]] void Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName,
+                                                      int lineNum, const char* functionName) noexcept;
+        // don't call directly - implementation detail...
         // NOTE - take strings as wchar_t so no lose UNICODE, but functionName as char* since I cannot figure out so far how to get UNICODE filename
-        void Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,  const char* functionName) noexcept;
+        void Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName,
+                                              int lineNum, const char* functionName) noexcept;
 
         /**
          * Private implementation utility macro
