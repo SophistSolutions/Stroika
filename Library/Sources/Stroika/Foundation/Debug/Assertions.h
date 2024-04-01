@@ -26,14 +26,11 @@
 namespace Stroika::Foundation::Debug {
 
     /**
-     *  \brief Stroika_Foundation_Debug_Widen is used mostly internally to expand macros like __FILE__ into UNICODE SAFE strings (so debug messages work properly if run on locale with charset other than matching filesystem)
+     *  \brief Stroika_Foundation_Debug_Widen is used mostly internally to expand macros like Stroika_Foundation_Debug_Widen ( __FILE__) into UNICODE SAFE strings (so debug messages work properly if run on locale with charset other than matching filesystem)
      *  Idea from https://stackoverflow.com/questions/3291047/how-do-i-print-the-string-which-file-expands-to-correctly
      */
-#define Stroika_Foundation_Debug_Widen2_ L##x
-#define Stroika_Foundation_Debug_Widen (x) Stroika_Foundation_Debug_Widen2_ (x)
-
-    //#define Stroika_Foundation_Debug_Str2_ (s) #s
-    //#define Stroika_Foundation_Debug_Str_ (s) Stroika_Foundation_Debug_Str2_ (s)
+#define Stroika_Foundation_Debug_Widen2_(x) L##x
+#define Stroika_Foundation_Debug_Widen(x) Stroika_Foundation_Debug_Widen2_ (x)
 
 #if qDebug || defined(__Doxygen__)
     /**
@@ -45,8 +42,8 @@ namespace Stroika::Foundation::Debug {
      *
      *          Assertion handlers typically just print a debug message, and then exit the program. They are fatal, and must not return/throw.
      */
-    using AssertionHandlerType = void (*) (const wchar_t* assertCategory, const char* assertionText, const char* fileName, int lineNum,
-                                           const char* functionName) noexcept;
+    using AssertionHandlerType = void (*) (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName,
+                                           int lineNum, const wchar_t* functionName) noexcept;
 
     /**
      *  Stroika makes very heavy use of assertions (to some extent inspired and
@@ -145,9 +142,6 @@ namespace Stroika::Foundation::Debug {
      *  then this merely selects the default assertion handler.
      */
     void SetAssertionHandler (AssertionHandlerType assertionHandler);
-    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
-    SetAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
-                                                const char* functionName) noexcept);
 
     /**
      */
@@ -162,27 +156,25 @@ namespace Stroika::Foundation::Debug {
      *  then this merely selects the default assertion handler.
      */
     void SetWeakAssertionHandler (AssertionHandlerType assertionHandler);
-    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
-    SetWeakAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName,
-                                                    int lineNum, const char* functionName) noexcept);
 
     namespace Private_ {
-        void Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const char* assertionText, const char* fileName, int lineNum,
-                                              const char* functionName) noexcept; // don't call directly - implementation detail...
-        [[noreturn]] void Assertion_Failure_Handler_ (const wchar_t* assertCategory, const char* assertionText, const char* fileName, int lineNum,
-                                                      const char* functionName) noexcept; // don't call directly - implementation detail...
-                                                                                          /**
+        void Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
+                                              const wchar_t* functionName) noexcept; // don't call directly - implementation detail...
+        [[noreturn]] void Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
+                                                      const wchar_t* functionName) noexcept; // don't call directly - implementation detail...
+
+        /**
          * Private implementation utility macro
          */
 #if !defined(__Doxygen__)
 #if qCompilerAndStdLib_Support__PRETTY_FUNCTION__
-#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __PRETTY_FUNCTION__
+#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ Stroika_Foundation_Debug_Widen (__PRETTY_FUNCTION__)
 #elif qCompilerAndStdLib_Support__func__
-#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __func__
+#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ Stroika_Foundation_Debug_Widen (__func__)
 #elif qCompilerAndStdLib_Support__FUNCTION__
-#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __FUNCTION__
+#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ Stroika_Foundation_Debug_Widen (__FUNCTION__)
 #else
-#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ ""
+#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ L""
 #endif
 #endif
     }
@@ -194,8 +186,10 @@ namespace Stroika::Foundation::Debug {
  *  Like Assert(), but without [[assume]] support, and in the form of an expression (since https://en.cppreference.com/w/cpp/language/attributes/assume - can only be applied to a statement)
  */
 #if qDebug
-#define AssertExpression(c)                                                                                                                                   \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
+#define AssertExpression(c)                                                                                                                \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", Stroika_Foundation_Debug_Widen (#c),           \
+                                                                                 Stroika_Foundation_Debug_Widen (__FILE__), __LINE__,      \
+                                                                                 ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),                 \
                false))
 #else
 #define AssertExpression (c) ((void)0)
@@ -229,8 +223,10 @@ namespace Stroika::Foundation::Debug {
      *  result is EXPRESSION;
      */
 #if qDebug
-#define RequireExpression(c)                                                                                                                                   \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
+#define RequireExpression(c)                                                                                                               \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", Stroika_Foundation_Debug_Widen (#c),          \
+                                                                                 Stroika_Foundation_Debug_Widen (__FILE__), __LINE__,      \
+                                                                                 ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),                 \
                false))
 #else
 #define RequireExpression(c) ((void)0)
@@ -243,17 +239,19 @@ namespace Stroika::Foundation::Debug {
  *        build, they must be syntactic (new requirement in Stroika v3.0).
  */
 #if qDebug
-#define Require(c) RequireExpression (c);
+#define Require(c) RequireExpression (c)
 #else
-#define Require(c) _ASSUME_ATTRIBUTE_ (c);
+#define Require(c) _ASSUME_ATTRIBUTE_ (c)
 #endif
 
 /**
  *  \def EnsureExpression(c) - alias for AssertExpression(), but with a different message, and used to declare an assertion promised about the state at the end of a function.
  */
 #if qDebug
-#define EnsureExpression(c)                                                                                                                                   \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
+#define EnsureExpression(c)                                                                                                                \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", Stroika_Foundation_Debug_Widen (#c),           \
+                                                                                 Stroika_Foundation_Debug_Widen (__FILE__), __LINE__,      \
+                                                                                 ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),                 \
                false))
 #else
 #define EnsureExpression(c) ((void)0)
@@ -266,9 +264,9 @@ namespace Stroika::Foundation::Debug {
  *        build, they must be syntactic (new requirement in Stroika v3.0).
  */
 #if qDebug
-#define Ensure(c) EnsureExpression (c);
+#define Ensure(c) EnsureExpression (c)
 #else
-#define Ensure(c) _ASSUME_ATTRIBUTE_ (c);
+#define Ensure(c) _ASSUME_ATTRIBUTE_ (c)
 #endif
 
 /**
@@ -321,8 +319,9 @@ namespace Stroika::Foundation::Debug {
  *  \hideinitializer
  */
 #if qDebug
-#define AssertNotReached()                                                                                                                 \
-    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#define AssertNotReached()                                                                                                                  \
+    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
+                                                                      __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 #elif __cpp_lib_unreachable < 202202
 #define AssertNotReached()
 #else
@@ -337,8 +336,9 @@ namespace Stroika::Foundation::Debug {
  *  \hideinitializer
  */
 #if qDebug
-#define EnsureNotReached()                                                                                                                 \
-    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#define EnsureNotReached()                                                                                                                  \
+    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
+                                                                      __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 #elif __cpp_lib_unreachable < 202202
 #define EnsureNotReached()
 #else
@@ -353,8 +353,9 @@ namespace Stroika::Foundation::Debug {
  *  \hideinitializer
  */
 #if qDebug
-#define RequireNotReached()                                                                                                                \
-    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#define RequireNotReached()                                                                                                                  \
+    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
+                                                                      __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 #elif __cpp_lib_unreachable < 202202
 #define RequireNotReached()
 #else
@@ -370,8 +371,9 @@ namespace Stroika::Foundation::Debug {
  *  \hideinitializer
  */
 #if qDebug
-#define AssertNotImplemented()                                                                                                             \
-    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#define AssertNotImplemented()                                                                                                                  \
+    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", L"Not Implemented", Stroika_Foundation_Debug_Widen (__FILE__), \
+                                                                      __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 #else
 #define AssertNotImplemented()
 #endif
@@ -399,7 +401,7 @@ namespace Stroika::Foundation::Debug {
  *
  *  \note   logically
  *          if (!(c)) {
- *              Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
+ *              Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"Assert", Stroika_Foundation_Debug_Widen (#c), Stroika_Foundation_Debug_Widen ( __FILE__), __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
  *          }
  *          But using funny !! and || syntax to allow use in expressions
  *
@@ -408,14 +410,16 @@ namespace Stroika::Foundation::Debug {
  *  \hideinitializer
  */
 #if qDebug
-#define WeakAssert(c)                                                                                                                                                  \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"WeakAssert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
+#define WeakAssert(c)                                                                                                                      \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"WeakAssert", Stroika_Foundation_Debug_Widen (#c),  \
+                                                                                      Stroika_Foundation_Debug_Widen (__FILE__), __LINE__, \
+                                                                                      ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),            \
                false))
 #else
 #define WeakAssert (c) ((void)0)
 #endif
 
-    /**
+/**
  *  \def WeakAssertMember(p,c)
  *
  *  @see AssertMember
@@ -438,7 +442,8 @@ namespace Stroika::Foundation::Debug {
  */
 #if qDebug
 #define WeakAssertNotReached()                                                                                                             \
-    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"WeakAssert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (                                                                \
+        L"WeakAssert", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 #else
 #define WeakAssertNotReached()
 #endif
@@ -453,8 +458,8 @@ namespace Stroika::Foundation::Debug {
  */
 #if qDebug
 #define WeakAssertNotImplemented()                                                                                                         \
-    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"WeakAssert", "Not Implemented", __FILE__, __LINE__,           \
-                                                                           ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (                                                                \
+        L"WeakAssert", L"Not Implemented", Stroika_Foundation_Debug_Widen (__FILE__), __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 #else
 #define WeakAssertNotImplemented()
 #endif
@@ -474,6 +479,14 @@ namespace Stroika::Foundation::Debug {
 #else
 #define WeakVerify(c) ((void)(c))
 #endif
+
+    /// ---------------------  DEPRECATED CODE      ------------------------
+    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
+    SetWeakAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName,
+                                                    int lineNum, const char* functionName) noexcept);
+    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
+    SetAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
+                                                const char* functionName) noexcept);
 
 }
 
