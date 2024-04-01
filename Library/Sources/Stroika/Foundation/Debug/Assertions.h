@@ -158,21 +158,24 @@ namespace Stroika::Foundation::Debug {
     void SetWeakAssertionHandler (AssertionHandlerType assertionHandler);
 
     namespace Private_ {
-        void Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
-                                              const wchar_t* functionName) noexcept; // don't call directly - implementation detail...
-        [[noreturn]] void Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
-                                                      const wchar_t* functionName) noexcept; // don't call directly - implementation detail...
+        // don't call directly - implementation detail...
+        // NOTE - take strings as wchar_t so no lose UNICODE, but functionName as char* since I cannot figure out so far how to get UNICODE filename
+        [[noreturn]] void Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,   const char* functionName) noexcept;
+         // don't call directly - implementation detail...
+        // NOTE - take strings as wchar_t so no lose UNICODE, but functionName as char* since I cannot figure out so far how to get UNICODE filename
+        void Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,  const char* functionName) noexcept;
 
         /**
          * Private implementation utility macro
+         *      \note these are ASCII - not wchar_t for now, since not clear how to get UNICODE here? --LGP 2024-04-01
          */
 #if !defined(__Doxygen__)
 #if qCompilerAndStdLib_Support__PRETTY_FUNCTION__
-#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ Stroika_Foundation_Debug_Widen (__PRETTY_FUNCTION__)
+#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __PRETTY_FUNCTION__
 #elif qCompilerAndStdLib_Support__func__
-#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ Stroika_Foundation_Debug_Widen (__func__)
+#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __func__
 #elif qCompilerAndStdLib_Support__FUNCTION__
-#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ Stroika_Foundation_Debug_Widen (__FUNCTION__)
+#define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __FUNCTION__
 #else
 #define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ L""
 #endif
