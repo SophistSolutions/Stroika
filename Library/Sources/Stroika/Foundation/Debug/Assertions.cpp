@@ -64,8 +64,8 @@ namespace {
                   fileName == nullptr ? L"" : fileName, lineNum);
 #if qPlatform_POSIX
         fwprintf (stderr, L"%s (%s) failed in '%s'; %s:%d\n", assertCategory == nullptr ? L"Unknown assertion" : assertCategory,
-                 assertionText == nullptr ? L"" : assertionText, functionName == nullptr ? L"" : functionName,
-                 fileName == nullptr ? L"" : fileName, lineNum);
+                  assertionText == nullptr ? L"" : assertionText, functionName == nullptr ? L"" : functionName,
+                  fileName == nullptr ? L"" : fileName, lineNum);
 #endif
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         {
@@ -168,9 +168,11 @@ void Stroika::Foundation::Debug::SetWeakAssertionHandler (AssertionHandlerType a
 }
 
 namespace {
-    void (*sLegacyWeakHandlerDelegate2_) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept;
+    void (*sLegacyWeakHandlerDelegate2_) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
+                                          const char* functionName) noexcept;
 }
-void Stroika::Foundation::Debug::SetWeakAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept)
+void Stroika::Foundation::Debug::SetWeakAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText,
+                                                                                 const char* fileName, int lineNum, const char* functionName) noexcept)
 {
     sLegacyWeakHandlerDelegate2_ = legacyHandler;
     auto wrapper                 = [] (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
@@ -189,8 +191,8 @@ void Stroika::Foundation::Debug::SetWeakAssertionHandler (void (*legacyHandler) 
     SetWeakAssertionHandler (wrapper);
 }
 
-
-[[noreturn]] void Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum, const char* functionName) noexcept
+[[noreturn]] void Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText,
+                                                                                    const wchar_t* fileName, int lineNum, const char* functionName) noexcept
 {
     static bool s_InTrap = false;
     if (s_InTrap) {
@@ -199,8 +201,8 @@ void Stroika::Foundation::Debug::SetWeakAssertionHandler (void (*legacyHandler) 
         abort ();
     }
     s_InTrap = true;
-    
-    (sAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, Characters::NarrowSDK2Wide(functionName).c_str ());
+
+    (sAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, Characters::NarrowSDK2Wide (functionName).c_str ());
     //  in case using some sort of assertion handler that allows for continuation
     //  (like under debugger manipulation of PC to go a little further in the code)
     s_InTrap = false;
@@ -216,6 +218,6 @@ void Stroika::Foundation::Debug::SetWeakAssertionHandler (void (*legacyHandler) 
 void Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText,
                                                                             const wchar_t* fileName, int lineNum, const char* functionName) noexcept
 {
-    (sWeakAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, Characters::NarrowSDK2Wide(functionName).c_str ());
+    (sWeakAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, Characters::NarrowSDK2Wide (functionName).c_str ());
 }
 #endif
