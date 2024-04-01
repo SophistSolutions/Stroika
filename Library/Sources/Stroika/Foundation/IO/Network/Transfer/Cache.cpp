@@ -108,7 +108,7 @@ namespace {
                     }
                 }
                 catch (...) {
-                    DbgTrace (L"Cache::OnBeforeFetch::oops: %s", Characters::ToString (current_exception ()).c_str ()); // ignore...
+                    DbgTrace ("Cache::OnBeforeFetch::oops: {}"_f, Characters::ToString (current_exception ())); // ignore...
                 }
             }
             // In this case, no caching is possible - nothing todo
@@ -136,7 +136,7 @@ namespace {
                             }
                         }
                         catch (...) {
-                            DbgTrace (L"Cache::OnAfterFetch::oops(ok): %s", Characters::ToString (current_exception ()).c_str ()); // ignore...
+                            DbgTrace ("Cache::OnAfterFetch::oops(ok): {}"_f, Characters::ToString (current_exception ())); // ignore...
                         }
                     }
                 } break;
@@ -155,11 +155,11 @@ namespace {
                             *response = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, headers, response->GetSSLResultInfo ()};
                         }
                         else {
-                            DbgTrace (L"Cache::OnAfterFetch::oops: unexpected NOT-MODIFIED result when nothing was in the cache"); // ignore...
+                            DbgTrace ("Cache::OnAfterFetch::oops: unexpected NOT-MODIFIED result when nothing was in the cache"_f); // ignore...
                         }
                     }
                     catch (...) {
-                        DbgTrace (L"Cache::OnAfterFetch::oops(ok): %s", Characters::ToString (current_exception ()).c_str ()); // ignore...
+                        DbgTrace ("Cache::OnAfterFetch::oops(ok): {}"_f, Characters::ToString (current_exception ())); // ignore...
                     }
                 } break;
                 default: {
@@ -218,7 +218,7 @@ Transfer::Cache::Element::Element (const Response& response)
                 // treat invalid dates as if the resource has already exipred
                 //fExpires = DateTime::min ();  // better but cannot convert back to date - fix stk date stuff so this works
                 fExpires = DateTime::Now ();
-                DbgTrace (L"Malformed expires (%s) treated as expires immediately", Characters::ToString (hi->fValue).c_str ());
+                DbgTrace (L"Malformed expires ({}) treated as expires immediately"_f, Characters::ToString (hi->fValue));
             }
             hi = headers.erase (hi);
         }
@@ -227,7 +227,7 @@ Transfer::Cache::Element::Element (const Response& response)
                 fLastModified = DateTime::Parse (hi->fValue, DateTime::kRFC1123Format);
             }
             catch (...) {
-                DbgTrace (L"Malformed last-modified (%s) treated as ignored", Characters::ToString (hi->fValue).c_str ());
+                DbgTrace ("Malformed last-modified ({}) treated as ignored"_f, Characters::ToString (hi->fValue));
             }
             hi = headers.erase (hi);
         }

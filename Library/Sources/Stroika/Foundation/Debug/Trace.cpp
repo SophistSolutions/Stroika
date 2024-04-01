@@ -96,10 +96,10 @@ namespace {
 }
 
 /*
-     ********************************************************************************
-     ******************************* Debug::Private_::Emitter ***********************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ******************************* Debug::Private_::Emitter ***********************
+ ********************************************************************************
+ */
 
 template <typename CHARTYPE>
 inline void Debug::Private_::Emitter::EmitUnadornedText (const CHARTYPE* p)
@@ -155,19 +155,19 @@ auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
     auto emitFirstTime = [] () {
         // Cannot call DbgTrace or TraceContextBumper in this code (else hang cuz calls back to Emitter::Get ())
         // which is why this function takes Emitter as argument!
-        sModuleData_->fEmitter.EmitTraceMessage ("***Starting TraceLog***");
+        sModuleData_->fEmitter.EmitTraceMessage ("***Starting TraceLog***"_f);
         sModuleData_->fEmitter.EmitTraceMessage ("Starting at {}"_f, Time::DateTime::Now ().Format ());
 #if qStroika_Foundation_Debug_Trace_TraceToFile
         sModuleData_->fEmitter.EmitTraceMessage ("TraceFileName: {}"_f, Characters::ToString (Emitter::GetTraceFileName ()));
 #endif
         sModuleData_->fEmitter.EmitTraceMessage ("EXEPath={}"_f, Characters::ToString (Execution::GetEXEPath ()));
-        sModuleData_->fEmitter.EmitTraceMessage ("<debug-state {>");
+        sModuleData_->fEmitter.EmitTraceMessage ("<debug-state>"_f);
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithAddressSanitizer = {}"_f, Debug::kBuiltWithAddressSanitizer);
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithThreadSanitizer = {}"_f, Debug::kBuiltWithThreadSanitizer);
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithUndefinedBehaviorSanitizer = {}(?)"_f,
                                                  Debug::kBuiltWithUndefinedBehaviorSanitizer); // warning maybe falsely reported as false on gcc
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::IsRunningUnderValgrind () = {}"_f, Debug::IsRunningUnderValgrind ());
-        sModuleData_->fEmitter.EmitTraceMessage ("</debug-state>");
+        sModuleData_->fEmitter.EmitTraceMessage ("</debug-state>"_f);
     };
     static once_flag sOnceFlag_;
     call_once (sOnceFlag_, [=] () { emitFirstTime (); });
@@ -302,7 +302,8 @@ void Debug::Private_::Emitter::EmitTraceMessage (const wchar_t* format, ...) noe
     }
 }
 
-auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept -> TraceLastBufferedWriteTokenType
+#if 0
+auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, const wchar_t* format, ...) noexcept -> TraceLastBufferedWriteTokenType
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
         return 0;
@@ -311,7 +312,7 @@ auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const 
     try {
         va_list argsList;
         va_start (argsList, format);
-        string tmp = Characters::CString::FormatV (format, argsList);
+        wstring tmp = Characters::CString::FormatV (format, argsList);
         va_end (argsList);
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
@@ -324,18 +325,17 @@ auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const 
         return 0;
     }
 }
+#endif
 
-auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept -> TraceLastBufferedWriteTokenType
+auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, wstring_view users_fmt,
+                                                  Configuration::StdCompat::wformat_args&& args) noexcept -> TraceLastBufferedWriteTokenType
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
         return 0;
     }
     Thread::SuppressInterruptionInContext suppressAborts;
     try {
-        va_list argsList;
-        va_start (argsList, format);
-        wstring tmp = Characters::CString::FormatV (format, argsList);
-        va_end (argsList);
+        wstring tmp = vformat (users_fmt, args);
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
@@ -640,11 +640,12 @@ TraceContextBumper::TraceContextBumper (CHAR_ARRAY_T mainName, CHAR_ARRAY_T extr
 {
     Require (char_traits<wchar_t>::length (mainName.data ()) <= kMaxContextNameLen_); // assert NUL-terminated
     if (extraTextAtTop.empty () or extraTextAtTop[0] == '\0') {
-        fLastWriteToken_ = Private_::Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", mainName.data ());
+        fLastWriteToken_ =
+            Private_::Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{}> {{"sv, make_wformat_args (mainName.data ()));
     }
     else {
-        fLastWriteToken_ =
-            Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", mainName.data (), extraTextAtTop.data ());
+        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{} ({})> {{sv",
+                                                              make_wformat_args (mainName.data (), extraTextAtTop.data ()));
     }
     size_t len = char_traits<wchar_t>::length (mainName.data ());
     char_traits<wchar_t>::copy (fSavedContextName_.data (), mainName.data (), len);
@@ -663,8 +664,9 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
     try {
         va_list argsList;
         va_start (argsList, extraFmt);
-        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", contextName,
-                                                             Characters::CString::FormatV (extraFmt, argsList).c_str ());
+        fLastWriteToken_ =
+            Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{} ({})> {{"sv,
+                                               make_wformat_args (contextName, Characters::CString::FormatV (extraFmt, argsList).c_str ()));
         va_end (argsList);
         size_t len = min (kMaxContextNameLen_ - 1, char_traits<wchar_t>::length (contextName));
         char_traits<wchar_t>::copy (fSavedContextName_.data (), contextName, len);
@@ -706,11 +708,11 @@ TraceContextBumper::~TraceContextBumper () noexcept
                 Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
             }
             else {
-                Emitter::Get ().EmitTraceMessage (L"} </%s>", fSavedContextName_.data ());
+                Emitter::Get ().EmitTraceMessage ("}} </{}>"_f, fSavedContextName_.data ());
             }
         }
         catch (...) {
-            // not much of a chance of successfully reporting a problem here, but DTOR mustbe noexcept
+            // not much of a chance of successfully reporting a problem here, but DTOR must be noexcept
         }
     }
 }

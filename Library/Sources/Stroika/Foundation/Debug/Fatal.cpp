@@ -3,8 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/SDKChar.h"
-#include "../Characters/ToString.h"
+#include "Stroika/Foundation/Characters/SDKChar.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 
 #include "BackTrace.h"
 #include "Debugger.h"
@@ -19,15 +19,15 @@ using namespace Stroika::Foundation::Debug;
 namespace {
     void _DefaultFatalErrorHandler_ ([[maybe_unused]] const SDKChar* msg) noexcept
     {
-        DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
+        DbgTrace ("Fatal Error {} encountered"_f, String::FromSDKString (msg));
         if (auto exc = current_exception ()) {
-            DbgTrace (L"Uncaught exception", Characters::ToString (exc).c_str ());
+            DbgTrace ("Uncaught exception: {}"_f, Characters::ToString (exc));
         }
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         {
             wstring tmp{Debug::BackTrace::Capture ()};
             if (not tmp.empty ()) {
-                DbgTrace (L"BackTrace: %s", tmp.c_str ());
+                DbgTrace ("BackTrace: {}"_f, tmp);
             }
         }
 #endif

@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -19,6 +20,8 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
+
+using namespace Stroika::Foundation::Characters::Literals;
 
 using namespace Stroika::Frameworks::Test;
 
@@ -69,7 +72,7 @@ namespace {
     void FatalSignalHandler_ (Execution::SignalID signal) noexcept
     {
         cerr << "FAILED: SIGNAL= " << Execution::SignalToName (signal) << endl;
-        DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
+        DbgTrace ("FAILED: SIGNAL= {}"_f, Execution::SignalToName (signal));
         Debug::DropIntoDebuggerIfPresent ();
         _Exit (EXIT_FAILURE); // skip
     }
@@ -100,13 +103,13 @@ int Test::PrintPassOrFail (void (*regressionTest) ())
     try {
         (*regressionTest) ();
         cout << "Succeeded" << endl;
-        DbgTrace (L"Succeeded");
+        DbgTrace ("Succeeded"_f);
     }
     catch (...) {
         auto exc = current_exception ();
         cerr << "FAILED: REGRESSION TEST DUE TO EXCEPTION: '" << Characters::ToString (exc) << "'" << endl;
         cout << "Failed" << endl;
-        DbgTrace (L"FAILED: REGRESSION TEST (Exception): '%s", Characters::ToString (exc).c_str ());
+        DbgTrace ("FAILED: REGRESSION TEST (Exception): '{}"_f, Characters::ToString (exc));
         Debug::DropIntoDebuggerIfPresent ();
         return EXIT_FAILURE;
     }

@@ -59,7 +59,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
     if constexpr (qStroika_Foundation_Debug_Trace_DefaultTracingOn) {
         Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - first time notifications"};
         for ([[maybe_unused]] const auto& a : advertisements) {
-            DbgTrace (L"(alive,loc=%s,usn=%s,...)", Characters::ToString (a.fLocation).As<wstring> ().c_str (), a.fUSN.As<wstring> ().c_str ());
+            DbgTrace ("(alive,loc={},usn={},...)"_f, Characters::ToString (a.fLocation), a.fUSN);
         }
     }
 
@@ -90,7 +90,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
             Execution::ReThrow ();
         }
         catch (...) {
-            DbgTrace (L"Ignoring inability to send SSDP notify packets: %s (try again later)", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("Ignoring inability to send SSDP notify packets: {} (try again later)"_f, Characters::ToString (current_exception ()));
         }
     };
     fIntervalTimerAdder_ = make_unique<Execution::IntervalTimer::Adder> (callback, Time::Duration{fi.fRepeatInterval},

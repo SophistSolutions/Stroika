@@ -787,10 +787,10 @@ namespace {
                 registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"Sensors"})};
             //consumerCallback.fContext.fTraceThisReader = true;
             XML::SAXParse (mkdata_ (), &consumerCallback);
-            DbgTrace (L"LaserTemperatures=%s", Characters::ToString (data.LaserTemperatures).c_str ());
-            DbgTrace (L"MirrorTemperature=%s", Characters::ToString (data.MirrorTemperatures).c_str ());
-            DbgTrace (L"LaserCurrents=%s", Characters::ToString (data.LaserCurrents).c_str ());
-            DbgTrace (L"TECPowerConsumptionStats=%s", Characters::ToString (data.TECPowerConsumptionStats->TunerTECCurrent).c_str ());
+            DbgTrace ("LaserTemperatures={}"_f, Characters::ToString (data.LaserTemperatures));
+            DbgTrace ("MirrorTemperature={}"_f, Characters::ToString (data.MirrorTemperatures));
+            DbgTrace ("LaserCurrents={}"_f, Characters::ToString (data.LaserCurrents));
+            DbgTrace ("TECPowerConsumptionStats={}"_f, Characters::ToString (data.TECPowerConsumptionStats->TunerTECCurrent));
             EXPECT_TRUE (not data.ActiveLaser.has_value ());
             EXPECT_TRUE (Math::NearlyEquals (*data.DetectorTemperature, 13.1));
             EXPECT_TRUE (Math::NearlyEquals (*data.OpticsTemperature, 0.86115019791435543));
@@ -850,7 +850,7 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetAlarmsResponse"}, Name{"Alarm"})};
                 XML::SAXParse (mkdata_ (), &consumerCallback);
-                DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
+                DbgTrace ("Alarms={}"_f, Characters::ToString (data));
             }
             EXPECT_EQ (data, (Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
         }
@@ -863,7 +863,7 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetAlarmsResponse"}, kAlarmName_)};
                 XML::SAXParse (mkdata_ (), &consumerCallback);
-                DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
+                DbgTrace ("Alarms={}"_f, Characters::ToString (data));
             }
             EXPECT_EQ (data, (Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
         }
@@ -876,7 +876,7 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetAlarmsResponse"}, kWrongAlarmName_)};
                 XML::SAXParse (mkdata_ (), &consumerCallback);
-                DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
+                DbgTrace ("Alarms={}"_f, Characters::ToString (data));
             }
             EXPECT_EQ (data, (Set<AlarmType_>{}));
         }
@@ -1016,16 +1016,16 @@ namespace {
                                                                        Name{"ScanPersistenceGetScanDetailsResponse"}, Name{"Scan"})};
             //consumerCallback.fContext.fTraceThisReader = true;
             XML::SAXParse (mkdata_ (), &consumerCallback);
-            DbgTrace (L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
-            DbgTrace (L"ScanStart=%s", Characters::ToString (data.ScanStart).c_str ());
-            DbgTrace (L"ScanEnd=%s", Characters::ToString (data.ScanEnd).c_str ());
+            DbgTrace ("ScanID={}"_f, Characters::ToString (data.ScanID));
+            DbgTrace ("ScanStart={}"_f, Characters::ToString (data.ScanStart));
+            DbgTrace ("ScanEnd={}"_f, Characters::ToString (data.ScanEnd));
             if (data.ScanLabel) {
-                DbgTrace (L"ScanLabel=%s", Characters::ToString (*data.ScanLabel).c_str ());
+                DbgTrace (L"ScanLabel={}"_f, Characters::ToString (*data.ScanLabel));
             }
             if (data.RawSpectrum) {
-                DbgTrace (L"RawSpectrum=%s", Characters::ToString (*data.RawSpectrum).c_str ());
+                DbgTrace ("RawSpectrum={}"_f, Characters::ToString (*data.RawSpectrum));
             }
-            DbgTrace (L"AuxData=%s", Characters::ToString (data.AuxData).c_str ());
+            DbgTrace ("AuxData={}"_f, Characters::ToString (data.AuxData));
             EXPECT_EQ (data.ScanID, 8320u);
             EXPECT_EQ (data.ScanStart, DateTime::Parse ("2016-07-28T20:14:30Z", DateTime::kISO8601Format));
             EXPECT_EQ (data.ScanEnd, DateTime::Parse ("2016-07-28T20:14:44Z", DateTime::kISO8601Format));
@@ -1253,7 +1253,7 @@ namespace {
                 make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetFactorySettingsResponse"})};
             //consumerCallback.fContext.fTraceThisReader = true;
             XML::SAXParse (mkdata_ (), &consumerCallback);
-            DbgTrace (L"Tuners=%s", Characters::ToString (data.Tuners).c_str ());
+            DbgTrace (L"Tuners={}"_f, Characters::ToString (data.Tuners));
             EXPECT_EQ (data.Tuners.Keys (), (Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2}));
             EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorOperationFrequency, 40.0));
             EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorResonantFrequency, 150.0));
@@ -1437,23 +1437,22 @@ namespace {
         const Memory::BLOB kPersonalXSD_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xsd);
         const Memory::BLOB kHealthFrameWorks_v3_xml      = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);
         const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::TestFiles_ReferenceContent_2012_03_xsd);
-
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             DOM::Document::Ptr d   = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             String             tmp = d.Write ();
-            DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
+            DbgTrace ("tmp={}"_f, Characters::ToString (tmp));
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             Schema::Ptr        personalSchema = schemaFactory (kPersonalXSD_, nullptr);
             DOM::Document::Ptr d              = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), personalSchema);
             String             tmp            = d.Write ();
-            DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
+            DbgTrace (L"tmp={}"_f, Characters::ToString (tmp));
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             Schema::Ptr        schema = schemaFactory (kReferenceContent_2012_03_xsd, nullptr);
             DOM::Document::Ptr d      = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), schema);
             String             tmp    = d.Write ();
-            DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
+            DbgTrace (L"tmp={}"_f, Characters::ToString (tmp));
         });
     }
 }
@@ -1515,7 +1514,7 @@ namespace {
                 EXPECT_TRUE (itsSubordinates.Contains ("three.worker")); // guy we deleted
                 bigBoss.GetChild ("link").SetAttribute ("subordinates", itsSubordinates.Remove ("three.worker"));
                 EXPECT_NO_THROW (d.Validate (schema));
-                DbgTrace (L"bigBoss=%s", Characters::ToString (bigBoss).c_str ());
+                DbgTrace ("bigBoss={}"_f, Characters::ToString (bigBoss));
             }
             personelElt.GetChildElements ().Apply ([] (DOM::Element::Ptr p) {
                 EXPECT_EQ (p.GetName ().fNamespace, nullopt);
@@ -1539,7 +1538,7 @@ namespace {
                     link.SetAttribute ("manager", "Big.Boss");
                 }
                 String testCanSerializeElts = Characters::ToString (person2Add);
-                DbgTrace (L"o=%s", Characters::ToString (person2Add).c_str ());
+                DbgTrace ("o={}"_f, Characters::ToString (person2Add));
             }
             EXPECT_NO_THROW (d.Validate (schema));
             EXPECT_EQ (personelElt.GetChildElements ().size (), 6u);

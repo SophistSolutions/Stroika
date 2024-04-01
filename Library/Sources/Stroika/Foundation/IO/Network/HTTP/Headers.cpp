@@ -565,7 +565,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
             }
         }
         catch (...) {
-            DbgTrace (L"Treating ill-formatted date as missing date header");
+            DbgTrace ("Treating ill-formatted date as missing date header"_f);
         }
         if (nRemoveals != nullptr) {
             *nRemoveals = (useDT == nullopt and fDate_ != nullopt) ? 1 : 0;

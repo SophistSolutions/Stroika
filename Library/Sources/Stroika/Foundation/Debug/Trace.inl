@@ -43,8 +43,8 @@ namespace Stroika::Foundation::Debug {
         /**
          *   \note DbgTrace() is NOT a cancelation point, so you can call this freely without worrying about Throw (ThreadAbortException) etc
          */
-        nonvirtual void EmitTraceMessage (const char* format, ...) noexcept;
-        nonvirtual void EmitTraceMessage (const wchar_t* format, ...) noexcept;
+        [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] void EmitTraceMessage (const char* format, ...) noexcept;
+        [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] void EmitTraceMessage (const wchar_t* format, ...) noexcept;
 
         template <typename CHAR_T, typename... Args>
         nonvirtual void EmitTraceMessage (Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
@@ -56,10 +56,9 @@ namespace Stroika::Foundation::Debug {
             }
         }
 
-        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
-        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
-
     private:
+        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage_ (size_t bufferLastNChars, wstring_view users_fmt,
+                                                                      Configuration::StdCompat::wformat_args&& args) noexcept;
         nonvirtual void EmitTraceMessage_ (wstring_view users_fmt, Configuration::StdCompat::wformat_args&& args) noexcept;
         nonvirtual void EmitTraceMessage_ (string_view users_fmt, Configuration::StdCompat::format_args&& args) noexcept;
         nonvirtual void EmitTraceMessage_ (const wstring& raw) noexcept;
@@ -96,6 +95,9 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void DoEmit_ (const wchar_t* p) noexcept;
         nonvirtual void DoEmit_ (const char* p, const char* e) noexcept;
         nonvirtual void DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept;
+
+    private:
+        friend class TraceContextBumper;
     };
 
     namespace Private_ {

@@ -142,10 +142,10 @@ public:
                         d.fLocation = IO::Network::URI{value};
                     }
                     catch (...) {
-                        DbgTrace (L"A notification without a valid location probably won't be useful, so we could allow the exception to "
-                                  L"propagate and the notification to be ignored. However, we don't throw when the location is missing "
-                                  L"altogether. So for now, treat as missing: e=%s",
-                                  Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("A notification without a valid location probably won't be useful, so we could allow the exception to "
+                                  "propagate and the notification to be ignored. However, we don't throw when the location is missing "
+                                  "altogether. So for now, treat as missing: e={}"_f,
+                                  Characters::ToString (current_exception ()));
                     }
                 }
                 else if (kLabelComparer_ (label, "NT"sv) == 0) {

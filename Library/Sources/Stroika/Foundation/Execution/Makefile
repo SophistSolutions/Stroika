@@ -45,6 +45,7 @@ Objs	:=	\
 	$(ObjDir)Signals${OBJ_SUFFIX}\
 	$(ObjDir)SignalHandlers${OBJ_SUFFIX}\
 	$(ObjDir)Sleep${OBJ_SUFFIX}\
+	$(ObjDir)Synchronized${OBJ_SUFFIX}\
 	$(ObjDir)Thread${OBJ_SUFFIX}\
 	$(ObjDir)ThreadPool${OBJ_SUFFIX}\
 	$(ObjDir)Throw${OBJ_SUFFIX}\

@@ -266,7 +266,7 @@ namespace {
                 if (fOptions_.fReturnSSLInfo) {
                     bool looksLikeSSLError = (e.code () == error_code (ERROR_WINHTTP_SECURE_FAILURE, system_category ()));
                     if (looksLikeSSLError and not sslExceptionProblem) {
-                        DbgTrace ("Got %d ssl error so retrying with flags to disable cert checking", e.code ().value ());
+                        DbgTrace ("Got {} ssl error so retrying with flags to disable cert checking"_f, e.code ().value ());
                         sslExceptionProblem = true;
                         goto RetryWithNoCERTCheck;
                     }

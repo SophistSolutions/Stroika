@@ -168,7 +168,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
 
                     if (e.code () == errc::no_such_device) {
                         // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
-                        DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again");
+                        DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again"_f);
                         Execution::Sleep (1s);
                         goto Again;
                     }

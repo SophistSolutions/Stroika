@@ -69,15 +69,15 @@ namespace {
             Set<int> s7{v.begin (), v.end ()};
             Set<int> s8{move (s1)};
             Set<int> s9{1, 2, 3};
-            EXPECT_TRUE (s9.size () == 3);
+            EXPECT_EQ (s9.size (), 3);
             Set<int> s10{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
         }
         void TestCTORFromOtherContainer_ ()
         {
             using Characters::Character;
             using Characters::String;
-            Set<String> tmp1 = Set<String> (Sequence<String>{});
-            Set<String> tmp2 = Set<String> (String ().Trim ().Tokenize ({';', ' '}));
+            Set<String> tmp1 = Set<String>{Sequence<String>{}};
+            Set<String> tmp2 = Set<String>{String ().Trim ().Tokenize ({';', ' '})};
         }
         void DoTest ()
         {
@@ -92,7 +92,7 @@ namespace {
         void DoAll ()
         {
             Set<int> s{1, 2, 3, 4, 5};
-            EXPECT_TRUE ((s.Where ([] (int i) { return Math::IsPrime (i); }) == Set<int>{2, 3, 5}));
+            EXPECT_EQ (s.Where ([] (int i) { return Math::IsPrime (i); }), (Set<int>{2, 3, 5}));
         }
     }
 }

@@ -27,9 +27,19 @@ namespace Stroika::Foundation::Execution {
                 return t.what ();
             }
             else {
-                return ToString_ (typeid (T)); // exact match preferered over template
+                return ToString_ (typeid (T)); // exact match preferred over template
             }
         }
+
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        void JustDbgTrace_ (const string& msg);
+        void JustDbgTrace_ (const wstring& msg);
+        void ThrowingExceptionDbgTrace_ (const string& msg);
+        void ThrowingExceptionDbgTrace_ (const wstring& msg);
+        void ReThrowingExceptionDbgTrace_ (const string& msg);
+        void ReThrowingExceptionDbgTrace_ (const wstring& msg = {});
+#endif
+
     }
 
     /*
@@ -41,27 +51,27 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] inline void Throw (T&& e2Throw)
     {
         static_assert (is_convertible_v<remove_cvref_t<T>*, exception*>);
-        if constexpr (qStroika_Foundation_Execution_Throw_TraceThrowpoint) {
-#if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-            DbgTrace ("Throwing exception: %s from %s", Private_::ToString_ (forward<T> (e2Throw)).c_str (), Private_::GetBT_s ().c_str ());
-#else
-            DbgTrace ("Throwing exception: %s", Private_::ToString_ (e2Throw).c_str ());
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::ThrowingExceptionDbgTrace_ (Private_::ToString_ (forward<T> (e2Throw)));
 #endif
-        }
         throw e2Throw;
     }
     template <typename T>
     [[noreturn]] inline void Throw (T&& e2Throw, [[maybe_unused]] const char* traceMsg)
     {
         static_assert (is_convertible_v<remove_cvref_t<T>*, exception*>);
-        DbgTrace ("%s", traceMsg);
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::JustDbgTrace_ (traceMsg);
+#endif
         Throw (forward<T> (e2Throw)); // important todo this way to get its template specialization (even though the cost is an extra trace message)
     }
     template <typename T>
     [[noreturn]] inline void Throw (T&& e2Throw, [[maybe_unused]] const wchar_t* traceMsg)
     {
         static_assert (is_convertible_v<remove_cvref_t<T>*, exception*>);
-        DbgTrace (L"%s", traceMsg);
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::JustDbgTrace_ (traceMsg);
+#endif
         Throw (forward<T> (e2Throw)); // important todo this way to get its template specialization (even though the cost is an extra trace message)
     }
 
@@ -72,66 +82,44 @@ namespace Stroika::Foundation::Execution {
      */
     [[noreturn]] inline void ReThrow ()
     {
-        if constexpr (qStroika_Foundation_Execution_Throw_TraceThrowpoint) {
-#if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-            DbgTrace ("ReThrow from %s", Execution::Private_::GetBT_s ().c_str ());
-#else
-            DbgTrace ("ReThrow");
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::ReThrowingExceptionDbgTrace_ ();
 #endif
-        }
         throw;
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e)
     {
-        if constexpr (qStroika_Foundation_Execution_Throw_TraceThrowpoint) {
-#if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-            DbgTrace ("ReThrow from %s", Execution::Private_::GetBT_s ().c_str ());
-#else
-            DbgTrace ("ReThrow");
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::ReThrowingExceptionDbgTrace_ ();
 #endif
-        }
         rethrow_exception (e);
     }
     [[noreturn]] inline void ReThrow ([[maybe_unused]] const char* traceMsg)
     {
-        if constexpr (qStroika_Foundation_Execution_Throw_TraceThrowpoint) {
-#if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-            DbgTrace ("ReThrow %s from %s", traceMsg, Execution::Private_::GetBT_s ().c_str ());
-#else
-            DbgTrace ("ReThrow: %s", traceMsg);
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::ReThrowingExceptionDbgTrace_ (traceMsg);
 #endif
-        }
         throw;
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const char* traceMsg)
     {
-#if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-        DbgTrace ("ReThrow: %s from %s", traceMsg, Execution::Private_::GetBT_s ().c_str ());
-#else
-        DbgTrace ("ReThrow: %s", traceMsg);
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::ReThrowingExceptionDbgTrace_ (traceMsg);
 #endif
         rethrow_exception (e);
     }
     [[noreturn]] inline void ReThrow ([[maybe_unused]] const wchar_t* traceMsg)
     {
-        if constexpr (qStroika_Foundation_Execution_Throw_TraceThrowpoint) {
-#if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-            DbgTrace (L"ReThrow: %s from %s", traceMsg, Execution::Private_::GetBT_ws ().c_str ());
-#else
-            DbgTrace (L"ReThrow: %s", traceMsg);
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::ReThrowingExceptionDbgTrace_ (traceMsg);
 #endif
-        }
         throw;
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const wchar_t* traceMsg)
     {
-        if constexpr (qStroika_Foundation_Execution_Throw_TraceThrowpoint) {
-#if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-            DbgTrace (L"ReThrow: %s from %s", traceMsg, Execution::Private_::GetBT_ws ().c_str ());
-#else
-            DbgTrace (L"ReThrow: %s", traceMsg);
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        Private_::ReThrowingExceptionDbgTrace_ (traceMsg);
 #endif
-        }
         rethrow_exception (e);
     }
 
@@ -153,7 +141,6 @@ namespace Stroika::Foundation::Execution {
         static const bad_alloc kException_;
         ThrowIfNull (p, kException_);
     }
-
 }
 
 #endif /*_Stroia_Foundation_Execution_Throw_inl_*/

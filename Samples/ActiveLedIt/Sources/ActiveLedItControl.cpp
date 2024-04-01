@@ -40,6 +40,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "ActiveLedIt_h.h"
 
+using namespace Stroika::Foundation::Characters::Literals;
 using Stroika::Foundation::Characters::String;
 
 // Not sure about this - experiment... See spr#0521
@@ -815,16 +816,13 @@ BOOL ActiveLedItControl::OnSetObjectRects (LPCRECT lprcPosRect, LPCRECT lprcClip
 {
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
     if (lprcClipRect == NULL) {
-        DbgTrace (
-            Led_SDK_TCHAROF (
-                "ActiveLedItControl::OnSetObjectRects (m_bUIActive=%d, m_bInPlaceSiteWndless=%d, lprcPosRect=(%d, %d, %d, %d), NULL)\n"),
-            m_bUIActive, m_bInPlaceSiteWndless, lprcPosRect->top, lprcPosRect->left, lprcPosRect->bottom, lprcPosRect->right);
+        DbgTrace ("ActiveLedItControl::OnSetObjectRects (m_bUIActive={}, m_bInPlaceSiteWndless={}, lprcPosRect=({}, {}, {}, {}), NULL)"_f,
+                  (bool)m_bUIActive, (bool)m_bInPlaceSiteWndless, lprcPosRect->top, (int)lprcPosRect->left, lprcPosRect->bottom, lprcPosRect->right);
     }
     else {
-        DbgTrace (Led_SDK_TCHAROF ("ActiveLedItControl::OnSetObjectRects (m_bUIActive=%d, m_bInPlaceSiteWndless=%d, lprcPosRect=(%d, %d, "
-                                   "%d, %d), lprcClipRect=(%d, %d, %d, %d))\n"),
-                  m_bUIActive, m_bInPlaceSiteWndless, lprcPosRect->top, lprcPosRect->left, lprcPosRect->bottom, lprcPosRect->right,
-                  lprcClipRect->top, lprcClipRect->left, lprcClipRect->bottom, lprcClipRect->right);
+        DbgTrace ("ActiveLedItControl::OnSetObjectRects (m_bUIActive={}, m_bInPlaceSiteWndless={}, lprcPosRect=({}, {}, {}, {}), lprcClipRect=({}, {}, {}, {}))"_f,
+                  (bool)m_bUIActive, (bool)m_bInPlaceSiteWndless, lprcPosRect->top, lprcPosRect->left, lprcPosRect->bottom,
+                  lprcPosRect->right, lprcClipRect->top, lprcClipRect->left, lprcClipRect->bottom, lprcClipRect->right);
     }
 #endif
 #if 0
@@ -1639,7 +1637,7 @@ int ActiveLedItControl::OnCreate (LPCREATESTRUCT lpCreateStruct)
 void ActiveLedItControl::OnWindowPosChanged (WINDOWPOS* lpwndpos)
 {
     RequireNotNull (lpwndpos);
-    DbgTrace (Led_SDK_TCHAROF ("ActiveLedItControl::OnWindowPosChanged (cx=%d, cy=%d, flags=0x%x)\n"), lpwndpos->cx, lpwndpos->cy, lpwndpos->flags);
+    DbgTrace ("ActiveLedItControl::OnWindowPosChanged (cx={}, cy={}, flags=0x{:x})"_f, lpwndpos->cx, lpwndpos->cy, lpwndpos->flags);
 
     IdleManager::NonIdleContext nonIdleContext;
 

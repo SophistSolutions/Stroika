@@ -7,6 +7,7 @@
 #ifndef _Stroika_Foundation_Debug_TimingTrace_inl_
 #define _Stroika_Foundation_Debug_TimingTrace_inl_ 1
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Trace.h"
 
 namespace Stroika::Foundation::Debug {
@@ -21,7 +22,9 @@ namespace Stroika::Foundation::Debug {
     {
         warnIfLongerThan,
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-            [] (Time::DurationSeconds timeTaken) noexcept { DbgTrace ("(timeTaken=%f seconds)", timeTaken.count ()); }
+            [] (Time::DurationSeconds timeTaken) noexcept {
+                DbgTrace (Characters::FormatString<char>{"(timeTaken={} seconds)"}, timeTaken.count ());
+            }
 #else
             nullptr
 #endif
@@ -33,7 +36,9 @@ namespace Stroika::Foundation::Debug {
     {
         warnIfLongerThan,
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-            [=] (Time::DurationSeconds timeTaken) noexcept { DbgTrace ("%s (timeTaken=%f seconds)", label, timeTaken.count ()); }
+            [=] (Time::DurationSeconds timeTaken) noexcept {
+                DbgTrace (Characters::FormatString<char>{"{} (timeTaken={} seconds)"}, Characters::String{label}, timeTaken.count ());
+            }
 #else
             nullptr
 #endif
@@ -45,7 +50,9 @@ namespace Stroika::Foundation::Debug {
     {
         warnIfLongerThan,
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-            [=] (Time::DurationSeconds timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label, timeTaken.count ()); }
+            [=] (Time::DurationSeconds timeTaken) noexcept {
+                DbgTrace (Characters::FormatString<char>{"{} (timeTaken={} seconds)"}, label, timeTaken.count ());
+            }
 #else
             nullptr
 #endif
@@ -58,7 +65,7 @@ namespace Stroika::Foundation::Debug {
         warnIfLongerThan,
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
             [=] (Time::DurationSeconds timeTaken) noexcept {
-                DbgTrace (L"%s (timeTaken=%f seconds)", label.As<wstring> ().c_str (), timeTaken.count ());
+                DbgTrace (Characters::FormatString<char>{"{} (timeTaken={} seconds)"}, label, timeTaken.count ());
             }
 #else
             nullptr

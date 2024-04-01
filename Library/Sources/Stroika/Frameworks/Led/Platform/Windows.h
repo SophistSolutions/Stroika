@@ -1261,7 +1261,8 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (UINT nSBCode, UINT /*nPos*/, HWND /*hScrollBar*/)
     {
-        DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (nSBCode=%d,...)\n"), nSBCode);
+        using namespace Characters::Literals;
+        DbgTrace ("Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (nSBCode={},...)"_f, nSBCode);
 
         using TextInteractor::eDefaultUpdate;
         using TextInteractor::eImmediateUpdate;
@@ -1609,6 +1610,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnSize_ ()
     {
+        using namespace Characters::Literals;
         this->InvalidateScrollBarParameters (); // Cuz even if no layoutwidth change, we still change page size for scrollbars, if any...
         RECT     cr;
         Led_Rect r;
@@ -1635,8 +1637,8 @@ namespace Stroika::Frameworks::Led::Platform {
         if (r.left >= r.right) {
             r.right = r.left + 1;
         }
-        DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::OnSize_ (clientRect=(%d,%d,%d,%d), windowRect <= (%d,%d,%d,%d))\n"), cr.top,
-                  cr.left, cr.bottom, cr.right, r.top, r.left, r.bottom, r.right);
+        DbgTrace ("Led_Win32_Helper<>::OnSize_ (clientRect=(%d,%d,%d,%d), windowRect <= (%d,%d,%d,%d))"_f, cr.top, cr.left, cr.bottom,
+                  cr.right, r.top, r.left, r.bottom, r.right);
         this->SetWindowRect (r);
     }
     template <typename BASE_INTERACTOR>
@@ -1732,9 +1734,10 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::WindowDrawHelper (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing)
     {
-        DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::WindowDrawHelper (subsetToDraw= (%d, %d, %d, %d))\n"), subsetToDraw.top,
-                  subsetToDraw.left, subsetToDraw.bottom, subsetToDraw.right);
-        TemporarilyUseTablet tmpUseTablet (*this, tablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall);
+        using namespace Characters::Literals;
+        DbgTrace ("Led_Win32_Helper<>::WindowDrawHelper (subsetToDraw= (%d, %d, %d, %d))"_f, subsetToDraw.top, subsetToDraw.left,
+                  subsetToDraw.bottom, subsetToDraw.right);
+        TemporarilyUseTablet tmpUseTablet{*this, tablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall};
         this->Draw (subsetToDraw, printing);
 
         /*
@@ -1962,11 +1965,11 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::SetHScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw)
     {
+        using namespace Characters::Literals;
         bool showBar = TypeAndScrollInfoSBVisible (scrollbarAppears, scrollInfo);
 
-        DbgTrace (Led_SDK_TCHAROF (
-                      "Led_Win32_Helper<>::SetHScrollInfo  (scrollbarAppears=%d, smin=%d, smax=%d, nPage=%d, nPos=%d) ==> showBar=%d)\n"),
-                  scrollbarAppears, scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar);
+        DbgTrace ("Led_Win32_Helper<>::SetHScrollInfo  (scrollbarAppears={}, smin={}, smax={}, nPage={}, nPos={}) ==> showBar={})"_f,
+                  static_cast<int> (scrollbarAppears), scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar);
 
         /*
          *  As near as I can tell - the below call to ::SetScrollInfo () should be sufficient to show/hide the SBAR. And - often
@@ -2008,10 +2011,10 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::SetVScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw)
     {
+        using namespace Characters::Literals;
         bool showBar = TypeAndScrollInfoSBVisible (scrollbarAppears, scrollInfo);
-        DbgTrace (Led_SDK_TCHAROF (
-                      "Led_Win32_Helper<>::SetVScrollInfo  (scrollbarAppears=%d, smin=%d, smax=%d, nPage=%d, nPos=%d) ==> showBar=%d)\n"),
-                  scrollbarAppears, scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar);
+        DbgTrace ("Led_Win32_Helper<>::SetVScrollInfo  (scrollbarAppears={}, smin={}, smax={}, nPage={}, nPos={}) ==> showBar={})"_f,
+                  static_cast<int> (scrollbarAppears), scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar);
 
         /*
          *  As near as I can tell - the below call to ::SetScrollInfo () should be sufficient to show/hide the SBAR. And - often
@@ -2130,8 +2133,9 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::UpdateScrollBars ()
     {
-        DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::UpdateScrollBars () with winStart=%d, winEnd=%d)\n"),
-                  this->GetMarkerPositionOfStartOfWindow (), this->GetMarkerPositionOfEndOfWindow ());
+        using namespace Characters::Literals;
+        DbgTrace ("Led_Win32_Helper<>::UpdateScrollBars () with winStart={}, winEnd={})"_f, this->GetMarkerPositionOfStartOfWindow (),
+                  this->GetMarkerPositionOfEndOfWindow ());
 
 // Don't allow SetVScrollInfo/SetHScrollInfo () calls during a thumb track - because MS Windows scrollbar
 // control SOMETIMES doesn't react well (npos not properly adjusted) when you reset the page size during

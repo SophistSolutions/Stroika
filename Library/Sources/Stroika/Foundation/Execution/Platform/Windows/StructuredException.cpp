@@ -9,13 +9,14 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Characters/String.h"
-#include "../../../Common/TemplateUtilities.h"
-#include "../../../Configuration/Common.h"
-#include "../../../Containers/Common.h"
-#include "../../../Debug/Trace.h"
-#include "../../../Execution/Exceptions.h"
-#include "../../../Time/Realtime.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "StructuredException.h"
 
@@ -108,27 +109,28 @@ namespace {
     {
         TraceContextBumper ctx{"{}::trans_func_"};
         {
+            using namespace Characters::Literals;
             // I wish I knew how to get a PROCNAME of where the caller was...
-            DbgTrace ("u = 0x%x (%s)", u, StructuredException_error_category ().message (u).c_str ());
+            DbgTrace ("u = 0x{:x} ({})"_f, u, String::FromNarrowSDKString (StructuredException_error_category ().message (u)));
             if (pExp != nullptr) {
                 if (pExp->ContextRecord != nullptr) {
                     TraceContextBumper ctx1{"ContextRecord"};
-                    DbgTrace ("ContextRecord->ContextFlags = 0x%x", pExp->ContextRecord->ContextFlags);
-                    DbgTrace ("ContextRecord->Dr0 = 0x%x", pExp->ContextRecord->Dr0);
+                    DbgTrace ("ContextRecord->ContextFlags = 0x{:x}"_f, pExp->ContextRecord->ContextFlags);
+                    DbgTrace ("ContextRecord->Dr0 = 0x{:x}"_f, pExp->ContextRecord->Dr0);
 #if qPlatform_Win32
-                    DbgTrace ("ContextRecord->Esp = 0x%x", pExp->ContextRecord->Esp);
+                    DbgTrace ("ContextRecord->Esp = 0x{:x}"_f, pExp->ContextRecord->Esp);
 #endif
                 }
                 if (pExp->ExceptionRecord != nullptr) {
                     TraceContextBumper ctx1{"ExceptionRecord"};
-                    DbgTrace ("ExceptionRecord->ExceptionAddress = 0x%x", pExp->ExceptionRecord->ExceptionAddress);
-                    DbgTrace ("ExceptionRecord->ExceptionCode = 0x%x", pExp->ExceptionRecord->ExceptionCode);
-                    DbgTrace ("ExceptionRecord->ExceptionFlags = 0x%x", pExp->ExceptionRecord->ExceptionFlags);
-                    DbgTrace ("ExceptionRecord->NumberParameters = %d", pExp->ExceptionRecord->NumberParameters);
+                    DbgTrace ("ExceptionRecord->ExceptionAddress = 0x{:x}"_f, pExp->ExceptionRecord->ExceptionAddress);
+                    DbgTrace ("ExceptionRecord->ExceptionCode = 0x{:x}"_f, pExp->ExceptionRecord->ExceptionCode);
+                    DbgTrace ("ExceptionRecord->ExceptionFlags = 0x{:x}"_f, pExp->ExceptionRecord->ExceptionFlags);
+                    DbgTrace ("ExceptionRecord->NumberParameters = {}"_f, pExp->ExceptionRecord->NumberParameters);
                 }
             }
         }
-        DbgTrace ("Translating it into a Platform::Windows::StructuredException::THROW()");
+        DbgTrace ("Translating it into a Platform::Windows::StructuredException::THROW()"_f);
         Assert (false); // in case debug turned on, helpful to drop into the debugger here!
         Execution::Throw (Execution::SystemErrorException (u, StructuredException_error_category ()));
     }

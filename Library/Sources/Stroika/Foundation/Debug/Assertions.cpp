@@ -6,9 +6,10 @@
 #include <cassert>
 #include <cstdlib>
 
-#include "BackTrace.h"
-#include "Debugger.h"
-#include "Trace.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/BackTrace.h"
+#include "Stroika/Foundation/Debug/Debugger.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "Assertions.h"
 
@@ -17,6 +18,7 @@
 #endif
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Debug;
 
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qDebug, qDebug);
@@ -27,9 +29,9 @@ namespace {
     void DefaultAssertionHandler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
     {
         try {
-            DbgTrace ("%s (%s) failed in '%s'; %s:%d", assertCategory == nullptr ? "Unknown assertion" : assertCategory,
-                      assertionText == nullptr ? "" : assertionText, functionName == nullptr ? "" : functionName,
-                      fileName == nullptr ? "" : fileName, lineNum);
+            DbgTrace ("{} ({}) failed in '{}'; {}:{}"_f, String{assertCategory == nullptr ? "Unknown assertion" : assertCategory},
+                      String{assertionText == nullptr ? "" : assertionText}, String{functionName == nullptr ? "" : functionName},
+                      String{fileName == nullptr ? "" : fileName}, lineNum);
 #if qPlatform_POSIX
             fprintf (stderr, "%s (%s) failed in '%s'; %s:%d\n", assertCategory == nullptr ? "Unknown assertion" : assertCategory,
                      assertionText == nullptr ? "" : assertionText, functionName == nullptr ? "" : functionName,
@@ -39,12 +41,12 @@ namespace {
             {
                 wstring tmp{Debug::BackTrace::Capture ()};
                 if (not tmp.empty ()) {
-                    DbgTrace (L"BackTrace: %s", tmp.c_str ());
+                    DbgTrace ("BackTrace: {}"_f, tmp);
                 }
             }
 #endif
             DropIntoDebuggerIfPresent ();
-            DbgTrace ("ABORTING...");
+            DbgTrace ("ABORTING..."_f);
 #if qPlatform_POSIX
             fprintf (stderr, "ABORTING...\n");
 #endif
@@ -55,9 +57,9 @@ namespace {
     }
     void DefaultWeakAssertionHandler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
     {
-        DbgTrace ("%s (%s) failed in '%s'; %s:%d", assertCategory == nullptr ? "Unknown assertion" : assertCategory,
-                  assertionText == nullptr ? "" : assertionText, functionName == nullptr ? "" : functionName,
-                  fileName == nullptr ? "" : fileName, lineNum);
+        DbgTrace ("{} ({}) failed in '{}'; {}:{}"_f, String{assertCategory == nullptr ? "Unknown assertion" : assertCategory},
+                  String{assertionText == nullptr ? "" : assertionText}, String{functionName == nullptr ? "" : functionName},
+                  String{fileName == nullptr ? "" : fileName}, lineNum);
 #if qPlatform_POSIX
         fprintf (stderr, "%s (%s) failed in '%s'; %s:%d\n", assertCategory == nullptr ? "Unknown assertion" : assertCategory,
                  assertionText == nullptr ? "" : assertionText, functionName == nullptr ? "" : functionName,
@@ -67,7 +69,7 @@ namespace {
         {
             wstring tmp{Debug::BackTrace::Capture ()};
             if (not tmp.empty ()) {
-                DbgTrace (L"BackTrace: %s", tmp.c_str ());
+                DbgTrace ("BackTrace: {}"_f, tmp);
             }
         }
 #endif

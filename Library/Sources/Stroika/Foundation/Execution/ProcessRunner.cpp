@@ -381,7 +381,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
             ::CloseHandle (processHandle);
         }
         else {
-            DbgTrace (L"openprocess returned null: GetLastError () = %d", GetLastError ());
+            DbgTrace ("::OpenProcess returned null: GetLastError () = {}"_f, GetLastError ());
         }
 #else
         AssertNotImplemented ();
@@ -1060,7 +1060,7 @@ namespace {
                                     //      -- LGP 2009-05-07
                                     if (lastErr != ERROR_SUCCESS and lastErr != ERROR_NO_MORE_FILES and lastErr != ERROR_PIPE_BUSY and
                                         lastErr != ERROR_NO_DATA) {
-                                        DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", lastErr);
+                                        DbgTrace ("in RunExternalProcess_ - throwing {} while fill in stdin"_f, lastErr);
                                         Execution::ThrowSystemErrNo (lastErr);
                                     }
                                 }
@@ -1122,12 +1122,12 @@ namespace {
                     readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
                     switch (waitResult) {
                         case WAIT_OBJECT_0: {
-                            DbgTrace (_T ("process finished normally"));
+                            DbgTrace ("process finished normally"_f);
                             //                              timeoutAt = -1.0f;  // force out of loop
                             goto DoneWithProcess;
                         } break;
                         case WAIT_TIMEOUT: {
-                            DbgTrace ("still waiting for external process output (WAIT_TIMEOUT)");
+                            DbgTrace ("still waiting for external process output (WAIT_TIMEOUT)"_f);
                         }
                     }
                 }

@@ -160,7 +160,7 @@ public:
                         for (int i = 0; i < NSIG; ++i) {
                             while (fIncomingSignalCounts_[i] > 0) {
                                 fLastSignalRecieved_ = i;
-                                DbgTrace ("Rare, but possible race avoidance");
+                                DbgTrace ("Rare, but possible race avoidance"_f);
                                 goto Again;
                             }
                         }
@@ -470,7 +470,7 @@ void SignalHandlerRegistry::RemoveSignalHandler (SignalID signal, const SignalHa
 
 void SignalHandlerRegistry::DefaultCrashSignalHandler ([[maybe_unused]] SignalID signal)
 {
-    DbgTrace (L"Serious Signal Error trapped: %s ... Aborting", SignalToName (signal).c_str ());
+    DbgTrace ("Serious Signal Error trapped: {} ... Aborting"_f, SignalToName (signal));
     abort ();
 }
 

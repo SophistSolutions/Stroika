@@ -69,8 +69,8 @@ namespace {
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", L"opening", Characters::ToString (testDBFile).c_str (),
-                                  Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("Error {} experiment DB: {}: {}"_f, L"opening"sv, Characters::ToString (testDBFile),
+                                  Characters::ToString (current_exception ()));
                         Execution::ReThrow ();
                     }
                 }
@@ -81,7 +81,7 @@ namespace {
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("Error {} experiment DB: {}: {}"_f, L"opening"sv, L"MEMORY"sv, Characters::ToString (current_exception ()));
                         Execution::ReThrow ();
                     }
                 }
@@ -134,7 +134,7 @@ namespace {
                         fDB_.Exec (insertSQL);
                     }
                     Statement s{fDB_, "SELECT MAX(ScanId) FROM Scans;"sv};
-                    DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
+                    DbgTrace ("Statement: {}"_f, Characters::ToString (s));
                     return s.GetNextRow ()->Lookup ("MAX(ScanId)"sv)->As<ScanIDType_> ();
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
@@ -147,10 +147,10 @@ namespace {
                 nonvirtual optional<ScanIDType_> GetLastScan_Explicit_ (ScanKindType_ scanKind)
                 {
                     Statement s{fDB_, Characters::Format (L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind)};
-                    DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
+                    DbgTrace ("Statement: {}"_f, Characters::ToString (s));
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
+                        DbgTrace ("ROW: {}"_f, Characters::ToString (*r));
 #endif
                         return r->Lookup ("MAX(ScanId)")->As<ScanIDType_> ();
                     }
@@ -160,10 +160,10 @@ namespace {
                 {
                     Statement s{fDB_, "select MAX(ScanId) from Scans where  ScanTypeIDRef=:ScanKind;"};
                     s.Bind (":ScanKind", VariantValue{(int)scanKind});
-                    DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
+                    DbgTrace ("Statement: {}"_f, Characters::ToString (s));
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
+                        DbgTrace ("ROW: {}"_f, Characters::ToString (*r));
 #endif
                         return r->Lookup ("MAX(ScanId)")->As<ScanIDType_> ();
                     }
@@ -242,10 +242,10 @@ namespace {
                              }},
                         });
                     if (created) {
-                        DbgTrace (L"Initialized new experiment DB: %s", Characters::ToString (db).c_str ());
+                        DbgTrace ("Initialized new experiment DB: {}"_f, Characters::ToString (db));
                     }
                     else {
-                        DbgTrace (L"Opened experiment DB: %s", Characters::ToString (db).c_str ());
+                        DbgTrace ("Opened experiment DB: {}"_f, Characters::ToString (db));
                     }
                 }
                 Database::SQL::SQLite::Connection::Ptr fDB_;
@@ -261,12 +261,12 @@ namespace {
                 db.fDB_->Exec ("select * from ScanTypes;");
                 {
                     Statement s{db.fDB_, "select * from ScanTypes;"};
-                    DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
+                    DbgTrace ("Statement: {}"_f, Characters::ToString (s));
                     while (optional<Statement::Row> r = s.GetNextRow ()) {
-                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
+                        DbgTrace ("ROW: {}"_f, Characters::ToString (*r));
                     }
                 }
-                DbgTrace ("Latest Reference=%d", db.GetLastScan (ScanKindType_::Reference).value_or (static_cast<ScanIDType_> (-1)));
+                DbgTrace ("Latest Reference={}"_f, db.GetLastScan (ScanKindType_::Reference).value_or (static_cast<ScanIDType_> (-1)));
                 SpectrumType_      spectrum;
                 const unsigned int kNRecordsAddedPerTestCall = 100;
                 for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
@@ -276,7 +276,7 @@ namespace {
                     Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
                     Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid,
+                    DbgTrace ("ScanPersistenceAdd returned id={}, and laserScan reported={}"_f, (int)sid,
                               (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
 #endif
                 }
@@ -425,7 +425,7 @@ namespace {
                             case 0:
                             case 1: {
                                 String name = kNames_[namesDistr (generator)];
-                                DbgTrace (L"Adding employee %s", name.c_str ());
+                                DbgTrace ("Adding employee {}"_f, name);
                                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
                                     {":NAME"sv, name},
                                     {":AGE"sv, ageDistr (generator)},
@@ -440,7 +440,7 @@ namespace {
                                 if (not activeEmps.empty ()) {
                                     uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                                     tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
-                                    DbgTrace (L"Firing employee: %d, %s", get<0> (killMe).As<int> (), get<1> (killMe).As<String> ().c_str ());
+                                    DbgTrace ("Firing employee: {}, {}"_f, get<0> (killMe).As<int> (), get<1> (killMe).As<String> ());
                                     fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{":ID", get<0> (killMe).As<int> ()}});
                                 }
                             } break;
@@ -448,8 +448,7 @@ namespace {
                     }
                     catch (...) {
                         // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s",
-                                  Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
                     }
 
                     Sleep (1s); // **cancelation point**
@@ -469,7 +468,7 @@ namespace {
                             int    id     = get<0> (employee).As<int> ();
                             String name   = get<1> (employee).As<String> ();
                             double salary = get<2> (employee).As<double> ();
-                            DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", id, name.c_str (), salary);
+                            DbgTrace ("Writing paycheck for employee #{} ({}) amount {}"_f, id, name, salary);
                             addPaycheckStatement.Execute (initializer_list<Statement::ParameterDescription>{
                                 {":EMPLOYEEREF", id},
                                 {":AMOUNT", salary / 12},
@@ -479,8 +478,7 @@ namespace {
                     }
                     catch (...) {
                         // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s",
-                                  Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
                     }
                     Sleep (2s); // **cancelation point**
                 }
@@ -669,7 +667,7 @@ namespace {
                             case 0:
                             case 1: {
                                 String name = kNames_[namesDistr (generator)];
-                                DbgTrace (L"Adding employee %s", name.c_str ());
+                                DbgTrace ("Adding employee {}"_f, name);
                                 employeeTableConnection->AddNew (Employee{nullopt, name, ageDistr (generator),
                                                                           kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
                             } break;
@@ -680,7 +678,7 @@ namespace {
                                     uniform_int_distribution<int> empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                                     Employee                      killMe = activeEmps[empDistr (generator)];
                                     Assert (killMe.ID.has_value ());
-                                    DbgTrace (L"Firing employee: %d, %s", *killMe.ID, killMe.fName.c_str ());
+                                    DbgTrace ("Firing employee: {}, {}"_f, *killMe.ID, killMe.fName);
                                     killMe.fStillEmployed = false;
                                     employeeTableConnection->Update (killMe);
                                 }
@@ -689,8 +687,7 @@ namespace {
                     }
                     catch (...) {
                         // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s",
-                                  Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
                     }
 
                     Sleep (1s); // **cancelation point**
@@ -710,14 +707,13 @@ namespace {
                     try {
                         for (auto employee : employeeTableConnection->GetAll ()) {
                             Assert (employee.ID != nullopt);
-                            DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", *employee.ID, employee.fName.c_str (), employee.fSalary);
+                            DbgTrace ("Writing paycheck for employee #{} (%s) amount {}"_f, *employee.ID, employee.fName, employee.fSalary);
                             paycheckTableConnection->AddNew (Paycheck{nullopt, *employee.ID, employee.fSalary / 12, DateTime::Now ().GetDate ()});
                         }
                     }
                     catch (...) {
                         // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s",
-                                  Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
                     }
                     Sleep (2s); // **cancelation point**
                 }
@@ -761,7 +757,7 @@ namespace {
         static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         RegressionTest1_sqlite_ScansDBTest_::DoIt ();
         if (kRunningValgrind_ and qDebug) {
-            DbgTrace ("Skipping remaining tests cuz too slow");
+            DbgTrace ("Skipping remaining tests cuz too slow"_f);
             return;
         }
         RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt ();

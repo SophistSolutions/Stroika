@@ -44,6 +44,7 @@
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
@@ -144,7 +145,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
 #endif
     char ac[1024];
     if (::gethostname (ac, sizeof (ac)) == SOCKET_ERROR) {
-        DbgTrace (L"gethostname: err=%d", WSAGetLastError ());
+        DbgTrace ("gethostname: err={}"_f, WSAGetLastError ());
         return InternetAddress{};
     }
     Sequence<InternetAddress> allAddrs    = DNS::kThe.GetHostAddresses (String::FromNarrowSDKString (ac));

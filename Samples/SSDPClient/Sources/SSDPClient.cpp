@@ -47,7 +47,7 @@ namespace {
             }
         }
         catch (...) {
-            DbgTrace (L"failed to fetch description: %s", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("failed to fetch description: {}"_f, Characters::ToString (current_exception ()));
         }
     }
 }

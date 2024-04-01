@@ -22,6 +22,7 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::DataExchange;
 
 using namespace Stroika::Frameworks;
@@ -220,10 +221,9 @@ namespace {
         {
             auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
                 [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
-                DbgTrace (L"SUFFIX(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
-                DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
-                DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.As<wstring> ().c_str (),
-                          Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
+                DbgTrace ("SUFFIX({})={}"_f, label.As<wstring> (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)));
+                DbgTrace ("ASSOCFILESUFFIXES({})={}"_f, label.As<wstring> (), Characters::ToString (r.GetAssociatedFileSuffixes (i)));
+                DbgTrace ("GetAssociatedPrettyName({})={}"_f, label, Characters::ToString (r.GetAssociatedPrettyName (i)));
             };
             auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
                 [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
@@ -272,7 +272,7 @@ namespace {
             Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::Get ().GetMediaTypes()"};
             // enumerate all content types
             for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
-                DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
+                DbgTrace ("i={}"_f, Characters::ToString (ct));
             }
         }
         {

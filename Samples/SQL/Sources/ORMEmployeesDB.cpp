@@ -165,7 +165,7 @@ namespace {
                     case 0:
                     case 1: {
                         String name = kNames_[namesDistr (generator)];
-                        DbgTrace (L"Adding employee %s", name.c_str ());
+                        DbgTrace ("Adding employee {}"_f, name);
                         employeeTableConnection->AddNew (Employee{nullopt, name, ageDistr (generator),
                                                                   kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
                     } break;
@@ -176,7 +176,7 @@ namespace {
                             uniform_int_distribution<int> empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             Employee                      killMe = activeEmps[empDistr (generator)];
                             Assert (killMe.ID.has_value ());
-                            DbgTrace (L"Firing employee: %d, %s", *killMe.ID, killMe.fName.c_str ());
+                            DbgTrace ("Firing employee: {}, {}"_f, *killMe.ID, killMe.fName);
                             killMe.fStillEmployed = false;
                             employeeTableConnection->Update (killMe);
                         }
@@ -184,8 +184,8 @@ namespace {
                 }
             }
             catch (...) {
-                // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                DbgTrace (L"Exception processing SQL - this should generally not happen: %s", Characters::ToString (current_exception ()).c_str ());
+                // no need to check for ThreadAbort exception, since Sleep is a cancelation point
+                DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
             }
 
             Sleep (1s); // **cancelation point**
@@ -204,8 +204,7 @@ namespace {
             try {
                 for (const auto& employee : employeeTableConnection->GetAll ()) {
                     Assert (employee.ID != nullopt);
-                    DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", *employee.ID, employee.fName.As<wstring> ().c_str (),
-                              employee.fSalary);
+                    DbgTrace ("Writing paycheck for employee #{} ({}) amount {}"_f, *employee.ID, employee.fName, employee.fSalary);
                     paycheckTableConnection->AddNew (Paycheck{nullopt, *employee.ID, employee.fSalary / 12, DateTime::Now ().GetDate ()});
                 }
             }

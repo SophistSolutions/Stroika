@@ -305,7 +305,7 @@ bool Response::End ()
             fState_ = State::eCompleted;
         }
         catch (...) {
-            DbgTrace (L"Exception during Response::End () automaticaly triggers Response::Abort()");
+            DbgTrace (L"Exception during Response::End () automaticaly triggers Response::Abort()"_f);
             Abort ();
             Ensure (this->responseAborted ());
             Ensure (this->responseCompleted ());

@@ -262,13 +262,13 @@ namespace {
         size_t      prevTotalRemainingAlloced = 0;
         ExtractInfo_ (curSnapshot.fAllocations, &sizes, &totalRemainingAlloced);
         ExtractInfo_ (sinceSnapshot.fAllocations, &prevSizes, &prevTotalRemainingAlloced);
-        DbgTrace ("Net Allocation Count = %d (prev %d)", curSnapshot.fAllocations.size (), sinceSnapshot.fAllocations.size ());
-        DbgTrace ("Net Allocation byte Count = %d (prev %d)", totalRemainingAlloced, prevTotalRemainingAlloced);
+        DbgTrace ("Net Allocation Count = {} (prev {})"_f, curSnapshot.fAllocations.size (), sinceSnapshot.fAllocations.size ());
+        DbgTrace ("Net Allocation byte Count = {} (prev {})"_f, totalRemainingAlloced, prevTotalRemainingAlloced);
         if (totalRemainingAlloced > prevTotalRemainingAlloced) {
-            DbgTrace ("Leaked %d bytes", totalRemainingAlloced - prevTotalRemainingAlloced);
+            DbgTrace ("Leaked {} bytes"_f, totalRemainingAlloced - prevTotalRemainingAlloced);
         }
         else if (prevTotalRemainingAlloced > totalRemainingAlloced) {
-            DbgTrace ("Reverse-Leaked %d bytes", prevTotalRemainingAlloced - totalRemainingAlloced);
+            DbgTrace ("Reverse-Leaked {} bytes"_f, prevTotalRemainingAlloced - totalRemainingAlloced);
         }
 #if 0
         {
@@ -306,22 +306,22 @@ namespace {
                         unsigned int oldCountThisSize = ExtractCountUsedForSize_ (sinceSnapshot.fAllocations, *si);
                         unsigned int newCountThisSize = ExtractCountUsedForSize_ (curSnapshot.fAllocations, *si);
                         if (oldCountThisSize < newCountThisSize) {
-                            DbgTrace ("Leak: for bucket size %d, oldCount=%d, newCount=%d", *si, oldCountThisSize, newCountThisSize);
+                            DbgTrace ("Leak: for bucket size {}, oldCount={}, newCount={}"_f, *si, oldCountThisSize, newCountThisSize);
                         }
                         else if (oldCountThisSize > newCountThisSize) {
-                            DbgTrace ("Reverse-Leak: for bucket size %d, oldCount=%d, newCount=%d", *si, oldCountThisSize, newCountThisSize);
+                            DbgTrace ("Reverse-Leak: for bucket size {}, oldCount={}, newCount={}"_f, *si, oldCountThisSize, newCountThisSize);
                         }
                         ++si;
                         ++psi;
                     }
                     else {
-                        DbgTrace ("Reverse-Leak: old size bucket %d", *psi);
+                        DbgTrace ("Reverse-Leak: old size bucket {}"_f, *psi);
                         ++psi;
                     }
                 }
             }
             while (psi != prevSizes.end ()) {
-                DbgTrace ("Reverse-Leak: old size bucket %d", *psi);
+                DbgTrace ("Reverse-Leak: old size bucket {}"_f, *psi);
                 ++psi;
             }
         }

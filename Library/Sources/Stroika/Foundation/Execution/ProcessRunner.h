@@ -146,18 +146,6 @@ namespace Stroika::Foundation::Execution {
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
         ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
-#if !qTargetPlatformSDKUseswchar_t && 0
-        ProcessRunner (const SDKString& commandLine, const Streams::InputStream::Ptr<byte>& in = nullptr,
-                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr)
-            : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
-        {
-        }
-        ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
-                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr)
-            : ProcessRunner (String::FromSDKString (executable), args, in, out, error)
-        {
-        }
-#endif
 
     public:
         nonvirtual ProcessRunner& operator= (const ProcessRunner&) = delete;

@@ -113,7 +113,7 @@ namespace {
         EXPECT_TRUE (r.GetSucceeded ());
         EXPECT_TRUE (r.GetData ().size () > 1);
         String response = r.GetDataTextInputStream ().ReadAll ();
-        DbgTrace (L"response=%s", response.As<wstring> ().c_str ());
+        DbgTrace (L"response={}"_f, response);
         EXPECT_TRUE (response.StartsWith ("<html>"));
         EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
     }

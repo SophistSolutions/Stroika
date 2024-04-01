@@ -610,7 +610,7 @@ namespace {
                         case wlan_interface_state_authenticating:
                             return WirelessInfo::State::eAuthenticating;
                         default:
-                            DbgTrace (L"Unknown state %ld", s);
+                            DbgTrace ("Unknown state {}"_f, static_cast<int> (s));
                             return WirelessInfo::State::eUnknown;
                     }
                 };
@@ -629,7 +629,7 @@ namespace {
                     }
 
                     if (pConnectInfo->isState != pIfInfo->isState) {
-                        DbgTrace (L"Not sure how these can differ (except for race condition) - but if they do, maybe worth looking into");
+                        DbgTrace ("Not sure how these can differ (except for race condition) - but if they do, maybe worth looking into"_f);
                     }
 
                     auto mapConnectionMode = [] (WLAN_CONNECTION_MODE s) -> WirelessInfo::ConnectionMode {
@@ -647,7 +647,7 @@ namespace {
                             case wlan_connection_mode_invalid:
                                 return WirelessInfo::ConnectionMode::eInvalid;
                             default:
-                                DbgTrace (L"Unknown connection mode %d\n", s);
+                                DbgTrace ("Unknown connection mode {}"_f, static_cast<int> (s));
                                 return WirelessInfo::ConnectionMode::eUnknown;
                         }
                     };
@@ -670,7 +670,7 @@ namespace {
                             case dot11_BSS_type_any:
                                 return WirelessInfo::BSSType::eAny;
                             default:
-                                DbgTrace (L"Unknown connection mode %d", s);
+                                DbgTrace ("Unknown BSS mode {}"_f, static_cast<int> (s));
                                 return WirelessInfo::BSSType::eUnknown;
                         }
                     };
@@ -704,7 +704,7 @@ namespace {
                             case dot11_phy_type_he:
                                 return WirelessInfo::PhysicalConnectionType::e80211ax;
                             default:
-                                DbgTrace (L"Unknown DOT11_PHY_TYPE %d\n", s);
+                                DbgTrace (L"Unknown DOT11_PHY_TYPE {}"_f, static_cast<int> (s));
                                 return WirelessInfo::PhysicalConnectionType::eUnknown;
                         }
                     };
@@ -737,7 +737,7 @@ namespace {
                             case DOT11_AUTH_ALGO_RSNA_PSK:
                                 return WirelessInfo::AuthAlgorithm::eRSNA_PSK;
                             default:
-                                DbgTrace (L"Unknown AuthAlgorithm %d\n", s);
+                                DbgTrace (L"Unknown AuthAlgorithm {}"_f, static_cast<int> (s));
                                 return WirelessInfo::AuthAlgorithm::eUnknown;
                         }
                     };
@@ -828,13 +828,13 @@ namespace {
                         }
                         break;
                     default:
-                        DbgTrace ("Treating unknown currAddresses->IfType = %d type as eOther", currAddresses->IfType);
+                        DbgTrace ("Treating unknown currAddresses->IfType = {} type as eOther"_f, currAddresses->IfType);
                         newInterface.fType = Interface::Type::eOther;
                         break;
                 }
                 if (currAddresses->TunnelType != TUNNEL_TYPE_NONE) {
                     if (newInterface.fType) {
-                        DbgTrace (L"overwriting type %s with tunneltype", Characters::ToString (newInterface.fType).c_str ());
+                        DbgTrace ("overwriting type {} with tunneltype"_f, Characters::ToString (newInterface.fType));
                     }
                     newInterface.fType = Interface::Type::eTunnel;
                 }
@@ -853,7 +853,7 @@ namespace {
                         break;
                     default:
                         // Don't know how to interpret the other status states
-                        DbgTrace (L"ignoring unrecognized status: %d", currAddresses->OperStatus);
+                        DbgTrace ("ignoring unrecognized status: {}"_f, static_cast<int> (currAddresses->OperStatus));
                         break;
                 }
                 for (PIP_ADAPTER_UNICAST_ADDRESS pu = currAddresses->FirstUnicastAddress; pu != nullptr; pu = pu->Next) {
@@ -935,7 +935,7 @@ namespace {
             goto Again;
         }
         else if (dwRetVal == ERROR_NO_DATA) {
-            DbgTrace ("There are no network adapters enabled on the local system");
+            DbgTrace ("There are no network adapters enabled on the local system"_f);
         }
         else {
             Execution::ThrowSystemErrNo (dwRetVal);

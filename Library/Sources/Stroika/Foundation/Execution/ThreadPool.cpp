@@ -153,7 +153,7 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
     Debug::TraceContextBumper ctx{"ThreadPool::SetPoolSize", "poolSize={}"_f, poolSize};
     Require (not fAborted_);
     [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-    DbgTrace (L"fThreads_.size ()=%d", fThreads_.size ());
+    DbgTrace ("fThreads_.size ()={}"_f, fThreads_.size ());
     while (poolSize > fThreads_.size ()) {
         fThreads_.Add (mkThread_ ());
     }
@@ -173,7 +173,7 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
         }
         if (not anyFoundToKill) {
             // @todo - fix this better/eventually - either throw or wait...
-            DbgTrace ("Failed to lower the loop size - cuz all threads busy - giving up");
+            DbgTrace ("Failed to lower the loop size - cuz all threads busy - giving up"_f);
             return;
         }
     }
@@ -191,7 +191,7 @@ auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Charac
         if (GetPendingTasksCount () >= qmax.fLength) [[unlikely]] {
 #if qDebug
             if (not blockedAtLeastOnce) {
-                DbgTrace ("Blocking inside ThreadPool::AddTask due to excessive pending task count");
+                DbgTrace ("Blocking inside ThreadPool::AddTask due to excessive pending task count"_f);
                 blockedAtLeastOnce = true;
             }
 #endif
@@ -482,7 +482,7 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
         Thread::AbortAndWaitForDone (threadsToShutdown);
     }
     catch (...) {
-        DbgTrace ("ThreadPool::AbortAndWaitForDone_: serious bug/exception");
+        DbgTrace ("ThreadPool::AbortAndWaitForDone_: serious bug/exception"_f);
         AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
     }
 }
@@ -524,8 +524,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String
                 *result     = fPendingTasks_.front ().fTask;
                 *resultName = fPendingTasks_.front ().fName;
                 fPendingTasks_.pop_front ();
-                DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving "
-                          "pending-task-list-size = %d",
+                DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving pending-task-list-size = {}"_f,
                           fPendingTasks_.size ());
                 Ensure (*result != nullptr);
                 return;

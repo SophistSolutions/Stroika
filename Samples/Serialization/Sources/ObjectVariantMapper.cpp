@@ -57,7 +57,7 @@ namespace {
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be displayed for debugging purposes using
-        DbgTrace (L"v = %s", Characters::ToString (v).c_str ());
+        DbgTrace ("v = {}"_f, Characters::ToString (v));
 
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
         // And dump the results into a temporary memory-based stream
@@ -125,7 +125,7 @@ namespace {
 
         // at this point - we should have VariantValue object with "Enabled", "Last-Synchronized-At" etc fields set properly.
         // This can then be displayed using
-        DbgTrace (L"v = %s", Characters::ToString (v).c_str ());
+        DbgTrace ("v = {}"_f, Characters::ToString (v));
 
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we selected JSON)
         Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
@@ -144,7 +144,7 @@ namespace {
                 IO::FileSystem::FileInputStream::Ptr tmpFileStream =
                     IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
                 SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpFileStream));
-                DbgTrace (L"tmp2 = %s", Characters::ToString (tmp2).c_str ());
+                DbgTrace ("tmp2 = {}"_f, Characters::ToString (tmp2));
                 Assert (tmp2 == tmp);
             }
         }
@@ -180,13 +180,13 @@ namespace {
 
             // at this point - we should have VariantValue object with "Enabled" field.
             // This can then be displayed for debugging purposes using
-            DbgTrace (L"vv = %s", Characters::ToString (vv).c_str ());
+            DbgTrace ("vv = {}"_f, Characters::ToString (vv));
 
             // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
             // And dump the results into a temporary memory-based stream
             Streams::MemoryStream::Ptr<Character> tmpStream = Streams::MemoryStream::New<Character> ();
             Variant::JSON::Writer{}.Write (vv, tmpStream);
-            DbgTrace (L"rendered as JSON: = %s", tmpStream.As<String> ().ReplaceAll ("\n"sv, ""sv).c_str ());
+            DbgTrace ("rendered as JSON: = {}"_f, tmpStream.As<String> ().ReplaceAll ("\n"sv, ""sv));
         };
 
         // Create a test object to serialize

@@ -290,8 +290,23 @@ namespace Stroika::Foundation::Debug {
      *          DbgTrace (L"u = {}"_f, url);
      *          DbgTrace ("u = {}"_f, url);
      *      \endcode
+     * 
+     *  @todo - redo NOT as MACRO but as FUNCTION call (to emittracemessage)
+     * 
+     *   template <typename CHAR_T, typename... Args>
+        nonvirtual void DbgTrace (Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
+        {
+        or some such
+            try {
+                Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage (fmt.get (), Configuration::StdCompat::make_wformat_args (args...));
+            }
+            catch (...) {
+            }
+        }
+        but only after 'd' stage development so I can lose C-style FMT string overloads...
      */
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+
 #define DbgTrace Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage
 #else
 #define DbgTrace _NoOp_

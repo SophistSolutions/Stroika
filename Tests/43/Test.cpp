@@ -21,6 +21,7 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
@@ -81,7 +82,7 @@ namespace {
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("http://www.ics.uci.edu/pub/ietf/uri/#Related");
                     EXPECT_TRUE (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "www.ics.uci.edu");
-                    DbgTrace (L"X=%s", uri.As<String> ().c_str ());
+                    DbgTrace ("X={}"_f, uri.As<String> ());
                     EXPECT_TRUE (uri.As<String> () == "http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {
@@ -443,7 +444,7 @@ namespace {
                 {InternetAddress{192, 168, 255, 255}, false, false, false, true},
             };
             for (auto i : kTests_) {
-                DbgTrace (L"i.addr=%s", i.addr.As<String> ().c_str ());
+                DbgTrace ("i.addr={}"_f, i.addr);
                 EXPECT_TRUE (i.addr.IsLocalhostAddress () == i.isLocalHost);
                 EXPECT_TRUE (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
                 EXPECT_TRUE (i.addr.IsMulticastAddress () == i.isMulticast);
@@ -469,7 +470,7 @@ namespace {
     {
         Debug::TraceContextBumper trcCtx{"Test3_NetworkInterfaceList_"};
         for (Interface iFace : SystemInterfacesMgr{}.GetAll ()) {
-            DbgTrace (L"iFace: %s", Characters::ToString (iFace).c_str ());
+            DbgTrace ("iFace: {}"_f, iFace);
         }
     }
 }
@@ -494,7 +495,7 @@ namespace {
             }
             {
                 optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress{23, 56, 90, 167});
-                DbgTrace (L"reverselookup %s", Memory::NullCoalesce (aaa).c_str ());
+                DbgTrace ("reverselookup {}"_f, Memory::NullCoalesce (aaa));
             }
         }
     }
@@ -548,7 +549,7 @@ namespace {
                     // Note - this try/catch is ONLY needed to workaround bug with MSFT WSL (windows subsystem for linux), and when thats fixed we can remove the try/catch -- LGP 2020-03-20
                     try {
                         for (NeighborsMonitor::Neighbor n : monitor.GetNeighbors ()) {
-                            DbgTrace (L"discovered %s", Characters::ToString (n).c_str ());
+                            DbgTrace ("discovered {}"_f, Characters::ToString (n));
                         }
                     }
                     catch ([[maybe_unused]] const filesystem::filesystem_error& e) {

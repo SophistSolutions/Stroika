@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 
+#include "../../../Characters/Format.h"
 #include "../../../Debug/Trace.h"
 
 #include "HRESULTErrorException.h"
@@ -23,6 +24,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      */
     inline COMInitializer::COMInitializer (COINIT initFlag, bool worksWithAnyCoInitFlag)
     {
+        using namespace Characters::Literals;
         Debug::TraceContextBumper ctx{"Execution::Platform::Windows::COMInitializer::CTOR"};
         HRESULT                   hr = ::CoInitializeEx (nullptr, initFlag);
         switch (hr) {
@@ -35,7 +37,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
             case RPC_E_CHANGED_MODE: {
                 if (worksWithAnyCoInitFlag) {
                     fNeedsShutdown_ = true;
-                    DbgTrace ("RPC_E_CHANGED_MODE being ignored");
+                    DbgTrace ("RPC_E_CHANGED_MODE being ignored"_f);
                     return; // harmless, already initialized and we don't care how
                 }
                 else {

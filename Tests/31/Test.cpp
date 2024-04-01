@@ -476,27 +476,27 @@ namespace {
             Set<String> defaultContextStandardDigestAlgorithms =
                 OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
 
-            DbgTrace (L"defaultContextAvailableCipherAlgorithms = #%d %s", defaultContextAvailableCipherAlgorithms.size (),
-                      Characters::ToString (defaultContextAvailableCipherAlgorithms).c_str ());
-            DbgTrace (L"defaultContextStandardCipherAlgorithms = #%d %s", defaultContextStandardCipherAlgorithms.size (),
-                      Characters::ToString (defaultContextStandardCipherAlgorithms).c_str ());
-            DbgTrace (L"defaultContextAvailableDigestAlgorithms = #%d %s", defaultContextAvailableDigestAlgorithms.size (),
-                      Characters::ToString (defaultContextAvailableDigestAlgorithms).c_str ());
-            DbgTrace (L"defaultContextStandardDigestAlgorithms = #%d %s", defaultContextStandardDigestAlgorithms.size (),
-                      Characters::ToString (defaultContextStandardDigestAlgorithms).c_str ());
+            DbgTrace ("defaultContextAvailableCipherAlgorithms = #{} {}"_f, defaultContextAvailableCipherAlgorithms.size (),
+                      Characters::ToString (defaultContextAvailableCipherAlgorithms));
+            DbgTrace ("defaultContextStandardCipherAlgorithms = #{} {}"_f, defaultContextStandardCipherAlgorithms.size (),
+                      Characters::ToString (defaultContextStandardCipherAlgorithms));
+            DbgTrace ("defaultContextAvailableDigestAlgorithms = #{} {}"_f, defaultContextAvailableDigestAlgorithms.size (),
+                      Characters::ToString (defaultContextAvailableDigestAlgorithms));
+            DbgTrace ("defaultContextStandardDigestAlgorithms = #{} {}"_f, defaultContextStandardDigestAlgorithms.size (),
+                      Characters::ToString (defaultContextStandardDigestAlgorithms));
 
             // worth noting if these fail
             if (not defaultContextAvailableCipherAlgorithms.ContainsAny (defaultContextStandardCipherAlgorithms)) {
                 Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format (
-                        L"defaultContextAvailableCipherAlgorithms missing standard algoritmhs: %s",
+                        L"defaultContextAvailableCipherAlgorithms missing standard algorithms: %s",
                         Characters::ToString (defaultContextStandardCipherAlgorithms - defaultContextAvailableCipherAlgorithms).c_str ())
                         .c_str ());
             }
             if (not defaultContextAvailableDigestAlgorithms.ContainsAny (defaultContextStandardDigestAlgorithms)) {
                 Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format (
-                        L"defaultContextAvailableDigestAlgorithms missing standard algoritmhs: %s",
+                        L"defaultContextAvailableDigestAlgorithms missing standard algorithms: %s",
                         Characters::ToString (defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms).c_str ())
                         .c_str ());
             }
@@ -597,11 +597,11 @@ namespace {
                         or ci.pName () == "id-smime-alg-CMS3DESwrap"
                             // clang-format on
                             )) {
-                        DbgTrace (L"Skipping ci='%s' on raspi/asan", ci.pName ().As<wstring> ().c_str ());
+                        DbgTrace ("Skipping ci='{}' on raspi/asan"_f, ci.pName ());
                         continue;
                     }
                     for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
-                        DbgTrace (L"Testing ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ());
+                        DbgTrace ("Testing ci={}, di={}"_f, Characters::ToString (ci), Characters::ToString (di));
                         size_t nFailsForThisCipherDigestCombo{};
                         for (BLOB passphrase : kPassphrases_) {
                             for (BLOB inputMessage : kTestMessages_) {
@@ -618,8 +618,8 @@ namespace {
                                 catch (...) {
                                     nFailures++;
                                     failingCiphers.Add (Characters::ToString (ci));
-                                    DbgTrace (L"For Test (%s, %s): Ignorning exception: %s", Characters::ToString (ci).c_str (),
-                                              Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ());
+                                    DbgTrace ("For Test ({}, {}): Ignorning exception: {}"_f, Characters::ToString (ci),
+                                              Characters::ToString (di), Characters::ToString (current_exception ()));
                                 }
                             }
                         }
@@ -711,14 +711,14 @@ namespace {
             auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const DerivedKey& expected) {
                 unsigned int nRounds = 1; // command-line tool uses this
                 DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds};
-                DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
+                DbgTrace ("dk={}; expected={}"_f, Characters::ToString (dk), Characters::ToString (expected));
                 EXPECT_TRUE (dk == expected);
             };
             auto checkWithSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password,
                                      const BLOB& salt, const DerivedKey& expected) {
                 unsigned int nRounds = 1; // command-line tool uses this
                 DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds, salt};
-                DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
+                DbgTrace ("dk={}; expected={}"_f, Characters::ToString (dk), Characters::ToString (expected));
                 EXPECT_TRUE (dk == expected);
             };
 
@@ -777,16 +777,15 @@ namespace {
                 if (OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Contains (cipherAlgorithm)) {
                     unsigned int nRounds = 1; // command-line tool uses this
                     OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
-                    DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());
+                    DbgTrace ("dk={}"_f, Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}));
                     BLOB encodedData =
                         OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
                     BLOB decodedData =
                         OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
-                    DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (),
-                              Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (),
-                              Characters::ToString (decodedData).c_str ());
-                    EXPECT_TRUE (encodedData == expected);
-                    EXPECT_TRUE (src == decodedData);
+                    DbgTrace ("src={}; encodedData={}; expected={}; decodedData={}"_f, Characters::ToString (src),
+                              Characters::ToString (encodedData), Characters::ToString (expected), Characters::ToString (decodedData));
+                    EXPECT_EQ (encodedData, expected);
+                    EXPECT_EQ (src, decodedData);
                 }
             };
 

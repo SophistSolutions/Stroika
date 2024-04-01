@@ -88,7 +88,7 @@ namespace {
         {
             if constexpr (qDebug) {
                 if (not sRunningThreads_.empty ()) {
-                    DbgTrace (L"Threads %s running", Characters::ToString (Thread::GetStatistics ().fRunningThreads).c_str ());
+                    DbgTrace ("Threads {} running"_f, Characters::ToString (Thread::GetStatistics ().fRunningThreads));
                     Require (sRunningThreads_.empty ());
                 }
             }
@@ -291,8 +291,7 @@ void Thread::Ptr::Rep_::Run_ ()
     }
     catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"in ad::Ptr::Rep_::Run_ () - saving caught exception to repropagate later (%s)",
-                  Characters::ToString (current_exception ()).c_str ());
+        DbgTrace ("in ad::Ptr::Rep_::Run_ () - saving caught exception to repropagate later ({})"_f, Characters::ToString (current_exception ()));
 #endif
         fSavedException_ = current_exception ();
         throw;
@@ -373,9 +372,8 @@ void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
 void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Ptr::Rep_::ApplyPriority", L"threads=%s, priority=%s",
-                                                                                 Characters::ToString (*this).c_str (),
-                                                                                 Characters::ToString (priority).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        "Thread::Ptr::Rep_::ApplyPriority", "threads={}, priority={}"_f, Characters::ToString (*this), Characters::ToString (priority))};
 #endif
     NativeHandleType nh = GetNativeHandle ();
     if (nh != NativeHandleType{}) {
@@ -499,14 +497,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             Require (Debug::AppearsDuringMainLifetime ());
             [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
-            DbgTrace (L"Adding thread index %s to sRunningThreads_ (%s)",
-                      Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))).c_str (),
-                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> ([] (IDType i) {
-                          return IndexRegistrar::sThe.GetIndex (i);
-                      })).c_str ());
+            DbgTrace (L"Adding thread index {} to sRunningThreads_ ({})"_f,
+                      Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))),
+                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> (
+                          [] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); })));
 #else
-            DbgTrace (L"Adding thread id %s to sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (),
-                      Characters::ToString (sRunningThreads_).c_str ());
+            DbgTrace (L"Adding thread id {} to sRunningThreads_ ({})"_f, Characters::ToString (thisThreadID), Characters::ToString (sRunningThreads_));
 #endif
             Verify (sRunningThreads_.insert (thisThreadID).second); // .second true if inserted, so checking not already there
         }
@@ -515,14 +511,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             Require (Debug::AppearsDuringMainLifetime ()); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
-            DbgTrace (L"removing thread index %s from sRunningThreads_ (%s)",
-                      Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))).c_str (),
-                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> ([] (IDType i) {
-                          return IndexRegistrar::sThe.GetIndex (i);
-                      })).c_str ());
+            DbgTrace (L"removing thread index {} from sRunningThreads_ ({})"_f,
+                      Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))),
+                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> (
+                          [] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); })));
 #else
-            DbgTrace (L"removing thread id %s from sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (),
-                      Characters::ToString (sRunningThreads_).c_str ());
+            DbgTrace (L"removing thread id {} from sRunningThreads_ ({})", Characters::ToString (thisThreadID), Characters::ToString (sRunningThreads_));
 #endif
             Verify (sRunningThreads_.erase (thisThreadID) == 1); // verify exactly one erased
         });
@@ -538,7 +532,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                 (void)sigaddset (&mySet, SignalUsedForThreadInterrupt ()); // ""
                 Verify (::pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Just set SIG_UNBLOCK for signal %s in this thread", SignalToName (SignalUsedForThreadInterrupt ()).c_str ());
+                DbgTrace (L"Just set SIG_UNBLOCK for signal {} in this thread"_f, SignalToName (SignalUsedForThreadInterrupt ()));
 #endif
             }
 #endif
@@ -557,22 +551,20 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
             // But only register this after fRefCountBumpedInsideThreadMainEvent_ (would need to think more carefully to place this earlier)
             // --LGP 2023-10-03
-            stop_callback stopCallback{
-                thisThreadRep->fStopToken_, [=] () {
-                    if (doRun) {
-                        DbgTrace (
-                            "Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state.");
-                        // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
-                        if (not thisThreadRep->fAbortRequested_) [[unlikely]] {
-                            IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
-                        }
-                    }
-                }};
+            stop_callback stopCallback{thisThreadRep->fStopToken_, [=] () {
+                                           if (doRun) {
+                                               DbgTrace ("Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state."_f);
+                                               // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
+                                               if (not thisThreadRep->fAbortRequested_) [[unlikely]] {
+                                                   IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
+                                               }
+                                           }
+                                       }};
 #endif
             if (doRun) {
-                DbgTrace (L"In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: %s", thisThreadRep->ToString ().c_str ());
+                DbgTrace (L"In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
                 thisThreadRep->Run_ ();
-                DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", thisThreadRep->ToString ().c_str ());
+                DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {}"_f, thisThreadRep->ToString ());
             }
         }
         catch (const AbortException&) {
@@ -588,11 +580,11 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
     }
     catch (const AbortException&) {
         DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow not "
-                  "working???");
+                  "working???"_f);
         AssertNotReached (); // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
     catch (...) {
-        DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught exception");
+        DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught exception"_f);
         AssertNotReached (); // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
 }
@@ -715,9 +707,8 @@ void Thread::Ptr::SetThreadName (const String& threadName) const
     RequireNotNull (fRep_);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'",
-                                                       Characters::ToString (GetID ()).c_str (), threadName.As<wstring> ().c_str ())};
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Execution::Thread::SetThreadName", "thisThreadID={}, threadName = '{}'"_f,
+                                                                          Characters::ToString (GetID ()), threadName.As<wstring> ())};
 #endif
     if (fRep_->fThreadName_ != threadName) {
         fRep_->fThreadName_ = threadName.As<wstring> ();
@@ -793,7 +784,7 @@ void Thread::Ptr::Start () const
     if (optional<Priority> p = fRep_->fInitialPriority_.load ()) {
         fRep_->ApplyPriority (*p);
     }
-    DbgTrace (L"Requesting transition to running for %s", ToString ().c_str ());
+    DbgTrace (L"Requesting transition to running for {}"_f, ToString ());
     fRep_->fStartReadyToTransitionToRunningEvent_.Set ();
 }
 void Thread::Ptr::Start (WaitUntilStarted) const
@@ -827,7 +818,7 @@ void Thread::Ptr::Abort () const
         // If transitioning to aborted state, notify any existing stop_callbacks
         // not needed to check prevState - since https://en.cppreference.com/w/cpp/thread/jthread/request_stop says requst_stop checks if already requested.
         if (not wasAborted) [[likely]] {
-            DbgTrace ("Transitioned state to aborting, so calling fThread_.get_stop_source ().request_stop ();");
+            DbgTrace ("Transitioned state to aborting, so calling fThread_.get_stop_source ().request_stop ();"_f);
             fRep_->fStopSource_.request_stop ();
         }
 #endif
@@ -846,7 +837,7 @@ void Thread::Ptr::Abort () const
         fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"leaving *this = %s", Characters::ToString (*this).c_str ());
+    DbgTrace (L"leaving *this = {}"_f, Characters::ToString (*this));
 #endif
 }
 
@@ -994,8 +985,7 @@ Thread::Statistics Thread::GetStatistics ()
 void Thread::Abort (const Traversal::Iterable<Ptr>& threads)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"threads=%s", Characters::ToString (threads).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::Abort", "threads={}"_f, Characters::ToString (threads))};
 #endif
     threads.Apply ([] (Ptr t) { t.Abort (); });
 }
@@ -1003,8 +993,8 @@ void Thread::Abort (const Traversal::Iterable<Ptr>& threads)
 void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"threads=%s, timeoutAt=%f",
-                                                                                 Characters::ToString (threads).c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::AbortAndWaitForDoneUntil", "threads={}, timeoutAt={}"_f,
+                                                                                 Characters::ToString (threads), timeoutAt)};
 #endif
     /*
      *  Before Stroika v3, we would sometimes re-send the abort message, but no need if this is not buggy. One abort sb enuf.
@@ -1016,8 +1006,8 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, 
 void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"threads=%s, timeoutAt=%f",
-                                                                                 Characters::ToString (threads).c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::WaitForDoneUntil", "threads={}, timeoutAt={}"_f,
+                                                                                 Characters::ToString (threads), timeoutAt)};
 #endif
     CheckForInterruption (); // always a cancelation point (even if empty list)
     // consider rewriting so we don't do this sequentially, but 'harvest' the ones completed (much as we did in Stroika v2.1), but perhaps no point.
@@ -1161,7 +1151,7 @@ void Execution::Thread::CheckForInterruption ()
         else if (thisRunningThreadRep->fAbortRequested_) {
             static atomic<unsigned int> sSuperSuppress_{};
             if (++sSuperSuppress_ <= 1) {
-                IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: t_InterruptionSuppressDepth_=%d, t_Interrupting_=%d",
+                IgnoreExceptionsForCall (DbgTrace ("Suppressed interrupt throw: t_InterruptionSuppressDepth_={}, t_Interrupting_={}"_f,
                                                    t_InterruptionSuppressDepth_, thisRunningThreadRep->fAbortRequested_.load ()));
                 sSuperSuppress_--;
             }

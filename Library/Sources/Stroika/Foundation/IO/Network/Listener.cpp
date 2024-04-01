@@ -18,6 +18,7 @@
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO::Network;
@@ -57,9 +58,9 @@ struct Listener::Rep_ {
                     }
                     catch (...) {
                         // unclear what todo with exceptions here
-                        // probably ignore all but for threadabort.
-                        // may need virtual fucntions to handle? Or std::function passed in?
-                        DbgTrace (L"Exception accepting new connection: %s - ignored", Characters::ToString (current_exception ()).c_str ());
+                        // probably ignore all but for thread abort.
+                        // may need virtual functions to handle? Or std::function passed in?
+                        DbgTrace ("Exception accepting new connection: {} - ignored"_f, Characters::ToString (current_exception ()));
                     }
                 }
             },
@@ -68,7 +69,7 @@ struct Listener::Rep_ {
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
     ~Rep_ ()
     {
-        DbgTrace (L"Starting destructor for Listener::Rep_ (%p)", this);
+        DbgTrace ("Starting destructor for Listener::Rep_ ({})"_f, static_cast<const void*> (this));
     }
 #endif
 

@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "CharacterEncodingException.h"
+#include "Format.h"
 
 #include "UTFConvert.h"
 
@@ -431,7 +432,8 @@ namespace {
             *sourceStart = source;
             *targetStart = target;
             if (result == sourceIllegal) {
-                DbgTrace (L"ConvertUTF16toUTF32 illegal seq 0x%04x,%04x\n", ch, ch2);
+                using namespace Characters::Literals;
+                DbgTrace ("ConvertUTF16toUTF32 illegal seq 0x{:x},0x{:x}"_f, static_cast<int> (ch), static_cast<int> (ch2));
             }
             return result;
         }

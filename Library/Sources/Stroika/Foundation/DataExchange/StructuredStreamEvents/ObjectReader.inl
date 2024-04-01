@@ -109,7 +109,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     /*
      ********************************************************************************
-     ******************************** Registry::Context ****************************
+     ******************************** Registry::Context *****************************
      ********************************************************************************
      */
     inline Context::Context (const Registry& registry)
@@ -123,11 +123,12 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
     inline void Context::Push (const shared_ptr<IElementConsumer>& elt)
     {
+        using namespace Characters::Literals;
         RequireNotNull (elt);
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
         if (fTraceThisReader) {
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
-            DbgTrace (L"%sContext::Push [%s]", TraceLeader_ ().c_str (), Characters::ToString (typeid (*elt.get ())).c_str ());
+            DbgTrace ("{}Context::Push [{}]"_f, TraceLeader_ (), Characters::ToString (typeid (*elt.get ())));
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
         }
 #endif
@@ -137,16 +138,17 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
     inline void Context::Pop ()
     {
+        using namespace Characters::Literals;
         fStack_.back ()->Deactivating ();
         fStack_.pop_back ();
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
         if (fTraceThisReader) {
             if (fStack_.empty ()) {
-                DbgTrace (L"%sContext::Popped [empty stack]", TraceLeader_ ().c_str ());
+                DbgTrace ("{}Context::Popped [empty stack]"_f, TraceLeader_ ());
             }
             else {
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
-                DbgTrace (L"%sContext::Popped [back to: %s]", TraceLeader_ ().c_str (), Characters::ToString (typeid (*GetTop ().get ())).c_str ());
+                DbgTrace (L"{}Context::Popped [back to: {}]"_f, TraceLeader_ (), Characters::ToString (typeid (*GetTop ().get ())));
                 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
             }
         }
@@ -273,6 +275,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename T>
     ReaderFromVoidStarFactory ClassReader<T>::LookupFactoryForName_ (const Name& name) const
     {
+        using namespace Characters::Literals;
         RequireNotNull (fActiveContext_);
         for (const StructFieldInfo& i : fFieldDescriptions_) {
             if (i.fSerializedFieldName == name) {
@@ -283,7 +286,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     optional<ReaderFromVoidStarFactory> o = fActiveContext_->GetObjectReaderRegistry ().Lookup (i.fFieldMetaInfo.GetTypeInfo ());
                     if constexpr (qDebug) {
                         if (not o.has_value ()) {
-                            DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (i.fFieldMetaInfo).c_str ());
+                            DbgTrace ("(forTypeInfo = {}) - UnRegistered Type!"_f, Characters::ToString (i.fFieldMetaInfo));
                             AssertNotReached ();
                         }
                     }
@@ -749,7 +752,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap) -> ReaderFromVoidStarFactory
     {
-        using namespace Characters;
+        using namespace Characters::Literals;
         struct myReader_ : public IElementConsumer {
             Containers::Bijection<ENUM_TYPE, String> fNameMap;
             myReader_ (const Containers::Bijection<ENUM_TYPE, String>& nameMap, ENUM_TYPE* intoVal)
@@ -774,9 +777,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     *fValue_ = *optVal;
                 }
                 else {
-                    DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (),
-                              fBuf_.str ().c_str ());
-                    Execution::Throw (BadFormatException{"Enumeration value out of range"sv});
+                    DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, Characters::ToString (typeid (ENUM_TYPE)), fBuf_.str ());
+                    static const auto kException_ = BadFormatException{"Enumeration value out of range"sv};
+                    Execution::Throw (kException_);
                 }
             }
         };
@@ -826,9 +829,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
                 }
                 else {
-                    DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (),
-                              fBuf_.str ().c_str ());
-                    Execution::Throw (BadFormatException{"Enumeration value out of range"sv});
+                    DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, Characters::ToString (typeid (ENUM_TYPE)), fBuf_);
+                    static const auto kException_ = BadFormatException{"Enumeration value out of range"sv};
+                    Execution::Throw (kException_);
                 }
             }
         };

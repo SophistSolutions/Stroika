@@ -20,6 +20,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Common;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
@@ -147,7 +148,7 @@ namespace {
                 EXPECT_TRUE (h2.contentLength4 == 5);
                 bool firstEventHanlderCalled{false};
                 h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
-                    DbgTrace ("first event handler called");
+                    DbgTrace ("first event handler called"_f);
                     firstEventHanlderCalled = true;
                     return PropertyCommon::PropertyChangedEventResultType::eContinueProcessing;
                 });
@@ -156,7 +157,7 @@ namespace {
                 bool secondEventHanlderCalled{false};
                 EXPECT_TRUE (firstEventHanlderCalled);
                 h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
-                    DbgTrace ("second event handler called");
+                    DbgTrace ("second event handler called"_f);
                     secondEventHanlderCalled = true;
                     return PropertyCommon::PropertyChangedEventResultType::eSilentlyCutOffProcessing;
                 });

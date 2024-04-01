@@ -65,7 +65,7 @@ namespace {
                     int nb    = ::recv (fSD_, data, (int)NEltsOf (data), flags);
 #endif
                     if (nb > 0) {
-                        DbgTrace (L"Warning: %d unread bytes to be read on socket when it was closed.",
+                        DbgTrace ("Warning: {} unread bytes to be read on socket when it was closed."_f,
                                   nb); // SHOULD READ ZERO AFTER SHUTDOWN to indicate client other side of connection handled the close
                         goto again;
                     }

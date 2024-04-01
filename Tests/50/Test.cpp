@@ -25,6 +25,7 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Time;
 
 using namespace Stroika::Frameworks;
@@ -446,7 +447,7 @@ namespace {
         }
         catch (...) {
             // See qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy if this is triggered
-            DbgTrace ("qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy");
+            DbgTrace ("qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy"_f);
             EXPECT_TRUE (false);
             Execution::ReThrow ();
         }
@@ -511,10 +512,10 @@ namespace {
             //TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            DbgTrace (L"DateTime::Now()=%s", Characters::ToString (DateTime::Now ()).c_str ());
-            DbgTrace (L"DateTime::Now().AsUTC ()=%s", Characters::ToString (DateTime::Now ().AsUTC ()).c_str ());
-            DbgTrace (L"DateTime::Now().AsLocalTime ()=%s", Characters::ToString (DateTime::Now ().AsLocalTime ()).c_str ());
-            DbgTrace (L"Timezone::kLocalTime.GetBiasFromUTC (fDate_, TimeOfDay{0})=%d",
+            DbgTrace (L"DateTime::Now()={}"_f, Characters::ToString (DateTime::Now ()));
+            DbgTrace (L"DateTime::Now().AsUTC ()={}"_f, Characters::ToString (DateTime::Now ().AsUTC ()));
+            DbgTrace (L"DateTime::Now().AsLocalTime ()={}"_f, Characters::ToString (DateTime::Now ().AsLocalTime ()));
+            DbgTrace ("Timezone::kLocalTime.GetBiasFromUTC (fDate_, TimeOfDay{{0}})={}"_f,
                       Timezone::kLocalTime.GetBiasFromUTC (DateTime::Now ().GetDate (), TimeOfDay{0}));
             {
                 DateTime regTest{time_t (1598992961)};
@@ -522,12 +523,12 @@ namespace {
                 EXPECT_TRUE ((regTest.GetDate () == Date{Year{2020}, September, DayOfMonth{1}}));
                 EXPECT_TRUE ((regTest.GetTimeOfDay () == TimeOfDay{20, 42, 41}));
                 if (Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()) == -4 * 60 * 60) {
-                    DbgTrace ("Eastern US timezone");
+                    DbgTrace ("Eastern US timezone"_f);
                     EXPECT_TRUE ((regTest.AsLocalTime () ==
                                   DateTime{Date{Year{2020}, September, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
                 }
                 else {
-                    DbgTrace ("other timezone: offset=%d", Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()));
+                    DbgTrace ("other timezone: offset={}"_f, Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()));
                 }
             }
         }
@@ -1066,8 +1067,8 @@ namespace {
             Date                d2 = DateTime::Now ().GetDate () + 1;
             String              t1 = Characters::ToString (d1);
             DiscreteRange<Date> dr{d1, d2};
-            Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage (L"dr=%d", Characters::ToString (dr).c_str ());
-            Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage (L"drContains=%d", dr.Contains (dr.GetMidpoint ()));
+            DbgTrace ("dr={}"_f, Characters::ToString (dr));
+            DbgTrace ("drContains={}"_f, dr.Contains (dr.GetMidpoint ()));
 #else
             DiscreteRange<Date> dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};
 #endif

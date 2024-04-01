@@ -333,12 +333,13 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnPerformCommand_MSG (UINT commandNumber)
     {
         using namespace Stroika::Foundation;
+        using namespace Stroika::Foundation::Characters::Literals;
         IdleManager::NonIdleContext nonIdleContext;
         try {
             (void)this->OnPerformCommand (MFC_CommandNumberMapping::Get ().Lookup (commandNumber));
         }
         catch (...) {
-            DbgTrace (L"Ignoring / suppressing uncaught exception in PerformCommand: %s", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("Ignoring / suppressing uncaught exception in PerformCommand: {}"_f, Characters::ToString (current_exception ()));
         }
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>

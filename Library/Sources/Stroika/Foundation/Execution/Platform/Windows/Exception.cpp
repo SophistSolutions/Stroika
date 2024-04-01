@@ -108,7 +108,7 @@ void Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
     DISABLE_COMPILER_MSC_WARNING_END (4311)
     DISABLE_COMPILER_MSC_WARNING_END (4302)
     if (errCode <= 32) {
-        DbgTrace ("ThrowIfShellExecError (0x%x) - throwing exception", errCode);
+        DbgTrace ("ThrowIfShellExecError (0x{:x}) - throwing exception"_f, errCode);
         switch (errCode) {
             case 0:
                 Execution::ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY); // The operating system is out of memory or resources.

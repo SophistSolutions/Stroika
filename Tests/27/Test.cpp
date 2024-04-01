@@ -56,7 +56,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Containers_SortedMultiSet, all)
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {

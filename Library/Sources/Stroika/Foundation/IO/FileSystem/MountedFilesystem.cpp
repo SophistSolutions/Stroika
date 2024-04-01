@@ -262,15 +262,15 @@ namespace {
                 DWORD retLen = 0;
                 DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
                 if (x == 0) {
-                    DbgTrace (SDKSTR ("Ignoring error getting paths (volume='%s')"), volumeNameBuf);
+                    DbgTrace ("Ignoring error getting paths (volume='{}')"_f, String::FromSDKString (volumeNameBuf));
                 }
                 else if (volPathsBuf[0] == 0) {
                     // Ignore - unmounted!
-                    DbgTrace (SDKSTR ("Ignoring unmounted filesystem (volume='%s')"), volumeNameBuf);
+                    DbgTrace ("Ignoring unmounted filesystem (volume='{}')"_f, String::FromSDKString (volumeNameBuf));
                 }
                 else {
                     for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += Characters::CString::Length (NameIdx) + 1) {
-                        v.fMountedOn = filesystem::path (NameIdx);
+                        v.fMountedOn = filesystem::path{NameIdx};
                         results.Add (v);
                     }
                 }

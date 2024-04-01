@@ -212,7 +212,7 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
     auto p = fLoadedProviders_.LookupOneValue (providerName);
     if (p == nullptr) {
         // really load cuz not already loaded
-        DbgTrace (L"calling OSSL_PROVIDER_load");
+        DbgTrace ("calling OSSL_PROVIDER_load"_f);
         p = ::OSSL_PROVIDER_load (nullptr, providerName.AsNarrowSDKString ().c_str ());
         static const Execution::RuntimeErrorException kErr_{"No such SSL provider"sv};
         Execution::ThrowIfNull (p, kErr_);
@@ -232,7 +232,7 @@ void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerNam
     auto providerToMaybeRemove = fLoadedProviders_.LookupOneValue (providerName);
     fLoadedProviders_.Remove (providerName);
     if (not fLoadedProviders_.ContainsKey (providerName)) {
-        DbgTrace (L"calling OSSL_PROVIDER_unload");
+        DbgTrace ("calling OSSL_PROVIDER_unload"_f);
         Verify (::OSSL_PROVIDER_unload (providerToMaybeRemove) == 1);
     }
 #endif

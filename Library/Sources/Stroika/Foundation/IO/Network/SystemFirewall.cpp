@@ -166,7 +166,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
 
     for (const auto& r : LookupByGroup (rule.fGroup)) {
         if (r == rule) {
-            DbgTrace ("run unchanged, so returning false");
+            DbgTrace ("run unchanged, so returning false"_f);
             return false;
         }
     }
@@ -211,7 +211,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
     ThrowIfErrorHRESULT (pFwRule->put_Enabled (rule.fEnabled ? VARIANT_TRUE : VARIANT_FALSE));
 
     // Add the Firewall Rule
-    DbgTrace ("Updating firewall rule");
+    DbgTrace ("Updating firewall rule"_f);
     ThrowIfErrorHRESULT (pFwRules->Add (pFwRule));
 #endif
     return true;

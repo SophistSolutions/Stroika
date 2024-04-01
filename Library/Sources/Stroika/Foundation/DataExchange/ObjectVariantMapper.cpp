@@ -22,6 +22,7 @@
 #include "ObjectVariantMapper.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 
 using Time::Date;
@@ -500,7 +501,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type
     if constexpr (qDebug) {
         if (not i.has_value ()) {
             Debug::TraceContextBumper ctx{"ObjectVariantMapper::Lookup_"};
-            DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (forTypeInfo).c_str ());
+            DbgTrace ("(forTypeInfo = {}) - UnRegistered Type!"_f, Characters::ToString (forTypeInfo));
         }
     }
     Require (i.has_value ()); // if not present, this is a usage error - only use types which are registered

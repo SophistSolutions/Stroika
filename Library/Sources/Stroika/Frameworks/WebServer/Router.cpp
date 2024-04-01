@@ -127,7 +127,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 Execution::Throw (kException_);
             }
             else {
-                DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->request ().url ()).c_str ());
+                DbgTrace (L"Router 404: (...url={}"_f, Characters::ToString (m->request ().url ()));
                 Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
             }
         }
@@ -244,7 +244,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             response.status = HTTP::StatusCodes::kNoContent;
         }
         else {
-            DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (message->request ().url ()).c_str ());
+            DbgTrace (L"Router 404: (...url={})"_f, Characters::ToString (message->request ().url ()));
             Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
         }
     }

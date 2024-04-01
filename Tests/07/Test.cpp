@@ -22,6 +22,7 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::LockFreeDataStructures;
 
@@ -105,10 +106,10 @@ namespace {
                         [[maybe_unused]] optional<int> x = a.pop_front ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         if (x == y) {
-                            DbgTrace (L"y");
+                            DbgTrace ("y"_f);
                         }
                         else {
-                            DbgTrace (L"n");
+                            DbgTrace ("n"_f);
                         }
 #endif
                     }
@@ -178,10 +179,10 @@ namespace {
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         if (x == y) {
-                            DbgTrace (L"y");
+                            DbgTrace ("y"_f);
                         }
                         else {
-                            DbgTrace (L"n");
+                            DbgTrace ("n"_f);
                         }
 #endif
                     }
@@ -208,7 +209,7 @@ namespace {
                 remainingNumbers.insert (k);
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("remainingNumbers filled with #s %d to %d", 0, totalElementCount);
+            DbgTrace ("remainingNumbers filled with #s {} to {}"_f, 0, totalElementCount);
 #endif
             for (int i = 0; i < threadCount; i++) {
                 threads.emplace_back ([&, i] () {
@@ -229,7 +230,7 @@ namespace {
 #endif
                         if (not r) {
                             // this loop could have gotten ahead of the other thread/loop and emptied the list, so retry
-                            DbgTrace ("waiting for push_front loop");
+                            DbgTrace ("waiting for push_front loop"_f);
                             Execution::Sleep (5ms);
                             goto retry;
                         }
@@ -356,7 +357,7 @@ namespace {
                         int op = rand () % (perThreadOpCount / 100);
                         if (op == 0) {
                             [[maybe_unused]] auto cleared = a.clear ();
-                            DbgTrace ("cleared=%d", cleared);
+                            DbgTrace ("cleared={}"_f, cleared);
                         }
                         else {
                             a.push_front (rand () % 20);

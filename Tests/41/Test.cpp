@@ -159,7 +159,7 @@ namespace {
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
             auto                        mutateFunction = [&oneToKeepOverwriting, repeatCount, &baseMutateFunction] () {
                 Debug::TraceContextBumper traceCtx{"{}::MutateFunction ()"};
-                DbgTrace ("(type %s)", typeid (ITERABLE_TYPE).name ());
+                DbgTrace ("(type {})"_f, Characters::ToString (typeid (ITERABLE_TYPE).name ()));
                 for (unsigned int i = 0; i < repeatCount; ++i) {
                     baseMutateFunction (&oneToKeepOverwriting);
                 }
@@ -606,8 +606,7 @@ namespace {
             //
             Debug::TraceContextBumper traceCtx{"{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()"};
             if (Debug::kBuiltWithThreadSanitizer) {
-                DbgTrace (
-                    "PROBABLY STILL BUGGY - BUT SKIP FOR NOW AND DEBUG LATER... - NOT RECENT REGRESSION - BUT IMPORTANT TO UNDERATNAD");
+                DbgTrace ("PROBABLY STILL BUGGY - BUT SKIP FOR NOW AND DEBUG LATER... - NOT RECENT REGRESSION - BUT IMPORTANT TO UNDERATNAD"_f);
                 // marked high priority in JIRA - LGP 2023-12-06
                 return;
             }
@@ -745,9 +744,9 @@ namespace {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
             auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
-            DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
+            DbgTrace (L"Total Running threads at end: {}"_f, runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {
-                DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
+                DbgTrace (L"Exiting main with thread {} running"_f, Characters::ToString (threadID));
             }
             EXPECT_TRUE (runningThreads.size () == 0);
         });

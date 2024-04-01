@@ -93,22 +93,21 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         }
         Sequence<String> tokens{line.Tokenize ({' '})};
         if (tokens.size () < 3) {
-            DbgTrace (L"tokens=%s, line='%s', fMsgHeaderInTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (),
-                      fMsgHeaderInTextStream.ToString ().c_str ());
+            DbgTrace (L"tokens={}, line='{}', fMsgHeaderInTextStream={}"_f, Characters::ToString (tokens), line, fMsgHeaderInTextStream.ToString ());
             Execution::Throw (ClientErrorException{Characters::Format (L"Bad METHOD Request HTTP line (%s)", line.c_str ())});
         }
         updatableRequest.httpMethod  = tokens[0];
         updatableRequest.httpVersion = tokens[2];
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
-            DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
+            DbgTrace (L"tokens={}, line='{}'"_f, Characters::ToString (tokens), line);
             Execution::Throw (ClientErrorException{"Bad HTTP Request line - missing host-relative URL"sv});
         }
         using IO::Network::URL;
         updatableRequest.url = URI{tokens[1]};
         if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
-            DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
+            DbgTrace (L"tokens={}, line='{}'"_f, Characters::ToString (tokens), line);
             Execution::Throw (ClientErrorException{"Bad METHOD in Request HTTP line"sv});
         }
     }
@@ -122,7 +121,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         // add subsequent items to the header map
         size_t i = line.find (':');
         if (i == string::npos) {
-            DbgTrace (L"line=%s", Characters::ToString (line).c_str ());
+            DbgTrace ("line={}"_f, line);
             Execution::Throw (ClientErrorException{"Bad HTTP Request missing colon in headers"sv});
         }
         else {
@@ -230,7 +229,7 @@ Connection::~Connection ()
         fSocket_.Close ();
     }
     catch (...) {
-        DbgTrace (L"Exception ignored closing socket: %s", Characters::ToString (current_exception ()).c_str ());
+        DbgTrace ("Exception ignored closing socket: {}"_f, Characters::ToString (current_exception ()));
     }
 }
 
@@ -254,12 +253,12 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
             )) {
             case MyMessage_::eIncompleteDeadEnd: {
-                DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web "
-                          L"browser hitting refresh button fast).");
+                DbgTrace ("ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web "
+                          "browser hitting refresh button fast)."_f);
                 return eClose; // don't keep-alive - so this closes connection
             } break;
             case MyMessage_::eIncompleteButMoreMayBeAvailable: {
-                DbgTrace (L"ReadHeaders failed - incomplete header (most likely a DOS attack).");
+                DbgTrace ("ReadHeaders failed - incomplete header (most likely a DOS attack)."_f);
                 return ReadAndProcessResult::eTryAgainLater;
             } break;
             case MyMessage_::eCompleteGood: {
@@ -366,7 +365,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
                 if (auto actualETag = this->response ().headers ().ETag ()) {
                     if (requestedINoneMatch->fETags.Contains (*actualETag)) {
-                        DbgTrace (L"Updating OK response to NotModified (due to ETag match)");
+                        DbgTrace (L"Updating OK response to NotModified (due to ETag match)"_f);
                         this->rwResponse ().status = HTTP::StatusCodes::kNotModified; // this assignment automatically prevents sending data
                     }
                 }
@@ -382,8 +381,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         return thisMessageKeepAlive ? eTryAgainLater : eClose;
     }
     catch (...) {
-        DbgTrace (L"ReadAndProcessMessage Exception caught (%s), so returning ReadAndProcessResult::eClose",
-                  Characters::ToString (current_exception ()).c_str ());
+        DbgTrace ("ReadAndProcessMessage Exception caught ({}), so returning ReadAndProcessResult::eClose"_f,
+                  Characters::ToString (current_exception ()));
         this->rwResponse ().Abort ();
         return Connection::ReadAndProcessResult::eClose;
     }

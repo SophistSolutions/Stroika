@@ -243,7 +243,7 @@ KeyedCollection<DiskInfoType, filesystem::path> FileSystem::GetAvailableDisks ()
             DWORD dwBytesReturned{};
             BOOL bResult = ::DeviceIoControl (hHandle, IOCTL_DISK_GET_LENGTH_INFO, nullptr, 0, &li, sizeof (li), &dwBytesReturned, nullptr);
             if (bResult == 0) {
-                DbgTrace (L"failed - DeviceIoControl - IOCTL_DISK_GET_LENGTH_INFO - ignored");
+                DbgTrace ("failed - DeviceIoControl - IOCTL_DISK_GET_LENGTH_INFO - ignored"_f);
                 continue;
             }
         }
@@ -253,7 +253,7 @@ KeyedCollection<DiskInfoType, filesystem::path> FileSystem::GetAvailableDisks ()
             BOOL  bResult =
                 ::DeviceIoControl (hHandle, IOCTL_DISK_GET_DRIVE_GEOMETRY, nullptr, 0, &driveInfo, sizeof (driveInfo), &dwBytesReturned, nullptr);
             if (bResult == 0) {
-                DbgTrace (L"failed - DeviceIoControl - IOCTL_DISK_GET_DRIVE_GEOMETRY - ignored");
+                DbgTrace ("failed - DeviceIoControl - IOCTL_DISK_GET_DRIVE_GEOMETRY - ignored"_f);
                 continue;
             }
         }

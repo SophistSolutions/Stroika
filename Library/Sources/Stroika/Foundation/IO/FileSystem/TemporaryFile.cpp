@@ -73,12 +73,12 @@ AppTempFileManager::AppTempFileManager (const Options& options)
     // to disambiguiate.
     //
     tmpDir /= GetSysTmpRelativePath_ (options);
-    DbgTrace (L"tmpDir=%s (assuring created now...)", Characters::ToString (tmpDir).c_str ());
+    DbgTrace ("tmpDir={} (assuring created now...)"_f, Characters::ToString (tmpDir));
     try {
         create_directories (tmpDir);
     }
     catch (...) {
-        DbgTrace (L"Error creating tmpdirs, so adjusting and retrying : %s", Characters::ToString (current_exception ()).c_str ());
+        DbgTrace (L"Error creating tmpdirs, so adjusting and retrying : {}"_f, Characters::ToString (current_exception ()));
         // tmpDir == GetEXEPath (): happens in regtests - maybe better way to handle -
         tmpDir.replace_filename (GetEXEPath ().stem ().generic_string () + "-tmpdir");
         create_directories (tmpDir); // if that doesn't do it, just throw
@@ -100,19 +100,19 @@ AppTempFileManager::AppTempFileManager (const Options& options)
 AppTempFileManager::~AppTempFileManager ()
 {
     if (not fTmpDir_.empty ()) {
-        DbgTrace (L"AppTempFileManager::DTOR: clearing %s", Characters::ToString (fTmpDir_).c_str ());
+        DbgTrace (L"AppTempFileManager::DTOR: clearing {}"_f, Characters::ToString (fTmpDir_));
         try {
             remove_all (fTmpDir_);
         }
         catch (...) {
-            DbgTrace ("Ignoring exception clearly AppTempFileManager files: %s", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("Ignoring exception clearly AppTempFileManager files: {}"_f, Characters::ToString (current_exception ()));
         }
     }
 }
 
 AppTempFileManager& AppTempFileManager::operator= (AppTempFileManager&& rhs)
 {
-    DbgTrace (L"AppTempFileManager::DTOR: clearing %s", Characters::ToString (fTmpDir_).c_str ());
+    DbgTrace ("AppTempFileManager::DTOR: clearing {}"_f, Characters::ToString (fTmpDir_));
     remove_all (fTmpDir_);
     fTmpDir_ = move (rhs.fTmpDir_); // prevents rhs DTOR from doing anything
     Assert (rhs.fTmpDir_.empty ()); // cuz of this...
@@ -138,20 +138,20 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
                                           nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY, nullptr);
                 fd != INVALID_HANDLE_VALUE) {
                 ::CloseHandle (fd);
-                DbgTrace (L"AppTempFileManager::GetTempFile (): returning %s", Characters::ToString (trialName).c_str ());
+                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, Characters::ToString (trialName));
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
 #else
             if (int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, filesystem::perms::all); fd >= 0) {
                 close (fd);
-                DbgTrace (L"AppTempFileManager::GetTempFile (): returning %s", Characters::ToString (trialName).c_str ());
+                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, Characters::ToString (trialName));
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
 #endif
         }
-        DbgTrace (L"Attempt to create file (%s) collided, so retrying (%d attempts)", Characters::ToString (trialName).c_str (), attempts);
+        DbgTrace ("Attempt to create file ({}) collided, so retrying ({} attempts)"_f, Characters::ToString (trialName), attempts);
     }
     Execution::Throw (Exception{"Unknown error creating file"sv}, "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
@@ -166,12 +166,12 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
         filesystem::path trialName = fn / ToPath (dirNameBase + buf);
         if (not is_directory (trialName)) {
             if (create_directories (trialName)) {
-                DbgTrace (L"AppTempFileManager::GetTempDir (): returning '%s'", Characters::ToString (trialName).c_str ());
+                DbgTrace ("AppTempFileManager::GetTempDir (): returning '{}'"_f, Characters::ToString (trialName));
                 WeakAssert (is_directory (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
         }
-        DbgTrace (L"Attempt to create directory collided, so retrying (%d)", Characters::ToString (trialName).c_str (), attempts);
+        DbgTrace ("Attempt to create directory collided, so retrying ({})"_f, Characters::ToString (trialName), attempts);
     }
     Execution::Throw (Exception{"Unknown error creating temporary directory"sv},
                       "AppTempFileManager::GetTempDir (): failed to create tempdir");

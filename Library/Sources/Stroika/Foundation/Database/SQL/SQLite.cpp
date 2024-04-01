@@ -48,11 +48,11 @@ namespace {
         }
         switch (errCode) {
             case SQLITE_BUSY: {
-                DbgTrace ("SQLITE_BUSY"); //  The database file is locked
+                DbgTrace ("SQLITE_BUSY"_f); //  The database file is locked
                 Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
             } break;
             case SQLITE_LOCKED: {
-                DbgTrace ("SQLITE_LOCKED"); //  A table in the database is locked
+                DbgTrace ("SQLITE_LOCKED"_f); //  A table in the database is locked
                 Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
             } break;
             case SQLITE_CONSTRAINT: {
@@ -69,7 +69,7 @@ namespace {
                 Execution::Throw (kEx_);
             } break;
             case SQLITE_FULL: {
-                DbgTrace ("SQLITE_FULL");
+                DbgTrace ("SQLITE_FULL"_f);
                 Execution::Throw (system_error{make_error_code (errc::no_space_on_device)});
             } break;
             case SQLITE_READONLY: {
@@ -95,7 +95,7 @@ namespace {
                 }
             } break;
             case SQLITE_NOMEM: {
-                DbgTrace ("SQLITE_NOMEM translated to bad_alloc");
+                DbgTrace ("SQLITE_NOMEM translated to bad_alloc"_f);
                 Execution::Throw (bad_alloc{});
             } break;
         }
@@ -582,8 +582,8 @@ struct Statement::MyRep_ : IRep {
                 return;
             }
         }
-        DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.As<wstring> ().c_str (),
-                  Characters::ToString (fParameters_.Map<Traversal::Iterable<String>> ([] (const auto& i) { return i.fName; })).c_str ());
+        DbgTrace ("Statement::Bind: Parameter '{}' not found in list {}"_f, parameterName,
+                  Characters::ToString (fParameters_.Map<Traversal::Iterable<String>> ([] (const auto& i) { return i.fName; })));
         RequireNotReached (); // invalid paramter name provided
     }
     virtual void Reset () override

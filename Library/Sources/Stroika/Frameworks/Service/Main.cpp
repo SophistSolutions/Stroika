@@ -266,7 +266,7 @@ String Main::GetServiceStatusMessage () const
         default:
             AssertNotReached ();
     }
-    DbgTrace (L"returning status: (%s)", tmp.str ().c_str ());
+    DbgTrace ("returning status: ({})"_f, tmp.str ());
     return tmp.str ();
 }
 
@@ -445,14 +445,14 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
     : fOurSignalHandler_{[this] (SignalID signum) { SignalHandler_ (signum); }}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl: this=%p", this);
+    DbgTrace ("Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl: this={}"_f, static_cast<const void*> (this));
 #endif
 }
 
 Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl: this=%p", this);
+    DbgTrace ("Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl: this={}"_f, static_cast<const void*> (this));
 #endif
     Require (fAppRep_.load () == nullptr);
 }
@@ -786,7 +786,7 @@ void Main::WindowsService::_Install ()
         ::CloseServiceHandle (hSCM);
     });
 
-    DbgTrace (L"registering with command-line: '%s', serviceName: '%s'", cmdLineForRunSvc.c_str (), GetSvcName_ ().c_str ());
+    DbgTrace (L"registering with command-line: '{}', serviceName: '{}'"_f, cmdLineForRunSvc, GetSvcName_ ());
     SC_HANDLE hService = ::CreateService (hSCM, GetSvcName_ ().c_str (), fAppRep_->GetServiceDescription ().fPrettyName.AsSDKString ().c_str (),
                                           kServiceMgrAccessPrivs, SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
                                           cmdLineForRunSvc.AsSDKString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL);
@@ -837,7 +837,7 @@ void Main::WindowsService::_RunAsService ()
     if (::StartServiceCtrlDispatcher (st) == FALSE) {
         fServiceStatus_.dwWin32ExitCode = ::GetLastError ();
         if (fServiceStatus_.dwWin32ExitCode == ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) {
-            DbgTrace ("fServiceStatus_.dwWin32ExitCode = ERROR_FAILED_SERVICE_CONTROLLER_CONNECT");
+            DbgTrace ("fServiceStatus_.dwWin32ExitCode = ERROR_FAILED_SERVICE_CONTROLLER_CONNECT"_f);
         }
         Execution::ThrowSystemErrNo (fServiceStatus_.dwWin32ExitCode); // nb: set to getlasterror result above
     }
@@ -969,7 +969,7 @@ bool Main::WindowsService::IsInstalled_ () const noexcept
 
 void Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept
 {
-    DbgTrace ("SetServiceStatus_ (%d)", dwState);
+    DbgTrace ("SetServiceStatus_ ({})"_f, dwState);
     Assert (fServiceStatusHandle_ != nullptr);
     fServiceStatus_.dwCurrentState = dwState;
     ::SetServiceStatus (fServiceStatusHandle_, &fServiceStatus_);
@@ -1004,7 +1004,7 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
         fRunThread_.Join ();
     }
     catch (...) {
-        DbgTrace (L"mapping run-thread.Join () exception %s to dwWin32ExitCode=1", Characters::ToString (current_exception ()).c_str ());
+        DbgTrace (L"mapping run-thread.Join () exception {} to dwWin32ExitCode=1"_f, Characters::ToString (current_exception ()));
         fServiceStatus_.dwWin32ExitCode = 1; // some non-zero exit code
     }
     SetServiceStatus_ (SERVICE_STOPPED);

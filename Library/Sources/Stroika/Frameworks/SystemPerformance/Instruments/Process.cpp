@@ -160,8 +160,8 @@ namespace {
             try {
                 setupToken_ ();
                 if (not SetPrivilege_ (fToken_, fPrivilege_.c_str (), true)) {
-                    DbgTrace (L"Failed to set privilege: error#: %d", ::GetLastError ()); // avoid through so we don't pollute log with throw/catch stuff
-                    failed = true;                                                        // IgnoreError
+                    DbgTrace ("Failed to set privilege: error#: {}"_f, ::GetLastError ()); // avoid through so we don't pollute log with throw/catch stuff
+                    failed = true;                                                         // IgnoreError
                 }
             }
             catch (...) {
@@ -257,7 +257,7 @@ namespace {
         {
             HANDLE hThreadSnap = ::CreateToolhelp32Snapshot (TH32CS_SNAPTHREAD, 0);
             if (hThreadSnap == INVALID_HANDLE_VALUE) {
-                DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
+                DbgTrace (L"CreateToolhelp32Snapshot failed: {}"_f, ::GetLastError ());
                 return;
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
@@ -268,7 +268,7 @@ namespace {
 
             // Retrieve information about the first thread, and exit if unsuccessful
             if (not ::Thread32First (hThreadSnap, &te32)) {
-                DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
+                DbgTrace (L"CreateToolhelp32Snapshot failed: {}"_f, ::GetLastError ());
                 return;
             }
             // Now walk the thread list of the system,
@@ -1446,7 +1446,7 @@ namespace {
                                     convertFILETIME2DurationSeconds (kernelTime) + convertFILETIME2DurationSeconds (userTime);
                             }
                             else {
-                                DbgTrace (L"error calling GetProcessTimes: %d", ::GetLastError ());
+                                DbgTrace (L"error calling GetProcessTimes: {}"_f, ::GetLastError ());
                             }
                         }
                         {
@@ -1456,7 +1456,7 @@ namespace {
                                 processInfo.fCombinedIOWriteBytes = static_cast<double> (ioCounters.WriteTransferCount);
                             }
                             else {
-                                DbgTrace (L"error calling GetProcessIoCounters: %d", ::GetLastError ());
+                                DbgTrace (L"error calling GetProcessIoCounters: {}"_f, ::GetLastError ());
                             }
                         }
 

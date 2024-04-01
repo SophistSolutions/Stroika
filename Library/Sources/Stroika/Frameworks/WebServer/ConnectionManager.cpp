@@ -235,15 +235,16 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
     }
 
-    DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d, and listening on %s", this,
-              fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options), Characters::ToString (bindAddresses).c_str ());
+    DbgTrace ("Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d, and listening on %s"_f,
+              static_cast<const void*> (this), fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options),
+              Characters::ToString (bindAddresses));
     fWaitForReadyConnectionThread_.Start (); // start here instead of AutoStart so a guaranteed initialized before thread main starts - see https://stroika.atlassian.net/browse/STK-706
 }
 
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
 ConnectionManager::~ConnectionManager ()
 {
-    DbgTrace ("Starting destructor for WebServer::ConnectionManager (%p)", this);
+    DbgTrace ("Starting destructor for WebServer::ConnectionManager (%p)"_f, static_cast<const void*> (this));
 }
 #endif
 
@@ -271,7 +272,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 void ConnectionManager::WaitForReadyConnectionLoop_ ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ConnectionManager::WaitForReadyConnectionLoop_")};
+    Debug::TraceContextBumper ctx{"ConnectionManager::WaitForReadyConnectionLoop_"};
 #endif
 
     // run til thread aborted
@@ -355,7 +356,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
             Execution::ReThrow ();
         }
         catch (...) {
-            DbgTrace (L"Internal exception in WaitForReadyConnectionLoop_ loop suppressed: %s", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("Internal exception in WaitForReadyConnectionLoop_ loop suppressed: {}"_f, Characters::ToString (current_exception ()));
         }
     }
 }

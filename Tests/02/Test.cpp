@@ -973,7 +973,7 @@ namespace {
                 Memory::StackBuffer<wchar_t> ignoreBuf1;
                 span<const wchar_t>          tmpData1 = sb1.GetData (&ignoreBuf1);
                 double                       ff2      = Characters::FloatConversion::ToFloat<double> (tmpData1);
-                DbgTrace (L"*in reader:  ff2-> %f", ff2);
+                DbgTrace ("*in reader:  ff2-> {}"_f, ff2);
                 EXPECT_TRUE (Math::NearlyEquals (ff2, wVal, 0.001));
             };
             for (int i = 1; i < 10; ++i) {
@@ -1324,7 +1324,7 @@ namespace {
             catch (const runtime_error&) {
                 // https://en.cppreference.com/w/cpp/locale/locale/locale says must throw std::runtime_error if invalid locale
                 // if no such locale, just skip the test...
-                DbgTrace (L"e=%s", Characters::ToString (current_exception ()).c_str ());
+                DbgTrace ("e={}"_f, Characters::ToString (current_exception ()));
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 // sigh - fails to convert unicode characters
 #else
@@ -1332,7 +1332,7 @@ namespace {
 #endif
             }
             catch (...) {
-                DbgTrace (L"error: %s", Characters::ToString (current_exception ()).c_str ());
+                DbgTrace ("error: "_f, Characters::ToString (current_exception ()));
                 EXPECT_TRUE (false); // I think docs say must throw std::runtime_error
             }
         };
@@ -1964,20 +1964,20 @@ namespace {
         String a3 = Format ("{}"_f, 3);
         String a4 = Format ("{}"_f, a3);
         String a5 = Format (L"{}"_f, IO::Network::URI{"http://www.sophists.com"});
-        DbgTrace (L"a5=%s", Characters::ToString (a5).c_str ());
+        DbgTrace ("a5={}"_f, Characters::ToString (a5));
         String a5a = Format ("{}"_f, IO::Network::URI{"http://www.sophists.com"});
-        DbgTrace (L"a5a=%s", Characters::ToString (a5).c_str ());
+        DbgTrace ("a5a={}"_f, Characters::ToString (a5));
         String a6 = Format (L"{}"_f, IO::Network::CIDR{"192.168.244.0/24"});
-        DbgTrace (L"a6=%s", Characters::ToString (a6).c_str ());
+        DbgTrace ("a6={}"_f, Characters::ToString (a6));
         {
             auto url = IO::Network::URI{"http://www.sophists.com"};
-            DbgTrace (L"u = %s", Characters::ToString (url).c_str ());
+            DbgTrace ("u = {}"_f, Characters::ToString (url));
             DbgTrace (L"u = {}"_f, url);
             DbgTrace ("u = {}"_f, url);
             // Each will output "u = http://www.sophists.com
         }
         String a7 = Format ("{}"_f, foo{});
-        DbgTrace (L"a7=%s", Characters::ToString (a7).c_str ());
+        DbgTrace ("a7={}"_f, Characters::ToString (a7));
         DbgTrace (L"yippie: {}"_f, foo{});
         EXPECT_EQ (a7, "foo as a string"sv);
         DbgTrace (L"t2:  cidr= {}, s1={}, s2={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});

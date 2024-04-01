@@ -465,7 +465,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                     ++processorPackageCount;
                     break;
                 default:
-                    DbgTrace ("Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.");
+                    DbgTrace ("Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value."_f);
                     break;
             }
             byteOffset += sizeof (SYSTEM_LOGICAL_PROCESSOR_INFORMATION);

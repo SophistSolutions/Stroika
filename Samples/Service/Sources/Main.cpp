@@ -60,7 +60,7 @@ namespace {
     void FatalErorrHandler_ (const Characters::SDKChar* msg) noexcept
     {
         Thread::SuppressInterruptionInContext suppressCtx;
-        DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
+        DbgTrace ("Fatal Error {} encountered"_f, msg);
 #if qUseLogger
         Logger::sThe.Log (Logger::eCriticalError, "Fatal Error: {}; Aborting..."_f, String::FromSDKString (msg));
         Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Characters::ToString (Debug::BackTrace::Capture ()));
@@ -135,7 +135,7 @@ int main (int argc, const char* argv[])
 
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
     [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
-        DbgTrace (L"Exiting main with thread %s running", Characters::ToString (Execution::Thread::GetStatistics ().fRunningThreads).c_str ());
+        DbgTrace ("Exiting main with thread {} running"_f, Characters::ToString (Execution::Thread::GetStatistics ().fRunningThreads));
     });
 #endif
 

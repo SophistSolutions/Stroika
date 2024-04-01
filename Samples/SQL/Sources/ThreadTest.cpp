@@ -144,7 +144,7 @@ namespace {
                     case 0:
                     case 1: {
                         String name = kNames_[namesDistr (generator)];
-                        DbgTrace (L"Adding employee %s", name.c_str ());
+                        DbgTrace ("Adding employee {}"_f, name);
                         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
                             {":NAME"sv, name},
                             {":AGE"sv, ageDistr (generator)},
@@ -159,7 +159,7 @@ namespace {
                         if (not activeEmps.empty ()) {
                             uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
-                            DbgTrace (L"Firing employee: %d, %s", get<0> (killMe).As<int> (), get<1> (killMe).As<String> ().c_str ());
+                            DbgTrace ("Firing employee: {}, {}"_f, get<0> (killMe).As<int> (), get<1> (killMe).As<String> ());
                             fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{L":ID", get<0> (killMe).As<int> ()}});
                         }
                     } break;
@@ -167,7 +167,7 @@ namespace {
             }
             catch (...) {
                 // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                DbgTrace (L"Exception processing SQL - this should generally not happen: %s", Characters::ToString (current_exception ()).c_str ());
+                DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
             }
 
             Sleep (1s); // **cancelation point**
@@ -185,7 +185,7 @@ namespace {
                     int    id     = get<0> (employee).As<int> ();
                     String name   = get<1> (employee).As<String> ();
                     double salary = get<2> (employee).As<double> ();
-                    DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", id, name.c_str (), salary);
+                    DbgTrace ("Writing paycheck for employee #{} ({}) amount {}"_f, id, name, salary);
                     addPaycheckStatement.Execute (initializer_list<Statement::ParameterDescription>{
                         {":EMPLOYEEREF"sv, id},
                         {":AMOUNT"sv, salary / 12},
@@ -194,8 +194,8 @@ namespace {
                 }
             }
             catch (...) {
-                // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                DbgTrace (L"Exception processing SQL - this should generally not happen: %s", Characters::ToString (current_exception ()).c_str ());
+                // no need to check for ThreadAbort exception, since Sleep is a cancelation point
+                DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
             }
             Sleep (2s); // **cancelation point**
         }

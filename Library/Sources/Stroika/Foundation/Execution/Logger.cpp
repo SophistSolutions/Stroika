@@ -341,12 +341,12 @@ void Logger::Log (Priority logLevel, const wchar_t* format, ...)
     va_start (argsList, format);
     String msg = Characters::FormatV (format, argsList);
     va_end (argsList);
-    DbgTrace (L"Logger::Log (%s, \"%s\")", Characters::ToString (logLevel).c_str (), msg.c_str ());
+    DbgTrace ("Logger::Log ({}, \"{}\")"_f, Characters::ToString (logLevel), msg);
     if (WouldLog (logLevel)) {
         Log_ (logLevel, msg);
     }
     else {
-        DbgTrace (L"...suppressed by WouldLog");
+        DbgTrace ("...suppressed by WouldLog"_f);
     }
 }
 #endif

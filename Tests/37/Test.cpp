@@ -26,6 +26,7 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
@@ -73,7 +74,7 @@ namespace {
                     EXPECT_TRUE (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::eCaseInsensitive));
                 }
                 catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()).c_str ());
                     EXPECT_TRUE (false); //oops
                 }
                 // and test throwing fancy unicode string
@@ -88,7 +89,7 @@ namespace {
                     EXPECT_TRUE (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::eCaseInsensitive));
                 }
                 catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()));
                     EXPECT_TRUE (false); //oops
                 }
             }
@@ -102,7 +103,7 @@ namespace {
                     EXPECT_TRUE (e.code () != errc::already_connected);
                 }
                 catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()));
                     EXPECT_TRUE (false); //oops
                 }
                 try {
@@ -113,7 +114,7 @@ namespace {
                     EXPECT_TRUE (e.code () != errc::already_connected);
                 }
                 catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()));
                     EXPECT_TRUE (false); //oops
                 }
                 const Characters::String kMsg1_ = L"to abcd 123 zß水𝄋";
@@ -126,7 +127,7 @@ namespace {
                     EXPECT_TRUE (Characters::ToString (e).Contains (kMsg1_));
                 }
                 catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()));
                     EXPECT_TRUE (false); //oops
                 }
             }
@@ -211,10 +212,10 @@ namespace {
                 EXPECT_TRUE ((error_code{ERROR_OUTOFMEMORY, system_category ()} == errc::not_enough_memory));
 #if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
                 if ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out)) {
-                    DbgTrace (L"FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy");
+                    DbgTrace ("FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy"_f);
                 }
                 if ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out)) {
-                    DbgTrace (L"FIXED");
+                    DbgTrace ("FIXED"_f);
                 }
 #else
                 EXPECT_TRUE ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out));
@@ -301,13 +302,13 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
             auto                      prevValue = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
-            DbgTrace ("sDefault_IncludeSourceLines = true");
+            DbgTrace ("sDefault_IncludeSourceLines = true"_f);
             Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
             Private::ThrowCatchStringException_ ();
-            DbgTrace ("sDefault_IncludeSourceLines = false");
+            DbgTrace ("sDefault_IncludeSourceLines = false"_f);
             Debug::BackTrace::Options::sDefault_IncludeSourceLines = false;
             Private::ThrowCatchStringException_ ();
-            DbgTrace ("sDefault_IncludeSourceLines = <<default>>");
+            DbgTrace ("sDefault_IncludeSourceLines = <<default>>"_f);
             Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
             Private::ThrowCatchStringException_ ();
         }

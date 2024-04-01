@@ -17,6 +17,7 @@
 #include "ObjectReader.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader;
@@ -206,8 +207,7 @@ void IConsumerDelegateToContext::StartElement (const Name& name, const Mapping<N
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext.TraceLeader_ ().c_str (),
-                  name.fLocalName.As<wstring> ().c_str ());
+        DbgTrace ("{}Calling IConsumerDelegateToContext::HandleChildStart ('{}')..."_f, fContext.TraceLeader_ (), name.fLocalName);
     }
 #endif
     shared_ptr<IElementConsumer> eltToPush = fContext.GetTop ()->HandleChildStart (name);
@@ -226,8 +226,7 @@ void IConsumerDelegateToContext::EndElement ([[maybe_unused]] const StructuredSt
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext.TraceLeader_ ().c_str (),
-                  name.fLocalName.As<wstring> ().c_str ());
+        DbgTrace ("{}Calling IConsumerDelegateToContext::EndElement ('{}')..."_f, fContext.TraceLeader_ (), name.fLocalName);
     }
 #endif
     fContext.Pop ();
@@ -237,8 +236,7 @@ void IConsumerDelegateToContext::TextInsideElement (const String& text)
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::TextInsideElement ('%s')...", fContext.TraceLeader_ ().c_str (),
-                  text.LimitLength (50).c_str ());
+        DbgTrace ("{}Calling IConsumerDelegateToContext::TextInsideElement ('{}')..."_f, fContext.TraceLeader_ (), text.LimitLength (50));
     }
 #endif
     fContext.GetTop ()->HandleTextInside (text);

@@ -87,8 +87,8 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
     , fNextSequenceNumber_{static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_))}
     , fPingTimeout_{options.fTimeout.value_or (Options::kDefaultTimeout)}
 {
-    DbgTrace (L"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", L"addr=%s, options=%s", Characters::ToString (fDestination_).c_str (),
-              Characters::ToString (fOptions_).c_str ());
+    Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", "addr={}, options={}"_f,
+                                  Characters::ToString (fDestination_), Characters::ToString (fOptions_)};
     // use random data as a payload
     for (byte* p = (byte*)fSendPacket_.begin () + sizeof (ICMP::V4::PacketHeader); p < fSendPacket_.end (); ++p) {
         uniform_int_distribution<mt19937::result_type> anyByteDistribution (0, numeric_limits<uint8_t>::max ());
@@ -167,7 +167,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
             } break;
         }
         if (echoedID and echoedID != pingRequest.id) {
-            DbgTrace (L"echoedID (%s != pingRequest.id (%x) so ignoring this reply", Characters::ToString (echoedID).c_str (), pingRequest.id);
+            DbgTrace ("echoedID ({} != pingRequest.id (0x{:x}) so ignoring this reply"_f, Characters::ToString (echoedID), pingRequest.id);
             // Must be a reply for another pinger running locally, so just
             // ignore it.
             continue;

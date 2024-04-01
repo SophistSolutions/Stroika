@@ -73,7 +73,7 @@ public:
                             s = gotCRLFCR;
                         } break;
                         default: {
-                            DbgTrace ("Looks like bad HTTP header");
+                            DbgTrace ("Looks like bad HTTP header (\\r)"_f);
                             s = gotNOTHING;
                         } break;
                     }
@@ -88,7 +88,7 @@ public:
                             return true;
                         } break;
                         default: {
-                            DbgTrace ("Looks like bad HTTP header");
+                            DbgTrace ("Looks like bad HTTP header (\\n)"_f);
                             s = gotNOTHING;
                         } break;
                     }

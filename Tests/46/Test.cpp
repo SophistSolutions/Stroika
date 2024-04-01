@@ -23,6 +23,7 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::IO::FileSystem;
 
 using namespace Stroika::Frameworks;
@@ -35,14 +36,14 @@ namespace {
         {
             Debug::TraceContextBumper ctx1{"simple test"};
             for (DirectoryIterator i{WellKnownLocations::GetTemporary ()}; not i.Done (); ++i) {
-                DbgTrace (L"filename = %s", Characters::ToString (*i).c_str ());
+                DbgTrace ("filename = {}"_f, Characters::ToString (*i));
             }
         }
         {
             Debug::TraceContextBumper ctx1{"t2"};
             DirectoryIterator         i{WellKnownLocations::GetTemporary ()};
             for (DirectoryIterator i2 = i; not i2.Done (); ++i2) {
-                DbgTrace (L"filename = %s", Characters::ToString (*i2).c_str ());
+                DbgTrace ("filename = {}"_f, Characters::ToString (*i2));
             }
         }
     }
@@ -53,7 +54,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test2_DirectoryIterable_"};
         for (filesystem::path filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
-            DbgTrace (L"filename = %s", Characters::ToString (filename).c_str ());
+            DbgTrace ("filename = {}"_f, Characters::ToString (filename));
         }
         {
             Debug::TraceContextBumper                      ctx1{"test-known-dir"};
@@ -151,7 +152,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test4_MountedFilesystems_"};
             for (auto i : IO::FileSystem::GetMountedFilesystems ()) {
-                DbgTrace (L"fs=%s", Characters::ToString (i).c_str ());
+                DbgTrace ("fs={}"_f, Characters::ToString (i));
             }
         }
     }
@@ -163,7 +164,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test5_DisksPresent_"};
             for (auto i : IO::FileSystem::GetAvailableDisks ()) {
-                DbgTrace (L"d=%s", Characters::ToString (i).c_str ());
+                DbgTrace ("d={}"_f, Characters::ToString (i));
             }
         }
     }

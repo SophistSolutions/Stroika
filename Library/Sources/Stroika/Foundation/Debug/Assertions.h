@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Debug {
 
 #if qDebug || defined(__Doxygen__)
     /**
-     *  Note: Some any paramaters may be null, if no suitable value is available.
+     *  Note: Some any parameters may be null, if no suitable value is available.
      *
      *  \note   AssertionHandlers shall NOT throw an exception (but I don't think we can declare typedef as noexcept)
      *          The reason for this is so that assertions can be used safely in circumstances that don't expect
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Debug {
                                            const char* functionName) noexcept;
 
     /**
-     *  Note: Some any paramaters may be null, if no suitable value is available.
+     *  Note: Some any parameters may be null, if no suitable value is available.
      *
      *  \note   AssertionHandlers shall NOT throw an exception (but I don't think we can declare typedef as noexcept)
      *          The reason for this is so that assertions can be used safely in circumstances that don't expect
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Debug {
 
     /**
      *  Stroika makes very heavy use of assertions (to some extent inspired and
-     *  patternend after Bertrand Meyers Eiffel assertion mechanism). Assertions are logical
+     *  patterned after Bertrand Meyers Eiffel assertion mechanism). Assertions are logical
      *  statements about function parameters, results, object states, etc, which are guaranteed
      *  (required) to be held true. These logical assertions serve two important functions:
      *  they <em>document</em> the requirements on input parameters for a function,
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Debug {
      *  the assertions hold true</em>.
      *
      *  This latter point about conditional compilation is important. If the macro
-     *  preprocessor symbol <code>qDebug</code> is true (non-zero), then this assertion cheching is
+     *  preprocessor symbol <code>qDebug</code> is true (non-zero), then this assertion checking is
      *  enabled. If the symbol is false (zero), then the checking is disabled. <b>Of course the
      *  promises must always hold true!</b> But since the checking can significantly slow the code,
      *  it is best to only build with assertions on in certain circumstances (like while developing,
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Debug {
      *  very likely get a debugger trap at almost exactly the point in your calling code where
      *  the error occurred. This can make debugging code written using Stroika much easier.
      *
-     *  Stroika provides four familes of 'assertion' macro functions. The are named
+     *  Stroika provides four families of 'assertion' macro functions. The are named
      *          <code><em>Assert</em></code>,
      *          <code><em>Require</em></code>,
      *          <code><em>Ensure</em></code>, and
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Debug {
      *  typically when you see a <em>Require</em> fail, you will find that it is the calling
      *  function which is passing invalid arguments to the function which triggered the requirement
      *  failure. The other reason <em>Requires</em> will be of particular interest to programmers
-     *  using Stroika is because checking the <em>Require</em> declarations at the beggining of a
+     *  using Stroika is because checking the <em>Require</em> declarations at the beginning of a
      *  function is often very telling about the details of what sort of parameters the function
      *  expects.
      *
@@ -100,11 +100,11 @@ namespace Stroika::Foundation::Debug {
      *  Plain <em>Assertions</em> are for assertions which don't fall into any of the above
      *  categories, but are still useful checks to be performed. When an assertion is triggered,
      *  it is almost always diagnostic of a bug in the code which triggered the assertion (or
-     *  corrupted data structures). (asside: Assertions logically mean the same thing as Ensures,
+     *  corrupted data structures). (aside: Assertions logically mean the same thing as Ensures,
      *  except that Ensures only check return values).</p>
      *
      *  <em>Verify</em>s are inspired by the MFC VERIFY() macro, and the particular
-     *  idiosyncracies of the Win32 SDK, though they can be used cross-platform. Many of the Win32 SDK
+     *  idiosyncrasies of the Win32 SDK, though they can be used cross-platform. Many of the Win32 SDK
      *  routines return non-zero on success, and zero on failure. Most sample Win32 code you look at
      *  simply ignores these results. For paranoia sake (which was very helpful in the old moldy win32s
      *  days) I wrap most Win32 SDK calls in a <em><code>Verify</code></em> wrapper. This - when
@@ -125,13 +125,13 @@ namespace Stroika::Foundation::Debug {
      *   after that is undefined. This is Stroika's default behavior.
      *
      *  But there are others who hold the view that triggered assertions should generate
-     *  exceptions. This isn't an appropraite forum for explanations of why this is generally
-     *  a bad idea. Instead, I simply provide the flexability to allow those who want todo this
+     *  exceptions. This isn't an appropriate forum for explanations of why this is generally
+     *  a bad idea. Instead, I simply provide the flexibility to allow those who want todo this
      *  that ability. There are <code>SetAssertionHandler</code> and <code>GetAssertionHandler</code>
      *  functions which allow the programmer to specify an alternate assertion handling scheme. The
      *  only assumption Stroika makes about this scheme is that the assertion handling function not
-     *  return (so itmust either exit the program, or longjump/throw). Led makes no gaurantee that
-     *  attemptsto throw out past an assertion will succeed.
+     *  return (so it must either exit the program, or longjump/throw). Led makes no guarantee that
+     *  attempts to throw out past an assertion will succeed.
      *
      *  GetAssertionHandler() never returns nullptr - it always returns some handler.
      *
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Debug {
 /**
  *  \def AssertExpression(c)
  *
- *  Like Assert(), but without [[assume]] support, and in the form of an expression
+ *  Like Assert(), but without [[assume]] support, and in the form of an expression (since https://en.cppreference.com/w/cpp/language/attributes/assume - can only be applied to a statement)
  */
 #define AssertExpression(c)                                                                                                                \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))

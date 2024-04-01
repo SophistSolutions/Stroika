@@ -25,6 +25,7 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
@@ -41,7 +42,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qDebug) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
         }
         struct FRED {
@@ -68,7 +69,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qDebug) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
         }
 
@@ -254,8 +255,8 @@ namespace {
                 }
                 Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
                 if (not(expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_)) {
-                    DbgTrace ("expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt.time_since_epoch ().count ()),
-                              double (caughtExceptAt.time_since_epoch ().count ()));
+                    DbgTrace ("expectedEndAt={}, caughtExceptAt={}"_f, expectedEndAt.time_since_epoch ().count (),
+                              caughtExceptAt.time_since_epoch ().count ());
                 }
                 EXPECT_TRUE (expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt);
                 // FAILURE:
@@ -365,8 +366,8 @@ namespace {
                 Time::TimePointSeconds doneAt        = Time::GetTickCount ();
                 Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
                 if (not(startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_)) {
-                    DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double (startTestAt.time_since_epoch ().count ()),
-                              double (doneAt.time_since_epoch ().count ()), double (expectedEndAt.time_since_epoch ().count ()));
+                    DbgTrace ("startTestAt={}, doneAt={}, expectedEndAt={}"_f, startTestAt.time_since_epoch ().count (),
+                              doneAt.time_since_epoch ().count (), expectedEndAt.time_since_epoch ().count ());
                 }
                 EXPECT_TRUE (startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_);
             }
@@ -382,7 +383,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qDebug) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
         }
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
@@ -477,7 +478,7 @@ namespace {
                 });
                 Thread::Start ({readerThread, writerThread});
                 Thread::WaitForDone ({readerThread, writerThread});
-                DbgTrace ("readsDoneAfterWriterDone = %d", readsDoneAfterWriterDone.load ()); // make sure we do some reads during writes - scheduling doesn't guarnatee
+                DbgTrace ("readsDoneAfterWriterDone = {}"_f, readsDoneAfterWriterDone.load ()); // make sure we do some reads during writes - scheduling doesn't guarnatee
             }
         }
         void DoIt ()
@@ -487,7 +488,7 @@ namespace {
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
             if (kRunningValgrind_ and qDebug) {
                 // Test passes, but takes hours and adds insufficient value to wait
-                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
                 return;
             }
             Private_::Test1_ ();
@@ -504,7 +505,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qDebug) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
         }
         {
@@ -563,7 +564,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qDebug) {
             // Test passes, but takes a while under valgrind.
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
         }
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
@@ -571,13 +572,13 @@ namespace {
         [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
             again:
                 auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
-                DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
+                DbgTrace ("Total Running threads at end: {}"_f, runningThreads.size ());
                 for (Execution::Thread::IDType threadID : runningThreads) {
-                    DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
+                    DbgTrace ("Exiting main with thread {} running"_f, Characters::ToString (threadID));
                 }
                 if (not runningThreads.empty ()) {
                     Execution::Sleep (1.0);
-                    DbgTrace ("trying again...");
+                    DbgTrace ("trying again..."_f);
                     goto again;
                 }
                 EXPECT_TRUE (runningThreads.size () == 0);
@@ -644,7 +645,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qDebug) {
             // Test passes, but takes a while under valgrind.
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
         }
         recursive_mutex useCritSection;
@@ -897,7 +898,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_) {
             // Test passes, but takes hour with valgrind/memcheck. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
         }
         {
@@ -983,7 +984,7 @@ namespace {
                 else {
                     EXPECT_TRUE (countWhereTwoHoldingRead >= 1 or sleepTime <= 0); // not logically true, but a good test.. (if sleepTime == 0, this is less likely to be true - so dont fail test because of it)
                 }
-                DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (),
+                DbgTrace ("countWhereTwoHoldingRead={} (percent={})"_f, countWhereTwoHoldingRead.load (),
                           100.0 * double (countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
             }
             void Test2_LongWritesBlock_ ()
@@ -1090,7 +1091,7 @@ namespace {
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
             if (kRunningValgrind_) {
                 // Test passes, but takes 8 HRs on ubuntu 20.04 ; and quite a while (hours) on other ubuntu releases. Not without valgrind however
-                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
                 return;
             }
             Private_::TEST_ ();
@@ -1295,14 +1296,14 @@ namespace {
             EXPECT_TRUE (false); // NOT REACHED
         }
         catch (...) {
-            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock"_f);
         }
         try {
             auto c = test.cget (5ms);
             EXPECT_TRUE (false); // NOT REACHED
         }
         catch (...) {
-            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock"_f);
         }
         t1.AbortAndWaitForDone ();
         try {
@@ -1397,14 +1398,14 @@ namespace {
             EXPECT_TRUE (false); // NOT REACHED
         }
         catch (...) {
-            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock"_f);
         }
         try {
             auto c = test.cget (5ms);
             EXPECT_TRUE (false); // NOT REACHED
         }
         catch (...) {
-            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock"_f);
         }
         t1.AbortAndWaitForDone ();
         // doing this last part is what triggers TSAN failure if SanitizerDoubleLockWithConditionVariables
@@ -1438,9 +1439,9 @@ namespace {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         [[maybe_unused]] auto&& cleanupReport = Finally ([] () noexcept {
             auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
-            DbgTrace ("Total Running threads at end: %d", runningThreads.size ());
+            DbgTrace ("Total Running threads at end: {}"_f, runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {
-                DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
+                DbgTrace ("Exiting main with thread {} running"_f, Characters::ToString (threadID));
             }
             EXPECT_TRUE (runningThreads.size () == 0);
         });

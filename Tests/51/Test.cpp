@@ -31,6 +31,7 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
@@ -811,7 +812,7 @@ namespace {
             Iterable<int> c{1, 2, 2, 5, 9, 4, 5, 6};
             EXPECT_TRUE (c.Distinct ().SetEquals ({1, 2, 4, 5, 6, 9}));
             auto resultsEqualMod5 = c.Distinct ([] (int l, int r) { return l % 5 == r % 5; });
-            DbgTrace (L"x=%s", Characters::ToString (resultsEqualMod5).c_str ());
+            DbgTrace ("x={}"_f, Characters::ToString (resultsEqualMod5));
             EXPECT_TRUE (resultsEqualMod5.size () == 4);
             for (auto i : resultsEqualMod5) {
                 EXPECT_TRUE (i != 3);
@@ -960,7 +961,7 @@ namespace {
             seeIfReady.Add (1, 1);
             seeIfReady.Add (2, 2);
             EXPECT_TRUE (seeIfReady.size () == 2);
-            DbgTrace (L"seeIfReady=%s", Characters::ToString (seeIfReady).c_str ());
+            DbgTrace ("seeIfReady={}"_f, Characters::ToString (seeIfReady));
             EXPECT_TRUE (seeIfReady.size () == 2);
 
             const bool               kFails_ = true;
@@ -968,7 +969,7 @@ namespace {
 
             EXPECT_TRUE (fds.size () == 2);
             EXPECT_TRUE (seeIfReady.size () == 2);
-            DbgTrace (L"fds=%s", Characters::ToString (fds).c_str ()); // note this is critical step in reproducing old bug - iterating over fds
+            DbgTrace ("fds={}"_f, Characters::ToString (fds)); // note this is critical step in reproducing old bug - iterating over fds
             EXPECT_TRUE (fds.size () == 2);
             EXPECT_TRUE (seeIfReady.size () == 2);
         };
@@ -979,19 +980,19 @@ namespace {
             seeIfReady.Add (2, 2);
             seeIfReady.Add (3, 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
-            DbgTrace (L"seeIfReady=%s", Characters::ToString (seeIfReady).c_str ());
+            DbgTrace ("seeIfReady={}"_f, Characters::ToString (seeIfReady));
             EXPECT_TRUE (seeIfReady.size () == 3);
 
             Traversal::Iterable<int> fds = seeIfReady.Image ();
 
             EXPECT_TRUE (fds.size () == 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
-            DbgTrace (L"fds=%s", Characters::ToString (fds).c_str ()); // note this is critical step in reproducing old bug - iterating over fds
+            DbgTrace ("fds={}"_f, Characters::ToString (fds)); // note this is critical step in reproducing old bug - iterating over fds
             EXPECT_TRUE (fds.size () == 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
             EXPECT_TRUE (fds.size () == 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
-            DbgTrace (L"fds=%s", Characters::ToString (fds).c_str ()); // note this is critical step in reproducing old bug - iterating over fds
+            DbgTrace ("fds={}"_f, Characters::ToString (fds)); // note this is critical step in reproducing old bug - iterating over fds
             EXPECT_TRUE (fds.size () == 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
         };
@@ -1002,7 +1003,7 @@ namespace {
             seeIfReady.Add (2, 2);
             seeIfReady.Add (3, 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
-            DbgTrace (L"seeIfReady=%s", Characters::ToString (seeIfReady).c_str ());
+            DbgTrace (L"seeIfReady={}"_f, Characters::ToString (seeIfReady));
             EXPECT_TRUE (seeIfReady.size () == 3);
 
             const bool               kFails_ = true;
@@ -1010,7 +1011,7 @@ namespace {
 
             EXPECT_TRUE (fds.size () == 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
-            DbgTrace (L"fds=%s", Characters::ToString (fds).c_str ()); // not this is critical step in reproducing old bug - iterating over fds
+            DbgTrace ("fds={}"_f, Characters::ToString (fds)); // not this is critical step in reproducing old bug - iterating over fds
             EXPECT_TRUE (fds.size () == 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
 

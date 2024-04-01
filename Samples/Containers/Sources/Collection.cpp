@@ -22,6 +22,7 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Characters::Literals;
 
 using Characters::CompareOptions;
 
@@ -67,20 +68,20 @@ namespace {
             fruits += "cherries";
             fruits += "APPLE";
             // Print (to debugger/tracelog) the fruits - but now they could come out in any order
-            DbgTrace (L"fruits=%s", Characters::ToString (fruits).c_str ());
+            DbgTrace ("fruits={}"_f, Characters::ToString (fruits).c_str ());
             Assert (fruits.size () == 4); // they are all there
 
             // Like changing the backend. But this still respects all the rules of a Collection (no order specified) -
             // except now it will happen to be ordered (using the default compare function)
             fruits = SortedCollection<String>{fruits};
-            DbgTrace (L"sorted fruits=%s", Characters::ToString (fruits).c_str ());
+            DbgTrace ("sorted fruits={}"_f, Characters::ToString (fruits));
             Assert (fruits.size () == 4); // only one apple or the other (case squished)
             // note they must now be in alphabetic order
             Assert (fruits.SequentialEquals (initializer_list<String>{"APPLE", "apple", "bananas", "cherries"}));
 
             // But, we can do the same thing with a compare function that sorts case insensitively
             fruits = SortedCollection<String>{String::LessComparer{CompareOptions::eCaseInsensitive}, fruits};
-            DbgTrace (L"sorted case insensitve fruits=%s", Characters::ToString (fruits).c_str ());
+            DbgTrace ("sorted case insensitive fruits={}"_f, Characters::ToString (fruits));
             Assert (fruits.SequentialEquals (initializer_list<String>{"apple", "APPLE", "bananas", "cherries"}) or
                     fruits.SequentialEquals (initializer_list<String>{"APPLE", "apple", "bananas", "cherries"}));
         }
@@ -112,7 +113,7 @@ namespace {
          */
         Debug::TraceContextBumper ctx{L"PrintTheContentsOfAContainerToTheTraceLog_"};
         Collection<int>           tmp{1, 3, 5, 7, 9};
-        DbgTrace (L"tmp=%s", Characters::ToString (tmp).c_str ());
+        DbgTrace ("tmp={}"_f, Characters::ToString (tmp));
     }
 }
 
@@ -131,12 +132,12 @@ namespace {
         {
             Collection<int> tmp{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
             auto            whereTestResult = tmp.Where ([] (int i) { return i % 2 == 1; });
-            DbgTrace (L"tmp=%s", Characters::ToString (whereTestResult).c_str ());
+            DbgTrace ("tmp={}"_f, Characters::ToString (whereTestResult));
         }
         {
             Collection<int> tmp{1, 2, 3, 4, 5, 1, 2, 3, 4, 5};
             auto            d = tmp.Distinct ();
-            DbgTrace (L"d=%s", Characters::ToString (d).c_str ());
+            DbgTrace ("d={}"_f, Characters::ToString (d));
             Assert (d.SetEquals (initializer_list<int>{1, 2, 3, 4, 5}));
         }
         {
@@ -146,7 +147,7 @@ namespace {
             fruits += "APPLE";
             fruits += "bananas";
             fruits += "cherries";
-            DbgTrace (L"fruits=%s", Characters::ToString (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive})).c_str ());
+            DbgTrace ("fruits={}"_f, Characters::ToString (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive})));
             Assert (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive}).size () == 3); // only one apple or the other (case squished)
         }
     }

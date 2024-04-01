@@ -25,6 +25,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
@@ -467,7 +468,7 @@ namespace {
                     ++countOfReallocCopies;
                 }
             }
-            DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs", kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
+            DbgTrace (L"For {} ({} its log) resizes, we got {} reallocs"_f, kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
             VerifyTestResultWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
         }
     }

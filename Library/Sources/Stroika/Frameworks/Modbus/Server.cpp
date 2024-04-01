@@ -151,13 +151,13 @@ namespace {
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         static atomic<uint32_t> sConnectionNumber_;
         uint32_t                thisModbusConnectionNumber = ++sConnectionNumber_;
-        DbgTrace ("Starting modbus connection %d", thisModbusConnectionNumber);
-        [[maybe_unused]] auto&& cleanup =
-            Execution::Finally ([thisModbusConnectionNumber] () { DbgTrace ("Finishing modbus connection %d", thisModbusConnectionNumber); });
+        DbgTrace ("Starting Modbus connection {}"_f, thisModbusConnectionNumber);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally (
+            [thisModbusConnectionNumber] () { DbgTrace ("Finishing Modbus connection {}"_f, thisModbusConnectionNumber); });
 #endif
         if constexpr (qDebug) {
             if (auto p = connectionSocket.GetPeerAddress ()) {
-                DbgTrace (L"Starting connection from peer: %s", Characters::ToString (*p).c_str ());
+                DbgTrace ("Starting connection from peer: {}"_f, Characters::ToString (*p));
             }
         }
 
@@ -171,7 +171,7 @@ namespace {
              *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16 (etc)
              */
             if (requestPayload.size () != 4) {
-                DbgTrace (L"requestPayload=%s", Characters::ToString (requestPayload).c_str ());
+                DbgTrace ("requestPayload={}"_f, Characters::ToString (requestPayload));
                 Throw (Execution::Exception{Characters::Format (L"Invalid payload length (got %d, expected 4)", requestPayload.size ())});
             }
             uint16_t startingAddress = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
@@ -400,8 +400,8 @@ namespace {
                         }
                     } break;
                     default: {
-                        DbgTrace (L"UNREGONIZED FunctionCode (NYI probably) - %d - so echo ILLEGAL_FUNCTION code",
-                                  Characters::ToString (requestHeader.fFunctionCode).c_str ());
+                        DbgTrace ("UNREGONIZED FunctionCode (NYI probably) - {} - so echo ILLEGAL_FUNCTION code"_f,
+                                  Characters::ToString (requestHeader.fFunctionCode));
                         if (options.fLogger) {
                             options.fLogger.value ()->Log (Logger::eWarning, "ModbusTCP unrecognized function code '{}'- rejected as ILLEGAL_FUNCTION"_f,
                                                            Characters::ToString (requestHeader.fFunctionCode));
@@ -411,8 +411,8 @@ namespace {
                         out.WriteRaw (ToNetwork_ (responseHeader));
                         out.WriteRaw (static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Sent UNREGONIZED_FUNCTION response: header=%s, and exceptionCode=%d",
-                                  Characters::ToString (responseHeader).c_str (), exceptionCode);
+                        DbgTrace ("Sent UNREGONIZED_FUNCTION response: header={}, and exceptionCode={}"_f,
+                                  Characters::ToString (responseHeader), exceptionCode);
 #endif
                     }
                 }

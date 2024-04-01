@@ -806,7 +806,7 @@ namespace {
                 static void warnFun ([[maybe_unused]] void* ctx, [[maybe_unused]] const char* msg, ...)
                 {
                     // ignored for now
-                    DbgTrace ("validate warn function ignored");
+                    DbgTrace ("validate warn function ignored"_f);
                 }
                 static void errFun (void* ctx, const char* msg, ...)
                 {

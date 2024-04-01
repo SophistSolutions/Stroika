@@ -836,7 +836,7 @@ namespace Stroika::Foundation::Execution {
          *  Note you can only reference the singleton sThe. This can be referenced before main, or after main safely,
          *  but in those cases, there can be no threads, so it just returns zero (GetIndex).
          * 
-         *  NOTE - this class is sligtly queer, in that it guarantees behavior of one of its methods BEFORE its
+         *  NOTE - this class is slightly queer, in that it guarantees behavior of one of its methods BEFORE its
          *  constructed and AFTER its been destroyed. This cannot be 100% true in general and might cause some problems
          *  with sanitizers and the like. But I think this path will generally work and certainly tries to give reasonable
          *  answers when called outside its lifetime (and should work due to only having a single singleton instance).
@@ -872,7 +872,7 @@ namespace Stroika::Foundation::Execution {
         inline IndexRegistrar IndexRegistrar::sThe;
 
         /**
-         *  This object - while in existance, blocks delivery of all Thread::AbortException's
+         *  This object - while in existence, blocks delivery of all Thread::AbortException's
          *  (for this thread in which its instantiated). This blocking nest (so if you have two of them in one thread, only when the last
          *  one is destroyed does the block on Interruption be removed).
          *

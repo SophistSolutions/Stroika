@@ -13,11 +13,17 @@
 // Comment this in to turn on aggressive noisy DbgTrace in this module (note the extra long name since its in a header)
 //#define Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
-#include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 namespace Stroika::Foundation::Execution {
     void ThrowTimeOutException (); // forward declare to avoid include/deadly include embrace
+
+    namespace Private_ {
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        void DbgTraceHelper_ (const wchar_t* w1, const optional<std::wstring>& w2);
+#endif
+    }
 }
 
 namespace Stroika::Foundation::Execution {
@@ -279,7 +285,7 @@ namespace Stroika::Foundation::Execution {
             [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) {
                 if (interveningWriteLock) [[unlikely]] {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"in UpgradeLockNonAtomicallyQuietly - turning interveningWriteLock into fake timeout");
+                    DbgTrace ("in UpgradeLockNonAtomicallyQuietly - turning interveningWriteLock into fake timeout");
 #endif
                     return false;
                 }
@@ -358,7 +364,9 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             if (this->fDbgTraceLocksName) {
-                DbgTrace (L"%s: %s", m, this->fDbgTraceLocksName->c_str ());
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+                Private_::DbgTraceHelper_ (m, this->fDbgTraceLocksName);
+#endif
             }
         }
     }
@@ -460,7 +468,9 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             if (this->fDbgTraceLocksName) {
-                DbgTrace (L"%s: %s", m, this->fDbgTraceLocksName->c_str ());
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+                Private_::DbgTraceHelper_ (m, this->fDbgTraceLocksName);
+#endif
             }
         }
     }
