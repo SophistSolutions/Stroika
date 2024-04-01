@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Debug {
 #if qDebug
 #define Assert(c) AssertExpression (c)
 #else
-#define Assert (c) _ASSUME_ATTRIBUTE_ (c)
+#define Assert(c) _ASSUME_ATTRIBUTE_ (c)
 #endif
 
     /**
