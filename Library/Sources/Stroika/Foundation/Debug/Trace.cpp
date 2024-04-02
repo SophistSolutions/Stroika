@@ -641,15 +641,14 @@ TraceContextBumper::TraceContextBumper (CHAR_ARRAY_T mainName, CHAR_ARRAY_T extr
     Require (char_traits<wchar_t>::length (mainName.data ()) <= kMaxContextNameLen_); // assert NUL-terminated
     if (extraTextAtTop.empty () or extraTextAtTop[0] == '\0') {
         auto mainNameData = mainName.data ();
-        fLastWriteToken_ = Private_::Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{}> {{"sv,
-                                                                        Configuration::StdCompat::make_wformat_args (mainNameData));
+        fLastWriteToken_  = Private_::Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{}> {{"sv,
+                                                                         Configuration::StdCompat::make_wformat_args (mainNameData));
     }
     else {
-        auto mainNameData = mainName.data ();
+        auto mainNameData       = mainName.data ();
         auto extraTextAtTopData = extraTextAtTop.data ();
-        fLastWriteToken_ =
-            Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{} ({})> {{sv",
-                                               Configuration::StdCompat::make_wformat_args (mainNameData, extraTextAtTopData));
+        fLastWriteToken_        = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{} ({})> {{sv",
+                                                                     Configuration::StdCompat::make_wformat_args (mainNameData, extraTextAtTopData));
     }
     size_t len = char_traits<wchar_t>::length (mainName.data ());
     char_traits<wchar_t>::copy (fSavedContextName_.data (), mainName.data (), len);
@@ -668,10 +667,9 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
     try {
         va_list argsList;
         va_start (argsList, extraFmt);
-        wstring tmpFmtV = Characters::CString::FormatV (extraFmt, argsList);
-        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage_ (
-            3 + ::wcslen (GetEOL<wchar_t> ()), L"<{} ({})> {{"sv,
-            Configuration::StdCompat::make_wformat_args (contextName, tmpFmtV));
+        wstring tmpFmtV  = Characters::CString::FormatV (extraFmt, argsList);
+        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{} ({})> {{"sv,
+                                                              Configuration::StdCompat::make_wformat_args (contextName, tmpFmtV));
         va_end (argsList);
         size_t len = min (kMaxContextNameLen_ - 1, char_traits<wchar_t>::length (contextName));
         char_traits<wchar_t>::copy (fSavedContextName_.data (), contextName, len);

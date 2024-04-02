@@ -15,10 +15,10 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/Containers/Set.h"
-#include "../../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "../../../Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 /**
  *  \file

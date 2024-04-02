@@ -6,9 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 
 #include "Request.h"
 #include "Response.h"

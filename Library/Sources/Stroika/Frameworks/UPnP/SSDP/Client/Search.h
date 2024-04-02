@@ -8,7 +8,7 @@
 
 #include <functional>
 
-#include "../../../../Foundation/IO/Network/InternetProtocol/IP.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
 
 #include "../../Device.h"
 #include "../Advertisement.h"

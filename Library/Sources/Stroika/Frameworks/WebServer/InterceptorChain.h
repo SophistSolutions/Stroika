@@ -6,9 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Containers/Sequence.h"
-#include "../../Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 #include "Interceptor.h"
 

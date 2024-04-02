@@ -6,10 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
-#include "../../../Foundation/Characters/String.h"
-#include "../../../Foundation/Configuration/Common.h"
-#include "../../../Foundation/Configuration/SystemConfiguration.h"
-#include "../../../Foundation/IO/Network/SocketAddress.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/SystemConfiguration.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
 /**
  *  \file

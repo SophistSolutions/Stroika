@@ -8,10 +8,10 @@
 
 #include <optional>
 
-#include "../../../Foundation/Containers/Collection.h"
-#include "../../../Foundation/Containers/Set.h"
-#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../../Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/IO/Network/Interface.h"
 
 #include "../Instrument.h"
 

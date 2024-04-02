@@ -8,10 +8,10 @@
 
 #include <optional>
 
-#include "../../Foundation/Execution/Logger.h"
-#include "../../Foundation/Execution/Thread.h"
-#include "../../Foundation/Execution/ThreadPool.h"
-#include "../../Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/ThreadPool.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
 
 #include "IModbusService.h"
 

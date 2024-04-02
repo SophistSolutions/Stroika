@@ -9,11 +9,11 @@
 #include <filesystem>
 #include <optional>
 
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../../Foundation/IO/FileSystem/Disk.h"
-#include "../../../Foundation/IO/FileSystem/MountedFilesystem.h"
-#include "../../../Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/IO/FileSystem/Disk.h"
+#include "Stroika/Foundation/IO/FileSystem/MountedFilesystem.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "../Instrument.h"
 

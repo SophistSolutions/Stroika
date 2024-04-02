@@ -9,15 +9,15 @@
 #include <list>
 #include <memory>
 
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Containers/Collection.h"
-#include "../../Foundation/Containers/Set.h"
-#include "../../Foundation/Execution/Synchronized.h"
-#include "../../Foundation/Execution/ThreadPool.h"
-#include "../../Foundation/Execution/UpdatableWaitForIOReady.h"
-#include "../../Foundation/IO/Network/HTTP/Headers.h"
-#include "../../Foundation/IO/Network/Listener.h"
-#include "../../Foundation/IO/Network/SocketAddress.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/ThreadPool.h"
+#include "Stroika/Foundation/Execution/UpdatableWaitForIOReady.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/Listener.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
 #include "CORS.h"
 #include "Connection.h"

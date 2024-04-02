@@ -9,21 +9,21 @@
 #include <filesystem>
 #include <optional>
 
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/Containers/Sequence.h"
-#include "../../Foundation/Containers/Set.h"
-#include "../../Foundation/Execution/CommandLine.h"
-#include "../../Foundation/Execution/Logger.h"
-#include "../../Foundation/Execution/Process.h"
-#include "../../Foundation/Execution/Synchronized.h"
-#include "../../Foundation/Execution/Thread.h"
-#include "../../Foundation/Streams/OutputStream.h"
-#include "../../Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/Execution/Process.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #if qPlatform_POSIX
-#include "../../Foundation/Execution/SignalHandlers.h"
-#include "../../Foundation/Execution/Signals.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/Signals.h"
 #endif
 
 /**

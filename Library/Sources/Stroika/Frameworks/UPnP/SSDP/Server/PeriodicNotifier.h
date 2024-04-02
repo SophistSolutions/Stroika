@@ -6,10 +6,10 @@
 
 #include "../../../StroikaPreComp.h"
 
-#include "../../../../Foundation/Characters/String.h"
-#include "../../../../Foundation/Configuration/Common.h"
-#include "../../../../Foundation/Execution/IntervalTimer.h"
-#include "../../../../Foundation/Traversal/Iterable.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/IntervalTimer.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
 
 #include "../../Device.h"
 #include "../Advertisement.h"

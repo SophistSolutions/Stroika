@@ -8,7 +8,7 @@
 
 #include <optional>
 
-#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 
 #include "../Instrument.h"
 

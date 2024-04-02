@@ -8,13 +8,13 @@
 
 #include <optional>
 
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/IO/Network/HTTP/KeepAlive.h"
-#include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
-#include "../../Foundation/IO/Network/SocketStream.h"
-#include "../../Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/IO/Network/HTTP/KeepAlive.h"
+#include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
+#include "Stroika/Foundation/IO/Network/SocketStream.h"
+#include "Stroika/Foundation/Streams/TextWriter.h"
 
 #include "InterceptorChain.h"
 #include "Message.h"

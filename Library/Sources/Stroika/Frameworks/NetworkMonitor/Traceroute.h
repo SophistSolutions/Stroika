@@ -6,12 +6,12 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Containers/Sequence.h"
-#include "../../Foundation/IO/Network/InternetAddress.h"
-#include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
-#include "../../Foundation/IO/Network/InternetProtocol/IP.h"
-#include "../../Foundation/Time/Duration.h"
-#include "../../Foundation/Traversal/Range.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/ICMP.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
+#include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 /**
  *

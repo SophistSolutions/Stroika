@@ -8,8 +8,8 @@
 
 #include <functional>
 
-#include "../../../../Foundation/Containers/Mapping.h"
-#include "../../../../Foundation/IO/Network/InternetProtocol/IP.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
 
 #include "../../Device.h"
 #include "../Advertisement.h"

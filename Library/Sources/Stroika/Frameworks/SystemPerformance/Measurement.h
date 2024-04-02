@@ -6,10 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Containers/Collection.h"
-#include "../../Foundation/DataExchange/Atom.h"
-#include "../../Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/DataExchange/Atom.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 
 /*
  * TODO:

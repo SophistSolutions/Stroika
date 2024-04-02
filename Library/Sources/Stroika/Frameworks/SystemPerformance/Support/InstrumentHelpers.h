@@ -9,9 +9,9 @@
 #include <memory>
 #include <optional>
 
-#include "../../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "../../../Foundation/Execution/Synchronized.h"
-#include "../../../Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "../Instrument.h"
 

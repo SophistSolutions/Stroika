@@ -10,13 +10,13 @@
 #include <optional>
 #include <random>
 
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/IO/Network/ConnectionlessSocket.h"
-#include "../../Foundation/IO/Network/InternetAddress.h"
-#include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
-#include "../../Foundation/IO/Network/InternetProtocol/IP.h"
-#include "../../Foundation/Time/Duration.h"
-#include "../../Foundation/Traversal/Range.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/ICMP.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
+#include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 /**
  *  \file

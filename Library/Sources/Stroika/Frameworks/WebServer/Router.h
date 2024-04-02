@@ -6,10 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Characters/RegularExpression.h"
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Containers/Sequence.h"
-#include "../../Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 #include "CORS.h"
 #include "Interceptor.h"

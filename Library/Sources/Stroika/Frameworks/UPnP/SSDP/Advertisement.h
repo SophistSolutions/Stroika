@@ -9,14 +9,14 @@
 #include <compare>
 #include <optional>
 
-#include "../../../Foundation/Characters/String.h"
-#include "../../../Foundation/Common/Property.h"
-#include "../../../Foundation/Configuration/Common.h"
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../../Foundation/IO/Network/SocketAddress.h"
-#include "../../../Foundation/IO/Network/URI.h"
-#include "../../../Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 /**
  *  \file

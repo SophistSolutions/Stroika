@@ -6,9 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Containers/Collection.h"
-#include "../../Foundation/Time/Realtime.h"
-#include "../../Foundation/Traversal/Range.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 #include "Measurement.h"
 

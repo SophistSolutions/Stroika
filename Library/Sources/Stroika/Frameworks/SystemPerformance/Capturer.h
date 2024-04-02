@@ -6,13 +6,13 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Containers/Collection.h"
-#include "../../Foundation/Containers/Set.h"
-#include "../../Foundation/Execution/Function.h"
-#include "../../Foundation/Execution/Synchronized.h"
-#include "../../Foundation/Execution/ThreadPool.h"
-#include "../../Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/ThreadPool.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "CaptureSet.h"
 #include "Measurement.h"

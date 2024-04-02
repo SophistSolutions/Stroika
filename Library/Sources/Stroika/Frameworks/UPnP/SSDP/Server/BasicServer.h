@@ -6,8 +6,8 @@
 
 #include "../../../StroikaPreComp.h"
 
-#include "../../../../Foundation/Characters/String.h"
-#include "../../../../Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "../../Device.h"
 #include "../../DeviceDescription.h"

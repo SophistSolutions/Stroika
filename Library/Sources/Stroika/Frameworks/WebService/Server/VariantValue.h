@@ -6,12 +6,12 @@
 
 #include "../../StroikaPreComp.h"
 
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/Containers/Sequence.h"
-#include "../../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../../Foundation/DataExchange/VariantValue.h"
-#include "../../../Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 
 #include "../../WebServer/Request.h"
 #include "../../WebServer/RequestHandler.h"

@@ -6,8 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Set.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

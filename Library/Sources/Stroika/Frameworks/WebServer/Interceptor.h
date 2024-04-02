@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "Message.h"
 

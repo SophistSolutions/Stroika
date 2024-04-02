@@ -8,13 +8,13 @@
 
 #include <optional>
 
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../Foundation/IO/Network/HTTP/Request.h"
-#include "../../Foundation/IO/Network/URI.h"
-#include "../../Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Request.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

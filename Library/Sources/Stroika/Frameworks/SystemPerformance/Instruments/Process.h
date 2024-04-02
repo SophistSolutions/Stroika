@@ -8,12 +8,12 @@
 
 #include <filesystem>
 
-#include "../../../Foundation/Configuration/Enumeration.h"
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/Containers/Sequence.h"
-#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../../Foundation/Execution/Process.h"
-#include "../../../Foundation/IO/FileSystem/Common.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/Execution/Process.h"
+#include "Stroika/Foundation/IO/FileSystem/Common.h"
 
 #include "../Instrument.h"
 

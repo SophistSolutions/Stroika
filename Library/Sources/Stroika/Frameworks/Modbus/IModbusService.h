@@ -6,9 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Containers/Mapping.h"
-#include "../../Foundation/Containers/Set.h"
-#include "../../Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 /**
  *

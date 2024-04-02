@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 
 #include "Message.h"
 

@@ -10,22 +10,22 @@
 #include <string>
 #include <vector>
 
-#include "../../Foundation/Characters/CodePage.h"
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/Containers/Mapping.h"
-#include "../../Foundation/Cryptography/Digest/Algorithm/MD5.h"
-#include "../../Foundation/Cryptography/Digest/Digester.h"
-#include "../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../Foundation/IO/Network/HTTP/Headers.h"
-#include "../../Foundation/IO/Network/HTTP/Response.h"
-#include "../../Foundation/IO/Network/HTTP/Status.h"
-#include "../../Foundation/IO/Network/Socket.h"
-#include "../../Foundation/IO/Network/URI.h"
-#include "../../Foundation/Memory/BLOB.h"
-#include "../../Foundation/Streams/BufferedOutputStream.h"
-#include "../../Foundation/Streams/OutputStream.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
+#include "Stroika/Foundation/Cryptography/Digest/Digester.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Response.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Status.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Streams/BufferedOutputStream.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

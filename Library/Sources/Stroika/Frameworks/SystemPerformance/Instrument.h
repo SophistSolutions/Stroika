@@ -9,13 +9,13 @@
 #include <compare>
 #include <memory>
 
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Containers/Mapping.h"
-#include "../../Foundation/Containers/Set.h"
-#include "../../Foundation/DataExchange/Atom.h"
-#include "../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/Atom.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Function.h"
 
 #include "Measurement.h"
 #include "MeasurementSet.h"

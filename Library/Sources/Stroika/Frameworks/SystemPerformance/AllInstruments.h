@@ -6,8 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Containers/Set.h"
-#include "../../Foundation/DataExchange/Atom.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/Atom.h"
 
 #include "Instrument.h"
 

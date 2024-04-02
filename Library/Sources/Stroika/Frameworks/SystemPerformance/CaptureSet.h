@@ -6,9 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Containers/Set.h"
-#include "../../Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Instrument.h"
 
