@@ -2407,14 +2407,25 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm8192EE7re
 /usr/bin/ld: /tmp/lto-llvm-f3876d.o: in function `Stroika::Foundation::Memory::InlineBuffer<char, 10240ul>::reserve(unsigned long, bool)':
 ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb]+0xae): undefined reference to `Stroika::Foundation::Execution::ThrowIfNull(void const*)'
 
+
+/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/x/Stroika-Foundation.a(SDKString.o): in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::Allocate_(unsigned long)':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb]+0x93): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
+/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/x/Stroika-Foundation.a(SDKString.o): in function `Stroika::Foundation::Memory::InlineBuffer<std::byte, 4096ul>::Allocate_(unsigned long)':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm4096EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm4096EE7reserveEmb]+0x8e): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
+/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/x/Stroika-Foundation.a(Utilities.o): in function `Stroika::Foundation::Memory::InlineBuffer<char, 10240ul>::Allocate_(unsigned long)':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb]+0x8e): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
+/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/x/Stroika-Foundation.a(Utilities.o): in function `Stroika::Foundation::Memory::InlineBuffer<char8_t, 10240ul>::Allocate_(unsigned long)':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIDuLm
+
+
 */
 #ifndef qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
 // appears still broken in clang++-13 and -clang++-14-release-libstdc++
 // and broekn uuntu22.04 clang++-15-release-libstdc++
-// appears fixed in clang++16
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// broken in clang++16 - release builds - seemed OK for a while but then broke again - not just says missing symbol... so possibly different bug???
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
 #endif
