@@ -26,38 +26,45 @@ using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Frameworks::Test;
 
 namespace {
-    void ASSERT_HANDLER_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
+    void ASSERT_HANDLER_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum, const wchar_t* functionName) noexcept
     {
         if (assertCategory == nullptr) {
-            assertCategory = "Unknown assertion";
+            assertCategory = L"Unknown assertion";
         }
         if (assertionText == nullptr) {
-            assertionText = "";
+            assertionText = L"";
+        }
+        if (fileName == nullptr) {
+            fileName = L"";
         }
         if (functionName == nullptr) {
-            functionName = "";
+            functionName = L"";
         }
-        cerr << "FAILED: " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
-        DbgTrace ("FAILED: %s; %s; %s; %s; %d", assertCategory, assertionText, functionName, fileName, lineNum);
+        wcerr << "FAILED: " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
+        DbgTrace ("FAILED: {}; {}; {}; {}; {}"_f, assertCategory, assertionText, functionName, fileName, lineNum);
 
         Debug::DropIntoDebuggerIfPresent ();
 
         _Exit (EXIT_FAILURE); // skip
     }
-    void WEAK_ASSERT_HANDLER_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
+    void WEAK_ASSERT_HANDLER_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
+                               const wchar_t* functionName) noexcept
     {
         if (assertCategory == nullptr) {
-            assertCategory = "Unknown assertion";
+            assertCategory = L"Unknown assertion";
         }
         if (assertionText == nullptr) {
-            assertionText = "";
+            assertionText = L"";
+        }
+        if (fileName == nullptr) {
+            fileName = L"";
         }
         if (functionName == nullptr) {
-            functionName = "";
+            functionName = L"";
         }
-        cerr << "WARNING: weak assertion  " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": "
-             << lineNum << endl;
-        DbgTrace ("WARNING: weak assertion  %s; %s; %s; %s; %d", assertCategory, assertionText, functionName, fileName, lineNum);
+        wcerr << "WARNING: weak assertion  " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": "
+              << lineNum << endl;
+        DbgTrace ("WARNING: weak assertion  {}; {}; {}; {}; {}"_f, assertCategory, assertionText, functionName, fileName, lineNum);
     }
     void FatalErrorHandler_ (const Characters::SDKChar* msg) noexcept
     {
@@ -116,29 +123,30 @@ int Test::PrintPassOrFail (void (*regressionTest) ())
     return EXIT_SUCCESS;
 }
 
-void Test::Test_ (bool failIfFalse, bool isFailureElseWarning, const char* regressionTestText, const char* fileName, int lineNum)
+void Test::Private_::Test_ (bool failIfFalse, bool isFailureElseWarning, const wchar_t* regressionTestText, const wchar_t* fileName, int lineNum)
 {
     if (not failIfFalse) {
         if (isFailureElseWarning) {
-            ASSERT_HANDLER_ ("RegressionTestFailure", regressionTestText, fileName, lineNum, "");
+            ASSERT_HANDLER_ (L"RegressionTestFailure", regressionTestText, fileName, lineNum, nullptr);
         }
         else {
-            cerr << "WARNING: REGRESSION TEST ISSUE: " << regressionTestText << ";" << fileName << ": " << lineNum << endl;
-            DbgTrace ("WARNING: REGRESSION TEST ISSUE: ; %s; %s; %d", regressionTestText, fileName, lineNum);
+            wcerr << "WARNING: REGRESSION TEST ISSUE: " << regressionTestText << ";" << fileName << ": " << lineNum << endl;
+            DbgTrace ("WARNING: REGRESSION TEST ISSUE: ; {}; {}; {}"_f, regressionTestText, fileName, lineNum);
             // OK to continue
         }
     }
 }
 
-void Test::VerifyTestResultWarning_ (bool failIfFalse, bool isFailureElseWarning, const char* regressionTestText, const char* fileName, int lineNum)
+void Test::Private_::VerifyTestResultWarning_ (bool failIfFalse, bool isFailureElseWarning, const wchar_t* regressionTestText,
+                                               const wchar_t* fileName, int lineNum)
 {
     if (not failIfFalse) {
         if (isFailureElseWarning) {
-            ASSERT_HANDLER_ ("RegressionTestFailure", regressionTestText, fileName, lineNum, "");
+            ASSERT_HANDLER_ (L"RegressionTestFailure", regressionTestText, fileName, lineNum, nullptr);
         }
         else {
-            cerr << "WARNING: REGRESSION TEST ISSUE: " << regressionTestText << ";" << fileName << ": " << lineNum << endl;
-            DbgTrace ("WARNING: REGRESSION TEST ISSUE: ; %s; %s; %d", regressionTestText, fileName, lineNum);
+            wcerr << "WARNING: REGRESSION TEST ISSUE: " << regressionTestText << ";" << fileName << ": " << lineNum << endl;
+            DbgTrace ("WARNING: REGRESSION TEST ISSUE: ; {}; {}; {}"_f, regressionTestText, fileName, lineNum);
             // OK to continue
         }
     }
@@ -146,12 +154,12 @@ void Test::VerifyTestResultWarning_ (bool failIfFalse, bool isFailureElseWarning
 
 void Test::WarnTestIssue (const char* issue)
 {
-    cerr << "WARNING: REGRESSION TEST ISSUE: '" << issue << "'" << endl;
-    DbgTrace ("WARNING: REGRESSION TEST ISSUE: '%s", issue);
+    using namespace Characters;
+    WarnTestIssue (NarrowSDK2Wide (issue).c_str ());
 }
 
 void Test::WarnTestIssue (const wchar_t* issue)
 {
-    using namespace Characters;
-    WarnTestIssue (SDK2Narrow (Wide2SDK (issue)).c_str ());
+    wcerr << "WARNING: REGRESSION TEST ISSUE: '" << issue << "'" << endl;
+    DbgTrace ("WARNING: REGRESSION TEST ISSUE: '{}"_f, issue);
 }

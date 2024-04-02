@@ -185,11 +185,13 @@ namespace Stroika::Foundation::Debug {
     }
 #endif
 
-/**
- *  \def AssertExpression(c)
- *
- *  Like Assert(), but without [[assume]] support, and in the form of an expression (since https://en.cppreference.com/w/cpp/language/attributes/assume - can only be applied to a statement)
- */
+    /**
+     *  \def AssertExpression(c)
+     *
+     *  Like Assert(), but without [[assume]] support, and in the form of an expression (since https://en.cppreference.com/w/cpp/language/attributes/assume - can only be applied to a statement)
+     *
+     *  result is EXPRESSION;
+     */
 #if qDebug
 #define AssertExpression(c)                                                                                                                \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", Stroika_Foundation_Debug_Widen (#c),           \
@@ -205,7 +207,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  \note   logically
      *          if (!(c)) {
-     *              Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
+     *              GetAssertionHandler () (...)
      *          }
      *
      *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
@@ -222,8 +224,7 @@ namespace Stroika::Foundation::Debug {
 #endif
 
     /**
-     *  \def RequireExpression(c) - alias for AssertExpression(), but with a different message: used at the start of a function to declare calling conventions - expected arguments to the function
-     *  in debug builds (qDebug true) - check the given requirement and trigger GetAssertionHandler () if false (terminates program); 
+     *  Like Require(), but without [[assume]] support, and in the form of an expression (since https://en.cppreference.com/w/cpp/language/attributes/assume - can only be applied to a statement)
      *
      *  result is EXPRESSION;
      */
@@ -239,9 +240,6 @@ namespace Stroika::Foundation::Debug {
 
 /**
  *  \def Require(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion about the incoming contract - arguments to a function.
- *
- *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
- *        build, they must be syntactic (new requirement in Stroika v3.0).
  */
 #if qDebug
 #define Require(c) RequireExpression (c)
@@ -264,9 +262,6 @@ namespace Stroika::Foundation::Debug {
 
 /**
  *  \def Ensure(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion promised about the state at the end of a function.
- *
- *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
- *        build, they must be syntactic (new requirement in Stroika v3.0).
  */
 #if qDebug
 #define Ensure(c) EnsureExpression (c)
@@ -291,37 +286,35 @@ namespace Stroika::Foundation::Debug {
 /**
  *  \def RequireMember(p,c)
  *
- *  @see GetAssertionHandler
+ *  Simple wrapper on Require () - checking p is a member of class c (with dynamic_cast)
  */
 #define RequireMember(p, c) Require (dynamic_cast<const c*> (p) != nullptr)
 
 /**
  *  \def AssertNotNull(p)
  *
- *  @see GetAssertionHandler
+ *  Simple wrapper on Assert () - checking p != nullptr
  */
 #define AssertNotNull(p) Assert (p != nullptr)
 
 /**
  *  \def EnsureNotNull(p)
  *
- *  @see GetAssertionHandler
+ *  Simple wrapper on Ensure () - checking p != nullptr
  */
 #define EnsureNotNull(p) Ensure (p != nullptr)
 
 /**
  *  \def RequireNotNull(p)
  *
- *  @see GetAssertionHandler
+ *  Simple wrapper on Require () - checking p != nullptr
  */
 #define RequireNotNull(p) Require (p != nullptr)
 
 /**
  *  \def AssertNotReached(p)
  *
- *  @see GetAssertionHandler
- *
- *  \hideinitializer
+ *  A program bug within the procedure called from, if this code is ever reached. In release builds, this calls unreachable, so can be optimized/assumed never reached.
  */
 #if qDebug
 #define AssertNotReached()                                                                                                                  \
@@ -336,9 +329,7 @@ namespace Stroika::Foundation::Debug {
 /**
  *  \def EnsureNotReached(p)
  *
- *  @see GetAssertionHandler
- *
- *  \hideinitializer
+ *  A program bug within the procedure called from, if this code is ever reached. In release builds, this calls unreachable, so can be optimized/assumed never reached.
  */
 #if qDebug
 #define EnsureNotReached()                                                                                                                  \
@@ -353,9 +344,7 @@ namespace Stroika::Foundation::Debug {
 /**
  *  \def RequireNotReached(p)
  *
- *  @see GetAssertionHandler
- *
- *  \hideinitializer
+ *  A program bug within the caller, if this code is ever reached. In release builds, this calls unreachable, so can be optimized/assumed on argument condition.
  */
 #if qDebug
 #define RequireNotReached()                                                                                                                  \
@@ -434,16 +423,14 @@ namespace Stroika::Foundation::Debug {
 /**
  *  \def WeakAssertNotNull(p)
  *
- *  @see GetAssertionHandler
+ *  @see WeakAssert
  */
 #define WeakAssertNotNull(p) WeakAssert (p != nullptr)
 
 /**
  *  \def WeakAssertNotReached(p)
  *
- *  @see GetAssertionHandler
- *
- *  \hideinitializer
+ *  @see WeakAssert
  */
 #if qDebug
 #define WeakAssertNotReached()                                                                                                             \
@@ -459,7 +446,7 @@ namespace Stroika::Foundation::Debug {
  *  Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
  *  makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
  *
- *  \hideinitializer
+ *  @see WeakAssert
  */
 #if qDebug
 #define WeakAssertNotImplemented()                                                                                                         \

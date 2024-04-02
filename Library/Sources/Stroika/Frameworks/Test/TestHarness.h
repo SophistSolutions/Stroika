@@ -29,7 +29,7 @@ namespace Stroika::Frameworks::Test {
      *      \endcode
      * 
      *  if qHasFeature_GoogleTest is enabled, this calls testing::InitGoogleTest(), which may remove some values from argc/argv.
-     *  Use the value returned from Setup() to get the adjusted args list. Note - no characterset mapping is done in this routine. Just copying of the same
+     *  Use the value returned from Setup() to get the adjusted args list. Note - no character-set mapping is done in this routine. Just copying of the same
      *  starting raw data.
      */
     vector<string> Setup (int argc, const char* argv[]);
@@ -40,26 +40,30 @@ namespace Stroika::Frameworks::Test {
      */
     [[deprecated ("Since Strokka v3.0d5 - just use gtest")]] int PrintPassOrFail (void (*regressionTest) ());
 
-    /**
-     * LIKE calling Assert but it will ALSO trigger a failure in NODEBUG builds
-     */
-    void Test_ (bool failIfFalse, bool isFailureElseWarning, const char* regressionTestText, const char* fileName, int lineNum);
-    void VerifyTestResultWarning_ (bool failIfFalse, bool isFailureElseWarning, const char* regressionTestText, const char* fileName, int lineNum);
+    namespace Private_ {
+        /**
+         * LIKE calling Assert but it will ALSO trigger a failure in NODEBUG builds
+         */
+        void Test_ (bool failIfFalse, bool isFailureElseWarning, const wchar_t* regressionTestText, const wchar_t* fileName, int lineNum);
+        void VerifyTestResultWarning_ (bool failIfFalse, bool isFailureElseWarning, const wchar_t* regressionTestText,
+                                       const wchar_t* fileName, int lineNum);
+    }
 
     /**
      */
-#define VerifyTestResult(c) Stroika::Frameworks::Test::Test_ (!!(c), true, #c, __FILE__, __LINE__)
+#define VerifyTestResult(c)                                                                                                                \
+    Stroika::Frameworks::Test::Private_::Test_ (!!(c), true, Stroika_Foundation_Debug_Widen (#c), Stroika_Foundation_Debug_Widen (__FILE__), __LINE__)
 
     /**
      */
-#define VerifyTestResultWarning(c) Stroika::Frameworks::Test::VerifyTestResultWarning_ (!!(c), false, #c, __FILE__, __LINE__)
+#define VerifyTestResultWarning(c)                                                                                                         \
+    Stroika::Frameworks::Test::Private_::VerifyTestResultWarning_ (!!(c), false, Stroika_Foundation_Debug_Widen (#c),                      \
+                                                                   Stroika_Foundation_Debug_Widen (__FILE__), __LINE__)
 
     /**
+     *  Unlike most Stroika APIs, here 'char' refers to 'narrow SDK-char' codepage.
      */
     void WarnTestIssue (const char* issue);
-
-    /**
-     */
     void WarnTestIssue (const wchar_t* issue);
 
 }

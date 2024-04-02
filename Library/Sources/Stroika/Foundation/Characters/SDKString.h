@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Characters {
      *      NOTE - in the context of this file, the word "Narrow" refers to single byte encodings of UNICODE
      *      characters (such as SJIS, UTF-8, or ISO-Latin-1, for example).
      * 
-     *      NOTE - in the context of this file, the word "Wide" refrers to wchar_t beased encoding of UNICODE
+     *      NOTE - in the context of this file, the word "Wide" refers to wchar_t based encoding of UNICODE
      *      characters.
      */
     using SDKString = basic_string<SDKChar>;
