@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Characters {
             //static_assert (not IsASCII (c));  // not sure what/how todo this
         }
         if (not is_constant_evaluated () and not IsASCII (c)) [[unlikely]] {
-            Private_::ThrowSurrogatesOutOfRange_ ();
+            Private_::ThrowNotIsASCII_ ();
         }
     }
     constexpr inline Character::Character (Latin1 c) noexcept
