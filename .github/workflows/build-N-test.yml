@@ -81,18 +81,21 @@ jobs:
           df -h
       - name: Hacks 2 Save Space
         run: |
+          echo ""*************Before cleanups"*************:"
           df -h
           #du -hs /* || true
           #du -hs /usr/* || true
           #du -hs /usr/share/* || true
           #du -hs /__w/* || true
-          echo Deleting:
           du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || true
           du -hs Archive .git
+          echo Deleting:
           rm -r /usr/share/doc  /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || echo "Issue deleting incomplete"
           rm -rf Archive .git || echo "Issue deleting incomplete"
           #ls -la .
+          echo ""*************After cleanups"*************:"
           df -h
+          du -hs /usr/* /usr/share/* /usr/lib/* || true
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
@@ -108,14 +111,13 @@ jobs:
           make libraries
       - name: Save space
         run: |
-          echo "Before save space"
-          df -h
-          du -hs Builds/*/* IntermediateFiles/*/*
-          make --directory Library --silent clean
-          make --directory ThirdPartyComponents --silent clean
+          echo "*************Before save space*************:"
           df -h
           du -hs Builds/*/* IntermediateFiles/*/* ThirdPartyComponents/Origs-Cache/
+          make --directory Library --silent clean
+          make --directory ThirdPartyComponents --silent clean
           rm -f Builds/${{ matrix.config_name }}/ThirdPartyComponents/bin/* ThirdPartyComponents/Origs-Cache/*
+          echo ""*************After cleanups"*************:"
           df -h
           du -hs Builds/*/* IntermediateFiles/*/* ThirdPartyComponents/*
       - name: Run Tests
@@ -123,10 +125,11 @@ jobs:
           make run-tests
       - name: Save space
         run: |
-          echo "Before save space"
+          echo "*************Before save space*************:"
           df -h
           du -hs Builds/*/* IntermediateFiles/*/*
           make --directory Tests clobber
+          echo ""*************After cleanups"*************:"
           df -h
           du -hs Builds/*/* IntermediateFiles/*/*
       - name: Make tools & samples
