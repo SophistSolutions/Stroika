@@ -87,9 +87,9 @@ jobs:
           #du -hs /usr/share/* || true
           #du -hs /__w/* || true
           echo Deleting:
-          du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts-droid-fallback /usr/share/X11 /usr/local/lib/android || true
+          du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || true
           du -hs Archive .git
-          rm -r /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts-droid-fallback /usr/share/X11 /usr/local/lib/android || echo "Issue deleting incomplete"
+          rm -r /usr/share/doc  /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || echo "Issue deleting incomplete"
           rm -rf Archive .git || echo "Issue deleting incomplete"
           #ls -la .
           df -h
