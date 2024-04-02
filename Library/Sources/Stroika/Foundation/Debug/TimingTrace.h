@@ -53,12 +53,28 @@ namespace Stroika::Foundation::Debug {
      *
      * \note   Aliases Performance Trace, PerformanceTrace
      */
-    class TimingTrace : private Execution::WhenTimeExceeded {
+    class TimingTrace
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        : private Execution::WhenTimeExceeded
+#endif
+    {
     public:
         TimingTrace (Time::DurationSeconds warnIfLongerThan = 0s);
         TimingTrace (const char* label, Time::DurationSeconds warnIfLongerThan = 0s);
         TimingTrace (const wchar_t* label, Time::DurationSeconds warnIfLongerThan = 0s);
         TimingTrace (const Characters::String& label, Time::DurationSeconds warnIfLongerThan = 0s);
+
+    public:
+        /**
+         *  Optionally suppress logging for a given timing context; for example, if trying to trace failed fetches, call .Suppress() on success and then
+         *  you only see log entries for the timing of failed fetches.
+         */
+        nonvirtual void Suppress ();
+
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+    private:
+        bool fShowIfTimeExceeded_{true};
+#endif
     };
 
 }
