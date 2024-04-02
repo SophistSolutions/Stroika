@@ -574,7 +574,7 @@ namespace {
                         }
                     }
                     catch (...) {
-                        DbgTrace (L"ignored: %s", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("ignored: {}"_f, Characters::ToString (current_exception ()));
                     }
 
                     if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {

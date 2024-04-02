@@ -252,7 +252,7 @@ namespace {
                                                   std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
                 else {
-                    DbgTrace ("getloadave failed - with result = %d", lr);
+                    DbgTrace ("getloadave failed - with result = {}"_f, lr);
                 }
             }
 #endif
@@ -280,7 +280,7 @@ namespace {
                     double totalTime = idleTime + nonIdleTime;
                     if (totalTime <= this->_fOptions.fMinimumAveragingInterval.count ()) {
                         // can happen if called too quickly together. No good answer
-                        DbgTrace ("Warning - times too close together for cputime_");
+                        DbgTrace ("Warning - times too close together for cputime"_f);
                         return nullopt;
                     }
                     Assert (totalTime > 0);
