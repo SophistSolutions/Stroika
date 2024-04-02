@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Debug {
                                                                                  ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),                 \
                false))
 #else
-#define AssertExpression (c) ((void)0)
+#define AssertExpression(c) ((void)0)
 #endif
 
     /**
