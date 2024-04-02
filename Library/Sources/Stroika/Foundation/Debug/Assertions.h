@@ -410,7 +410,7 @@ namespace Stroika::Foundation::Debug {
                                                                                       ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),            \
                false))
 #else
-#define WeakAssert (c) ((void)0)
+#define WeakAssert(c) ((void)0)
 #endif
 
 /**
@@ -464,7 +464,8 @@ namespace Stroika::Foundation::Debug {
  *  todo an assertion about the result of a function, but don't want to keep the
  *  result in a temporary just to look at it for this one assertion test...
  *
- *  @see GetAssertionHandler
+ *  @see Verify
+ *  @see WeakAssert
  */
 #if qDebug
 #define WeakVerify(c) WeakAssert (c)
