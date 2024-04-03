@@ -2418,6 +2418,14 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserve
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIDuLm
 
 
+      Linking  $StroikaRoot/Builds/clang++-17-release-libc++23/HTMLViewCompiler...
+/usr/bin/ld: /tmp/lto-llvm-91d516.o: in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::reserve(unsigned long, bool)':
+ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb]+0x83): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
+/usr/bin/ld: /tmp/lto-llvm-91d516.o: in function `Stroika::Foundation::Memory::InlineBuffer<std::byte, 4096ul>::Allocate_(unsigned long)':
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm4096EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm4096EE7reserveEmb]+0x91): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
+/usr/bin/ld: /tmp/lto-llvm-91d516.o: in function `Stroika::Foundation::Memory::InlineBuffer<char, 10240ul>::Allocate_(unsigned long)':
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation10Characters7CString6FormatEPKcz+0x1f6): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
+
 */
 #ifndef qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
 
@@ -2425,7 +2433,8 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserve
 // appears still broken in clang++-13 and -clang++-14-release-libstdc++
 // and broekn uuntu22.04 clang++-15-release-libstdc++
 // broken in clang++16 - release builds - seemed OK for a while but then broke again - not just says missing symbol... so possibly different bug???
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+// same issue with clang++-17-release-libc++23
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #else
 #define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
 #endif
