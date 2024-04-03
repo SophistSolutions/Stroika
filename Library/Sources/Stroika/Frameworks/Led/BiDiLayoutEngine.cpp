@@ -842,7 +842,8 @@ TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from)
     neededSize += sizeof (Led_tChar) * strLength;             // fRealText
     neededSize += sizeof (Led_tChar) * strLength;             // fVirtualText
     neededSize += sizeof (ScriptRunElt) * scriptRuns.size (); // fScriptRuns
-    fRep = shared_ptr<BlockRep> (reinterpret_cast<BlockRep*> (new byte[neededSize]));
+    auto deleter = [] (BlockRep* br) { delete[] (reinterpret_cast<byte*> (br)); };
+    fRep         = shared_ptr<BlockRep>{reinterpret_cast<BlockRep*> (new byte[neededSize]), deleter};
 
     fRep->fTextLength = strLength;
 
