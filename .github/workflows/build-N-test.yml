@@ -200,6 +200,7 @@ jobs:
           brew install p7zip
           brew install autoconf
           brew install libtool
+          brew install libidn2
           brew install automake
           brew install pkg-config
           make install-realpath
