@@ -2434,7 +2434,8 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveE
 // and broekn uuntu22.04 clang++-15-release-libstdc++
 // broken in clang++16 - release builds - seemed OK for a while but then broke again - not just says missing symbol... so possibly different bug???
 // same issue with clang++-17-release-libc++23
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+// same issue with clang++-18-release-libc++23
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
 #endif
