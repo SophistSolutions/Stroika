@@ -180,7 +180,7 @@ jobs:
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
-      # EXPERIMENTAL FIX TO LIBIDB2 not found
+      # EXPERIMENTAL FIX TO LIBIDB2 not found https://github.com/actions/runner-images/issues/9638
       LIBRARY_PATH: "/opt/homebrew/lib"
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
@@ -203,7 +203,6 @@ jobs:
           brew install p7zip
           brew install autoconf
           brew install libtool
-          brew install libidn2
           brew install automake
           brew install pkg-config
           make install-realpath
@@ -217,17 +216,10 @@ jobs:
           make clean
       - name: Build Library
         run: |
-          make libraries ECHO_BUILD_LINES=1
-      - name: PRINT DEBUG STUIFF
-        run: |
-          echo cat Builds/${{ matrix.config_name }}/ThirdPartyComponents/lib/pkgconfig/libcurl.pc
-          cat Builds/${{ matrix.config_name }}/ThirdPartyComponents/lib/pkgconfig/libcurl.pc
-          echo PKG_CONFIG_PATH=Builds/${{ matrix.config_name }}/ThirdPartyComponents/lib/pkgconfig pkg-config  --static --libs  libxml-2.0 openssl libcurl zlib gtest
-          PKG_CONFIG_PATH=Builds/${{ matrix.config_name }}/ThirdPartyComponents/lib/pkgconfig pkg-config  --static --libs  libxml-2.0 openssl libcurl zlib gtest    
-          echo "LIBRARY_PATH=$LIBRARY_PATH"
+          make libraries
       - name: Build All
         run: |
-          make all ECHO_BUILD_LINES=1
+          make all
       - name: Run-Tests
         run: |
           make run-tests
