@@ -152,7 +152,6 @@
     {},
     {
         "comment": "MacOS",
-        "comment2": " # runs_on: macos-latest   -- latest is 12, but we need 13 -- LGP 2023-06-10"
     },
     {
         "build_job": "MacOS",
@@ -183,12 +182,30 @@
     },
     {
         "build_job": "MacOS",
-        "displayTargetName": "MacOS-14-XCode-15.4--All3rdParty-Debug----TESTING",
+        "displayTargetName": "MacOS-14-XCode-15.3-Debug",
+        "runs_on": "macos-14",
+        "xcode": "15.3",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable",
+        "run_on_branch": "always"
+    },
+    {
+        "build_job": "MacOS",
+        "displayTargetName": "MacOS-14-XCode-15.3",
+        "runs_on": "macos-14",
+        "xcode": "15.3",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "MacOS",
+        "displayTargetName": "MacOS-14-XCode-15.3--All3rdParty-Debug",
         "runs_on": "macos-14",
         "xcode": "15.3",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components",
-        "run_on_branch": "always"
+        "run_on_branch": "v3-Release"
     },
     {},
     {
