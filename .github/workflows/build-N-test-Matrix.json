@@ -151,7 +151,7 @@
     },
     {},
     {
-        "comment": "MacOS",
+        "comment": "MacOS"
     },
     {
         "build_job": "MacOS",
