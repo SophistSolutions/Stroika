@@ -193,6 +193,7 @@ jobs:
           system_profiler SPDeveloperToolsDataType
           sw_vers
           echo "    X-CODE: `xcodebuild -version | tr '\n' ';'`"
+          echo "LIBRARY_PATH = $LIBRARY_PATH"
       # If we had docker ability, most of these would be built into a docker file
       - name: Install Basic Build requirements
         run: |
@@ -214,10 +215,17 @@ jobs:
           make clean
       - name: Build Library
         run: |
-          make libraries
+          make libraries ECHO_BUILD_LINES=1
+      - name: PRINT DEBUG STUIFF
+        run: |
+          echo cat Builds/${{ matrix.config_name }}/ThirdPartyComponents/lib/pkgconfig/libcurl.pc
+          cat Builds/${{ matrix.config_name }}/ThirdPartyComponents/lib/pkgconfig/libcurl.pc
+          echo PKG_CONFIG_PATH=Builds/${{ matrix.config_name }}/ThirdPartyComponents/lib/pkgconfig pkg-config  --static --libs  libxml-2.0 openssl libcurl zlib gtest
+          PKG_CONFIG_PATH=Builds/${{ matrix.config_name }}/ThirdPartyComponents/lib/pkgconfig pkg-config  --static --libs  libxml-2.0 openssl libcurl zlib gtest    
+          echo "LIBRARY_PATH=$LIBRARY_PATH"
       - name: Build All
         run: |
-          make all
+          make all ECHO_BUILD_LINES=1
       - name: Run-Tests
         run: |
           make run-tests
