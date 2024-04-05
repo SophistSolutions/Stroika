@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Characters {
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
             or is_optional_<T>::value
 #else
-            requires (T t) {
+            or requires (T t) {
                 {
                     []<typename X> (optional<X>) {}(t)
                 };

@@ -1639,13 +1639,32 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
 
 #endif
 
-
+/*
+ file included from /usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:14:
+/usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_destructible.h:28:61: error: ambiguous partial specializations of 'formatter<int, wchar_t>'
+   28 | struct _LIBCPP_TEMPLATE_VIS is_destructible : _BoolConstant<__is_destructible(_Tp)> {};
+      |                                                             ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:41:47: note: in instantiation of template class 'std::is_destructible<std::formatter<int, wchar_t>>' requested here
+   41 |     : public __libcpp_is_nothrow_destructible<is_destructible<_Tp>::value, _Tp> {};
+      |                                               ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:69:51: note: in instantiation of template class 'std::is_nothrow_destructible<std::formatter<int, wchar_t>>' requested here
+   69 | inline constexpr bool is_nothrow_destructible_v = is_nothrow_destructible<_Tp>::value;
+      |                                                   ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/destructible.h:26:24: note: in instantiation of variable template specialization 'std::is_nothrow_destructible_v<std::formatter<int, wchar_t>>' requested here
+   26 | concept destructible = is_nothrow_destructible_v<_Tp>;
+      |                        ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/destructible.h:26:24: note: while substituting template arguments into constraint expression here
+   26 | concept destructible = is_nothrow_destructible_v<_Tp>;
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/constructible.h:27:30: note: while checking the s
+*/
 #ifndef qCompilerAndStdLib_template_concept_matcher_requires_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_template_concept_matcher_requires_Buggy                                                      \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++17
+// Noticed broken in -clang++18
 #define qCompilerAndStdLib_template_concept_matcher_requires_Buggy                                                      \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #else
