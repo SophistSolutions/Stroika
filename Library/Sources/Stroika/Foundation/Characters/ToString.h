@@ -174,23 +174,14 @@ namespace Stroika::Foundation::Characters {
     };
 
     namespace Private_ {
-#ifndef qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
-// rbeaks on xcode and clang++-17-debug-libc++.xml
-#if defined(__clang__)
-#define qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER 1
-#else
-#define qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER 0
-#endif
-#endif
 
-#if qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
-template <typename T>
-struct is_optional_ : std::false_type { };
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        template <typename T>
+        struct is_optional_ : std::false_type {};
 
-template <typename A>
-struct is_optional_<optional<A>> : std::true_type { };
+        template <typename A>
+        struct is_optional_<optional<A>> : std::true_type {};
 #endif
-
 
         /*
          *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formatable so far'
@@ -207,10 +198,9 @@ struct is_optional_<optional<A>> : std::true_type { };
                     t.ToString ()
                 } -> convertible_to<Characters::String>;
             }
-#if qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
-            or
-            is_optional_<T>::value
-            #else
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+            or is_optional_<T>::value
+#else
             requires (T t) {
                 {
                     []<typename X> (optional<X>) {}(t)
@@ -220,9 +210,7 @@ struct is_optional_<optional<A>> : std::true_type { };
             or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index, thread::id>;
 
         static_assert (IUseToStringFormatterForFormatter_<exception_ptr> and IUseToStringFormatterForFormatter_<type_info>); // etc
-#if !qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
         static_assert (IUseToStringFormatterForFormatter_<optional<int>>);
-#endif
     }
 
 }

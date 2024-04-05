@@ -1639,6 +1639,22 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
 
 #endif
 
+
+#ifndef qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_template_concept_matcher_requires_Buggy                                                      \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(__clang__) && !defined(__APPLE__)
+// Noticed broken in -clang++17
+#define qCompilerAndStdLib_template_concept_matcher_requires_Buggy                                                      \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+#else
+#define qCompilerAndStdLib_template_concept_matcher_requires_Buggy 0
+#endif
+
+#endif
+
+
 /**
  * In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/type_traits:510:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_trivially_destructible.h:25:38: error: incomplete type 'Stroika::Foundation::Characters::String' used in type trait expression
