@@ -183,15 +183,12 @@ namespace Stroika::Foundation::Characters {
 #endif
 #endif
         /*
-         *  https://en.cppreference.com/w/cpp/utility/format/formatter
-        // Tricky - cuz different versions of stdc++ include different ones of these... - and we cannot include if stdc++ already does!
-
-        *
+         *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formatable so far'
+         * 
+         *  \see https://en.cppreference.com/w/cpp/utility/format/formatter
+         *
          *  Idea is to TRY to capture all the cases we support to Characters::ToString() - except those already done
          *  by std c++ lib (and String which we special case).
-         *
-         *  roughly - thopugh this doesnt work - its
-         *      concept = !formattable<T> and IToString<T>;
          */
         template <typename T>
         concept IUseToStringFormatterForFormatter_ =
@@ -218,7 +215,6 @@ namespace Stroika::Foundation::Characters {
 
 }
 
-// SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
