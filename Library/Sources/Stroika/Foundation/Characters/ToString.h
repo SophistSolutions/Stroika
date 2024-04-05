@@ -175,7 +175,8 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
 #ifndef qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
-#if defined(__APPLE__)
+// rbeaks on xcode and clang++-17-debug-libc++.xml
+#if defined(__clang__)
 #define qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER 1
 #else
 #define qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER 0
