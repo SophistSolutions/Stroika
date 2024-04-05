@@ -39,7 +39,7 @@ class Search::Rep_ {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     {
-        static constexpr Execution::Activity kConstructingSSDPSearcher_{"constucting SSDP searcher"sv};
+        static constexpr Execution::Activity kConstructingSSDPSearcher_{"constructing SSDP searcher"sv};
         Execution::DeclareActivity           activity{&kConstructingSSDPSearcher_};
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
@@ -75,7 +75,7 @@ public:
     }
     void DoRun_ (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
     {
-        bool didFirstRetry = false; // because search unreliable/UDP, recomended to send two search requests
+        bool didFirstRetry = false; // because search unreliable/UDP, recommended to send two search requests
                                     // a little bit apart even if addition to longer retry interval
                                     // http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
     Retry:
@@ -89,7 +89,7 @@ public:
         }
         for (ConnectionlessSocket::Ptr s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Sending M-SEARCH"};
+            Debug::TraceContextBumper ctx{"Sending M-SEARCH"sv};
 #endif
             SocketAddress useSocketAddress = s.GetAddressFamily () == SocketAddress::INET ? SSDP::V4::kSocketAddress : SSDP::V6::kSocketAddress;
             string request;
@@ -124,7 +124,7 @@ public:
                 s.SetMulticastTTL (kMaxHops_);
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("DETAILS: %s", request.c_str ());
+            DbgTrace ("DETAILS: {}"_f, request);
 #endif
             s.SendTo (reinterpret_cast<const byte*> (request.c_str ()),
                       reinterpret_cast<const byte*> (request.c_str () + request.length ()), useSocketAddress);
@@ -162,7 +162,7 @@ public:
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Read Reply"};
-        DbgTrace (L"firstLine: %s", firstLine.c_str ());
+        DbgTrace ("firstLine: {}"_f, firstLine);
 #endif
 
         static const String kOKRESPONSELEAD_ = "HTTP/1.1 200"sv;
@@ -171,7 +171,7 @@ public:
             while (true) {
                 String line = in.ReadLine ().Trim ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"reply-line: %s", line.c_str ());
+                DbgTrace (L"reply-line: {}"_f, line);
 #endif
                 if (line.empty ()) {
                     break;

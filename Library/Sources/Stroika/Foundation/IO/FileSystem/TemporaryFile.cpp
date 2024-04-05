@@ -105,7 +105,7 @@ AppTempFileManager::~AppTempFileManager ()
             remove_all (fTmpDir_);
         }
         catch (...) {
-            DbgTrace ("Ignoring exception clearly AppTempFileManager files: {}"_f, Characters::ToString (current_exception ()));
+            DbgTrace ("Ignoring exception clearly AppTempFileManager files: {}"_f, current_exception ());
         }
     }
 }
@@ -214,6 +214,6 @@ ScopedTmpFile::~ScopedTmpFile ()
         remove (fTmpFile_);
     }
     catch (...) {
-        DbgTrace ("Ignoring exception clearing file in ScopedTmpFile::~ScopedTmpFile: {}"_f, Characters::ToString (current_exception ()));
+        DbgTrace ("Ignoring exception clearing file in ScopedTmpFile::~ScopedTmpFile: {}"_f, current_exception ());
     }
 }

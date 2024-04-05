@@ -46,7 +46,7 @@ class Listener::Rep_ {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     {
-        static constexpr Execution::Activity kConstructingSSDPListener_{"constucting SSDP Listener"sv};
+        static constexpr Execution::Activity kConstructingSSDPListener_{"constructing SSDP Listener"sv};
         Execution::DeclareActivity           activity{&kConstructingSSDPListener_};
         Socket::BindFlags                    bindFlags = Socket::BindFlags{};
         bindFlags.fSO_REUSEADDR                        = true;
@@ -102,7 +102,7 @@ public:
                     // ignore errors - and keep on trucking
                     // but avoid wasting too much time if we get into an error storm
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"Caught/ignored exception for SSDP advertisement packet: %s", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace ("Caught/ignored exception for SSDP advertisement packet: {}"_f, current_exception ());
 #endif
                     Execution::Sleep (1s);
                 }
@@ -115,7 +115,7 @@ public:
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Read SSDP Packet"};
-        DbgTrace (L"firstLine: %s", firstLine.c_str ());
+        DbgTrace ("firstLine: {}"_f, firstLine);
 #endif
         const String kNOTIFY_LEAD = "NOTIFY "sv;
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
@@ -145,7 +145,7 @@ public:
                         DbgTrace ("A notification without a valid location probably won't be useful, so we could allow the exception to "
                                   "propagate and the notification to be ignored. However, we don't throw when the location is missing "
                                   "altogether. So for now, treat as missing: e={}"_f,
-                                  Characters::ToString (current_exception ()));
+                                  current_exception ());
                     }
                 }
                 else if (kLabelComparer_ (label, "NT"sv) == 0) {
