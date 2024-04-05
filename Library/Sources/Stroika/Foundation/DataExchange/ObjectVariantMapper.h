@@ -142,6 +142,14 @@ namespace Stroika::Foundation::DataExchange {
     using Containers::Set;
 
     /**
+     *  This isn't very expensive (if your compiler supports cheap thread_local variables) - but its not free, and not very
+     *  useful if you have reliable data (just produces better exception messages decoding structured data).
+     */
+#if !defined(qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities)
+#define qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities 1
+#endif
+
+    /**
      *  \brief  ObjectVariantMapper can be used to map C++ types to and from variant-union types, which can be transparently mapped into and out of XML, JSON, etc.
      *
      *  ObjectVariantMapper IS COPYABLE. Make one instance, register your types into it and use this to

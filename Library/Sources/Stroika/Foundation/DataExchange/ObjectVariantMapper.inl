@@ -16,7 +16,9 @@
 #include "../Containers/Concrete/Mapping_stdmap.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Sanitizer.h"
+#if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
 #include "../Execution/Activity.h"
+#endif
 #include "../Execution/Throw.h"
 
 #include "BadFormatException.h"
@@ -467,6 +469,7 @@ namespace Stroika::Foundation::DataExchange {
     template <Containers::Adapters::IAddableTo ACTUAL_CONTAINER_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_WithAdder ()
     {
+        using namespace Characters::Literals;
         using T                                                      = typename ACTUAL_CONTAINER_TYPE::value_type;
         FromObjectMapperType<ACTUAL_CONTAINER_TYPE> fromObjectMapper = [] (const ObjectVariantMapper&   mapper,
                                                                            const ACTUAL_CONTAINER_TYPE* fromObjOfTypeT) -> VariantValue {
@@ -484,6 +487,13 @@ namespace Stroika::Foundation::DataExchange {
                                                                        ACTUAL_CONTAINER_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
             Require (intoObjOfTypeT->empty ());
+#if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
+            auto                       decodingClassActivity = Execution::LazyEvalActivity{[&] () -> String {
+                return Characters::Format ("Decoding {} into class {}"_f, Characters::ToString (d),
+                                                                 Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)));
+            }};
+            Execution::DeclareActivity da{&decodingClassActivity};
+#endif
             Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
             if (not s.empty ()) {
                 ToObjectMapperType<T> valueMapper{mapper.ToObjectMapper<T> ()};
@@ -1076,10 +1086,11 @@ namespace Stroika::Foundation::DataExchange {
             Debug::TraceContextBumper ctx{"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
 #endif
 
+#if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
             auto decodingClassActivity = Execution::LazyEvalActivity{
                 [&] () -> String { return Characters::Format ("Encoding {}"_f, Characters::ToString (typeid (CLASS))); }};
             Execution::DeclareActivity da{&decodingClassActivity};
-
+#endif
             Mapping<String, VariantValue> m;
             if (extends) [[unlikely]] {
                 m = extends->fFromObjectMapper (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> (); // so we can extend
@@ -1111,9 +1122,12 @@ namespace Stroika::Foundation::DataExchange {
             Debug::TraceContextBumper ctx{"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper"};
 #endif
             RequireNotNull (intoObjOfTypeT);
-            auto decodingClassActivity = Execution::LazyEvalActivity{
-                [&] () -> String { return Characters::Format ("Decoding {}"_f, Characters::ToString (typeid (CLASS))); }};
+#if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
+            auto                       decodingClassActivity = Execution::LazyEvalActivity{[&] () -> String {
+                return Characters::Format ("Decoding {} into class {}"_f, Characters::ToString (d), Characters::ToString (typeid (CLASS)));
+            }};
             Execution::DeclareActivity da{&decodingClassActivity};
+#endif
             if (extends) {
                 extends->fToObjectMapper (mapper, d, intoObjOfTypeT);
             }
