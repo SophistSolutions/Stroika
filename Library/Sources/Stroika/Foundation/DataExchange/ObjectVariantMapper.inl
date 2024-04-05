@@ -16,6 +16,7 @@
 #include "../Containers/Concrete/Mapping_stdmap.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Sanitizer.h"
+#include "../Execution/Activity.h"
 #include "../Execution/Throw.h"
 
 #include "BadFormatException.h"
@@ -1045,6 +1046,7 @@ namespace Stroika::Foundation::DataExchange {
                                                                const Traversal::Iterable<StructFieldInfo>& fields,
                                                                const optional<TypeMappingDetails>&         extends)
     {
+        using namespace Characters::Literals;
         if constexpr (qDebug) {
             {
                 // assure each field unique
@@ -1073,6 +1075,11 @@ namespace Stroika::Foundation::DataExchange {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
 #endif
+
+            auto decodingClassActivity = Execution::LazyEvalActivity{
+                [&] () -> String { return Characters::Format ("Encoding {}"_f, Characters::ToString (typeid (CLASS))); }};
+            Execution::DeclareActivity da{&decodingClassActivity};
+
             Mapping<String, VariantValue> m;
             if (extends) [[unlikely]] {
                 m = extends->fFromObjectMapper (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> (); // so we can extend
@@ -1104,6 +1111,9 @@ namespace Stroika::Foundation::DataExchange {
             Debug::TraceContextBumper ctx{"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper"};
 #endif
             RequireNotNull (intoObjOfTypeT);
+            auto decodingClassActivity = Execution::LazyEvalActivity{
+                [&] () -> String { return Characters::Format ("Decoding {}"_f, Characters::ToString (typeid (CLASS))); }};
+            Execution::DeclareActivity da{&decodingClassActivity};
             if (extends) {
                 extends->fToObjectMapper (mapper, d, intoObjOfTypeT);
             }
