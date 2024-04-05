@@ -182,6 +182,16 @@ namespace Stroika::Foundation::Characters {
 #define qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER 0
 #endif
 #endif
+
+#if qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
+template <typename T>
+struct is_optional_ : std::false_type { };
+
+template <typename A>
+struct is_optional_<optional<A>> : std::true_type { };
+#endif
+
+
         /*
          *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formatable so far'
          * 
@@ -197,8 +207,10 @@ namespace Stroika::Foundation::Characters {
                     t.ToString ()
                 } -> convertible_to<Characters::String>;
             }
-#if !qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
+#if qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
             or
+            is_optional_<T>::value
+            #else
             requires (T t) {
                 {
                     []<typename X> (optional<X>) {}(t)
