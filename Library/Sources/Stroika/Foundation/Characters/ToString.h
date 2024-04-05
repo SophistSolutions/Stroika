@@ -190,6 +190,8 @@ namespace Stroika::Foundation::Characters {
          *
          *  Idea is to TRY to capture all the cases we support to Characters::ToString() - except those already done
          *  by std c++ lib (and String which we special case).
+         * 
+         *  && still todo - file path (but tricky cuz added in C++26) and pair and tuple and KeyValuePair maybe??
          */
         template <typename T>
         concept IUseToStringFormatterForFormatter_ =
@@ -201,7 +203,8 @@ namespace Stroika::Foundation::Characters {
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
             or is_optional_<T>::value
 #else
-            or requires (T t) {
+            or
+            requires (T t) {
                 {
                     []<typename X> (optional<X>) {}(t)
                 };
