@@ -169,19 +169,29 @@ namespace Stroika::Foundation::Characters {
         }
     };
 
-    template <typename T>
-    concept IToStringxxx = requires (T t) {
-        {
-            t.ToString ()
-        } -> convertible_to<Characters::String>;
-    };
+    namespace Private_ {
+        /*
+         *  https://en.cppreference.com/w/cpp/utility/format/formatter
+        // Tricky - cuz different versions of stdc++ include different ones of these... - and we cannot include if stdc++ already does!
+         */
+        template <typename T>
+        concept IUseToStringFormatterForFormatter_ = requires (T t) {
+            {
+                t.ToString ()
+            } -> convertible_to<Characters::String>;
+        } or requires (T t) {
+            {
+                []<typename X> (optional<X>) {}(t)
+            };
+        } or same_as<remove_cvref_t<T>, exception_ptr>;
+    }
 
 }
 
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
-template <Stroika::Foundation::Characters::IToStringxxx T>
+template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
-template <Stroika::Foundation::Characters::IToStringxxx T>
+template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
 /*
