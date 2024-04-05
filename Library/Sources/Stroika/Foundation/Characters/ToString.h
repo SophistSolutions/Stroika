@@ -8,6 +8,9 @@
 
 #include <ios>
 #include <optional>
+#include <thread>
+#include <typeindex>
+#include <typeinfo>
 
 #include "Format.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
@@ -178,27 +181,35 @@ namespace Stroika::Foundation::Characters {
 #define qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER 0
 #endif
 #endif
-//using namespace std;
         /*
          *  https://en.cppreference.com/w/cpp/utility/format/formatter
         // Tricky - cuz different versions of stdc++ include different ones of these... - and we cannot include if stdc++ already does!
+
+        *
+         *  Idea is to TRY to capture all the cases we support to Characters::ToString() - except those already done
+         *  by std c++ lib (and String which we special case).
+         *
+         *  roughly - thopugh this doesnt work - its
+         *      concept = !formattable<T> and IToString<T>;
          */
         template <typename T>
-        concept IUseToStringFormatterForFormatter_ = requires (T t) {
-            {
-                t.ToString ()
-            } -> convertible_to<Characters::String>;
-        } 
-        #if !qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
-        or requires (T t) {
-            {
-                []<typename X> (optional<X>) {}(t)
-            };
-        }
-        #endif 
-        or same_as<remove_cvref_t<T>, exception_ptr>;
+        concept IUseToStringFormatterForFormatter_ =
+            requires (T t) {
+                {
+                    t.ToString ()
+                } -> convertible_to<Characters::String>;
+            }
+#if !qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
+            or
+            requires (T t) {
+                {
+                    []<typename X> (optional<X>) {}(t)
+                };
+            }
+#endif
+            or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index, thread::id>;
 
-        static_assert (IUseToStringFormatterForFormatter_<exception_ptr>);
+        static_assert (IUseToStringFormatterForFormatter_<exception_ptr> and IUseToStringFormatterForFormatter_<type_info>); // etc
 #if !qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
         static_assert (IUseToStringFormatterForFormatter_<optional<int>>);
 #endif
