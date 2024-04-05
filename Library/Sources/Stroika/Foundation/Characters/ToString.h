@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <ios>
+#include <optional>
 
 #include "Format.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
@@ -170,6 +171,14 @@ namespace Stroika::Foundation::Characters {
     };
 
     namespace Private_ {
+#ifndef qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
+#if defined(__APPLE__)
+#define qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER 1
+#else
+#define qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER 0
+#endif
+#endif
+//using namespace std;
         /*
          *  https://en.cppreference.com/w/cpp/utility/format/formatter
         // Tricky - cuz different versions of stdc++ include different ones of these... - and we cannot include if stdc++ already does!
@@ -179,11 +188,20 @@ namespace Stroika::Foundation::Characters {
             {
                 t.ToString ()
             } -> convertible_to<Characters::String>;
-        } or requires (T t) {
+        } 
+        #if !qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
+        or requires (T t) {
             {
                 []<typename X> (optional<X>) {}(t)
             };
-        } or same_as<remove_cvref_t<T>, exception_ptr>;
+        }
+        #endif 
+        or same_as<remove_cvref_t<T>, exception_ptr>;
+
+        static_assert (IUseToStringFormatterForFormatter_<exception_ptr>);
+#if !qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
+        static_assert (IUseToStringFormatterForFormatter_<optional<int>>);
+#endif
     }
 
 }
