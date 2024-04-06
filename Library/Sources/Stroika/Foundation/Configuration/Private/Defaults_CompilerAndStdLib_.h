@@ -1664,7 +1664,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++17
 // Noticed broken in -clang++18
-#define qCompilerAndStdLib_template_concept_matcher_requires_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+#define qCompilerAndStdLib_template_concept_matcher_requires_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_template_concept_matcher_requires_Buggy 0
 #endif
