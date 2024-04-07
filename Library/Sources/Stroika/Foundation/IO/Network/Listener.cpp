@@ -60,11 +60,11 @@ struct Listener::Rep_ {
                         // unclear what todo with exceptions here
                         // probably ignore all but for thread abort.
                         // may need virtual functions to handle? Or std::function passed in?
-                        DbgTrace ("Exception accepting new connection: {} - ignored"_f, Characters::ToString (current_exception ()));
+                        DbgTrace ("Exception accepting new connection: {} - ignored"_f, current_exception ());
                     }
                 }
             },
-            Thread::eAutoStart, "Socket Listener: " + Characters::ToString (addrs));
+            Thread::eAutoStart, "Socket Listener: "sv + Characters::ToString (addrs));
     }
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
     ~Rep_ ()

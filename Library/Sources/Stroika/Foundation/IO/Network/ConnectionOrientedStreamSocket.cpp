@@ -181,8 +181,7 @@ namespace {
         }
         virtual void Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const override
         {
-            Debug::TraceContextBumper ctx{"ConnectionOrientedStreamSocket_IMPL_::Connect", "sockAddr={}, timeout={}"_f,
-                                          Characters::ToString (sockAddr), Characters::ToString (timeout)};
+            Debug::TraceContextBumper ctx{"ConnectionOrientedStreamSocket_IMPL_::Connect", "sockAddr={}, timeout={}"_f, sockAddr, timeout};
             if (timeout) {
                 Connect_AsyncWTimeout_ (sockAddr, *timeout);
             }
@@ -376,16 +375,16 @@ Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::To
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "Enabled: "sv << Characters::ToString (fEnabled) << ","sv;
+    sb << "Enabled: "sv << fEnabled << ","sv;
 #if qPlatform_Linux or qPlatform_Windows
     if (fMaxProbesSentBeforeDrop) {
-        sb << "Max-Probes-Sent-Before-Drop: "sv << Characters::ToString (fMaxProbesSentBeforeDrop) << ","sv;
+        sb << "Max-Probes-Sent-Before-Drop: "sv << fMaxProbesSentBeforeDrop << ","sv;
     }
     if (fTimeIdleBeforeSendingKeepalives) {
-        sb << "Time-Idle-Before-Sending-Keepalives: "sv << Characters::ToString (fTimeIdleBeforeSendingKeepalives) << ","sv;
+        sb << "Time-Idle-Before-Sending-Keepalives: "sv << fTimeIdleBeforeSendingKeepalives << ","sv;
     }
     if (fTimeBetweenIndividualKeepaliveProbes) {
-        sb << "Time-Between-Individual-Keepalive-Probes: "sv << Characters::ToString (fTimeBetweenIndividualKeepaliveProbes) << ","sv;
+        sb << "Time-Between-Individual-Keepalive-Probes: "sv << fTimeBetweenIndividualKeepaliveProbes << ","sv;
     }
 #endif
     sb << "}"sv;

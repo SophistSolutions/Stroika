@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         for (size_t row = 0; row < GetDimensions ().fRows; ++row) {
             sb << "["sv;
             for (size_t col = 0; col < GetDimensions ().fColumns; ++col) {
-                sb << Characters::ToString (GetAt (row, col)) << ", "sv;
+                sb << GetAt (row, col) << ", "sv;
             }
             sb << "],"sv;
         }

@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Execution {
      * 
      *  \par Example Usage
      *      \code
-     *          auto            scanningThisAddress = LazyEvalActivity ([&] () -> String { return Characters::Format (L"scanning ports on %s", Characters::ToString (ia).c_str ()); });
+     *          auto            scanningThisAddress = LazyEvalActivity ([&] () -> String { return Characters::Format ("scanning ports on {}"_f, ia); });
      *          DeclareActivity da{&scanningThisAddress};
      *      \endcode
      */

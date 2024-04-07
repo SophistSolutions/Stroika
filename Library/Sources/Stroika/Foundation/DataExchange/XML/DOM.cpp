@@ -73,7 +73,7 @@ String XPath::Expression::ToString () const
     AssertNotNull (fRep_);
     StringBuilder sb;
     sb << "{"sv;
-    sb << "expression: "sv << Characters::ToString (fRep_->GetExpression ());
+    sb << "expression: "sv << fRep_->GetExpression ();
     // @todo add options
     sb << "}"sv;
     return sb.str ();

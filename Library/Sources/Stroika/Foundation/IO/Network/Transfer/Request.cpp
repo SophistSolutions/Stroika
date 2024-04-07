@@ -37,10 +37,10 @@ String Request::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Method: "sv << Characters::ToString (fMethod) << ","sv;
-    sb << "fAuthorityRelativeURL: "sv << Characters::ToString (fAuthorityRelativeURL) << ","sv;
-    sb << "fOverrideHeaders: "sv << Characters::ToString (fOverrideHeaders) << ","sv;
-    sb << "fData: "sv << Characters::ToString (fData) << ","sv;
+    sb << "Method: "sv << fMethod << ","sv;
+    sb << "AuthorityRelativeURL: "sv << fAuthorityRelativeURL << ","sv;
+    sb << "OverrideHeaders: "sv << fOverrideHeaders << ","sv;
+    sb << "Data: "sv << fData << ","sv;
     sb << "}"sv;
     return sb.str ();
 }

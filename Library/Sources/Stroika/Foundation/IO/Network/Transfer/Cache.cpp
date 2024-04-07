@@ -55,7 +55,7 @@ namespace {
             nonvirtual String ToString () const
             {
                 StringBuilder sb = Element::ToString ().SubString (0, -1);
-                sb << ", ExpiresDefault: "sv << Characters::ToString (fExpiresDefault);
+                sb << ", ExpiresDefault: "sv << fExpiresDefault;
                 sb << "}"sv;
                 return sb.str ();
             }
@@ -108,7 +108,7 @@ namespace {
                     }
                 }
                 catch (...) {
-                    DbgTrace ("Cache::OnBeforeFetch::oops: {}"_f, Characters::ToString (current_exception ())); // ignore...
+                    DbgTrace ("Cache::OnBeforeFetch::oops: {}"_f, current_exception ()); // ignore...
                 }
             }
             // In this case, no caching is possible - nothing todo
@@ -136,7 +136,7 @@ namespace {
                             }
                         }
                         catch (...) {
-                            DbgTrace ("Cache::OnAfterFetch::oops(ok): {}"_f, Characters::ToString (current_exception ())); // ignore...
+                            DbgTrace ("Cache::OnAfterFetch::oops(ok): {}"_f, current_exception ()); // ignore...
                         }
                     }
                 } break;
@@ -159,7 +159,7 @@ namespace {
                         }
                     }
                     catch (...) {
-                        DbgTrace ("Cache::OnAfterFetch::oops(ok): {}"_f, Characters::ToString (current_exception ())); // ignore...
+                        DbgTrace ("Cache::OnAfterFetch::oops(ok): {}"_f, current_exception ()); // ignore...
                     }
                 } break;
                 default: {
@@ -305,14 +305,14 @@ String Transfer::Cache::Element::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << ", ETag: "sv << Characters::ToString (fETag);
-    sb << ", Expires: "sv << Characters::ToString (fExpires);
-    sb << ", ExpiresDueToMaxAge: "sv << Characters::ToString (fExpiresDueToMaxAge);
-    sb << ", LastModified: "sv << Characters::ToString (fLastModified);
-    sb << ", CacheControl: "sv << Characters::ToString (fCacheControl);
-    sb << ", ContentType: "sv << Characters::ToString (fContentType);
-    sb << ", OtherHeaders: "sv << Characters::ToString (fOtherHeaders);
-    sb << ", Body: "sv << Characters::ToString (fBody);
+    sb << ", ETag: "sv << fETag;
+    sb << ", Expires: "sv << fExpires;
+    sb << ", ExpiresDueToMaxAge: "sv << fExpiresDueToMaxAge;
+    sb << ", LastModified: "sv << fLastModified;
+    sb << ", CacheControl: "sv << fCacheControl;
+    sb << ", ContentType: "sv << fContentType;
+    sb << ", OtherHeaders: "sv << fOtherHeaders;
+    sb << ", Body: "sv << fBody;
     sb << "}"sv;
     return sb.str ();
 }

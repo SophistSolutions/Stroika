@@ -284,7 +284,7 @@ namespace {
         nonvirtual void SetAuthorityRelativeURL_ (const URI& url)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (%s)", Characters::ToString (url).c_str ());
+            DbgTrace ("Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ ({})"_f, url);
 #endif
             URI newURL = url; // almost but not quite the same as fURL_.Combine (url)
             newURL.SetScheme (fURL_.GetScheme ());

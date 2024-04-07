@@ -132,8 +132,8 @@ String Request::ToString () const
     sb << "{"sv;
     sb << "HTTPVersion: "sv << fHTTPVersion_ << ", "sv;
     sb << "Method: "sv << fMethod_ << ", "sv;
-    sb << "URL: "sv << Characters::ToString (fURL_) << ", "sv;
-    sb << "Headers: "sv << Characters::ToString (fHeaders_);
+    sb << "URL: "sv << fURL_ << ", "sv;
+    sb << "Headers: "sv << fHeaders_;
     sb << "}"sv;
     return sb.str ();
 }

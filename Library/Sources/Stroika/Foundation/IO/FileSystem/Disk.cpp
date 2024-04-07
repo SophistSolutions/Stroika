@@ -50,12 +50,12 @@ String DiskInfoType::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Device-Name: "sv << Characters::ToString (fDeviceName) << ", "sv;
+    sb << "Device-Name: "sv << fDeviceName << ", "sv;
     if (fDeviceKind) {
         sb << "Device-Kind: '"sv << Characters::ToString (*fDeviceKind) << "', "sv;
     }
     if (fSizeInBytes) {
-        sb << "Size-In-Bytes: "sv << Characters::ToString (*fSizeInBytes) << ", "sv;
+        sb << "Size-In-Bytes: "sv << *fSizeInBytes << ", "sv;
     }
     sb << "}"sv;
     return sb.str ();

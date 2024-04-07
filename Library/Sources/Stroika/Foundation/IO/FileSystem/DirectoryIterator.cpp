@@ -101,7 +101,7 @@ public:
             Execution::ThrowPOSIXErrNo ();
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"curInode=%s", Characters::ToString (curInode).c_str ()};
+        Debug::TraceContextBumper ctx{"DirectoryIterator::Rep_::CTOR", "curInode={}"_f, curInode};
 #endif
         if (curInode) {
             do {

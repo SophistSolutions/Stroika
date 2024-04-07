@@ -53,20 +53,20 @@ String Rule::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Name: "sv << Characters::ToString (fName) << ","sv;
-    sb << "Description: "sv << Characters::ToString (fDescription) << ","sv;
-    sb << "Application: "sv << Characters::ToString (fApplication) << ","sv;
+    sb << "Name: "sv << fName << ","sv;
+    sb << "Description: "sv << fDescription << ","sv;
+    sb << "Application: "sv << fApplication << ","sv;
 #if qPlatform_Windows
-    sb << "ProfileMask: "sv << Characters::ToString ((int)fProfileMask) << ","sv;
-    sb << "Direction: "sv << Characters::ToString ((int)fDirection) << ","sv;
-    sb << "Protocol: "sv << Characters::ToString ((int)fProtocol) << ","sv;
+    sb << "ProfileMask: "sv << (int)fProfileMask << ","sv;
+    sb << "Direction: "sv << (int)fDirection << ","sv;
+    sb << "Protocol: "sv << (int)fProtocol << ","sv;
 #endif
-    sb << "LocalPorts: "sv << Characters::ToString (fLocalPorts) << ","sv;
-    sb << "RemotePorts: "sv << Characters::ToString (fRemotePorts) << ","sv;
+    sb << "LocalPorts: "sv << fLocalPorts << ","sv;
+    sb << "RemotePorts: "sv << fRemotePorts << ","sv;
 #if qPlatform_Windows
-    sb << "Action: "sv << Characters::ToString ((int)fAction) << ","sv;
+    sb << "Action: "sv << (int)fAction << ","sv;
 #endif
-    sb << "Enabled: "sv << Characters::ToString (fEnabled) << ","sv;
+    sb << "Enabled: "sv << fEnabled << ","sv;
     sb << "}"sv;
     return sb.str ();
 }

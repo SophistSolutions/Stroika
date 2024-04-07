@@ -141,7 +141,7 @@ namespace {
                 Read_ProcVMStat_ (&result);
             }
             catch (...) {
-                DbgTrace ("Ignoring error in Read_ProcVMStat_: {}"_f, Characters::ToString (current_exception ()));
+                DbgTrace ("Ignoring error in Read_ProcVMStat_: {}"_f, current_exception ());
             }
             _NoteCompletedCapture ();
             return result;

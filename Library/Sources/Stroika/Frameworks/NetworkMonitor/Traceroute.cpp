@@ -69,7 +69,7 @@ String Traceroute::Options::ToString () const
         sb << "Packet-Payload-Size: "sv << Characters::Format (L"%d", *fPacketPayloadSize) << ", "sv;
     }
     if (fSampleInfo) {
-        sb << "Sample: "sv << Characters::ToString (*fSampleInfo);
+        sb << "Sample: "sv << *fSampleInfo;
     }
     sb << "}"sv;
     return sb.str ();
@@ -84,8 +84,8 @@ String Hop::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Time: "sv << Characters::ToString (fTime) << ", "sv;
-    sb << "Address: "sv << Characters::ToString (fAddress);
+    sb << "Time: "sv << fTime << ", "sv;
+    sb << "Address: "sv << fAddress;
     sb << "}"sv;
     return sb.str ();
 }
@@ -143,7 +143,7 @@ void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void
         }
         catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"exception %s ", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace (L"exception {}"_f, current_exception ());
 #endif
             perHopCallback (Hop{});
         }

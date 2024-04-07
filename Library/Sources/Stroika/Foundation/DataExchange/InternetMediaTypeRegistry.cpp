@@ -404,8 +404,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                     imt = InternetMediaType{line[0]};
                                 }
                                 catch (...) {
-                                    DbgTrace ("Ignoring exception looking parsing potential media type entry ({}): {}"_f,
-                                              Characters::ToString (line[0]), Characters::ToString (current_exception ()));
+                                    DbgTrace ("Ignoring exception looking parsing potential media type entry ({}): {}"_f, line[0], current_exception ());
                                 }
                                 fSuffix2MediaTypeMap_.Add (glob, imt, AddReplaceMode::eAddIfMissing);
                                 fMediaType2PreferredSuffixMap_.Add (imt, glob, AddReplaceMode::eAddIfMissing);

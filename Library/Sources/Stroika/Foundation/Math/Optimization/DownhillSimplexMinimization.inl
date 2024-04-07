@@ -32,10 +32,10 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
         Characters::StringBuilder sb;
         sb << "{"sv;
         if (fMaxIterations) {
-            sb << "Max-Iterations: "sv << Characters::ToString (fMaxIterations) << ","sv;
+            sb << "Max-Iterations: "sv << fMaxIterations << ","sv;
         }
         if (fNoImprovementThreshold) {
-            sb << "No-Improvement-Threshold: "sv << Characters::ToString (fNoImprovementThreshold) << ","sv;
+            sb << "No-Improvement-Threshold: "sv << fNoImprovementThreshold << ","sv;
         }
         sb << "}"sv;
         return sb.str ();
@@ -51,9 +51,9 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
     {
         Characters::StringBuilder sb;
         sb << "{"sv;
-        sb << "Optimized-Parameters: "sv << Characters::ToString (fOptimizedParameters) << ","sv;
-        sb << "Score: "sv << Characters::ToString (fScore) << ","sv;
-        sb << "Iteration-Count: "sv << Characters::Format (L"%d", fIterationCount);
+        sb << "Optimized-Parameters: "sv << fOptimizedParameters << ","sv;
+        sb << "Score: "sv << fScore << ","sv;
+        sb << "Iteration-Count: "sv << fIterationCount;
         sb << "}"sv;
         return sb.str ();
     }

@@ -304,25 +304,25 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     sb << "{"sv;
     if (fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) {
         // If fRefCountBumpedInsideThreadMainEvent_ not yet SET, then this info is bogus
-        sb << "id: "sv << Characters::ToString (GetID ()) << ", "sv;
+        sb << "id: "sv << GetID () << ", "sv;
         if constexpr (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
             sb << "index: " << Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (GetID ()))) << ", "sv;
         }
     }
     if (not fThreadName_.empty ()) {
-        sb << "name: "sv << Characters::ToString (fThreadName_) << ", "sv;
+        sb << "name: "sv << fThreadName_ << ", "sv;
     }
-    sb << "status: "sv << Characters::ToString (PeekStatusForToString_ ()) << ", "sv;
+    sb << "status: "sv << PeekStatusForToString_ () << ", "sv;
     //sb << "runnable: "sv << Characters::ToString (fRunnable_) << ", "sv;     // doesn't yet print anything useful
     sb << "abortRequested: "sv << Characters::ToString (fAbortRequested_.load ()) << ", "sv;
-    sb << "refCountBumpedEvent: "sv << Characters::ToString (fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) << ", "sv;
-    sb << "startReadyToTransitionToRunningEvent_: "sv << Characters::ToString (fStartReadyToTransitionToRunningEvent_.PeekIsSet ()) << ", "sv;
+    sb << "refCountBumpedEvent: "sv << fRefCountBumpedInsideThreadMainEvent_.PeekIsSet () << ", "sv;
+    sb << "startReadyToTransitionToRunningEvent_: "sv << fStartReadyToTransitionToRunningEvent_.PeekIsSet () << ", "sv;
     sb << "threadDoneAndCanJoin: "sv << fThreadDoneAndCanJoin_.PeekIsSet () << ", "sv;
     if (fSavedException_.load () != nullptr) [[unlikely]] {
         sb << "savedException: "sv << fSavedException_.load () << ", "sv;
     }
     if (fInitialPriority_.load () != nullopt) [[unlikely]] {
-        sb << "initialPriority: "sv << Characters::ToString (fInitialPriority_.load ()) << ", "sv;
+        sb << "initialPriority: "sv << fInitialPriority_.load () << ", "sv;
     }
 #if qPlatform_Windows
     sb << "throwInterruptExceptionInsideUserAPC: "sv << fThrowInterruptExceptionInsideUserAPC_ << ", "sv;
@@ -836,7 +836,7 @@ void Thread::Ptr::Abort () const
         fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"leaving *this = {}"_f, Characters::ToString (*this));
+    DbgTrace (L"leaving *this = {}"_f, *this);
 #endif
 }
 
@@ -992,8 +992,8 @@ void Thread::Abort (const Traversal::Iterable<Ptr>& threads)
 void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::AbortAndWaitForDoneUntil", "threads={}, timeoutAt={}"_f,
-                                                                                 Characters::ToString (threads), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::AbortAndWaitForDoneUntil",
+                                                                                 "threads={}, timeoutAt={}"_f, threads, timeoutAt)};
 #endif
     /*
      *  Before Stroika v3, we would sometimes re-send the abort message, but no need if this is not buggy. One abort sb enuf.

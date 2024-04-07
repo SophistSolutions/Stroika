@@ -24,16 +24,16 @@ Characters::String CORSOptions::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fAllowCredentials) {
-        sb << "Allow-Credentials"sv << Characters::ToString (fAllowCredentials) << ", "sv;
+        sb << "Allow-Credentials"sv << fAllowCredentials << ", "sv;
     }
     if (fAccessControlMaxAge) {
-        sb << "Access-Control-Max-Age"sv << Characters::ToString (fAccessControlMaxAge) << ", "sv;
+        sb << "Access-Control-Max-Age"sv << fAccessControlMaxAge << ", "sv;
     }
     if (fAllowedOrigins) {
-        sb << "Allowed-Origins"sv << Characters::ToString (fAllowedOrigins) << ", "sv;
+        sb << "Allowed-Origins"sv << fAllowedOrigins << ", "sv;
     }
     if (fAllowedHeaders) {
-        sb << "Allowed-Headers"sv << Characters::ToString (fAllowedHeaders);
+        sb << "Allowed-Headers"sv << fAllowedHeaders;
     }
     sb << "}"sv;
     return sb.str ();

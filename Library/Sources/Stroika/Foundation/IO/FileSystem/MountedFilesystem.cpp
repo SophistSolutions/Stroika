@@ -297,9 +297,9 @@ String MountedFilesystemType::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Mounted-On: "sv << Characters::ToString (fMountedOn) << ", "sv;
+    sb << "Mounted-On: "sv << fMountedOn << ", "sv;
     if (fDevicePaths) {
-        sb << "Device-Paths: "sv << Characters::ToString (*fDevicePaths) << ", "sv;
+        sb << "Device-Paths: "sv << *fDevicePaths << ", "sv;
     }
     if (fFileSystemType) {
         sb << "FileSystem-Type: '"sv << *fFileSystemType << "', "sv;

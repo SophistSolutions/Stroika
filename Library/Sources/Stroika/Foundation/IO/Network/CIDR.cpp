@@ -59,7 +59,7 @@ template <>
 String CIDR::As<String> () const
 {
     StringBuilder sb;
-    sb << fBaseAddress_.As<String> () << "/"sv << Characters::ToString ((int)fSignificantBits_);
+    sb << fBaseAddress_.As<String> () << "/"sv << (int)fSignificantBits_;
     return sb.str ();
 }
 

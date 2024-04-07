@@ -46,8 +46,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  */
 MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName)
 {
-    auto activity = LazyEvalActivity (
-        [&] () -> String { return Characters::Format (L"memory mapping %s for read access", Characters::ToString (fileName).c_str ()); });
+    auto activity = LazyEvalActivity ([&] () -> String { return Characters::Format ("memory mapping {} for read access"_f, fileName); });
     DeclareActivity currentActivity{&activity};
 #if qPlatform_POSIX
     int fd = -1;

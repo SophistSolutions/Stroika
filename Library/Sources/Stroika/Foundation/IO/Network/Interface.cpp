@@ -100,18 +100,18 @@ String Interface::WirelessInfo::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "SSID: "sv << Characters::ToString (fSSID) << ", "sv;
-    sb << "State: "sv << Characters::ToString (fState) << ", "sv;
-    sb << "ConnectionMode: "sv << Characters::ToString (fConnectionMode) << ", "sv;
-    sb << "ProfileName: "sv << Characters::ToString (fProfileName) << ", "sv;
-    sb << "BSSType: "sv << Characters::ToString (fBSSType) << ", "sv;
-    sb << "MACAddress: "sv << Characters::ToString (fMACAddress) << ", "sv;
-    sb << "PhysicalConnectionType: "sv << Characters::ToString (fPhysicalConnectionType) << ", "sv;
-    sb << "SignalQuality: "sv << Characters::ToString (fSignalQuality) << ", "sv;
-    sb << "SecurityEnabled: "sv << Characters::ToString (fSecurityEnabled) << ", "sv;
-    sb << "8021XEnabled: "sv << Characters::ToString (f8021XEnabled) << ", "sv;
-    sb << "AuthAlgorithm: "sv << Characters::ToString (fAuthAlgorithm) << ", "sv;
-    sb << "Cipher: "sv << Characters::ToString (fCipher);
+    sb << "SSID: "sv << fSSID << ", "sv;
+    sb << "State: "sv << fState << ", "sv;
+    sb << "ConnectionMode: "sv << fConnectionMode << ", "sv;
+    sb << "ProfileName: "sv << fProfileName << ", "sv;
+    sb << "BSSType: "sv << fBSSType << ", "sv;
+    sb << "MACAddress: "sv << fMACAddress << ", "sv;
+    sb << "PhysicalConnectionType: "sv << fPhysicalConnectionType << ", "sv;
+    sb << "SignalQuality: "sv << fSignalQuality << ", "sv;
+    sb << "SecurityEnabled: "sv << fSecurityEnabled << ", "sv;
+    sb << "8021XEnabled: "sv << f8021XEnabled << ", "sv;
+    sb << "AuthAlgorithm: "sv << fAuthAlgorithm << ", "sv;
+    sb << "Cipher: "sv << fCipher;
     sb << "}"sv;
     return sb.str ();
 }
@@ -125,8 +125,8 @@ String Interface::Bindings::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "BoundAddressRanges: "sv << Characters::ToString (fAddressRanges) << ", "sv;
-    sb << "BoundAddresses: "sv << Characters::ToString (fAddresses);
+    sb << "BoundAddressRanges: "sv << fAddressRanges << ", "sv;
+    sb << "BoundAddresses: "sv << fAddresses;
     sb << "}"sv;
     return sb.str ();
 }
@@ -139,38 +139,38 @@ String Interface::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "Internal-Interface-ID: "sv << Characters::ToString (fInternalInterfaceID) << ", "sv;
+    sb << "Internal-Interface-ID: "sv << fInternalInterfaceID << ", "sv;
 #if qPlatform_POSIX
-    sb << "InterfaceName: "sv << Characters::ToString (GetInterfaceName ()) << ", "sv;
+    sb << "InterfaceName: "sv << GetInterfaceName () << ", "sv;
 #endif
-    sb << "Friendly-Name: "sv << Characters::ToString (fFriendlyName) << ", "sv;
+    sb << "Friendly-Name: "sv << fFriendlyName << ", "sv;
     if (fDescription) {
-        sb << "Description: "sv << Characters::ToString (*fDescription) << ", "sv;
+        sb << "Description: "sv << *fDescription << ", "sv;
     }
     if (fNetworkGUID) {
-        sb << "Network-GUID: "sv << Characters::ToString (*fNetworkGUID) << ", "sv;
+        sb << "Network-GUID: "sv << *fNetworkGUID << ", "sv;
     }
     if (fType) {
-        sb << "Type: "sv << Characters::ToString (*fType) << ", "sv;
+        sb << "Type: "sv << *fType << ", "sv;
     }
     if (fHardwareAddress) {
-        sb << "Hardware-Address: "sv << Characters::ToString (*fHardwareAddress) << ", "sv;
+        sb << "Hardware-Address: "sv << *fHardwareAddress << ", "sv;
     }
     if (fTransmitSpeedBaud) {
-        sb << "Transmit-Speed-Baud: "sv << Characters::ToString (*fTransmitSpeedBaud) << ", "sv;
+        sb << "Transmit-Speed-Baud: "sv << *fTransmitSpeedBaud << ", "sv;
     }
     if (fReceiveLinkSpeedBaud) {
-        sb << "Receive-Link-Speed-Baud: "sv << Characters::ToString (*fReceiveLinkSpeedBaud) << ", "sv;
+        sb << "Receive-Link-Speed-Baud: "sv << *fReceiveLinkSpeedBaud << ", "sv;
     }
     if (fWirelessInfo) {
-        sb << "Wireless-Info: "sv << Characters::ToString (fWirelessInfo) << ", "sv;
+        sb << "Wireless-Info: "sv << fWirelessInfo << ", "sv;
     }
-    sb << "Bindings: "sv << Characters::ToString (fBindings) << ", "sv;
+    sb << "Bindings: "sv << fBindings << ", "sv;
 
-    sb << "Gateways: "sv << Characters::ToString (fGateways) << ", "sv;
-    sb << "DNS-Servers: "sv << Characters::ToString (fDNSServers) << ", "sv;
+    sb << "Gateways: "sv << fGateways << ", "sv;
+    sb << "DNS-Servers: "sv << fDNSServers << ", "sv;
     if (fStatus) {
-        sb << "Status: "sv << Characters::ToString (*fStatus);
+        sb << "Status: "sv << *fStatus;
     }
     sb << "}"sv;
     return sb.str ();
@@ -337,7 +337,7 @@ namespace {
                         }
                     }
                     catch (...) {
-                        DbgTrace ("got exception converting gateway to address (dns): {}"_f, Characters::ToString (current_exception ())); // should work...
+                        DbgTrace ("got exception converting gateway to address (dns): {}"_f, current_exception ()); // should work...
                     }
                 }
 #endif
@@ -925,7 +925,7 @@ namespace {
                     WeakAssert (not wirelessInfo2Merge.ContainsKey (newInterface.fInternalInterfaceID));
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"newInterface=%s", Characters::ToString (newInterface).c_str ());
+                DbgTrace (L"newInterface={}"_f, newInterface);
 #endif
                 results.Add (newInterface);
             }

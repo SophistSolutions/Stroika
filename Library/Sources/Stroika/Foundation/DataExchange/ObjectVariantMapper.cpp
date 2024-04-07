@@ -67,7 +67,7 @@ String ObjectVariantMapper::TypesRegistry::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "type-mappers: "sv << Characters::ToString (fSerializers_.Keys ()); // for now the values are not interesting
+    sb << "type-mappers: "sv << fSerializers_.Keys (); // for now the values are not interesting
     sb << "}"sv;
     return sb.str ();
 }

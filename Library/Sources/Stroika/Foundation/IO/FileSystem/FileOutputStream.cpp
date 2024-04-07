@@ -57,9 +57,7 @@ namespace {
             , fFlushFlag{flushFlag}
             , fFileName_{fileName}
         {
-            auto            activity = LazyEvalActivity ([&] () -> String {
-                return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ());
-            });
+            auto activity = LazyEvalActivity ([&] () -> String { return Characters::Format ("opening {} for write access"_f, fFileName_); });
             DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
             int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
@@ -121,8 +119,7 @@ namespace {
         {
             Require (not elts.empty ());
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            auto                                            activity = LazyEvalActivity (
-                [&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+            auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format ("writing to {}"_f, fFileName_); });
             DeclareActivity currentActivity{&activity};
             const byte*     i   = elts.data ();
             const byte*     end = elts.data () + elts.size ();

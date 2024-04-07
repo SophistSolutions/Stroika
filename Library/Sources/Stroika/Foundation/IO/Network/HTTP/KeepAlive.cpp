@@ -70,10 +70,10 @@ String KeepAlive::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMessages) {
-        sb << "Messages: "sv << Characters::ToString (*fMessages) << ", "sv;
+        sb << "Messages: "sv << *fMessages << ", "sv;
     }
     if (fTimeout) {
-        sb << "Timeout: "sv << Characters::ToString (*fTimeout);
+        sb << "Timeout: "sv << *fTimeout;
     }
     sb << "}"sv;
     return sb.str ();

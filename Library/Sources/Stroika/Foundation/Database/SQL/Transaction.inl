@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Database::SQL {
                 }
                 catch (...) {
                     using namespace Characters::Literals;
-                    DbgTrace ("Suppress rollback failure exception in SQL transaction: {}"_f, Characters::ToString (current_exception ()));
+                    DbgTrace ("Suppress rollback failure exception in SQL transaction: {}"_f, current_exception ());
                     // intentially fall-thru
                 }
             }

@@ -36,13 +36,13 @@ String Advertisement::ToString () const
     Characters::StringBuilder sb;
     sb << "{"sv;
     if (fAlive) {
-        sb << "Alive : "sv << Characters::ToString (fAlive) << ", "sv;
+        sb << "Alive : "sv << fAlive << ", "sv;
     }
-    sb << "USN : "sv << Characters::ToString (fUSN) << ", "sv;
-    sb << "Location : "sv << Characters::ToString (fLocation) << ", "sv;
-    sb << "Server : "sv << Characters::ToString (fServer) << ", "sv;
-    sb << "Target : "sv << Characters::ToString (fTarget) << ", "sv;
-    sb << "Raw-Headers : "sv << Characters::ToString (fRawHeaders);
+    sb << "USN : "sv << fUSN << ", "sv;
+    sb << "Location : "sv << fLocation << ", "sv;
+    sb << "Server : "sv << fServer << ", "sv;
+    sb << "Target : "sv << fTarget << ", "sv;
+    sb << "Raw-Headers : "sv << fRawHeaders;
     sb << "}"sv;
     return sb.str ();
 }

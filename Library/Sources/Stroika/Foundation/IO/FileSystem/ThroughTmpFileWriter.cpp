@@ -54,7 +54,7 @@ ThroughTmpFileWriter::ThroughTmpFileWriter (const filesystem::path& realFileName
 ThroughTmpFileWriter::~ThroughTmpFileWriter ()
 {
     if (not fTmpFilePath_.empty ()) {
-        DbgTrace ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to {}"_f, Characters::ToString (fRealFilePath_));
+        DbgTrace ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to {}"_f, fRealFilePath_);
         // ignore errors on unlink, cuz nothing to be done in DTOR anyhow...(@todo perhaps should at least tracelog)
 #if qPlatform_POSIX
         (void)::unlink (fTmpFilePath_.c_str ());
@@ -71,10 +71,8 @@ void ThroughTmpFileWriter::Commit ()
     Require (not fTmpFilePath_.empty ()); // cannot Commit more than once
     // Also - NOTE - you MUST close fTmpFilePath (any file descriptors that have opened it) BEFORE the Commit!
 
-    auto            activity = LazyEvalActivity ([&] () -> String {
-        return Characters::Format (L"committing temporary file %s to %s", Characters::ToString (fTmpFilePath_).c_str (),
-                                              Characters::ToString (fRealFilePath_).c_str ());
-    });
+    auto activity = LazyEvalActivity (
+        [&] () -> String { return Characters::Format ("committing temporary file {} to {}"_f, fTmpFilePath_, fRealFilePath_); });
     DeclareActivity currentActivity{&activity};
 #if qPlatform_POSIX
     FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::rename (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()), fTmpFilePath_, fRealFilePath_);

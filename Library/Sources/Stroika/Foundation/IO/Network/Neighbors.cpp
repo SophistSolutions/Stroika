@@ -123,7 +123,7 @@ namespace {
 #endif
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"returning: %s", Characters::ToString (result).c_str ());
+        DbgTrace (L"returning: {}"_f, result);
 #endif
         return result;
     }
@@ -181,9 +181,9 @@ String NeighborsMonitor::Neighbor::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "InternetAddress:"sv << Characters::ToString (fInternetAddress) << ","sv;
-    sb << "HardwareAddress:"sv << Characters::ToString (fHardwareAddress) << ","sv;
-    sb << "InterfaceID:"sv << Characters::ToString (fInterfaceID);
+    sb << "InternetAddress:"sv << fInternetAddress << ","sv;
+    sb << "HardwareAddress:"sv << fHardwareAddress << ","sv;
+    sb << "InterfaceID:"sv << fInterfaceID;
     sb << "}"sv;
     return sb.str ();
 }

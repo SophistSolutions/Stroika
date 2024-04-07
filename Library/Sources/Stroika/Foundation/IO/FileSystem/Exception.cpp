@@ -48,9 +48,7 @@ Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const Char
 void Exception::ThrowPOSIXErrNo (errno_t errNo, const path& p1, const path& p2)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::FileSystem::Exception::ThrowPOSIXErrNo", L"sysErr=%d, p1=%s, p2=%s", errNo,
-                                                       Characters::ToString (p1).c_str (), Characters::ToString (p2).c_str ())};
+    Debug::TraceContextBumper ctx{"IO::FileSystem::Exception::ThrowPOSIXErrNo", "sysErr={}, p1={}, p2={}"_f, errNo, p1, p2};
 #endif
     Require (errNo != 0);
 #if qPlatform_POSIX

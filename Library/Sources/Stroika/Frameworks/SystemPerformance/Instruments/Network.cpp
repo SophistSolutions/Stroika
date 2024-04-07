@@ -269,7 +269,7 @@ namespace {
                                                                  *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
                 }
                 else {
-                    DbgTrace ("Line {} bad in file {}"_f, nLine, Characters::ToString (kProcFileName_));
+                    DbgTrace ("Line {} bad in file {}"_f, nLine, kProcFileName_);
                 }
             }
         }

@@ -133,11 +133,11 @@ namespace Stroika::Foundation::Characters {
     {
         StringBuilder sb;
         sb << "{"sv;
-        sb << "TransactionID: "sv << Characters::ToString (mh.fTransactionID) << ", "sv;
-        sb << "ProtocolID: "sv << Characters::ToString (mh.fProtocolID) << ", "sv;
-        sb << "Length: "sv << Characters::ToString (mh.fLength) << ", "sv;
-        sb << "UnitID: "sv << Characters::ToString (mh.fUnitID) << ", "sv;
-        sb << "FunctionCode: "sv << Characters::ToString (mh.fFunctionCode);
+        sb << "TransactionID: "sv << mh.fTransactionID << ", "sv;
+        sb << "ProtocolID: "sv << mh.fProtocolID << ", "sv;
+        sb << "Length: "sv << mh.fLength << ", "sv;
+        sb << "UnitID: "sv << mh.fUnitID << ", "sv;
+        sb << "FunctionCode: "sv << mh.fFunctionCode;
         sb << "}"sv;
         return sb.str ();
     }
@@ -171,7 +171,7 @@ namespace {
              *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16 (etc)
              */
             if (requestPayload.size () != 4) {
-                DbgTrace ("requestPayload={}"_f, Characters::ToString (requestPayload));
+                DbgTrace ("requestPayload={}"_f, requestPayload);
                 Throw (Execution::Exception{Characters::Format (L"Invalid payload length (got %d, expected 4)", requestPayload.size ())});
             }
             uint16_t startingAddress = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));

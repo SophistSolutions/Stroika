@@ -112,7 +112,7 @@ AppTempFileManager::~AppTempFileManager ()
 
 AppTempFileManager& AppTempFileManager::operator= (AppTempFileManager&& rhs)
 {
-    DbgTrace ("AppTempFileManager::DTOR: clearing {}"_f, Characters::ToString (fTmpDir_));
+    DbgTrace ("AppTempFileManager::DTOR: clearing {}"_f, fTmpDir_);
     remove_all (fTmpDir_);
     fTmpDir_ = move (rhs.fTmpDir_); // prevents rhs DTOR from doing anything
     Assert (rhs.fTmpDir_.empty ()); // cuz of this...
@@ -166,7 +166,7 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
         filesystem::path trialName = fn / ToPath (dirNameBase + buf);
         if (not is_directory (trialName)) {
             if (create_directories (trialName)) {
-                DbgTrace ("AppTempFileManager::GetTempDir (): returning '{}'"_f, Characters::ToString (trialName));
+                DbgTrace ("AppTempFileManager::GetTempDir (): returning '{}'"_f, trialName);
                 WeakAssert (is_directory (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
