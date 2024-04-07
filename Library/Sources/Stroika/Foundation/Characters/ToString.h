@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Characters {
         struct is_optional_ : std::false_type {};
         template <typename A>
         struct is_optional_<optional<A>> : std::true_type {};
-        template <typename T1, typename T2>
+        template <typename T1, typename T2= void>
         struct is_pair_ : std::false_type {};
         template <typename T1, typename T2>
         struct is_pair_<pair<T1, T2>> : std::true_type {};
