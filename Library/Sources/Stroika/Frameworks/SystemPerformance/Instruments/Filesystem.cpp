@@ -417,7 +417,7 @@ namespace {
                         _fContext.rwget ().rwref ()->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
-                        DbgTrace ("Unknown error reading {}"_f, Characters::ToString (fn));
+                        DbgTrace ("Unknown error reading {}"_f, fn);
                         // ignore
                     }
                 }

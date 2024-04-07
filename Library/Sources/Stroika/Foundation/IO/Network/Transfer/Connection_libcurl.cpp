@@ -150,7 +150,7 @@ namespace {
         virtual void SetSchemeAndAuthority (const URI& schemeAndAuthority) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Connection_LibCurl::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
+            DbgTrace ("Connection_LibCurl::Rep_::SetSchemeAndAuthority ('{}')"_f, schemeAndAuthority);
 #endif
             fURL_.SetScheme (schemeAndAuthority.GetScheme ());
             fURL_.SetAuthority (schemeAndAuthority.GetAuthority ());

@@ -242,10 +242,10 @@ namespace {
                              }},
                         });
                     if (created) {
-                        DbgTrace ("Initialized new experiment DB: {}"_f, Characters::ToString (db));
+                        DbgTrace ("Initialized new experiment DB: {}"_f, db);
                     }
                     else {
-                        DbgTrace ("Opened experiment DB: {}"_f, Characters::ToString (db));
+                        DbgTrace ("Opened experiment DB: {}"_f, db);
                     }
                 }
                 Database::SQL::SQLite::Connection::Ptr fDB_;

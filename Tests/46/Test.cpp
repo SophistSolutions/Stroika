@@ -36,14 +36,14 @@ namespace {
         {
             Debug::TraceContextBumper ctx1{"simple test"};
             for (DirectoryIterator i{WellKnownLocations::GetTemporary ()}; not i.Done (); ++i) {
-                DbgTrace ("filename = {}"_f, Characters::ToString (*i));
+                DbgTrace ("filename = {}"_f, *i);
             }
         }
         {
             Debug::TraceContextBumper ctx1{"t2"};
             DirectoryIterator         i{WellKnownLocations::GetTemporary ()};
             for (DirectoryIterator i2 = i; not i2.Done (); ++i2) {
-                DbgTrace ("filename = {}"_f, Characters::ToString (*i2));
+                DbgTrace ("filename = {}"_f, *i2);
             }
         }
     }
@@ -54,7 +54,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test2_DirectoryIterable_"};
         for (filesystem::path filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
-            DbgTrace ("filename = {}"_f, Characters::ToString (filename));
+            DbgTrace ("filename = {}"_f, filename);
         }
         {
             Debug::TraceContextBumper                      ctx1{"test-known-dir"};

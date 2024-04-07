@@ -184,7 +184,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
     }
     auto result = Parse (rep, l, kDefaultParseFormats);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning %s", Characters::ToString (result).c_str ());
+    DbgTrace ("returning {}"_f, result);
 #endif
     return result;
 }

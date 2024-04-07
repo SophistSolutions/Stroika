@@ -137,9 +137,9 @@ namespace {
             Debug::TraceContextBumper ctx{"{}::Test4_SystemConfigruation_"};
             using namespace Configuration;
             SystemConfiguration sc = GetSystemConfiguration ();
-            DbgTrace ("systemConfig={}"_f, Characters::ToString (sc));
-            DbgTrace ("systemConfig.actualOS={}"_f, Characters::ToString (sc.fActualOperatingSystem));
-            DbgTrace ("systemConfig.apparentOS={}"_f, Characters::ToString (sc.fApparentOperatingSystem));
+            DbgTrace ("systemConfig={}"_f, sc);
+            DbgTrace ("systemConfig.actualOS={}"_f, sc.fActualOperatingSystem);
+            DbgTrace ("systemConfig.apparentOS={}"_f, sc.fApparentOperatingSystem);
         }
     }
 }

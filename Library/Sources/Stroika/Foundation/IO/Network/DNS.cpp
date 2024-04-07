@@ -279,9 +279,7 @@ InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress) const
 InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s, family=%s",
-                                                                                 Characters::ToString (address).c_str (),
-                                                                                 Characters::ToString (family).c_str ())};
+    Debug::TraceContextBumper ctx{"DNS::HostEntry DNS::GetHostAddresses", "address={}, family={}"_f, address family};
 #endif
     auto h = GetHostEntry (hostNameOrAddress).fAddressList;
     for (auto i = h.begin (); i != h.end (); ++i) {

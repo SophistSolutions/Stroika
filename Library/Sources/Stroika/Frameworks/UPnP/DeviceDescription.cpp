@@ -35,11 +35,11 @@ String DeviceDescription::Icon::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "MimeType: "sv << Characters::ToString (fMimeType) << ", "sv;
-    sb << "HorizontalPixels: "sv << Characters::ToString (fHorizontalPixels) << ", "sv;
-    sb << "VerticalPixels: "sv << Characters::ToString (fVerticalPixels) << ", "sv;
-    sb << "ColorDepth : "sv << Characters::ToString (fColorDepth) << ", "sv;
-    sb << "URL: "sv << Characters::ToString (fURL);
+    sb << "MimeType: "sv << fMimeType << ", "sv;
+    sb << "HorizontalPixels: "sv << fHorizontalPixels << ", "sv;
+    sb << "VerticalPixels: "sv << fVerticalPixels << ", "sv;
+    sb << "ColorDepth : "sv << fColorDepth << ", "sv;
+    sb << "URL: "sv << fURL;
     sb << "}"sv;
     return sb.str ();
 }

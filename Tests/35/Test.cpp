@@ -272,7 +272,7 @@ namespace {
             Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::Get ().GetMediaTypes()"};
             // enumerate all content types
             for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
-                DbgTrace ("i={}"_f, Characters::ToString (ct));
+                DbgTrace ("i={}"_f, ct);
             }
         }
         {

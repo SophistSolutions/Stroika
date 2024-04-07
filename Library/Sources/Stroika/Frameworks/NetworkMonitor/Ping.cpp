@@ -220,8 +220,8 @@ Characters::String SampleOptions::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Interval: "sv << Characters::ToString (fInterval) << ", "sv;
-    sb << "Count: "sv << Characters::Format (L"%d", fSampleCount);
+    sb << "Interval: "sv << fInterval << ", "sv;
+    sb << "Count: "sv << fSampleCount;
     sb << "}"sv;
     return sb.str ();
 }
@@ -236,13 +236,13 @@ String SampleResults::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMedianPingTime) {
-        sb << "Median-Ping-Time: "sv << Characters::ToString (*fMedianPingTime) << ", "sv;
+        sb << "Median-Ping-Time: "sv << *fMedianPingTime << ", "sv;
     }
     if (fMedianHopCount) {
-        sb << "Median-Hop-Count: "sv << Characters::Format (L"%d", *fMedianHopCount) << ", "sv;
+        sb << "Median-Hop-Count: "sv << fMedianHopCount << ", "sv;
     }
     if (fExceptionCount != 0) {
-        sb << "Exception-Count: "sv << Characters::Format (L"%d", fExceptionCount) << ", "sv; // to see exceptions - run with sample-count = 1
+        sb << "Exception-Count: "sv << fExceptionCount << ", "sv; // to see exceptions - run with sample-count = 1
     }
     sb << "}"sv;
     return sb.str ();
@@ -255,9 +255,7 @@ String SampleResults::ToString () const
  */
 SampleResults NetworkMonitor::Ping::Sample (const InternetAddress& addr, const SampleOptions& sampleOptions, const Options& options)
 {
-    Debug::TraceContextBumper         ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        "Frameworks::NetworkMonitor::Ping::Sample", "addr={}, sampleOptions={}, options={}"_f, Characters::ToString (addr),
-        Characters::ToString (sampleOptions), Characters::ToString (options))};
+    Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Ping::Sample", "addr={}, sampleOptions={}, options={}"_f, addr, sampleOptions, options};
     Pinger                            pinger{addr, options};
     Collection<Time::DurationSeconds> sampleTimes;
     Collection<unsigned int>          sampleHopCounts;

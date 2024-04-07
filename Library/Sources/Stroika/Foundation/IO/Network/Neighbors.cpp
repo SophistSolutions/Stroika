@@ -165,7 +165,7 @@ namespace {
             result += Neighbor{InternetAddress{line[0]}, line[3], line[5]};
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"returning: %s", Characters::ToString (result).c_str ());
+        DbgTrace ("returning: {}"_f, result);
 #endif
         return result;
     }

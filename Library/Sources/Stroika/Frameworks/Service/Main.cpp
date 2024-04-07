@@ -318,7 +318,7 @@ Main::ServiceDescription Main::GetServiceDescription () const
 
 void Main::Restart (Time::DurationSeconds timeout)
 {
-    Debug::TraceContextBumper ctx{"Stroika::Frameworks::Service::Main::Restart", "timeout = {}"_f, Characters::ToString (timeout)};
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::Service::Main::Restart", "timeout = {}"_f, timeout};
 
     /////// @TODO FIX - WRONG HANDLING OF TIMEOUT
     Stop (timeout);
@@ -372,7 +372,7 @@ void Main::LoggerServiceWrapper::_Install ()
         fDelegateTo_->_Install ();
     }
     catch (...) {
-        Logger::sThe.Log (Logger::eError, "Failed to install - {} - aborting..."_f, Characters::ToString (current_exception ()));
+        Logger::sThe.Log (Logger::eError, "Failed to install - {} - aborting..."_f, current_exception ());
         Execution::ReThrow ();
     }
 }
@@ -384,7 +384,7 @@ void Main::LoggerServiceWrapper::_UnInstall ()
         fDelegateTo_->_UnInstall ();
     }
     catch (...) {
-        Logger::sThe.Log (Logger::eError, "Failed to uninstall - {} - aborting..."_f, Characters::ToString (current_exception ()));
+        Logger::sThe.Log (Logger::eError, "Failed to uninstall - {} - aborting..."_f, current_exception ());
         Execution::ReThrow ();
     }
 }
@@ -396,7 +396,7 @@ void Main::LoggerServiceWrapper::_RunAsService ()
         fDelegateTo_->_RunAsService ();
     }
     catch (...) {
-        Logger::sThe.Log (Logger::eError, L"Exception running service - {} - aborting..."_f, Characters::ToString (current_exception ()));
+        Logger::sThe.Log (Logger::eError, L"Exception running service - {} - aborting..."_f, current_exception ());
         Execution::ReThrow ();
     }
     Logger::sThe.Log (Logger::eNotice, "Service stopped normally"_f);
@@ -1004,7 +1004,7 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
         fRunThread_.Join ();
     }
     catch (...) {
-        DbgTrace (L"mapping run-thread.Join () exception {} to dwWin32ExitCode=1"_f, Characters::ToString (current_exception ()));
+        DbgTrace (L"mapping run-thread.Join () exception {} to dwWin32ExitCode=1"_f, current_exception ());
         fServiceStatus_.dwWin32ExitCode = 1; // some non-zero exit code
     }
     SetServiceStatus_ (SERVICE_STOPPED);

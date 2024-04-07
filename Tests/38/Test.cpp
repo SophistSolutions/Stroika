@@ -158,7 +158,7 @@ void RegressionTes7_FaledRun_ ()
     }
     catch (...) {
         using namespace Characters::Literals;
-        DbgTrace ("got failure msg: {}"_f, Characters::ToString (current_exception ()));
+        DbgTrace ("got failure msg: {}"_f, current_exception ());
     }
 }
 

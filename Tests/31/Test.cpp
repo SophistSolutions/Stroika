@@ -718,7 +718,7 @@ namespace {
                                      const BLOB& salt, const DerivedKey& expected) {
                 unsigned int nRounds = 1; // command-line tool uses this
                 DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds, salt};
-                DbgTrace ("dk={}; expected={}"_f, Characters::ToString (dk), Characters::ToString (expected));
+                DbgTrace ("dk={}; expected={}"_f, dk, expected);
                 EXPECT_TRUE (dk == expected);
             };
 

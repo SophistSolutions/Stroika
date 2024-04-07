@@ -73,12 +73,12 @@ AppTempFileManager::AppTempFileManager (const Options& options)
     // to disambiguiate.
     //
     tmpDir /= GetSysTmpRelativePath_ (options);
-    DbgTrace ("tmpDir={} (assuring created now...)"_f, Characters::ToString (tmpDir));
+    DbgTrace ("tmpDir={} (assuring created now...)"_f, tmpDir);
     try {
         create_directories (tmpDir);
     }
     catch (...) {
-        DbgTrace (L"Error creating tmpdirs, so adjusting and retrying : {}"_f, Characters::ToString (current_exception ()));
+        DbgTrace (L"Error creating tmpdirs, so adjusting and retrying : {}"_f, current_exception ());
         // tmpDir == GetEXEPath (): happens in regtests - maybe better way to handle -
         tmpDir.replace_filename (GetEXEPath ().stem ().generic_string () + "-tmpdir");
         create_directories (tmpDir); // if that doesn't do it, just throw
@@ -100,7 +100,7 @@ AppTempFileManager::AppTempFileManager (const Options& options)
 AppTempFileManager::~AppTempFileManager ()
 {
     if (not fTmpDir_.empty ()) {
-        DbgTrace (L"AppTempFileManager::DTOR: clearing {}"_f, Characters::ToString (fTmpDir_));
+        DbgTrace (L"AppTempFileManager::DTOR: clearing {}"_f, fTmpDir_);
         try {
             remove_all (fTmpDir_);
         }
@@ -145,7 +145,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
 #else
             if (int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, filesystem::perms::all); fd >= 0) {
                 close (fd);
-                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, Characters::ToString (trialName));
+                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, trialName);
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }

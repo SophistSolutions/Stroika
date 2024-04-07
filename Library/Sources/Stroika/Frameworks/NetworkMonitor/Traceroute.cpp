@@ -44,8 +44,8 @@ Characters::String Traceroute::Options::SampleInfo::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Interval: "sv << Characters::ToString (fInterval) << ", "sv;
-    sb << "Count: "sv << Characters::Format (L"%d", fSampleCount);
+    sb << "Interval: "sv << fInterval << ", "sv;
+    sb << "Count: "sv << fSampleCount;
     sb << "}"sv;
     return sb.str ();
 }

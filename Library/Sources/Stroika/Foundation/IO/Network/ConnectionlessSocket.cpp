@@ -144,9 +144,7 @@ namespace {
         }
         virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
         {
-            Debug::TraceContextBumper ctx{
-                Stroika_Foundation_Debug_OptionalizeTraceArgs ("IO::Network::Socket::LeaveMulticastGroup", L"iaddr={} onInterface={}"_f,
-                                                               Characters::ToString (iaddr), Characters::ToString (onInterface))};
+            Debug::TraceContextBumper ctx{"IO::Network::Socket::LeaveMulticastGroup", "iaddr={} onInterface={}"_f, iaddr, onInterface};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             switch (iaddr.GetAddressFamily ()) {
                 case InternetAddress::AddressFamily::V4: {

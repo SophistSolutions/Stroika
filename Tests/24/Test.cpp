@@ -91,10 +91,10 @@ namespace {
             String ToString () const
             {
                 Characters::StringBuilder sb;
-                sb += L"{";
-                sb += L"Name: " + Characters::ToString (fName) + L",";
-                sb += L"Priority: " + Characters::ToString (fPriority);
-                sb += L"}";
+                sb << L"{";
+                sb << L"Name: " << fName << L",";
+                sb << L"Priority: " << fPriority;
+                sb << L"}";
                 return sb.str ();
             }
         };

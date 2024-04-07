@@ -161,8 +161,7 @@ namespace {
 
 bool SystemFirewall::Manager::Register (const Rule& rule)
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("SystemFirewall::Manager::Register", "rule={}"_f, Characters::ToString (rule))};
+    Debug::TraceContextBumper ctx{"SystemFirewall::Manager::Register", "rule={}"_f, rule};
 
     for (const auto& r : LookupByGroup (rule.fGroup)) {
         if (r == rule) {

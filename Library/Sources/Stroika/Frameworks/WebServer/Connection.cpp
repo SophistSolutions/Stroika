@@ -108,7 +108,8 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens={}, line='{}'"_f, Characters::ToString (tokens), line);
-            Execution::Throw (ClientErrorException{"Bad METHOD in Request HTTP line"sv});
+            static const auto kException_ = ClientErrorException{"Bad METHOD in Request HTTP line"sv};
+            Execution::Throw (kException_);
         }
     }
     while (true) {
@@ -381,8 +382,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         return thisMessageKeepAlive ? eTryAgainLater : eClose;
     }
     catch (...) {
-        DbgTrace ("ReadAndProcessMessage Exception caught ({}), so returning ReadAndProcessResult::eClose"_f,
-                  Characters::ToString (current_exception ()));
+        DbgTrace ("ReadAndProcessMessage Exception caught ({}), so returning ReadAndProcessResult::eClose"_f, current_exception ());
         this->rwResponse ().Abort ();
         return Connection::ReadAndProcessResult::eClose;
     }
