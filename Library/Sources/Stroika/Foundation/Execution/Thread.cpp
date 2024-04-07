@@ -319,13 +319,13 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     sb << "startReadyToTransitionToRunningEvent_: "sv << Characters::ToString (fStartReadyToTransitionToRunningEvent_.PeekIsSet ()) << ", "sv;
     sb << "threadDoneAndCanJoin: "sv << Characters::ToString (fThreadDoneAndCanJoin_.PeekIsSet ()) << ", "sv;
     if (fSavedException_.load () != nullptr) [[unlikely]] {
-        sb << "savedException: "sv << Characters::ToString (fSavedException_.load ()) << ", "sv;
+        sb << "savedException: "sv << fSavedException_.load () << ", "sv;
     }
     if (fInitialPriority_.load () != nullopt) [[unlikely]] {
         sb << "initialPriority: "sv << Characters::ToString (fInitialPriority_.load ()) << ", "sv;
     }
 #if qPlatform_Windows
-    sb << "throwInterruptExceptionInsideUserAPC: "sv << Characters::ToString (fThrowInterruptExceptionInsideUserAPC_) << ", "sv;
+    sb << "throwInterruptExceptionInsideUserAPC: "sv << fThrowInterruptExceptionInsideUserAPC_ << ", "sv;
 #endif
     sb << "}"sv;
     return sb.str ();
@@ -497,8 +497,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             Require (Debug::AppearsDuringMainLifetime ());
             [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
-            DbgTrace (L"Adding thread index {} to sRunningThreads_ ({})"_f,
-                      Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))),
+            DbgTrace (L"Adding thread index {} to sRunningThreads_ ({})"_f, static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID)),
                       Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> (
                           [] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); })));
 #else

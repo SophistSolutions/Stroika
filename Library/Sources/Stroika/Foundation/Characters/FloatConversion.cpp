@@ -34,7 +34,7 @@ String FloatConversion::ToStringOptions::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fPrecision_) {
-        sb << "Precision:"sv << Characters::ToString (*fPrecision_) << ","sv;
+        sb << "Precision:"sv << *fPrecision_ << ","sv;
     }
     if (fFmtFlags_) {
         sb << "Fmt-Flags:"sv << Characters::ToString ((int)*fFmtFlags_, ios_base::hex) << ","sv;
@@ -43,10 +43,10 @@ String FloatConversion::ToStringOptions::ToString () const
         sb << "Use-Locale"sv << String::FromNarrowSDKString (fUseLocale_->name ()) << ","sv;
     }
     if (fTrimTrailingZeros_) {
-        sb << "Trim-Trailing-Zeros: "sv << Characters::ToString (*fTrimTrailingZeros_) << ","sv;
+        sb << "Trim-Trailing-Zeros: "sv << *fTrimTrailingZeros_ << ","sv;
     }
     if (fFloatFormat_) {
-        sb << "Scientific-Notation: "sv << Characters::ToString ((int)*fFloatFormat_) << ","sv;
+        sb << "Scientific-Notation: "sv << (int)*fFloatFormat_ << ","sv;
     }
     sb << "}"sv;
     return sb.str ();

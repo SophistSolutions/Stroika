@@ -171,15 +171,13 @@ OptionsFile::OptionsFile (const String& modName, const ObjectVariantMapper& mapp
 
 BLOB OptionsFile::ReadRaw () const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OptionsFile::ReadRaw", L"readfilename={}"_f,
-                                                                                 Characters::ToString (GetReadFilePath_ ()))};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OptionsFile::ReadRaw", L"readfilename={}"_f, GetReadFilePath_ ())};
     return IO::FileSystem::FileInputStream::New (GetReadFilePath_ ()).ReadAll ();
 }
 
 void OptionsFile::WriteRaw (const BLOB& blob)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OptionsFile::WriteRaw", L"writefilename={}"_f,
-                                                                                 Characters::ToString (GetWriteFilePath_ ()))};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OptionsFile::WriteRaw", L"writefilename={}"_f, GetWriteFilePath_ ())};
     if (GetReadFilePath_ () == GetWriteFilePath_ ()) {
         try {
             if (ReadRaw () == blob) {

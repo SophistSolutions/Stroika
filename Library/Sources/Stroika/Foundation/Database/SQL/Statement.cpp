@@ -31,8 +31,8 @@ String Statement::ColumnDescription::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "name: "sv << Characters::ToString (fName) << ", "sv;
-    sb << "type: "sv << Characters::ToString (fType);
+    sb << "name: "sv << fName << ", "sv;
+    sb << "type: "sv << fType;
     sb << "}"sv;
     return sb.str ();
 }
@@ -46,8 +46,8 @@ String Statement::ParameterDescription::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "name: "sv << Characters::ToString (fName) << ", "sv;
-    sb << "value: "sv << Characters::ToString (fValue);
+    sb << "name: "sv << fName << ", "sv;
+    sb << "value: "sv << fValue;
     sb << "}"sv;
     return sb.str ();
 }
@@ -165,8 +165,7 @@ void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parame
 void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SQL::Statement::Execute", L"parameters=%s",
-                                                                          Characters::ToString (parameters).c_str ())};
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("SQL::Statement::Execute", "parameters={}"_f,  parameters};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Reset ();
@@ -179,9 +178,9 @@ String Statement::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
     StringBuilder                                  sb;
     sb << "{"sv;
-    sb << "Parameter-Bindings: "sv << Characters::ToString (GetParameters ()) << ", "sv;
-    sb << "Column-Descriptions: "sv << Characters::ToString (GetColumns ()) << ", "sv;
-    sb << "Original-SQL: "sv << Characters::ToString (GetSQL ());
+    sb << "Parameter-Bindings: "sv << GetParameters () << ", "sv;
+    sb << "Column-Descriptions: "sv << GetColumns () << ", "sv;
+    sb << "Original-SQL: "sv << GetSQL ();
     sb << "}"sv;
     return sb.str ();
 }

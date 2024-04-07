@@ -33,10 +33,10 @@ String Profile::ToString () const
     Characters::StringBuilder sb;
     sb << "{"sv;
     if (not fUnnamedSection.fProperties.empty ()) {
-        sb << "fUnnamedSection: "sv << Characters::ToString (fUnnamedSection) << ","sv;
+        sb << "UnnamedSection: "sv << fUnnamedSection << ","sv;
     }
     if (not fNamedSections.empty ()) {
-        sb << "fNamedSections: "sv << Characters::ToString (fNamedSections) << ","sv;
+        sb << "NamedSections: "sv << fNamedSections << ","sv;
     }
     sb << "}"sv;
     return sb.str ();

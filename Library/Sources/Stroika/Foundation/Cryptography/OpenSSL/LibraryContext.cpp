@@ -103,7 +103,7 @@ LibraryContext::LibraryContext ()
         Set<CipherAlgorithm> results{cipherNames.Map<Set<CipherAlgorithm>> (
             [] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::CipherAlgorithm::GetByNameQuietly (n); })};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
+        DbgTrace ("Found pAvailableCipherAlgorithms (cnt={}): {}"_f, results.size (), results);
 #endif
         return results;
     }}

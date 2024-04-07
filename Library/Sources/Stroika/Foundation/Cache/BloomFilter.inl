@@ -38,12 +38,12 @@ namespace Stroika::Foundation::Cache {
     {
         Characters::StringBuilder sb;
         sb << "{"sv;
-        sb << "HashFunctions: "sv << Characters::ToString (fHashFunctions) << ", "sv;
-        sb << "BitCount: "sv << Characters::ToString (fBitCount) << ", "sv;
-        sb << "BitsSet: "sv << Characters::ToString (fBitsSet) << ", "sv;
-        sb << "ActualAddCalls: "sv << Characters::ToString (fActualAddCalls) << ", "sv;
-        sb << "ApparentlyDistinctAddCalls: "sv << Characters::ToString (fApparentlyDistinctAddCalls) << ", "sv;
-        sb << "ProbabilityOfFalsePositive: "sv << Characters::ToString (ProbabilityOfFalsePositive ());
+        sb << "HashFunctions: "sv << fHashFunctions << ", "sv;
+        sb << "BitCount: "sv << fBitCount << ", "sv;
+        sb << "BitsSet: "sv << fBitsSet << ", "sv;
+        sb << "ActualAddCalls: "sv << fActualAddCalls << ", "sv;
+        sb << "ApparentlyDistinctAddCalls: "sv << fApparentlyDistinctAddCalls << ", "sv;
+        sb << "ProbabilityOfFalsePositive: "sv << ProbabilityOfFalsePositive ();
         sb << "}"sv;
         return sb.str ();
     }

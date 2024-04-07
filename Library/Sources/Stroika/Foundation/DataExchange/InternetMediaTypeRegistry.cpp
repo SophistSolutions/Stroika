@@ -438,8 +438,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes", L"majorType=%s",
-                                                                                         Characters::ToString (fn).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("UsrShareMIMERep_::GetMediaTypes", "majorType={}"_f, majorType)};
 #endif
             Containers::Set<InternetMediaType> results;
             for (const auto& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
@@ -620,7 +619,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                         }
                         catch (...) {
                             // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                            DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, Characters::ToString (o), current_exception ());
+                            DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, o, current_exception ());
                             continue;
                         }
                         if (majorType) {
@@ -661,7 +660,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                             }
                             catch (...) {
                                 // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                                DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, o, Characters::ToString (current_exception ()));
+                                DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, o, current_exception ());
                                 continue;
                             }
                             if (ct.GetType () == imt.GetType () and ct.GetSubType () == imt.GetSubType ()) {
