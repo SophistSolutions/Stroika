@@ -15,9 +15,9 @@
 //          its needed, so check it first
 
 #if qHasFeature_fmtlib
+#include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/xchar.h>
-#include <fmt/chrono.h>
 #elif __has_include(<format>)
 #include <format>
 #endif

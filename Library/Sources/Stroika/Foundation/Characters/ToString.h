@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Characters {
             }
 #endif
             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id> or
-            (ranges::range<T> and not Configuration::IAnyOf<remove_cvref_t<T>, string, wstring>)
+            (ranges::range<T> and not Configuration::IAnyOf<remove_cvref_t<T>, string, wstring, string_view, wstring_view>)
 #endif
             or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index>;
 
