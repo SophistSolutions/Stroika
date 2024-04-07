@@ -167,12 +167,12 @@ String SystemConfiguration::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Boot-Information: " << Characters::ToString (fBootInformation) << ", "sv;
-    sb << "CPU: "sv << Characters::ToString (fCPU) << ", "sv;
-    sb << "Memory: "sv << Characters::ToString (fMemory) << ", "sv;
-    sb << "Actual-Operating-System: "sv << Characters::ToString (fActualOperatingSystem) << ", "sv;
-    sb << "Apparent-Operating-System: "sv << Characters::ToString (fApparentOperatingSystem) << ", "sv;
-    sb << "Computer-Names: "sv << Characters::ToString (fComputerNames) << ", "sv;
+    sb << "Boot-Information: " << fBootInformation << ", "sv;
+    sb << "CPU: "sv << fCPU << ", "sv;
+    sb << "Memory: "sv << fMemory << ", "sv;
+    sb << "Actual-Operating-System: "sv << fActualOperatingSystem << ", "sv;
+    sb << "Apparent-Operating-System: "sv << fApparentOperatingSystem << ", "sv;
+    sb << "Computer-Names: "sv << fComputerNames << ", "sv;
     sb << "}"sv;
     return sb.str ();
 };

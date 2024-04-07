@@ -178,9 +178,12 @@ namespace Stroika::Foundation::Characters {
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
         template <typename T>
         struct is_optional_ : std::false_type {};
-
         template <typename A>
         struct is_optional_<optional<A>> : std::true_type {};
+        template <typename T1, typename T2>
+        struct is_pair_ : std::false_type {};
+        template <typename T1, typename T2>
+        struct is_pair_<pair<T1, T2>> : std::true_type {};
 #endif
 
         /*
@@ -209,6 +212,23 @@ namespace Stroika::Foundation::Characters {
                     []<typename X> (optional<X>) {}(t)
                 };
             }
+#endif
+        // unsure what to check - __cpp_lib_format - test c++26  __cpp_lib_formatters < 202601L  -- 202302L  is c++23
+#if __cplusplus < 242001L
+            or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
+#endif
+#if __cplusplus < 202300L
+        // @todo tuple
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+            or is_pair_<T>::value
+#else
+            or
+            requires (T t) {
+                {
+                    []<typename T1, typename T2> (pair<T1, T2>) {}(t)
+                };
+            }
+#endif
 #endif
             or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index, thread::id>;
 
