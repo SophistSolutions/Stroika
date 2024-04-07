@@ -918,7 +918,7 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (intoObjOfTypeT);
             auto optVal = nameMap.InverseLookup (d.As<String> ());
             if (not optVal.has_value ()) [[unlikely]] {
-                DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, typeid (ENUM_TYPE), d);
+                DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, Characters::ToString (typeid (ENUM_TYPE)), d);
                 static const auto kException_ = BadFormatException{"Enumeration value out of range"sv};
                 Execution::Throw (kException_);
             }
@@ -1027,17 +1027,17 @@ namespace Stroika::Foundation::DataExchange {
             }
             else {
                 if (m.size () != 2) [[unlikely]] {
-                    DbgTrace ("Range ('{}') element needs LowerBound and UpperBound"_f, typeid (RANGE_TYPE));
+                    DbgTrace ("Range ('{}') element needs LowerBound and UpperBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
                     static const auto kException_ = BadFormatException{"Range needs LowerBound and UpperBound"sv};
                     Execution::Throw (kException_);
                 }
                 if (not m.ContainsKey (lowerBoundLabel)) [[unlikely]] {
-                    DbgTrace ("Range ('{}') element needs LowerBound"_f, typeid (RANGE_TYPE));
+                    DbgTrace ("Range ('{}') element needs LowerBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
                     static const auto kException_ = BadFormatException{"Range needs 'LowerBound' element"sv};
                     Execution::Throw (kException_);
                 }
                 if (not m.ContainsKey (upperBoundLabel)) [[unlikely]] {
-                    DbgTrace ("Range ('{}') element needs UpperBound"_f, typeid (RANGE_TYPE));
+                    DbgTrace ("Range ('{}') element needs UpperBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
                     static const auto kException_ = BadFormatException{"Range needs 'UpperBound' element"sv};
                     Execution::Throw (kException_);
                 }
