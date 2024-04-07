@@ -17,6 +17,7 @@
 #if qHasFeature_fmtlib
 #include <fmt/format.h>
 #include <fmt/xchar.h>
+#include <fmt/chrono.h>
 #elif __has_include(<format>)
 #include <format>
 #endif
