@@ -217,6 +217,8 @@ namespace Stroika::Foundation::Characters {
 #if __cplusplus < 242001L
             or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
+
+        // features added in C++23
 #if __cplusplus < 202300L
         // @todo tuple
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
@@ -229,8 +231,10 @@ namespace Stroika::Foundation::Characters {
                 };
             }
 #endif
+            or Configuration::IAnyOf<remove_cvref_t<T>, thread::id> or
+            (ranges::range<T> and not Configuration::IAnyOf<remove_cvref_t<T>, string, wstring>)
 #endif
-            or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index, thread::id>;
+            or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index>;
 
         static_assert (IUseToStringFormatterForFormatter_<exception_ptr> and IUseToStringFormatterForFormatter_<type_info>); // etc
         static_assert (IUseToStringFormatterForFormatter_<optional<int>>);
