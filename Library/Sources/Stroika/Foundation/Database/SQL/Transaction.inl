@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Database::SQL {
         RequireNotNull (_fRep);
         Characters::StringBuilder sb;
         sb << "{"sv;
-        sb << " disposition: "sv << Characters::ToString (_fRep->GetDisposition ());
+        sb << " disposition: "sv << _fRep->GetDisposition ();
         sb << "}"sv;
         return sb.str ();
     }

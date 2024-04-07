@@ -286,9 +286,7 @@ namespace Stroika::Foundation::Debug {
      *  \par Example Usage
      *      \code
      *          auto url = IO::Network::URI{"http://www.sophists.com"};
-     *          DbgTrace (L"u = %s", Characters::ToString (url).c_str ());      // Each will output "u = 'http://www.sophists.com'"
-     *          DbgTrace (L"u = {}"_f, url);
-     *          DbgTrace ("u = {}"_f, url);
+     *          DbgTrace ("u = {}"_f, url);     // output "u = 'http://www.sophists.com'"
      *      \endcode
      * 
      *  @todo - redo NOT as MACRO but as FUNCTION call (to emittracemessage)

@@ -1097,7 +1097,7 @@ namespace Stroika::Foundation::DataExchange {
             }
             for (const auto& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("fieldname = {}, offset={}"_f, i.fSerializedFieldName, Characters::ToString (i.fFieldMetaInfo));
+                DbgTrace ("fieldname = {}, offset={}"_f, i.fSerializedFieldName, i.fFieldMetaInfo);
 #endif
                 VariantValue vv = [&] () {
                     const byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (fromObjOfTypeT)

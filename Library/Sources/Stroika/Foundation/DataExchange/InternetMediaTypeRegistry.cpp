@@ -295,8 +295,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                         ct = InternetMediaType{line[0]};
                     }
                     catch (...) {
-                        DbgTrace ("Ignoring exception looking parsing potential media type entry ({}): {}"_f, line[0],
-                                  Characters::ToString (current_exception ()));
+                        DbgTrace ("Ignoring exception looking parsing potential media type entry ({}): {}"_f, line[0], current_exception ());
                     }
                     // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
                     Containers::Set<FileSuffixType> fileSuffixes;
@@ -621,8 +620,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                         }
                         catch (...) {
                             // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                            DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, Characters::ToString (o),
-                                      Characters::ToString (current_exception ()));
+                            DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, Characters::ToString (o), current_exception ());
                             continue;
                         }
                         if (majorType) {

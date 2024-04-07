@@ -123,8 +123,7 @@ using namespace std;
 Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String, VariantValue>& fields) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{L"ORM::Schema::Table::MapToDB",
-                           Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
+    TraceContextBumper ctx{L"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields={}"_f, fields)};
 #endif
     Mapping<String, VariantValue> resultFields;
     Set<String>                   usedFields; // must track outside of resultFields.Keys () cuz input key could differ from output
@@ -209,7 +208,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
         // @todo maybe check fNamedFields contains all the actual fields??? Maybe OK to not check
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("resultFields={}"_f, Characters::ToString (resultFields));
+    DbgTrace ("resultFields={}"_f, resultFields);
 #endif
     return resultFields;
 }

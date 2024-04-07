@@ -56,8 +56,8 @@ String DerivedKey::ToString () const
 {
     Characters::StringBuilder result;
     result << "{"sv;
-    result << "key: "sv << Characters::ToString (fKey) << ", "sv;
-    result << "IV: "sv << Characters::ToString (fIV);
+    result << "key: "sv << fKey << ", "sv;
+    result << "IV: "sv << fIV;
     result << "}"sv;
     return result.str ();
 }

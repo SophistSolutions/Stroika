@@ -42,10 +42,10 @@ namespace Stroika::Foundation::DataExchange::XML {
         Characters::StringBuilder sb;
         sb << "{"sv;
         if (fDefaultNamespace_) {
-            sb << "defaultNS: "sv << Characters::ToString (*fDefaultNamespace_) << ", "sv;
+            sb << "defaultNS: "sv << *fDefaultNamespace_ << ", "sv;
         }
         if (fDefaultNamespace_) {
-            sb << "prefixedNamespaces: "sv << Characters::ToString (fPrefixedNS_);
+            sb << "prefixedNamespaces: "sv << fPrefixedNS_;
         }
         sb << "}"sv;
         return sb.str ();
