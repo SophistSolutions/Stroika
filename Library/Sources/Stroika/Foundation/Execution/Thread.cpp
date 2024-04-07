@@ -317,7 +317,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     sb << "abortRequested: "sv << Characters::ToString (fAbortRequested_.load ()) << ", "sv;
     sb << "refCountBumpedEvent: "sv << Characters::ToString (fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) << ", "sv;
     sb << "startReadyToTransitionToRunningEvent_: "sv << Characters::ToString (fStartReadyToTransitionToRunningEvent_.PeekIsSet ()) << ", "sv;
-    sb << "threadDoneAndCanJoin: "sv << Characters::ToString (fThreadDoneAndCanJoin_.PeekIsSet ()) << ", "sv;
+    sb << "threadDoneAndCanJoin: "sv << fThreadDoneAndCanJoin_.PeekIsSet () << ", "sv;
     if (fSavedException_.load () != nullptr) [[unlikely]] {
         sb << "savedException: "sv << fSavedException_.load () << ", "sv;
     }

@@ -35,9 +35,9 @@ namespace Stroika::Foundation::Execution {
     {
         Characters::StringBuilder out;
         out << "{"sv;
-        out << "P: "sv << Characters::ToString (P) << "',"sv;
-        out << "I: "sv << Characters::ToString (I) << "',"sv;
-        out << "D: "sv << Characters::ToString (D);
+        out << "P: "sv << P << "',"sv;
+        out << "I: "sv << I << "',"sv;
+        out << "D: "sv << D;
         out << "}"sv;
         return out.str ();
     }
@@ -116,19 +116,15 @@ namespace Stroika::Foundation::Execution {
                 fOutputFunction_ (outputFunctionArgument);
                 nextRunAt += fUpdatePeriod_;
 #if Stroika_Foundation_Execution_PIDLoop_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Completed PIDLoop update: set-point=%s, measuredValue=%s, error=%s, derivative=%s, integral=%s, "
-                          L"outputFunctionArgument=%s, nextRunAt=%f",
-                          Characters::ToString (setPoint).c_str (), Characters::ToString (measuredValue).c_str (),
-                          Characters::ToString (error).c_str (), Characters::ToString (derivative).c_str (),
-                          Characters::ToString (fUpdatableParams_->fIntegral_).c_str (),
-                          Characters::ToString (outputFunctionArgument).c_str (), nextRunAt);
+                DbgTrace ("Completed PIDLoop update: set-point={}, measuredValue{}, error={}, derivative={}, integral={}, outputFunctionArgument={}, nextRunAt={}"_f,
+                          setPoint, measuredValue, error, derivative, fUpdatableParams_->fIntegral_, outputFunctionArgument, nextRunAt);
 #endif
             }
             catch (const Thread::AbortException&) {
                 Execution::ReThrow ();
             }
             catch (...) {
-                DbgTrace (L"Suppressing exception in PIDLoop: %s", Characters::ToString (current_exception ()).c_str ());
+                DbgTrace (L"Suppressing exception in PIDLoop: {}"_f, current_exception ());
             }
         }
     }

@@ -158,9 +158,9 @@ auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
         sModuleData_->fEmitter.EmitTraceMessage ("***Starting TraceLog***"_f);
         sModuleData_->fEmitter.EmitTraceMessage ("Starting at {}"_f, Time::DateTime::Now ().Format ());
 #if qStroika_Foundation_Debug_Trace_TraceToFile
-        sModuleData_->fEmitter.EmitTraceMessage ("TraceFileName: {}"_f, Characters::ToString (Emitter::GetTraceFileName ()));
+        sModuleData_->fEmitter.EmitTraceMessage ("TraceFileName: {}"_f, Emitter::GetTraceFileName ());
 #endif
-        sModuleData_->fEmitter.EmitTraceMessage ("EXEPath={}"_f, Characters::ToString (Execution::GetEXEPath ()));
+        sModuleData_->fEmitter.EmitTraceMessage ("EXEPath={}"_f, Execution::GetEXEPath ());
         sModuleData_->fEmitter.EmitTraceMessage ("<debug-state>"_f);
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithAddressSanitizer = {}"_f, Debug::kBuiltWithAddressSanitizer);
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithThreadSanitizer = {}"_f, Debug::kBuiltWithThreadSanitizer);

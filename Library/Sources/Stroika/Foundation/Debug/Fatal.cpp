@@ -21,7 +21,7 @@ namespace {
     {
         DbgTrace ("Fatal Error {} encountered"_f, String::FromSDKString (msg));
         if (auto exc = current_exception ()) {
-            DbgTrace ("Uncaught exception: {}"_f, Characters::ToString (exc));
+            DbgTrace ("Uncaught exception: {}"_f, exc);
         }
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         {

@@ -324,7 +324,7 @@ optional<Time::Duration> Logger::GetSuppressDuplicates () const
 void Logger::SetSuppressDuplicates (const optional<Duration>& suppressDuplicatesThreshold)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Logger::SetSuppressDuplicates", "suppressDuplicatesThreshold={}"_f,
-                                                                                 Characters::ToString (suppressDuplicatesThreshold))};
+                                                                                 suppressDuplicatesThreshold)};
     Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0s);
     RequireNotNull (fRep_); // not destroyed
     [[maybe_unused]] lock_guard critSec{fRep_->fSuppressDuplicatesThreshold_};

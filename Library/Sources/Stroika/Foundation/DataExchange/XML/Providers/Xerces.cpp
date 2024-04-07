@@ -1346,7 +1346,7 @@ namespace {
             START_LIB_EXCEPTION_MAPPER_
             {
                 try {
-                    DbgTrace ("Validating against schema (target namespace '{}')"_f, Characters::ToString (schema.GetTargetNamespace ()));
+                    DbgTrace ("Validating against schema (target namespace '{}')"_f, schema.GetTargetNamespace ());
                     // As this CAN be expensive - especially if we need to externalize the file, and re-parse it!!! - just shortcut by
                     // checking the top-level DOM-node and assure that has the right namespace. At least quickie first check that works when
                     // reading files (doesn't help in pre-save check, of course)
@@ -1396,7 +1396,7 @@ namespace {
                         // temporary file
                         //
                         filesystem::path tmpFileName = IO::FileSystem::AppTempFileManager::sThe.GetTempFile ("FAILED_VALIDATION_.xml");
-                        DbgTrace ("Error validating - so writing out temporary file = '{}'"_f, Characters::ToString (tmpFileName));
+                        DbgTrace ("Error validating - so writing out temporary file = '{}'"_f, tmpFileName);
                         Write (IO::FileSystem::FileOutputStream::New (tmpFileName), SerializationOptions{.fPrettyPrint = true, .fIndent = 4});
                         try {
                             ValidateFile (tmpFileName, schema);

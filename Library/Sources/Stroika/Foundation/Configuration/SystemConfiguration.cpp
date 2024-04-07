@@ -70,7 +70,7 @@ String SystemConfiguration::BootInformation::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Booted-At: "sv << Characters::ToString (fBootedAt);
+    sb << "Booted-At: "sv << fBootedAt;
     sb << "}"sv;
     return sb.str ();
 };
@@ -85,8 +85,8 @@ String SystemConfiguration::CPU::CoreDetails::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Socket-ID: "sv << Characters::ToString (fSocketID) << ", "sv;
-    sb << "Model-Name: "sv << Characters::ToString (fModelName);
+    sb << "Socket-ID: "sv << fSocketID << ", "sv;
+    sb << "Model-Name: "sv << fModelName;
     sb << "}"sv;
     return sb.str ();
 }
@@ -100,7 +100,7 @@ String SystemConfiguration::CPU::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Cores: "sv << Characters::ToString (fCores);
+    sb << "Cores: "sv << fCores;
     sb << "}"sv;
     return sb.str ();
 };
@@ -114,9 +114,9 @@ String SystemConfiguration::Memory::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Page-Size: "sv << Characters::ToString (fPageSize) << ", "sv;
-    sb << "Total-Physical-RAM: "sv << Characters::ToString (fTotalPhysicalRAM) << ", "sv;
-    sb << "Total-Virtual-RAM: "sv << Characters::ToString (fTotalVirtualRAM);
+    sb << "Page-Size: "sv << fPageSize << ", "sv;
+    sb << "Total-Physical-RAM: "sv << fTotalPhysicalRAM << ", "sv;
+    sb << "Total-Virtual-RAM: "sv << fTotalVirtualRAM;
     sb << "}"sv;
     return sb.str ();
 };
@@ -130,7 +130,7 @@ String SystemConfiguration::ComputerNames::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Hostname: "sv << Characters::ToString (fHostname) << ", "sv;
+    sb << "Hostname: "sv << fHostname << ", "sv;
     sb << "}"sv;
     return sb.str ();
 };
@@ -144,15 +144,15 @@ String SystemConfiguration::OperatingSystem::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Token-Name: "sv + Characters::ToString (fTokenName) << ", "sv;
-    sb << "Short-Pretty-Name: "sv + Characters::ToString (fShortPrettyName) + ", "sv;
-    sb << "Pretty-Name-With-Major-Version: "sv + Characters::ToString (fPrettyNameWithMajorVersion) + ", "sv;
-    sb << "Pretty-Name-With-Details: "sv + Characters::ToString (fPrettyNameWithVersionDetails) + ", "sv;
-    sb << "Major-Minor-Version-String: "sv + Characters::ToString (fMajorMinorVersionString) + ", "sv;
-    sb << "RFC1945-Compat-Product-Token-With-Version: "sv + Characters::ToString (fRFC1945CompatProductTokenWithVersion) + ", "sv;
-    sb << "Bits: "sv << Characters::ToString (fBits) + ", "sv;
+    sb << "Token-Name: "sv + fTokenName << ", "sv;
+    sb << "Short-Pretty-Name: "sv + fShortPrettyName + ", "sv;
+    sb << "Pretty-Name-With-Major-Version: "sv + fPrettyNameWithMajorVersion + ", "sv;
+    sb << "Pretty-Name-With-Details: "sv + fPrettyNameWithVersionDetails + ", "sv;
+    sb << "Major-Minor-Version-String: "sv + fMajorMinorVersionString + ", "sv;
+    sb << "RFC1945-Compat-Product-Token-With-Version: "sv + fRFC1945CompatProductTokenWithVersion + ", "sv;
+    sb << "Bits: "sv << fBits << ", "sv;
     if (fPreferedInstallerTechnology) {
-        sb << "Prefered-Installer-Technology: "sv + Characters::ToString (*fPreferedInstallerTechnology) + ", "sv;
+        sb << "Prefered-Installer-Technology: "sv << *fPreferedInstallerTechnology << ", "sv;
     }
     sb << "}"sv;
     return sb.str ();
@@ -563,7 +563,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             tmp.fMajorMinorVersionString    = p.fUnnamedSection.fProperties.LookupValue ("VERSION_ID"sv);
         }
         catch (...) {
-            DbgTrace ("Failure reading /etc/os-release: {}"_f, Characters::ToString (current_exception ()));
+            DbgTrace ("Failure reading /etc/os-release: {}"_f, current_exception ());
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
@@ -576,7 +576,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
                 }
             }
             catch (...) {
-                DbgTrace ("Failure reading /etc/centos-release {}"_f, Characters::ToString (current_exception ()));
+                DbgTrace ("Failure reading /etc/centos-release {}"_f, current_exception ());
             }
         }
         if (tmp.fShortPrettyName.empty ()) {
@@ -590,7 +590,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
                 }
             }
             catch (...) {
-                DbgTrace ("Failure reading /etc/redhat-release {}"_f, Characters::ToString (current_exception ()));
+                DbgTrace ("Failure reading /etc/redhat-release {}"_f, current_exception ());
             }
         }
         if (tmp.fShortPrettyName.empty ()) {
@@ -733,7 +733,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             }
         }
         catch (...) {
-            DbgTrace ("Exception suppressed looking up windows version in registry: {}"_f, Characters::ToString (current_exception ()));
+            DbgTrace ("Exception suppressed looking up windows version in registry: {}"_f, current_exception ());
         }
 
         if (tmp.fShortPrettyName.empty ()) {
