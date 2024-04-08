@@ -11,6 +11,7 @@
 #include <functional> // needed for std::equal_to
 #include <iterator>   // needed for std::begin/std::end calls
 #include <optional>
+#include <variant>
 
 #include "Stroika/Foundation/Configuration/Common.h"
 
@@ -125,6 +126,10 @@ namespace Stroika::Foundation::Configuration {
         struct is_pair_ : std::false_type {};
         template <typename T1, typename T2>
         struct is_pair_<pair<T1, T2>> : std::true_type {};
+        template <typename... ARGS>
+        struct is_variant_ : std::false_type {};
+        template <typename... ARGS>
+        struct is_variant_<variant<ARGS...>> : std::true_type {};
 #endif
     }
 
@@ -165,6 +170,32 @@ namespace Stroika::Foundation::Configuration {
     } && []<std::size_t... N> (std::index_sequence<N...>) {
         return (Private_::has_tuple_element<T, N> && ...);
     }(std::make_index_sequence<std::tuple_size_v<T>> ());
+
+    /**
+     *  Weak draft attempt at how to detect if V is a variant.
+     */
+#if 0
+    template <typename T>
+    concept IVariant = !std::is_reference_v<T> and requires (T t) {
+        {
+            t.index ()
+        } -> same_as<size_t>;
+        std::holds_alternative<char> (t);
+    };
+#endif
+    template <typename T>
+    concept IVariant =
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        Private_::is_variant_<T>::value
+#else
+        requires (T t) {
+            {
+                []<typename... TYPES> (variant<TYPES...>) {}(t)
+            };
+        };
+#endif
+        static_assert (not IVariant<int>);
+    static_assert (IVariant<variant<int>>);
 
     /**
      * Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
@@ -466,7 +497,6 @@ namespace Stroika::Foundation::Configuration {
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-
 }
 
 /*
