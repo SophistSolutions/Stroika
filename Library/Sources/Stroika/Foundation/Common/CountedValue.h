@@ -74,6 +74,32 @@ namespace Stroika::Foundation::Common {
             requires (equality_comparable<VALUE_TYPE>);
     };
 
+    namespace Private_ {
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        template <typename T1, typename T2 = void>
+        struct is_CV_ : std::false_type {};
+        template <typename T1, typename T2>
+        struct is_CV_<CountedValue<T1, T2>> : std::true_type {};
+#endif
+    }
+
+    /**
+     */
+    template <typename T>
+    concept ICountedValue =
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        Private_::is_CV_<T>::value
+#else
+        requires (T t) {
+            {
+                []<typename VALUE_TYPE, typename COUNTER_TYPE> (CountedValue<VALUE_TYPE, COUNTER_TYPE>) {}(t)
+            };
+        }
+#endif
+        ;
+    static_assert (not ICountedValue<int>);
+    static_assert (ICountedValue<CountedValue<int>>);
+
 }
 
 /*
