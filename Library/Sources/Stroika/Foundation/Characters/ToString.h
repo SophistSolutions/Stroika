@@ -177,10 +177,10 @@ namespace Stroika::Foundation::Characters {
     namespace Private_ {
 
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
-        template <typename T>
-        struct is_optional_ : std::false_type {};
-        template <typename A>
-        struct is_optional_<optional<A>> : std::true_type {};
+        //template <typename T>
+        //struct is_optional_ : std::false_type {};
+        //template <typename A>
+        //struct is_optional_<optional<A>> : std::true_type {};
         template <typename T1, typename T2 = void>
         struct is_pair_ : std::false_type {};
         template <typename T1, typename T2>
@@ -195,8 +195,6 @@ namespace Stroika::Foundation::Characters {
          *  Idea is to TRY to capture all the cases we support to Characters::ToString() - except those already done
          *  by std c++ lib (and String which we special case). If I overlap at all, we get very confusing messages from compiler
          *  about duplicate / overlapping formatter definitions.
-         * 
-         *  && still todo - tuple 
          */
         template <typename T>
         concept IUseToStringFormatterForFormatter_ =
@@ -205,41 +203,30 @@ namespace Stroika::Foundation::Characters {
                     t.ToString ()
                 } -> convertible_to<Characters::String>;
             }
-#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
-            or is_optional_<T>::value
-#else
-            or
-            requires (T t) {
-                {
-                    []<typename X> (optional<X>) {}(t)
-                };
-            }
+
+            // Stroika types not captured by std-c++ rules
+            or Common::IKeyValuePair<remove_cvref_t<T>>
+
+        // c++ 23 features which may not be present with current compilers
+#if __cplusplus < 202300L
+            // @todo add tuple here!
+            or Configuration::IPair<remove_cvref_t<T>> or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+#if 0
+            // ranges matches some stuff that IS already pre-included by std-c++ formatters
+            or (ranges::range<decay_t<T>> and
+             not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
+                                       qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
+#endif
+
+        // features added in C++26
         // unsure what to check - __cpp_lib_format - test c++26  __cpp_lib_formatters < 202601L  -- 202302L  is c++23
 #if __cplusplus < 242001L
             or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
 
-        // features added in C++23
-#if __cplusplus < 202300L
-        // @todo tuple
-#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
-            or is_pair_<T>::value
-#else
-            or
-            requires (T t) {
-                {
-                    []<typename T1, typename T2> (pair<T1, T2>) {}(t)
-                };
-            }
-#endif
-            or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
-
-            or (ranges::range<remove_cvref_t<T>> and
-                not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
-                                          qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
-#endif
-            or is_enum_v<remove_cvref_t<T>> or Common::IKeyValuePair<remove_cvref_t<T>> or
+            // Features from std-c++ that probably should have been added
+            or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or
             Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index>;
 
         static_assert (IUseToStringFormatterForFormatter_<exception_ptr> and IUseToStringFormatterForFormatter_<type_info>); // etc

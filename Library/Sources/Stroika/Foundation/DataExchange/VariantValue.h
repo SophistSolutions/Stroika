@@ -371,7 +371,7 @@ namespace Stroika::Foundation::DataExchange {
         template <typename RETURNTYPE>
         nonvirtual RETURNTYPE As () const
             requires (Private_::IVariantValueAsBasic_<RETURNTYPE> or
-                      (Configuration::IStdOptional<RETURNTYPE> and Private_::IVariantValueAsBasic_<Configuration::ExtractValueType_t<RETURNTYPE>>));
+                      (Configuration::IOptional<RETURNTYPE> and Private_::IVariantValueAsBasic_<Configuration::ExtractValueType_t<RETURNTYPE>>));
 
     public:
         /**

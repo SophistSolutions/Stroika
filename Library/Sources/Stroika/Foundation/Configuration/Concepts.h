@@ -115,9 +115,32 @@ namespace Stroika::Foundation::Configuration {
     /**
      */
     template <typename OT>
-    concept IStdOptional = same_as<remove_cvref_t<OT>, std::optional<typename OT::value_type>>;
-    static_assert (IStdOptional<std::optional<int>>);
-    static_assert (not IStdOptional<int>);
+    concept IOptional = same_as<remove_cvref_t<OT>, std::optional<typename OT::value_type>>;
+    static_assert (IOptional<std::optional<int>>);
+    static_assert (not IOptional<int>);
+
+    namespace Private_ {
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        template <typename T1, typename T2 = void>
+        struct is_pair_ : std::false_type {};
+        template <typename T1, typename T2>
+        struct is_pair_<pair<T1, T2>> : std::true_type {};
+#endif
+    }
+
+    template <typename T>
+    concept IPair =
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        is_pair_<T>::value
+#else
+
+        requires (T t) {
+            {
+                []<typename T1, typename T2> (pair<T1, T2>) {}(t)
+            };
+        }
+#endif
+        ;
 
     /**
      * Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
