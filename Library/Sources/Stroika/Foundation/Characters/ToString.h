@@ -220,7 +220,7 @@ namespace Stroika::Foundation::Characters {
 #endif
 
             // Features from std-c++ that probably should have been added
-            or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or
+            or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>> or
             Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index>;
 
         static_assert (IUseToStringFormatterForFormatter_<exception_ptr> and IUseToStringFormatterForFormatter_<type_info>); // etc
