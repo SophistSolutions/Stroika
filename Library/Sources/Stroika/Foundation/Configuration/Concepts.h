@@ -128,12 +128,13 @@ namespace Stroika::Foundation::Configuration {
 #endif
     }
 
+    /**
+    */
     template <typename T>
     concept IPair =
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
         Private_::is_pair_<T>::value
 #else
-
         requires (T t) {
             {
                 []<typename T1, typename T2> (pair<T1, T2>) {}(t)
