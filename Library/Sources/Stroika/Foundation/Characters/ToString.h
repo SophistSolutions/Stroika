@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Characters {
 
         // features added in C++26
         // unsure what to check - __cpp_lib_format - test c++26  __cpp_lib_formatters < 202601L  -- 202302L  is c++23
-#if __cplusplus < 242001L
+#if __cplusplus < 202400L
             or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
 

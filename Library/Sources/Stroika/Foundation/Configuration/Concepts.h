@@ -172,17 +172,8 @@ namespace Stroika::Foundation::Configuration {
     }(std::make_index_sequence<std::tuple_size_v<T>> ());
 
     /**
-     *  Weak draft attempt at how to detect if V is a variant.
+     *  \brief - detect if T is a std::variant<> type.
      */
-#if 0
-    template <typename T>
-    concept IVariant = !std::is_reference_v<T> and requires (T t) {
-        {
-            t.index ()
-        } -> same_as<size_t>;
-        std::holds_alternative<char> (t);
-    };
-#endif
     template <typename T>
     concept IVariant =
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
@@ -192,9 +183,10 @@ namespace Stroika::Foundation::Configuration {
             {
                 []<typename... TYPES> (variant<TYPES...>) {}(t)
             };
-        };
+        }
 #endif
-        static_assert (not IVariant<int>);
+        ;
+    static_assert (not IVariant<int>);
     static_assert (IVariant<variant<int>>);
 
     /**
