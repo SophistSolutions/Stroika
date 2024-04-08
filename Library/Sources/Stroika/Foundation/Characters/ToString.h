@@ -209,8 +209,8 @@ namespace Stroika::Foundation::Characters {
 
         // c++ 23 features which may not be present with current compilers
 #if __cplusplus < 202300L
-            // @todo add tuple here!
-            or Configuration::IPair<remove_cvref_t<T>> or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+            or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>> or
+            Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
 #if 0
             // ranges matches some stuff that IS already pre-included by std-c++ formatters
             or (ranges::range<decay_t<T>> and
