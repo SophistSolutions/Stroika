@@ -97,6 +97,32 @@ namespace Stroika::Foundation::Common {
             requires (three_way_comparable<KEY_TYPE> and three_way_comparable<VALUE_TYPE>);
     };
 
+    namespace Private_ {
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        template <typename T1, typename T2 = void>
+        struct is_KVP_ : std::false_type {};
+        template <typename T1, typename T2>
+        struct is_KVP_<KeyValuePair<T1, T2>> : std::true_type {};
+#endif
+    }
+
+    /**
+     */
+    template <typename T>
+    concept IKeyValuePair =
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        Private_::is_KVP_<T>::value
+#else
+        requires (T t) {
+            {
+                []<typename T1, typename T2> (KeyValuePair<T1, T2>) {}(t)
+            };
+        }
+#endif
+        ;
+    static_assert (not IKeyValuePair<optional<int>>);
+    static_assert (IKeyValuePair<KeyValuePair<int, int>>);
+
 }
 
 /*
