@@ -13,6 +13,7 @@
 #include <typeinfo>
 
 #include "Format.h"
+#include "Stroika/Foundation/Common/CountedValue.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
 
@@ -176,17 +177,6 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
 
-#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy && 0
-        //template <typename T>
-        //struct is_optional_ : std::false_type {};
-        //template <typename A>
-        //struct is_optional_<optional<A>> : std::true_type {};
-        template <typename T1, typename T2 = void>
-        struct is_pair_ : std::false_type {};
-        template <typename T1, typename T2>
-        struct is_pair_<pair<T1, T2>> : std::true_type {};
-#endif
-
         /*
          *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formattable so far'
          * 
@@ -196,7 +186,7 @@ namespace Stroika::Foundation::Characters {
          *  by std c++ lib (and String which we special case). If I overlap at all, we get very confusing messages from compiler
          *  about duplicate / overlapping formatter definitions.
          * 
-         * add CountedValue and variant
+         * add  variant
          */
         template <typename T>
         concept IUseToStringFormatterForFormatter_ =
@@ -207,7 +197,8 @@ namespace Stroika::Foundation::Characters {
             }
 
             // Stroika types not captured by std-c++ rules
-            or Common::IKeyValuePair<remove_cvref_t<T>>
+            or Common::IKeyValuePair<remove_cvref_t<T>> or
+            Common::ICountedValue<remove_cvref_t<T>>
 
         // c++ 23 features which may not be present with current compilers
 #if __cplusplus < 202300L
