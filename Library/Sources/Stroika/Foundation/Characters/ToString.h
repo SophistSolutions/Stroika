@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
 
-#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy && 0
         //template <typename T>
         //struct is_optional_ : std::false_type {};
         //template <typename A>
@@ -195,6 +195,8 @@ namespace Stroika::Foundation::Characters {
          *  Idea is to TRY to capture all the cases we support to Characters::ToString() - except those already done
          *  by std c++ lib (and String which we special case). If I overlap at all, we get very confusing messages from compiler
          *  about duplicate / overlapping formatter definitions.
+         * 
+         * add CountedValue and variant
          */
         template <typename T>
         concept IUseToStringFormatterForFormatter_ =
@@ -209,14 +211,15 @@ namespace Stroika::Foundation::Characters {
 
         // c++ 23 features which may not be present with current compilers
 #if __cplusplus < 202300L
-            or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>> or
-            Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
-#if 0
-            // ranges matches some stuff that IS already pre-included by std-c++ formatters
+            // available in C++23
+            or Configuration::IPair<remove_cvref_t<T>> or
+            Configuration::ITuple<remove_cvref_t<T>>
+            // available in C++23
+            or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+            // ranges available in C++23, but range<T> matches some stuff that IS already pre-included by std-c++ formatters
             or (ranges::range<decay_t<T>> and
-             not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
-                                       qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
-#endif
+                not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
+                                          qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
 
         // features added in C++26
