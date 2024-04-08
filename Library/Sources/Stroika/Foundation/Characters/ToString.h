@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Characters {
 #endif
 
         /*
-         *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formatable so far'
+         *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formattable so far'
          * 
          *  \see https://en.cppreference.com/w/cpp/utility/format/formatter
          *
@@ -233,9 +233,9 @@ namespace Stroika::Foundation::Characters {
 #endif
             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
 
-#if 0
-            or (ranges::range<T> and
-                not Configuration::IAnyOf<remove_cvref_t<T>, string, wstring, string_view, wstring_view,
+#if 1
+            or (ranges::range<decay_t<T>> and
+                not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
                                           qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
 #endif

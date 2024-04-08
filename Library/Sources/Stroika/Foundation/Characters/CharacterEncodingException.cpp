@@ -20,7 +20,7 @@ CharacterEncodingException::CharacterEncodingException (EncodingOrDecoding encod
     : inherited{[=] () {
         StringBuilder sb;
         sb << (encodingOrDecoding == eEncoding ? "Encoding Exception: cannot construct code point for character"sv
-                                               : "Decodiing Exception: cannot decode bytes to character"sv);
+                                               : "Decoding Exception: cannot decode bytes to character"sv);
         if (atSourceOffset) {
             sb << " at source offset "sv << Format (L"%d", *atSourceOffset);
         }
