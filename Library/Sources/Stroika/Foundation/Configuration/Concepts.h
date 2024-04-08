@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     concept IPair =
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
-        is_pair_<T>::value
+        Private_::is_pair_<T>::value
 #else
 
         requires (T t) {
