@@ -38,7 +38,7 @@ void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version
 }
 void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version targetDBVersion, const Traversal::Iterable<TableProvisioner>& tables)
 {
-    TraceContextBumper ctx{"ORM::ProvisionForVersion", Stroika_Foundation_Debug_OptionalizeTraceArgs ("conn={}"_f, Characters::ToString (conn))};
+    TraceContextBumper ctx{"ORM::ProvisionForVersion", "conn={}"_f, conn};
     SQL::Statement doesTableExist = conn.mkStatement (conn.GetEngineProperties ()->GetSQL (SQL::EngineProperties::NonStandardSQL::eDoesTableExist));
     for (const auto& ti : tables) {
         doesTableExist.Reset ();

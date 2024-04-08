@@ -231,8 +231,13 @@ namespace Stroika::Foundation::Characters {
                 };
             }
 #endif
-            or Configuration::IAnyOf<remove_cvref_t<T>, thread::id> or
-            (ranges::range<T> and not Configuration::IAnyOf<remove_cvref_t<T>, string, wstring, string_view, wstring_view>)
+            or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+
+#if 0
+            or (ranges::range<T> and
+                not Configuration::IAnyOf<remove_cvref_t<T>, string, wstring, string_view, wstring_view,
+                                          qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
+#endif
 #endif
             or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index>;
 
