@@ -134,8 +134,7 @@ namespace {
     Collection<Neighbor> ProcNetArp_ (bool includePurgedEntries)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ProcNetArp_", L"includePurgedEntries=%s",
-                                                                                     Characters::ToString (includePurgedEntries).c_str ())};
+        Debug::TraceContextBumper ctx{"{}ProcNetArp_", "includePurgedEntries={}"_f, includePurgedEntries};
 #endif
         Collection<Neighbor> result;
         using Characters::String2Int;

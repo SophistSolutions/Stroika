@@ -836,8 +836,7 @@ namespace {
         static StatFileInfo_ ReadStatFile_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_",
-                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_", "fullPath={}"_f, fullPath};
 #endif
             StatFileInfo_ result{};
             Streams::InputStream::Ptr<byte> in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
@@ -845,7 +844,7 @@ namespace {
             size_t nBytes = in.ReadAll (span{data}).size ();
             Assert (nBytes <= NEltsOf (data));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("nBytes read = %d", nBytes);
+            DbgTrace ("nBytes read = {}"_f, nBytes);
 #endif
             if (nBytes == NEltsOf (data)) {
                 --nBytes; // ignore trailing byte so we can nul-terminate
@@ -961,12 +960,11 @@ namespace {
         static optional<proc_io_data_> Readproc_io_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_",
-                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", "fullPath={}"_f, fullPath};
 #endif
             if (not IO::FileSystem::Default ().Access (fullPath)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Skipping read cuz no access");
+                DbgTrace ("Skipping read cuz no access");
 #endif
                 return nullopt;
             }
@@ -997,8 +995,7 @@ namespace {
              *      1: 00000000:0050 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 6059 1 e466d720 300 0 0 2 -1
              */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_",
-                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_", "fullPath={}"_f, fullPath};
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1037,8 +1034,7 @@ namespace {
         static optional<MemorySizeType> ReadPrivateBytes_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_",
-                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", "fullPath={}"_f, fullPath};
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1076,8 +1072,8 @@ namespace {
         static proc_status_data_ Readproc_proc_status_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_",
-                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_",
+                                          "fullPath={}"_f, fullPath};
 #endif
             proc_status_data_ result{};
             ifstream          r;

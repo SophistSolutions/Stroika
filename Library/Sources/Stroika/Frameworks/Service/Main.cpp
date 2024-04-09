@@ -409,7 +409,7 @@ void Main::LoggerServiceWrapper::_RunDirectly (const optional<Time::Duration>& r
         fDelegateTo_->_RunDirectly (runFor);
     }
     catch (...) {
-        Logger::sThe.Log (Logger::eError, "Exception running service in direct mode - {} - aborting..."_f, Characters::ToString (current_exception ()));
+        Logger::sThe.Log (Logger::eError, "Exception running service in direct mode - {} - aborting..."_f, current_exception ());
         Execution::ReThrow ();
     }
     Logger::sThe.Log (Logger::eNotice, "Service stopped normally"_f);
@@ -570,7 +570,7 @@ void Main::BasicUNIXServiceImpl::_RunDirectly (const optional<Time::Duration>& r
 
 void Main::BasicUNIXServiceImpl::_Start (Time::DurationSeconds timeout)
 {
-    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::Start", "timeout = {}"_f, Characters::ToString (timeout)};
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::Start", "timeout = {}"_f, timeout};
 
     Time::TimePointSeconds timeoutAt = Time::GetTickCount () + timeout;
 

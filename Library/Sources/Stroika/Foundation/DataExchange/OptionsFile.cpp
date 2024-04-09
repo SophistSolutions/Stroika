@@ -55,32 +55,25 @@ String OptionsFile::LoggerMessage::FormatMessage () const
     }
     switch (fMsg) {
         case Msg::eFailedToWriteFile:
-            return Characters::Format (L"Failed to write file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Failed to write file {}: {}."_f, fFileName, details);
         case Msg::eFailedToReadFile:
-            return Characters::Format (L"Failed to read file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Failed to read file {}: {}."_f, fFileName, details);
         case Msg::eFailedToParseReadFile:
-            return Characters::Format (L"Error analyzing configuration file %s - using defaults%s.",
-                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Error analyzing configuration file {} - using defaults{}."_f, fFileName, details);
         case Msg::eFailedToParseReadFileBadFormat:
-            return Characters::Format (L"Error analyzing configuration file (because bad format) %s - using defaults%s.",
-                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Error analyzing configuration file (because bad format) {} - using defaults{}."_f, fFileName, details);
         case Msg::eFailedToCompareReadFile:
-            return Characters::Format (L"Failed to compare configuration file: %s%s.",
-                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Failed to compare configuration file: {}{}."_f, fFileName, details);
         case Msg::eWritingConfigFile_SoDefaultsEditable:
-            return Characters::Format (
-                L"Writing configuration file %s because not found (and so defaults are more easily seen and editable)%s.",
-                Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Writing configuration file {} because not found (and so defaults are more easily seen and editable){}."_f,
+                                       fFileName, details);
         case Msg::eWritingConfigFile_BecauseUpgraded:
-            return Characters::Format (L"Writing configuration file %s in a new location because the software has been upgraded%s.",
-                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Writing configuration file {} in a new location because the software has been upgraded{}."_f, fFileName, details);
         case Msg::eWritingConfigFile_BecauseSomethingChanged:
-            return Characters::Format (
-                L"Writing configuration file %s because something changed (e.g. a default, or field added/removed)%s.",
-                Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Writing configuration file {} because something changed (e.g. a default, or field added/removed){}."_f,
+                                       fFileName, details);
         case Msg::eFailedToWriteInUseValues:
-            return Characters::Format (L"Failed to write default (in use) values to file: %s%s.",
-                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format ("Failed to write default (in use) values to file: {}{}."_f, fFileName, details);
         default:
             RequireNotReached ();
             return String{};

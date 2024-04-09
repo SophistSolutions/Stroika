@@ -88,7 +88,7 @@ namespace {
         {
             if constexpr (qDebug) {
                 if (not sRunningThreads_.empty ()) {
-                    DbgTrace ("Threads {} running"_f, Characters::ToString (Thread::GetStatistics ().fRunningThreads));
+                    DbgTrace ("Threads {} running"_f, Thread::GetStatistics ().fRunningThreads);
                     Require (sRunningThreads_.empty ());
                 }
             }
@@ -291,7 +291,7 @@ void Thread::Ptr::Rep_::Run_ ()
     }
     catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("in ad::Ptr::Rep_::Run_ () - saving caught exception to repropagate later ({})"_f, Characters::ToString (current_exception ()));
+        DbgTrace ("in ad::Ptr::Rep_::Run_ () - saving caught exception to repropagate later ({})"_f, current_exception ());
 #endif
         fSavedException_ = current_exception ();
         throw;
@@ -313,7 +313,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
         sb << "name: "sv << fThreadName_ << ", "sv;
     }
     sb << "status: "sv << PeekStatusForToString_ () << ", "sv;
-    //sb << "runnable: "sv << Characters::ToString (fRunnable_) << ", "sv;     // doesn't yet print anything useful
+    //sb << "runnable: "sv << fRunnable_ << ", "sv;     // doesn't yet print anything useful
     sb << "abortRequested: "sv << fAbortRequested_.load () << ", "sv;
     sb << "refCountBumpedEvent: "sv << fRefCountBumpedInsideThreadMainEvent_.PeekIsSet () << ", "sv;
     sb << "startReadyToTransitionToRunningEvent_: "sv << fStartReadyToTransitionToRunningEvent_.PeekIsSet () << ", "sv;
@@ -983,7 +983,7 @@ Thread::Statistics Thread::GetStatistics ()
 void Thread::Abort (const Traversal::Iterable<Ptr>& threads)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::Abort", "threads={}"_f, Characters::ToString (threads))};
+    Debug::TraceContextBumper ctx{"Thread::Abort", "threads={}"_f, threads};
 #endif
     threads.Apply ([] (Ptr t) { t.Abort (); });
 }
@@ -1004,8 +1004,7 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, 
 void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::WaitForDoneUntil", "threads={}, timeoutAt={}"_f,
-                                                                                 Characters::ToString (threads), timeoutAt)};
+    Debug::TraceContextBumper ctx{"Thread::WaitForDoneUntil", "threads={}, timeoutAt={}"_f, threads, timeoutAt};
 #endif
     CheckForInterruption (); // always a cancelation point (even if empty list)
     // consider rewriting so we don't do this sequentially, but 'harvest' the ones completed (much as we did in Stroika v2.1), but perhaps no point.

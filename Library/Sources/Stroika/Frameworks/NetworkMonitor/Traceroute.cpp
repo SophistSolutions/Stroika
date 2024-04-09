@@ -105,8 +105,7 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
 
 void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void (Hop)> perHopCallback, const Options& options)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        "Frameworks::NetworkMonitor::Traceroute::Run", L"addr={}, options={}"_f, Characters::ToString (addr), Characters::ToString (options))};
+    Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Traceroute::Run", "addr={}, options={}"_f, addr, options};
     unsigned int              maxTTL = options.fMaxHops.value_or (Options::kDefaultMaxHops);
 
     Ping::Options pingOptions{};
@@ -127,16 +126,14 @@ void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void
         }
         catch (const ICMP::V4::TTLExpiredException& ttlExpiredException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (ttlExpiredException).c_str (),
-                      Characters::ToString (ttlExpiredException.GetReachedIP ()).c_str ());
+            DbgTrace ("exception {} - ipaddr = {}"_f, ttlExpiredException, ttlExpiredException.GetReachedIP ());
 #endif
             // totally normal - this is how we find out the hops
             perHopCallback (Hop{Duration{Time::GetTickCount () - startOfPingRequest}, ttlExpiredException.GetUnreachedIP ()});
         }
         catch (const ICMP::V4::DestinationUnreachableException& destinationUnreachableException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (destinationUnreachableException).c_str (),
-                      Characters::ToString (destinationUnreachableException.GetReachedIP ()).c_str ());
+            DbgTrace ("exception {} - ipaddr = {}"_f, destinationUnreachableException, destinationUnreachableException.GetReachedIP ());
 #endif
             // Not sure how normal this is? @todo - research - maybe abandon ping when this happens... -- LGP 2017-03-27
             perHopCallback (Hop{Duration{Time::GetTickCount () - startOfPingRequest}, destinationUnreachableException.GetUnreachedIP ()});

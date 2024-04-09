@@ -307,7 +307,7 @@ namespace {
             }
             else {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"statvfs (%s) return error: errno=%d", Characters::ToString (mountedOnName).c_str (), errno);
+                DbgTrace ("statvfs ({}) return error: errno={}"_f, mountedOnName, errno);
 #endif
             }
         }

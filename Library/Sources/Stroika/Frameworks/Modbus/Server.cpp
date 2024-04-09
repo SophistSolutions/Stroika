@@ -336,7 +336,7 @@ namespace {
                             out.WriteRaw (responseLen);
                             out.Write (span{reinterpret_cast<const byte*> (results.begin ()), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
+                            DbgTrace ("Sent response: header={}, responseLen={}"_f, responseHeader, responseLen);
 #endif
                         }
                     } break;
@@ -350,8 +350,8 @@ namespace {
                         uint16_t              endInclusiveAddress = startingAddress + quantity - 1u;
                         StackBuffer<uint16_t> results{quantity}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadInputRegister_ (starting0Address: %d, quantity: %d) message with request-header=%s",
-                                  startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace ("Processing kReadInputRegister_ (starting0Address: {}, quantity: {}) message with request-header={}"_f,
+                                  startingAddress, quantity, requestHeader);
 #endif
                         for (const auto& i : serviceHandler->ReadInputRegisters (
                                  DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}
@@ -373,7 +373,7 @@ namespace {
                             out.WriteRaw (responseLen);
                             out.Write (span{reinterpret_cast<const byte*> (results.begin ()), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
+                            DbgTrace ("Sent response: header={}, responseLen={}"_f, responseHeader, responseLen);
 #endif
                         }
                     } break;
@@ -384,8 +384,8 @@ namespace {
                         uint16_t outputAddress = checkedReadHelperPayload2Shorts (requestPayload, 0, 0xff00).first;
                         uint16_t value         = checkedReadHelperPayload2Shorts (requestPayload, 0, 0xff00).second;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kWriteSingleCoil_ (outputAddress: %d, value: %d) message with request-header=%s",
-                                  outputAddress, value, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace ("Processing kWriteSingleCoil_ (outputAddress: {}, value: {}) message with request-header={}"_f,
+                                  outputAddress, value, requestHeader);
 #endif
                         serviceHandler->WriteCoils ({{zeroToOneBased (outputAddress), value == 0 ? false : true}});
                         {

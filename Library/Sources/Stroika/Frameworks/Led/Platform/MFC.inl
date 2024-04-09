@@ -339,7 +339,7 @@ namespace Stroika::Frameworks::Led::Platform {
             (void)this->OnPerformCommand (MFC_CommandNumberMapping::Get ().Lookup (commandNumber));
         }
         catch (...) {
-            DbgTrace ("Ignoring / suppressing uncaught exception in PerformCommand: {}"_f, Characters::ToString (current_exception ()));
+            DbgTrace ("Ignoring / suppressing uncaught exception in PerformCommand: {}"_f, current_exception ());
         }
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>

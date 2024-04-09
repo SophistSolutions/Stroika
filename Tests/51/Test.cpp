@@ -961,7 +961,7 @@ namespace {
             seeIfReady.Add (1, 1);
             seeIfReady.Add (2, 2);
             EXPECT_TRUE (seeIfReady.size () == 2);
-            DbgTrace ("seeIfReady={}"_f, Characters::ToString (seeIfReady));
+            DbgTrace ("seeIfReady={}"_f, seeIfReady);
             EXPECT_TRUE (seeIfReady.size () == 2);
 
             const bool               kFails_ = true;
@@ -969,7 +969,7 @@ namespace {
 
             EXPECT_TRUE (fds.size () == 2);
             EXPECT_TRUE (seeIfReady.size () == 2);
-            DbgTrace ("fds={}"_f, Characters::ToString (fds)); // note this is critical step in reproducing old bug - iterating over fds
+            DbgTrace ("fds={}"_f, fds); // note this is critical step in reproducing old bug - iterating over fds
             EXPECT_TRUE (fds.size () == 2);
             EXPECT_TRUE (seeIfReady.size () == 2);
         };

@@ -193,8 +193,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
                              const Options<FLOAT_TYPE>& options)
     {
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Optimization::DownhillSimplexMinimization::Run", L"initialValues=%s, options=%s",
-                                      Characters::ToString (initialValues).c_str (), Characters::ToString (options).c_str ()};
+        Debug::TraceContextBumper ctx{"Optimization::DownhillSimplexMinimization::Run", "initialValues={}, options={}"_f, initialValues, options};
 #endif
         Results<FLOAT_TYPE> results{};
         FLOAT_TYPE          step            = 0.1;

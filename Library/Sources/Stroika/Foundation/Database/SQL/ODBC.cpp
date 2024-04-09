@@ -255,7 +255,7 @@ struct Statement::MyRep_ : IRep {
             }
         }
         DbgTrace ("Statement::Bind: Parameter '{}' not found in list {}"_f, parameterName,
-                  Characters::ToString (fParameters_.Map<vector<String>> ([] (const auto& i) { return i.fName; })));
+                  fParameters_.Map<vector<String>> ([] (const auto& i) { return i.fName; }));
         RequireNotReached (); // invalid parameter name provided
     }
     virtual void Reset () override

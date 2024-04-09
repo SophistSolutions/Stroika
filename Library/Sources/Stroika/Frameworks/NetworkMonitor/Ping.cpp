@@ -131,7 +131,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
                                                                kExtraSluff_}; // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
         size_t n = fSocket_.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, fPingTimeout_);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
+        DbgTrace ("got back packet from {}"_f, fromAddress);
 #endif
         const IP::V4::PacketHeader* replyIPHeader = reinterpret_cast<const IP::V4::PacketHeader*> (recv_buf.begin ());
 

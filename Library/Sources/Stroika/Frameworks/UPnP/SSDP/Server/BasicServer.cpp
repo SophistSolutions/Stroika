@@ -71,8 +71,7 @@ public:
         using LinkMonitor = IO::Network::LinkMonitor;
         LinkMonitor lm;
         lm.AddCallback ([this] (LinkMonitor::LinkChange lc, String netName, String ipNum) {
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                "Basic SSDP server - LinkMonitor callback", "lc = {}, netName={}, ipNum={}"_f, Characters::ToString (lc), netName, ipNum)};
+            Debug::TraceContextBumper ctx{"Basic SSDP server - LinkMonitor callback", "lc = {}, netName={}, ipNum={}"_f, lc, netName, ipNum};
             if (lc == LinkMonitor::LinkChange::eAdded) {
                 this->Restart_ ();
             }

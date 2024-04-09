@@ -489,8 +489,7 @@ namespace Stroika::Foundation::DataExchange {
             Require (intoObjOfTypeT->empty ());
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
             auto                       decodingClassActivity = Execution::LazyEvalActivity{[&] () -> String {
-                return Characters::Format ("Decoding {} into class {}"_f, Characters::ToString (d),
-                                                                 Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)));
+                return Characters::Format ("Decoding {} into class {}"_f, d, Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)));
             }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif

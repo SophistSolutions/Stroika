@@ -496,7 +496,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("failed coerce-to-int: type={}, value={}"_f, Characters::ToString (fVal_->GetType ()), *this);
+            DbgTrace ("failed coerce-to-int: type={}, value={}"_f, fVal_->GetType (), *this);
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to integer"sv});
         }
@@ -533,7 +533,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("failed coerce-to-uint: type={}, value={}"_f, Characters::ToString (fVal_->GetType ()), *this);
+            DbgTrace ("failed coerce-to-uint: type={}, value={}"_f, fVal_->GetType (), *this);
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to unsigned integer"sv});
         }
@@ -569,7 +569,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("failed coerce-to-float: type={}, value={}"_f, Characters::ToString (fVal_->GetType ()), *this);
+            DbgTrace ("failed coerce-to-float: type={}, value={}"_f, fVal_->GetType (), *this);
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to float"sv});
         }
@@ -599,7 +599,7 @@ Date VariantValue::AsDate_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("failed coerce-to-date: type={}, value={}"_f, Characters::ToString (fVal_->GetType ()), *this);
+            DbgTrace ("failed coerce-to-date: type={}, value={}"_f, fVal_->GetType (), *this);
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to date"sv});
         }
@@ -629,7 +629,7 @@ DateTime VariantValue::AsDateTime_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("failed coerce-to-datetime: type={}, value={}"_f, Characters::ToString (fVal_->GetType ()), *this);
+            DbgTrace ("failed coerce-to-datetime: type={}, value={}"_f, fVal_->GetType (), *this);
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to date-time"sv});
         }

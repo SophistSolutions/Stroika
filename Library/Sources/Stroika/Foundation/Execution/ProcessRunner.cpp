@@ -1235,8 +1235,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
 
 pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args)
 {
-    TraceContextBumper ctx{"Execution::DetachedProcessRunner",
-                           Stroika_Foundation_Debug_OptionalizeTraceArgs ("executable={}, args={}"_f, executable, Characters::ToString (args))};
+    TraceContextBumper ctx{"Execution::DetachedProcessRunner", "executable={}, args={}"_f, executable, args};
 
     // @todo Consider rewriting below launch code so more in common with ::Run / CreateRunnable code in ProcessRunner
 
