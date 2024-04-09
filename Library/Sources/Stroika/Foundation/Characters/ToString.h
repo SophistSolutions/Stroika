@@ -201,7 +201,8 @@ namespace Stroika::Foundation::Characters {
             Common::ICountedValue<remove_cvref_t<T>>
 
         // c++ 23 features which may not be present with current compilers
-#if __cplusplus < 202300L
+        // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
+#if __cplusplus < 202100L/*202300L*/
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
