@@ -444,13 +444,13 @@ namespace {
                 }
                 auto totalEntries      = cidr.GetRange ().GetNumberOfContainedPoints ();
                 auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
-                DbgTrace ("stats: {}"_f, Characters::ToString (f.GetStatistics ()));
+                DbgTrace ("stats: {}"_f, f.GetStatistics ());
                 DbgTrace ("Probability of false positives = {}"_f, f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace ("false positives: {}, expected: {}"_f, falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
-                DbgTrace ("expectedFalsePositiveRange: {}"_f, Characters::ToString (expectedFalsePositiveRange));
+                DbgTrace ("expectedFalsePositiveRange: {}"_f, expectedFalsePositiveRange);
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleInternetAddressTestWithExplicitHash ()
@@ -527,7 +527,7 @@ namespace {
                 }
                 auto totalEntries      = cidr.GetRange ().GetNumberOfContainedPoints ();
                 auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
-                DbgTrace ("stats: {}"_f, Characters::ToString (f.GetStatistics ()));
+                DbgTrace ("stats: {}"_f, f.GetStatistics ());
                 DbgTrace ("Probability of false positives = {}"_f, f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace ("false positives: {}, expected: {}"_f, falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically around 14 (now 20)

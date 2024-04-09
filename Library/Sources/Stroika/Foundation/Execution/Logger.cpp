@@ -341,7 +341,7 @@ void Logger::Log (Priority logLevel, const wchar_t* format, ...)
     va_start (argsList, format);
     String msg = Characters::FormatV (format, argsList);
     va_end (argsList);
-    DbgTrace ("Logger::Log ({}, \"{}\")"_f, Characters::ToString (logLevel), msg);
+    DbgTrace ("Logger::Log ({}, \"{}\")"_f, logLevel, msg);
     if (WouldLog (logLevel)) {
         Log_ (logLevel, msg);
     }

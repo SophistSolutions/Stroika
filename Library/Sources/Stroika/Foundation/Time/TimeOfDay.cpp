@@ -222,7 +222,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const String& formatPattern)
     }
     if (auto o = ParseQuietly_ (rep.As<wstring> (), formatPattern)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
+        DbgTrace ("returning {}"_f, *o);
 #endif
         return *o;
     }
@@ -240,7 +240,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& fo
     }
     if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
+        DbgTrace ("returning {}"_f, *o);
 #endif
         return *o;
     }

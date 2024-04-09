@@ -1356,10 +1356,8 @@ namespace {
                     }
                     optional<URI> docURI = docNode->getNamespaceURI () == nullptr ? optional<URI>{} : docNode->getNamespaceURI ();
                     if (docURI != schema.GetTargetNamespace ()) {
-                        Execution::Throw (BadFormatException{Format (L"Wrong document namespace (found '%s' and expected '%s')",
-                                                                     Characters::ToString (docURI).c_str (),
-                                                                     Characters::ToString (schema.GetTargetNamespace ()).c_str ()),
-                                                             0, 0, 0});
+                        Execution::Throw (BadFormatException{
+                            Format ("Wrong document namespace (found '{}' and expected '{}')"_f, docURI, schema.GetTargetNamespace ()), 0, 0, 0});
                     }
 
                     // EXTERNALIZE, AND THEN RE-PARSE USING CACHED SAX PARSER WTIH LOADED GRAMMAR

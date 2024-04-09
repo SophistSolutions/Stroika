@@ -46,9 +46,9 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *          DbgTrace (L"SUFFIX: %s", Characters::ToString (InternetMediaTypeRegistry::Get ().GetPreferredAssociatedFileSuffix (i)).c_str ());
-     *          DbgTrace (L"ASSOCFILESUFFIXES: %s", Characters::ToString (InternetMediaTypeRegistry::Get ().GetAssociatedFileSuffixes (i)).c_str ());
-     *          DbgTrace (L"GetAssociatedPrettyName: %s", Characters::ToString (InternetMediaTypeRegistry::Get ().GetAssociatedPrettyName (i)).c_str ());
+     *          DbgTrace ("SUFFIX: {}"_f, InternetMediaTypeRegistry::Get ().GetPreferredAssociatedFileSuffix (i));
+     *          DbgTrace ("ASSOCFILESUFFIXES: {}"_f, InternetMediaTypeRegistry::Get ().GetAssociatedFileSuffixes (i));
+     *          DbgTrace ("GetAssociatedPrettyName: {}"_f, InternetMediaTypeRegistry::Get ().GetAssociatedPrettyName (i));
      *      \endcode
      *
      *  \par Example Usage

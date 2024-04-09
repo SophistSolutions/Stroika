@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Execution {
         using namespace Characters::Literals;
         if (WouldLog (logLevel)) {
             String msg = Characters::Format (fmt, args...);
-            DbgTrace ("Logger::Log ({}, \"{}\")"_f, Characters::ToString (logLevel), msg);
+            DbgTrace ("Logger::Log ({}, \"{}\")"_f, logLevel, msg);
             Log_ (logLevel, msg);
         }
         else {

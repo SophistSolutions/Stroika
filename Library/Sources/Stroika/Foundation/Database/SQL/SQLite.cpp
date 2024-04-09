@@ -583,7 +583,7 @@ struct Statement::MyRep_ : IRep {
             }
         }
         DbgTrace ("Statement::Bind: Parameter '{}' not found in list {}"_f, parameterName,
-                  Characters::ToString (fParameters_.Map<Traversal::Iterable<String>> ([] (const auto& i) { return i.fName; })));
+                  fParameters_.Map<Traversal::Iterable<String>> ([] (const auto& i) { return i.fName; }));
         RequireNotReached (); // invalid paramter name provided
     }
     virtual void Reset () override

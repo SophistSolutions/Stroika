@@ -34,7 +34,7 @@ struct Listener::Rep_ {
           const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Listener::Rep_::CTOR (addres={}, ...)"_f, addrs);
+        DbgTrace ("Listener::Rep_::CTOR (address={}, ...)"_f, addrs);
 #endif
         Sequence<ConnectionOrientedMasterSocket::Ptr> masterSockets;
         for (const auto& addr : addrs) {

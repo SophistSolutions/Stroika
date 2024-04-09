@@ -185,8 +185,7 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
 optional<String> DNS::ReverseLookup (const InternetAddress& address) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::ReverseLookup", L"address=%s",
-                                                                                 Characters::ToString (address).c_str ())};
+    Debug::TraceContextBumper ctx{"DNS::HostEntry DNS::ReverseLookup", "address={}"_f, address};
 #endif
     char             hbuf[NI_MAXHOST];
     SocketAddress    sa{address, 0};
@@ -214,8 +213,7 @@ optional<String> DNS::ReverseLookup (const InternetAddress& address) const
 optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::ReverseLookup", L"address=%s",
-                                                                                 Characters::ToString (address).c_str ())};
+    Debug::TraceContextBumper ctx{"DNS::HostEntry DNS::ReverseLookup", "address={}"_f, address};
 #endif
     char             hbuf[NI_MAXHOST];
     SocketAddress    sa{address, 0};

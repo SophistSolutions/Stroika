@@ -97,7 +97,7 @@ LibraryContext::LibraryContext ()
                                     &cipherNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", cipherNames.size (), Characters::ToString (cipherNames).c_str ());
+        DbgTrace ("Found pAvailableCipherAlgorithms-FIRST-PASS (cnt={}): {}"_f, cipherNames.size (), cipherNames);
 #endif
 
         Set<CipherAlgorithm> results{cipherNames.Map<Set<CipherAlgorithm>> (
@@ -163,13 +163,13 @@ LibraryContext::LibraryContext ()
                                 &digestNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Found pAvailableDigestAlgorithms-FIRST-PASS (cnt=%d): %s", digestNames.size (), Characters::ToString (digestNames).c_str ());
+        DbgTrace ("Found pAvailableDigestAlgorithms-FIRST-PASS (cnt={}): {}", digestNames.size (), digestNames);
 #endif
 
         Set<DigestAlgorithm> results{digestNames.Map<Set<DigestAlgorithm>> (
             [] (const String& n) -> optional<DigestAlgorithm> { return OpenSSL::DigestAlgorithm::GetByNameQuietly (n); })};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Found pAvailableDigestAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
+        DbgTrace ("Found pAvailableDigestAlgorithms (cnt={}): {}"_f, results.size (), results);
 #endif
         return results;
     }}

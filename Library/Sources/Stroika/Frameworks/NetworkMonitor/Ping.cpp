@@ -45,13 +45,13 @@ String Ping::Options::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMaxHops) {
-        sb << "Max-Hops: "sv << Characters::Format (L"%d", *fMaxHops) << ", "sv;
+        sb << "Max-Hops: "sv << *fMaxHops << ", "sv;
     }
     if (fTimeout) {
-        sb << "Timeout: "sv << Characters::ToString (*fTimeout) << ", "sv;
+        sb << "Timeout: "sv << *fTimeout << ", "sv;
     }
     if (fPacketPayloadSize) {
-        sb << "Packet-Payload-Size: "sv << Characters::Format (L"%d", *fPacketPayloadSize);
+        sb << "Packet-Payload-Size: "sv << *fPacketPayloadSize;
     }
     sb << "}"sv;
     return sb.str ();
@@ -98,8 +98,7 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
 
 Pinger::ResultType Pinger::RunOnce (const optional<unsigned int>& ttl)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Frameworks::NetworkMonitor::Ping::Pinger::RunOnce",
-                                                                                 "ttl={}"_f, Characters::ToString (ttl))};
+    Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Ping::Pinger::RunOnce", "ttl={}"_f, ttl};
     return RunOnce_ICMP_ (ttl.value_or (fOptions_.fMaxHops.value_or (Options::kDefaultMaxHops)));
 }
 

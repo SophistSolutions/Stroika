@@ -52,7 +52,7 @@ String ObjectVariantMapper::TypeMappingDetails::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "for-type: "sv << Characters::ToString (fForType);
+    sb << "for-type: "sv << fForType;
     // @todo maybe also print function pointers? Not sure a good reason
     sb << "}"sv;
     return sb.str ();
@@ -500,8 +500,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type
     auto i = fTypeMappingRegistry_.Lookup (forTypeInfo);
     if constexpr (qDebug) {
         if (not i.has_value ()) {
-            Debug::TraceContextBumper ctx{"ObjectVariantMapper::Lookup_"};
-            DbgTrace ("(forTypeInfo = {}) - UnRegistered Type!"_f, Characters::ToString (forTypeInfo));
+            Debug::TraceContextBumper ctx{"ObjectVariantMapper::Lookup_", "(forTypeInfo = {}) - UnRegistered Type!"_f, forTypeInfo};
         }
     }
     Require (i.has_value ()); // if not present, this is a usage error - only use types which are registered
@@ -537,7 +536,7 @@ String ObjectVariantMapper::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "type-map-registry: "sv << Characters::ToString (fTypeMappingRegistry_);
+    sb << "type-map-registry: "sv << fTypeMappingRegistry_;
     sb << "}"sv;
     return sb.str ();
 }

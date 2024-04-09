@@ -72,7 +72,7 @@ namespace {
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                "IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch", "schemeAndAuthority={}"_f, Characters::ToString (schemeAndAuthority))};
+                "IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch", "schemeAndAuthority={}"_f, schemeAndAuthority)};
 #endif
             if (request->fMethod == HTTP::Methods::kGet) {
                 try {
@@ -215,10 +215,10 @@ Transfer::Cache::Element::Element (const Response& response)
                 fExpires = DateTime::Parse (hi->fValue, DateTime::kRFC1123Format);
             }
             catch (...) {
-                // treat invalid dates as if the resource has already exipred
+                // treat invalid dates as if the resource has already expired
                 //fExpires = DateTime::min ();  // better but cannot convert back to date - fix stk date stuff so this works
                 fExpires = DateTime::Now ();
-                DbgTrace (L"Malformed expires ({}) treated as expires immediately"_f, Characters::ToString (hi->fValue));
+                DbgTrace ("Malformed expires ({}) treated as expires immediately"_f, hi->fValue);
             }
             hi = headers.erase (hi);
         }
@@ -227,7 +227,7 @@ Transfer::Cache::Element::Element (const Response& response)
                 fLastModified = DateTime::Parse (hi->fValue, DateTime::kRFC1123Format);
             }
             catch (...) {
-                DbgTrace ("Malformed last-modified ({}) treated as ignored"_f, Characters::ToString (hi->fValue));
+                DbgTrace ("Malformed last-modified ({}) treated as ignored"_f, hi->fValue);
             }
             hi = headers.erase (hi);
         }

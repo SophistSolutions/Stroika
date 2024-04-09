@@ -138,8 +138,7 @@ namespace {
             // normally nothing todo - write 'writes thru' (except if fFlushFlag)
             if (fFlushFlag == FlushFlag::eToDisk) {
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                auto                                            activity = LazyEvalActivity{
-                    [&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); }};
+                auto activity = LazyEvalActivity{[&] () -> String { return Characters::Format ("flushing data to {}"_f, fFileName_); }};
                 DeclareActivity currentActivity{&activity};
 #if qPlatform_POSIX
                 ThrowPOSIXErrNoIfNegative (::fsync (fFD_));

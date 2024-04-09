@@ -388,8 +388,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             // @todo consider using globs2 file support, but little point since they seem to be written in priority order
             auto loadGlobsFromFile = [&] (const filesystem::path& fn) {
                 if (filesystem::exists (fn)) {
-                    Debug::TraceContextBumper ctx1{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                        "UsrShareMIMERep_::CTOR::loadGlobsFromFile", "exists=true,fn={}"_f, Characters::ToString (fn))};
+                    Debug::TraceContextBumper ctx1{"UsrShareMIMERep_::CTOR::loadGlobsFromFile", "exists=true,fn={}"_f, fn};
                     try {
                         for (Sequence<String> line :
                              DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {

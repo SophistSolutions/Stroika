@@ -601,7 +601,7 @@ namespace {
                         continue;
                     }
                     for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
-                        DbgTrace ("Testing ci={}, di={}"_f, Characters::ToString (ci), Characters::ToString (di));
+                        DbgTrace ("Testing ci={}, di={}"_f, ci, di);
                         size_t nFailsForThisCipherDigestCombo{};
                         for (BLOB passphrase : kPassphrases_) {
                             for (BLOB inputMessage : kTestMessages_) {
@@ -609,8 +609,7 @@ namespace {
                                 ++nCipherTests;
                                 try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                                    Debug::TraceContextBumper ctx{L"roundtriptesting", L"ci=%s, di=%s", Characters::ToString (ci).c_str (),
-                                                                  Characters::ToString (di).c_str ()};
+                                    Debug::TraceContextBumper ctx{"roundtriptesting", "ci={}, di={}"_f, ci, di};
 #endif
                                     OpenSSLCryptoParams cryptoParams{ci, OpenSSL::EVP_BytesToKey{ci, di, passphrase}};
                                     roundTripTester_ (cryptoParams, inputMessage);
@@ -618,8 +617,7 @@ namespace {
                                 catch (...) {
                                     nFailures++;
                                     failingCiphers.Add (Characters::ToString (ci));
-                                    DbgTrace ("For Test ({}, {}): Ignorning exception: {}"_f, Characters::ToString (ci),
-                                              Characters::ToString (di), Characters::ToString (current_exception ()));
+                                    DbgTrace ("For Test ({}, {}): Ignoring exception: {}"_f, ci, di, current_exception ());
                                 }
                             }
                         }

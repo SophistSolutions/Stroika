@@ -108,8 +108,7 @@ Socket::Type Socket::Ptr::GetType () const
 
 void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
-    Debug::TraceContextBumper                              ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        "IO::Network::Socket::Bind", "sockAddr={} bindFlags.fReUseAddr={}"_f, sockAddr, Characters::ToString (bindFlags.fSO_REUSEADDR))};
+    Debug::TraceContextBumper ctx{"IO::Network::Socket::Bind", "sockAddr={} bindFlags.fReUseAddr={}"_f, sockAddr, bindFlags.fSO_REUSEADDR};
     Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
@@ -172,7 +171,7 @@ String Socket::Ptr::ToString () const
         sb << "Native-Socket: "sv
            << ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED"sv : Characters::ToString (fRep_->GetNativeSocket ())) << ", "sv;
         if (auto ola = GetLocalAddress ()) {
-            sb << "Local-Address: "sv << Characters::ToString (*ola);
+            sb << "Local-Address: "sv << *ola;
         }
         sb << "}"sv;
     }

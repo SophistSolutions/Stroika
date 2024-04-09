@@ -434,7 +434,7 @@ namespace {
             }
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"GetInterfaces_POSIX_mkInterface_ returns %s", Characters::ToString (newInterface).c_str ());
+        DbgTrace ("GetInterfaces_POSIX_mkInterface_ returns {}"_f, newInterface);
 #endif
         return newInterface;
     }
@@ -834,7 +834,7 @@ namespace {
                 }
                 if (currAddresses->TunnelType != TUNNEL_TYPE_NONE) {
                     if (newInterface.fType) {
-                        DbgTrace ("overwriting type {} with tunneltype"_f, Characters::ToString (newInterface.fType));
+                        DbgTrace ("overwriting type {} with tunneltype"_f, newInterface.fType);
                     }
                     newInterface.fType = Interface::Type::eTunnel;
                 }
@@ -942,7 +942,7 @@ namespace {
         }
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"returning %s", Characters::ToString (results.MappedValues ()).c_str ());
+        DbgTrace ("returning {}"_f, results.MappedValues ());
 #endif
         return results;
     }
@@ -967,7 +967,7 @@ Traversal::Iterable<Interface> SystemInterfacesMgr::GetAll ()
     AssertNotImplemented ();
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning %s", Characters::ToString (results).c_str ());
+    DbgTrace ("returning {}"_f, results);
 #endif
     return results;
 }

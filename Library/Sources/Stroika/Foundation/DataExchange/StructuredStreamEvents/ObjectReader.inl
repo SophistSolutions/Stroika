@@ -286,7 +286,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     optional<ReaderFromVoidStarFactory> o = fActiveContext_->GetObjectReaderRegistry ().Lookup (i.fFieldMetaInfo.GetTypeInfo ());
                     if constexpr (qDebug) {
                         if (not o.has_value ()) {
-                            DbgTrace ("(forTypeInfo = {}) - UnRegistered Type!"_f, Characters::ToString (i.fFieldMetaInfo));
+                            DbgTrace ("(forTypeInfo = {}) - UnRegistered Type!"_f, i.fFieldMetaInfo);
                             AssertNotReached ();
                         }
                     }
@@ -717,8 +717,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     using namespace Characters;
                     Debug::TraceContextBumper ctx{"Registry::AddCommonReader_Class",
                                                   "CLASS={} field-TypeInfo-not-found = {}, for field named '{}' - UnRegistered Type!"_f,
-                                                  Characters::ToString (typeid (CLASS)), Characters::ToString (kv.fFieldMetaInfo.GetTypeInfo ()),
-                                                  Characters::ToString (kv.fSerializedFieldName)};
+                                                  Characters::ToString (typeid (CLASS)),
+                                                  Characters::ToString (kv.fFieldMetaInfo.GetTypeInfo ()), kv.fSerializedFieldName};
                     RequireNotReached ();
                 }
             }

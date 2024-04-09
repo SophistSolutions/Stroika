@@ -138,7 +138,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
                                           nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY, nullptr);
                 fd != INVALID_HANDLE_VALUE) {
                 ::CloseHandle (fd);
-                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, Characters::ToString (trialName));
+                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, trialName);
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
@@ -151,7 +151,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
             }
 #endif
         }
-        DbgTrace ("Attempt to create file ({}) collided, so retrying ({} attempts)"_f, Characters::ToString (trialName), attempts);
+        DbgTrace ("Attempt to create file ({}) collided, so retrying ({} attempts)"_f, trialName, attempts);
     }
     Execution::Throw (Exception{"Unknown error creating file"sv}, "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
@@ -171,7 +171,7 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
                 return trialName;
             }
         }
-        DbgTrace ("Attempt to create directory collided, so retrying ({})"_f, Characters::ToString (trialName), attempts);
+        DbgTrace ("Attempt to create directory collided, so retrying ({})"_f, trialName, attempts);
     }
     Execution::Throw (Exception{"Unknown error creating temporary directory"sv},
                       "AppTempFileManager::GetTempDir (): failed to create tempdir");
@@ -189,12 +189,12 @@ ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
 
 ScopedTmpDir::~ScopedTmpDir ()
 {
-    Debug::TraceContextBumper ctx{"ScopedTmpDir::~ScopedTmpDir", "readfilename={}"_f, Characters::ToString (fTmpDir_)};
+    Debug::TraceContextBumper ctx{"ScopedTmpDir::~ScopedTmpDir", "readfilename={}"_f, fTmpDir_};
     try {
         remove_all (fTmpDir_);
     }
     catch (...) {
-        DbgTrace ("Ignoring exception DTOR: {}"_f, Characters::ToString (current_exception ()));
+        DbgTrace ("Ignoring exception DTOR: {}"_f, current_exception ());
     }
 }
 

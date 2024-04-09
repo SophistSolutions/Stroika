@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
                 iters += 1;
 
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"...best so far (iteration %d): %s", iters, Characters::ToString (best).c_str ());
+                DbgTrace ("...best so far (iteration {}): {}"_f, iters, best);
 #endif
                 // break after no_improv_break iterations with no improvement
                 if (best < prev_best - no_improve_thr) {
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
         unsigned int        max_iter        = options.fMaxIterations.value_or (0);
         results = PRIVATE_::nelder_mead_by_fchollet<FLOAT_TYPE> (function2Minimize, initialValues, step, no_improve_thr, no_improv_break, max_iter);
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"returns: %s", Characters::ToString (results).c_str ());
+        DbgTrace ("returns: {}"_f, results);
 #endif
         return results;
     }

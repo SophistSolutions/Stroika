@@ -345,7 +345,7 @@ bool VariantValue::AsBool_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("failed coerce-to-bool: type={}, value={}"_f, Characters::ToString (fVal_->GetType ()), *this);
+            DbgTrace ("failed coerce-to-bool: type={}, value={}"_f, fVal_->GetType (), *this);
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to bool"sv});
         }
@@ -818,8 +818,7 @@ Mapping<String, VariantValue> VariantValue::AsMapping_ () const
             return v->fVal;
         }
         default: {
-            Execution::Throw (
-                DataExchange::BadFormatException{"Cannot coerce VariantValue of type {} to map"_f(Characters::ToString (fVal_->GetType ()))});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue of type {} to map"_f(fVal_->GetType ())});
         }
     }
 }
@@ -836,8 +835,7 @@ Sequence<VariantValue> VariantValue::AsSequence_ () const
             return v->fVal;
         }
         default: {
-            Execution::Throw (
-                DataExchange::BadFormatException{"Cannot coerce VariantValue of type {} to array"_f(Characters::ToString (fVal_->GetType ()))});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue of type {} to array"_f(fVal_->GetType ())});
         }
     }
 }

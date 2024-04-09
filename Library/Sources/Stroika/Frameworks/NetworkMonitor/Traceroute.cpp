@@ -60,13 +60,13 @@ String Traceroute::Options::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMaxHops) {
-        sb << "Max-Hops: "sv << Characters::Format (L"%d", *fMaxHops) << ", "sv;
+        sb << "Max-Hops: "sv << *fMaxHops << ", "sv;
     }
     if (fTimeout) {
-        sb << "Timeout: "sv << Characters::ToString (*fTimeout) << ", "sv;
+        sb << "Timeout: "sv << *fTimeout << ", "sv;
     }
     if (fPacketPayloadSize) {
-        sb << "Packet-Payload-Size: "sv << Characters::Format (L"%d", *fPacketPayloadSize) << ", "sv;
+        sb << "Packet-Payload-Size: "sv << *fPacketPayloadSize << ", "sv;
     }
     if (fSampleInfo) {
         sb << "Sample: "sv << *fSampleInfo;

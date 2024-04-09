@@ -126,7 +126,7 @@ namespace {
         virtual void SetSchemeAndAuthority (const URI& schemeAndAuthority) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Connection_WinHTTP::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
+            DbgTrace ("Connection_WinHTTP::Rep_::SetSchemeAndAuthority ('{}')"_f, schemeAndAuthority);
 #endif
             URI newURL = fURL_;
             newURL.SetScheme (schemeAndAuthority.GetScheme ());

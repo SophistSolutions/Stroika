@@ -257,9 +257,8 @@ namespace {
                             out.WriteRaw (responseLen);
                             out.Write (span{results.begin (), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"Sent response: header=%s, responseLen=%d, responsePayload=%s",
-                                      Characters::ToString (responseHeader).c_str (), responseLen,
-                                      Characters::ToString (Memory::BLOB (results.begin (), results.begin () + responseLen)).c_str ());
+                            DbgTrace ("Sent response: header={}, responseLen={}, responsePayload={}"_f, responseHeader, responseLen,
+                                      Memory::BLOB{results.begin (), results.begin () + responseLen});
 #endif
                         }
                     } break;
@@ -395,24 +394,22 @@ namespace {
                             out.WriteRaw (ToNetwork_ (outputAddress));
                             out.WriteRaw (ToNetwork_ (value));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"Sent response: header=%s", Characters::ToString (requestHeader).c_str ());
+                            DbgTrace ("Sent response: header={}"_f, requestHeader);
 #endif
                         }
                     } break;
                     default: {
-                        DbgTrace ("UNREGONIZED FunctionCode (NYI probably) - {} - so echo ILLEGAL_FUNCTION code"_f,
-                                  Characters::ToString (requestHeader.fFunctionCode));
+                        DbgTrace ("UNREGONIZED FunctionCode (NYI probably) - {} - so echo ILLEGAL_FUNCTION code"_f, requestHeader.fFunctionCode);
                         if (options.fLogger) {
                             options.fLogger.value ()->Log (Logger::eWarning, "ModbusTCP unrecognized function code '{}'- rejected as ILLEGAL_FUNCTION"_f,
-                                                           Characters::ToString (requestHeader.fFunctionCode));
+                                                           requestHeader.fFunctionCode);
                         }
                         MBAPHeaderIsh_ responseHeader = requestHeader;
                         responseHeader.fFunctionCode = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
                         out.WriteRaw (ToNetwork_ (responseHeader));
                         out.WriteRaw (static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace ("Sent UNREGONIZED_FUNCTION response: header={}, and exceptionCode={}"_f,
-                                  Characters::ToString (responseHeader), exceptionCode);
+                        DbgTrace ("Sent UNREGONIZED_FUNCTION response: header={}, and exceptionCode={}"_f, responseHeader, exceptionCode);
 #endif
                     }
                 }
@@ -425,8 +422,7 @@ namespace {
         catch (...) {
             // Anytime we leave the loop due to an exception, thats worth a log note
             if (options.fLogger) {
-                options.fLogger.value ()->Log (Logger::eWarning, "ModbusTCP connection ended abnormally: {}"_f,
-                                               Characters::ToString (current_exception ()));
+                options.fLogger.value ()->Log (Logger::eWarning, "ModbusTCP connection ended abnormally: {}"_f, current_exception ());
             }
             ReThrow ();
         }

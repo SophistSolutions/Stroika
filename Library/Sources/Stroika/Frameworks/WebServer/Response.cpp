@@ -243,7 +243,7 @@ void Response::Flush ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Response::Flush"};
-    DbgTrace (L"fState_ = %s", Characters::ToString (fState_).c_str ());
+    DbgTrace ("fState_ = {}"_f, fState_);
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
 
@@ -405,12 +405,12 @@ String Response::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{_fThisAssertExternallySynchronized};
     StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
-    sb << "Socket: "sv << Characters::ToString (fSocket_) << ", "sv;
-    sb << "InChunkedMode: "sv << Characters::ToString (fInChunkedModeCache_) << ", "sv;
-    sb << "State: "sv << Characters::ToString (fState_) << ", "sv;
-    sb << "CodePage: "sv << Characters::ToString (fCodePage_) << ", "sv;
-    sb << "BodyBytes: "sv << Characters::ToString (fBodyBytes_) << ", "sv;
-    sb << "HeadMode: "sv << Characters::ToString (fHeadMode_) << ", "sv;
+    sb << "Socket: "sv << fSocket_ << ", "sv;
+    sb << "InChunkedMode: "sv << fInChunkedModeCache_ << ", "sv;
+    sb << "State: "sv << fState_ << ", "sv;
+    sb << "CodePage: "sv << fCodePage_ << ", "sv;
+    sb << "BodyBytes: "sv << fBodyBytes_ << ", "sv;
+    sb << "HeadMode: "sv << fHeadMode_ << ", "sv;
     sb << "ETagDigester: "sv << String{fETagDigester_ ? "true"sv : "false"sv} << ", "sv;
     sb << "}"sv;
     return sb.str ();

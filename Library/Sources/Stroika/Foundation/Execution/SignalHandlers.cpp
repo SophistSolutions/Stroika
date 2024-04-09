@@ -66,7 +66,7 @@ Characters::String SignalHandler::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "type: "sv << Characters::ToString (GetType ()) << ", "sv;
+    sb << "type: "sv << GetType () << ", "sv;
     // rough guess what to print...
     Function<void (SignalID)>::STDFUNCTION stdFuncTarget = static_cast<Function<void (SignalID)>::STDFUNCTION> (fCall_);
     if (stdFuncTarget.target_type () == typeid (void (*) (SignalID))) {
@@ -77,7 +77,7 @@ Characters::String SignalHandler::ToString () const
     }
     else {
         // type only/mainly interesting if not one of the above so we're printing nullptr
-        sb << "target-type: "sv << Characters::ToString (stdFuncTarget.target_type ());
+        sb << "target-type: "sv << stdFuncTarget.target_type ();
     }
     sb << "}"sv;
     return sb.str ();
@@ -357,9 +357,8 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const SignalHand
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
-    Debug::TraceContextBumper trcCtx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers",
-                                                       "signal: {}, handlers: {}"_f, SignalToName (signal), Characters::ToString (handlers))};
+    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        "Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers", "signal: {}, handlers: {}"_f, SignalToName (signal), handlers)};
 
     Set<SignalHandler> directHandlers;
     Set<SignalHandler> safeHandlers;

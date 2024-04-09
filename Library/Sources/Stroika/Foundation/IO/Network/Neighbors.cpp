@@ -153,7 +153,7 @@ namespace {
         for (const Sequence<String>& line :
              reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kProcFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"in ProcNetArp_ capture_ line=%s", Characters::ToString (line).c_str ());
+            DbgTrace ("in ProcNetArp_ capture_ line={}"_f, line);
 #endif
             if (not readFirstLine) {
                 readFirstLine = true;
@@ -234,8 +234,7 @@ public:
     Collection<NeighborsMonitor::Neighbor> GetNeighbors_ (Options::Strategy s) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"NeighborsMonitor::Rep_::GetNeighbors_", L"s=%s",
-                                                                                     Characters::ToString ((int)s).c_str ())};
+        Debug::TraceContextBumper ctx{"NeighborsMonitor::Rep_::GetNeighbors_", "s={}"_f, s};
 #endif
         switch (s) {
             case Options::Strategy::eArpProgram:

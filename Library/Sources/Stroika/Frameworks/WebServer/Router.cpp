@@ -127,7 +127,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 Execution::Throw (kException_);
             }
             else {
-                DbgTrace (L"Router 404: (...url={}"_f, Characters::ToString (m->request ().url ()));
+                DbgTrace ("Router 404: (...url={})"_f, m->request ().url ());
                 Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
             }
         }

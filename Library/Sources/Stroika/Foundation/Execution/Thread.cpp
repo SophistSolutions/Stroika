@@ -306,7 +306,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
         // If fRefCountBumpedInsideThreadMainEvent_ not yet SET, then this info is bogus
         sb << "id: "sv << GetID () << ", "sv;
         if constexpr (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
-            sb << "index: " << Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (GetID ()))) << ", "sv;
+            sb << "index: " << IndexRegistrar::sThe.GetIndex (GetID ()) << ", "sv;
         }
     }
     if (not fThreadName_.empty ()) {
@@ -314,7 +314,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     }
     sb << "status: "sv << PeekStatusForToString_ () << ", "sv;
     //sb << "runnable: "sv << Characters::ToString (fRunnable_) << ", "sv;     // doesn't yet print anything useful
-    sb << "abortRequested: "sv << Characters::ToString (fAbortRequested_.load ()) << ", "sv;
+    sb << "abortRequested: "sv << fAbortRequested_.load () << ", "sv;
     sb << "refCountBumpedEvent: "sv << fRefCountBumpedInsideThreadMainEvent_.PeekIsSet () << ", "sv;
     sb << "startReadyToTransitionToRunningEvent_: "sv << fStartReadyToTransitionToRunningEvent_.PeekIsSet () << ", "sv;
     sb << "threadDoneAndCanJoin: "sv << fThreadDoneAndCanJoin_.PeekIsSet () << ", "sv;
@@ -497,9 +497,9 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             Require (Debug::AppearsDuringMainLifetime ());
             [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
-            DbgTrace (L"Adding thread index {} to sRunningThreads_ ({})"_f, static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID)),
-                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> (
-                          [] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); })));
+            DbgTrace (
+                L"Adding thread index {} to sRunningThreads_ ({})"_f, static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID)),
+                Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> ([] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); }));
 #else
             DbgTrace (L"Adding thread id {} to sRunningThreads_ ({})"_f, Characters::ToString (thisThreadID), Characters::ToString (sRunningThreads_));
 #endif
@@ -706,8 +706,7 @@ void Thread::Ptr::SetThreadName (const String& threadName) const
     RequireNotNull (fRep_);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Execution::Thread::SetThreadName", "thisThreadID={}, threadName = '{}'"_f,
-                                                                          Characters::ToString (GetID ()), threadName.As<wstring> ())};
+    TraceContextBumper ctx{"Execution::Thread::SetThreadName", "thisThreadID={}, threadName = '{}'"_f, GetID (), threadName};
 #endif
     if (fRep_->fThreadName_ != threadName) {
         fRep_->fThreadName_ = threadName.As<wstring> ();
@@ -724,7 +723,7 @@ Characters::String Thread::Ptr::ToString () const
 void Thread::Ptr::Start () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::Start", L"*this=%s"_f, ToString ())};
+    Debug::TraceContextBumper ctx{"Thread::Start", "*this={}"_f, ToString ()};
     RequireNotNull (fRep_);
     Require (not fRep_->fStartEverInitiated_);
 #if qDebug

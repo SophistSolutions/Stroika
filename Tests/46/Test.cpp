@@ -152,7 +152,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test4_MountedFilesystems_"};
             for (auto i : IO::FileSystem::GetMountedFilesystems ()) {
-                DbgTrace ("fs={}"_f, Characters::ToString (i));
+                DbgTrace ("fs={}"_f, i);
             }
         }
     }
@@ -164,7 +164,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test5_DisksPresent_"};
             for (auto i : IO::FileSystem::GetAvailableDisks ()) {
-                DbgTrace ("d={}"_f, Characters::ToString (i));
+                DbgTrace ("d={}"_f, i);
             }
         }
     }
