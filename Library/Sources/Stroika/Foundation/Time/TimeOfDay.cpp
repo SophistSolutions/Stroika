@@ -192,9 +192,8 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s', formatPatterns=%s",
-                                                                                 rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (),
-                                                                                 Characters::ToString (formatPatterns).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("TimeOfDay::Parse", "rep='{}', l='{}', formatPatterns={}"_f,
+                                                                                 rep, String::FromNarrowSDKString (l.name ()), formatPatterns)};
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe);
@@ -306,7 +305,7 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get
     Ensure (0 <= when.tm_sec and when.tm_sec <= 59);
     auto result = TimeOfDay{static_cast<unsigned> (when.tm_hour), static_cast<unsigned> (when.tm_min), static_cast<unsigned> (when.tm_sec)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning %s", Characters::ToString (result).c_str ());
+    DbgTrace ("returning {}"_f, result);
 #endif
     return result;
 }

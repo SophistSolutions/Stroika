@@ -349,9 +349,9 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (request ()).c_str ());
+                DbgTrace ("Assuring all data read; REQ={}"_f, request ());
 #endif
-                // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
+                // @todo - this can be more efficient in the rare case we ignore the body - but that's rare enough to not matter much
                 (void)fMessage_->rwRequest ().GetBody ();
             }
         }
@@ -364,7 +364,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
                 if (auto actualETag = this->response ().headers ().ETag ()) {
                     if (requestedINoneMatch->fETags.Contains (*actualETag)) {
-                        DbgTrace (L"Updating OK response to NotModified (due to ETag match)"_f);
+                        DbgTrace ("Updating OK response to NotModified (due to ETag match)"_f);
                         this->rwResponse ().status = HTTP::StatusCodes::kNotModified; // this assignment automatically prevents sending data
                     }
                 }

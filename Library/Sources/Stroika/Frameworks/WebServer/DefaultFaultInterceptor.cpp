@@ -56,7 +56,7 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             }
         }
         catch (...) {
-            DbgTrace (L"Oops! - not good, but nothing todo but burry it: {}"_f, Characters::ToString (current_exception ())); // else horse has left the barn
+            DbgTrace (L"Oops! - not good, but nothing todo but burry it: {}"_f, current_exception ()); // else horse has left the barn
             response.Abort ();
         }
     }

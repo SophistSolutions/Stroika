@@ -261,9 +261,8 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {
         scoped_lock critSec{fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
-        DbgTrace (L"In onConnect_ (after adding connection %s): fActiveConnections_=%s, inactiveOpenConnections_=%s",
-                  Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.load ()).c_str (),
-                  Characters::ToString (GetInactiveConnections_ ()).c_str ());
+        DbgTrace ("In onConnect_ (after adding connection {}): fActiveConnections_={}, inactiveOpenConnections_={}"_f, conn,
+                  fActiveConnections_.load (), GetInactiveConnections_ ());
     }
 #endif
 }

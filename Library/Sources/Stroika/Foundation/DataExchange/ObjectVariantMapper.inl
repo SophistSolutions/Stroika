@@ -489,7 +489,7 @@ namespace Stroika::Foundation::DataExchange {
             Require (intoObjOfTypeT->empty ());
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
             auto                       decodingClassActivity = Execution::LazyEvalActivity{[&] () -> String {
-                return Characters::Format ("Decoding {} into class {}"_f, d, Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)));
+                return Characters::Format ("Decoding {} into class {}"_f, d, type_index{typeid (ACTUAL_CONTAINER_TYPE)});
             }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
@@ -547,7 +547,7 @@ namespace Stroika::Foundation::DataExchange {
                 Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                 if (p.size () != 2) [[unlikely]] {
                     DbgTrace ("Bijection ('{}') element with item count (%d) other than 2"_f,
-                              Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)), static_cast<int> (p.size ()));
+                              type_index{typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)}, static_cast<int> (p.size ()));
                     static const auto kException_ = BadFormatException{"Mapping element with item count other than 2"sv};
                     Execution::Throw (kException_);
                 }
@@ -840,7 +840,7 @@ namespace Stroika::Foundation::DataExchange {
             Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
             T*                     actualMember{reinterpret_cast<T*> (intoObjOfTypeT)};
             if (s.size () > SZ) [[unlikely]] {
-                DbgTrace ("Array ('{}') actual size {} out of range"_f, Characters::ToString (typeid (T[SZ])), static_cast<int> (s.size ()));
+                DbgTrace ("Array ('{}') actual size {} out of range"_f, type_index{typeid (T[SZ])}, static_cast<int> (s.size ()));
                 static const auto kException_ = BadFormatException{"Array size out of range"sv};
                 Execution::Throw (kException_);
             }
@@ -889,7 +889,7 @@ namespace Stroika::Foundation::DataExchange {
                 if (p.size () != 2) [[unlikely]] {
                     using namespace Characters;
                     DbgTrace ("Container with Key/Value pair ('{}') element with item count ({}) other than 2"_f,
-                              Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)), static_cast<int> (p.size ()));
+                              type_index{typeid (ACTUAL_CONTAINER_TYPE)}, static_cast<int> (p.size ()));
                     static const auto kException_ = BadFormatException{"Container with Key/Value pair element with item count other than 2"_k};
                     Execution::Throw (kException_);
                 }
@@ -917,7 +917,7 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (intoObjOfTypeT);
             auto optVal = nameMap.InverseLookup (d.As<String> ());
             if (not optVal.has_value ()) [[unlikely]] {
-                DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, Characters::ToString (typeid (ENUM_TYPE)), d);
+                DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, type_index{typeid (ENUM_TYPE)}, d);
                 static const auto kException_ = BadFormatException{"Enumeration value out of range"sv};
                 Execution::Throw (kException_);
             }
@@ -956,7 +956,7 @@ namespace Stroika::Foundation::DataExchange {
             Assert (static_cast<SerializeAsType> (*intoObjOfTypeT) == d.As<SerializeAsType> ()); // no round-trip loss
             if (not(ENUM_TYPE::eSTART <= *intoObjOfTypeT and *intoObjOfTypeT < ENUM_TYPE::eEND)) [[unlikely]] {
                 using namespace Characters;
-                DbgTrace ("Enumeration ('{}') value {} out of range"_f, Characters::ToString (typeid (ENUM_TYPE)), static_cast<int> (*intoObjOfTypeT));
+                DbgTrace ("Enumeration ('{}') value {} out of range"_f, type_index{typeid (ENUM_TYPE)}, static_cast<int> (*intoObjOfTypeT));
                 static const auto kException_ = BadFormatException{"Enumeration value out of range"_k};
                 Execution::Throw (kException_);
             }
@@ -1026,17 +1026,17 @@ namespace Stroika::Foundation::DataExchange {
             }
             else {
                 if (m.size () != 2) [[unlikely]] {
-                    DbgTrace ("Range ('{}') element needs LowerBound and UpperBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
+                    DbgTrace ("Range ('{}') element needs LowerBound and UpperBound"_f, type_index{typeid (RANGE_TYPE)});
                     static const auto kException_ = BadFormatException{"Range needs LowerBound and UpperBound"sv};
                     Execution::Throw (kException_);
                 }
                 if (not m.ContainsKey (lowerBoundLabel)) [[unlikely]] {
-                    DbgTrace ("Range ('{}') element needs LowerBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
+                    DbgTrace ("Range ('{}') element needs LowerBound"_f, type_index{typeid (RANGE_TYPE)});
                     static const auto kException_ = BadFormatException{"Range needs 'LowerBound' element"sv};
                     Execution::Throw (kException_);
                 }
                 if (not m.ContainsKey (upperBoundLabel)) [[unlikely]] {
-                    DbgTrace ("Range ('{}') element needs UpperBound"_f, Characters::ToString (typeid (RANGE_TYPE)));
+                    DbgTrace ("Range ('{}') element needs UpperBound"_f, type_index{typeid (RANGE_TYPE)});
                     static const auto kException_ = BadFormatException{"Range needs 'UpperBound' element"sv};
                     Execution::Throw (kException_);
                 }
@@ -1086,8 +1086,8 @@ namespace Stroika::Foundation::DataExchange {
 #endif
 
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
-            auto decodingClassActivity = Execution::LazyEvalActivity{
-                [&] () -> String { return Characters::Format ("Encoding {}"_f, Characters::ToString (typeid (CLASS))); }};
+            auto decodingClassActivity =
+                Execution::LazyEvalActivity{[&] () -> String { return Characters::Format ("Encoding {}"_f, type_index{typeid (CLASS)}); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             Mapping<String, VariantValue> m;
@@ -1123,7 +1123,7 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (intoObjOfTypeT);
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
             auto decodingClassActivity = Execution::LazyEvalActivity{
-                [&] () -> String { return Characters::Format ("Decoding {} into class {}"_f, d, Characters::ToString (typeid (CLASS))); }};
+                [&] () -> String { return Characters::Format ("Decoding {} into class {}"_f, d, type_index{typeid (CLASS)}); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             if (extends) {

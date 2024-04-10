@@ -128,7 +128,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
         if (fTraceThisReader) {
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
-            DbgTrace ("{}Context::Push [{}]"_f, TraceLeader_ (), Characters::ToString (typeid (*elt.get ())));
+            DbgTrace ("{}Context::Push [{}]"_f, TraceLeader_ (), type_index{typeid (*elt.get ())});
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
         }
 #endif
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             else {
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
-                DbgTrace (L"{}Context::Popped [back to: {}]"_f, TraceLeader_ (), Characters::ToString (typeid (*GetTop ().get ())));
+                DbgTrace (L"{}Context::Popped [back to: {}]"_f, TraceLeader_ (), type_index{typeid (*GetTop ().get ())});
                 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
             }
         }
@@ -717,7 +717,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     using namespace Characters;
                     Debug::TraceContextBumper ctx{"Registry::AddCommonReader_Class",
                                                   "CLASS={} field-TypeInfo-not-found = {}, for field named '{}' - UnRegistered Type!"_f,
-                                                  Characters::ToString (typeid (CLASS)), kv.fFieldMetaInfo.GetTypeInfo (), kv.fSerializedFieldName};
+                                                  type_index{typeid (CLASS)}, kv.fFieldMetaInfo.GetTypeInfo (), kv.fSerializedFieldName};
                     RequireNotReached ();
                 }
             }
@@ -776,7 +776,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     *fValue_ = *optVal;
                 }
                 else {
-                    DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, Characters::ToString (typeid (ENUM_TYPE)), fBuf_.str ());
+                    DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, type_index{typeid (ENUM_TYPE)}, fBuf_.str ());
                     static const auto kException_ = BadFormatException{"Enumeration value out of range"sv};
                     Execution::Throw (kException_);
                 }

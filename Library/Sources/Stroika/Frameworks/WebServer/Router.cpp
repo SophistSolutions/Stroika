@@ -102,8 +102,7 @@ struct Router::Rep_ : Interceptor::_IRep {
     virtual void HandleMessage (Message* m) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->request ().httpMethod ().c_str (),
-                                      Characters::ToString (m->request ().url ()).c_str ()};
+        Debug::TraceContextBumper ctx{"Router::Rep_::HandleMessage", "...method={},url={}"_f, m->request ().httpMethod (), m->request ().url ()};
 #endif
         Sequence<String>         matches;
         optional<RequestHandler> handler = Lookup_ (m->request (), &matches);
@@ -244,7 +243,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             response.status = HTTP::StatusCodes::kNoContent;
         }
         else {
-            DbgTrace (L"Router 404: (...url={})"_f, Characters::ToString (message->request ().url ()));
+            DbgTrace ("Router 404: (...url={})"_f, message->request ().url ());
             Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
         }
     }

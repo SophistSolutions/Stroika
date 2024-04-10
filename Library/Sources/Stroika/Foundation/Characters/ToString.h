@@ -9,8 +9,10 @@
 #include <ios>
 #include <optional>
 #include <thread>
+#include <tuple>
 #include <typeindex>
 #include <typeinfo>
+#include <utility>
 
 #include "Format.h"
 #include "Stroika/Foundation/Common/CountedValue.h"
@@ -186,10 +188,12 @@ namespace Stroika::Foundation::Characters {
          *  by std c++ lib (and String which we special case). If I overlap at all, we get very confusing messages from compiler
          *  about duplicate / overlapping formatter definitions.
          * 
-         * add  variant
+         *  \todo Would be nice to support type_info/typeid, but for tricky fact that type_info(const type_info&)=deleted, makes it largely not
+         *        work. Probably missing some perfect forwarding someplace? And with that fixed maybe can work??? --LGP 2024-04-10
          */
         template <typename T>
         concept IUseToStringFormatterForFormatter_ =
+            // most user-defined types captured by this rule - just add a ToString() method!
             requires (T t) {
                 {
                     t.ToString ()
@@ -202,21 +206,27 @@ namespace Stroika::Foundation::Characters {
         // c++ 23 features which may not be present with current compilers
         // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
         // this stuff needed for clang++-18-debug-libstdc++-c++23
-        // sadly MSFT doesn't use __cplusplus properly, but instead uses _HAS_CXX23
-#if _HAS_CXX23
+#if !__cpp_lib_format_ranges
             or (ranges::range<decay_t<T>> and
                 not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
                                           qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
-#elif (__cplusplus < 202100L /*202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240315))
+#endif
+        // sadly MSFT doesnt support all, and doesnt support __cplusplus with right value
+#if _MSC_VER
+            // available in C++23
+            or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
+#elif __cplusplus < 202100L /*202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240315)
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
             // available in C++23
             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+#if 0
             // ranges available in C++23, but range<T> matches some stuff that IS already pre-included by std-c++ formatters
             or (ranges::range<decay_t<T>> and
                 not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
                                           qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
+#endif
 #endif
 
         // features added in C++26
@@ -226,11 +236,10 @@ namespace Stroika::Foundation::Characters {
 #endif
 
             // Features from std-c++ that probably should have been added
+            // NOTE - we WANT to support type_info (so typeid works directly) - but run into trouble because type_info(const type_info)=delete, so not
+            // sure how to make that work with formatters (besides wrapping in type_index).
             or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>> or
-            Configuration::ITimePoint<T> or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index>;
-
-        static_assert (IUseToStringFormatterForFormatter_<exception_ptr> and IUseToStringFormatterForFormatter_<type_info>); // etc
-        static_assert (IUseToStringFormatterForFormatter_<optional<int>>);
+            Configuration::ITimePoint<T> or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_index>;
     }
 
 }
@@ -239,6 +248,19 @@ template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFor
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
+
+#if __cplusplus > 202200L || _HAS_CXX23
+// various examples of things Stroika provides / assure support for regardless of C++ version
+static_assert (std::formattable<std::type_index, wchar_t>);
+static_assert (std::formattable<std::thread::id, wchar_t>);
+static_assert (std::formattable<std::exception_ptr, wchar_t>);
+static_assert (std::formattable<std::type_index, wchar_t>);
+static_assert (std::formattable<std::filesystem::path, wchar_t>);
+static_assert (std::formattable<std::optional<int>, wchar_t>);
+static_assert (std::formattable<std::pair<int, char>, wchar_t>);
+static_assert (std::formattable<std::tuple<int>, wchar_t>);
+//static_assert (std::formattable<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but dont #include just for this
+#endif
 
 /*
  ********************************************************************************
