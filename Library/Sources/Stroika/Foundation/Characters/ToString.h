@@ -202,7 +202,8 @@ namespace Stroika::Foundation::Characters {
 
         // c++ 23 features which may not be present with current compilers
         // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
-#if __cplusplus < 202100L/*202300L*/
+        // this stuff needed for clang++-18-debug-libstdc++-c++23
+#if __cplusplus < 202100L/*202300L*/ || (__clang__ != 0 &&  __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240315)
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
