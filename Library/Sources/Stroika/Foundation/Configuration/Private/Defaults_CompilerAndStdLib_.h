@@ -1083,7 +1083,7 @@ In file included from Thread.cpp:18:
   */
 #ifndef qCompilerAndStdLib_FormatThreadId_Buggy
 
-#if defined(__clang__) &&  defined(__GLIBCXX__)
+#if defined(__clang__) && defined(__GLIBCXX__)
 // broken in clang++-18 with
 #define qCompilerAndStdLib_FormatThreadId_Buggy 1
 //#define qCompilerAndStdLib_FormatThreadId_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GLIBCXX__ <= 20240315))
@@ -1092,8 +1092,6 @@ In file included from Thread.cpp:18:
 #endif
 
 #endif
-
-
 
 /**
  *

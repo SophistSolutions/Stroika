@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Execution {
         WaitableEvent fStartReadyToTransitionToRunningEvent_;
         WaitableEvent fThreadDoneAndCanJoin_;
         wstring       fThreadName_;
-        Synchronized<exception_ptr> fSavedException_; // really no logical need for Syncrhonized<>, except when used from ToString() for debugging
+        Synchronized<exception_ptr> fSavedException_; // really no logical need for Synchronized<>, except when used from ToString() for debugging
         Synchronized<optional<Priority>> fInitialPriority_; // where we store priority before start
 #if qPlatform_Windows
         bool fThrowInterruptExceptionInsideUserAPC_{false};
