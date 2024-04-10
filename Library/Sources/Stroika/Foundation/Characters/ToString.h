@@ -235,7 +235,9 @@ namespace Stroika::Foundation::Characters {
             or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>>
 
 // want this but causes trouble with CLANG!!!
-#if !qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+#if qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+            or same_as<T,std::chrono::time_point<chrono::steady_clock,chrono::duration<double>>>
+#else
             or Configuration::ITimePoint<T>
 #endif
             or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_index>;
