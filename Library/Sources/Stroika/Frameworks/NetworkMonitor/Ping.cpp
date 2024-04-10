@@ -87,8 +87,7 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
     , fNextSequenceNumber_{static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_))}
     , fPingTimeout_{options.fTimeout.value_or (Options::kDefaultTimeout)}
 {
-    Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", "addr={}, options={}"_f,
-                                  Characters::ToString (fDestination_), Characters::ToString (fOptions_)};
+    Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", "addr={}, options={}"_f, fDestination_, fOptions_};
     // use random data as a payload
     for (byte* p = (byte*)fSendPacket_.begin () + sizeof (ICMP::V4::PacketHeader); p < fSendPacket_.end (); ++p) {
         uniform_int_distribution<mt19937::result_type> anyByteDistribution (0, numeric_limits<uint8_t>::max ());

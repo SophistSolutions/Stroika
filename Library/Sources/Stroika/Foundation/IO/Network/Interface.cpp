@@ -918,7 +918,7 @@ namespace {
                     else {
                         // This happens for down/wifi-direct interfaces
                         // no biggie.
-                        // DbgTrace (L"Oops - didn't find wireless interface we should have: %s, avail-keys=%s", Characters::ToString (newInterface.fInternalInterfaceID).c_str (), Characters::ToString (wirelessInfo2Merge.Keys ()).c_str ());
+                        // DbgTrace ("Oops - didn't find wireless interface we should have: {}, avail-keys={}"_f, newInterface.fInternalInterfaceID, wirelessInfo2Merge.Keys ());
                     }
                 }
                 else {

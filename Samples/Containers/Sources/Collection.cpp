@@ -68,20 +68,20 @@ namespace {
             fruits += "cherries";
             fruits += "APPLE";
             // Print (to debugger/tracelog) the fruits - but now they could come out in any order
-            DbgTrace ("fruits={}"_f, Characters::ToString (fruits).c_str ());
+            DbgTrace ("fruits={}"_f, fruits);
             Assert (fruits.size () == 4); // they are all there
 
             // Like changing the backend. But this still respects all the rules of a Collection (no order specified) -
             // except now it will happen to be ordered (using the default compare function)
             fruits = SortedCollection<String>{fruits};
-            DbgTrace ("sorted fruits={}"_f, Characters::ToString (fruits));
+            DbgTrace ("sorted fruits={}"_f, fruits);
             Assert (fruits.size () == 4); // only one apple or the other (case squished)
             // note they must now be in alphabetic order
             Assert (fruits.SequentialEquals (initializer_list<String>{"APPLE", "apple", "bananas", "cherries"}));
 
             // But, we can do the same thing with a compare function that sorts case insensitively
             fruits = SortedCollection<String>{String::LessComparer{CompareOptions::eCaseInsensitive}, fruits};
-            DbgTrace ("sorted case insensitive fruits={}"_f, Characters::ToString (fruits));
+            DbgTrace ("sorted case insensitive fruits={}"_f, fruits);
             Assert (fruits.SequentialEquals (initializer_list<String>{"apple", "APPLE", "bananas", "cherries"}) or
                     fruits.SequentialEquals (initializer_list<String>{"APPLE", "apple", "bananas", "cherries"}));
         }
@@ -109,11 +109,11 @@ namespace {
     void PrintTheContentsOfAContainerToTheTraceLog_ ()
     {
         /*
-         *  Use DbgTrace and Characters::ToString () to echo objects to a tracelog file (and/or debugger output under windows)
+         *  Use DbgTrace (and often implicitly Characters::ToString ()) to echo objects to a tracelog file (and/or debugger output under windows)
          */
         Debug::TraceContextBumper ctx{L"PrintTheContentsOfAContainerToTheTraceLog_"};
         Collection<int>           tmp{1, 3, 5, 7, 9};
-        DbgTrace ("tmp={}"_f, Characters::ToString (tmp));
+        DbgTrace ("tmp={}"_f, tmp);
     }
 }
 
@@ -132,12 +132,12 @@ namespace {
         {
             Collection<int> tmp{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
             auto            whereTestResult = tmp.Where ([] (int i) { return i % 2 == 1; });
-            DbgTrace ("tmp={}"_f, Characters::ToString (whereTestResult));
+            DbgTrace ("whereTestResult={}"_f, whereTestResult);
         }
         {
             Collection<int> tmp{1, 2, 3, 4, 5, 1, 2, 3, 4, 5};
             auto            d = tmp.Distinct ();
-            DbgTrace ("d={}"_f, Characters::ToString (d));
+            DbgTrace ("d={}"_f, d);
             Assert (d.SetEquals (initializer_list<int>{1, 2, 3, 4, 5}));
         }
         {
@@ -147,7 +147,7 @@ namespace {
             fruits += "APPLE";
             fruits += "bananas";
             fruits += "cherries";
-            DbgTrace ("fruits={}"_f, Characters::ToString (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive})));
+            DbgTrace ("fruits={}"_f, fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive}));
             Assert (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive}).size () == 3); // only one apple or the other (case squished)
         }
     }

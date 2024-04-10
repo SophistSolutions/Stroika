@@ -157,7 +157,7 @@ namespace {
 #endif
         if constexpr (qDebug) {
             if (auto p = connectionSocket.GetPeerAddress ()) {
-                DbgTrace ("Starting connection from peer: {}"_f, Characters::ToString (*p));
+                DbgTrace ("Starting connection from peer: {}"_f, *p);
             }
         }
 
@@ -228,8 +228,8 @@ namespace {
                         StackBuffer<uint8_t> results{quantityBytes};
                         (void)::memset (results.begin (), 0, quantityBytes); // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadCoils_ (starting0Address: %d, quantity: %d) message with request-header=%s",
-                                  startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace ("Processing kReadCoils_ (starting0Address: {}, quantity: {}) message with request-header={}",
+                                  startingAddress, quantity, requestHeader);
 #endif
                         for (const auto& i :
                              serviceHandler->ReadCoils (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}
@@ -241,9 +241,8 @@ namespace {
                             }
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"results bitmask bytes=%s", Characters::ToString (Memory::BLOB (reinterpret_cast<const byte*> (results.begin ()),
-                                                                                                   reinterpret_cast<const byte*> (results.end ())))
-                                                                   .c_str ());
+                        DbgTrace (L"results bitmask bytes={}", Memory::BLOB{reinterpret_cast<const byte*> (results.begin ()),
+                                                                            reinterpret_cast<const byte*> (results.end ())});
 #endif
                         {
                             // Response ready - format, toNetwork, and write
@@ -273,8 +272,8 @@ namespace {
                         size_t               quantityBytes       = (quantity + 7) / 8;
                         StackBuffer<uint8_t> results{quantityBytes}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadDiscreteInputs_ (starting0Address: %d, quantity: %d) message with request-header=%s",
-                                  startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace ("Processing kReadDiscreteInputs_ (starting0Address: {}, quantity: {}) message with request-header={}"_f,
+                                  startingAddress, quantity, requestHeader);
 #endif
                         for (const auto& i : serviceHandler->ReadDiscreteInput (
                                  DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}
@@ -299,7 +298,7 @@ namespace {
                             out.WriteRaw (responseLen);
                             out.Write (span{results.begin (), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
+                            DbgTrace ("Sent response: header={}, responseLen={}"_f, responseHeader, responseLen);
 #endif
                         }
                     } break;
@@ -313,8 +312,8 @@ namespace {
                         uint16_t              endInclusiveAddress = startingAddress + quantity - 1u;
                         StackBuffer<uint16_t> results{quantity}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadHoldingResisters_ (starting0Address: %d, quantity: %d) message with request-header=%s",
-                                  startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace (L"Processing kReadHoldingResisters_ (starting0Address: {}, quantity: {}) message with request-header={}"_f,
+                                  startingAddress, quantity, requestHeader);
 #endif
                         for (const auto& i : serviceHandler->ReadHoldingRegisters (
                                  DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}

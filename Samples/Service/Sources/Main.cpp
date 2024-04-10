@@ -63,9 +63,9 @@ namespace {
         DbgTrace ("Fatal Error {} encountered"_f, String::FromSDKString (msg));
 #if qUseLogger
         Logger::sThe.Log (Logger::eCriticalError, "Fatal Error: {}; Aborting..."_f, String::FromSDKString (msg));
-        Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Characters::ToString (Debug::BackTrace::Capture ()));
+        Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Debug::BackTrace::Capture ());
         if (std::exception_ptr exc = std::current_exception ()) {
-            Logger::sThe.Log (Logger::eCriticalError, "Uncaught exception: {}"_f, Characters::ToString (exc));
+            Logger::sThe.Log (Logger::eCriticalError, "Uncaught exception: {}"_f, exc);
         }
         Logger::sThe.Flush ();
 #endif
@@ -77,7 +77,7 @@ namespace {
         DbgTrace ("Fatal Signal encountered: {}"_f, Execution::SignalToName (signal));
 #if qUseLogger
         Logger::sThe.Log (Logger::eCriticalError, "Fatal Signal: {}; Aborting..."_f, Execution::SignalToName (signal));
-        Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Characters::ToString (Debug::BackTrace::Capture ()));
+        Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Debug::BackTrace::Capture ());
         Logger::sThe.Flush ();
 #endif
         std::_Exit (EXIT_FAILURE); // skip
@@ -134,9 +134,8 @@ int main (int argc, const char* argv[])
     Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
-    [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
-        DbgTrace ("Exiting main with thread {} running"_f, Characters::ToString (Execution::Thread::GetStatistics ().fRunningThreads));
-    });
+    [[maybe_unused]] auto&& cleanupReport = Execution::Finally (
+        [] () { DbgTrace ("Exiting main with thread {} running"_f, Execution::Thread::GetStatistics ().fRunningThreads); });
 #endif
 
     /*

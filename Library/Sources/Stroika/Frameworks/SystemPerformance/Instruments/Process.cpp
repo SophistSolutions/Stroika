@@ -524,9 +524,9 @@ namespace {
                         processDetails.fPrivateBytes = ReadPrivateBytes_ (dir / "smaps");
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld",
-                                  Characters::ToString (processDetails.fProcessStartedAt).c_str (), stats.start_time);
-                        DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld",
+                        DbgTrace ("loaded processDetails.fProcessStartedAt={} wuit stats.start_time = {}"_f,
+                                  processDetails.fProcessStartedAt, stats.start_time);
+                        DbgTrace ("loaded processDetails.fTotalCPUTimeEverUsed={} wuit stats.utime = {}, stats.stime = {}"_f,
                                   processDetails.fTotalCPUTimeEverUsed->count (), stats.utime, stats.stime);
 #endif
                     }

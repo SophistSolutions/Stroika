@@ -1023,9 +1023,9 @@ namespace {
                 DbgTrace (L"ScanLabel={}"_f, *data.ScanLabel);
             }
             if (data.RawSpectrum) {
-                DbgTrace ("RawSpectrum={}"_f, *data.RawSpectrum);
+                DbgTrace ("RawSpectrum={}"_f, Characters::ToString (*data.RawSpectrum));
             }
-            DbgTrace ("AuxData={}"_f, data.AuxData);
+            DbgTrace ("AuxData={}"_f, Characters::ToString (data.AuxData));
             EXPECT_EQ (data.ScanID, 8320u);
             EXPECT_EQ (data.ScanStart, DateTime::Parse ("2016-07-28T20:14:30Z", DateTime::kISO8601Format));
             EXPECT_EQ (data.ScanEnd, DateTime::Parse ("2016-07-28T20:14:44Z", DateTime::kISO8601Format));
@@ -1253,7 +1253,7 @@ namespace {
                 make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetFactorySettingsResponse"})};
             //consumerCallback.fContext.fTraceThisReader = true;
             XML::SAXParse (mkdata_ (), &consumerCallback);
-            DbgTrace ("Tuners={}"_f, data.Tuners);
+            DbgTrace ("Tuners={}"_f, Characters::ToString (data.Tuners));
             EXPECT_EQ (data.Tuners.Keys (), (Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2}));
             EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorOperationFrequency, 40.0));
             EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorResonantFrequency, 150.0));

@@ -47,7 +47,7 @@ namespace {
             // Construct a set with an arbitrary comparison routine (in this case comparing mod 11)
             Set<int> s10{Common::DeclareEqualsComparer ([] (int l, int r) { return (l % 11) == (r % 11); }), c};
             Assert (s10.Contains (3) and s10.Contains (3 + 11) and not s10.Contains (6));
-            DbgTrace ("s10={}"_f, Characters::ToString (s10));
+            DbgTrace ("s10={}"_f, s10);
         }
         {
             Set<int> s{1, 2, 3};                  // use the default Set<> representation - the best for type 'int'

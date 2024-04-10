@@ -1055,7 +1055,8 @@ namespace Stroika::Foundation::Execution {
          *
          *  @see Characters::ToString (Thread::IDType threadID)
          */
-        string FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo& formatInfo = {});
+        wstring FormatThreadID (Thread::IDType threadID, const FormatThreadInfo& formatInfo = {});
+        string  FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo& formatInfo = {});
 
         /**
          */

@@ -40,8 +40,7 @@ namespace {
     Collection<Neighbor> ArpDashA_ (bool includePurgedEntries, bool omitAllFFHardwareAddresses)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s",
-                                                                                     Characters::ToString (includePurgedEntries).c_str ())};
+        Debug::TraceContextBumper ctx{"{}ArpDashA_", "includePurgedEntries={}"_f, includePurgedEntries};
 #endif
 #if qPlatform_Windows
         SystemInterfacesMgr sysInterfacesMgr;

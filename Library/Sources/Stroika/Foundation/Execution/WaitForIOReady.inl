@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Execution {
         : fPollData_{Containers::Collection<pair<T, TypeOfMonitorSet>>{fds}}
         , fPollable2Wakeup_{pollable2Wakeup}
     {
-        //DbgTrace (L"WaitForIOReady::CTOR (%s, %s)", Characters::ToString (fds).c_str (), Characters::ToString (pollable2Wakeup).c_str ());
+        //DbgTrace ("WaitForIOReady::CTOR ({}, {})"_f, fds, pollable2Wakeup);
     }
     template <typename T, typename TRAITS>
     WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags,

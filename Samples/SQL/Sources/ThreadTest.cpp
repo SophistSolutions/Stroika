@@ -167,7 +167,7 @@ namespace {
             }
             catch (...) {
                 // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
+                DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, current_exception ());
             }
 
             Sleep (1s); // **cancelation point**

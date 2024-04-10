@@ -184,7 +184,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
 {
     Require (s != nullptr);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Created connection for socket %s", Characters::ToString (s).c_str ());
+    DbgTrace ("Created connection for socket {}"_f, s);
 #endif
     fSocketStream_ = SocketStream::New (fSocket_);
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
@@ -207,7 +207,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
 Connection::~Connection ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Destroying connection for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (fMessage_).c_str ());
+    DbgTrace ("Destroying connection for socket {}, message={}"_f, fSocket_, fMessage_);
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
@@ -230,7 +230,7 @@ Connection::~Connection ()
         fSocket_.Close ();
     }
     catch (...) {
-        DbgTrace ("Exception ignored closing socket: {}"_f, Characters::ToString (current_exception ()));
+        DbgTrace ("Exception ignored closing socket: {}"_f, current_exception ());
     }
 }
 
@@ -239,8 +239,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s",
-                                                                                     Characters::ToString (fSocket_).c_str ())};
+        Debug::TraceContextBumper ctx{"Connection::ReadAndProcessMessage", "this->socket="_f, fSocket_};
 #endif
         fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
@@ -315,21 +314,20 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
          *  the response somehow or other (typically through routes).
          */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ());
+        DbgTrace ("Handing request {} to interceptor chain"_f, request ());
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-        WriteLogConnectionMsg_ (Characters::Format (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ()));
+        WriteLogConnectionMsg_ (Characters::Format ("Handing request {} to interceptor chain"_f, request ()));
 #endif
         try {
             fInterceptorChain_.HandleMessage (fMessage_.get ());
         }
         catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("Interceptor-Chain caught exception handling message: {}"_f, current_exception ());
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-            WriteLogConnectionMsg_ (Characters::Format (L"Interceptor-Chain caught exception handling message: %s",
-                                                        Characters::ToString (current_exception ()).c_str ()));
+            WriteLogConnectionMsg_ (Characters::Format ("Interceptor-Chain caught exception handling message: {}"_f, urrent_exception ()));
 #endif
         }
 

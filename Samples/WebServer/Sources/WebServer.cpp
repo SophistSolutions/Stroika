@@ -36,6 +36,7 @@ using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
 using Common::ConstantProperty;
+using Execution::CommandLine;
 using Memory::BLOB;
 
 using Stroika::Frameworks::WebServer::FileSystemRequestHandler;
@@ -128,8 +129,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+    CommandLine                                          cmdLine{argc, argv};
+    Debug::TraceContextBumper                            ctx{"main", "argv={}"_f, cmdLine};
     Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
@@ -138,9 +139,8 @@ int main (int argc, const char* argv[])
     const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
 
     try {
-        uint16_t               portNumber = 8080;
-        Time::DurationSeconds  quitAfter  = Time::kInfinity;
-        Execution::CommandLine cmdLine{argc, argv};
+        uint16_t              portNumber = 8080;
+        Time::DurationSeconds quitAfter  = Time::kInfinity;
         cmdLine.Validate ({kPortO_, kQuitAfterO_});
         if (auto o = cmdLine.GetArgument (kPortO_)) {
             portNumber = Characters::String2Int<uint16_t> (*o);

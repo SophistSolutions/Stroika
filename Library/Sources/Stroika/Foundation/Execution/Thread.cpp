@@ -498,10 +498,10 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
             DbgTrace (
-                L"Adding thread index {} to sRunningThreads_ ({})"_f, static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID)),
+                "Adding thread index {} to sRunningThreads_ ({})"_f, IndexRegistrar::sThe.GetIndex (thisThreadID),
                 Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> ([] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); }));
 #else
-            DbgTrace (L"Adding thread id {} to sRunningThreads_ ({})"_f, Characters::ToString (thisThreadID), Characters::ToString (sRunningThreads_));
+            DbgTrace ("Adding thread id {} to sRunningThreads_ ({})"_f, thisThreadID, sRunningThreads_);
 #endif
             Verify (sRunningThreads_.insert (thisThreadID).second); // .second true if inserted, so checking not already there
         }
@@ -510,12 +510,11 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             Require (Debug::AppearsDuringMainLifetime ()); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
-            DbgTrace (L"removing thread index {} from sRunningThreads_ ({})"_f,
-                      Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))),
-                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> (
-                          [] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); })));
+            DbgTrace (
+                "removing thread index {} from sRunningThreads_ ({})"_f, IndexRegistrar::sThe.GetIndex (thisThreadID),
+                Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> ([] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); }));
 #else
-            DbgTrace (L"removing thread id {} from sRunningThreads_ ({})", Characters::ToString (thisThreadID), Characters::ToString (sRunningThreads_));
+            DbgTrace ("removing thread id {} from sRunningThreads_ ({})"_f, thisThreadID, sRunningThreads_);
 #endif
             Verify (sRunningThreads_.erase (thisThreadID) == 1); // verify exactly one erased
         });
@@ -853,8 +852,7 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) co
 void Thread::Ptr::ThrowIfDoneWithException () const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::ThrowIfDoneWithException", "*this={}"_f, Characters::ToString (*this))};
+    Debug::TraceContextBumper ctx{"Thread::ThrowIfDoneWithException", "*this={}"_f, *this};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (fRep_ and fRep_->IsDone_ () and fRep_->fSavedException_.load () != nullptr) {
@@ -865,8 +863,7 @@ void Thread::Ptr::ThrowIfDoneWithException () const
 
 void Thread::Ptr::WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::WaitForDoneUntil", "*this={}, timeoutAt={}"_f,
-                                                                                 ToString (), Characters::ToString (timeoutAt))};
+    Debug::TraceContextBumper ctx{"Thread::WaitForDoneUntil", "*this={}, timeoutAt={}"_f, ToString (), timeoutAt};
     if (not WaitForDoneUntilQuietly (timeoutAt)) {
         Throw (TimeOutException::kThe);
     }
@@ -1042,9 +1039,14 @@ SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
 
 /*
  ********************************************************************************
- ****************** Execution::Thread::FormatThreadID_A *************************
+ ******************** Execution::Thread::FormatThreadID *************************
  ********************************************************************************
  */
+wstring Execution::Thread::FormatThreadID (Thread::IDType threadID, const FormatThreadInfo& formatThreadInfo)
+{
+    return String::FromNarrowSDKString (FormatThreadID_A (threadID, formatThreadInfo)).As<wstring> ();
+}
+
 string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo& formatThreadInfo)
 {
     Thread::SuppressInterruptionInContext suppressAborts;

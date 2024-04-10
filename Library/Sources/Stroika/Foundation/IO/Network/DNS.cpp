@@ -238,52 +238,52 @@ optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
 Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s",
-                                                                                 Characters::ToString (address).c_str ())};
+    Debug::TraceContextBumper ctx
+    {"DNS::HostEntry DNS::GetHostAddresses", "address={}"_f, address);
 #endif
-    return GetHostEntry (hostNameOrAddress).fAddressList;
-}
+        return GetHostEntry (hostNameOrAddress).fAddressList;
+    }
 
-Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const
-{
+    Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const
+    {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"DNS::HostEntry DNS::GetHostAddresses", "address={}, family={}"_f, address, family};
+        Debug::TraceContextBumper ctx{"DNS::HostEntry DNS::GetHostAddresses", "address={}, family={}"_f, address, family};
 #endif
-    auto h = GetHostEntry (hostNameOrAddress).fAddressList;
-    for (auto i = h.begin (); i != h.end (); ++i) {
-        if (i->GetAddressFamily () != family) {
-            h.Remove (i);
+        auto h = GetHostEntry (hostNameOrAddress).fAddressList;
+        for (auto i = h.begin (); i != h.end (); ++i) {
+            if (i->GetAddressFamily () != family) {
+                h.Remove (i);
+            }
         }
+        return h;
     }
-    return h;
-}
 
-InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress) const
-{
+    InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress) const
+    {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s",
-                                                                                 Characters::ToString (address).c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s",
+                                                                                     Characters::ToString (address).c_str ())};
 #endif
-    auto h = GetHostEntry (hostNameOrAddress).fAddressList;
-    if (h.empty ()) {
-        Execution::Throw (RuntimeErrorException{"No associated addresses"sv});
-    }
-    return h[0];
-}
-
-InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"DNS::HostEntry DNS::GetHostAddresses", "address={}, family={}"_f, address family};
-#endif
-    auto h = GetHostEntry (hostNameOrAddress).fAddressList;
-    for (auto i = h.begin (); i != h.end (); ++i) {
-        if (i->GetAddressFamily () != family) {
-            h.Remove (i);
+        auto h = GetHostEntry (hostNameOrAddress).fAddressList;
+        if (h.empty ()) {
+            Execution::Throw (RuntimeErrorException{"No associated addresses"sv});
         }
+        return h[0];
     }
-    if (h.empty ()) {
-        Execution::Throw (RuntimeErrorException{"No associated addresses"sv});
+
+    InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{"DNS::HostEntry DNS::GetHostAddresses", "address={}, family={}"_f, address family};
+#endif
+        auto h = GetHostEntry (hostNameOrAddress).fAddressList;
+        for (auto i = h.begin (); i != h.end (); ++i) {
+            if (i->GetAddressFamily () != family) {
+                h.Remove (i);
+            }
+        }
+        if (h.empty ()) {
+            Execution::Throw (RuntimeErrorException{"No associated addresses"sv});
+        }
+        return h[0];
     }
-    return h[0];
-}

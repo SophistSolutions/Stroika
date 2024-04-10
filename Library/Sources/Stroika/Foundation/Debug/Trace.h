@@ -95,7 +95,8 @@ namespace Stroika::Foundation::Debug {
     /**
      *  Just for debugging purposes, get the name displayed in the trace log for the given thread-id.
      */
-    string GetDbgTraceThreadName_A (thread::id threadID);
+    wstring GetDbgTraceThreadName (thread::id threadID);
+    string  GetDbgTraceThreadName_A (thread::id threadID);
 
     /**
      *  Define a new start/end context (with optional label) for trace messages emitted with DbgTrace (), and indent future

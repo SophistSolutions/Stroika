@@ -35,7 +35,8 @@ SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
 String SocketAddress::ToString () const
 {
     if (IsInternetAddress ()) {
-        return Characters::ToString (GetInternetAddress ()) + ":" + Characters::Format (L"%d", static_cast<int> (GetPort ()));
+        using namespace Characters::Literals;
+        return Characters::ToString (GetInternetAddress ()) + ":"sv + Characters::Format ("{}"_f, GetPort ());
     }
     else {
         return Characters::ToString (Memory::BLOB{reinterpret_cast<const byte*> (&fSocketAddress_),

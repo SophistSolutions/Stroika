@@ -34,7 +34,7 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             }
             catch (const IO::Network::HTTP::Exception& ee) {
                 if (response.responseStatusSent) {
-                    DbgTrace ("response failed after sending the status: {}"_f, Characters::ToString (current_exception ())); // else horse has left the barn
+                    DbgTrace ("response failed after sending the status: {}"_f, current_exception ()); // else horse has left the barn
                     response.Abort ();
                 }
                 else {
@@ -45,7 +45,7 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             }
             catch (...) {
                 if (response.responseStatusSent) {
-                    DbgTrace ("response failed after sending the status: {}"_f, Characters::ToString (current_exception ())); // else horse has left the barn
+                    DbgTrace ("response failed after sending the status: {}"_f, current_exception ()); // else horse has left the barn
                     response.Abort ();
                 }
                 else {

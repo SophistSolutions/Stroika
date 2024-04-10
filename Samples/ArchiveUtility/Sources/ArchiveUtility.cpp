@@ -155,12 +155,12 @@ namespace {
     void ExtractArchive_ (const filesystem::path& archiveName, const filesystem::path& toDirectory)
     {
         Debug::TraceContextBumper ctx{"ExtractArchive_"};
-        DbgTrace ("(archiveName={}, toDir={})"_f, Characters::ToString (archiveName), Characters::ToString (toDirectory));
+        DbgTrace ("(archiveName={}, toDir={})"_f, archiveName, toDirectory);
         DataExchange::Archive::Reader archive{OpenArchive_ (archiveName)};
         for (String i : archive.GetContainedFiles ()) {
             String           srcFileName = i;
             filesystem::path trgFileName = toDirectory / IO::FileSystem::ToPath (srcFileName);
-            //DbgTrace (L"(srcFileName=%s, trgFileName=%s)", Characters::ToString (srcFileName).c_str (), Characters::ToString (trgFileName).c_str ());
+            //DbgTrace ("(srcFileName={}, trgFileName={})"_f, srcFileName, trgFileName);
             BLOB b = archive.GetData (srcFileName);
             //DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
             create_directories (trgFileName.parent_path ());

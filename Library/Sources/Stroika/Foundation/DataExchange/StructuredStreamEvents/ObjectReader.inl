@@ -687,8 +687,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         if constexpr (qDebug) {
             if (not fFactories_.ContainsKey (ti)) {
                 using namespace Characters;
-                Debug::TraceContextBumper ctx{"Registry::MakeContextReader", "FAILED TO FIND READER! (forTypeInfo = {}) - Use of UnRegistered Type!"_f,
-                                              Characters::ToString (ti)};
+                Debug::TraceContextBumper ctx{"Registry::MakeContextReader",
+                                              "FAILED TO FIND READER! (forTypeInfo = {}) - Use of UnRegistered Type!"_f, ti};
             }
         }
         ReaderFromVoidStarFactory factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
@@ -717,8 +717,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     using namespace Characters;
                     Debug::TraceContextBumper ctx{"Registry::AddCommonReader_Class",
                                                   "CLASS={} field-TypeInfo-not-found = {}, for field named '{}' - UnRegistered Type!"_f,
-                                                  Characters::ToString (typeid (CLASS)),
-                                                  Characters::ToString (kv.fFieldMetaInfo.GetTypeInfo ()), kv.fSerializedFieldName};
+                                                  Characters::ToString (typeid (CLASS)), kv.fFieldMetaInfo.GetTypeInfo (), kv.fSerializedFieldName};
                     RequireNotReached ();
                 }
             }

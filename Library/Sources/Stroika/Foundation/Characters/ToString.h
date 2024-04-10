@@ -203,7 +203,8 @@ namespace Stroika::Foundation::Characters {
         // c++ 23 features which may not be present with current compilers
         // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
         // this stuff needed for clang++-18-debug-libstdc++-c++23
-#if __cplusplus < 202100L/*202300L*/ || (__clang__ != 0 &&  __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240315)
+        // sadly MSFT doesn't use __cplusplus properly, but instead uses _HAS_CXX23
+#if (__cplusplus < 202100L/*202300L*/ || (__clang__ != 0 &&  __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240315)) && !_HAS_CXX23
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
@@ -223,7 +224,7 @@ namespace Stroika::Foundation::Characters {
 
             // Features from std-c++ that probably should have been added
             or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>> or
-            Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index>;
+            Configuration::ITimePoint<T> or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_info, type_index>;
 
         static_assert (IUseToStringFormatterForFormatter_<exception_ptr> and IUseToStringFormatterForFormatter_<type_info>); // etc
         static_assert (IUseToStringFormatterForFormatter_<optional<int>>);

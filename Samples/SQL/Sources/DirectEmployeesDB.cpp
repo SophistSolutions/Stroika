@@ -157,7 +157,7 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
         AssertNotReached (); // RE-USED ID!!! - only detectable at runtime - so exception thrown
     }
     catch (...) {
-        DbgTrace ("Note good error message: {}"_f, Characters::ToString (current_exception ())); // silently ignore this here...
+        DbgTrace ("Note good error message: {}"_f, current_exception ()); // silently ignore this here...
     }
 
     /*

@@ -118,8 +118,7 @@ namespace {
         virtual void OnAfterFetch (const EvalContext& context, Response* response) noexcept override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("DefaultCacheRep_::OnAfterFetch", "context.fFullURI={}"_f,
-                                                                                         Characters::ToString (context.fFullURI))};
+            Debug::TraceContextBumper ctx{"DefaultCacheRep_::OnAfterFetch", "context.fFullURI={}"_f, context.fFullURI};
 #endif
             RequireNotNull (response);
             switch (response->GetStatus ()) {
@@ -131,7 +130,7 @@ namespace {
                                 cacheElement.fExpiresDefault = DateTime::Now () + *fOptions_.fDefaultResourceTTL;
                             }
                             if (cacheElement.IsCachable ()) {
-                                //DbgTrace (L"Add2Cache: uri=%s, cacheElement=%s", Characters::ToString (*context.fFullURI).c_str (), Characters::ToString (cacheElement).c_str ());
+                                //DbgTrace ("Add2Cache: uri={}, cacheElement={}"_f, *context.fFullURI, cacheElement);
                                 fCache_.Add (*context.fFullURI, cacheElement);
                             }
                         }

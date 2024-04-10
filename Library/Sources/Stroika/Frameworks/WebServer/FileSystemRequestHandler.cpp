@@ -64,9 +64,9 @@ namespace {
             String           urlHostRelPath{ExtractURLHostRelPath_ (m)};
             filesystem::path fn{fFSRoot_ / filesystem::path{urlHostRelPath.As<wstring> ()}};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                L"{}...FileSystemRequestHandler...HandleMessage", L"relURL=%s, serving fn=%s",
-                Characters::ToString (m->request ().url ().GetAuthorityRelativeResource ()).c_str (), Characters::ToString (fn).c_str ())};
+            Debug::TraceContextBumper ctx{
+                Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}...FileSystemRequestHandler...HandleMessage", "relURL={}, serving fn={}"_f,
+                                                               m->request ().url ().GetAuthorityRelativeResource (), fn)};
 #endif
             try {
                 Response&              response = m->rwResponse ();
@@ -74,7 +74,7 @@ namespace {
                 if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::Get ().GetAssociatedContentType (fn.extension ())) {
                     response.contentType = *oMediaType;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ());
+                    DbgTrace ("content-type: {}"_f, oMediaType->ToString ());
 #endif
                 }
                 ApplyCacheControl_ (response, urlHostRelPath);

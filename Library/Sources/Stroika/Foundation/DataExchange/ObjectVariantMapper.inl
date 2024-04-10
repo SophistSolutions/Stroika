@@ -1122,9 +1122,8 @@ namespace Stroika::Foundation::DataExchange {
 #endif
             RequireNotNull (intoObjOfTypeT);
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
-            auto                       decodingClassActivity = Execution::LazyEvalActivity{[&] () -> String {
-                return Characters::Format ("Decoding {} into class {}"_f, Characters::ToString (d), Characters::ToString (typeid (CLASS)));
-            }};
+            auto decodingClassActivity = Execution::LazyEvalActivity{
+                [&] () -> String { return Characters::Format ("Decoding {} into class {}"_f, d, Characters::ToString (typeid (CLASS))); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             if (extends) {
@@ -1134,7 +1133,7 @@ namespace Stroika::Foundation::DataExchange {
             for (const auto& i : fields) {
                 optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("fieldname = {}, offset={}, present={}"_f, i.fSerializedFieldName, Characters::ToString (i.fFieldMetaInfo), o.has_value ());
+                DbgTrace ("fieldname = {}, offset={}, present={}"_f, i.fSerializedFieldName, i.fFieldMetaInfo, o.has_value ());
 #endif
                 if (o) {
                     byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (intoObjOfTypeT) : reinterpret_cast<byte*> (intoObjOfTypeT);

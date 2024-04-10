@@ -775,13 +775,12 @@ namespace {
                 if (OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Contains (cipherAlgorithm)) {
                     unsigned int nRounds = 1; // command-line tool uses this
                     OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
-                    DbgTrace ("dk={}"_f, Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}));
+                    DbgTrace ("dk={}"_f, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds});
                     BLOB encodedData =
                         OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
                     BLOB decodedData =
                         OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
-                    DbgTrace ("src={}; encodedData={}; expected={}; decodedData={}"_f, Characters::ToString (src),
-                              Characters::ToString (encodedData), Characters::ToString (expected), Characters::ToString (decodedData));
+                    DbgTrace ("src={}; encodedData={}; expected={}; decodedData={}"_f, Characters::ToString (src), encodedData, expected, decodedData);
                     EXPECT_EQ (encodedData, expected);
                     EXPECT_EQ (src, decodedData);
                 }

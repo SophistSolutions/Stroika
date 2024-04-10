@@ -621,9 +621,13 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 
 /*
  ********************************************************************************
- ************************ Debug::GetDbgTraceThreadName_A ************************
+ ************************** Debug::GetDbgTraceThreadName ************************
  ********************************************************************************
  */
+wstring Debug::GetDbgTraceThreadName (thread::id threadID)
+{
+    return String::FromNarrowSDKString (GetDbgTraceThreadName_A (threadID)).As<wstring> ();
+}
 string Debug::GetDbgTraceThreadName_A (thread::id threadID)
 {
     return mkThreadLabelForThreadID_ (threadID).second;

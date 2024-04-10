@@ -204,7 +204,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
     for (const auto& formatPattern : formatPatterns) {
         if (auto o = ParseQuietly_ (wRep, tmget, formatPattern)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
+            DbgTrace ("returning {}"_f, *o);
 #endif
             return *o;
         }

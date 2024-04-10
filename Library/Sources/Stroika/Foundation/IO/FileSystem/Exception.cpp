@@ -62,9 +62,7 @@ void Exception::ThrowPOSIXErrNo (errno_t errNo, const path& p1, const path& p2)
 void Exception::ThrowSystemErrNo (int sysErr, const path& p1, const path& p2)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::FileSystem::Exception::ThrowSystemErrNo", L"sysErr=%d, p1=%s, p2=%s", sysErr,
-                                                       Characters::ToString (p1).c_str (), Characters::ToString (p2).c_str ())};
+    Debug::TraceContextBumper ctx{"IO::FileSystem::Exception::ThrowSystemErrNo", "sysErr={}, p1={}, p2={}"_f, sysErr, p1, p2};
 #endif
     Require (sysErr != 0);
     error_code ec{sysErr, system_category ()};

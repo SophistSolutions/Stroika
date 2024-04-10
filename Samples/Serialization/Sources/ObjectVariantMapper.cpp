@@ -57,7 +57,7 @@ namespace {
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be displayed for debugging purposes using
-        DbgTrace ("v = {}"_f, Characters::ToString (v));
+        DbgTrace ("v = {}"_f, v);
 
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
         // And dump the results into a temporary memory-based stream
@@ -91,11 +91,11 @@ namespace {
             {
                 StringBuilder sb;
                 sb << "{"sv;
-                sb << " Enabled: "sv << Characters::ToString (fEnabled) << ", "sv;
-                sb << " Last-Synchronized-At: "sv << Characters::ToString (fLastSynchronizedAt) << ", "sv;
-                sb << " This-PHRs-ID-To-Shared-Contact-ID: "sv << Characters::ToString (fThisPHRsIDToSharedContactID);
+                sb << " Enabled: "sv << fEnabled << ", "sv;
+                sb << " Last-Synchronized-At: "sv << fLastSynchronizedAt << ", "sv;
+                sb << " This-PHRs-ID-To-Shared-Contact-ID: "sv << fThisPHRsIDToSharedContactID;
                 sb << "}"sv;
-                return sb.str ();
+                return sb;
             }
         };
 
@@ -125,7 +125,7 @@ namespace {
 
         // at this point - we should have VariantValue object with "Enabled", "Last-Synchronized-At" etc fields set properly.
         // This can then be displayed using
-        DbgTrace ("v = {}"_f, Characters::ToString (v));
+        DbgTrace ("v = {}"_f, v);
 
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we selected JSON)
         Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
@@ -144,7 +144,7 @@ namespace {
                 IO::FileSystem::FileInputStream::Ptr tmpFileStream =
                     IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
                 SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpFileStream));
-                DbgTrace ("tmp2 = {}"_f, Characters::ToString (tmp2));
+                DbgTrace ("tmp2 = {}"_f, tmp2);
                 Assert (tmp2 == tmp);
             }
         }

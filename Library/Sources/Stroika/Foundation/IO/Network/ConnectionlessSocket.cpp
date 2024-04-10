@@ -38,9 +38,8 @@ namespace {
         virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{
-                Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s",
-                                                               static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
+            Debug::TraceContextBumper ctx{"IO::Network::Socket...rep...::SendTo", "end-start={}, sockAddr={}"_f,
+                                          static_cast<long long> (end - start), sockAddr};
 #endif
             AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                                sa = sockAddr.As<sockaddr_storage> ();
@@ -122,7 +121,7 @@ namespace {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
             auto                       activity = Execution::LazyEvalActivity{[&] () -> Characters::String {
-                return "joining multicast group "sv + Characters::ToString (iaddr) + L" on interface "sv + Characters::ToString (onInterface);
+                return "joining multicast group "sv + Characters::ToString (iaddr) + " on interface "sv + Characters::ToString (onInterface);
             }};
             Execution::DeclareActivity activityDeclare{&activity};
             switch (iaddr.GetAddressFamily ()) {
