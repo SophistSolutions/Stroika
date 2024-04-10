@@ -1131,6 +1131,11 @@ namespace Stroika::Foundation::DataExchange {
             }
             Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
             for (const auto& i : fields) {
+#if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
+                auto decodingFieldActivity = Execution::LazyEvalActivity{
+                    [&] () -> String { return Characters::Format ("Decoding field {}"_f, i.fSerializedFieldName); }};
+                [[maybe_unused]] Execution::DeclareActivity daf{&decodingFieldActivity};
+#endif
                 optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("fieldname = {}, offset={}, present={}"_f, i.fSerializedFieldName, i.fFieldMetaInfo, o.has_value ());
