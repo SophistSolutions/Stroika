@@ -40,13 +40,13 @@ void AssertExternallySynchronizedMutex::lock_ () noexcept
                 // Duplicate the  Require() below, but with more debug information, because this is a COMMON and IMPORANT case;
                 // If this happens, this means one thread has (the object containing this) is using this object (fake locked)
                 // while we are trying to use it (again doing fake write lock) - so we want to PRINT INFO about that thread!!!
-              #if !qCompilerAndStdLib_FormatThreadId_Buggy
+#if !qCompilerAndStdLib_FormatThreadId_Buggy
                 DbgTrace ("ATTEMPT TO modify (lock for write) an object which is already in use (debuglocked) in another thread (thisthread={})"_f,
                           this_thread::get_id ());
                 DbgTrace ("Original thread holding lock: threadID={}, and DbgTraceThreadName={}"_f,
                           Execution::Thread::FormatThreadID (sharedContext->fThreadWithFullLock_),
                           Characters::ToString (Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_)));
-                          #endif
+#endif
             }
             Require (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());
         }
