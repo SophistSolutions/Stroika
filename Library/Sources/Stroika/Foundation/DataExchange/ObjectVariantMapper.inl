@@ -489,7 +489,7 @@ namespace Stroika::Foundation::DataExchange {
             Require (intoObjOfTypeT->empty ());
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
             auto                       decodingClassActivity = Execution::LazyEvalActivity{[&] () -> String {
-                return Characters::Format ("Decoding {} into class {}"_f, d, type_index{typeid (ACTUAL_CONTAINER_TYPE)});
+                return Characters::Format ("Decoding {:.100} into class {}"_f, d, type_index{typeid (ACTUAL_CONTAINER_TYPE)});
             }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
@@ -1087,7 +1087,7 @@ namespace Stroika::Foundation::DataExchange {
 
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
             auto decodingClassActivity =
-                Execution::LazyEvalActivity{[&] () -> String { return Characters::Format ("Encoding {}"_f, type_index{typeid (CLASS)}); }};
+                Execution::LazyEvalActivity{[&] () -> String { return Characters::Format ("Encoding {:.50}"_f, type_index{typeid (CLASS)}); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             Mapping<String, VariantValue> m;
@@ -1123,7 +1123,7 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (intoObjOfTypeT);
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
             auto decodingClassActivity = Execution::LazyEvalActivity{
-                [&] () -> String { return Characters::Format ("Decoding {} into class {}"_f, d, type_index{typeid (CLASS)}); }};
+                [&] () -> String { return Characters::Format ("Decoding {:.100} into class {}"_f, d, type_index{typeid (CLASS)}); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             if (extends) {
