@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Characters {
 
 // want this but causes trouble with CLANG!!!
 #if qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-            or same_as<T,std::chrono::time_point<chrono::steady_clock,chrono::duration<double>>>
+            or same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
 #else
             or Configuration::ITimePoint<T>
 #endif
