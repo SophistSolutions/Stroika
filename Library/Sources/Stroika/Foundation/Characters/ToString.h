@@ -197,14 +197,17 @@ namespace Stroika::Foundation::Characters {
             }
 
             // Stroika types not captured by std-c++ rules
-            or Common::IKeyValuePair<remove_cvref_t<T>> or
-            Common::ICountedValue<remove_cvref_t<T>>
+            or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
 
         // c++ 23 features which may not be present with current compilers
         // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
         // this stuff needed for clang++-18-debug-libstdc++-c++23
         // sadly MSFT doesn't use __cplusplus properly, but instead uses _HAS_CXX23
-#if (__cplusplus < 202100L /*202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240315)) && !_HAS_CXX23
+#if _HAS_CXX23
+            or (ranges::range<decay_t<T>> and
+                not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
+                                          qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
+#elif (__cplusplus < 202100L /*202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240315))
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
