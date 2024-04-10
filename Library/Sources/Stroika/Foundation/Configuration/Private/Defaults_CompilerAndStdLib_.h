@@ -1030,6 +1030,71 @@ In file included from BackTrace.cpp:24:
 
 #endif
 
+/*
+ file included from AssertExternallySynchronizedMutex.cpp:6:
+./../Characters/ToString.h:258:16: error: static assertion failed
+  258 | static_assert (std::formattable<std::thread::id, wchar_t>);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./../Characters/ToString.h:258:16: note: because 'std::formattable<std::thread::id, wchar_t>' evaluated to false
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/format:2525:9: note: because '__format::__formattable_impl<remove_reference_t<id>, wchar_t>' evaluated to false
+ 2525 |       = __format::__formattable_impl<remove_reference_t<_Tp>, _CharT>;
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/format:2516:9: note: because '__parsable_with<std::thread::id, std::basic_format_context<std::back_insert_iterator<std::basic_string<wchar_t> >, wchar_t> >' evaluated to false
+ 2516 |       = __parsable_with<_Tp, _Context> && __formattable_with<_Tp, _Context>;
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/format:2491:9: note: because 'std::formatter<std::thread::id, wchar_t>' does not satisfy 'semiregular'
+ 2491 |       = semiregular<_Formatter>
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/concepts:280:27: note: because 'std::formatter<std::thread::id, wchar_t>' does not satisfy 'copyable'
+  280 |     concept semiregular = copyable<_Tp> && default_initializable<_Tp>;
+      |                           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/concepts:275:24: note: because 'std::formatter<std::thread::id, wchar_t>' does not satisfy 'copy_constructible'
+  275 |     concept copyable = copy_constructible<_Tp> && movable<_Tp>
+      |                        ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/concepts:179:9: note: because 'std::formatter<std::thread::id, wchar_t>' does not satisfy 'move_constructible'
+  179 |       = move_constructible<_Tp>
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/concepts:174:7: note: because 'constructible_from<std::formatter<std::thread::id, wchar_t>, std::formatter<std::thread::id, wchar_t> >' evaluated to false
+  174 |     = constructible_from<_Tp, _Tp> && convertible_to<_Tp, _Tp>;
+      |       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/concepts:160:9: note: because 'std::formatter<std::thread::id, wchar_t>' does not satisfy 'destructible'
+  160 |       = destructible<_Tp> && is_constructible_v<_Tp, _Args...>;
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/concepts:155:28: note: because '__detail::__destructible<std::formatter<std::thread::id, wchar_t> >' evaluated to false
+  155 |     concept destructible = __detail::__destructible<_Tp>;
+      |                            ^
+In file included from Thread.cpp:18:
+./../Characters/ToString.h:258:16: error: static assertion failed
+  258 | static_assert (std::formattable<std::thread::id, wchar_t>);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./../Characters/ToString.h:258:16: note: because 'std::formattable<std::thread::id, wchar_t>' evaluated to false
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/format:2525:9: note: because '__format::__formattable_impl<remove_reference_t<id>, wchar_t>' evaluated to false
+ 2525 |       = __format::__formattable_impl<remove_reference_t<_Tp>, _CharT>;
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/format:2516:9: note: because '__parsable_with<std::thread::id, std::basic_format_context<std::back_insert_iterator<std::basic_string<wchar_t> >, wchar_t> >' evaluated to false
+ 2516 |       = __parsable_with<_Tp, _Context> && __formattable_with<_Tp, _Context>;
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/format:2491:9: note: because 'std::formatter<std::thread::id, wchar_t>' does not satisfy 'semiregular'
+ 2491 |       = semiregular<_Formatter>
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/concepts:280:27: note: because 'std::formatter<std::thread::id, wchar_t>' does not satisfy 'copyable'
+  280 |     concept semiregular = copyable<_Tp> && default_initializable<_Tp>;
+  
+  */
+#ifndef qCompilerAndStdLib_FormatThreadId_Buggy
+
+#if defined(__clang__) &&  defined(__GLIBCXX__)
+// broken in clang++-18 with
+#define qCompilerAndStdLib_FormatThreadId_Buggy 1
+//#define qCompilerAndStdLib_FormatThreadId_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GLIBCXX__ <= 20240315))
+#else
+#define qCompilerAndStdLib_FormatThreadId_Buggy 0
+#endif
+
+#endif
+
+
+
 /**
  *
 On Vs2k19:

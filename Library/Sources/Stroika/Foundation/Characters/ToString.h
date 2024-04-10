@@ -253,7 +253,9 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika:
 #if __cplusplus > 202200L || _HAS_CXX23
 // various examples of things Stroika provides / assure support for regardless of C++ version
 static_assert (std::formattable<std::type_index, wchar_t>);
+#if !qCompilerAndStdLib_FormatThreadId_Buggy
 static_assert (std::formattable<std::thread::id, wchar_t>);
+#endif
 static_assert (std::formattable<std::exception_ptr, wchar_t>);
 static_assert (std::formattable<std::type_index, wchar_t>);
 static_assert (std::formattable<std::filesystem::path, wchar_t>);
