@@ -177,6 +177,14 @@ namespace Stroika::Foundation::Characters {
         }
     };
 
+    #ifndef qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY
+    #if defined (__clang__)
+    #define qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY 1
+    #else
+    #define qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY 0
+    #endif
+    #endif
+
     namespace Private_ {
 
         /*
@@ -238,8 +246,13 @@ namespace Stroika::Foundation::Characters {
             // Features from std-c++ that probably should have been added
             // NOTE - we WANT to support type_info (so typeid works directly) - but run into trouble because type_info(const type_info)=delete, so not
             // sure how to make that work with formatters (besides wrapping in type_index).
-            or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>> or
-            Configuration::ITimePoint<T> or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_index>;
+            or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>>
+        
+            // want this but causes trouble with CLANG!!!
+            #if !qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY
+             or Configuration::ITimePoint<T> 
+             #endif
+            or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_index>;
     }
 
 }
