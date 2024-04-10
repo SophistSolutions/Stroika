@@ -261,7 +261,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Execution, all)
     {
         Execution::Logger::Activator logMgrActivator; // needed for OptionsFile test
         Test1_Function_ ();
@@ -271,6 +271,23 @@ namespace {
         Test5_ModuleGetterSetter_::DoAll ();
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Execution, kInnerOuterExceptionStackHandlingWhile)
+    {
+        constexpr Execution::Activity kActivityOuter_{"OUTER"sv};
+        Execution::DeclareActivity    declareActivity{&kActivityOuter_};
+        constexpr Execution::Activity kActivityINNER_{"INNER"sv};
+        Execution::DeclareActivity    declareActivity2{&kActivityINNER_};
+        try {
+            Execution::Throw (Execution::RuntimeErrorException{"oops"});
+        }
+        catch (...) {
+            DbgTrace ("error={}"_f, current_exception ());
+        }
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])

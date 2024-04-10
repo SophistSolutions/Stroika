@@ -75,14 +75,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                 }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
@@ -122,14 +122,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                 }
             }
         }
@@ -310,14 +310,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                 }
 #if qHasFeature_LibCurl
                 // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
@@ -397,14 +397,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                 }
             }
         }
@@ -458,14 +458,14 @@ namespace {
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
                     Execution::ReThrow ();
                 }
             }
             catch (const Execution::TimeOutException& e) {
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -733,14 +733,14 @@ namespace {
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
                     Execution::ReThrow ();
                 }
             }
             catch (const Execution::TimeOutException& e) {
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
