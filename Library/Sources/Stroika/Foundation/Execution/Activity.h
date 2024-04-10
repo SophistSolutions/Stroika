@@ -14,8 +14,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *
- * TODO:
- *
  * Notes:
  *
  *
@@ -27,8 +25,8 @@ namespace Stroika::Foundation::Execution {
     namespace Private_ {
         namespace Activities_ {
             /**
-             *  \note intentionally ommit virtual DTOR because then the subclasses cannot be constexpr (at least it appears so in c++17).
-             *        And they are never destroyed by ptr to a baseclass type, so this isn't needed.
+             *  \note intentionally omit virtual DTOR because then the subclasses cannot be constexpr (at least it appears so in c++17).
+             *        And they are never destroyed by ptr to a base class type, so this isn't needed.
              */
             struct AsStringObj_ {
                 constexpr AsStringObj_ () noexcept           = default;
@@ -61,10 +59,10 @@ namespace Stroika::Foundation::Execution {
      *        created/thrown. @see CaptureCurrentActivities
      * 
      *  \note   for now, constexpr Activity<wstring_view> kActivity;    // FAILS
-     *          This is because AsStringObj_ has a virtual destructor (necesary for other types). Thats crazy
-     *          becuse constexpr objects are never destroyed, so its crazy to care that they have a virtual DTOR.
+     *          This is because AsStringObj_ has a virtual destructor (necessary for other types). Thats crazy
+     *          because constexpr objects are never destroyed, so its crazy to care that they have a virtual DTOR.
      *          Still, g++ and msvc both agree on this; I think this MAYBE fixed in C++20 (not yet tested) - because
-     *          there they at least allow virtual constexpr methods. That might impact (indirecly) whether an object
+     *          there they at least allow virtual constexpr methods. That might impact (indirectly) whether an object
      *          can be constexpr (having a virtual dtor).
      */
     template <typename STRINGISH_T = Characters::String>
@@ -118,6 +116,8 @@ namespace Stroika::Foundation::Execution {
      * 
      *  \note the intended purpose of this is to provide better 'context' for default exception messages, when exceptions are
      *        created/thrown.
+     * 
+     *  \note the TOP of the static is the most specific activity, and the bottom of the stack is the initial, outermost task.
      */
     Containers::Stack<Activity<>> CaptureCurrentActivities ();
 

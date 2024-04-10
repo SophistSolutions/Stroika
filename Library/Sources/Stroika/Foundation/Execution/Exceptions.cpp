@@ -53,7 +53,7 @@ namespace {
                 sb << ", while "sv;
             }
         }
-        return sb.str ();
+        return sb;
     }
 }
 

@@ -5,8 +5,6 @@
 
 #include <list>
 
-#include "../Debug/Trace.h"
-
 #include "Activity.h"
 
 using namespace Stroika::Foundation;
@@ -24,10 +22,10 @@ Containers::Stack<Activity<>> Execution::CaptureCurrentActivities ()
     // no locks needed because thread local
     for (const Private_::Activities_::StackElt_* si = Private_::Activities_::sTop_; si != nullptr; si = si->fPrev) {
         AssertNotNull (si->fActivity);
-        rv.push_front (Activity<>{si->fActivity->AsString ()});
+        rv.push_front (Activity<>{si->fActivity->AsString ()});     // push_front to reverse the list
     }
     Containers::Stack<Activity<>> result;
-    for (auto i = rv.rbegin (); i != rv.rend (); ++i) {
+    for (auto i = rv.begin (); i != rv.end (); ++i) {
         result.Push (*i);
     }
     return result;
