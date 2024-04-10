@@ -863,7 +863,7 @@ void Thread::Ptr::ThrowIfDoneWithException () const
 
 void Thread::Ptr::WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
-    #if !qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY
+#if !qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
     Debug::TraceContextBumper ctx{"Thread::WaitForDoneUntil", "*this={}, timeoutAt={}"_f, ToString (), timeoutAt};
     #endif
     if (not WaitForDoneUntilQuietly (timeoutAt)) {

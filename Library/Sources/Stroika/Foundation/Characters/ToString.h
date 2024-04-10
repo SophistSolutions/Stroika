@@ -177,14 +177,6 @@ namespace Stroika::Foundation::Characters {
         }
     };
 
-    #ifndef qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY
-    #if defined (__clang__)
-    #define qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY 1
-    #else
-    #define qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY 0
-    #endif
-    #endif
-
     namespace Private_ {
 
         /*
@@ -229,12 +221,6 @@ namespace Stroika::Foundation::Characters {
             Configuration::ITuple<remove_cvref_t<T>>
             // available in C++23
             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
-#if 0
-            // ranges available in C++23, but range<T> matches some stuff that IS already pre-included by std-c++ formatters
-            or (ranges::range<decay_t<T>> and
-                not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
-                                          qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
-#endif
 #endif
 
         // features added in C++26
@@ -247,11 +233,11 @@ namespace Stroika::Foundation::Characters {
             // NOTE - we WANT to support type_info (so typeid works directly) - but run into trouble because type_info(const type_info)=delete, so not
             // sure how to make that work with formatters (besides wrapping in type_index).
             or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>>
-        
-            // want this but causes trouble with CLANG!!!
-            #if !qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY
-             or Configuration::ITimePoint<T> 
-             #endif
+
+// want this but causes trouble with CLANG!!!
+#if !qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+            or Configuration::ITimePoint<T>
+#endif
             or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_index>;
     }
 

@@ -84,14 +84,15 @@ namespace Stroika::Foundation::Configuration {
 
     // From https://stackoverflow.com/questions/74383254/concept-that-models-only-the-stdchrono-duration-types
     template <typename T>
-    concept IDuration = requires { []<typename Rep, typename Period> (type_identity<chrono::duration<Rep, Period>>) {}(type_identity<T> ()); };
-    static_assert(not IDuration<float>);
+    concept IDuration =
+        requires { []<typename Rep, typename Period> (type_identity<chrono::duration<Rep, Period>>) {}(type_identity<T> ()); };
+    static_assert (not IDuration<float>);
 
     // From https://stackoverflow.com/questions/74383254/concept-that-models-only-the-stdchrono-duration-types
     template <typename T>
     concept ITimePoint =
         requires { []<typename CLOCK, typename DURATION> (type_identity<chrono::time_point<CLOCK, DURATION>>) {}(type_identity<T> ()); };
-    static_assert(not ITimePoint<float>);
+    static_assert (not ITimePoint<float>);
 
     /**
      *  \brief concept - trivial shorthand for variadic same_as A or same_as B, or ...

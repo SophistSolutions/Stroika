@@ -1461,6 +1461,15 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../includ
 
 #endif
 
+#ifndef qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+#if defined(__clang__)
+// Seen on clang++-18 on ubuntu
+#define qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy (__clang_major__ <= 18)
+#else
+#define qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy 0
+#endif
+#endif
+
 /**
  *      Compiling Library/Sources/Stroika/Foundation/Execution/SpinLock.cpp ... 
 In file included from SignalHandlers.cpp:27:
