@@ -192,7 +192,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
     template <typename FmtContext>
     typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
     {
-        return fDelegate2_.format (s.As<wstring> (), ctx);
+        return fDelegate2_.format (s.As<std::wstring> (), ctx);
     }
 };
 template <>
