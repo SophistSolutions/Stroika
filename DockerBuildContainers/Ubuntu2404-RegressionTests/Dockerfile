@@ -10,7 +10,7 @@ RUN apt-get -qq install -y locales && locale-gen en_US en_US.UTF-8
 RUN apt-get -qq install -y lsb-release
 
 #install the latest (C++20 compat) g++ compilers
-RUN apt-get -qq install -y g++-13 g++-14
+RUN apt-get -qq install -y g++-12 g++-13 g++-14
 
 # For reasons which elude me, installing libc++-N removes all the other
 # https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
@@ -30,4 +30,4 @@ RUN apt-get -qq install -y libz.a
 RUN apt-get -qq install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-RUN apt-get -qq install -y g++-13-arm-linux-gnueabihf g++-14-arm-linux-gnueabihf iputils-ping
+RUN apt-get -qq install -y g++-13-arm-linux-gnueabihf iputils-ping
