@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Characters {
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, wchar_t> {
-    qStroika_Foundation_Characters_FMT_PREFIX_::formatter<wstring, wchar_t> fDelegate2_;
+    qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::wstring, wchar_t> fDelegate2_;
 
     template <typename ParseContext>
     constexpr typename ParseContext::iterator parse (ParseContext& ctx)

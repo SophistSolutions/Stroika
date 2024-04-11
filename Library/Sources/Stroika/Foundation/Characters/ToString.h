@@ -112,7 +112,6 @@ namespace Stroika::Foundation::Characters {
     struct ToStringFormatter /* : std::formatter<std::wstring>*/ {
         qStroika_Foundation_Characters_FMT_PREFIX_::formatter<String, wchar_t> fDelegate2_;
 
-
         template <class ParseContext>
         constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
@@ -123,7 +122,7 @@ namespace Stroika::Foundation::Characters {
         typename FmtContext::iterator format (T s, FmtContext& ctx) const
         {
             return fDelegate2_.format (UnoverloadedToString (s), ctx);
-            #if 0
+#if 0
 
             std::wstringstream out;
             out << UnoverloadedToString (s);
@@ -132,7 +131,7 @@ namespace Stroika::Foundation::Characters {
 #else
             return Configuration::StdCompat::format_to (ctx.out (), L"{}", String{out.str ()});
 #endif
-            #endif
+#endif
         }
     };
     template <Stroika::Foundation::Characters::IToString T>
