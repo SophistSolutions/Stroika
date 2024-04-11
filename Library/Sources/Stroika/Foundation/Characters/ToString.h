@@ -110,31 +110,21 @@ namespace Stroika::Foundation::Characters {
     // I THINK I want to SUBCLASS from std::formatter<std::string> - or something close to that...
     template <Stroika::Foundation::Characters::IToString T>
     struct ToStringFormatter /* : std::formatter<std::wstring>*/ {
-        bool quoted = false;
+        qStroika_Foundation_Characters_FMT_PREFIX_::formatter<String, wchar_t> fDelegate2_;
+
 
         template <class ParseContext>
         constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
-            // Not clear how to forward...
-            auto it = ctx.begin ();
-            while (it != ctx.end ()) {
-                ++it;
-#if 0
-                if (it == ctx.end()) {
-                    throw Configuration::StdCompat::format_error{"Invalid format args (missing }) for ToStringFormatter."};
-                }
-#endif
-                if (*it == '}') {
-                    return it;
-                }
-            }
-            return it;
+            return fDelegate2_.parse (ctx);
         }
 
         template <class FmtContext>
         typename FmtContext::iterator format (T s, FmtContext& ctx) const
         {
-            using namespace Stroika::Foundation::Characters;
+            return fDelegate2_.format (UnoverloadedToString (s), ctx);
+            #if 0
+
             std::wstringstream out;
             out << UnoverloadedToString (s);
 #if __cpp_lib_ranges >= 202207L
@@ -142,6 +132,7 @@ namespace Stroika::Foundation::Characters {
 #else
             return Configuration::StdCompat::format_to (ctx.out (), L"{}", String{out.str ()});
 #endif
+            #endif
         }
     };
     template <Stroika::Foundation::Characters::IToString T>
