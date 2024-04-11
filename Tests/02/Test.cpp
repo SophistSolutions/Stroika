@@ -1990,6 +1990,12 @@ namespace {
         auto pp = "{}"_f(1);
         DbgTrace (L"pp={}"_f, pp);
         EXPECT_EQ (pp, "1");
+
+        {
+            String big = "1"_k.Repeat (1000);
+            String a   = Characters::Format ("BIG shortened '{:.10}'"_f, big);
+            DbgTrace ("a={}"_f, a);
+        }
     }
 }
 #endif

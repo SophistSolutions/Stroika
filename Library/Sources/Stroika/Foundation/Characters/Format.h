@@ -181,36 +181,18 @@ namespace Stroika::Foundation::Characters {
 // SUPER PRIMITIVE ROUGH FIRST DRAFT
 template <>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, wchar_t> {
-    bool quoted = false;
+    qStroika_Foundation_Characters_FMT_PREFIX_::formatter<wstring, wchar_t> fDelegate2_;
 
     template <typename ParseContext>
     constexpr typename ParseContext::iterator parse (ParseContext& ctx)
     {
-        auto it = ctx.begin ();
-        if (it == ctx.end ())
-            return it;
-
-        if (*it == '#') {
-            quoted = true;
-            ++it;
-        }
-        if (*it != '}')
-            throw format_error{"Invalid format args for QuotableString."};
-
-        return it;
+        return fDelegate2_.parse (ctx);
     }
 
     template <typename FmtContext>
     typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
     {
-        std::wstringstream out;
-        out << s;
-// NOT sure magic# for lib_ranges right here but ranges::copy doesnt exist on clang++15 for ubuntu 22.04
-#if __cpp_lib_ranges >= 202207L
-        return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
-#else
-        return format_to (ctx.out (), L"{}", out.str ());
-#endif
+        return fDelegate2_.format (s.As<wstring> (), ctx);
     }
 };
 template <>
@@ -221,16 +203,17 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
     constexpr typename ParseContext::iterator parse (ParseContext& ctx)
     {
         auto it = ctx.begin ();
-        if (it == ctx.end ())
-            return it;
-
-        if (*it == '#') {
-            //quoted = true;
+        while (it != ctx.end ()) {
             ++it;
+#if 0
+                if (it == ctx.end()) {
+                    throw Configuration::StdCompat::format_error{"Invalid format args (missing }) for formatter<String,char>."};
+                }
+#endif
+            if (*it == '}') {
+                return it;
+            }
         }
-        if (*it != '}')
-            throw format_error{"Invalid format args for QuotableString."};
-
         return it;
     }
 

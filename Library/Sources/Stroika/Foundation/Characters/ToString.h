@@ -106,24 +106,28 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     String UnoverloadedToString (const T& t);
 
+    //// @todo read https://stackoverflow.com/questions/59909102/stdformat-of-user-defined-types
+    // I THINK I want to SUBCLASS from std::formatter<std::string> - or something close to that...
     template <Stroika::Foundation::Characters::IToString T>
-    struct ToStringFormatter {
+    struct ToStringFormatter /* : std::formatter<std::wstring>*/ {
         bool quoted = false;
 
         template <class ParseContext>
         constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
+            // Not clear how to forward...
             auto it = ctx.begin ();
-            if (it == ctx.end ())
-                return it;
-
-            if (*it == '#') {
-                quoted = true;
+            while (it != ctx.end ()) {
                 ++it;
+#if 0
+                if (it == ctx.end()) {
+                    throw Configuration::StdCompat::format_error{"Invalid format args (missing }) for ToStringFormatter."};
+                }
+#endif
+                if (*it == '}') {
+                    return it;
+                }
             }
-            if (*it != '}')
-                throw Configuration::StdCompat::format_error{"Invalid format args for QuotableString."};
-
             return it;
         }
 
@@ -147,17 +151,19 @@ namespace Stroika::Foundation::Characters {
         template <class ParseContext>
         constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
+            // Not clear how to forward...
             auto it = ctx.begin ();
-            if (it == ctx.end ())
-                return it;
-
-            if (*it == '#') {
-                //  quoted = true;
+            while (it != ctx.end ()) {
                 ++it;
+#if 0
+                if (it == ctx.end ()) {
+                    throw Configuration::StdCompat::format_error{"Invalid format args (missing }) for ToStringFormatterASCII."};
+                }
+#endif
+                if (*it == '}') {
+                    return it;
+                }
             }
-            if (*it != '}')
-                throw Configuration::StdCompat::format_error{"Invalid format args for QuotableString."};
-
             return it;
         }
 
