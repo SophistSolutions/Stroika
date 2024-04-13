@@ -129,7 +129,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      * TODO:
      *      @todo   MABYE add "SCHEME REGISTER"
-     *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
+     *              { string, isSecure, isHttpIsh } -na dif httpish req certain methods get GethOst etc for httpish schemes
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);

@@ -77,6 +77,9 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
                         return *fRegisteredName_;
                     }
                     Assert (fInternetAddress_);
+                    if (fInternetAddress_->GetAddressFamily () == InternetAddress::AddressFamily::V6) {
+                        return "["sv + fInternetAddress_->As<String> () + "]"sv;
+                    }
                     return fInternetAddress_->As<String> ();
                 }
                 case StringPCTEncodedFlag::ePCTEncoded:
