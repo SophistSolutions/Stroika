@@ -366,220 +366,201 @@ namespace {
                 URI u;
                 u.SetScheme (URI::SchemeType{L"http"});
             }
-        }
-        void DoTests_ ()
-        {
-            Debug::TraceContextBumper ctx{"Test1_URI_::DoTests"};
-            Private_::TestHostParsing_ ();
-            Private_::SimpleURITests_ ();
-            Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
-            Private_::TestEmptyURI_ ();
-            Private_::TestSamplesFromPythonURLParseDocs_ ();
-            Private_::Test_PatternUsedInHealthFrame_ ();
-            Private_::Test_RegressionDueToBugInCompareURIsC20Spaceship_ ();
-            Private_::Test_UPNPBadURIIPv6_ ();
-            Private_::Test_SetScheme_ ();
+            void Test_roundtrip_IPV6NumericHostname_ ()
+            {
+                String v                 = Characters::Format ("http://[::1]:{}/"_f, 9080);
+                URI    ShowAsExternalURI = v;
+                EXPECT_EQ (ShowAsExternalURI.As<String> (), "http://[::1]:9080/");
+            }
         }
     }
 }
 
-namespace {
-    void Test2_InternetAddress_ ()
+GTEST_TEST (Foundation_IO_Network, Test1_URI_)
+{
+    Debug::TraceContextBumper ctx{"Test1_URI_::DoTests"};
+    using namespace Test1_URI_;
+    Private_::TestHostParsing_ ();
+    Private_::SimpleURITests_ ();
+    Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
+    Private_::TestEmptyURI_ ();
+    Private_::TestSamplesFromPythonURLParseDocs_ ();
+    Private_::Test_PatternUsedInHealthFrame_ ();
+    Private_::Test_RegressionDueToBugInCompareURIsC20Spaceship_ ();
+    Private_::Test_UPNPBadURIIPv6_ ();
+    Private_::Test_SetScheme_ ();
+    Private_::Test_roundtrip_IPV6NumericHostname_ ();
+}
+
+GTEST_TEST (Foundation_IO_Network, Test2_InternetAddress_)
+{
+    Debug::TraceContextBumper trcCtx{"Test2_InternetAddress_"};
     {
-        Debug::TraceContextBumper trcCtx{"Test2_InternetAddress_"};
-        {
-            EXPECT_TRUE ((InternetAddress{169, 254, 0, 1}).As<String> () == L"169.254.0.1");
-            EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}).As<String> () == L"1.2.3.4");
-            EXPECT_TRUE ((InternetAddress{L"1.2.3.4"}).As<String> () == L"1.2.3.4");
-            EXPECT_TRUE ((InternetAddress{"1.2.3.4"}).As<String> () == L"1.2.3.4");
-        }
-        {
-            EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[0] == 1));
-            EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
-        }
-        {
-            auto testRoundtrip = [] (const String& s) {
-                InternetAddress iaddr1{s};
-                InternetAddress iaddr2{s.As<wstring> ()};
-                InternetAddress iaddr3{s.AsASCII ()};
-                EXPECT_TRUE (iaddr1 == iaddr2);
-                EXPECT_TRUE (iaddr2 == iaddr3);
-                EXPECT_TRUE (iaddr1.As<String> () == s);
-                EXPECT_TRUE (iaddr2.As<String> () == s);
-                EXPECT_TRUE (iaddr3.As<String> () == s);
-            };
-            testRoundtrip (L"192.168.131.3");
-            testRoundtrip (L"::");
-            testRoundtrip (L"fec0:0:0:ffff::1");
-            testRoundtrip (L"fe80::44de:4247:5b76:ddc9");
-        }
-        {
-            struct Tester {
-                InternetAddress addr;
-                bool            isLocalHost;
-                bool            isLinkLocal;
-                bool            isMulticast;
-                bool            isPrivate;
-            };
-            const InternetAddress kSamplePrivateAddr_{"192.168.244.121"};
-            const InternetAddress kSSDPAddr_{239, 255, 255, 250};
-            const InternetAddress kSomeIPV4LinkLocalAddr_{"169.254.0.1"};
-            const InternetAddress kSomeIPV6LinkLocalAddr_{"fe80::44de:4247:5b76:ddc9"};
-            const Tester          kTests_[] = {
-                //  ADDR                                    localhost   linklocal   multicast   privateaddr
-                {V4::kAddrAny, false, false, false, false},
-                {V6::kAddrAny, false, false, false, false},
-                {V4::kLocalhost, true, false, false, false},
-                {V6::kLocalhost, true, false, false, false},
-                {kSSDPAddr_, false, false, true, false},
-                {kSomeIPV4LinkLocalAddr_, false, true, false, false},
-                {kSomeIPV6LinkLocalAddr_, false, true, false, false},
-                {kSamplePrivateAddr_, false, false, false, true},
-                {InternetAddress{10, 0, 0, 0}, false, false, false, true},
-                {InternetAddress{10, 255, 255, 255}, false, false, false, true},
-                {InternetAddress{172, 16, 0, 1}, false, false, false, true},
-                {InternetAddress{172, 16, 0, 3}, false, false, false, true},
-                {InternetAddress{172, 31, 255, 255}, false, false, false, true},
-                {InternetAddress{192, 168, 0, 0}, false, false, false, true},
-                {InternetAddress{192, 168, 255, 255}, false, false, false, true},
-            };
-            for (auto i : kTests_) {
-                DbgTrace ("i.addr={}"_f, i.addr);
-                EXPECT_TRUE (i.addr.IsLocalhostAddress () == i.isLocalHost);
-                EXPECT_TRUE (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
-                EXPECT_TRUE (i.addr.IsMulticastAddress () == i.isMulticast);
-                EXPECT_TRUE (i.addr.IsPrivateAddress () == i.isPrivate);
-            }
-        }
-        {
-            EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
-            EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or
-                         ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
-        }
-        {
-            EXPECT_TRUE (InternetAddress{"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
-                         InternetAddress{"2002:C0A8:6301::"});
-            EXPECT_TRUE (InternetAddress{"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) ==
-                         InternetAddress{"192.168.99.1"});
-        }
+        EXPECT_TRUE ((InternetAddress{169, 254, 0, 1}).As<String> () == L"169.254.0.1");
+        EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}).As<String> () == L"1.2.3.4");
+        EXPECT_TRUE ((InternetAddress{L"1.2.3.4"}).As<String> () == L"1.2.3.4");
+        EXPECT_TRUE ((InternetAddress{"1.2.3.4"}).As<String> () == L"1.2.3.4");
     }
-}
-
-namespace {
-    void Test3_NetworkInterfaceList_ ()
     {
-        Debug::TraceContextBumper trcCtx{"Test3_NetworkInterfaceList_"};
-        for (Interface iFace : SystemInterfacesMgr{}.GetAll ()) {
-            DbgTrace ("iFace: {}"_f, iFace);
+        EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[0] == 1));
+        EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
+    }
+    {
+        auto testRoundtrip = [] (const String& s) {
+            InternetAddress iaddr1{s};
+            InternetAddress iaddr2{s.As<wstring> ()};
+            InternetAddress iaddr3{s.AsASCII ()};
+            EXPECT_TRUE (iaddr1 == iaddr2);
+            EXPECT_TRUE (iaddr2 == iaddr3);
+            EXPECT_TRUE (iaddr1.As<String> () == s);
+            EXPECT_TRUE (iaddr2.As<String> () == s);
+            EXPECT_TRUE (iaddr3.As<String> () == s);
+        };
+        testRoundtrip (L"192.168.131.3");
+        testRoundtrip (L"::");
+        testRoundtrip (L"fec0:0:0:ffff::1");
+        testRoundtrip (L"fe80::44de:4247:5b76:ddc9");
+    }
+    {
+        struct Tester {
+            InternetAddress addr;
+            bool            isLocalHost;
+            bool            isLinkLocal;
+            bool            isMulticast;
+            bool            isPrivate;
+        };
+        const InternetAddress kSamplePrivateAddr_{"192.168.244.121"};
+        const InternetAddress kSSDPAddr_{239, 255, 255, 250};
+        const InternetAddress kSomeIPV4LinkLocalAddr_{"169.254.0.1"};
+        const InternetAddress kSomeIPV6LinkLocalAddr_{"fe80::44de:4247:5b76:ddc9"};
+        const Tester          kTests_[] = {
+            //  ADDR                                    localhost   linklocal   multicast   privateaddr
+            {V4::kAddrAny, false, false, false, false},
+            {V6::kAddrAny, false, false, false, false},
+            {V4::kLocalhost, true, false, false, false},
+            {V6::kLocalhost, true, false, false, false},
+            {kSSDPAddr_, false, false, true, false},
+            {kSomeIPV4LinkLocalAddr_, false, true, false, false},
+            {kSomeIPV6LinkLocalAddr_, false, true, false, false},
+            {kSamplePrivateAddr_, false, false, false, true},
+            {InternetAddress{10, 0, 0, 0}, false, false, false, true},
+            {InternetAddress{10, 255, 255, 255}, false, false, false, true},
+            {InternetAddress{172, 16, 0, 1}, false, false, false, true},
+            {InternetAddress{172, 16, 0, 3}, false, false, false, true},
+            {InternetAddress{172, 31, 255, 255}, false, false, false, true},
+            {InternetAddress{192, 168, 0, 0}, false, false, false, true},
+            {InternetAddress{192, 168, 255, 255}, false, false, false, true},
+        };
+        for (auto i : kTests_) {
+            DbgTrace ("i.addr={}"_f, i.addr);
+            EXPECT_TRUE (i.addr.IsLocalhostAddress () == i.isLocalHost);
+            EXPECT_TRUE (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
+            EXPECT_TRUE (i.addr.IsMulticastAddress () == i.isMulticast);
+            EXPECT_TRUE (i.addr.IsPrivateAddress () == i.isPrivate);
         }
+    }
+    {
+        EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
+        EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or
+                     ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
+    }
+    {
+        EXPECT_TRUE (InternetAddress{"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
+                     InternetAddress{"2002:C0A8:6301::"});
+        EXPECT_TRUE (InternetAddress{"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) ==
+                     InternetAddress{"192.168.99.1"});
     }
 }
 
-namespace {
-    namespace Test4_DNS_ {
-        void DoTests_ ()
-        {
-            Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
-            {
-                DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.sophists.com");
-                EXPECT_TRUE (e.fCanonicalName.Contains (".sophists.com"));
-                EXPECT_TRUE (e.fAddressList.size () >= 1);
-            }
-            {
-                DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.google.com");
-                EXPECT_TRUE (e.fAddressList.size () >= 1);
-            }
-            {
-                DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.cnn.com");
-                EXPECT_TRUE (e.fAddressList.size () >= 1);
-            }
-            {
-                optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress{23, 56, 90, 167});
-                DbgTrace ("reverselookup {}"_f, Memory::NullCoalesce (aaa));
-            }
-        }
+GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
+{
+    Debug::TraceContextBumper trcCtx{"Test3_NetworkInterfaceList_"};
+    for (Interface iFace : SystemInterfacesMgr{}.GetAll ()) {
+        DbgTrace ("iFace: {}"_f, iFace);
     }
 }
 
-namespace {
-    namespace Test5_CIDR_ {
-        void DoTests_ ()
-        {
-            Debug::TraceContextBumper ctx{"Test5_CIDR_::DoTests_"};
-            {
-                CIDR cidr{"10.70.0.0/15"};
-                auto cidr2 = CIDR{InternetAddress{"10.70.0.0"}, 15};
-                EXPECT_TRUE (cidr == cidr2);
-                EXPECT_TRUE (Characters::ToString (cidr) == "10.70.0.0/15");
-                EXPECT_TRUE (cidr.GetNumberOfSignificantBits () == 15);
-                EXPECT_TRUE ((cidr.GetRange () ==
-                              Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
-            }
-            {
-                auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};
-                EXPECT_TRUE (Characters::ToString (cidr) == "192.168.56.0/24");
-            }
-            {
-                auto cidr = CIDR{InternetAddress{"172.28.240.1"}, 20};
-                EXPECT_TRUE (Characters::ToString (cidr) == "172.28.240.0/20");
-            }
-            {
-                auto cidr = CIDR{InternetAddress{"172.17.185.1"}, 28};
-                EXPECT_TRUE (Characters::ToString (cidr) == "172.17.185.0/28");
-            }
-            {
-                // fix for https://stroika.atlassian.net/browse/STK-909
-                auto cidr = CIDR{V6::kAddrAny, 64};
-                EXPECT_TRUE (Characters::ToString (cidr) == "in6addr_any/64");
-                EXPECT_TRUE (CIDR{cidr.As<String> ()} == cidr); // can roundtrip numeric form
-            }
-        }
+GTEST_TEST (Foundation_IO_Network, Test4_DNS_)
+{
+    Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
+    {
+        DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.sophists.com");
+        EXPECT_TRUE (e.fCanonicalName.Contains (".sophists.com"));
+        EXPECT_TRUE (e.fAddressList.size () >= 1);
+    }
+    {
+        DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.google.com");
+        EXPECT_TRUE (e.fAddressList.size () >= 1);
+    }
+    {
+        DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.cnn.com");
+        EXPECT_TRUE (e.fAddressList.size () >= 1);
+    }
+    {
+        optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress{23, 56, 90, 167});
+        DbgTrace ("reverselookup {}"_f, Memory::NullCoalesce (aaa));
     }
 }
 
-namespace {
-    namespace Test6_Neighbors_ {
-        void DoTests_ ()
-        {
-            Debug::TraceContextBumper ctx{"Test6_Neighbors_::DoTests_"};
-            {
-                IO::Network::NeighborsMonitor monitor;
-                Time::TimePointSeconds        timeoutAt = (Time::GetTickCount () + Time::Duration{3s});
-                while (Time::GetTickCount () < timeoutAt) {
-                    // Note - this try/catch is ONLY needed to workaround bug with MSFT WSL (windows subsystem for linux), and when thats fixed we can remove the try/catch -- LGP 2020-03-20
-                    try {
-                        for (NeighborsMonitor::Neighbor n : monitor.GetNeighbors ()) {
-                            DbgTrace ("discovered {}"_f, Characters::ToString (n));
-                        }
-                    }
-                    catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
-#if qPlatform_Linux
-                        if (e.code () == errc::no_such_file_or_directory) {
-                            Test::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " +
-                                                  Characters::ToString (current_exception ()))
-                                                     .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
-                            return;
-                        }
-#endif
-                        Execution::ReThrow ();
-                    }
+GTEST_TEST (Foundation_IO_Network, Test5_CIDR_)
+{
+    Debug::TraceContextBumper ctx{"Test5_CIDR_::DoTests_"};
+    {
+        CIDR cidr{"10.70.0.0/15"};
+        auto cidr2 = CIDR{InternetAddress{"10.70.0.0"}, 15};
+        EXPECT_TRUE (cidr == cidr2);
+        EXPECT_TRUE (Characters::ToString (cidr) == "10.70.0.0/15");
+        EXPECT_TRUE (cidr.GetNumberOfSignificantBits () == 15);
+        EXPECT_TRUE ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
+    }
+    {
+        auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};
+        EXPECT_TRUE (Characters::ToString (cidr) == "192.168.56.0/24");
+    }
+    {
+        auto cidr = CIDR{InternetAddress{"172.28.240.1"}, 20};
+        EXPECT_TRUE (Characters::ToString (cidr) == "172.28.240.0/20");
+    }
+    {
+        auto cidr = CIDR{InternetAddress{"172.17.185.1"}, 28};
+        EXPECT_TRUE (Characters::ToString (cidr) == "172.17.185.0/28");
+    }
+    {
+        // fix for https://stroika.atlassian.net/browse/STK-909
+        auto cidr = CIDR{V6::kAddrAny, 64};
+        EXPECT_TRUE (Characters::ToString (cidr) == "in6addr_any/64");
+        EXPECT_TRUE (CIDR{cidr.As<String> ()} == cidr); // can roundtrip numeric form
+    }
+}
+
+GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
+{
+    Debug::TraceContextBumper ctx{"Test6_Neighbors_::DoTests_"};
+    {
+        IO::Network::NeighborsMonitor monitor;
+        Time::TimePointSeconds        timeoutAt = (Time::GetTickCount () + Time::Duration{3s});
+        while (Time::GetTickCount () < timeoutAt) {
+            // Note - this try/catch is ONLY needed to workaround bug with MSFT WSL (windows subsystem for linux), and when thats fixed we can remove the try/catch -- LGP 2020-03-20
+            try {
+                for (NeighborsMonitor::Neighbor n : monitor.GetNeighbors ()) {
+                    DbgTrace ("discovered {}"_f, Characters::ToString (n));
                 }
             }
+            catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
+#if qPlatform_Linux
+                if (e.code () == errc::no_such_file_or_directory) {
+                    Test::WarnTestIssue (
+                        (L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " + Characters::ToString (current_exception ()))
+                            .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                    return;
+                }
+#endif
+                Execution::ReThrow ();
+            }
         }
     }
 }
 
-namespace {
-    GTEST_TEST (Foundation_Caching, all)
-    {
-        Test1_URI_::DoTests_ ();
-        Test2_InternetAddress_ ();
-        Test3_NetworkInterfaceList_ ();
-        Test4_DNS_::DoTests_ ();
-        Test5_CIDR_::DoTests_ ();
-        Test6_Neighbors_::DoTests_ ();
-    }
-}
 #endif
 
 int main (int argc, const char* argv[])
