@@ -719,13 +719,13 @@ String VariantValue::AsString_ () const
             auto v = Debug::UncheckedDynamicCast<const TIRep_<IntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             Assert (typeid (v->fVal) == typeid (long long));
-            return Characters::Format (L"%lld", v->fVal);
+            return Characters::Format ("{}"_f, v->fVal);
         }
         case Type::eUnsignedInteger: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             Assert (typeid (v->fVal) == typeid (unsigned long long));
-            return Characters::Format (L"%llu", v->fVal);
+            return Characters::Format ("{:x}"_f, v->fVal);
         }
         case Type::eFloat: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
@@ -747,7 +747,7 @@ String VariantValue::AsString_ () const
              // of actual digits after the decimal point. But there is one before the decimal point to give the precision we
              // use in iostream.
              //
-             // Acutally - I'm really not sure of any of this. But this seems to work for now...
+             // Actually - I'm really not sure of any of this. But this seems to work for now...
              //      -- LGP 2013-11-17
              */
             //

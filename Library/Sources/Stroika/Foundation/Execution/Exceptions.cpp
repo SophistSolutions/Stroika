@@ -139,19 +139,19 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombined
     StringBuilder sb{message};
     sb += " ";
     if (errCode.category () == generic_category ()) {
-        sb += Characters::Format (L"{errno: %d}", errCode.value ());
+        sb += Characters::Format ("{{errno: {}}}"_f, errCode.value ());
     }
     else if (errCode.category () == system_category ()) {
 #if qPlatform_POSIX
-        sb += Characters::Format (L"{errno: %d}", errCode.value ());
+        sb += Characters::Format ("{{errno: {}}}"_f, errCode.value ());
 #elif qPlatform_Windows
-        sb += Characters::Format (L"{Windows error: %d}", errCode.value ());
+        sb += Characters::Format ("{{Windows error: {}}}"_f, errCode.value ());
 #else
-        sb += Characters::Format (L"{system error: %d}", errCode.value ());
+        sb += Characters::Format ("{{system error: {}}}"_f, errCode.value ());
 #endif
     }
     else {
-        sb += Characters::Format (L"{%s: %d}", Characters::String::FromNarrowSDKString (errCode.category ().name ()).c_str (), errCode.value ());
+        sb += Characters::Format ("{{{}: {}}}"_f, Characters::String::FromNarrowSDKString (errCode.category ().name ()), errCode.value ());
     }
     return sb.str ();
 }

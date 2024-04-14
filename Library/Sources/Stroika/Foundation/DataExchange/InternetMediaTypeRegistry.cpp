@@ -635,7 +635,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         {
             return fContentType2FileSuffixCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> optional<FileSuffixType> {
                 if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (
-                        Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
+                        Characters::Format ("MIME\\Database\\Content Type\\{}\\Extension"_f, ct))) {
                     return fs.As<String> ();
                 }
                 return nullopt;
@@ -692,7 +692,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                 using Characters::Format;
                 using Configuration::Platform::Windows::RegistryKey;
                 // only do registry lookup if needed, since (probably) more costly than local map lookup
-                if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"%s\\Content Type", fileSuffix.As<wstring> ().c_str ()))) {
+                if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format ("{}\\Content Type"_f, fileSuffix))) {
                     InternetMediaType mediaType{oct.As<String> ()};
                     return mediaType;
                 }

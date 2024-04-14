@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Execution::Resources {
     {
 #if qPlatform_Windows
         if (fIntName_.has_value ()) {
-            return Characters::Format (L"#%d", *fIntName_);
+            return Characters::Format ("#{}"_f, *fIntName_);
         }
 #endif
         return String::FromSDKString (fName_);

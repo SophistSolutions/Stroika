@@ -25,7 +25,7 @@ String Stats_Basic::ToString () const
     if (total == 0) {
         total = 1; // avoid divide by zero
     }
-    return Format (L"{ hits: %d, misses: %d, hit%%: %f }", hits, misses, float (hits) / float (total));
+    return Format ("{ hits: {}, misses: {}, hit%: {} }"_f, hits, misses, float (hits) / float (total));
 }
 
 /*

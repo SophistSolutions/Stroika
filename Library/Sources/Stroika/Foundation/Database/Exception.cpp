@@ -17,7 +17,7 @@ using namespace Stroika::Foundation::Database;
  ********************************************************************************
  */
 Database::Exception::Exception (const String& message)
-    : inherited{Format (L"Database error: %s", message.As<wstring> ().c_str ())}
+    : inherited{Format ("Database error: {}"_f, message)}
 {
 }
 

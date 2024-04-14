@@ -57,7 +57,7 @@ namespace {
             } break;
             case SQLITE_CONSTRAINT: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{Characters::Format (L"SQLITE_CONSTRAINT: %s", errMsgDetails->c_str ())});
+                    Execution::Throw (Exception{Characters::Format ("SQLITE_CONSTRAINT: {}"_f, errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_CONSTRAINT"sv};
@@ -78,7 +78,7 @@ namespace {
             } break;
             case SQLITE_MISUSE: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{Characters::Format (L"SQLITE_MISUSE: %s", errMsgDetails->c_str ())});
+                    Execution::Throw (Exception{Characters::Format ("SQLITE_MISUSE: {}"_f, errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_MISUSE"sv};
@@ -87,7 +87,7 @@ namespace {
             } break;
             case SQLITE_ERROR: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{Characters::Format (L"SQLITE_ERROR: %s", errMsgDetails->c_str ())});
+                    Execution::Throw (Exception{Characters::Format ("SQLITE_ERROR: {}"_f, errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_ERROR"sv};
@@ -100,10 +100,10 @@ namespace {
             } break;
         }
         if (errMsgDetails) {
-            Execution::Throw (Exception{Characters::Format (L"SQLite Error: %s (code %d)", errMsgDetails->c_str (), errCode)});
+            Execution::Throw (Exception{Characters::Format ("SQLite Error: %s (code %d)"_f, errMsgDetails, errCode)});
         }
         else {
-            Execution::Throw (Exception{Characters::Format (L"SQLite Error: %d", errCode)});
+            Execution::Throw (Exception{Characters::Format ("SQLite Error: {}"_f, errCode)});
         }
     }
     void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection = nullptr)

@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
 
 #include "Reader.h"
 
@@ -14,6 +14,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Compression;
 using namespace Stroika::Foundation::Streams;
@@ -40,9 +41,9 @@ namespace {
                     Execution::Throw (kException_);
                 }
                 case Z_ERRNO:
-                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"ZLIB Z_ERRNO (errno=%d", errno)});
+                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format ("ZLIB Z_ERRNO (errno={})"_f, errno)});
                 default:
-                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"ZLIB ERR %d", err)});
+                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format ("ZLIB ERR {}"_f, err)});
             }
         }
     }

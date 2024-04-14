@@ -1,9 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 
 #include "BadFormatException.h"
 
@@ -27,18 +28,18 @@ using namespace Stroika::Foundation::Characters;
 namespace {
     String mkMessage_OffsetInfo_ (const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
     {
-        String result;
+        StringBuilder result;
         if (lineNumber.has_value ()) {
-            result += Format (L"Line %d", *lineNumber);
+            result += Format ("Line {}"_f, *lineNumber);
             if (columnNumber.has_value ()) {
-                result += Format (L"; Column %d", *columnNumber);
+                result += Format ("; Column %d"_f, *columnNumber);
             }
         }
         if (fileOffset.has_value ()) {
             if (not result.empty ()) {
                 result += "; "sv;
             }
-            result += Format (L"; FileOffset %d", *fileOffset);
+            result += Format ("; FileOffset {}"_f, *fileOffset);
         }
         return result;
     }
@@ -52,20 +53,20 @@ namespace {
     }
     String mkMessage_ (const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, optional<uint64_t> fileOffset)
     {
-        String msg           = mkMessage_ ();
-        String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
+        StringBuilder msg           = mkMessage_ ();
+        String        lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += " ("sv + lineInfoExtra + ")."sv;
+            msg << " ("sv << lineInfoExtra << ")."sv;
         }
         return msg;
     }
     String mkMessage_ (const String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber,
                        const optional<uint64_t>& fileOffset)
     {
-        String msg           = mkMessage_ (details);
-        String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
+        StringBuilder msg           = mkMessage_ (details);
+        String        lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += " ("sv + lineInfoExtra + ")."sv;
+            msg << " ("sv << lineInfoExtra << ")."sv;
         }
         return msg;
     }

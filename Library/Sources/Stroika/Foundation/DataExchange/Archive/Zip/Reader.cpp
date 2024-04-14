@@ -2619,7 +2619,8 @@ public:
         unz_global_info64 gi;
         int               err = unzGetGlobalInfo64 (fZipFile_, &gi);
         if (err != UNZ_OK) [[unlikely]] {
-            Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"error %d with zipfile in unzGetGlobalInfo", err)});
+            using namespace Characters;
+            Execution::Throw (Execution::RuntimeErrorException{Format ("error {} with zipfile in unzGetGlobalInfo"_f, err)});
         }
         for (size_t i = 0; i < gi.number_entry; i++) {
             char            filename_inzip[10 * 1024];
@@ -2629,13 +2630,15 @@ public:
             //char charCrypt = ' ';
             err = ::unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof (filename_inzip), NULL, 0, NULL, 0);
             if (err != UNZ_OK) [[unlikely]] {
-                Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"error %d with zipfile in unzGetCurrentFileInfo64", err)});
+                using namespace Characters;
+                Execution::Throw (Execution::RuntimeErrorException{Format (L"error {} with zipfile in unzGetCurrentFileInfo64"_f, err)});
                 break;
             }
             if ((i + 1) < gi.number_entry) {
                 err = ::unzGoToNextFile_ (fZipFile_);
                 if (err != UNZ_OK) [[unlikely]] {
-                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"error %d with zipfile in unzGoToNextFile", err)});
+                    using namespace Characters;
+                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format ("error {} with zipfile in unzGoToNextFile"_f, err)});
                     break;
                 }
             }
@@ -2727,7 +2730,8 @@ public:
     virtual Memory::BLOB GetData (const String& fileName) const override
     {
         if (unzLocateFile_ (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK) [[unlikely]] {
-            Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"File '%s' not found", fileName.As<wstring> ().c_str ())});
+            using namespace Characters;
+            Execution::Throw (Execution::RuntimeErrorException{Format ("File '{}' not found"_f, fileName)});
         }
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
@@ -2737,8 +2741,8 @@ public:
             byte buf[10 * 1024];
             err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (Memory::NEltsOf (buf)));
             if (err < 0) [[unlikely]] {
-                Execution::Throw (Execution::RuntimeErrorException{
-                    Characters::Format (L"File '%s' error %d extracting", fileName.As<wstring> ().c_str (), err)});
+                using namespace Characters;
+                Execution::Throw (Execution::RuntimeErrorException{Format (L"File '{}' error {} extracting"_f, fileName, err)});
             }
             else if (err > 0) {
                 Assert (static_cast<size_t> (err) <= Memory::NEltsOf (buf));

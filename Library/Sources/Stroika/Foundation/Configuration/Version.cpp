@@ -135,7 +135,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
 
 Characters::String Version::AsWin32Version4DotString () const
 {
-    return Characters::Format (L"%d.%d.%d.%d", fMajorVer, fMinorVer, (static_cast<uint8_t> (fVerStage) << 5) | (fVerSubStage >> 7),
+    return Characters::Format ("{}.{}.{}.{}"_f, fMajorVer, fMinorVer, (static_cast<uint8_t> (fVerStage) << 5) | (fVerSubStage >> 7),
                                (static_cast<uint8_t> (fVerSubStage & 0x7f) << 1) | static_cast<uint8_t> (fFinalBuild));
 }
 
@@ -161,15 +161,15 @@ Characters::String Version::AsPrettyVersionString () const
     }
     String verSubStagStr;
     if (fVerSubStage != 0) {
-        verSubStagStr = Characters::Format (L"%d", fVerSubStage);
+        verSubStagStr = Characters::Format ("{}"_f, fVerSubStage);
     }
     if (not fFinalBuild) {
         verSubStagStr += "x"sv;
     }
-    return Characters::Format (L"%d.%d%s%s", fMajorVer, fMinorVer, stageStr.c_str (), verSubStagStr.c_str ());
+    return Characters::Format ("{}.{}{}{}"_f, fMajorVer, fMinorVer, stageStr, verSubStagStr);
 }
 
 Characters::String Version::AsMajorMinorString () const
 {
-    return Characters::Format (L"%d.%d", fMajorVer, fMinorVer);
+    return Characters::Format ("{}.{}"_f, fMajorVer, fMinorVer);
 }

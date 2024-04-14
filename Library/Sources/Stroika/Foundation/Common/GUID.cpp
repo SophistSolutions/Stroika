@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cinttypes>
 #include <random>
 
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/Format.h"
-#include "../DataExchange/CheckedConverter.h"
-#include "../DataExchange/DefaultSerializer.h"
-#include "../Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/DataExchange/CheckedConverter.h"
+#include "Stroika/Foundation/DataExchange/DefaultSerializer.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "GUID.h"
 
@@ -44,14 +44,16 @@ Common::GUID::GUID (const string& src)
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
     if (nfields != 11 and nchars != 36) {
-        Execution::Throw (DataExchange::BadFormatException{"Badly formatted GUID"sv});
+        static const auto kException_ = DataExchange::BadFormatException{"Badly formatted GUID"sv};
+        Execution::Throw (kException_);
     }
 }
 
 Common::GUID::GUID (const Memory::BLOB& src)
 {
     if (src.size () != 16) {
-        Execution::Throw (DataExchange::BadFormatException{"GUID from BLOB must be 16 bytes"sv});
+        static const auto kException_ = DataExchange::BadFormatException{"GUID from BLOB must be 16 bytes"sv};
+        Execution::Throw (kException_);
     }
     ::memcpy (this, src.begin (), 16);
 }
@@ -63,8 +65,8 @@ Common::GUID::GUID (const Characters::String& src)
 
 Characters::String Common::GUID::ToString () const
 {
-    return Characters::Format (L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", Data1, Data2, Data3, Data4[0], Data4[1], Data4[2],
-                               Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
+    return Characters::Format (L"{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}"_f, Data1, Data2, Data3, Data4[0],
+                               Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
 }
 
 Common::GUID::operator Memory::BLOB () const

@@ -22,13 +22,13 @@ CharacterEncodingException::CharacterEncodingException (EncodingOrDecoding encod
         sb << (encodingOrDecoding == eEncoding ? "Encoding Exception: cannot construct code point for character"sv
                                                : "Decoding Exception: cannot decode bytes to character"sv);
         if (atSourceOffset) {
-            sb << " at source offset "sv << Format (L"%d", *atSourceOffset);
+            sb << " at source offset "sv << *atSourceOffset;
         }
         if (encoding) {
             sb << " using "sv << *encoding << " encoding"sv;
         }
         sb << "."sv;
-        return sb.str ();
+        return sb;
     }()}
     , fEncodingOrDecoding_{encodingOrDecoding}
     , fAtSourceOffset_{atSourceOffset}

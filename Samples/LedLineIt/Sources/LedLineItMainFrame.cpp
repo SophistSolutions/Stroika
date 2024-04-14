@@ -217,7 +217,7 @@ void LedLineItMainFrame::OnUpdateLineIndicator (CCmdUI* pCmdUI)
         }
         else {
             Characters::CString::Copy (buf, Memory::NEltsOf (buf),
-                                       Characters::Format (L"%d", static_cast<int> (v->GetCurUserLine ())).AsSDKString ().c_str ());
+                                       Characters::Format ("{}"_f, static_cast<int> (v->GetCurUserLine ())).AsSDKString ().c_str ());
         }
     }
     pCmdUI->SetText (buf);

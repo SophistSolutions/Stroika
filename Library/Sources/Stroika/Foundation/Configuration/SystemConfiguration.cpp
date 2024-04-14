@@ -692,8 +692,8 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             Assert (size >= sizeof (VS_FIXEDFILEINFO));
             Assert (p != nullptr);
             auto pFixed          = static_cast<const VS_FIXEDFILEINFO*> (p);
-            kernelVersion        = Characters::Format (L"%d.%d", HIWORD (pFixed->dwFileVersionMS), LOWORD (pFixed->dwFileVersionMS));
-            kernelOSBuildVersion = Characters::Format (L"%d.%d", HIWORD (pFixed->dwFileVersionLS), LOWORD (pFixed->dwFileVersionLS));
+            kernelVersion        = Characters::Format ("{}.{}"_f, HIWORD (pFixed->dwFileVersionMS), LOWORD (pFixed->dwFileVersionMS));
+            kernelOSBuildVersion = Characters::Format ("{}.{}"_f, HIWORD (pFixed->dwFileVersionLS), LOWORD (pFixed->dwFileVersionLS));
         }
 
         /*

@@ -166,7 +166,9 @@ namespace Stroika::Foundation::Characters {
      *          a problem.
      */
     String FormatV (const wchar_t* format, va_list argsList);
-    String Format (const wchar_t* format, ...);
+    [[deprecated ("Since Stroika v3.0d6 - use _f format strings - not old style c format strings - use CString::Format for old style C "
+                  "format strings")]] String
+    Format (const wchar_t* format, ...);
 
     /**
      *  \brief Like std::format, except returning stroika String, and taking _f (FormatString) string as argument (which can be ASCII, but still produce UNICODE output).

@@ -60,7 +60,8 @@ namespace Stroika::Foundation::Database::SQL::Connection {
     }
     inline String Ptr::ToString () const
     {
-        return Characters::Format (L"%p", _fRep.get ());
+        using namespace Characters;
+        return Format ("{}"_f, static_cast<const void*> (_fRep.get ()));
     }
 
 }

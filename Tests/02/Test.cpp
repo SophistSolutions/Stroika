@@ -667,7 +667,7 @@ namespace {
         // SUBTLE - this would FAIL with vsnprintf on gcc -- See docs in Header for
         // Format string
         EXPECT_TRUE (CString::Format (L"%s", L"123") == L"123");
-        EXPECT_TRUE (Format (L"%s", L"123") == L"123");
+        EXPECT_EQ (Format ("{}"_f, L"123"), L"123");
 
         EXPECT_TRUE (Format (L"%20s", L"123") == L"                 123");
         EXPECT_TRUE (Format (L"%.20s", L"123") == L"123");
@@ -1731,7 +1731,7 @@ namespace {
         String                    b = L"…";
         if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
             try {
-                String x = Characters::Format (L"%s", b.c_str ());
+                String x = Characters::Format ("{}"_f, b);
                 EXPECT_TRUE (x == b);
             }
             catch (...) {

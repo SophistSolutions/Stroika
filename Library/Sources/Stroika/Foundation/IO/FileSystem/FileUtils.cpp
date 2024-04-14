@@ -58,13 +58,13 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 String IO::FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
 {
     if (bytes < 1000) {
-        return Format (L"%d bytes", static_cast<int> (bytes));
+        return Format ("{} bytes"_f, static_cast<int> (bytes));
     }
     else if (bytes < 1000 * 1024) {
-        return Format (L"%.1f K", static_cast<double> (bytes) / 1024.0f);
+        return Format ("%{:.1} K"_f, static_cast<double> (bytes) / 1024.0f);
     }
     else {
-        return Format (L"%.1f MB", static_cast<double> (bytes) / (1024 * 1024.0f));
+        return Format ("{:.1} MB"_f, static_cast<double> (bytes) / (1024 * 1024.0f));
     }
 }
 

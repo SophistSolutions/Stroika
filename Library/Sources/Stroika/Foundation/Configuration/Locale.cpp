@@ -73,8 +73,7 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
     if (auto r = FindLocaleNameQuietly (iso2LetterLanguageCode, iso2LetterTerritoryCode)) {
         return *r;
     }
-    Execution::Throw (Execution::RuntimeErrorException{Characters::Format (
-        L"Locale (%s-%s) not found", iso2LetterLanguageCode.As<wstring> ().c_str (), iso2LetterTerritoryCode.As<wstring> ().c_str ())});
+    Execution::Throw (Execution::RuntimeErrorException{Characters::Format ("Locale ({}-{}) not found"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode)});
 }
 
 optional<Characters::String> Configuration::FindLocaleNameQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)

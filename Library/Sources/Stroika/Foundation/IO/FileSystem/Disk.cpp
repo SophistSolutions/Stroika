@@ -218,7 +218,7 @@ namespace {
         // This format is NOT super well documented, and was mostly derived from reading the remarks section
         // of https://msdn.microsoft.com/en-us/library/windows/desktop/aa363216%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
         // (DeviceIoControl function)
-        return IO::FileSystem::ToPath (Characters::Format (L"\\\\.\\PhysicalDrive%d", i));
+        return IO::FileSystem::ToPath (Characters::Format ("\\\\.\\PhysicalDrive{}"_f, i));
     }
 }
 KeyedCollection<DiskInfoType, filesystem::path> FileSystem::GetAvailableDisks ()
