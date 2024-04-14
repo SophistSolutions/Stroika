@@ -82,13 +82,13 @@ namespace {
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("http://www.ics.uci.edu/pub/ietf/uri/#Related");
                     EXPECT_TRUE (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "www.ics.uci.edu");
-                    DbgTrace ("X={}"_f, uri.As<String> ());
-                    EXPECT_TRUE (uri.As<String> () == "http://www.ics.uci.edu/pub/ietf/uri/#Related");
+                    DbgTrace ("X={}"_f, uri);
+                    EXPECT_EQ (uri.As<String> () , "http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("/uri/#Related");
                     EXPECT_TRUE (not uri.GetAuthority ().has_value ());
-                    EXPECT_TRUE (uri.As<String> () == "/uri/#Related");
+                    EXPECT_EQ (uri.As<String> () , "/uri/#Related");
                 }
                 {
                     // This behavior appears to meet the needs of my URL::eStroikaPre20a50BackCompatMode tests - so may work for Stroika - just replace its use with URI -- LGP 2019-04-04
@@ -543,15 +543,13 @@ GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
             // Note - this try/catch is ONLY needed to workaround bug with MSFT WSL (windows subsystem for linux), and when thats fixed we can remove the try/catch -- LGP 2020-03-20
             try {
                 for (NeighborsMonitor::Neighbor n : monitor.GetNeighbors ()) {
-                    DbgTrace ("discovered {}"_f, Characters::ToString (n));
+                    DbgTrace ("discovered {}"_f, n);
                 }
             }
             catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
 #if qPlatform_Linux
                 if (e.code () == errc::no_such_file_or_directory) {
-                    Test::WarnTestIssue (
-                        (L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " + Characters::ToString (current_exception ()))
-                            .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                    Stroika::Frameworks::Test::WarnTestIssue ("Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f (current_exception ()).As<wstring> ().c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                     return;
                 }
 #endif
