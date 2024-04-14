@@ -83,12 +83,12 @@ namespace {
                     IO::Network::URI uri = IO::Network::URI::Parse ("http://www.ics.uci.edu/pub/ietf/uri/#Related");
                     EXPECT_TRUE (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "www.ics.uci.edu");
                     DbgTrace ("X={}"_f, uri);
-                    EXPECT_EQ (uri.As<String> () , "http://www.ics.uci.edu/pub/ietf/uri/#Related");
+                    EXPECT_EQ (uri.As<String> (), "http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("/uri/#Related");
                     EXPECT_TRUE (not uri.GetAuthority ().has_value ());
-                    EXPECT_EQ (uri.As<String> () , "/uri/#Related");
+                    EXPECT_EQ (uri.As<String> (), "/uri/#Related");
                 }
                 {
                     // This behavior appears to meet the needs of my URL::eStroikaPre20a50BackCompatMode tests - so may work for Stroika - just replace its use with URI -- LGP 2019-04-04
@@ -549,7 +549,8 @@ GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
             catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
 #if qPlatform_Linux
                 if (e.code () == errc::no_such_file_or_directory) {
-                    Stroika::Frameworks::Test::WarnTestIssue ("Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f (current_exception ()).As<wstring> ().c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                    Stroika::Frameworks::Test::WarnTestIssue (
+                        "Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f(current_exception ()).As<wstring> ().c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                     return;
                 }
 #endif

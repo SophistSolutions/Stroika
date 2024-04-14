@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Characters {
     /*
     * 
     *   &&& SOON TO BE OSBOLETE &&&& - NOT SURE IF/HOW MUCH WE WANT TO MAINTAIN THIS FUNCTIONALITY???
-    *   MAYBE OK - since probbaly not intrindically confusing?
+    *   MAYBE OK - since probably not intrindically confusing?
     * 
      * Format is the Stroika wrapper on sprintf().
      * The main differences between sprintf () and Format are:
