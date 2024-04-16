@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
@@ -991,19 +992,20 @@ namespace {
             VariantValue v   = numeric_limits<T>::lowest ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            EXPECT_TRUE (v == vrt);
+            EXPECT_EQ (v, vrt);
         }
         {
             VariantValue v   = numeric_limits<T>::min ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            EXPECT_TRUE (v == vrt);
+            EXPECT_EQ (v, vrt);
         }
         {
             VariantValue v   = numeric_limits<T>::max ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            EXPECT_TRUE (v == vrt);
+            DbgTrace (Characters::FormatString<char>{"v={}, vs={}, vrt={}"}, v, vs, vrt);
+            EXPECT_EQ (v, vrt);
         }
     }
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, Test3_VariantValue)

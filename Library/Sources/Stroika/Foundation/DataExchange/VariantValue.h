@@ -150,7 +150,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *      @todo   XPath / JPath / JSONPath feature in DataExchange::VariantValue - https://github.com/SophistSolutions/Stroika/issues/110
      *
-     *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
+     *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has cleaned up
      *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
      *              Maybe Float2StringOptions is optional param to As<String> ()???
      *
@@ -345,6 +345,9 @@ namespace Stroika::Foundation::DataExchange {
          *          Coercion of Date/DateTime values uses ISO8601 format.
          *          Coercion of array and map values is vaguely json-ish in format, readable, but not intended
          *          to be regular enough to be parsable.
+         * 
+         *  \note   Unsigned int and Signed int both converted to string representations base 10 (might have
+         *          considered hex for base 16, but no).
          *
          *  \note   About As<bool> ()
          *          Coerces String value 'true' - case sensitive - to true, and any integer or unsigned integer value

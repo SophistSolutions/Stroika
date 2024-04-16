@@ -753,7 +753,7 @@ namespace {
     GTEST_TEST (Foundation_Traversal, Test14_ToString_)
     {
         Debug::TraceContextBumper ctx{"{}::Test14_ToString_"};
-        EXPECT_TRUE ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4]"));
+        EXPECT_TRUE ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format ("{}"_f, n); }) == "[3 ... 4]"));
         EXPECT_TRUE ((Range<int>{3, 4}.ToString () == L"[3 ... 4]"));
         {
             using namespace Time;
@@ -831,12 +831,14 @@ namespace {
         {
             using Characters::String;
             Iterable<int> c{3, 4, 7};
-            EXPECT_TRUE (c.Map<Iterable<String>> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String>{"3", "4", "7"}));
+            EXPECT_TRUE (c.Map<Iterable<String>> ([] (int i) {
+                              return Characters::Format ("{}"_f, i);
+                          }).SequentialEquals (Iterable<String>{"3", "4", "7"}));
         }
         {
             using Characters::String;
             Iterable<int> c{3, 4, 7};
-            EXPECT_TRUE ((c.Map<vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{"3", "4", "7"}));
+            EXPECT_TRUE ((c.Map<vector<String>> ([] (int i) { return Characters::Format ("{}"_f, i); }) == vector<String>{"3", "4", "7"}));
         }
         {
             Iterable<int> c = {1, 2, 3, 4, 5, 6};

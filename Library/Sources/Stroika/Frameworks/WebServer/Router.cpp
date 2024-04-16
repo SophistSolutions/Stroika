@@ -95,7 +95,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         : fAllowedOrigins_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedOrigins)}
         , fAllowedHeaders_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedHeaders)}
         , fAccessControlAllowCredentialsValue_{*filledInCORSOptions.fAllowCredentials ? "true"sv : "false"sv}
-        , fAccessControlMaxAgeValue_{Characters::Format (L"%d", *filledInCORSOptions.fAccessControlMaxAge)}
+        , fAccessControlMaxAgeValue_{Characters::Format ("{}"_f, *filledInCORSOptions.fAccessControlMaxAge)}
         , fRoutes_{routes}
     {
     }

@@ -664,7 +664,7 @@ String DateTime::Format (LocaleIndependentFormat format) const
                         int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
                         int  hrs        = minuteBias / 60;
                         int  mins       = minuteBias - hrs * 60;
-                        r << ::Format ("{}{:.2}:{:.2}"_f, (tzBias < 0 ? L"-" : L"+"), hrs, mins);
+                        r << ::Format ("{}{:02}:{:02}"_f, (tzBias < 0 ? L"-" : L"+"), hrs, mins);
                     }
                 }
             }

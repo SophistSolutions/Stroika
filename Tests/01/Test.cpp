@@ -208,9 +208,9 @@ namespace {
                 }
                 void DoIt ()
                 {
-                    EXPECT_TRUE (Memory::NullCoalesce (LookupDiskStats_Try1 (L"xx")).size == 33);
-                    EXPECT_TRUE (LookupDiskStats_Try2 (L"xx").size == 33);
-                    EXPECT_TRUE (LookupDiskStats_Try3 (L"xx").size == 33);
+                    EXPECT_TRUE (Memory::NullCoalesce (LookupDiskStats_Try1 ("xx")).size == 33);
+                    EXPECT_TRUE (LookupDiskStats_Try2 ("xx").size == 33);
+                    EXPECT_TRUE (LookupDiskStats_Try3 ("xx").size == 33);
                     [[maybe_unused]] auto n = sDiskUsageCache_.Elements ().size ();
                     for (const auto& ci : sDiskUsageCache_.Elements ()) {
                         sDiskUsageCache_.Add (ci.fKey, ci.fValue, ci.fLastRefreshedAt);
@@ -486,7 +486,7 @@ namespace {
                 auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
                 DbgTrace ("stats: {}"_f, Characters::ToString (f.GetStatistics ()));
                 DbgTrace ("Probability of false positives = {}"_f, f.ProbabilityOfFalsePositive (totalEntries));
-                DbgTrace ("false positives: %d, expected: {}"_f, falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace ("false positives: {}, expected: {}"_f, falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
