@@ -155,7 +155,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             if (not result.empty ()) {
                 result << kCommaSpace_;
             }
-            result << Characters::Format (L"%d", nMonths) << kSpaceBeforeUnit_
+            result << Characters::Format ("{}"_f, nMonths) << kSpaceBeforeUnit_
                    << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
             timeLeft -= nMonths * kSecondsPerMonth_;
         }
@@ -166,7 +166,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             if (not result.empty ()) {
                 result << kCommaSpace_;
             }
-            result << Characters::Format (L"%d", nDays) << kSpaceBeforeUnit_
+            result << Characters::Format ("{}"_f, nDays) << kSpaceBeforeUnit_
                    << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
             timeLeft -= nDays * kSecondsPerDay_;
         }
@@ -178,7 +178,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 if (not result.empty ()) {
                     result << kCommaSpace_;
                 }
-                result << Characters::Format (L"%d", nHours) << kSpaceBeforeUnit_
+                result << Characters::Format ("{}"_f, nHours) << kSpaceBeforeUnit_
                        << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
                 timeLeft -= nHours * kSecondsPerHour_;
             }
@@ -189,7 +189,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 if (not result.empty ()) {
                     result << kCommaSpace_;
                 }
-                result << Characters::Format (L"%d", nMinutes) << kSpaceBeforeUnit_
+                result << Characters::Format ("{}"_f, nMinutes) << kSpaceBeforeUnit_
                        << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
                 timeLeft -= nMinutes * kSecondsPerMinute_;
             }

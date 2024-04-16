@@ -494,7 +494,7 @@ String ThreadPool::ToString () const
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         if (fThreadPoolName_) {
-            sb << Characters::Format (L"pool-name: '%s'", fThreadPoolName_->As<wstring> ().c_str ()) << ", "sv;
+            sb << Characters::Format ("pool-name: '{}'"_f, *fThreadPoolName_) << ", "sv;
         }
     }
     sb << Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) << ", "sv;
@@ -504,7 +504,7 @@ String ThreadPool::ToString () const
         sb << Characters::Format (L"pool-thread-count: %d", fThreads_.size ());
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 // THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool

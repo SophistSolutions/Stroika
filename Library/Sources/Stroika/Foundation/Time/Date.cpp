@@ -330,7 +330,7 @@ String Time::GetFormattedAge (const optional<Date>& birthDate, const optional<Da
 {
     if (birthDate.has_value ()) {
         int yearDiff = deathDate.has_value () ? YearDifference (*deathDate, *birthDate) : YearDifference (DateTime::GetToday (), *birthDate);
-        return Format (L"%d", yearDiff);
+        return Format ("{}"_f, yearDiff);
     }
     else {
         return "?"sv;

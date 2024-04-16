@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Characters {
             case FunctionCodeType_::kWriteSingleCoil_:
                 return "WriteSingleCoil"_k;
         }
-        return Format (L"%d", f);
+        return Format ("{}"_f, f);
     }
     template <>
     String ToString (const MBAPHeaderIsh_& mh)
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Characters {
         sb << "UnitID: "sv << mh.fUnitID << ", "sv;
         sb << "FunctionCode: "sv << mh.fFunctionCode;
         sb << "}"sv;
-        return sb.str ();
+        return sb;
     }
 }
 

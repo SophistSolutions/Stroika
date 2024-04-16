@@ -8,6 +8,7 @@
 #include "IModbusService.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Modbus;
@@ -18,7 +19,7 @@ using namespace Stroika::Frameworks::Modbus;
  ********************************************************************************
  */
 Modbus::Exception::Exception (ExceptionCode exceptionCode)
-    : Execution::RuntimeErrorException<>{Characters::Format (L"Modbus Exception: %d", exceptionCode)}
+    : Execution::RuntimeErrorException<>{Characters::Format ("Modbus Exception: {}"_f, static_cast<int> (exceptionCode))}
     , fExceptionCode{exceptionCode}
 {
 }
