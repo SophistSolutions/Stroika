@@ -76,9 +76,7 @@ void WMICollector::PerInstanceData_::AddCounter (const String& counterName)
 {
     Require (not fCounters_.ContainsKey (counterName));
     PDH_HCOUNTER newCounter = nullptr;
-    PDH_STATUS   x          = ::PdhAddCounter (fQuery_,
-                                               Characters::Format ("\\{}({})\\{}"_f, fObjectName_, fInstance_, counterName) .c_str (),
-                                               NULL, &newCounter);
+    PDH_STATUS x = ::PdhAddCounter (fQuery_, Characters::Format ("\\{}({})\\{}"_f, fObjectName_, fInstance_, counterName).c_str (), NULL, &newCounter);
     if (x != 0) {
         [[maybe_unused]] bool isPDH_CSTATUS_NO_OBJECT  = (x == PDH_CSTATUS_NO_OBJECT);
         [[maybe_unused]] bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
