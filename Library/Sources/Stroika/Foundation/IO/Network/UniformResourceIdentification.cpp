@@ -272,7 +272,7 @@ String Authority::As (optional<StringPCTEncodedFlag> pctEncode) const
         sb << fHost_->As<String> (pctEncode);
     }
     if (fPort_) {
-        sb << Format (L":%d", *fPort_);
+        sb << ":"sv << static_cast<unsigned int> (*fPort_);
     }
     return sb.str ();
 }

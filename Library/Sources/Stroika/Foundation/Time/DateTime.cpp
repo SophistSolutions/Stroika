@@ -664,11 +664,11 @@ String DateTime::Format (LocaleIndependentFormat format) const
                         int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
                         int  hrs        = minuteBias / 60;
                         int  mins       = minuteBias - hrs * 60;
-                        r << ::Format (L"%s%.2d:%.2d", (tzBias < 0 ? L"-" : L"+"), hrs, mins);
+                        r << ::Format ("{}{:.2}:{:.2}"_f, (tzBias < 0 ? L"-" : L"+"), hrs, mins);
                     }
                 }
             }
-            return r.str ();
+            return r;
         } break;
         case LocaleIndependentFormat::eRFC1123: {
             optional<Timezone>  tz     = GetTimezone ();

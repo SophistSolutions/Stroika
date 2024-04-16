@@ -41,8 +41,8 @@ namespace Stroika::Foundation::Characters {
      *          which Stroika probably still supports, but this has not been tested in a while (not very useful, not used much anymore).
      * 
      *      o   Unix
-     *          There is no standard. This could be locale-dependent (often EUC based mutlibyte charactersets).
-     *          Or could be UTF-8. These aren't totally incompatible possabilities.
+     *          There is no standard. This could be locale-dependent (often EUC based multibyte character sets).
+     *          Or could be UTF-8. These aren't totally incompatible possibilities.
      * 
      *      o   MacOS
      *          Same as 'Unix' above, but most typically UTF-8. So Stroika assumes UTF-8.

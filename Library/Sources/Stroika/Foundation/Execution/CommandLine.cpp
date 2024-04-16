@@ -117,19 +117,18 @@ String CommandLine::Option::GetArgumentDescription (bool includeArg) const
     String argName = this->fHelpArgName.value_or ("ARG"sv);
     if (fSingleCharName and fLongName) {
         if (includeArg) {
-            return Characters::Format (L"(-%c %s|--%s=%s)", *fSingleCharName, argName.As<wstring> ().c_str (),
-                                       fLongName->As<wstring> ().c_str (), argName.As<wstring> ().c_str ());
+            return Characters::Format ("(-{} {}|--{}={})"_f, *fSingleCharName, argName, *fLongName, argName);
         }
         else {
-            return Characters::Format (L"(-%c|--%s)", *fSingleCharName, fLongName->As<wstring> ().c_str ());
+            return Characters::Format ("(-{}|--{})"_f, *fSingleCharName, *fLongName);
         }
     }
     else if (this->fSingleCharName) {
         if (includeArg) {
-            return Characters::Format (L"-%c %s", *fSingleCharName, argName.As<wstring> ().c_str ());
+            return Characters::Format ("-{} {}"_f, *fSingleCharName, argName);
         }
         else {
-            return Characters::Format (L"-%c", *fSingleCharName);
+            return Characters::Format ("-{}"_f, *fSingleCharName);
         }
     }
     else if (fLongName) {
@@ -155,10 +154,10 @@ String CommandLine::Option::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fSingleCharName) {
-        sb << "fSingleCharName: "sv << *fSingleCharName << ","sv;
+        sb << "SingleCharName: "sv << *fSingleCharName << ","sv;
     }
     if (fLongName) {
-        sb << "fLongName: "sv << *fLongName << ","sv;
+        sb << "LongName: "sv << *fLongName << ","sv;
     }
     sb << "CaseSensitive: "sv << fLongNameCaseSensitive << ","sv;
     sb << "SupportsArgument: "sv << fSupportsArgument << ","sv;
@@ -297,12 +296,12 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
         }
     }
     if (o.fRequired and not found and arguments.empty ()) {
-        Execution::Throw (InvalidCommandLineArgument{Characters::Format (L"Command line argument '%s' required but not provided",
-                                                                         o.GetArgumentDescription ().As<wstring> ().c_str ())});
+        Execution::Throw (InvalidCommandLineArgument{
+            Characters::Format ("Command line argument '{}' required but not provided"_f, o.GetArgumentDescription ())});
     }
     if (found and o.fSupportsArgument and o.fIfSupportsArgumentThenRequired and arguments.empty ()) {
-        Execution::Throw (InvalidCommandLineArgument{Characters::Format (
-            L"Command line argument %s provided, but without required argument", o.GetArgumentDescription ().As<wstring> ().c_str ())});
+        Execution::Throw (InvalidCommandLineArgument{
+            Characters::Format ("Command line argument {} provided, but without required argument"_f, o.GetArgumentDescription ())});
     }
     return make_tuple (found, arguments);
 }

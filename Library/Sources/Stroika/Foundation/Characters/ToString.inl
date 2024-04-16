@@ -326,12 +326,12 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString (const shared_ptr<T>& pt)
         {
-            return (pt == nullptr) ? L"nullptr"sv : Format (L"%p", pt.get ());
+            return (pt == nullptr) ? L"nullptr"sv : Format ("{}"_f, static_cast<const void*> (pt.get ()));
         }
         template <typename T>
         inline String ToString (const unique_ptr<T>& pt)
         {
-            return (pt == nullptr) ? L"nullptr"sv : Format (L"%p", pt.get ());
+            return (pt == nullptr) ? L"nullptr"sv : Format ("{}"_f, static_cast<const void*> (pt.get ()));
         }
         template <typename T>
         inline String ToString (const optional<T>& o)

@@ -861,7 +861,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
         PX_Blob (pPX, kTextAsRTFBlob, hglobal);
         if (hglobal != NULL) {
             try {
-                Memory::Platform::Windows::StackBasedHandleLocker hdl (hglobal);
+                Memory::Platform::Windows::StackBasedHandleLocker hdl{hglobal};
                 const byte*                                       data = reinterpret_cast<byte*> (hdl.GetPointer ());
                 if (data != NULL) {
                     size_t size = *(size_t*)data;

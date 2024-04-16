@@ -107,8 +107,8 @@ public:
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         StringBuilder                                         sb;
         sb << "{"sv;
-        sb << "Offset: "sv << Characters::Format (L"%d", fOffset_) << ", "sv;
-        sb << "HighWaterMark: "sv << Characters::Format (L"%d", fBufferFilledUpValidBytes_) << ", "sv;
+        sb << "Offset: "sv << Characters::Format ("{}"_f, fOffset_) << ", "sv;
+        sb << "HighWaterMark: "sv << Characters::Format ("{}"_f, fBufferFilledUpValidBytes_) << ", "sv;
         sb << "TEXT: "sv;
         switch (format) {
             case ToStringFormat::eAsBytes: {

@@ -40,7 +40,7 @@ Mapping<String, String> Cookie::GetAttributes () const
         result.Add (kExpiresAttributeLabel, fExpires->Format (Time::DateTime::kISO8601Format)); // not sure this is right???
     }
     if (fMaxAge) {
-        result.Add (kMaxAgeAttributeLabel, Characters::Format (L"%d", *fMaxAge));
+        result.Add (kMaxAgeAttributeLabel, Characters::Format ("{}"_f, *fMaxAge));
     }
     if (fDomain) {
         result.Add (kDomainAttributeLabel, *fDomain);

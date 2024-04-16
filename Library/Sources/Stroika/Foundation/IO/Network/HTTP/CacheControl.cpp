@@ -106,26 +106,26 @@ String CacheControl::As () const
     }
     if (fAge) {
         handleComma ();
-        sb << Characters::Format (L"age=%d", *fAge);
+        sb << Characters::Format ("age={}"_f, *fAge);
     }
     if (fMaxAge) {
         handleComma ();
-        sb << Characters::Format (L"max-age=%d", *fMaxAge);
+        sb << Characters::Format ("max-age={}"_f, *fMaxAge);
     }
     if (fSharedMaxAge) {
         handleComma ();
-        sb << Characters::Format (L"s-max-age=%d", *fSharedMaxAge);
+        sb << Characters::Format ("s-max-age={}"_f, *fSharedMaxAge);
     }
     if (fMaxStale) {
         handleComma ();
-        sb << "max-stale";
+        sb << "max-stale"sv;
         if (fMaxStale->fAmount) {
-            sb << Characters::Format (L"=%d", *fMaxStale->fAmount);
+            sb << Characters::Format ("={}"_f, *fMaxStale->fAmount);
         }
     }
     if (fMinFresh) {
         handleComma ();
-        sb << Characters::Format (L"min-fresh=%d", *fMinFresh);
+        sb << Characters::Format ("min-fresh={}"_f, *fMinFresh);
     }
     return sb.str ();
 }

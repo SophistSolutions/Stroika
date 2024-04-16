@@ -97,8 +97,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                         default:
                             // avoid races and critical sections (appender internally threadsafe)
                             for (shared_ptr<IAppenderRep> tmp : fAppenders_.load ()) {
-                                tmp->Log (i->fKey.first, Characters::Format (L"[%d duplicates suppressed]: %s", i->fValue.fRepeatCount_ - 1,
-                                                                             i->fKey.second.As<wstring> ().c_str ()));
+                                tmp->Log (i->fKey.first,
+                                          Characters::Format ("[{} duplicates suppressed]: {}"_f, i->fValue.fRepeatCount_ - 1, i->fKey.second));
                             }
                             break;
                     }
@@ -432,8 +432,8 @@ public:
     void Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>{}.GetName (logLevel),
-                                                      Time::DateTime::Now ().Format ().c_str (), message.As<wstring> ().c_str ()));
+        fWriter_.rwget ()->Write (Characters::Format ("[{:5}][{:16}] {}\n"_f, Configuration::DefaultNames<Logger::Priority>{}.GetName (logLevel),
+                                                      Time::DateTime::Now ().Format (), message));
     }
 
 private:

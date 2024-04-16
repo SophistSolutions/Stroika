@@ -144,7 +144,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             if (not result.empty ()) {
                 result << kCommaSpace_;
             }
-            result << Characters::Format (L"%d", nYears) << kSpaceBeforeUnit_
+            result << nYears << kSpaceBeforeUnit_
                    << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
             timeLeft -= nYears * kSecondsPerYear_;
         }

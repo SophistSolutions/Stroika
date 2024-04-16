@@ -125,7 +125,7 @@ optional<String> TryToOverrideDefaultWindowsSystemCategoryMessage_ (error_code e
 Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkMsg_ (error_code errCode)
 {
 #if qPlatform_Windows
-    // for some messages, the default windows implemation does poorly generating messages
+    // for some messages, the default windows implementation does poorly generating messages
     if (optional<String> o = TryToOverrideDefaultWindowsSystemCategoryMessage_ (errCode)) {
         return *o;
     }
@@ -170,7 +170,7 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
         switch (errCode.value ()) {
             case WAIT_TIMEOUT:           // errc::timed_out
             case ERROR_INTERNET_TIMEOUT: // ""
-                // NOT a good idea becuase then code saying if (errCode==errc::timed_out) will still fail --- Throw (TimeOutException (errCode));
+                // NOT a good idea because then code saying if (errCode==errc::timed_out) will still fail --- Throw (TimeOutException (errCode));
                 Throw (TimeOutException::kThe); // sad to have to lose the original error, but kind of useful so if test against errc::timeout works
         }
     }

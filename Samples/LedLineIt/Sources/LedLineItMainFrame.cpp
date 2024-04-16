@@ -15,6 +15,7 @@
 #include "LedLineItMainFrame.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Frameworks::Led;
 
 inline LedLineItView* GetActiveLedItView ()

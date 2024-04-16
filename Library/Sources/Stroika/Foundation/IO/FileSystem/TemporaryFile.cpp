@@ -84,8 +84,7 @@ AppTempFileManager::AppTempFileManager (const Options& options)
         create_directories (tmpDir); // if that doesn't do it, just throw
     }
     for (int i = 0; i < INT_MAX; ++i) {
-        filesystem::path trialD =
-            tmpDir / ToPath (Format ("{}-{}-{}"_f, exeFileName, Execution::GetCurrentProcessID (), i + rand ()));
+        filesystem::path trialD = tmpDir / ToPath (Format ("{}-{}-{}"_f, exeFileName, Execution::GetCurrentProcessID (), i + rand ()));
 
         if (create_directory (trialD) == false) {
             continue; // try again - DIRECTORY EXISTS

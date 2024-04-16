@@ -295,7 +295,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     {
         Characters::StringBuilder extraMsg;
         if (err) {
-            extraMsg << Characters::Format (L"error: %d", int (*err));
+            extraMsg << Characters::Format ("error: {}"_f, *err);
         }
         if (not extraMsg.empty ()) {
             sb << ": "sv << extraMsg.str ();

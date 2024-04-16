@@ -26,7 +26,7 @@ namespace {
         else if (cName == RequiredComponentMissingException::kPDFOCXViewer) {
             cName = "PDF Viewer (OCX)"sv;
         }
-        return Characters::Format (L"A required component - %s - is missing, or is out of date", component.As<wstring> ().c_str ());
+        return Characters::Format ("A required component - {} - is missing, or is out of date"_f, component);
     }
 }
 RequiredComponentMissingException::RequiredComponentMissingException (const String& component)

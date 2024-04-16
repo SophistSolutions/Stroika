@@ -52,7 +52,7 @@ namespace {
             case 15:
                 return "ICMP Destination Unreachable: Precedence cutoff in effect."sv;
             default:
-                return Characters::Format (L"ICMP Destination Unreachable: code %d.", code);
+                return Characters::Format ("ICMP Destination Unreachable: code {}."_f, code);
         }
     }
 }
@@ -75,7 +75,7 @@ InternetProtocol::ICMP::V4::DestinationUnreachableException::DestinationUnreacha
  ********************************************************************************
  */
 InternetProtocol::ICMP::V4::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTypes type)
-    : inherited{Characters::Format (L"ICMP Unknown packet type: %d.", type)}
+    : inherited{Characters::Format ("ICMP Unknown packet type: {}."_f, type)}
     , fType_{type}
 {
 }
