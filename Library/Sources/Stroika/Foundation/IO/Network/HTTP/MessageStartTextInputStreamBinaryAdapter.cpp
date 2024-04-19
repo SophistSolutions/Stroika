@@ -113,7 +113,7 @@ public:
         switch (format) {
             case ToStringFormat::eAsBytes: {
                 for (size_t i = 0; i < fBufferFilledUpValidBytes_; ++i) {
-                    sb << Characters::Format (L"x%x, ", fAllDataReadBuf_[i]);
+                    sb << Characters::Format ("x{:x}, "_f, fAllDataReadBuf_[i]);
                 }
             } break;
             case ToStringFormat::eAsString: {

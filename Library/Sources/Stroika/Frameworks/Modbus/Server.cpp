@@ -172,12 +172,12 @@ namespace {
              */
             if (requestPayload.size () != 4) {
                 DbgTrace ("requestPayload={}"_f, requestPayload);
-                Throw (Execution::Exception{Characters::Format (L"Invalid payload length (got %d, expected 4)", requestPayload.size ())});
+                Throw (Execution::Exception{Characters::Format ("Invalid payload length (got {}, expected 4)"_f, requestPayload.size ())});
             }
             uint16_t startingAddress = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
             uint16_t quantity = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2)); // allowed 1..maxSecondValue
             if (not(minSecondValue <= quantity and quantity <= maxSecondValue)) {
-                Throw (Execution::Exception{Characters::Format (L"Invalid quantity parameter (%d): expected value from %d..%d", quantity,
+                Throw (Execution::Exception{Characters::Format ("Invalid quantity parameter ({}): expected value from {}..{}"_f, quantity,
                                                                 minSecondValue, maxSecondValue)});
             }
             return pair<uint16_t, uint16_t>{startingAddress, quantity};
@@ -185,7 +185,7 @@ namespace {
 
         try {
             /*
-             *  I believe (must re-read docs more carefully) - we can recieve multiple requests on a single connection, and just close the connection
+             *  I believe (must re-read docs more carefully) - we can receive multiple requests on a single connection, and just close the connection
              *  on our first bad packet.
              */
             while (true) {

@@ -168,7 +168,7 @@ String Date::Format (const String& formatPattern) const
 {
     // some format's locale independent
     if (formatPattern == kISO8601Format) {
-        return Characters::Format (L"%.4d-%.2d-%.2d", (int)(this->GetYear ()), (unsigned int)(this->GetMonth ()),
+        return Characters::Format ("{:04}-{:02}-{:02}"_f, (int)(this->GetYear ()), (unsigned int)(this->GetMonth ()),
                                    (unsigned int)(this->GetDayOfMonth ()));
     }
     else {
@@ -350,11 +350,11 @@ String Time::GetFormattedAgeWithUnit (const optional<Date>& birthDate, const opt
             float yearDiffF = deathDate.has_value () ? YearDifferenceF (*deathDate, *birthDate) : YearDifferenceF (DateTime::GetToday (), *birthDate);
             int     months   = int (yearDiffF * 12.0f + 0.4999f);
             wstring unitBase = abbrevUnit ? L"mo" : L"month";
-            return Format (L"%d %s", months, Linguistics::MessageUtiltiesManager::Get ()->PluralizeNoun (unitBase, months).c_str ());
+            return Format ("{} {}"_f, months, Linguistics::MessageUtiltiesManager::Get ()->PluralizeNoun (unitBase, months));
         }
         else {
             wstring unitBase = abbrevUnit ? L"yr" : L"year";
-            return Format (L"%d %s", yearDiff, Linguistics::MessageUtiltiesManager::Get ()->PluralizeNoun (unitBase, yearDiff).c_str ());
+            return Format ("{} {}"_f, yearDiff, Linguistics::MessageUtiltiesManager::Get ()->PluralizeNoun (unitBase, yearDiff));
         }
     }
     else {

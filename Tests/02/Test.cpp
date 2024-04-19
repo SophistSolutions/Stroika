@@ -669,7 +669,8 @@ namespace {
         EXPECT_TRUE (CString::Format (L"%s", L"123") == L"123");
         EXPECT_EQ (Format ("{}"_f, L"123"), L"123");
 
-        EXPECT_TRUE (Format (L"%20s", L"123") == L"                 123");
+        DbgTrace ("{:20}"_f, L"123");
+        EXPECT_EQ (Format ("{:>20}"_f, L"123"), "                 123");
         EXPECT_TRUE (Format (L"%.20s", L"123") == L"123");
 
         for (size_t i = 1; i < 1000; ++i) {

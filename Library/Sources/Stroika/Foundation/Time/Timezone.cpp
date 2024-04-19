@@ -140,14 +140,14 @@ String Timezone::AsHHMM (const Date& date, const TimeOfDay& tod, bool insertColo
     int          minutes    = GetBiasInMinutesFromUTC (date, tod);
     bool         isNeg      = minutes < 0;
     unsigned int nMinOffset = abs (fBiasInMinutesFromUTC_);
-    return Characters::Format (insertColon ? L"%s%02d:%02d" : L"%s%02d%02d", isNeg ? L"-" : L"+", nMinOffset / 60, nMinOffset % 60);
+    return Characters::Format (insertColon ? "{}{:02}:{:02}"_f : "{}{:02}{:02}"_f, isNeg ? L"-" : L"+", nMinOffset / 60, nMinOffset % 60);
 }
 
 String Timezone::AsRFC1123 (const Date& date, const TimeOfDay& tod) const
 {
     int minutes = GetBiasInMinutesFromUTC (date, tod);
     if (minutes == 0) {
-        static const String kUTC_ = L"GMT"sv; // UT or GMT for UTC in  https://tools.ietf.org/html/rfc822#section-5
+        static const String kUTC_ = "GMT"sv; // UT or GMT for UTC in  https://tools.ietf.org/html/rfc822#section-5
         return kUTC_;
     }
     return AsHHMM (date, tod, false);
@@ -195,7 +195,7 @@ Characters::String Timezone::ToString () const
             Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
             bool         isNeg      = fBiasInMinutesFromUTC_ < 0;
             unsigned int nMinOffset = abs (fBiasInMinutesFromUTC_);
-            return Characters::Format (L"%s%02d:%02d", isNeg ? L"-" : L"+", nMinOffset / 60, nMinOffset % 60);
+            return Characters::Format ("{}{:02}:{:02}"_f, isNeg ? L"-" : L"+", nMinOffset / 60, nMinOffset % 60);
         } break;
         case TZ_::eLocalTime: {
             return kLocaltime_;

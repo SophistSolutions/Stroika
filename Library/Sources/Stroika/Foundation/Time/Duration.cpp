@@ -203,12 +203,12 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 }
                 // Map 3.242 to printing out 3.242, but 0.234 prints out as 234 milliseconds
                 if (fabs (timeLeft - timeLeftAsInt) < 0.001) {
-                    result << Characters::Format (L"%d", static_cast<int> (timeLeft)) << kSpaceBeforeUnit_
+                    result << Characters::Format ("{}"_f, static_cast<int> (timeLeft)) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, timeLeftAsInt);
                     timeLeft -= static_cast<int> (timeLeft);
                 }
                 else {
-                    result << Characters::Format (L"%.3f", timeLeft) + kSpaceBeforeUnit_ + prettyPrintInfo.fLabels.fSeconds;
+                    result << Characters::Format ("{:.3f}"_f, timeLeft) + kSpaceBeforeUnit_ + prettyPrintInfo.fLabels.fSeconds;
                     timeLeft = 0.0;
                 }
             }

@@ -848,7 +848,7 @@ namespace {
         }
         {
             const Duration kD = Duration{L"PT1.003S"};
-            EXPECT_TRUE (kD.PrettyPrint () == L"1.003 seconds");
+            EXPECT_EQ (kD.PrettyPrint (), "1.003 seconds");
         }
         {
             const Duration kD = Duration{L"PT0.000045S"};
