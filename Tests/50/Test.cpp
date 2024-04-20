@@ -53,8 +53,7 @@ namespace {
                 // suppress macOS warn here - just not such locale installed
 #if !qPlatform_MacOS
                 Stroika::Frameworks::Test::WarnTestIssue (
-                    Characters::Format (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale %s",
-                                        localeName.As<wstring> ().c_str ())
+                    Characters::Format ("test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale {}"_f, localeName)
                         .c_str ());
 #endif
             }

@@ -42,7 +42,8 @@ namespace Stroika::Foundation::Characters {
         };
 
     public:
-        CharacterEncodingException (EncodingOrDecoding encodingOrDecoding, optional<size_t> atSourceOffset = nullopt, optional<String> encoding = nullopt);
+        CharacterEncodingException (EncodingOrDecoding encodingOrDecoding, optional<size_t> atSourceOffset = nullopt,
+                                    const optional<String>& encoding = nullopt);
 
     public:
         nonvirtual EncodingOrDecoding GetEncodingOrDecoding () const;

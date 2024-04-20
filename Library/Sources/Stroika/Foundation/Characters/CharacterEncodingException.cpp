@@ -16,7 +16,8 @@ using namespace Stroika::Foundation::Characters;
  ********************** Characters::CharacterEncodingException ******************
  ********************************************************************************
  */
-CharacterEncodingException::CharacterEncodingException (EncodingOrDecoding encodingOrDecoding, optional<size_t> atSourceOffset, optional<String> encoding)
+CharacterEncodingException::CharacterEncodingException (EncodingOrDecoding encodingOrDecoding, optional<size_t> atSourceOffset,
+                                                        const optional<String>& encoding)
     : inherited{[=] () {
         StringBuilder sb;
         sb << (encodingOrDecoding == eEncoding ? "Encoding Exception: cannot construct code point for character"sv

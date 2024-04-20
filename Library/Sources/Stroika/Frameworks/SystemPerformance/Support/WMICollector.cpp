@@ -80,7 +80,7 @@ void WMICollector::PerInstanceData_::AddCounter (const String& counterName)
     if (x != 0) {
         [[maybe_unused]] bool isPDH_CSTATUS_NO_OBJECT  = (x == PDH_CSTATUS_NO_OBJECT);
         [[maybe_unused]] bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
-        Execution::Throw (Exception{Characters::Format (L"PdhAddCounter: %d", x)});
+        Execution::Throw (Exception{Characters::Format ("PdhAddCounter: {}"_f, x)});
     }
     fCounters_.Add (counterName, newCounter);
 }
@@ -92,7 +92,7 @@ double WMICollector::PerInstanceData_::GetCurrentValue (const String& counterNam
     PDH_STATUS           x       = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, nullptr, &counterVal);
     if (x != 0) {
         [[maybe_unused]] bool isPDH_PDH_INVALID_DATA = (x == PDH_INVALID_DATA);
-        Execution::Throw (Exception{Characters::Format (L"PdhGetFormattedCounterValue: %d", x)});
+        Execution::Throw (Exception{Characters::Format ("PdhGetFormattedCounterValue: {}"_f, x)});
     }
     return counterVal.doubleValue;
 }
@@ -134,7 +134,7 @@ Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const 
     if (status != 0) {
         //PDH_CSTATUS_INVALID_DATA
         [[maybe_unused]] bool isPDH_PDH_INVALID_DATA = (status == PDH_INVALID_DATA);
-        Execution::Throw (Exception{Characters::Format (L"PdhGetFormattedCounterArray: %d", status)});
+        Execution::Throw (Exception{Characters::Format ("PdhGetFormattedCounterArray: {}"_f, status)});
     }
 
     Mapping<String, double> result;
@@ -200,8 +200,8 @@ void WMICollector::Collect ()
             bool isPDH_PDH_NO_DATA = (x == PDH_NO_DATA);
             if (not isPDH_PDH_NO_DATA) {
                 // happens when we try to read data about compact disk??? anyhow - best to just not throw here I think?
-                // --LGP 2015-05-06 - at least not til I underand better
-                Execution::Throw (Exception{Characters::Format (L"PdhCollectQueryData: %d", x)});
+                // --LGP 2015-05-06 - at least not til I understand better
+                Execution::Throw (Exception{"PdhCollectQueryData: {}"_f(x)});
             }
         }
     });
@@ -227,7 +227,7 @@ Set<String> WMICollector::GetAvailableInstaces ()
     pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize,
                                       instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {
-        Execution::Throw (Exception{Characters::Format (L"PdhEnumObjectItems: %d", pdhStatus)});
+        Execution::Throw (Exception{"PdhEnumObjectItems: {}"_f(pdhStatus)});
     }
 
     Set<String> result;
@@ -256,7 +256,7 @@ Set<String> WMICollector::GetAvailableCounters ()
     pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (),
                                       &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {
-        Execution::Throw (Exception{Characters::Format (L"PdhEnumObjectItems: %d", pdhStatus)});
+        Execution::Throw (Exception{"PdhEnumObjectItems: {}"_f(pdhStatus)});
     }
 
     Set<String> result;
