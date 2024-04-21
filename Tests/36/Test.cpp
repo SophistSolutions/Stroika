@@ -113,7 +113,7 @@ namespace {
                             sb += "select "sv;
                             sb += "'"sv + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + "',"sv;
                             sb += "'"sv + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + "',"sv;
-                            sb += Characters::Format (L"%d", scanKind) + ","sv;
+                            sb += Characters::Format ("{}"_f, (int)scanKind) + ","sv;
                             if (rawSpectrum) {
                                 sb += "'" + Database::SQL::Utils::QuoteStringForDB ("SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"sv) +
                                       "',"sv;
@@ -145,7 +145,7 @@ namespace {
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan_Explicit_ (ScanKindType_ scanKind)
                 {
-                    Statement s{fDB_, Characters::Format (L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind)};
+                    Statement s{fDB_, Characters::Format ("select MAX(ScanId) from Scans where  ScanTypeIDRef='{}';"_f, (int)scanKind)};
                     DbgTrace ("Statement: {}"_f, Characters::ToString (s));
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -187,12 +187,9 @@ namespace {
                                              "ScanTypeId tinyint Primary Key,"
                                              "TypeName varchar(255) not null"
                                              ");");
-                                     c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';",
-                                                                 ScanKindType_::Reference));
-                                     c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';",
-                                                                 ScanKindType_::Sample));
-                                     c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';",
-                                                                 ScanKindType_::Background));
+                                     c.Exec ("insert into ScanTypes (ScanTypeId, TypeName) select {}, 'Reference';"_f((int)ScanKindType_::Reference));
+                                     c.Exec ("insert into ScanTypes (ScanTypeId, TypeName) select {}, 'Sample';"_f((int)ScanKindType_::Sample));
+                                     c.Exec ("insert into ScanTypes (ScanTypeId, TypeName) select {}, 'Background';"_f((int)ScanKindType_::Background));
                                  }
                              }},
                             {"Scans"sv,

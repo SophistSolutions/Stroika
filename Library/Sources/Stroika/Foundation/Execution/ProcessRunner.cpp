@@ -262,19 +262,19 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     {
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
-            extraMsg << Characters::Format (L"exit status %d", int (*wExitStatus));
+            extraMsg << Characters::Format ("exit status {}"_f, int (*wExitStatus));
         }
         if (wTermSig) {
             if (not extraMsg.empty ()) {
                 extraMsg << ", "sv;
             }
-            extraMsg << Characters::Format (L"terminated by signal %d", int (*wTermSig));
+            extraMsg << Characters::Format ("terminated by signal {}"_f, int (*wTermSig));
         }
         if (wStopSig) {
             if (not extraMsg.empty ()) {
                 extraMsg << ", "sv;
             }
-            extraMsg << Characters::Format (L"stopped by signal %d", int (*wStopSig));
+            extraMsg << Characters::Format ("stopped by signal {}"_f, int (*wStopSig));
         }
         if (not extraMsg.empty ()) {
             sb << ": "sv + extraMsg.str ();
@@ -644,7 +644,7 @@ namespace {
                 DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, thisEXEPath_cstr);
 #endif
                 auto            activity = LazyEvalActivity ([&] () -> String {
-                    return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());
+                    return Characters::Format (L"executing {}"_f, Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());
                 });
                 DeclareActivity currentActivity{&activity};
                 ThrowPOSIXErrNo (e);

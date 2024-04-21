@@ -673,11 +673,14 @@ namespace {
         EXPECT_EQ (Format ("{:>20}"_f, L"123"), "                 123");
         EXPECT_EQ (Format ("{:.20}"_f, L"123"), "123");
 
+#if 0
+        // @todo somethign similar with new style string formatters
         for (size_t i = 1; i < 1000; ++i) {
             String format = Format (L"%%%ds", static_cast<int> (i));
             EXPECT_TRUE (Format (format.c_str (), L"x").length () == i);
         }
-        EXPECT_TRUE (Characters::Format (L"%d.%d%s%s", 1, 0, L"a", L"1x") == L"1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
+#endif
+        EXPECT_EQ (Characters::Format ("{}.{}{}{}"_f, 1, 0, L"a", L"1x"), "1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
     }
 }
 
