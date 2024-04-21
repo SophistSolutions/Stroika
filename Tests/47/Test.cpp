@@ -208,12 +208,13 @@ namespace {
                 double tunerInfoM{1};
                 String ToString () const
                 {
+                    using namespace Characters::Literals;
                     Characters::StringBuilder sb;
                     sb += L"{";
-                    sb += L"k1: " + Characters::Format (L"%.10e", k1) + L",";
-                    sb += L"k2: " + Characters::Format (L"%.10e", k2) + L",";
-                    sb += L"tunerInfoD: " + Characters::Format (L"%.10e", tunerInfoD) + L",";
-                    sb += L"tunerInfoM: " + Characters::Format (L"%.10e", tunerInfoM);
+                    sb += L"k1: " + Characters::Format ("{:.10e}"_f, k1) + ",";
+                    sb += L"k2: " + Characters::Format ("{:.10e}"_f, k2) + ",";
+                    sb += L"tunerInfoD: " + Characters::Format ("{:.10e}"_f, tunerInfoD) + ",";
+                    sb += L"tunerInfoM: " + Characters::Format ("{:.10e}"_f, tunerInfoM);
                     sb += L"}";
                     return sb.str ();
                 }

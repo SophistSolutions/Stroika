@@ -685,7 +685,7 @@ namespace {
         Thread::Ptr                         thread = Thread::New ([&innerThreads] () {
             while (true) {
                 static int  sInnerThreadNum{};
-                Thread::Ptr t = Thread::New ([] () { Execution::Sleep (.01); }, Characters::Format (L"innerthread%d", ++sInnerThreadNum));
+                Thread::Ptr t = Thread::New ([] () { Execution::Sleep (.01); }, Characters::Format ("innerthread{}"_f, ++sInnerThreadNum));
                 Execution::Sleep (.02);
                 t.Start ();
                 innerThreads.Add (t); // only add thread after its started. Illegal since Stroika v3.0d5 to Abort non-started threads

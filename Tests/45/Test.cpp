@@ -75,14 +75,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("Ignoring {}"_f, e).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("Ignoring {}"_f, e).c_str ());
                 }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
@@ -122,14 +122,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("Ignoring {}"_f, e).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignoring %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("Ignoring {}"_f, e).c_str ());
                 }
             }
         }
