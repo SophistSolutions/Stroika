@@ -239,7 +239,7 @@ namespace {
                  << " so try using runCount = " << int (runCount / baselineTime.count ()) << endl;
         }
 #endif
-        printResults (testName, Characters::Format (L"%f seconds", baselineTime.count ()), compareWithTName,
+        printResults (testName, Characters::Format ("{} seconds"_f, baselineTime.count ()), compareWithTName,
                       warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
         if constexpr (kPrintOutIfFailsToMeetPerformanceExpectations_) {
             double ratio = compareWithTime.count () / baselineTime.count ();
@@ -680,8 +680,8 @@ namespace {
     template <typename WIDESTRING_IMPL>
     void Test_String_Format_ ()
     {
-        EXPECT_TRUE (Format (L"a, %s, %d", L"xxx", 33) == L"a, xxx, 33");
-        EXPECT_TRUE (Format (L"0x%x", 0x20) == L"0x20");
+        EXPECT_EQ (Format ("a, {}, {}"_f, L"xxx", 33), L"a, xxx, 33");
+        EXPECT_EQ (Format ("0x{:x}"_f, 0x20), "0x20");
     }
     template <>
     void Test_String_Format_<wstring> ()
@@ -1537,9 +1537,9 @@ namespace {
                     (L"At least one test did not meet expected time constaint (see above): " + listAsMsg).c_str ());
             }
             else {
-                Stroika::Frameworks::Test::WarnTestIssue ((Format (L"At least one test (%s) did not meet expected time constraint (see %s)",
-                                                                   listAsMsg.c_str (), String{kDefaultPerfOutFile_}.c_str ()))
-                                                              .c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    (Format ("At least one test ({}) did not meet expected time constraint (see {})"_f, listAsMsg, String{kDefaultPerfOutFile_}))
+                        .c_str ());
             }
         }
     }

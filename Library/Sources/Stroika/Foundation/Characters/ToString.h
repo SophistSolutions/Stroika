@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Characters {
 #else
             or Configuration::ITimePoint<T>
 #endif
-            or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, exception, type_index>;
+            or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>;
     }
 
 }
