@@ -13,8 +13,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
 #if defined(__GNUC__)
-template <> 
-String Characters::UnoverloadedToString (const long int&);      // @todo experiment to see if this works around bug with g++-13 LTO
+template <>
+String Characters::UnoverloadedToString (const long int&); // @todo experiment to see if this works around bug with g++-13 LTO
 #endif
 
 /*
