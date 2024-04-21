@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "StroikaConfig.h"
 
-#include "../Characters/Format.h"
-#include "../Execution/Exceptions.h"
-#include "../Memory/Bits.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/Bits.h"
 
 #include "Version.h"
 

@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_Cryptography_OpenSSL_DerivedKey_h_
 #define _Stroika_Foundation_Cryptography_OpenSSL_DerivedKey_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <optional>
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Common.h"
-#include "../../Memory/BLOB.h"
-#include "../../Memory/Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 #include "CipherAlgorithm.h"
 #include "DigestAlgorithm.h"

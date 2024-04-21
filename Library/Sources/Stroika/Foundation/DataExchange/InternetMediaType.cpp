@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/RegularExpression.h"
-#include "../Characters/ToString.h"
-#include "../Containers/SortedMapping.h"
-#include "../DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 
 #include "InternetMediaType.h"
 

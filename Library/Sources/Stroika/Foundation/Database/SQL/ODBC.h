@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Database_SQL_ODBCClient_h_
 #define _Stroika_Foundation_Database_SQL_ODBCClient_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Connection.h"
 #include "Statement.h"

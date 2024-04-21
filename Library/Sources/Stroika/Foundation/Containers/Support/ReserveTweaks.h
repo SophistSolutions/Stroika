@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Containers_Support_ReserveTweaks_h_
 #define _Stroika_Foundation_Containers_Support_ReserveTweaks_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstddef>
 #include <optional>
@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
     constexpr size_t kDefaultMinChunkSize = 16;
 
     /**
-     *  \brief Comupute the best 'capacity' to use for the given targetSize of the container.
+     *  \brief Compute the best 'capacity' to use for the given targetSize of the container.
      *
      *  Adjust the given target (required) capacity to grow in geometric rate (so ln N reallocs), and use the argument chunkSize to
      *  make sure the number of entries is a multiple of that chunk size.

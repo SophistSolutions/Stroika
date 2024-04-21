@@ -4,16 +4,16 @@
 #ifndef _Stroika_Foundation_Cryptography_Base64_h_
 #define _Stroika_Foundation_Cryptography_Base64_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <string>
 #include <vector>
 
-#include "../../../Characters/String.h"
-#include "../../../Configuration/Common.h"
-#include "../../../Memory/BLOB.h"
-#include "../../../Streams/InputStream.h"
-#include "../../../Streams/OutputStream.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 /**
  *  \file

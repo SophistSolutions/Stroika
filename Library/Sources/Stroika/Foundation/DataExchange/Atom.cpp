@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/String.h"
-#include "../Containers/Concrete/Mapping_stdmap.h"
-#include "../Containers/Mapping.h"
-#include "../Containers/Sequence.h"
-#include "../Execution/Common.h"
-#include "../Execution/SpinLock.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/SpinLock.h"
 
 #include "Atom.h"
 

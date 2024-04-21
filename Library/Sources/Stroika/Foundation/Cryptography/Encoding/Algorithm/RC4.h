@@ -4,18 +4,18 @@
 #ifndef _Stroika_Foundation_Cryptography_RC4_h_
 #define _Stroika_Foundation_Cryptography_RC4_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Configuration/Common.h"
-#include "../../../Memory/BLOB.h"
-#include "../../../Streams/InputStream.h"
-#include "../../../Streams/OutputStream.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 /**
  *  \file
  *
  * TODO:
- *      @todo   REDO THIS API - USELESS AS IS. Pass in DervivedKey object - but only after I've made it
+ *      @todo   REDO THIS API - USELESS AS IS. Pass in DerivedKey object - but only after I've made it
  *              more portable.
  *
  *

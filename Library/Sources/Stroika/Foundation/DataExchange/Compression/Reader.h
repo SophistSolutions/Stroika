@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_DataExchange_Compression_Reader_h_
 #define _Stroika_Foundation_DataExchange_Compression_Reader_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Memory/SharedByValue.h"
-#include "../../Streams/InputStream.h"
+#include "Stroika/Foundation/Memory/SharedByValue.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 #include "../VariantValue.h"
 

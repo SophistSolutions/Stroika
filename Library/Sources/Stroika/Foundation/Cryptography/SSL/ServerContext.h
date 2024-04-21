@@ -4,18 +4,19 @@
 #ifndef _Stroika_Foundation_Cryptography_SSL_ServerContext_h_
 #define _Stroika_Foundation_Cryptography_SSL_ServerContext_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <string>
 #include <vector>
 
-#include "../../Configuration/Common.h"
 #include "Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 namespace Stroika::Foundation::Cryptography::SSL {
 
-    // Certs, policies, options etc - for a client trying to open an SSL conneciton
+    // Certs, policies, options etc - for a client trying to open an SSL connection
     class ServerContext {};
+
 }
 
 /*

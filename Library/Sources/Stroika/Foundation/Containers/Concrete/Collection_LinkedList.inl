@@ -9,8 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Debug/Cast.h"
-#include "../../Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "../DataStructures/LinkedList.h"
 #include "../Private/IteratorImplHelper.h"

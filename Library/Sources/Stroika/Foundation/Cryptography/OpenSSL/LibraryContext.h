@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Cryptography_OpenSSL_LibraryContext_h_
 #define _Stroika_Foundation_Cryptography_OpenSSL_LibraryContext_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <string>
 #include <string_view>
@@ -13,12 +13,12 @@
 #include <openssl/evp.h>
 #endif
 
-#include "../../Characters/String.h"
-#include "../../Common/Property.h"
-#include "../../Configuration/Common.h"
-#include "../../Containers/Association.h"
-#include "../../Containers/Set.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Association.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "CipherAlgorithm.h"
 #include "DigestAlgorithm.h"

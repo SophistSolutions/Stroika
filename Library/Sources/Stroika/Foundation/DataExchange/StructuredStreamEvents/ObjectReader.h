@@ -4,32 +4,32 @@
 #ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_
 #define _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 #include <type_traits>
 #include <typeindex>
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Enumeration.h"
-#include "../../Configuration/TypeHints.h"
-#include "../../Containers/Adapters/Adder.h"
-#include "../../Containers/Bijection.h"
-#include "../../Containers/Collection.h"
-#include "../../Containers/Mapping.h"
-#include "../../Containers/Sequence.h"
-#include "../../Containers/Set.h"
-#include "../../Containers/SortedCollection.h"
-#include "../../Containers/SortedMapping.h"
-#include "../../Containers/SortedSet.h"
-#include "../../Execution/Synchronized.h"
-#include "../../IO/Network/URI.h"
-#include "../../Memory/Common.h"
-#include "../../Memory/Optional.h"
-#include "../../Streams/InputStream.h"
-#include "../../Time/DateTime.h"
-#include "../../Time/Duration.h"
-#include "../../Traversal/Range.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Containers/Adapters/Adder.h"
+#include "Stroika/Foundation/Containers/Bijection.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Containers/SortedCollection.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/Containers/SortedSet.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 #include "../StructFieldMetaInfo.h"
 

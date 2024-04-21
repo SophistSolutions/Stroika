@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <charconv>
 #include <cstdarg>
@@ -10,13 +10,13 @@
 #include <limits>
 #include <sstream>
 
-#include "../Characters/StringBuilder.h"
-#include "../Characters/ToString.h"
-#include "../Containers/Common.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
-#include "../Debug/Valgrind.h"
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 #include "FloatConversion.h"
 

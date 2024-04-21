@@ -1,25 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 
-#include "../Cache/SynchronizedLRUCache.h"
-#include "../Characters/Format.h"
-#include "../Characters/ToString.h"
-#include "../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
-#include "../DataExchange/XML/SAXReader.h"
+#include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #if qPlatform_Windows
-#include "../Configuration/Platform/Windows/Registry.h"
+#include "Stroika/Foundation/Configuration/Platform/Windows/Registry.h"
 #endif
-#include "../Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #if qPlatform_Windows
-#include "../Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "../Execution/Synchronized.h"
-#include "../IO/FileSystem/FileInputStream.h"
-#include "../IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
 #include "InternetMediaTypeRegistry.h"
 

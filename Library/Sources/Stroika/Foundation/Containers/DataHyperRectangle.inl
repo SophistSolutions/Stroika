@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_DataHyperRectangle_inl_
 #define _Stroika_Foundation_Containers_DataHyperRectangle_inl_
 
-#include "../Configuration/Concepts.h"
-#include "../Debug/Assertions.h"
 #include "Private/IterableUtils.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers {
 

@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Configuration_Platform_Windows_Registry_h_
 #define _Stroika_Foundation_Configuration_Platform_Windows_Registry_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <Windows.h>
@@ -12,16 +12,16 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Characters/String.h"
-#include "../../../DataExchange/VariantValue.h"
 #include "../../Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 
 namespace Stroika::Foundation::Configuration::Platform::Windows {
 
     /**
      *  Simple utility class to allow (read-only) access to the windows registry.
      *
-     *  I considered making this support modification, but as JSON configuraiton files seem a better path than using
+     *  I considered making this support modification, but as JSON configuration files seem a better path than using
      *  the registry, and this is mainly for backward compatability with older systems, I chose to keep this read-only.
      *
      *  \par Example Usage

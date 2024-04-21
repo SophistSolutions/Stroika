@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Cryptography_Digest_Hash_h_
 #define _Stroika_Foundation_Cryptography_Digest_Hash_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdint>
 
-#include "../../Characters/String.h"
-#include "../../DataExchange/DefaultSerializer.h"
-#include "../../Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/DataExchange/DefaultSerializer.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Digester.h"
 #include "HashBase.h"

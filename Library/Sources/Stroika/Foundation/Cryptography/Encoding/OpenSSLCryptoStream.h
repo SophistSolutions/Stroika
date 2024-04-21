@@ -4,19 +4,19 @@
 #ifndef _Stroika_Foundation_Cryptography_OpenSSLCryptoStream_h_
 #define _Stroika_Foundation_Cryptography_OpenSSLCryptoStream_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qHasFeature_OpenSSL
 using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #endif
 
-#include "../../Configuration/Common.h"
-#include "../../Cryptography/SSL/Common.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Memory/BLOB.h"
-#include "../../Memory/Common.h"
-#include "../../Streams/InputStream.h"
-#include "../../Streams/OutputStream.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Cryptography/SSL/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 #include "../OpenSSL/CipherAlgorithm.h"
 #include "../OpenSSL/DerivedKey.h"

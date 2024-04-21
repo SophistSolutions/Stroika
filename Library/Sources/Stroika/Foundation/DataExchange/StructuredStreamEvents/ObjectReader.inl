@@ -9,11 +9,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Characters/String2Int.h"
-#include "../../Characters/StringBuilder.h"
-#include "../../Characters/ToString.h"
-#include "../../Containers/Support/ReserveTweaks.h"
 #include "../BadFormatException.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 
 namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader {
 

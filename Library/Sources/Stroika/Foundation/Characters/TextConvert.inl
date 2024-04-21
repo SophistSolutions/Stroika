@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Memory/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Characters {
 

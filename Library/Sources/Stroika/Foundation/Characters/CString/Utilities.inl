@@ -12,7 +12,7 @@
 #include <limits>
 #include <locale>
 
-#include "../../Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Characters::CString {
 

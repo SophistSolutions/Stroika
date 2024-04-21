@@ -4,16 +4,16 @@
 #ifndef _Stroika_Foundation_Database_SQL_Statement_h_
 #define _Stroika_Foundation_Database_SQL_Statement_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Characters/String.h"
-#include "../../Common/Property.h"
-#include "../../Containers/Mapping.h"
-#include "../../Containers/Sequence.h"
-#include "../../DataExchange/VariantValue.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "Connection.h"
 

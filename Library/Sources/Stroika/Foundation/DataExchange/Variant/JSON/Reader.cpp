@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 #include <stack>
@@ -11,17 +11,17 @@
 #include <boost/json/basic_parser_impl.hpp>
 #endif
 
-#include "../../../Characters/FloatConversion.h"
-#include "../../../Characters/Format.h"
-#include "../../../Characters/String2Int.h"
-#include "../../../Characters/StringBuilder.h"
-#include "../../../Containers/Concrete/Mapping_stdhashmap.h"
-#include "../../../Containers/Support/ReserveTweaks.h"
-#include "../../../Memory/InlineBuffer.h"
-#include "../../../Streams/StreamReader.h"
-#include "../../../Streams/TextReader.h"
-#include "../../../Traversal/Range.h"
 #include "../../BadFormatException.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Streams/StreamReader.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 #include "Reader.h"
 

@@ -7,8 +7,8 @@
 #ifndef _Stroika_Foundation_Database_SQL_ORM_TableConnection_inl_
 #define _Stroika_Foundation_Database_SQL_ORM_TableConnection_inl_ 1
 
-#include "../../../Debug/Trace.h"
-#include "../../../Execution/Finally.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 
 namespace Stroika::Foundation::Database::SQL::ORM {
 

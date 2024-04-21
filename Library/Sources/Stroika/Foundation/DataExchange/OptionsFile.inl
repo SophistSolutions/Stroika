@@ -9,8 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Characters/Format.h"
-#include "../Streams/MemoryStream.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 
 namespace Stroika::Foundation::DataExchange {
 

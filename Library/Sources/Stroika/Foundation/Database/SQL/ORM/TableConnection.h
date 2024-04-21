@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Database_SQL_ORM_TableConnection_h_
 #define _Stroika_Foundation_Database_SQL_ORM_TableConnection_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Common/GUID.h"
-#include "../../../Common/Property.h"
-#include "../../../DataExchange/ObjectVariantMapper.h"
-#include "../../../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "../Connection.h"
 #include "../Statement.h"

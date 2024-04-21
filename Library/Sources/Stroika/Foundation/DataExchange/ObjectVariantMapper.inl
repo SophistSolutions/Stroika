@@ -11,15 +11,15 @@
  */
 #include <algorithm>
 
-#include "../Characters/ToString.h"
-#include "../Containers/Adapters/Adder.h"
-#include "../Containers/Concrete/Mapping_stdmap.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Sanitizer.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Adapters/Adder.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
-#include "../Execution/Activity.h"
+#include "Stroika/Foundation/Execution/Activity.h"
 #endif
-#include "../Execution/Throw.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 #include "BadFormatException.h"
 #include "CheckedConverter.h"

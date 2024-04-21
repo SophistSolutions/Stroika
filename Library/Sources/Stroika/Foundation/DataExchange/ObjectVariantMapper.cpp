@@ -1,21 +1,21 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/Format.h"
-#include "../Characters/StringBuilder.h"
-#include "../Characters/ToString.h"
-#include "../Containers/MultiSet.h"
-#include "../Cryptography/Encoding/Algorithm/Base64.h"
-#include "../Debug/Trace.h"
-#include "../IO/FileSystem/PathName.h"
-#include "../IO/Network/CIDR.h"
-#include "../IO/Network/InternetAddress.h"
-#include "../IO/Network/URI.h"
-#include "../Time/Date.h"
-#include "../Time/DateTime.h"
-#include "../Time/Duration.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/MultiSet.h"
+#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/IO/Network/CIDR.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Time/Date.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "InternetMediaType.h"
 

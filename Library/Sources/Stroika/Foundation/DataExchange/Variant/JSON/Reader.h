@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_DataExchange_Variant_JSON_Reader_h_
 #define _Stroika_Foundation_DataExchange_Variant_JSON_Reader_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Configuration/Common.h"
-#include "../../../Streams/InputStream.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 #include "../../VariantValue.h"
 

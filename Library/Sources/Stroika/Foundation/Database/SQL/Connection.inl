@@ -7,7 +7,7 @@
 #ifndef _Stroika_Foundation_Database_SQL_Connection_inl_
 #define _Stroika_Foundation_Database_SQL_Connection_inl_ 1
 
-#include "../../Characters/Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
 
 namespace Stroika::Foundation::Database::SQL::Connection {
 

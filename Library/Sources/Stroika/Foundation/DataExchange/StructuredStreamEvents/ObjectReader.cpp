@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Characters/CString/Utilities.h"
-#include "../../Characters/FloatConversion.h"
-#include "../../Characters/Format.h"
-#include "../../Characters/String2Int.h"
-#include "../../Debug/Trace.h"
-#include "../../Time/Date.h"
-#include "../../Time/DateTime.h"
-#include "../../Time/Duration.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Time/Date.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "../BadFormatException.h"
 

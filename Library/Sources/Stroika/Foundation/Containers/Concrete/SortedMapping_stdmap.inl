@@ -10,8 +10,8 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
 #define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
 
-#include "../../Debug/Cast.h"
-#include "../../Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"

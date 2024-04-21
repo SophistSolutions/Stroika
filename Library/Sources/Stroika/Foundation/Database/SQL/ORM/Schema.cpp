@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/StringBuilder.h"
-#include "../../../DataExchange/Variant/JSON/Reader.h"
-#include "../../../DataExchange/Variant/JSON/Writer.h"
-#include "../../../Debug/Trace.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "../../Exception.h"
 

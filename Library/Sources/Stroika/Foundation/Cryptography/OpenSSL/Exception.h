@@ -4,17 +4,14 @@
 #ifndef _Stroika_Foundation_Cryptography_OpenSSL_Exception_h_
 #define _Stroika_Foundation_Cryptography_OpenSSL_Exception_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Configuration/Common.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Memory/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  *  \file
- *
- *  TODO:
- *
  */
 
 namespace Stroika::Foundation::Cryptography::OpenSSL {

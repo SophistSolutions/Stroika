@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Debug/Demangle.h"
-#include "../Execution/Exceptions.h"
-#include "../Execution/Thread.h"
+#include "Stroika/Foundation/Debug/Demangle.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 
 #include "ToString.h"
 
@@ -15,7 +15,7 @@ using namespace Stroika::Foundation::Characters;
 #if defined(__GNUC__)
 // @todo experiment to see if this works around bug with g++-13 LTO
 template <>
-String Characters::UnoverloadedToString(const unsigned long& arg)
+String Characters::UnoverloadedToString (const unsigned long& arg)
 {
     return ToString (arg);
 }

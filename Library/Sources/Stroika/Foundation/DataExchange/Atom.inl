@@ -11,7 +11,7 @@
  */
 #include <type_traits>
 
-#include "../Common/Compare.h"
+#include "Stroika/Foundation/Common/Compare.h"
 
 namespace Stroika::Foundation::DataExchange {
 

@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <windows.h>
@@ -12,8 +12,8 @@
 #include <sqlext.h>
 #endif
 
-#include "../../Characters/CString/Utilities.h"
-#include "../../Characters/Format.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
 
 #include "../Exception.h"
 

@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
 namespace Stroika::Foundation::DataExchange {
 

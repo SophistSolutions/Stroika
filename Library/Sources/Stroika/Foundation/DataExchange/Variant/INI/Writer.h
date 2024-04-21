@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_DataExchange_Variant_INI_Writer_h_
 #define _Stroika_Foundation_DataExchange_Variant_INI_Writer_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Configuration/Common.h"
-#include "../../../Streams/OutputStream.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 #include "../../VariantValue.h"
 

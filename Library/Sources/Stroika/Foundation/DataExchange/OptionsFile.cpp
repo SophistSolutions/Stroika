@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/Format.h"
-#include "../Execution/Logger.h"
-#include "../IO/FileSystem/FileInputStream.h"
-#include "../IO/FileSystem/FileOutputStream.h"
-#include "../IO/FileSystem/PathName.h"
-#include "../IO/FileSystem/ThroughTmpFileWriter.h"
-#include "../IO/FileSystem/WellKnownLocations.h"
-#include "../Streams/MemoryStream.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Variant/JSON/Reader.h"
 #include "Variant/JSON/Writer.h"

@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Common_Compare_h_
 #define _Stroika_Foundation_Common_Compare_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <functional>
@@ -12,10 +12,10 @@
 #include <optional>
 #include <type_traits>
 
-#include "../Configuration/Common.h"
-#include "../Configuration/Concepts.h"
-#include "../Configuration/Enumeration.h"
-#include "../Configuration/TypeHints.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Configuration/TypeHints.h"
 
 /**
  *  \file

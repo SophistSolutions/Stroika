@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Database_SQL_EngineProperties_h_
 #define _Stroika_Foundation_Database_SQL_EngineProperties_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <string_view>
 
-#include "../../Characters/String.h"
+#include "Stroika/Foundation/Characters/String.h"
 
 /**
  *  \file

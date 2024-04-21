@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_DataExchange_Variant_CharacterDelimitedLines_Reader_h_
 #define _Stroika_Foundation_DataExchange_Variant_CharacterDelimitedLines_Reader_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Configuration/Common.h"
-#include "../../../Containers/Sequence.h"
-#include "../../../Containers/Set.h"
-#include "../../../Streams/InputStream.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 #include "../../VariantValue.h"
 

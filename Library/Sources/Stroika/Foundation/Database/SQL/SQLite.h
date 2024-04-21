@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Database_SQL_SQLite_h_
 #define _Stroika_Foundation_Database_SQL_SQLite_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 #include <optional>
@@ -13,14 +13,14 @@
 #include <sqlite/sqlite3.h>
 #endif
 
-#include "../../Characters/String.h"
-#include "../../Common/Property.h"
-#include "../../Containers/Mapping.h"
-#include "../../Containers/Sequence.h"
-#include "../../DataExchange/VariantValue.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../IO/Network/URI.h"
-#include "../../Time/Duration.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Connection.h"
 #include "Statement.h"
@@ -33,7 +33,7 @@
  *
  *  TODO
  *      @todo   Create SQLite Exception class and use sqlite3_errstr () to generate good string 
- *              message (that seems to return threadafe static const strings)
+ *              message (that seems to return threadsafe static const strings)
  */
 
 namespace Stroika::Foundation::Database::SQL::SQLite {

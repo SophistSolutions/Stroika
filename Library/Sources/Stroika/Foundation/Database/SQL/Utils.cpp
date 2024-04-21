@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 
 #include "Utils.h"
 

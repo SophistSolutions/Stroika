@@ -12,8 +12,8 @@
 
 #include <type_traits>
 
-#include "../Execution/Throw.h"
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 namespace Stroika::Foundation::DataExchange {
 

@@ -8,7 +8,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "ResultTypes.h"
 

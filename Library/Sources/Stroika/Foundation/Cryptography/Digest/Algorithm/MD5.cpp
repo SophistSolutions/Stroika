@@ -3,10 +3,10 @@
  *
  * Copyright (C) 1990, RSA Data Security, Inc. All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Memory/BLOB.h"
-#include "../../../Traversal/Iterator.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 #include "MD5.h"
 

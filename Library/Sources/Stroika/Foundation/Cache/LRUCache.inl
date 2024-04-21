@@ -9,10 +9,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Containers/Common.h"
-#include "../Cryptography/Digest/Algorithm/Jenkins.h"
-#include "../Cryptography/Digest/Hash.h"
-#include "../Debug/Assertions.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
+#include "Stroika/Foundation/Cryptography/Digest/Hash.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Cache {
 

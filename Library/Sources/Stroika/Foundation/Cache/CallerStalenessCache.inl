@@ -7,7 +7,7 @@
 #ifndef _Stroika_Foundation_Cache_CallerStalenessCache_inl_
 #define _Stroika_Foundation_Cache_CallerStalenessCache_inl_ 1
 
-#include "../Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Cache {
 

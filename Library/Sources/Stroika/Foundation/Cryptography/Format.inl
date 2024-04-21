@@ -8,8 +8,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Common/GUID.h"
-#include "../Memory/BLOB.h"
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 namespace Stroika::Foundation::Cryptography {
 

@@ -4,20 +4,20 @@
 #ifndef _Stroika_Foundation_Database_SQL_Connection_h_
 #define _Stroika_Foundation_Database_SQL_Connection_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Characters/String.h"
-#include "../../Common/Property.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "EngineProperties.h"
 
 /**
  *  \file
  * 
- *  The point of this module is to define a Connection abtraction that can be used for different kinds
+ *  The point of this module is to define a Connection abstraction that can be used for different kinds
  *  of connections (e.g. SQLite local database object, and ODBC remote database object). This generic API
  *  can then be used in places where either backend database might be in use.
  *

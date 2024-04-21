@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Database_SQL_Transaction_h_
 #define _Stroika_Foundation_Database_SQL_Transaction_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Enumeration.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "Connection.h"
 
