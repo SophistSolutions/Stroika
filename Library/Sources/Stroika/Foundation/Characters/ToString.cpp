@@ -14,7 +14,7 @@ using namespace Stroika::Foundation::Characters;
 
 #if defined(__GNUC__)
 template <>
-String Characters::UnoverloadedToString (const long int&); // @todo experiment to see if this works around bug with g++-13 LTO
+String Characters::UnoverloadedToString (const unsigned long int&); // @todo experiment to see if this works around bug with g++-13 LTO
 #endif
 
 /*
