@@ -13,8 +13,12 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
 #if defined(__GNUC__)
+// @todo experiment to see if this works around bug with g++-13 LTO
 template <>
-String Characters::UnoverloadedToString (const unsigned long int&); // @todo experiment to see if this works around bug with g++-13 LTO
+String Characters::UnoverloadedToString(const unsigned long& arg)
+{
+    return ToString (arg);
+}
 #endif
 
 /*
@@ -24,7 +28,7 @@ String Characters::UnoverloadedToString (const unsigned long int&); // @todo exp
  */
 String Characters::ToStringDefaults::ToString (const exception_ptr& e)
 {
-    static const String kExceptPefix_{"Exception: "sv};
+    static const String kExceptPrefix_{"Exception: "sv};
     static const String kUnknown_{"Unknown Exception"sv};
     if (e == nullptr) {
         return "nullptr"sv;
@@ -34,11 +38,11 @@ String Characters::ToStringDefaults::ToString (const exception_ptr& e)
     }
     catch (const Execution::ExceptionStringHelper& e) {
         //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
-        //return kExceptPefix_ + e.As<String> ();
+        //return kExceptPrefix_ + e.As<String> ();
         return e.As<String> ();
     }
     catch (const exception& e) {
-        return kExceptPefix_ + String::FromNarrowSDKString (e.what ());
+        return kExceptPrefix_ + String::FromNarrowSDKString (e.what ());
     }
     catch (...) {
         // fall through

@@ -229,21 +229,17 @@ namespace {
                 [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
                 using namespace Characters;
                 if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (),
-                                                                      ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (),
-                                                                      ToString (possibleFileSuffixes).c_str ())
+                    Stroika::Frameworks::Test::WarnTestIssue (Format ("File suffix mismatch for {}: got {}, expected {}"_f, i,
+                                                                      r.GetPreferredAssociatedFileSuffix (i), possibleFileSuffixes)
                                                                   .c_str ());
                 }
                 if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
-                                                                      ToString (possibleFileSuffixes).c_str (), ToString (i).c_str (),
-                                                                      ToString (possibleFileSuffixes
-                                                                                    .Map<Iterable<InternetMediaType>> ([&] (String suffix) {
-                                                                                        return r.GetAssociatedContentType (suffix);
-                                                                                    })
-                                                                                    .As<Set<InternetMediaType>> ())
-                                                                          .c_str ())
-                                                                  .c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (
+                        Format ("GetAssociatedContentType for fileSuffixes {} (expected {}, got {})"_f, possibleFileSuffixes, i,
+                                possibleFileSuffixes
+                                    .Map<Iterable<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
+                                    .As<Set<InternetMediaType>> ())
+                            .c_str ());
                 }
             };
             dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);

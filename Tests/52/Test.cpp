@@ -86,10 +86,10 @@ namespace {
     string pctFaster2String_ (double pct)
     {
         if (pct < 0) {
-            return Format (L"%.2f%% slower", -pct).AsNarrowSDKString (eIgnoreErrors);
+            return Format ("{.2f}% slower"_f, -pct).AsNarrowSDKString (eIgnoreErrors);
         }
         else {
-            return Format (L"%.2f%% faster", pct).AsNarrowSDKString (eIgnoreErrors);
+            return Format ("{.2f}% faster"_f, pct).AsNarrowSDKString (eIgnoreErrors);
         }
     }
 }
