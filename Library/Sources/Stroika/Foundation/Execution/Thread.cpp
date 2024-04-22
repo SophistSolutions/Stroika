@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Configuration/StroikaConfig.h"
+#include "Stroika/Foundation/Configuration/StroikaConfig.h"
 
 #include <list>
 #include <sstream>
@@ -12,14 +12,14 @@
 #include <windows.h>
 #endif
 
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/Format.h"
-#include "../Characters/String.h"
-#include "../Characters/ToString.h"
-#include "../Containers/Set.h"
-#include "../Debug/Main.h"
-#include "../Debug/Trace.h"
-#include "../Time/Realtime.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Debug/Main.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Common.h"
 #include "DLLSupport.h"

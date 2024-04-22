@@ -4,17 +4,17 @@
 #ifndef _Stroika_Foundation_IO_Network_HTTP_Request_h_
 #define _Stroika_Foundation_IO_Network_HTTP_Request_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../../Characters/String.h"
-#include "../../../Common/Property.h"
-#include "../../../Configuration/Common.h"
-#include "../../../DataExchange/InternetMediaType.h"
-#include "../../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../../IO/Network/HTTP/Headers.h"
-#include "../../../IO/Network/URI.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 
 /**
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

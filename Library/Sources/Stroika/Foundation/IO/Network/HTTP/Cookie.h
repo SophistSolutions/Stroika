@@ -4,16 +4,16 @@
 #ifndef _Stroika_Foundation_IO_Network_HTTP_Cookie_h_
 #define _Stroika_Foundation_IO_Network_HTTP_Cookie_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/String.h"
-#include "../../../Characters/ToString.h"
-#include "../../../Common/KeyValuePair.h"
-#include "../../../Common/Property.h"
-#include "../../../Containers/Collection.h"
-#include "../../../Containers/Mapping.h"
-#include "../../../Streams/InputStream.h"
-#include "../../../Time/DateTime.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/KeyValuePair.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 /**
  */

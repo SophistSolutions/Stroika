@@ -10,8 +10,8 @@
  ********************************************************************************
  */
 
-#include "../Characters/ToString.h"
-#include "../Common/Compare.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Compare.h"
 
 namespace Stroika::Foundation::Execution {
 

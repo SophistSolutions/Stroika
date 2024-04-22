@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../../Characters/SDKString.h"
+#include "Stroika/Foundation/Characters/SDKString.h"
 
 #include "../../Throw.h"
 

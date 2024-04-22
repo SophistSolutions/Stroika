@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Time/Duration.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 namespace Stroika::Foundation::Execution {
 

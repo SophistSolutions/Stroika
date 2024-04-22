@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_IO_Network_HTTP_CacheControl_h_
 #define _Stroika_Foundation_IO_Network_HTTP_CacheControl_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../../Characters/String.h"
-#include "../../../Configuration/Enumeration.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
 
 /**
  */

@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_IO_Network_InternetAddress_h_
 #define _Stroika_Foundation_IO_Network_InternetAddress_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <optional>
@@ -19,11 +19,11 @@
 #include <inaddr.h>
 #endif
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Common.h"
-#include "../../DataExchange/DefaultSerializer.h"
-#include "../../Traversal/Iterable.h"
-#include "../../Traversal/Range.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/DataExchange/DefaultSerializer.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 #include "InternetProtocol/IP.h"
 

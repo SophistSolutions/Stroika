@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_DataExchange_XML_WriterUtils_h_
 #define _Stroika_Foundation_DataExchange_XML_WriterUtils_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Characters/String.h"
-#include "../../Time/Date.h"
-#include "../../Time/DateTime.h"
-#include "../../Time/Duration.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Time/Date.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Common.h"
 

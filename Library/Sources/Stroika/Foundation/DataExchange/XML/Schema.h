@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_DataExchange_XML_Schema_h_
 #define _Stroika_Foundation_DataExchange_XML_Schema_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"

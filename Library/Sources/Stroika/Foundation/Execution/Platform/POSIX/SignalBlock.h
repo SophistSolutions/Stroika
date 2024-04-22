@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Execution_Platform_POSIX_SignalBlock_h_
 #define _Stroika_Foundation_Execution_Platform_POSIX_SignalBlock_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <csignal>
 #include <mutex>

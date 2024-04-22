@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 namespace Stroika::Foundation::Execution {
 

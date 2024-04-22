@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_IO_Network_CIDR_h_
 #define _Stroika_Foundation_IO_Network_CIDR_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 
-#include "../../Characters/String.h"
-#include "../../Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include "InternetAddress.h"
 

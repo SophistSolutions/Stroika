@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Execution_Resources_Concrete_WindowsResourceManager_h_
 #define _Stroika_Foundation_Execution_Resources_Concrete_WindowsResourceManager_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <Windows.h>
@@ -12,8 +12,8 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Characters/String.h"
-#include "../../../Configuration/Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "../Manager.h"
 

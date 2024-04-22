@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -14,13 +14,13 @@
 #include <unistd.h>
 #endif
 
-#include "../../Characters/Format.h"
-#include "../../Debug/Trace.h"
-#include "../../Execution/Common.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Module.h"
-#include "../../Execution/Process.h"
-#include "../../IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/Process.h"
+#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 
 #include "PathName.h"
 #include "WellKnownLocations.h"

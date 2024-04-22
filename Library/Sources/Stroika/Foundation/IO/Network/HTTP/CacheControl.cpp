@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/Format.h"
-#include "../../../Characters/String2Int.h"
-#include "../../../Characters/StringBuilder.h"
-#include "../../../Streams/TextReader.h"
-#include "../../../Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include "CacheControl.h"
 

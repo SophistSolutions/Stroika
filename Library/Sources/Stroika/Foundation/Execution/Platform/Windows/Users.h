@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Execution_Platform_Windows_Users_h_
 #define _Stroika_Foundation_Execution_Platform_Windows_Users_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if !qPlatform_Windows
 #error "ONLY INCLUDE FOR Windows"
@@ -12,8 +12,8 @@
 
 #include <Windows.h>
 
-#include "../../../Characters/String.h"
-#include "../../../Configuration/Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 

@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
 
 #include "RequiredComponentMissingException.h"
 
@@ -26,7 +26,7 @@ namespace {
         else if (cName == RequiredComponentMissingException::kPDFOCXViewer) {
             cName = "PDF Viewer (OCX)"sv;
         }
-        return Characters::Format ("A required component - {} - is missing, or is out of date"_f, component);
+        return "A required component - {} - is missing, or is out of date"_f(component);
     }
 }
 RequiredComponentMissingException::RequiredComponentMissingException (const String& component)

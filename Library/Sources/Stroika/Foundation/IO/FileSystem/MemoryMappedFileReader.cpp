@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <fcntl.h>
 #include <sys/types.h>
@@ -13,16 +13,16 @@
 #include <unistd.h>
 #endif
 
-#include "../../Execution/Activity.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Throw.h"
+#include "Stroika/Foundation/Execution/Activity.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #if qPlatform_Windows
-#include "../../Execution/Platform/Windows/Exception.h"
-#include "../../Execution/Platform/Windows/HRESULTErrorException.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "../../Debug/Trace.h"
 #include "FileSystem.h"
 #include "PathName.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "MemoryMappedFileReader.h"
 

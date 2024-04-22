@@ -10,8 +10,8 @@
  ********************************************************************************
  */
 
-#include "../../../Characters/Format.h"
-#include "../../../Debug/Trace.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "HRESULTErrorException.h"
 

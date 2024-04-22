@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_IO_FileSystem_PathName_h_
 #define _Stroika_Foundation_IO_FileSystem_PathName_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Common.h"
 #include "Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  *  \file

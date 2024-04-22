@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_Resources_Name_h_
 #define _Stroika_Foundation_Execution_Resources_Name_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 namespace Stroika::Foundation::Execution::Resources {
 

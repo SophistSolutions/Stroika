@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <windows.h>
@@ -16,19 +16,19 @@
 #if qPlatform_Linux
 #include <linux/limits.h>
 #endif
-#include "../../Characters/Format.h"
-#include "../../Characters/ToString.h"
-#include "../../Containers/Collection.h"
-#include "../../Containers/Set.h"
-#include "../../Debug/Trace.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #if qPlatform_Windows
-#include "../../Execution/Platform/Windows/Exception.h"
-#include "../../Execution/Platform/Windows/HRESULTErrorException.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 
-#include "../../IO/FileSystem/Exception.h"
+#include "Stroika/Foundation/IO/FileSystem/Exception.h"
 
 #include "DirectoryIterable.h"
 #include "FileUtils.h"

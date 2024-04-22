@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_IO_FileSystem_FileUtils_h_
 #define _Stroika_Foundation_IO_FileSystem_FileUtils_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 #include <set>
@@ -14,11 +14,11 @@
 #include <Windows.h>
 #endif
 
-#include "../../Characters/SDKChar.h"
-#include "../../Configuration/Common.h"
-#include "../../Debug/Assertions.h"
-#include "../../Execution/Thread.h"
-#include "../../Time/DateTime.h"
+#include "Stroika/Foundation/Characters/SDKChar.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 #include "../AccessMode.h"
 #include "Common.h"

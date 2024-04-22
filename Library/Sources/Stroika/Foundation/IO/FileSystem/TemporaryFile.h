@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_IO_FileSystem_TemporaryFile_h_
 #define _Stroika_Foundation_IO_FileSystem_TemporaryFile_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Common.h"
 
@@ -22,7 +22,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  If used directly, you can make your own, or use AppTempFileManager::sThe.
      * 
      *  AppTempFileManager::sThe CAN be overwritten, but best practice is to do so early in main (main thread)
-     *  before any threads have been created (whihc might create a race).
+     *  before any threads have been created (which might create a race).
      */
     class AppTempFileManager {
     public:

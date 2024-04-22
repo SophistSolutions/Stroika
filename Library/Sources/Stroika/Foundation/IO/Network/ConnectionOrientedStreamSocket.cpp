@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_POSIX
 #include <fcntl.h>
 #include <unistd.h>
 #endif
 
-#include "../../Characters/StringBuilder.h"
-#include "../../Characters/ToString.h"
-#include "../../Execution/WaitForIOReady.h"
-#include "../../Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Socket-Private_.h"
 

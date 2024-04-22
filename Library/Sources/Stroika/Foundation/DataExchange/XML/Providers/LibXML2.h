@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_DataExchange_XML_Providers_LibXML2_h_
 #define _Stroika_Foundation_DataExchange_XML_Providers_LibXML2_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libxml2 not set");
 

@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_IO_Network_HTTP_IfNoneMatch_h_
 #define _Stroika_Foundation_IO_Network_HTTP_IfNoneMatch_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/String.h"
-#include "../../../Containers/Sequence.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 
 #include "ETag.h"
 

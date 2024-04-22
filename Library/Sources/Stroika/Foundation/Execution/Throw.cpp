@@ -1,15 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/ToString.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 
 #include "Throw.h"
 
 #if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-#include "../Characters/String.h"
-#include "../Debug/BackTrace.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Debug/BackTrace.h"
 #endif
 
 using namespace Stroika::Foundation;

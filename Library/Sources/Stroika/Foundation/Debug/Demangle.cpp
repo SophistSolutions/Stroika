@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdlib> // to force __GLIBCXX__ define reference
 
@@ -13,7 +13,7 @@
 #include <Dbghelp.h>
 #endif
 
-#include "../Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 
 #include "Demangle.h"
 

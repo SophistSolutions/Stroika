@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/Format.h"
-#include "../../../Characters/ToString.h"
-#include "../../../Execution/Common.h"
-#include "../../../Execution/OperationNotSupportedException.h"
-#include "../../../Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
 
 #include "MessageStartTextInputStreamBinaryAdapter.h"
 

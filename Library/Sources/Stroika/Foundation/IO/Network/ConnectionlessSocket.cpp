@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Characters/ToString.h"
-#include "../../Execution/Activity.h"
-#include "../../Execution/Thread.h"
-#include "../../Execution/TimeOutException.h"
-#include "../../Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/Activity.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
 
 #include "Socket-Private_.h"
 

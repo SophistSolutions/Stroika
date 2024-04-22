@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdio>
 #include <filesystem>
@@ -33,26 +33,26 @@
 #include <netioapi.h>
 #endif
 
-#include "../../Characters/CString/Utilities.h"
-#include "../../Characters/Format.h"
-#include "../../Characters/StringBuilder.h"
-#include "../../Characters/ToString.h"
-#include "../../Containers/Collection.h"
-#include "../../Containers/KeyedCollection.h"
-#include "../../Containers/Mapping.h"
-#include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
-#include "../../Debug/Sanitizer.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Finally.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #if qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../Execution/ProcessRunner.h"
-#include "../../Execution/Synchronized.h"
-#include "../../IO/FileSystem/FileInputStream.h"
-#include "../../IO/Network/DNS.h"
-#include "../../Memory/Optional.h"
-#include "../../Streams/MemoryStream.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/Network/DNS.h"
+#include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Socket.h"
 

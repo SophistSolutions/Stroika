@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <mutex>
 
@@ -23,7 +23,7 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal ()
     : fRestoreMask_{}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals all signals");
+    DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals all signals"_f);
 #endif
     sigset_t mySet;
     Verify (sigemptyset (&mySet) == 0);         // nb: cannot use :: cuz crapple uses macro --LGP 2016-12-31

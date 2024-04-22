@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <atomic>
 #include <exception>
@@ -13,7 +13,7 @@
 #include <unistd.h>
 #endif
 
-#include "../Memory/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 #include "Trace.h"
 

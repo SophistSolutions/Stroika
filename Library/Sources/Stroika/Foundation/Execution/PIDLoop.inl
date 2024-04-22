@@ -9,9 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Characters/StringBuilder.h"
-#include "../Characters/ToString.h"
 #include "Sleep.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module (note the extra long name since its in a header)
 //#define Stroika_Foundation_Execution_PIDLoop_USE_NOISY_TRACE_IN_THIS_MODULE_ 1

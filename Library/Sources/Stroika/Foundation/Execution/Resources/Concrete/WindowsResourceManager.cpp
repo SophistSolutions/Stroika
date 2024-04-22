@@ -1,10 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Common/Common.h"
-#include "../../../Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "../ResourceNotFoundException.h"
 

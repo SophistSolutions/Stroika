@@ -9,10 +9,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Configuration/Endian.h"
-#include "../../Memory/Bits.h"
-#include "../../Memory/Common.h"
-#include "../../Traversal/Iterator.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Memory/Bits.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 namespace Stroika::Foundation::IO::Network {
 

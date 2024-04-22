@@ -11,10 +11,10 @@
  */
 #include <atomic>
 
-#include "../Debug/Assertions.h"
-#include "../Math/Common.h"
-#include "../Memory/BlockAllocated.h"
-#include "../Streams/InputStreamDelegationHelper.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Streams/InputStreamDelegationHelper.h"
 
 #include "Common.h"
 #include "Synchronized.h"

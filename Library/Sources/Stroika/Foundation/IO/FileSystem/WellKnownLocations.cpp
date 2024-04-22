@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <shlobj.h>
@@ -10,9 +10,9 @@
 #include <cstdlib>
 #endif
 
-#include "../../Execution/Throw.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #if qPlatform_Windows
-#include "../../Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
 #include "FileUtils.h"

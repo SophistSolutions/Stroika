@@ -1,19 +1,19 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
 
-#include "../../../Characters/Format.h"
-#include "../../../Characters/StringBuilder.h"
-#include "../../../Characters/ToString.h"
-#include "../../../Containers/Common.h"
-#include "../../../Debug/Assertions.h"
-#include "../../../Debug/Trace.h"
-#include "../../../IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 
 #include "Response.h"
 

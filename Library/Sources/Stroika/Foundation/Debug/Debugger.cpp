@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_POSIX
 #include <fcntl.h>
@@ -18,7 +18,7 @@
 #elif qPlatform_Windows
 #include <Windows.h>
 #endif
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 #include "Debugger.h"
 

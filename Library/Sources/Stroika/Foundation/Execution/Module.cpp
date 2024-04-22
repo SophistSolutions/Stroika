@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdio>
 
@@ -16,11 +16,11 @@
 #include <windows.h>
 #endif
 
-#include "../Execution/Exceptions.h"
-#include "../Execution/Synchronized.h"
-#include "../Execution/Throw.h"
-#include "../IO/FileSystem/PathName.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "Module.h"
 

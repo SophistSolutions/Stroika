@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdio>
 
@@ -15,17 +15,17 @@
 #include <WS2tcpip.h>
 #endif
 
-#include "../../Characters/Format.h"
-#include "../../Common/TemplateUtilities.h"
-#include "../../Containers/Collection.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Finally.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #if qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../Execution/Exceptions.h"
 #include "SocketAddress.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "DNS.h"
 

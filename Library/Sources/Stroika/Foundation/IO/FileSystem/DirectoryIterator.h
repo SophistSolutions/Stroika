@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_IO_FileSystem_DirectoryIterator_h_
 #define _Stroika_Foundation_IO_FileSystem_DirectoryIterator_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Common.h"
-#include "../../Configuration/Enumeration.h"
-#include "../../Traversal/Iterator.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 #include "Common.h"
 

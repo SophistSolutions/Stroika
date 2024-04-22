@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../../Debug/Cast.h"
+#include "Stroika/Foundation/Debug/Cast.h"
 
 namespace Stroika::Foundation::IO::Network {
 

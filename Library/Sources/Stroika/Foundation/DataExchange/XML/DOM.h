@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_DataExchange_XML_DOM_h_
 #define _Stroika_Foundation_DataExchange_XML_DOM_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <variant>
 
-#include "../../Common/TemplateUtilities.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Streams/InputStream.h"
-#include "../../Streams/OutputStream.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 #include "../BadFormatException.h"
 #include "../VariantValue.h"

@@ -10,8 +10,8 @@
  ********************************************************************************
  */
 
-#include "../../Streams/MemoryStream.h"
-#include "../../Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 

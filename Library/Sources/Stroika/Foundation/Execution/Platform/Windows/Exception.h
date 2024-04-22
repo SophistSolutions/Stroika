@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Execution_Platform_Windows_Exception_h_
 #define _Stroika_Foundation_Execution_Platform_Windows_Exception_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <Windows.h>
@@ -12,8 +12,8 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Configuration/Common.h"
-#include "../../../Execution/Exceptions.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 

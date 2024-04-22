@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Streams/EOFException.h"
+#include "Stroika/Foundation/Streams/EOFException.h"
 #include "TimeOutException.h"
 
 namespace Stroika::Foundation::Execution {

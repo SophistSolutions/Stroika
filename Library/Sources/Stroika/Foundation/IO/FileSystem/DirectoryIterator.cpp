@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <windows.h>
@@ -9,17 +9,17 @@
 #include <dirent.h>
 #endif
 
-#include "../../Characters/CString/Utilities.h"
-#include "../../Characters/ToString.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Debug/Cast.h"
-#include "../../Debug/Trace.h"
-#include "../../Execution/Exceptions.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #if qPlatform_Windows
-#include "../../Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../IO/FileSystem/Exception.h"
-#include "../../IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/IO/FileSystem/Exception.h"
+#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 
 #include "PathName.h"
 

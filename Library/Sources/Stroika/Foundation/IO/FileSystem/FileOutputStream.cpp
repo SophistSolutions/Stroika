@@ -1,29 +1,29 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#if qPlatform_Windows
-#include <io.h>
-#elif qPlatform_POSIX
+#if qPlatform_POSIX
 #include <unistd.h>
+#elif qPlatform_Windows
+#include <io.h>
 #endif
 
-#include "../../Characters/Format.h"
-#include "../../Characters/ToString.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Execution/Activity.h"
-#include "../../Execution/Common.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Throw.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Activity.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #if qPlatform_Windows
-#include "../../Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../Streams/InternallySynchronizedOutputStream.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
 
 #include "Exception.h"
 

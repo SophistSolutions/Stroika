@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_IO_Network_InternetProtocol_IP_h_
 #define _Stroika_Foundation_IO_Network_InternetProtocol_IP_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Linux
 #include <netinet/ip.h>
 #endif
 
-#include "../../../Configuration/Common.h"
-#include "../../../Configuration/Endian.h"
-#include "../../../Memory/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
 *

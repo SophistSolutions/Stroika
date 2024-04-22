@@ -9,7 +9,7 @@
  ********************************************************************************
  */
 
-#include "../../Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Providers/IProvider.h"
 

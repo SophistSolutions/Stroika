@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <sstream>
 
@@ -15,27 +15,27 @@
 #include <unistd.h>
 #endif
 
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/Format.h"
-#include "../Characters/StringBuilder.h"
-#include "../Characters/ToString.h"
-#include "../Containers/Sequence.h"
-#include "../Debug/Trace.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #if qPlatform_Windows
 #include "Platform/Windows/Exception.h"
 #endif
-#include "../Execution/CommandLine.h"
-#include "../Execution/Exceptions.h"
-#include "../Execution/Finally.h"
-#include "../Execution/WaitForIOReady.h"
-#include "../IO/FileSystem/FileSystem.h"
-#include "../IO/FileSystem/FileUtils.h"
-#include "../IO/FileSystem/PathName.h"
-#include "../Memory/Span.h"
-#include "../Memory/StackBuffer.h"
-#include "../Streams/MemoryStream.h"
-#include "../Streams/TextReader.h"
-#include "../Streams/TextWriter.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/TextWriter.h"
 
 #include "Sleep.h"
 #include "Thread.h"

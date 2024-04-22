@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Characters/Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
 
 namespace Stroika::Foundation::Execution {
 

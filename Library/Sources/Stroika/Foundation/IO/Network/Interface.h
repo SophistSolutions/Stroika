@@ -4,16 +4,16 @@
 #ifndef _Stroika_Foundation_IO_Network_Interface_h_
 #define _Stroika_Foundation_IO_Network_Interface_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Characters/String.h"
-#include "../../Common/GUID.h"
-#include "../../Configuration/Common.h"
-#include "../../Configuration/Enumeration.h"
-#include "../../Containers/Collection.h"
-#include "../../Containers/Set.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Set.h"
 
 #include "CIDR.h"
 #include "InternetAddress.h"

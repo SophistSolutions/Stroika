@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_DataExchange_XML_Providers_Xerces_h_
 #define _Stroika_Foundation_DataExchange_XML_Providers_Xerces_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerces not set");
 

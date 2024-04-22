@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <Windows.h>
 #endif
 
-#include "../Characters/SDKChar.h"
+#include "Stroika/Foundation/Characters/SDKChar.h"
 #if qPlatform_Windows
-#include "../Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #if qPlatform_POSIX
 #include "Platform/POSIX/Users.h"

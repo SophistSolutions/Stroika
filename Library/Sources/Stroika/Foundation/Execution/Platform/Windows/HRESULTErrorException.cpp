@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <Windows.h>
@@ -10,13 +10,13 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Characters/String.h"
-#include "../../../Common/TemplateUtilities.h"
-#include "../../../Configuration/Common.h"
-#include "../../../Containers/Common.h"
-#include "../../../Debug/Trace.h"
-#include "../../../Time/Realtime.h"
 #include "Exception.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "HRESULTErrorException.h"
 

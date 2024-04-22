@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_IO_FileSystem_FileOutputStream_h_
 #define _Stroika_Foundation_IO_FileSystem_FileOutputStream_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 
-#include "../../Characters/String.h"
-#include "../../Streams/OutputStream.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 #include "FileStream.h"
 

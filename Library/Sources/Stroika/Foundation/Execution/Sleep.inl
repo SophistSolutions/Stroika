@@ -18,7 +18,7 @@
 #endif
 #include <cerrno>
 
-#include "../Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Execution {
 

@@ -1,19 +1,19 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/StringBuilder.h"
-#include "../Common/GUID.h"
-#include "../Database/SQL/Connection.h"
-#include "../Database/SQL/Statement.h"
-#include "../IO/Network/CIDR.h"
-#include "../IO/Network/InternetAddress.h"
-#include "../IO/Network/SocketAddress.h"
-#include "../IO/Network/URI.h"
-#include "../Time/Date.h"
-#include "../Time/DateTime.h"
-#include "../Time/TimeOfDay.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Database/SQL/Connection.h"
+#include "Stroika/Foundation/Database/SQL/Statement.h"
+#include "Stroika/Foundation/IO/Network/CIDR.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Time/Date.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/TimeOfDay.h"
 
 #include "Visualizations.h"
 

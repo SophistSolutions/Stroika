@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdio>
 
@@ -26,15 +26,15 @@
 #include <netioapi.h>
 #endif
 
-#include "../../Characters/CString/Utilities.h"
-#include "../../Containers/Collection.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Thread.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #if qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../IO/Network/DNS.h"
+#include "Stroika/Foundation/IO/Network/DNS.h"
 
 #include "ConnectionlessSocket.h"
 

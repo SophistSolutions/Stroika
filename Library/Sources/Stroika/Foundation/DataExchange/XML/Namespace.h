@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_DataExchange_XML_Namespace_h_
 #define _Stroika_Foundation_DataExchange_XML_Namespace_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Characters/String.h"
-#include "../../Containers/Mapping.h"
-#include "../../Containers/Sequence.h"
-#include "../../IO/Network/URI.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 
 #include "Common.h"
 

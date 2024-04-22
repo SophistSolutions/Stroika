@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_POSIX
 #include <poll.h>
@@ -14,9 +14,9 @@
 #include <ws2tcpip.h>
 #endif
 
-#include "../Memory/BLOB.h"
-#include "../Memory/StackBuffer.h"
-#include "../Time/Realtime.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Exceptions.h"
 #if qPlatform_Windows
@@ -24,8 +24,8 @@
 #include "Platform/Windows/WaitSupport.h"
 #endif
 
-#include "../IO/Network/ConnectionOrientedMasterSocket.h"
-#include "../IO/Network/ConnectionOrientedStreamSocket.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 
 #include "WaitForIOReady.h"
 

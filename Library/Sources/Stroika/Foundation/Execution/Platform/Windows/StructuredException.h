@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_
 #define _Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <system_error>
 

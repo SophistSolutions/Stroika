@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Streams/TextToByteReader.h"
+#include "Stroika/Foundation/Streams/TextToByteReader.h"
 
 namespace Stroika::Foundation::DataExchange::Variant {
 

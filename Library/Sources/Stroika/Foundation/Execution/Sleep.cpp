@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Time/Duration.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Sleep.h"
 

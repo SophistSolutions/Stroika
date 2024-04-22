@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_IO_Network_ConnectionOrientedStreamSocket_h_
 #define _Stroika_Foundation_IO_Network_ConnectionOrientedStreamSocket_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Time/Duration.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Socket.h"
 

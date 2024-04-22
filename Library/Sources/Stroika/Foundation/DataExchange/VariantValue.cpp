@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/FloatConversion.h"
-#include "../Characters/Format.h"
-#include "../Characters/String2Int.h"
-#include "../Characters/ToString.h"
-#include "../Containers/SortedMapping.h"
-#include "../Cryptography/Encoding/Algorithm/Base64.h"
-#include "../DataExchange/BadFormatException.h"
-#include "../Debug/Cast.h"
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 #include "VariantValue.h"
 

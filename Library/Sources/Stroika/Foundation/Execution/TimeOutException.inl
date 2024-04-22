@@ -11,7 +11,7 @@
  */
 #include <condition_variable>
 
-#include "../Time/Common.h"
+#include "Stroika/Foundation/Time/Common.h"
 
 namespace Stroika::Foundation::Execution {
 

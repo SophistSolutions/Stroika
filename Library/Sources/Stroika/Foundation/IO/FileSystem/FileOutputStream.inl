@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../../Streams/BufferedOutputStream.h"
+#include "Stroika/Foundation/Streams/BufferedOutputStream.h"
 
 namespace Stroika::Foundation::IO::FileSystem::FileOutputStream {
 

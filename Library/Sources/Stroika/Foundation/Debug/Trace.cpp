@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cmath>
 #include <cstdarg>
@@ -10,25 +10,25 @@
 #include <map>
 #include <mutex>
 
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/Format.h"
-#include "../Characters/LineEndings.h"
-#include "../Characters/ToString.h"
-#include "../Debug/Sanitizer.h"
-#include "../Debug/Valgrind.h"
-#include "../Execution/Common.h"
-#include "../Execution/Module.h"
-#include "../Execution/Process.h"
-#include "../Execution/Thread.h"
-#include "../IO/FileSystem/PathName.h"
-#include "../Memory/Common.h"
-#include "../Memory/StackBuffer.h"
-#include "../Time/DateTime.h"
-#include "../Time/Realtime.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/Process.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #if qStroika_Foundation_Debug_Trace_TraceToFile
-#include "../IO/FileSystem/WellKnownLocations.h"
-#include "../Time/DateTime.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 #endif
 
 #include "Trace.h"
