@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_WaitableEvent_inl_
-#define _Stroika_Foundation_Execution_WaitableEvent_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Common.h"
 
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
@@ -257,5 +249,3 @@ namespace Stroika::Foundation::Configuration {
         {Execution::WaitableEvent::WaitStatus::eTriggered, L"Triggered"},
     }}};
 }
-
-#endif /*_Stroika_Foundation_Execution_WaitableEvent_inl_*/

@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Logger_inl_
-#define _Stroika_Foundation_Execution_Logger_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Characters/Format.h"
 
 namespace Stroika::Foundation::Execution {
@@ -74,5 +66,3 @@ namespace Stroika::Foundation::Configuration {
         {Execution::Logger::Priority::eEmergency, L"Emergency"},
     }}};
 }
-
-#endif /*_Stroika_Foundation_Execution_Logger_inl_*/

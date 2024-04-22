@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_WaitForIOReady_inl_
-#define _Stroika_Foundation_Execution_WaitForIOReady_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "TimeOutException.h"
 
 namespace Stroika::Foundation::Execution {
@@ -118,5 +109,3 @@ namespace Stroika::Foundation::Configuration {
             {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eHUP, L"HUP"},
         }}};
 }
-
-#endif /*_Stroika_Foundation_Execution_WaitForIOReady_inl_*/

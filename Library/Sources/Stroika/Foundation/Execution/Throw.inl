@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroia_Foundation_Execution_Throw_inl_
-#define _Stroia_Foundation_Execution_Throw_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <typeinfo> // needed for use of typeid()
 
 namespace Stroika::Foundation::Execution {
@@ -142,5 +134,3 @@ namespace Stroika::Foundation::Execution {
         ThrowIfNull (p, kException_);
     }
 }
-
-#endif /*_Stroia_Foundation_Execution_Throw_inl_*/

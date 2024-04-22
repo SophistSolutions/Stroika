@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Function_inl_
-#define _Stroika_Foundation_Execution_Function_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Compare.h"
 
@@ -87,5 +78,3 @@ namespace Stroika::Foundation::Execution {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Execution_Function_inl_*/

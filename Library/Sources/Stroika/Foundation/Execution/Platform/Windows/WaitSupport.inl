@@ -1,14 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Platform_Windows_WaitSupport_inl_
-#define _Stroika_Foundation_Execution_Platform_Windows_WaitSupport_inl_ 1
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 namespace Stroika::Foundation::Execution::Platform::Windows {
 
     inline DWORD Duration2Milliseconds (Time::DurationSeconds nSeconds)
@@ -17,5 +10,3 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_inl_*/

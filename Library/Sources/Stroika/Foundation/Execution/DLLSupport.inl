@@ -1,14 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroia_Foundation_Execution_DLLSupport_inl_
-#define _Stroia_Foundation_Execution_DLLSupport_inl_ 1
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 
@@ -62,5 +55,3 @@ namespace Stroika::Foundation::Execution {
 #endif
 
 }
-
-#endif /*_Stroia_Foundation_Execution_DLLSupport_inl_*/

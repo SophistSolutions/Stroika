@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_inl_
-#define _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "../BadFormatException.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
@@ -959,5 +951,3 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
 }
-
-#endif /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_inl_*/

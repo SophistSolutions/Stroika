@@ -1,20 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_LazyInitialized_inl_
-#define _Stroika_Foundation_Execution_LazyInitialized_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ******************************** LazyInitialized<T> ******************************
+     ****************************** LazyInitialized<T> ******************************
      ********************************************************************************
      */
     template <typename T>
@@ -59,5 +51,3 @@ namespace Stroika::Foundation::Execution {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Execution_LazyInitialized_inl_*/

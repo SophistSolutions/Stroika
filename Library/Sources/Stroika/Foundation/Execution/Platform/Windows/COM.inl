@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Platform_Windows_COM_inl_
-#define _Stroika_Foundation_Execution_Platform_Windows_COM_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
@@ -19,7 +10,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
 
     /*
      ********************************************************************************
-     ***************************** Implementation Details ***************************
+     ********************************** COMInitializer ******************************
      ********************************************************************************
      */
     inline COMInitializer::COMInitializer (COINIT initFlag, bool worksWithAnyCoInitFlag)
@@ -57,5 +48,3 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Execution_Platform_Windows_COM_inl_*/

@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_OptionsFile_inl_
-#define _Stroika_Foundation_DataExchange_OptionsFile_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
@@ -110,5 +102,3 @@ namespace Stroika::Foundation::DataExchange {
     }
 
 }
-
-#endif /*_Stroika_Foundation_DataExchange_OptionsFile_inl_*/

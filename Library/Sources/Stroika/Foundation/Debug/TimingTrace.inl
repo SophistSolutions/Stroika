@@ -1,11 +1,6 @@
-
 /*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Debug_TimingTrace_inl_
-#define _Stroika_Foundation_Debug_TimingTrace_inl_ 1
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Trace.h"
@@ -66,5 +61,3 @@ namespace Stroika::Foundation::Debug {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Debug_TimingTrace_inl_*/

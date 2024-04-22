@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Synchronized_inl_
-#define _Stroika_Foundation_Execution_Synchronized_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module (note the extra long name since its in a header)
 //#define Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -676,5 +668,3 @@ namespace Stroika::Foundation::Execution {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Execution_Synchronized_inl_*/

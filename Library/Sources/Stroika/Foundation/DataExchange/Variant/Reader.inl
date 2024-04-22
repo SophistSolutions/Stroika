@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_Variant_Reader_inl_
-#define _Stroika_Foundation_DataExchange_Variant_Reader_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Streams/TextToByteReader.h"
 
 namespace Stroika::Foundation::DataExchange::Variant {
@@ -85,5 +77,3 @@ namespace Stroika::Foundation::DataExchange::Variant {
     }
 
 }
-
-#endif /*_Stroika_Foundation_DataExchange_Variant_Reader_inl_*/

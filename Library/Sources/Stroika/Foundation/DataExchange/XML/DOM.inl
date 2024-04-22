@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_XML_DOM_inl_
-#define _Stroika_Foundation_DataExchange_XML_DOM_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
@@ -425,5 +416,3 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
 
 }
-
-#endif

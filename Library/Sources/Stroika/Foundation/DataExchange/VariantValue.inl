@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_VariantValue_inl_
-#define _Stroika_Foundation_DataExchange_VariantValue_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::DataExchange {
@@ -155,5 +147,3 @@ namespace Stroika::Foundation::Configuration {
         {DataExchange::VariantValue::eMap, L"Map"},
     }}};
 }
-
-#endif /*_Stroika_Foundation_DataExchange_VariantValue_inl_*/

@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Thread_inl_
-#define _Stroika_Foundation_Execution_Thread_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <atomic>
 
 #include "WaitableEvent.h"
@@ -432,5 +424,3 @@ namespace Stroika::Foundation::Configuration {
         {Execution::Thread::Priority::eHighest, L"Highest"},
     }}};
 }
-
-#endif /*_Stroika_Foundation_Execution_Thread_inl_*/

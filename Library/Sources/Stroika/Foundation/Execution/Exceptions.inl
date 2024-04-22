@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroia_Foundation_Execution_Exceptions_inl_
-#define _Stroia_Foundation_Execution_Exceptions_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -222,5 +214,3 @@ namespace Stroika::Foundation::Execution {
     }
 
 }
-
-#endif /*_Stroia_Foundation_Execution_Exceptions_inl_*/

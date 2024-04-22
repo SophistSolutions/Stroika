@@ -1,14 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Resources_Accessor_inl_
-#define _Stroika_Foundation_Execution_Resources_Accessor_inl_ 1
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 namespace Stroika::Foundation::Execution::Resources {
 
     /*
@@ -38,5 +31,3 @@ namespace Stroika::Foundation::Execution::Resources {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Execution_Resources_Accessor_inl_*/
