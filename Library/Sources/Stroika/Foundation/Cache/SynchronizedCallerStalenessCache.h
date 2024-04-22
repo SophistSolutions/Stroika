@@ -9,7 +9,7 @@
 #include <mutex>
 #include <shared_mutex>
 
-#include "CallerStalenessCache.h"
+#include "Stroika/Foundation/Cache/CallerStalenessCache.h"
 
 /**
  *      \file

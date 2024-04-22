@@ -8,9 +8,8 @@
 
 #include <regex>
 
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
-
-#include "String.h"
 
 /**
  *  \file

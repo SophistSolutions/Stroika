@@ -9,8 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../../Containers/Common.h"
-#include "../../../Debug/Assertions.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Characters::Platform::Windows {
 

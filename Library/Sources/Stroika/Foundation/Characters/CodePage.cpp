@@ -7,18 +7,16 @@
 #include <mutex>
 #include <set>
 
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-
-#include "CString/Utilities.h"
-#include "Format.h"
-#include "String.h"
-
-#include "CodeCvt.h"
 
 #include "CodePage.h"
 

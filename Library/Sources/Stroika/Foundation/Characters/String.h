@@ -12,6 +12,8 @@
 #include <string>
 #include <string_view>
 
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -19,10 +21,6 @@
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
-
-#include "SDKString.h"
-
-#include "Character.h"
 
 /**
  *  \file

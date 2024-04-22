@@ -12,10 +12,10 @@
 #include <algorithm>
 #include <cstring>
 
-#include "../Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 #if qPlatform_Windows
-#include "Platform/Windows/CodePage.h"
+#include "Stroika/Foundation/Characters/Platform/Windows/CodePage.h"
 #endif
 
 #include "UTFConvert.h"

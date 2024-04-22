@@ -9,7 +9,7 @@
 #include <span>
 #include <string>
 
-#include "SDKChar.h"
+#include "Stroika/Foundation/Characters/SDKChar.h"
 
 /**
  *  TODO

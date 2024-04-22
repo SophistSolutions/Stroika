@@ -14,12 +14,11 @@
 #include <typeinfo>
 #include <utility>
 
-#include "Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/CountedValue.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
-
-#include "String.h"
 
 /**
  *  TODO:

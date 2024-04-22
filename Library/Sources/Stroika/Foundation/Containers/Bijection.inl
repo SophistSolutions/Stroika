@@ -10,9 +10,8 @@
 #ifndef _Stroika_Foundation_Containers_Bijection_inl_
 #define _Stroika_Foundation_Containers_Bijection_inl_
 
+#include "Stroika/Foundation/Containers/Factory/Bijection_Factory.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-
-#include "Factory/Bijection_Factory.h"
 
 namespace Stroika::Foundation::Containers {
 

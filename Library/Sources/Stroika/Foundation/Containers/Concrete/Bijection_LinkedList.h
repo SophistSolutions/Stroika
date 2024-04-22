@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
+#ifndef _Stroika_Foundation_Containers_Concrete_Bijection_LinkedList_h_
+#define _Stroika_Foundation_Containers_Concrete_Bijection_LinkedList_h_
+
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Common/Compare.h"
 
-#include "../Bijection.h"
-
-#ifndef _Stroika_Foundation_Containers_Concrete_Bijection_LinkedList_h_
-#define _Stroika_Foundation_Containers_Concrete_Bijection_LinkedList_h_
+#include "Stroika/Foundation/Containers/Bijection.h"
 
 /**
  *  \file

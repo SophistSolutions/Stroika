@@ -13,7 +13,7 @@
 #include <boost/locale/encoding_utf.hpp>
 #endif
 
-#include "Character.h"
+#include "Stroika/Foundation/Characters/Character.h"
 
 /**
  *  \file

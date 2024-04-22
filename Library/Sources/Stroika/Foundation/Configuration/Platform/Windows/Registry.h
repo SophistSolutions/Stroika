@@ -12,8 +12,8 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../Common.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 
 namespace Stroika::Foundation::Configuration::Platform::Windows {

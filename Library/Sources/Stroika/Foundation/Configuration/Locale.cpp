@@ -5,10 +5,9 @@
 
 #include <set>
 
-#include "StroikaConfig.h"
-
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
+#include "Stroika/Foundation/Configuration/StroikaConfig.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 

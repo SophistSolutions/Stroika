@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <regex>
 
-#include "../Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 
 #include "RegularExpression.h"
 

@@ -6,10 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
-
-#include "String.h"
 
 /**
  *  \file

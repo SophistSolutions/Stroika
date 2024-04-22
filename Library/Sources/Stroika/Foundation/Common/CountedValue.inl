@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/Configuration/Concepts.h"
 
-#include "Compare.h"
+//#include "Stroika/Foundation/Common/Compare.h"
 
 /*
  ********************************************************************************

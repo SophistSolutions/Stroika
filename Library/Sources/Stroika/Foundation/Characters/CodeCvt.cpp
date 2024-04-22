@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Common/Common.h"
-#include "../Execution/Exceptions.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
-#include "CharacterEncodingException.h"
+#include "Stroika/Foundation/Characters/CharacterEncodingException.h"
 
 #include "CodeCvt.h"
 

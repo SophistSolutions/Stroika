@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "Stroika/Foundation/Cache/Statistics.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
@@ -16,8 +17,6 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
-
-#include "Statistics.h"
 
 /**
  *      \file

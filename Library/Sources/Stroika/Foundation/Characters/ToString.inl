@@ -20,11 +20,11 @@
 #include <variant>
 #include <wchar.h>
 
-#include "../Configuration/Concepts.h"
-#include "../Configuration/Enumeration.h"
-#include "FloatConversion.h"
-#include "Format.h"
-#include "StringBuilder.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
 
 namespace Stroika::Foundation::Characters {
 

@@ -11,6 +11,9 @@
 #include <string>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
+#include "Stroika/Foundation/Characters/SDKString.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Configuration/Empty.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
@@ -23,10 +26,6 @@
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/Span.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-
-#include "RegularExpression.h"
-#include "SDKString.h"
-#include "StringBuilder.h"
 
 #include "String.h"
 

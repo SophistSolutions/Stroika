@@ -9,12 +9,11 @@
 #include <optional>
 #include <vector>
 
+#include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/TypeHints.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
-
-#include "LRUCache.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "String.h"
+#include "Stroika/Foundation/Characters/String.h"
 
 #include "Charset.h"
 

@@ -11,18 +11,17 @@
  */
 #include <memory>
 
-#include "../Debug/Assertions.h"
-#include "../Execution/Common.h"
-#include "../Memory/Optional.h"
-
-#include "CString/Utilities.h"
-#include "UTFConvert.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     ***************************** Implementation Details ***************************
+     ***************************** StringBuilder<OPTIONS> ***************************
      ********************************************************************************
      */
     template <typename OPTIONS>
@@ -44,7 +43,6 @@ namespace Stroika::Foundation::Characters {
         Append (rhs);
         return *this;
     }
-
     template <typename OPTIONS>
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (span<const CHAR_T> s)

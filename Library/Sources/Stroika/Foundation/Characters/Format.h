@@ -12,12 +12,11 @@
 #include <ranges>
 #include <sstream> //tmphack for my current formatter
 
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Configuration/StdCompat.h"
-
-#include "Character.h"
-#include "String.h"
 
 /**
  *  \file

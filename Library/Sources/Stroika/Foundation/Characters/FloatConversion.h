@@ -10,9 +10,8 @@
 #include <locale>
 #include <optional>
 
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "String.h"
 
 /**
  * TODO:

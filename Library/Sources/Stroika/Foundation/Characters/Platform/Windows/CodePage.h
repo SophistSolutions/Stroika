@@ -15,9 +15,8 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
+#include "Stroika/Foundation/Characters/CodePage.h"
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "../../CodePage.h"
 
 namespace Stroika::Foundation::Characters::Platform::Windows {
 

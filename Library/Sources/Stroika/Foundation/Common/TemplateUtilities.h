@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <variant>
 
-#include "Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /**
  *  \file

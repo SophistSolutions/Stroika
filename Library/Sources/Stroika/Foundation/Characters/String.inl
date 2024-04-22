@@ -11,11 +11,10 @@
  */
 #include <regex>
 
-#include "../Debug/Assertions.h"
-#include "../Execution/Throw.h"
-#include "../Memory/Span.h"
-
-#include "CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/Span.h"
 
 namespace Stroika::Foundation::Characters {
 

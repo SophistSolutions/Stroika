@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "Stroika/Foundation/Characters/String.h"
-
-#include "Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  *  \file

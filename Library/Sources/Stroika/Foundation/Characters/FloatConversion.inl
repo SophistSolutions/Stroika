@@ -12,13 +12,12 @@
 #include <charconv>
 #include <sstream>
 
-#include "../Containers/Common.h"
-#include "../Memory/Optional.h"
-#include "../Memory/Span.h"
-#include "../Memory/StackBuffer.h"
-
-#include "CString/Utilities.h"
-#include "UTFConvert.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters::FloatConversion {
 

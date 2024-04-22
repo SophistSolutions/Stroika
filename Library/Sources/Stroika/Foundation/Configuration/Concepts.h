@@ -14,8 +14,7 @@
 #include <variant>
 
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "ConceptsBase.h"
+#include "Stroika/Foundation/Configuration/ConceptsBase.h"
 
 /*
  *  \file Miscellaneous type traits and concepts for metaprogramming

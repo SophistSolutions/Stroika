@@ -9,7 +9,7 @@
 #include <concepts>
 #include <cstdint>
 
-#include "Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  *  \file

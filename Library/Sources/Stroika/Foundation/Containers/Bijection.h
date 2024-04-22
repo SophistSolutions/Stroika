@@ -12,11 +12,10 @@
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/DataExchange/ValidationStrategy.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
-
-#include "Common.h"
 
 /*
  *  \file

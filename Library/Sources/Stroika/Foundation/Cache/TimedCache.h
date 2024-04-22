@@ -10,6 +10,7 @@
 #include <mutex>
 #include <optional>
 
+#include "Stroika/Foundation/Cache/Statistics.h"
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/TypeHints.h"
@@ -17,8 +18,6 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Time/Realtime.h"
-
-#include "Statistics.h"
 
 /**
  *      \file

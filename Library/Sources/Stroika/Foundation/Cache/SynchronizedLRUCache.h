@@ -9,7 +9,7 @@
 #include <mutex>
 #include <shared_mutex>
 
-#include "LRUCache.h"
+#include "Stroika/Foundation/Cache/LRUCache.h"
 
 /**
  *      \file

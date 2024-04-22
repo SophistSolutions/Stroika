@@ -10,9 +10,8 @@
  ********************************************************************************
  */
 
-#include "../Debug/Assertions.h"
-
-#include "Factory/Collection_Factory.h"
+#include "Stroika/Foundation/Containers/Factory/Collection_Factory.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers {
 

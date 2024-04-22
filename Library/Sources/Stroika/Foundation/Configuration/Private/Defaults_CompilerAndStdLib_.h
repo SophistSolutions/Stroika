@@ -743,8 +743,8 @@ make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49
 #ifndef qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-// FIRST SEEN BROKEN IN GCC 13 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
-#define qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13)
+// FIRST SEEN BROKEN IN GCC 13 and 12 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
+#define qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ( __GNUC__ <= 13)
 #else
 #define qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy 0
 #endif

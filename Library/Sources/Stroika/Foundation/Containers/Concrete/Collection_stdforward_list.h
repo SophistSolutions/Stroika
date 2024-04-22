@@ -1,14 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
+#ifndef _Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_
+#define _Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_
+
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <forward_list>
 
-#include "../Collection.h"
+#include "Stroika/Foundation/Containers/Collection.h"
 
-#ifndef _Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_
-#define _Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_
 
 /**
  *  \file

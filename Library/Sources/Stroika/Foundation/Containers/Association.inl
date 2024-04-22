@@ -11,11 +11,10 @@
  */
 #include <set> //tmphack for sloppy RetainAll impl
 
+#include "Stroika/Foundation/Containers/Factory/Association_Factory.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Traversal/Generator.h"
-
-#include "Factory/Association_Factory.h"
 
 namespace Stroika::Foundation::Containers {
 

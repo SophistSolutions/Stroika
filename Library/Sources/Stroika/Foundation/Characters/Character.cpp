@@ -3,9 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/UTFConvert.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
-
-#include "UTFConvert.h"
 
 #include "Character.h"
 

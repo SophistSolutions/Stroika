@@ -3,9 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "StroikaConfig.h"
-
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Configuration/StroikaConfig.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/Bits.h"
 

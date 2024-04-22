@@ -9,10 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Debug/Cast.h"
-#include "../../Memory/BlockAllocated.h"
-
-#include "../DataStructures/STLContainerWrapper.h"
+#include "Stroika/Foundation/Containers//DataStructures/STLContainerWrapper.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 

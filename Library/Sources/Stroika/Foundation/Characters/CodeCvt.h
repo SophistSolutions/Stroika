@@ -12,10 +12,10 @@
 #include <span>
 #include <variant>
 
-#include "Character.h"
-#include "Charset.h"
-#include "CodePage.h"
-#include "UTFConvert.h"
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Characters/Charset.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/UTFConvert.h"
 
 /**
  *  \file
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Characters {
      *          It can be used to convert (abstract API) between ANY combination of 'target hidden in implementation'
      *          and exposed CHAR_T characters (reading or writing). DEFAULT CTORS only provide the combinations
      *          supported by stdc++ (and a little more). To get other combinations, you must use subclass.
-     *      o   'equivilent' code-point types automatically supported (e.g wchar_t == char16 or char32, and
+     *      o   'equivalent code-point types automatically supported (e.g wchar_t == char16 or char32, and
      *          Character==char32_t).
      *      o   No explicit 'external_type' exposed. Just bytes go in and out vs (CHAR_T) UNICODE characters.
      *          This erasure of the 'encoding' type from the CodeCvt<CHAR_T> allows it to be used generically
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Characters {
          *      UNICODE Characters.
          * 
          *  CodeCvt (const string& localeName):
-         *      Is equivilent to mkFromStdCodeCvt<...> (std::codecvt_byname {localeName}) - so it can throw if no such locale name
+         *      Is equivalent to mkFromStdCodeCvt<...> (std::codecvt_byname {localeName}) - so it can throw if no such locale name
          * 
          *  CodeCvt (span<const byte>* guessFormatFrom)
          *      the initial part of the span data (up to kMaxBOMSize bytes) are examined and used to select the CodeCvt to create (else default CodeCvt created).
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Characters {
          *      o   span<byte> from - initially all of which will be converted or an exception thrown (only if data corrupt/unconvertable) (updated to point to bytes which form part of a single additional character)
          *      o   span<CHAR_T> to - buffer to have data converted 'into'
          *          NOTE - all we require is that the result fit into 'to'. BUt we offer a quick way to compute a buffer 'large enough' -  (call ComputeTargetCharacterBufferSize).
-         *          But (a more expnsive) way is to call Bytes2Characters/1 and that will tell you exactly how many needed.
+         *          But (a more expensive) way is to call Bytes2Characters/1 and that will tell you exactly how many needed.
          *  Returns:
          *      subspan of 'to', with converted characters.
          *      Throws on failure (corrupt source content).

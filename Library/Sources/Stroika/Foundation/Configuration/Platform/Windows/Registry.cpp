@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <Windows.h>
@@ -9,12 +9,12 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Execution/DLLSupport.h"
-#include "../../../Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/DLLSupport.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 
-#include "../../../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
-#include "./Registry.h"
+#include "Registry.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;

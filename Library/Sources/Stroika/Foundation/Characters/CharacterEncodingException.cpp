@@ -3,8 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Format.h"
-#include "StringBuilder.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 
 #include "CharacterEncodingException.h"
 

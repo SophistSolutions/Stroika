@@ -9,9 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Containers/Common.h"
-
-#include "CodePage.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Containers/Common.h"
 
 namespace Stroika::Foundation::Execution {
     [[noreturn]] void ThrowSystemErrNo ();
