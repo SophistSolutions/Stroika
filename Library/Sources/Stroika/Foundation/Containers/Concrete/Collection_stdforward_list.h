@@ -10,7 +10,6 @@
 
 #include "Stroika/Foundation/Containers/Collection.h"
 
-
 /**
  *  \file
  *

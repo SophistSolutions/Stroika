@@ -10,11 +10,10 @@
  ********************************************************************************
  */
 
-#include "../../Debug/Cast.h"
-#include "../../Memory/BlockAllocated.h"
-
-#include "../DataStructures/DoublyLinkedList.h"
-#include "../Private/IteratorImplHelper.h"
+#include "Stroika/Foundation/Containers/DataStructures/DoublyLinkedList.h"
+#include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 

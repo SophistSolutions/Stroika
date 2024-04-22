@@ -8,7 +8,6 @@
 
 #include "Stroika/Foundation/Containers/Deque.h"
 
-
 /**
  *  \file
  *

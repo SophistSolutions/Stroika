@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#ifndef _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdhashset_h_
+#define _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdhashset_h_
+
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <set>
 #include <unordered_set>
 
-#include "../../Cryptography/Digest/HashBase.h"
-#include "../KeyedCollection.h"
-
-#ifndef _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdhashset_h_
-#define _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdhashset_h_
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
 
 //// NOT YET IMPELEMTNED - DRAFT ----
 
