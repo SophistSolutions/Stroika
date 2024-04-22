@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Characters/CodeCvt.h"
-#include "../../Foundation/Characters/CodePage.h"
-#include "../../Foundation/Characters/LineEndings.h"
-#include "../../Foundation/IO/FileSystem/FileInputStream.h"
-#include "../../Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Config.h"
 

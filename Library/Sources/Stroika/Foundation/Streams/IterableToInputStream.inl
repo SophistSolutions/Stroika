@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 namespace Stroika::Foundation::Streams::IterableToInputStream {
 

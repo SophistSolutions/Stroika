@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_SystemPerformance_Instruments_Process_h_
 #define _Stroika_Framework_SystemPerformance_Instruments_Process_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <filesystem>
 

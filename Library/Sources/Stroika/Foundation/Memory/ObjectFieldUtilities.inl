@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 #include "Common.h"
 

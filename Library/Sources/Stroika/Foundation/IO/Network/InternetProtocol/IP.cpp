@@ -3,8 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/TextReader.h"
 #include "../HTTP/Headers.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "IP.h"
 

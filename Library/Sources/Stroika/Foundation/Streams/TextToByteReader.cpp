@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/UTFConvert.h"
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Execution/Common.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "IterableToInputStream.h"
 #include "MemoryStream.h"

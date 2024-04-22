@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Throw.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #if qPlatform_Windows
-#include "../../Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
 #include "FStreamSupport.h"

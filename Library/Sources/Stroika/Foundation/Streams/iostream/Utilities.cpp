@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Containers/Common.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Throw.h"
-#include "../../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "Utilities.h"
 

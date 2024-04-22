@@ -13,11 +13,11 @@
 #include <mutex>
 #include <vector>
 
-#include "../Debug/Assertions.h"
-#include "../Debug/Valgrind.h"
-#include "../Execution/Common.h"
-#include "../Execution/SpinLock.h"
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/SpinLock.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 #include "Common.h"
 

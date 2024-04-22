@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_
 #define _Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <istream>
 
-#include "../../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 #include "../InputStream.h"
 #include "../InternallySynchronizedInputStream.h"

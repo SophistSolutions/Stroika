@@ -11,9 +11,9 @@
  */
 #include <mutex>
 
-#include "../Containers/Support/ReserveTweaks.h"
-#include "../Debug/Cast.h"
-#include "../Execution/WaitableEvent.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 
 namespace Stroika::Foundation::Streams::SharedMemoryStream {
 

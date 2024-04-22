@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_Platform_Windows_FileRegistration_h_
 #define _Stroika_Frameworks_Led_Platform_Windows_FileRegistration_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    Led_Win32_FileRegistration

@@ -1,19 +1,19 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cctype>
 #include <cmath>
 
-#include "../../Foundation/Characters/Character.h"
-#include "../../Foundation/Characters/CodeCvt.h"
-#include "../../Foundation/Characters/CodePage.h"
-#include "../../Foundation/IO/FileSystem/FileInputStream.h"
-#include "../../Foundation/IO/FileSystem/FileOutputStream.h"
-#include "../../Foundation/Memory/BLOB.h"
-#include "../../Foundation/Memory/StackBuffer.h"
-#include "../../Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Streams/TextWriter.h"
 
 #include "SpellCheckEngine_Basic.h"
 

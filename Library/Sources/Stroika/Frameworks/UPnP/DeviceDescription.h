@@ -4,16 +4,16 @@
 #ifndef _Stroika_Frameworks_UPnP_DeviceDescription_h_
 #define _Stroika_Frameworks_UPnP_DeviceDescription_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/Containers/Collection.h"
-#include "../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../Foundation/IO/Network/URI.h"
-#include "../../Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Device.h"
 
@@ -34,7 +34,7 @@ namespace Stroika::Frameworks::UPnP {
 
     /**
      * high level device description - from ssdp. This is the BASIC device info
-     * whcih appears to the XML file (pointed to by Device location field).
+     * which appears to the XML file (pointed to by Device location field).
      *
      *  This is based on http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf, page 43-46 apx
      */
@@ -100,7 +100,7 @@ namespace Stroika::Frameworks::UPnP {
         DeviceDescription () = default;
 
         /**
-         *  Mapper to facilitiate serialization
+         *  Mapper to facilitate serialization
          */
         static const Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> kMapper;
 

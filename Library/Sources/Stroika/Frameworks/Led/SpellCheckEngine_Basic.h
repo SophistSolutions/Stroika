@@ -10,7 +10,7 @@
 
  */
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <memory>
 #include <set>

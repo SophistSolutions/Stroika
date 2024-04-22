@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
 

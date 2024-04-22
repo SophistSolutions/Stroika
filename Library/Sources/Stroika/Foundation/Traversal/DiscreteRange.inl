@@ -4,8 +4,8 @@
 #ifndef _Stroika_Foundation_Traversal_DiscreteRange_inl_
 #define _Stroika_Foundation_Traversal_DiscreteRange_inl_
 
-#include "../Debug/Assertions.h"
-#include "../Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Traversal {
 

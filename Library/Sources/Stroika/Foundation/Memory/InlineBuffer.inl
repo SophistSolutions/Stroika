@@ -13,9 +13,9 @@
 #include <cstring>
 #include <type_traits>
 
-#include "../Containers/Support/ReserveTweaks.h"
-#include "../Debug/Assertions.h"
 #include "Common.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Execution {
     // Instead of #include "../Execution/Throw.h"

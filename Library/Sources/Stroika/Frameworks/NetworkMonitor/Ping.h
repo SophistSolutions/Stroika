@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_NetworkMonitor_Ping_h_
 #define _Stroika_Frameworks_NetworkMonitor_Ping_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <limits>
 #include <optional>

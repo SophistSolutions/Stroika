@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "InternallySynchronizedInputStream.h"
 

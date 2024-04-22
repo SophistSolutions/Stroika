@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -11,16 +11,16 @@
 #include <time.h>
 #endif
 
-#include "../Characters/Format.h"
-#include "../Characters/String.h"
-#include "../Configuration/Common.h"
-#include "../Containers/Mapping.h"
-#include "../DataExchange/Variant/INI/Reader.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
-#include "../Execution/ProcessRunner.h"
-#include "../IO/FileSystem/FileInputStream.h"
-#include "../Streams/TextReader.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "DateTime.h"
 
@@ -216,7 +216,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
     TimeZoneInformationType result;
 #if qPlatform_POSIX
     try {
-        result.fID = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/timezone"sv)).ReadAll ().Trim ();
+        result.fID = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/timezone"sv)).ReadAll ().Trim ();
     }
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone"_f);

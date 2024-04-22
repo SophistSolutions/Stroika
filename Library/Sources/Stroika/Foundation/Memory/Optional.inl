@@ -9,10 +9,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Containers/Adapters/Adder.h"
-#include "../Debug/Assertions.h"
-#include "../Execution/Common.h"
-#include "../Execution/Throw.h"
+#include "Stroika/Foundation/Containers/Adapters/Adder.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 namespace Stroika::Foundation::Memory {
 

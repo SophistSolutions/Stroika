@@ -11,8 +11,8 @@
  */
 #include <cmath>
 
-#include "../Debug/Assertions.h"
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 namespace Stroika::Foundation::Time {
 

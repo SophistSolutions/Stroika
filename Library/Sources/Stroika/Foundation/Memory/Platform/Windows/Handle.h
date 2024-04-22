@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Memory_OS_Win32_Handle_h_
 #define _Stroika_Foundation_Memory_OS_Win32_Handle_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <Windows.h>
@@ -12,8 +12,8 @@
 
 #include <memory>
 
-#include "../../../Configuration/Common.h"
-#include "../../../Memory/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Memory::Platform::Windows {
 

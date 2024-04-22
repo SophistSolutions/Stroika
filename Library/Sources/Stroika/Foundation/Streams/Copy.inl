@@ -10,8 +10,8 @@
  ********************************************************************************
  */
 
-#include "../Execution/Thread.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Streams {
 

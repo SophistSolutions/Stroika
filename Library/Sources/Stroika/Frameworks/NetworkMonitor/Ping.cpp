@@ -1,18 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Characters/StringBuilder.h"
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Containers/Collection.h"
-#include "../../Foundation/Execution/Sleep.h"
-#include "../../Foundation/Execution/TimeOutException.h"
-#include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
-#include "../../Foundation/IO/Network/InternetProtocol/IP.h"
-#include "../../Foundation/IO/Network/Socket.h"
-#include "../../Foundation/IO/Network/SocketAddress.h"
-#include "../../Foundation/Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/ICMP.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include "Ping.h"
 

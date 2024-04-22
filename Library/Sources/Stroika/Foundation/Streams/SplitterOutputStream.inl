@@ -10,8 +10,8 @@
  ********************************************************************************
  */
 
-#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "InternallySynchronizedOutputStream.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 namespace Stroika::Foundation::Streams::SplitterOutputStream {
 

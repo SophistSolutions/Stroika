@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_SystemPerformance_MeasurementSet_h_
 #define _Stroika_Framework_SystemPerformance_MeasurementSet_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Time/Realtime.h"

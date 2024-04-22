@@ -4,9 +4,9 @@
 #ifndef _Stroika_Frameworks_Led_Platform_Windows_h_
 #define _Stroika_Frameworks_Led_Platform_Windows_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../../Foundation/Debug/CompileTimeFlagChecker.h"
+#include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 
 /*
 @MODULE:    Led_Win32
@@ -18,13 +18,13 @@
 
 #include <Windows.h>
 
-#include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/CodePage.h"
-#include "../../../Foundation/Characters/Format.h"
-#include "../../../Foundation/Characters/LineEndings.h"
-#include "../../../Foundation/Debug/Trace.h"
-#include "../../../Foundation/Memory/StackBuffer.h"
-#include "../../../Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "../TextInteractor.h"
 

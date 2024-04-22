@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <windows.h>
@@ -9,7 +9,7 @@
 #include <Psapi.h>
 #endif
 
-#include "../Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "Common.h"
 

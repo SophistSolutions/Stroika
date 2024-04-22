@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <climits>
 
@@ -14,8 +14,8 @@ DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
 DISABLE_COMPILER_MSC_WARNING_END (5054)
 
-#include "../../../Foundation/DataExchange/BadFormatException.h"
-#include "../../../Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "MFC_WordProcessor.h"
 

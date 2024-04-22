@@ -1,10 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/ToString.h"
-#include "../Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "MemoryStream.h"
 

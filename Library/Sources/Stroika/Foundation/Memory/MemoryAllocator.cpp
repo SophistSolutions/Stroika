@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <atomic>
 #include <cstdlib>
 #include <new>
 #include <set>
 
-#include "../Characters/Format.h"
-#include "../Debug/Debugger.h"
-#include "../Execution/Common.h"
-#include "../Execution/Throw.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/Debugger.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 #include "MemoryAllocator.h"
 

@@ -34,8 +34,8 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #if qPlatform_Windows
-#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
 #include "Socket.h"

@@ -4,12 +4,12 @@
 #ifndef _Stroika_Frameworks_UPnP_Device_h_
 #define _Stroika_Frameworks_UPnP_Device_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../Foundation/IO/Network/URI.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 
 /*
  * TODO:
@@ -33,7 +33,7 @@ namespace Stroika::Frameworks::UPnP {
         String fServer;
 
         /**
-         *  Mapper to facilitiate serialization
+         *  Mapper to facilitate serialization
          */
         static const Foundation::DataExchange::ObjectVariantMapper kMapper;
     };

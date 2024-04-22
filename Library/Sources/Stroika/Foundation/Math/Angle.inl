@@ -9,9 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "Common.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Common.h"
 
 namespace Stroika::Foundation::Math {
 

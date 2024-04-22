@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Traversal_Partition_inl_
 #define _Stroika_Foundation_Traversal_Partition_inl_
 
-#include "../Containers/SortedMapping.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 namespace Stroika::Foundation::Traversal {
 

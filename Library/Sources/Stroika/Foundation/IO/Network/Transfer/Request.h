@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Request_h_
 #define _Stroika_Foundation_IO_Network_Transfer_Request_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/String.h"
-#include "../../../Configuration/Common.h"
-#include "../../../Containers/Mapping.h"
-#include "../../../DataExchange/InternetMediaType.h"
-#include "../../../Memory/BLOB.h"
-#include "../../../Time/Realtime.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "../URI.h"
 

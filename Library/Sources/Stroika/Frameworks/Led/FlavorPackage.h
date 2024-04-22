@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_FlavorPackage_h_
 #define _Stroika_Frameworks_Led_FlavorPackage_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    FlavorPackage
@@ -17,7 +17,7 @@
 #include <map>
 #include <vector>
 
-#include "../../Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
 
 #include "Command.h"
 #include "TextImager.h"

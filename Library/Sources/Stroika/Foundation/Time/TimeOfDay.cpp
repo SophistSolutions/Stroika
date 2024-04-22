@@ -1,26 +1,26 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <algorithm>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
 
-#include "../Characters/Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
 #if qPlatform_Windows
-#include "../Characters/Platform/Windows/SmartBSTR.h"
+#include "Stroika/Foundation/Characters/Platform/Windows/SmartBSTR.h"
 #endif
-#include "../Characters/ToString.h"
-#include "../Containers/Sequence.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
-#include "../Execution/Throw.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #if qPlatform_Windows
-#include "../Execution/Platform/Windows/HRESULTErrorException.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "../Linguistics/Words.h"
+#include "Stroika/Foundation/Linguistics/Words.h"
 
 #include "TimeOfDay.h"
 

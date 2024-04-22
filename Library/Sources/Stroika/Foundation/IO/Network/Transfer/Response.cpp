@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/CodeCvt.h"
-#include "../../../Characters/Format.h"
-#include "../../../Characters/StringBuilder.h"
-#include "../../../Characters/ToString.h"
-#include "../../../Execution/RequiredComponentMissingException.h"
-#include "../../../Streams/TextReader.h"
 #include "../HTTP/Headers.h"
 #include "../HTTP/Methods.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Response.h"
 

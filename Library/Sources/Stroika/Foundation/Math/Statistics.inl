@@ -11,9 +11,9 @@
  */
 #include <algorithm>
 
-#include "../Debug/Assertions.h"
-#include "../Memory/StackBuffer.h"
 #include "Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Math {
 

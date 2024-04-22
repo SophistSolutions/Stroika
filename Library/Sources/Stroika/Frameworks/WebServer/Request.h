@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_WebServer_Request_h_
 #define _Stroika_Framework_WebServer_Request_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <optional>
 

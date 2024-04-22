@@ -10,10 +10,10 @@
  ********************************************************************************
  */
 
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Throw.h"
 #include "../InternallySynchronizedOutputStream.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
 

@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/CodeCvt.h"
-#include "../Characters/TextConvert.h"
-#include "../Containers/Support/ReserveTweaks.h"
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Execution/Common.h"
-#include "../Execution/OperationNotSupportedException.h"
-#include "../Memory/InlineBuffer.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/TextConvert.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "IterableToInputStream.h"
 

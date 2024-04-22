@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <algorithm>
 #include <cstdio>
 #include <set>
 
-#include "../../Foundation/Characters/CString/Utilities.h"
-#include "../../Foundation/Characters/CodePage.h"
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "GDI.h"
 

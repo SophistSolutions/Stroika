@@ -18,7 +18,7 @@
 #error "if you ARE in fact using one of the supported class libraries."
 #endif
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "ChunkedArrayTextStore.h"
 #include "Command.h"

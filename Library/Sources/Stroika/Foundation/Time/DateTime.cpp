@@ -7,12 +7,12 @@
 #include <ctime>
 #include <sstream>
 
-#include "../Characters/Format.h"
-#include "../Characters/RegularExpression.h"
-#include "../Characters/ToString.h"
-#include "../Debug/Assertions.h"
-#include "../Execution/Exceptions.h"
-#include "../Execution/Throw.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 #include "Duration.h"
 

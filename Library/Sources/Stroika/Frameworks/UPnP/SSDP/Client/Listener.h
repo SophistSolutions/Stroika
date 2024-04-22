@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Client_Listener_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Client_Listener_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <functional>
 
@@ -34,8 +34,8 @@
 namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     /**
-     *  The SSDP Listener object will listen for SSDP 'muticast' messages, and call any
-     *  designated callbacks with the values in those SSDP muticast 'NOTIFY' messages.
+     *  The SSDP Listener object will listen for SSDP 'multicast messages, and call any
+     *  designated callbacks with the values in those SSDP multicast 'NOTIFY' messages.
      *
      *  Firewall Note:
      *      Firewalls can occasionally block SSDP multicast listening support. Perhaps

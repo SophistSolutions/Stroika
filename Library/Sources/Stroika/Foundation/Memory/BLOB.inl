@@ -9,12 +9,12 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Containers/Common.h"
-#include "../Debug/Assertions.h"
-#include "../Memory/BlockAllocated.h"
-#include "../Memory/Common.h"
-#include "../Memory/InlineBuffer.h"
-#include "../Traversal/Iterator.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 namespace Stroika::Foundation::Memory {
 

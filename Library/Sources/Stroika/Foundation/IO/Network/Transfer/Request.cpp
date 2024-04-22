@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/StringBuilder.h"
-#include "../../../Characters/ToString.h"
-#include "../../../Streams/TextReader.h"
 #include "../HTTP/Headers.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Request.h"
 

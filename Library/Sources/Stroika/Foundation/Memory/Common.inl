@@ -11,9 +11,9 @@
  */
 #include <cstring>
 
-#include "../Common/Compare.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Sanitizer.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 
 #include "Span.h"
 

@@ -3,6 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "../HTTP/Headers.h"
+#include "../HTTP/Methods.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
@@ -10,8 +12,6 @@
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
-#include "../HTTP/Headers.h"
-#include "../HTTP/Methods.h"
 
 #include "Connection.h"
 

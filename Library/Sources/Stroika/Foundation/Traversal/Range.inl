@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_Traversal_Range_inl_
 #define _Stroika_Foundation_Traversal_Range_inl_
 
-#include "../Characters/Format.h"
-#include "../Characters/StringBuilder.h"
-#include "../Debug/Assertions.h"
 #include "DisjointRange.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Traversal {
 

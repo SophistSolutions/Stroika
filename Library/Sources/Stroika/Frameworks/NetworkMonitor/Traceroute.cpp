@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <random>
 
-#include "../../Foundation/Characters/StringBuilder.h"
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Containers/Collection.h"
-#include "../../Foundation/Debug/Trace.h"
-#include "../../Foundation/Execution/Sleep.h"
-#include "../../Foundation/IO/Network/Listener.h"
-#include "../../Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/IO/Network/Listener.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
 
 #include "Ping.h"
 

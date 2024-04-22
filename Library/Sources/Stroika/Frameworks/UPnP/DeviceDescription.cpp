@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <sstream>
 
-#include "../../Foundation/Characters/StringBuilder.h"
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
-#include "../../Foundation/DataExchange/XML/SAXReader.h"
-#include "../../Foundation/DataExchange/XML/WriterUtils.h"
-#include "../../Foundation/Streams/TextReader.h"
-#include "../../Foundation/Streams/iostream/InputStreamFromStdIStream.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
+#include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 #include "DeviceDescription.h"
 

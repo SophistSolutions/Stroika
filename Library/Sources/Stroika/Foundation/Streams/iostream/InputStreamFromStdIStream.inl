@@ -10,10 +10,10 @@
  ********************************************************************************
  */
 
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Debug/Sanitizer.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Throw.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
 

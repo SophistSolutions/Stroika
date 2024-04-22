@@ -10,8 +10,8 @@
  ********************************************************************************
  */
 
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 namespace Stroika::Frameworks::Led {
 

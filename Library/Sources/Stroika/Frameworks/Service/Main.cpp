@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -14,31 +14,32 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+
 #if qPlatform_Windows
-#include "../../Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
-#include "../../Foundation/Characters/Format.h"
-#include "../../Foundation/Characters/SDKString.h"
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Debug/Trace.h"
-#include "../../Foundation/Execution/CommandLine.h"
-#include "../../Foundation/Execution/Exceptions.h"
-#include "../../Foundation/Execution/Finally.h"
-#include "../../Foundation/Execution/Module.h"
-#include "../../Foundation/Execution/OperationNotSupportedException.h"
-#include "../../Foundation/Execution/Process.h"
-#include "../../Foundation/Execution/ProcessRunner.h"
-#include "../../Foundation/Execution/SignalHandlers.h"
-#include "../../Foundation/Execution/Sleep.h"
-#include "../../Foundation/Execution/Synchronized.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Execution/TimeOutException.h"
-#include "../../Foundation/IO/FileSystem/PathName.h"
-#include "../../Foundation/IO/FileSystem/WellKnownLocations.h"
-#include "../../Foundation/Streams/iostream/FStreamSupport.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/SDKString.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Execution/Process.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Streams/iostream/FStreamSupport.h"
 
 #include "Main.h"
 

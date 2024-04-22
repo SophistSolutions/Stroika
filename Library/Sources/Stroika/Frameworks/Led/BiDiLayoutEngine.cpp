@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <algorithm>
 
-#include "../../Foundation/Characters/CodePage.h"
-#include "../../Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 
 #include "BiDiLayoutEngine.h"
 

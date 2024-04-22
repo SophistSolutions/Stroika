@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/Traversal/Iterator.h"

@@ -4,9 +4,9 @@
 #ifndef _Stroika_Frameworks_Led_Platform_MFC_inl_
 #define _Stroika_Frameworks_Led_Platform_MFC_inl_ 1
 
-#include "../../../Foundation/Characters/LineEndings.h"
-#include "../../../Foundation/Characters/ToString.h"
-#include "../../../Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 namespace Stroika::Frameworks::Led::Platform {
 

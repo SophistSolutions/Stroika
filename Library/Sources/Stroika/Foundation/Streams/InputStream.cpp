@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Containers/Support/ReserveTweaks.h"
-#include "../Debug/Trace.h"
-#include "../Memory/BLOB.h"
-#include "../Memory/StackBuffer.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "InputStream.h"
 

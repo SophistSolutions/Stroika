@@ -4,10 +4,10 @@
 #ifndef _Stroika_Foundation_Traversal_Generator_inl_
 #define _Stroika_Foundation_Traversal_Generator_inl_
 
-#include "../Debug/Assertions.h"
-#include "../Debug/Cast.h"
-#include "../Memory/BlockAllocated.h"
 #include "IterableFromIterator.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Traversal {
 

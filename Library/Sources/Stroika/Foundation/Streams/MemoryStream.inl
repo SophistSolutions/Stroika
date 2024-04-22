@@ -10,9 +10,9 @@
  ********************************************************************************
  */
 
-#include "../Containers/Support/ReserveTweaks.h"
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Debug/Cast.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/Cast.h"
 
 namespace Stroika::Foundation::Streams::MemoryStream {
 

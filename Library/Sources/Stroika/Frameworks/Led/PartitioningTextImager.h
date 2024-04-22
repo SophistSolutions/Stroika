@@ -4,9 +4,9 @@
 #ifndef _Stroika_Frameworks_Led_PartitioningTextImager_h_
 #define _Stroika_Frameworks_Led_PartitioningTextImager_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Cache/LRUCache.h"
+#include "Stroika/Foundation/Cache/LRUCache.h"
 
 /*
 @MODULE:    PartitioningTextImager

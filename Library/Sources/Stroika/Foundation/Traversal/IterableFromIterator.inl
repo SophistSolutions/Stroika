@@ -4,8 +4,8 @@
 #ifndef _Stroika_Foundation_Traversal_IterableFromIterator_inl_
 #define _Stroika_Foundation_Traversal_IterableFromIterator_inl_
 
-#include "../Debug/Assertions.h"
 #include "DelegatedIterator.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Traversal {
 

@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Streams_iostream_Utilities_h_
 #define _Stroika_Foundation_Streams_iostream_Utilities_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "../../Characters/SDKString.h"
+#include "Stroika/Foundation/Characters/SDKString.h"
 
 /**
 *   FILE DEPRECATED IN STROIKA v3.0d2

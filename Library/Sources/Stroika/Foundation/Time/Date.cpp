@@ -1,18 +1,18 @@
 ﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <algorithm>
 #include <ctime>
 #include <sstream>
 
-#include "../Characters/Format.h"
-#include "../Debug/Assertions.h"
-#include "../Execution/Throw.h"
-#include "../Linguistics/MessageUtilities.h"
 #include "DateTime.h"
 #include "Duration.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Linguistics/MessageUtilities.h"
 
 #include "Date.h"
 

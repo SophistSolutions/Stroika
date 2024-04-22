@@ -10,9 +10,9 @@
  ********************************************************************************
  */
 
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/StackBuffer.h"
 #include "InternallySynchronizedInputStream.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Streams::InputSubStream {
 

@@ -33,7 +33,7 @@
     @'StyledTextIOWriter_HTML'.</p>
  */
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "StyledTextIO.h"
 

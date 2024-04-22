@@ -4,15 +4,13 @@
 #ifndef _Stroika_Foundation_Streams_iostream_SerializeItemToBLOB_h_
 #define _Stroika_Foundation_Streams_iostream_SerializeItemToBLOB_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "../../Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 /**
- * TODO:
- *
  */
 
 namespace Stroika::Foundation::Streams::iostream {

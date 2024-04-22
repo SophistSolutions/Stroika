@@ -1,18 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cmath>
 #include <cstdio>
 
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/FloatConversion.h"
-#include "../Characters/Format.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
-#include "../Linguistics/MessageUtilities.h"
-#include "../Math/Common.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Linguistics/MessageUtilities.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 #include "Duration.h"
 

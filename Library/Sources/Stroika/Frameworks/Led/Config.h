@@ -4,10 +4,10 @@
 #ifndef _Stroika_Framework_Led_Config_h_
 #define _Stroika_Framework_Led_Config_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Configuration/StroikaVersion.h"
-#include "../../Foundation/Configuration/VersionDefs.h"
+#include "Stroika/Foundation/Configuration/StroikaVersion.h"
+#include "Stroika/Foundation/Configuration/VersionDefs.h"
 
 /*
 @MODULE:    LedConfig

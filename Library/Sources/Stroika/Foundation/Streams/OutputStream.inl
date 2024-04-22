@@ -11,12 +11,12 @@
  */
 #include <mutex>
 
-#include "../Characters/Format.h"
-#include "../Characters/LineEndings.h"
-#include "../Characters/String.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Cast.h"
-#include "../Memory/BLOB.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 namespace Stroika::Foundation::Streams::OutputStream {
 

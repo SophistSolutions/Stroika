@@ -12,10 +12,10 @@
 #include <execution>
 #include <set>
 
-#include "../Containers/Adapters/Adder.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Cast.h"
-#include "../Math/Statistics.h"
+#include "Stroika/Foundation/Containers/Adapters/Adder.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Math/Statistics.h"
 
 #include "Generator.h"
 

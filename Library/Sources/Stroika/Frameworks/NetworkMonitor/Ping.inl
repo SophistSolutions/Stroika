@@ -9,8 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Foundation/Configuration/Endian.h"
-#include "../../Foundation/Debug/Assertions.h"
 
 namespace Stroika::Frameworks::NetworkMonitor::Ping {
 }

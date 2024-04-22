@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_SystemPerformance_Support_InstrumentHelpers_h_
 #define _Stroika_Framework_SystemPerformance_Support_InstrumentHelpers_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <memory>
 #include <optional>

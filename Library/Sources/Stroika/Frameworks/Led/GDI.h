@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_GDI_h_
 #define _Stroika_Frameworks_Led_GDI_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
  * Graphix Library support. This code encapsulates access to underlying GDI for modularity sake.

@@ -11,10 +11,10 @@
  */
 #include <mutex>
 
-#include "../Characters/StringBuilder.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Cast.h"
-#include "../Execution/Finally.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 
 #include "EOFException.h"
 #include "EWouldBlock.h"

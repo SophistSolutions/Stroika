@@ -13,9 +13,9 @@
 
 #include "BlockAllocated.h"
 
-#include "../Execution/Common.h"
-#include "../Execution/SpinLock.h"
-#include "../Execution/Throw.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/SpinLock.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 namespace Stroika::Foundation::Memory {
     DISABLE_COMPILER_MSC_WARNING_START (4996);

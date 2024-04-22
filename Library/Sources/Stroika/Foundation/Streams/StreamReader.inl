@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Traversal/Range.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 namespace Stroika::Foundation::Streams {
 

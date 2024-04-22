@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Streams_ExternallyOwnedSpanInputStream_inl_
 #define _Stroika_Foundation_Streams_ExternallyOwnedSpanInputStream_inl_ 1
 
-#include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/Span.h"
-#include "../Traversal/Iterator.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 #include "InternallySynchronizedInputStream.h"
 
