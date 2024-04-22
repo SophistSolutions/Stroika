@@ -13,7 +13,7 @@
 
 #include "../Concrete/DenseDataHyperRectangle_Vector.h"
 
-namespace Stroika::Foundation::Containers {
+namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename... INDEXES>
     class DenseDataHyperRectangle_Vector;
 }
