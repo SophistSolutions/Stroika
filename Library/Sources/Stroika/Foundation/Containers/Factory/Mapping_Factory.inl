@@ -8,9 +8,6 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_
-
 #include <type_traits>
 
 #include "../Concrete/Mapping_Array.h"
@@ -86,5 +83,3 @@ namespace Stroika::Foundation::Containers::Factory {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_ */
