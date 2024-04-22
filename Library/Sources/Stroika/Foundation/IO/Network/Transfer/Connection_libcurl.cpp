@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <csignal>
 
@@ -9,10 +9,10 @@
 #include <curl/curl.h>
 #endif
 
-#include "../../../Characters/Format.h"
-#include "../../../Common/TemplateUtilities.h"
-#include "../../../Debug/Trace.h"
-#include "../../../Execution/Throw.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 #include "../HTTP/Headers.h"
 #include "../HTTP/Methods.h"

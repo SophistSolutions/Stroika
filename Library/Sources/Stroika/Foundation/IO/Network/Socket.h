@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_IO_Network_Socket_h_
 #define _Stroika_Foundation_IO_Network_Socket_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
@@ -12,10 +12,10 @@
 #include <sys/socket.h>
 #endif
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Common.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Execution/Exceptions.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "Platform/Windows/WinSock.h"
 #endif

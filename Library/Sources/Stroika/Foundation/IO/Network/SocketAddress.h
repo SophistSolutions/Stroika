@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_IO_Network_SocketAddress_h_
 #define _Stroika_Foundation_IO_Network_SocketAddress_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_POSIX
 #include <sys/socket.h>

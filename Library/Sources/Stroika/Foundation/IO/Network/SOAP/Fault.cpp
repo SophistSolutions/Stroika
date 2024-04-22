@@ -1,10 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../DataExchange/StructuredStreamEvents/ObjectReader.h"
-#include "../../../DataExchange/XML/SAXReader.h"
+#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 
 #include "Fault.h"
 

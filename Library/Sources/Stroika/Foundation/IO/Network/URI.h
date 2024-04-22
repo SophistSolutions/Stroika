@@ -2,18 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_URI_h_
-#define _Stroika_Foundation_IO_Network_URI_h_ 1
+#define _Stroika_Found3ation_IO_Network_URI_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 #include <string>
 
-#include "../../Characters/String.h"
-#include "../../Common/Compare.h"
-#include "../../Configuration/Common.h"
-#include "../../Containers/Mapping.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "InternetAddress.h"
 #include "UniformResourceIdentification.h"
 

@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Characters/CString/Utilities.h"
-#include "../../Characters/Format.h"
-#include "../../Characters/RegularExpression.h"
-#include "../../Characters/String2Int.h"
-#include "../../Characters/ToString.h"
-#include "../../DataExchange/CheckedConverter.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/Throw.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/CheckedConverter.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 #include "URI.h"
 

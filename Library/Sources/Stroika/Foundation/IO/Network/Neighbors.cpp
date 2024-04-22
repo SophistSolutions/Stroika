@@ -1,18 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 
-#include "../../Characters/Format.h"
-#include "../../Characters/String2Int.h"
-#include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
-#include "../../Execution/Exceptions.h"
-#include "../../Execution/ProcessRunner.h"
-#include "../../IO/FileSystem/FileInputStream.h"
-#include "../../Streams/MemoryStream.h"
-#include "../../Streams/TextReader.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Neighbors.h"
 

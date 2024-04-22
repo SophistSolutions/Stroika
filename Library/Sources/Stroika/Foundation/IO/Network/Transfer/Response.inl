@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../HTTP/Exception.h"
+#include "Stroika/Foundation/HTTP/Exception.h"
 
 namespace Stroika::Foundation::IO::Network::Transfer {
 

@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../../Characters/ToString.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 
 namespace Stroika::Foundation::IO::Network::Transfer {
 

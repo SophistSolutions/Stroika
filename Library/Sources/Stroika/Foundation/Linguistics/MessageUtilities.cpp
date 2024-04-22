@@ -1,15 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cctype>
 #include <locale>
 
-#include "../Characters/String.h"
-#include "../Containers/Collection.h"
-#include "../Debug/Assertions.h"
-#include "../Execution/Synchronized.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 #include "MessageUtilities.h"
 

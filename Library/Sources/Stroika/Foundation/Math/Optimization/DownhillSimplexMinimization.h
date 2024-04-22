@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_h_
 #define _Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Characters/String.h"
-#include "../../Containers/Sequence.h"
-#include "../../Traversal/Iterable.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
 
 /**
  *  \file

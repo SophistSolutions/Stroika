@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Containers/Collection.h"
-#include "../../../Execution/ConditionVariable.h"
-#include "../../../Execution/TimeOutException.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Execution/ConditionVariable.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 
 #include "ConnectionPool.h"
 

@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Connection_libcurl_inl_
 #define _Stroika_Foundation_IO_Network_Transfer_Connection_libcurl_inl_ 1
 
-#include "../../../Debug/CompileTimeFlagChecker.h"
+#include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 
 /*
  ********************************************************************************

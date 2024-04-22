@@ -4,14 +4,14 @@
 #ifndef _Stroika_Foundation_IO_Network_Neighbors_h_
 #define _Stroika_Foundation_IO_Network_Neighbors_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Characters/String.h"
-#include "../../Containers/Collection.h"
-#include "../../Containers/Set.h"
-#include "../../Time/Duration.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Interface.h"
 #include "InternetAddress.h"

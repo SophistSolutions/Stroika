@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Characters/ToString.h"
-#include "../../Containers/Sequence.h"
-#include "../../Debug/Assertions.h"
-#include "../../Execution/Thread.h"
-#include "../../Execution/Throw.h"
-#include "../../Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
 
 #include "ConnectionOrientedMasterSocket.h"
 

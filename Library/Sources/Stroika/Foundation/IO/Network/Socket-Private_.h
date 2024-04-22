@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_IO_Network_Socket_Private_h_
 #define _Stroika_Foundation_IO_Network_Socket_Private_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 // ONLY INCLUDED BY Network-Socket CPP implementation code. Do not include directly
 
@@ -30,11 +30,11 @@
 #include <netinet/tcp.h>
 #endif
 
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Debug/Trace.h"
-#include "../../Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #if qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
 #endif
 

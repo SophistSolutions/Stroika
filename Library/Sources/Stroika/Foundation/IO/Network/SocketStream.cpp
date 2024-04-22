@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <io.h>
@@ -10,8 +10,8 @@
 #endif
 #include <cstdlib>
 
-#include "../../Execution/OperationNotSupportedException.h"
-#include "../../Streams/InternallySynchronizedInputOutputStream.h"
+#include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedInputOutputStream.h"
 
 #include "SocketStream.h"
 

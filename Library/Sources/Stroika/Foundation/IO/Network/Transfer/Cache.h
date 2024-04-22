@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Cache_h_
 #define _Stroika_Foundation_IO_Network_Transfer_Cache_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Characters/ToString.h"
-#include "../../../Containers/Set.h"
-#include "../../../Time/DateTime.h"
-#include "../../../Time/Duration.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Request.h"
 #include "Response.h"

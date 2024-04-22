@@ -727,7 +727,6 @@ ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (w
 
 #endif
 
-
 /*
    Linking Test Builds/Release/Tests/Test02 (Foundation::Characters) ... 
 /usr/bin/ld: /tmp/ccp5kDeT.ltrans5.ltrans.o: in function `Stroika::Foundation::Characters::CharacterEncodingException::CharacterEncodingException(Stroika::Foundation::Characters::CharacterEncodingException::EncodingOrDecoding, std::optional<unsigned long>, std::optional<Stroika::Foundation::Characters::String> const&)':
@@ -751,7 +750,6 @@ make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49
 #endif
 
 #endif
-
 
 /*
 

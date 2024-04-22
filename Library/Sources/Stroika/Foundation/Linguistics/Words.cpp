@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cctype>
 #include <cstdarg>
@@ -9,10 +9,10 @@
 #include <iomanip>
 #include <sstream>
 
-#include "../Characters/CString/Utilities.h"
-#include "../Containers/Common.h"
-#include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "Words.h"
 

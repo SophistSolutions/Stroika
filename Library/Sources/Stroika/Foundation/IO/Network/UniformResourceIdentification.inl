@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Memory/Optional.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 

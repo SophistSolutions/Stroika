@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
@@ -13,18 +13,18 @@
 
 #include <list>
 
-#include "../../../Characters/CString/Utilities.h"
-#include "../../../Characters/Format.h"
-#include "../../../Characters/ToString.h"
-#include "../../../Containers/STL/Utilities.h"
-#include "../../../Execution/Finally.h"
-#include "../../../Execution/Throw.h"
-#include "../../../Execution/TimeOutException.h"
-#include "../../../Time/Date.h"
-#include "../../../Time/DateTime.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/STL/Utilities.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Time/Date.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 #if qPlatform_Windows
-#include "../../../Execution/Platform/Windows/Exception.h"
-#include "../../../Execution/Platform/Windows/HRESULTErrorException.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include "../HTTP/Exception.h"
 #include "../HTTP/Headers.h"

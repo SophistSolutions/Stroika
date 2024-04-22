@@ -4,16 +4,17 @@
 #ifndef _Stroika_Foundation_IO_Network_UniformResourceIdentification_h_
 #define _Stroika_Foundation_IO_Network_UniformResourceIdentification_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
 
 #include <string>
 
-#include "../../Characters/String.h"
-#include "../../Common/Compare.h"
-#include "../../Configuration/Common.h"
-#include "../../Containers/Mapping.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+
 #include "InternetAddress.h"
 #include "Port.h"
 

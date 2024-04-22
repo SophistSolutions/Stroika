@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Connection_libcurl_h_
 #define _Stroika_Foundation_IO_Network_Transfer_Connection_libcurl_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <system_error>
 
@@ -13,7 +13,7 @@
 #include <curl/curl.h>
 #endif
 
-#include "../../../Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "Connection.h"
 

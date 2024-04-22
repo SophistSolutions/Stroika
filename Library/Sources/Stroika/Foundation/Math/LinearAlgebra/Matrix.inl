@@ -11,9 +11,9 @@
  */
 #include <vector>
 
-#include "../../Characters/StringBuilder.h"
-#include "../../Characters/ToString.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 namespace Stroika::Foundation::Math::LinearAlgebra {
 

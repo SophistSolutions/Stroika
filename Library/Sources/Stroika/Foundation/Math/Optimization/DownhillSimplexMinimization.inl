@@ -9,9 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Characters/Format.h"
-#include "../../Characters/ToString.h"
-#include "../../Debug/Trace.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "../LinearAlgebra/Matrix.h"
 #include "../LinearAlgebra/Vector.h"
