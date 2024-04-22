@@ -12,8 +12,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
-#if defined(__GNUC__)
-// @todo experiment to see if this works around bug with g++-13 LTO
+#if qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy
 template <>
 String Characters::UnoverloadedToString (const unsigned long& arg)
 {

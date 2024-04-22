@@ -727,6 +727,32 @@ ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (w
 
 #endif
 
+
+/*
+   Linking Test Builds/Release/Tests/Test02 (Foundation::Characters) ... 
+/usr/bin/ld: /tmp/ccp5kDeT.ltrans5.ltrans.o: in function `Stroika::Foundation::Characters::CharacterEncodingException::CharacterEncodingException(Stroika::Foundation::Characters::CharacterEncodingException::EncodingOrDecoding, std::optional<unsigned long>, std::optional<Stroika::Foundation::Characters::String> const&)':
+/__w/Stroika/Stroika/Tests/03/../../Library/Sources/Stroika/Foundation/Characters/StringBuilder.h:170:(.text+0x1f66): undefined reference to `Stroika::Foundation::Characters::String Stroika::Foundation::Characters::UnoverloadedToString<unsigned long>(unsigned long const&)'
+collect2: error: ld returned 1 exit status
+make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49: /__w/Stroika/Stroika/Builds/Release/Tests/Test03] Error 1
+make[3]: *** [Makefile:179: 03] Error 2
+make[3]: *** Waiting for unfinished jobs....
+/usr/bin/ld: /tmp/cca4u1A2.ltrans20.ltrans.o: in function `Stroika::Foundation::Characters::CharacterEncodingException::CharacterEncodingException(Stroika::Foundation::Characters::CharacterEncodingException::EncodingOrDecoding, std::optional<unsigned long>, std::optional<Stroika::Foundation::Characters::String> const&)':
+/__w/Stroika/Stroika/Tests/02/../../Library/Sources/Stroika/Foundation/Characters/StringBuilder.h:170:(.text+0x5086): undefined reference to `Stroika::Foundation::Characters::String Stroika::Foundation::Characters::UnoverloadedToString<unsigned long>(unsigned long const&)'
+collect2: error: ld returned 1 exit status
+make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49
+*/
+#ifndef qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// FIRST SEEN BROKEN IN GCC 13 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
+#define qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13)
+#else
+#define qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy 0
+#endif
+
+#endif
+
+
 /*
 
    https://bugs.llvm.org/show_bug.cgi?id=42111

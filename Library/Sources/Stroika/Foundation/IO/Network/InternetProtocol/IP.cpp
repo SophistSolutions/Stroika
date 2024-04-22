@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 #include "../HTTP/Headers.h"
 
 #include "IP.h"
