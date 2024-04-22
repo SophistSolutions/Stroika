@@ -1,19 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
-#ifndef _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_
-
 #include "../Concrete/SparseDataHyperRectangle_stdmap.h"
 
-namespace Stroika::Foundation::Containers {
+namespace Stroika::Foundation::Containers::Concrete {
 
     template <typename T, typename... INDEXES>
     class SparseDataHyperRectangle_stdmap;
@@ -68,4 +58,3 @@ namespace Stroika::Foundation::Containers::Factory {
     }
 
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_ */

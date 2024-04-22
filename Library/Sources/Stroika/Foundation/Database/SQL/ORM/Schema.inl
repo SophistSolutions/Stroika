@@ -1,12 +1,6 @@
-
 /*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Database_SQL_ORM_Schema_inl_
-#define _Stroika_Foundation_Database_SQL_ORM_Schema_inl_ 1
-
 #include "Stroika/Foundation/Memory/Optional.h"
 
 namespace Stroika::Foundation::Database::SQL::ORM {
@@ -22,5 +16,3 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Database_SQL_ORM_Schema_inl_*/

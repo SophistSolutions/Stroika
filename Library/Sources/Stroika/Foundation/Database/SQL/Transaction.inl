@@ -1,12 +1,6 @@
-
 /*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Database_SQL_Transaction_inl_
-#define _Stroika_Foundation_Database_SQL_Transaction_inl_ 1
-
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 
@@ -74,5 +68,3 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eFailed, L"Failed"},
         }}};
 }
-
-#endif /*_Stroika_Foundation_Database_SQL_Transaction_inl_*/

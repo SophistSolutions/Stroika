@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_ObjectVariantMapper_inl_
-#define _Stroika_Foundation_DataExchange_ObjectVariantMapper_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <algorithm>
 
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -1175,5 +1167,3 @@ namespace Stroika::Foundation::DataExchange {
         return MakeCommonSerializer_ForClassObject_<CLASS> (forTypeInfo, sizeofObj, fields, extends);
     }
 }
-
-#endif /*_Stroika_Foundation_DataExchange_ObjectVariantMapper_inl_*/

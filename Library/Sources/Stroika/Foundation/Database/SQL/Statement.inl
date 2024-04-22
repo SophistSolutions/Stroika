@@ -1,11 +1,6 @@
-
 /*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Database_SQL_Statement_inl_
-#define _Stroika_Foundation_Database_SQL_Statement_inl_ 1
 
 namespace Stroika::Foundation::Database::SQL {
 
@@ -93,5 +88,3 @@ namespace Stroika::Foundation::Database::SQL {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Database_SQL_Statement_inl_*/

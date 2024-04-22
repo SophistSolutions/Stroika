@@ -1,12 +1,6 @@
-
 /*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Database_SQL_Connection_inl_
-#define _Stroika_Foundation_Database_SQL_Connection_inl_ 1
-
 #include "Stroika/Foundation/Characters/Format.h"
 
 namespace Stroika::Foundation::Database::SQL::Connection {
@@ -65,5 +59,3 @@ namespace Stroika::Foundation::Database::SQL::Connection {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Database_SQL_Connection_inl_*/

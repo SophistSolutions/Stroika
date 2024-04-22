@@ -1,16 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_inl_
-
 #include "../Concrete/SortedMapping_stdmap.h"
 
 namespace Stroika::Foundation::Containers::Factory {
@@ -63,5 +53,3 @@ namespace Stroika::Foundation::Containers::Factory {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_inl_ */
