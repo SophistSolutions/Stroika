@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Sequence_stdvector_inl_
-#define _Stroika_Foundation_Containers_Concrete_Sequence_stdvector_inl_
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <vector>
 
 #include "Stroika/Foundation/Debug/Cast.h"
@@ -269,5 +261,3 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Concrete_Sequence_stdvector_inl_ */

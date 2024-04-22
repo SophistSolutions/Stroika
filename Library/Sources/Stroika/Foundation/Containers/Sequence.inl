@@ -1,8 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Sequence_inl_
-#define _Stroika_Foundation_Containers_Sequence_inl_
 
 #include "../Debug/Assertions.h"
 #include "Concrete/Sequence_stdvector.h"
@@ -501,5 +499,3 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Sequence_inl_ */

@@ -1,17 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Configuration_Version_inl_
-#define _Stroika_Foundation_Configuration_Version_inl_ 1
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#if defined(__cplusplus)
 namespace Stroika::Foundation::Configuration {
-#endif
 
     /*
      ********************************************************************************
@@ -62,8 +53,4 @@ namespace Stroika::Foundation::Configuration {
         return make_signed_t<Binary32BitFullVersionType> (AsFullVersionNum ()) <=> make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
     }
 
-#if defined(__cplusplus)
 }
-#endif
-
-#endif /*_Stroika_Foundation_Configuration_Version_inl_*/

@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_LineEndings_inl_
-#define _Stroika_Foundation_Characters_LineEndings_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Common.h"
@@ -279,5 +271,3 @@ namespace Stroika::Foundation::Characters {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Characters_LineEndings_inl_*/

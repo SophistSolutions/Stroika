@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_Platform_Windows_CodePage_inl_
-#define _Stroika_Foundation_Characters_Platform_Windows_CodePage_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
@@ -346,4 +338,3 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
     }
 
 }
-#endif /*_Stroika_Foundation_Characters_Platform_Windows_CodePage_inl_*/

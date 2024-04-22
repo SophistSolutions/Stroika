@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_Character_inl_
-#define _Stroika_Foundation_Characters_Character_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <bit>
 #include <cwctype>
 #if !qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
@@ -638,5 +630,3 @@ namespace Stroika::Foundation::Configuration {
         {Characters::CompareOptions::eWithCase, L"With-Case"},
     }}};
 }
-
-#endif /*_Stroika_Foundation_Characters_Character_inl_*/

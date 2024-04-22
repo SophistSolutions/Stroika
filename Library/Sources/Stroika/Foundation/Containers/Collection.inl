@@ -1,8 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Collection_inl_
-#define _Stroika_Foundation_Containers_Collection_inl_
 
 /*
  ********************************************************************************
@@ -296,5 +294,3 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
 }
-
-#endif /* _Stroika_Foundation_Containers_Collection_inl_ */

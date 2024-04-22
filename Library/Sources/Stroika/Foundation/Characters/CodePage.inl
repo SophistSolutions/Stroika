@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_CodePage_inl_
-#define _Stroika_Foundation_Characters_CodePage_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <algorithm>
 #include <cstring>
 
@@ -376,5 +368,3 @@ namespace Stroika::Foundation::Characters {
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 }
-
-#endif /*_Stroika_Foundation_Characters_CodePage_inl_*/

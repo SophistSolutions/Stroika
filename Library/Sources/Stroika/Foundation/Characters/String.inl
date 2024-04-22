@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_String_inl_
-#define _Stroika_Foundation_Characters_String_inl_
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <regex>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
@@ -1371,5 +1363,3 @@ namespace {
     }
 }
 #endif
-
-#endif // _Stroika_Foundation_Characters_String_inl_

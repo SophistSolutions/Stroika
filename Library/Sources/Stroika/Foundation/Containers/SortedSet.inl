@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_SortedSet_inl_
-#define _Stroika_Foundation_Containers_SortedSet_inl_
-
 #include "../Debug/Assertions.h"
 #include "Factory/SortedSet_Factory.h"
 
@@ -139,5 +136,3 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_SortedSet_inl_ */

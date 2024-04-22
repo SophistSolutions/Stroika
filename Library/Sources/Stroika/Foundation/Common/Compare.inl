@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Common_Compare_inl_
-#define _Stroika_Foundation_Common_Compare_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Common {
@@ -401,5 +393,3 @@ namespace Stroika::Foundation::Common {
     using ExtractComparisonTraits [[deprecated ("Since Stroika v3.0d1 - use ExtractComparisonTraits_v instead")]] =
         Private_::ExtractComparisonTraits_<COMPARE_FUNCTION>;
 }
-
-#endif /*_Stroika_Foundation_Common_Compare_inl_*/

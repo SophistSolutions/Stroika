@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_TextConvert_inl_
-#define _Stroika_Foundation_Characters_TextConvert_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Characters {
@@ -119,5 +111,3 @@ namespace Stroika::Foundation::Characters {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Characters_TextConvert_inl_*/

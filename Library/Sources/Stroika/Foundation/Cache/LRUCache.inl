@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cache_LRUCache_inl_
-#define _Stroika_Foundation_Cache_LRUCache_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include "Stroika/Foundation/Cryptography/Digest/Hash.h"
@@ -413,5 +405,3 @@ namespace Stroika::Foundation::Cache {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Cache_LRUCache_inl_*/

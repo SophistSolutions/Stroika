@@ -1,17 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_KeyedCollection_inl_
-#define _Stroika_Foundation_Containers_KeyedCollection_inl_
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Debug/Assertions.h"
-#include "../Traversal/Generator.h"
-#include "Factory/KeyedCollection_Factory.h"
+#include "Stroika/Foundation/Containers/Factory/KeyedCollection_Factory.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Traversal/Generator.h"
 
 namespace Stroika::Foundation::Containers {
 
@@ -453,5 +451,3 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_KeyedCollection_inl_ */

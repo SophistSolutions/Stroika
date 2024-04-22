@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cache_Memoizer_inl_
-#define _Stroika_Foundation_Cache_Memoizer_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Containers/Common.h"
 
 namespace Stroika::Foundation::Cache {
@@ -32,5 +24,3 @@ namespace Stroika::Foundation::Cache {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Cache_Memoizer_inl_*/

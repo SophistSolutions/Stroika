@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_FloatConversion_inl_
-#define _Stroika_Foundation_Characters_FloatConversion_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <charconv>
 #include <sstream>
 
@@ -798,5 +790,3 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Characters_FloatConversion_inl_*/

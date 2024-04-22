@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_DataStructures_LinkedList_inl_
-#define _Stroika_Foundation_Containers_DataStructures_LinkedList_inl_ 1
-
 #include <optional>
 
 #include "../../Debug/Assertions.h"
@@ -516,4 +513,3 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
 }
-#endif /* _Stroika_Foundation_Containers_DataStructures_LinkedList_inl_ */

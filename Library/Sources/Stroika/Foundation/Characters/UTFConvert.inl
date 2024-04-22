@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_UTFConvert_inl_
-#define _Stroika_Foundation_Characters_UTFConvert_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #if qPlatform_Windows
 #include <windows.h>
 #endif
@@ -499,4 +491,3 @@ namespace Stroika::Foundation::Characters {
 #endif
 
 }
-#endif /*_Stroika_Foundation_Characters_UTFConvert_inl_*/

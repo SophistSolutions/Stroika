@@ -1,14 +1,6 @@
 ﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cache_BloomFilter_inl_
-#define _Stroika_Foundation_Cache_BloomFilter_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <cmath>
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
@@ -164,5 +156,3 @@ namespace Stroika::Foundation::Cache {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Cache_BloomFilter_inl_*/

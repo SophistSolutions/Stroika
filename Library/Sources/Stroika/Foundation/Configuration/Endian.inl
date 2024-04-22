@@ -1,18 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Configuration_Endian_inl_
-#define _Stroika_Foundation_Configuration_Endian_inl_ 1
-
 #include <cstdint>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 namespace Stroika::Foundation::Configuration {
 
@@ -82,5 +73,3 @@ namespace Stroika::Foundation::Configuration {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Configuration_Endian_inl_*/

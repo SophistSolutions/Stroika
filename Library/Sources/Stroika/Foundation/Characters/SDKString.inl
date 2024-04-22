@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_SDKString_inl_
-#define _Stroika_Foundation_Characters_SDKString_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Characters/CodePage.h"
 #include "Stroika/Foundation/Containers/Common.h"
 
@@ -309,5 +301,3 @@ namespace Stroika::Foundation::Characters {
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
 }
-
-#endif /*_Stroika_Foundation_Characters_SDKString_inl_*/

@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Queue_Array_inl_
-#define _Stroika_Foundation_Containers_Concrete_Queue_Array_inl_
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -197,5 +188,3 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Concrete_Queue_Array_inl_ */

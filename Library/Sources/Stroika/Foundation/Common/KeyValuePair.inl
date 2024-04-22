@@ -1,16 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Common_KeyValuePair_inl_
-#define _Stroika_Foundation_Common_KeyValuePair_inl_ 1
-
 #include "Compare.h"
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 namespace Stroika::Foundation::Common {
 
@@ -97,5 +88,3 @@ namespace Stroika::Foundation::Common {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Common_KeyValuePair_inl_*/

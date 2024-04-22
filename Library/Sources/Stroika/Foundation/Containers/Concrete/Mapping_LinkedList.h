@@ -9,7 +9,6 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_LinkedList_h_
 #define _Stroika_Foundation_Containers_Concrete_Mapping_LinkedList_h_
 
-
 /**
  *  \file
  *

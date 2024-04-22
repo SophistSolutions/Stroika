@@ -1,16 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_MultiSet_Array_inl_
-#define _Stroika_Foundation_Containers_MultiSet_Array_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include "Stroika/Foundation/Containers/DataStructures/Array.h"
 #include "Stroika/Foundation/Containers//Private/IteratorImplHelper.h"
+#include "Stroika/Foundation/Containers/DataStructures/Array.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -395,5 +387,3 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_MultiSet_Array_inl_ */

@@ -1,12 +1,6 @@
-
 /*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cache_CallerStalenessCache_inl_
-#define _Stroika_Foundation_Cache_CallerStalenessCache_inl_ 1
-
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Cache {
@@ -150,5 +144,3 @@ namespace Stroika::Foundation::Cache {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Cache_CallerStalenessCache_inl_*/

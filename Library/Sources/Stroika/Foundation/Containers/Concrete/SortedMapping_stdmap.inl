@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
-#define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
-
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -278,5 +269,3 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_ */

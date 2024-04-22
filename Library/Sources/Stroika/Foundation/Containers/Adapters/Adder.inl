@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Adapters_Adder_inl_
-#define _Stroika_Foundation_Containers_Adapters_Adder_inl_
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers::Adapters {
@@ -41,4 +33,3 @@ namespace Stroika::Foundation::Containers::Adapters {
     }
 
 }
-#endif /* _Stroika_Foundation_Containers_Adapters_Adder_inl_ */

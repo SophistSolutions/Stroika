@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_CString_Utilities_inl_
-#define _Stroika_Foundation_Characters_CString_Utilities_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <limits>
 #include <locale>
 
@@ -301,4 +293,3 @@ namespace Stroika::Foundation::Characters::CString {
         return Private_::String2IntOrUInt_<T, const wstring&> (s);
     }
 }
-#endif /*_Stroika_Foundation_Characters_CString_Utilities_inl_*/

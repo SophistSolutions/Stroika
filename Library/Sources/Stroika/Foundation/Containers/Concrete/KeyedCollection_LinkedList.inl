@@ -1,18 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_KeyedCollection_LinkedList_inl_
-#define _Stroika_Foundation_Containers_Concrete_KeyedCollection_LinkedList_inl_
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include "Stroika/Foundation/Debug/Cast.h"
-#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Containers/DataStructures/LinkedList.h"
 #include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
+#include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -257,5 +249,3 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Concrete_KeyedCollection_LinkedList_inl_ */

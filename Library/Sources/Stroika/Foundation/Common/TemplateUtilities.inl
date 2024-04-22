@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Common_TemplateUtilities_inl_
-#define _Stroika_Foundation_Common_TemplateUtilities_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <mutex>
 
 namespace Stroika::Foundation::Common {
@@ -65,5 +57,3 @@ namespace Stroika::Foundation::Common {
     constexpr size_t VariantIndex = Private_::variant_index<VARIANT_VALUE, T> ();
 
 }
-
-#endif /*_Stroika_Foundation_Common_TemplateUtilities_inl_*/

@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Common_Property_inl_
-#define _Stroika_Foundation_Common_Property_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #if !qStroika_Foundation_Common_Property_EmbedThisInProperties
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
 #endif
@@ -247,5 +238,3 @@ namespace Stroika::Foundation::Common {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Common_Property_inl_*/

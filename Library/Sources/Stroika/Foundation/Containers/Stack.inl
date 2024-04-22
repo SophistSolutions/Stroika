@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Stack_inl_
-#define _Stroika_Foundation_Containers_Stack_inl_
-
 #include <vector>
 
 #include "../Configuration/Concepts.h"
@@ -105,5 +102,3 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Stack_inl_ */

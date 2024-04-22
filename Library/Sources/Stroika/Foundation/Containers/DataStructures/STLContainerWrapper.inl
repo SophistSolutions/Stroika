@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_inl_
-#define _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_inl_ 1
-
 #include <algorithm>
 
 #include "../../Debug/Assertions.h"
@@ -205,4 +202,3 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 
 }
-#endif /* _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_inl_ */

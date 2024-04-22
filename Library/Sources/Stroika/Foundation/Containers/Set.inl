@@ -1,8 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Set_inl_
-#define _Stroika_Foundation_Containers_Set_inl_
 
 #include "../Common/Compare.h"
 #include "../Configuration/Concepts.h"
@@ -639,5 +637,3 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Containers_Set_inl_ */
