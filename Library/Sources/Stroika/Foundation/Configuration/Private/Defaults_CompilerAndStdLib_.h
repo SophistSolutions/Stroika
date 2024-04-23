@@ -739,14 +739,19 @@ make[3]: *** Waiting for unfinished jobs....
 /__w/Stroika/Stroika/Tests/02/../../Library/Sources/Stroika/Foundation/Characters/StringBuilder.h:170:(.text+0x5086): undefined reference to `Stroika::Foundation::Characters::String Stroika::Foundation::Characters::UnoverloadedToString<unsigned long>(unsigned long const&)'
 collect2: error: ld returned 1 exit status
 make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49
-*/
-#ifndef qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy
 
-#if defined(__GNUC__) && !defined(__clang__)
+        NOTE - maybe same issue as qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
+*/
+#ifndef qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
+
+#if defined(__clang__)
+// seen on apply clang++ 15
+#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(__GNUC__)
 // FIRST SEEN BROKEN IN GCC 13 and 12 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
-#define qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
+#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
 #else
-#define qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy 0
+#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy 0
 #endif
 
 #endif

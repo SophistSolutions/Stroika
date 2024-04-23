@@ -12,7 +12,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
-#if qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy
+#if qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
 template <>
 String Characters::UnoverloadedToString (const unsigned long& arg)
 {
