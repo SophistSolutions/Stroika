@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_FileSystem_FileOutputStream_inl_
-#define _Stroika_Foundation_IO_FileSystem_FileOutputStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Streams/BufferedOutputStream.h"
 
 namespace Stroika::Foundation::IO::FileSystem::FileOutputStream {
@@ -49,5 +40,3 @@ namespace Stroika::Foundation::IO::FileSystem::FileOutputStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_IO_FileSystem_FileOutputStream_inl_*/

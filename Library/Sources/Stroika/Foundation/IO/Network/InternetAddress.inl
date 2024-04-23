@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_Network_InternetAddress_inl_
-#define _Stroika_Foundation_IO_Network_InternetAddress_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Configuration/Endian.h"
 #include "Stroika/Foundation/Memory/Bits.h"
 #include "Stroika/Foundation/Memory/Common.h"
@@ -319,5 +311,3 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     inline constexpr IO::Network::InternetAddress Default<IO::Network::InternetAddress>::kUpperBound = IO::Network::InternetAddress::max ();
 
 }
-
-#endif /*_Stroika_Foundation_IO_Network_InternetAddress_inl_*/

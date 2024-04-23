@@ -1,22 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Resources_Name_inl_
-#define _Stroika_Foundation_Execution_Resources_Name_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "../../Characters/Format.h"
 
 namespace Stroika::Foundation::Execution::Resources {
 
     /*
      ********************************************************************************
-     ************************************ Resources::Name ***************************
+     ********************************* Resources::Name ******************************
      ********************************************************************************
      */
     inline Name::Name (const String& name, ResourceType type)
@@ -59,5 +50,3 @@ namespace Stroika::Foundation::Execution::Resources {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Execution_Resources_Name_inl_*/

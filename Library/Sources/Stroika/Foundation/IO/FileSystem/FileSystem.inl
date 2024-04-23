@@ -1,14 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_FileSystem_FileSystem_inl_
-#define _Stroika_Foundation_IO_FileSystem_FileSystem_inl_ 1
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 namespace Stroika::Foundation::IO::FileSystem {
 }
 
@@ -19,5 +12,3 @@ namespace Stroika::Foundation::Configuration {
         {IO::FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles, L"Remove-Any-Contained-Files"},
     }}};
 }
-
-#endif /*_Stroika_Foundation_IO_FileSystem_FileSystem_inl_*/

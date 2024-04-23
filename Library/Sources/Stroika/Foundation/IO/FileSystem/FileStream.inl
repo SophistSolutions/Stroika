@@ -1,14 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_FileSystem_FileStream_inl_
-#define _Stroika_Foundation_IO_FileSystem_FileStream_inl_ 1
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 namespace Stroika::Foundation::IO::FileSystem::FileStream {
 }
 
@@ -19,5 +12,3 @@ namespace Stroika::Foundation::Configuration {
         {IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction, L"Disconnect-On-Destruction"},
     }}};
 }
-
-#endif /*_Stroika_Foundation_IO_FileSystem_FileStream_inl_*/

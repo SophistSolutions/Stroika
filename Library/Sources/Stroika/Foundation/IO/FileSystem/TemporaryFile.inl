@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_FileSystem_TemporaryFile_inl_
-#define _Stroika_Foundation_IO_FileSystem_TemporaryFile_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 namespace Stroika::Foundation::IO::FileSystem {
 
@@ -43,5 +35,3 @@ namespace Stroika::Foundation::IO::FileSystem {
     }
 
 }
-
-#endif /*_Stroika_Foundation_IO_FileSystem_TemporaryFile_inl_*/
