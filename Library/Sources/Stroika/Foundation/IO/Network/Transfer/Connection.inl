@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_Network_Transfer_Connection_inl_
-#define _Stroika_Foundation_IO_Network_Transfer_Connection_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Characters/ToString.h"
 
 namespace Stroika::Foundation::IO::Network::Transfer {
@@ -103,5 +95,3 @@ namespace Stroika::Foundation::Configuration {
         }}};
 
 }
-
-#endif /*_Stroika_Foundation_IO_Network_Transfer_Connection_inl_*/

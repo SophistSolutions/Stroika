@@ -1,14 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_Network_HTTP_TransferEncoding_inl_
-#define _Stroika_Foundation_IO_Network_HTTP_TransferEncoding_inl_ 1
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 namespace Stroika::Foundation::IO::Network::HTTP {
 
     /*
@@ -38,5 +31,3 @@ namespace Stroika::Foundation::Configuration {
         {IO::Network::HTTP::TransferEncoding::eIdentity, L"identity"},
     }}};
 }
-
-#endif /*_Stroika_Foundation_IO_Network_HTTP_TransferEncoding_inl_*/
