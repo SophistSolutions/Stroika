@@ -21,11 +21,11 @@
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #if qPlatform_Windows
-#include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #endif
-#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
 #include "DNS.h"
 
