@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_InputSubStream_inl_
-#define _Stroika_Foundation_Streams_InputSubStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "InternallySynchronizedInputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
@@ -176,7 +167,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
 
     /*
      ********************************************************************************
-     ************************** Streams::InputSubStream *****************************
+     ********************* Streams::InputSubStream::New *****************************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
@@ -198,5 +189,3 @@ namespace Stroika::Foundation::Streams::InputSubStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_InputSubStream_inl_*/

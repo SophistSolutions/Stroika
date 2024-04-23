@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Frameworks_Led_GDI_inl_
-#define _Stroika_Frameworks_Led_GDI_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
@@ -2681,5 +2672,3 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 }
-
-#endif /*_Stroika_Frameworks_Led_GDI_inl_*/

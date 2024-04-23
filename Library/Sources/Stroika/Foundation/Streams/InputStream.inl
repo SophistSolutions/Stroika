@@ -1,16 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_InputStream_inl_
-#define _Stroika_Foundation_Streams_InputStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include <mutex>
-
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
@@ -448,5 +438,3 @@ namespace Stroika::Foundation::Streams::InputStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_InputStream_inl_*/

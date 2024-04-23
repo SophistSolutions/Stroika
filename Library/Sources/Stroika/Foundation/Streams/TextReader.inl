@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_TextReader_inl_
-#define _Stroika_Foundation_Streams_TextReader_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "InternallySynchronizedInputStream.h"
 
 namespace Stroika::Foundation::Streams::TextReader {
@@ -35,5 +27,3 @@ namespace Stroika::Foundation::Streams::TextReader {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_TextReader_inl_*/

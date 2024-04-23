@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Traversal_Range_inl_
-#define _Stroika_Foundation_Traversal_Range_inl_
-
 #include "DisjointRange.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
@@ -536,5 +533,3 @@ namespace Stroika::Foundation::Configuration {
         {Traversal::Openness::eClosed, L"Closed"},
     }}};
 }
-
-#endif /* _Stroika_Foundation_Traversal_Range_inl_ */

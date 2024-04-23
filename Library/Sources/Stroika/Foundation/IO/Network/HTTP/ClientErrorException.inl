@@ -19,10 +19,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
     }
     template <typename FUNCTION, typename RESULT_TYPE>
-    inline RESULT_TYPE ClientErrorException::TreatExceptionsAsClientError (FUNCTION f)
+    inline RESULT_TYPE ClientErrorException::TreatExceptionsAsClientError (FUNCTION&& f)
     {
         try {
-            return f ();
+            return forward<FUNCTION> (f) ();
         }
         catch (...) {
             Execution::Throw (ClientErrorException{current_exception ()});

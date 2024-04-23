@@ -1,16 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_OutputStream_inl_
-#define _Stroika_Foundation_Streams_OutputStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include <mutex>
-
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Characters/String.h"
@@ -196,5 +186,3 @@ namespace Stroika::Foundation::Streams::OutputStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_OutputStream_inl_*/

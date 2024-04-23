@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Framework_Led_WordProcessor_inl_
-#define _Stroika_Framework_Led_WordProcessor_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include <cstdio> // for sprintf() call
 
 namespace Stroika::Frameworks::Led {
@@ -1091,5 +1082,3 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 }
-
-#endif /*_Stroika_Framework_Led_WordProcessor_inl_*/

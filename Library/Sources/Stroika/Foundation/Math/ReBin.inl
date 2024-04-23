@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Math_ReBin_inl_
-#define _Stroika_Foundation_Math_ReBin_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "../Debug/Assertions.h"
 #include "../Traversal/Generator.h"
 #include "../Traversal/Partition.h"
@@ -244,4 +236,3 @@ namespace Stroika::Foundation::Math::ReBin {
     }
 
 }
-#endif /*_Stroika_Foundation_Math_ReBin_inl_*/

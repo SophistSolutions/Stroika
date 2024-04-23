@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Memory_SharedByValue_inl_
-#define _Stroika_Foundation_Memory_SharedByValue_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Memory {
@@ -237,5 +228,3 @@ namespace Stroika::Foundation::Memory {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Memory_SharedByValue_inl_*/

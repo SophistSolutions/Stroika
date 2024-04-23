@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_BufferedInputStream_inl_
-#define _Stroika_Foundation_Streams_BufferedInputStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "InternallySynchronizedInputStream.h"
@@ -94,5 +85,3 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_BufferedInputStream_inl_*/

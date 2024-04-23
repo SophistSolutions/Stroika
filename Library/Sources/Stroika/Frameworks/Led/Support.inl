@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Framework_Led_Support_inl_
-#define _Stroika_Framework_Led_Support_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Endian.h"
 
@@ -335,5 +327,3 @@ namespace Stroika::Frameworks::Led {
     }
 }
 CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qStroika_Frameworks_Led_ProvideIMESupport, qStroika_Frameworks_Led_ProvideIMESupport);
-
-#endif /*_Stroika_Framework_Led_Support_inl_*/

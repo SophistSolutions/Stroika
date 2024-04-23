@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_SharedMemoryStream_inl_
-#define _Stroika_Foundation_Streams_SharedMemoryStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <mutex>
 
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
@@ -338,5 +330,3 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_SharedMemoryStream_inl_*/

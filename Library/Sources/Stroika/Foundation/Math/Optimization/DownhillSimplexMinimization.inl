@@ -1,13 +1,5 @@
 /*
-* Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
-*/
-#ifndef _Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_inl_
-#define _Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -208,5 +200,3 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_inl_*/

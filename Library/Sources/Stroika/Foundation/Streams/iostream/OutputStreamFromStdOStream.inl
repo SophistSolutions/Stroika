@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_inl_
-#define _Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "../InternallySynchronizedOutputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
@@ -132,5 +123,3 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_inl_*/

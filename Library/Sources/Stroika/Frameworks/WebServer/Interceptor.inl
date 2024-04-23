@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Frameworks_WebServer_Interceptor_inl_
-#define _Stroika_Frameworks_WebServer_Interceptor_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "../../Foundation/Debug/Assertions.h"
 
 namespace Stroika::Frameworks::WebServer {
@@ -53,4 +45,3 @@ namespace Stroika::Frameworks::WebServer {
     }
 
 }
-#endif /*_Stroika_Frameworks_WebServer_Interceptor_inl_*/

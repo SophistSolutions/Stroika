@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Traversal_Generator_inl_
-#define _Stroika_Foundation_Traversal_Generator_inl_
-
 #include "IterableFromIterator.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
@@ -61,5 +58,3 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Traversal_Generator_inl_ */

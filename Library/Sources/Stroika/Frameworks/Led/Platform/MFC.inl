@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Frameworks_Led_Platform_MFC_inl_
-#define _Stroika_Frameworks_Led_Platform_MFC_inl_ 1
-
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -1704,5 +1701,3 @@ namespace Stroika::Frameworks::Led::Platform {
 }
 
 CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qMFCRequiresCWndLeftmostBaseClass, qMFCRequiresCWndLeftmostBaseClass)
-
-#endif /*_Stroika_Frameworks_Led_Platform_MFC_inl_*/

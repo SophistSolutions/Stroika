@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Time_DateTime_inl_
-#define _Stroika_Foundation_Time_DateTime_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <chrono>
 
 #include "Clock.h"
@@ -170,5 +162,3 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     inline constexpr Time::DateTime Default<Time::DateTime>::kLowerBound{Time::DateTime::kMin};
     inline constexpr Time::DateTime Default<Time::DateTime>::kUpperBound{Time::DateTime::kMax};
 }
-
-#endif /*_Stroika_Foundation_Time_DateTime_inl_*/

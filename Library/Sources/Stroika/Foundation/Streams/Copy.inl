@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_Copy_inl_
-#define _Stroika_Foundation_Streams_Copy_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
@@ -60,5 +51,3 @@ namespace Stroika::Foundation::Streams {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_Copyinl_*/

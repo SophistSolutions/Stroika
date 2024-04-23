@@ -52,7 +52,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Utility to map any functions thrown in the given (typically lambda) into a ClientErrorExcpetion
          */
         template <typename FUNCTION, typename RESULT_TYPE = std::invoke_result_t<FUNCTION>>
-        static RESULT_TYPE TreatExceptionsAsClientError (FUNCTION f);
+        static RESULT_TYPE TreatExceptionsAsClientError (FUNCTION&& f);
     };
 
 }

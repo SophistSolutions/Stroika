@@ -1,13 +1,5 @@
 /*
-* Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
-*/
-#ifndef _Stroika_Foundation_Math_LinearAlgebra_Matrix_inl_
-#define _Stroika_Foundation_Math_LinearAlgebra_Matrix_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include <vector>
 
@@ -180,9 +172,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
             sb << "],"sv;
         }
         sb << "]"sv;
-        return sb.str ();
+        return sb;
     }
 
 }
-
-#endif /*_Stroika_Foundation_Math_LinearAlgebra_Matrix_inl_*/

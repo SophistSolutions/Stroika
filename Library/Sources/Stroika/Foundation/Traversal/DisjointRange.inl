@@ -1,8 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Traversal_DisjointRange_inl_
-#define _Stroika_Foundation_Traversal_DisjointRange_inl_
 
 namespace Stroika::Foundation::Traversal {
 
@@ -382,4 +380,3 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
-#endif /* _Stroika_Foundation_Traversal_DisjointRange_inl_ */

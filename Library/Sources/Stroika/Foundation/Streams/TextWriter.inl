@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_TextWriter_inl_
-#define _Stroika_Foundation_Streams_TextWriter_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "InternallySynchronizedOutputStream.h" // no need to include once we remove deprecated references to this
 
 namespace Stroika::Foundation::Streams::TextWriter {
@@ -188,5 +180,3 @@ namespace Stroika::Foundation::Streams::TextWriter {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_TextWriter_inl_*/

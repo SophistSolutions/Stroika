@@ -1,20 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_ExternallyOwnedSpanInputStream_inl_
-#define _Stroika_Foundation_Streams_ExternallyOwnedSpanInputStream_inl_ 1
-
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/Span.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
 
 #include "InternallySynchronizedInputStream.h"
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
 
     namespace Private_ {
@@ -170,5 +162,3 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_ExternallyOwnedSpanInputStream_inl_*/

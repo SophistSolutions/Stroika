@@ -1,14 +1,6 @@
 ﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Memory_SharedPtr_inl_
-#define _Stroika_Foundation_Memory_SharedPtr_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <mutex>
 
 #include "BlockAllocated.h"
@@ -541,5 +533,3 @@ namespace std {
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 }
-
-#endif /*_Stroika_Foundation_Memory_SharedPtr_inl_*/

@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Traversal_DiscreteRange_inl_
-#define _Stroika_Foundation_Traversal_DiscreteRange_inl_
-
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -237,5 +234,3 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Traversal_DiscreteRange_inl_ */

@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_MemoryStream_inl_
-#define _Stroika_Foundation_Streams_MemoryStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Debug/Cast.h"
@@ -326,5 +317,3 @@ namespace Stroika::Foundation::Streams::MemoryStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_MemoryStream_inl_*/

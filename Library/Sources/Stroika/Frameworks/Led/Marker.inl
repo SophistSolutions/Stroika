@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Framework_Led_Marker_inl_
-#define _Stroika_Framework_Led_Marker_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "TextStore.h"
 
 namespace Stroika::Frameworks::Led {
@@ -348,5 +339,3 @@ namespace Stroika::Frameworks::Led {
     }
 
 }
-
-#endif /*_Stroika_Framework_Led_Marker_inl_*/

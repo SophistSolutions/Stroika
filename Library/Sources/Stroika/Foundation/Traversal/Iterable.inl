@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Traversal_Iterable_inl_
-#define _Stroika_Foundation_Traversal_Iterable_inl_
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <execution>
 #include <set>
 
@@ -1264,5 +1256,3 @@ namespace Stroika::Foundation::Traversal {
     }
     DISABLE_COMPILER_MSC_WARNING_END (4701)
 }
-
-#endif /* _Stroika_Foundation_Traversal_Iterable_inl_ */

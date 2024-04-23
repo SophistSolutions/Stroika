@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Traversal_IterableFromIterator_inl_
-#define _Stroika_Foundation_Traversal_IterableFromIterator_inl_
-
 #include "DelegatedIterator.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
@@ -99,5 +96,3 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Traversal_IterableFromIterator_inl_ */

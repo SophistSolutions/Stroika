@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_SplitterOutputStream_inl_
-#define _Stroika_Foundation_Streams_SplitterOutputStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include "InternallySynchronizedOutputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
@@ -88,7 +79,7 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
 
     /*
      ********************************************************************************
-     ************************* Streams::SplitterOutputStream ************************
+     ********************** Streams::SplitterOutputStream::New **********************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
@@ -113,5 +104,3 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_SplitterOutputStream_inl_*/

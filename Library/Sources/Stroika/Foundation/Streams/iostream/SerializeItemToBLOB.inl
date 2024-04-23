@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_iostream_SerializeItemToBLOB_inl_
-#define _Stroika_Foundation_Streams_iostream_SerializeItemToBLOB_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <ostream>
 #include <sstream>
 
@@ -25,5 +17,3 @@ namespace Stroika::Foundation::Streams::iostream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_iostream_SerializeItemToBLOB_inl_*/

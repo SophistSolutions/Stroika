@@ -75,7 +75,7 @@ namespace {
     {
         String effectiveReason = mkCanBeEmptyReason_ (status, reason);
         if (effectiveReason.empty ()) {
-            return CString::Format (L"HTTP exception: status %d", status);
+            return Format ("HTTP exception: status {}"_f, status);
         }
         else {
             return effectiveReason;
@@ -85,10 +85,10 @@ namespace {
     {
         String effectiveReason = mkCanBeEmptyReason_ (status, reason);
         if (effectiveReason.empty ()) {
-            return CString::Format (L"HTTP exception: status %d", status);
+            return Format ("HTTP exception: status {}"_f, status);
         }
         else {
-            return CString::Format (L"HTTP exception: status %d (%s)", status, effectiveReason.c_str ());
+            return Format ("HTTP exception: status {} ({})"_f, status, effectiveReason);
         }
     }
 }

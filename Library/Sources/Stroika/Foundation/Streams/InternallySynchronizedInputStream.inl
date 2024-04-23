@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_InternallySynchronizedInputStream_inl_
-#define _Stroika_Foundation_Streams_InternallySynchronizedInputStream_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
@@ -136,7 +128,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
 
     /*
      ********************************************************************************
-     **************** InternallySynchronizedInputStream<BASE_REP_TYPE> **************
+     ************* InternallySynchronizedInputStream<BASE_REP_TYPE>::New ************
      ********************************************************************************
      */
     template <typename BASE_REP_TYPE, typename OPTIONS, typename... ARGS>
@@ -151,5 +143,3 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Streams_InternallySynchronizedInputStream_inl_*/

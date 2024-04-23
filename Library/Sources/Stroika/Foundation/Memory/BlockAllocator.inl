@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Memory_BlockAllocator_inl_
-#define _Stroika_Foundation_Memory_BlockAllocator_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <algorithm>
 #include <mutex>
 #include <vector>
@@ -418,5 +410,3 @@ namespace Stroika::Foundation::Memory {
     }
 
 }
-
-#endif /*_Stroika_Foundation_Memory_BlockAllocator_inl_*/

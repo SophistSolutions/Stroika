@@ -1,15 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Math_LinearAlgebra_Vector_inl_
-#define _Stroika_Foundation_Math_LinearAlgebra_Vector_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
 #include <vector>
 
 #include "../../Characters/StringBuilder.h"
@@ -131,9 +122,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
             sb << i << ", "sv;
         }
         sb << "]"sv;
-        return sb.str ();
+        return sb;
     }
 
 }
-
-#endif /*_Stroika_Foundation_Math_LinearAlgebra_Vector_inl_*/

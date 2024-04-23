@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Memory_Common_inl_
-#define _Stroika_Foundation_Memory_Common_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 #include <cstring>
 
 #include "Stroika/Foundation/Common/Compare.h"
@@ -303,4 +295,3 @@ namespace Stroika::Foundation::Memory {
     }
 
 }
-#endif /*_Stroika_Foundation_Memory_Common_inl_*/

@@ -186,4 +186,4 @@ namespace Stroika::Frameworks::Led {
  */
 #include "FlavorPackage.inl"
 
-#endif /*_Stroika_Frameworks_Led_FlavorPackage_inl_*/
+#endif /*_Stroika_Frameworks_Led_FlavorPackage_h_*/

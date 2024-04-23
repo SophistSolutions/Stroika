@@ -1,14 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Framework_SystemPerformance_Support_WMICollector_inl_
-#define _Stroika_Framework_SystemPerformance_Support_WMICollector_inl_ 1
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 namespace Stroika::Frameworks::SystemPerformance::Support {
 
@@ -23,4 +15,3 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
     }
 
 }
-#endif /*_Stroika_Framework_SystemPerformance_Support_WMICollector_inl_*/

@@ -9,8 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
-
-#include "Status.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 
 /**
  */

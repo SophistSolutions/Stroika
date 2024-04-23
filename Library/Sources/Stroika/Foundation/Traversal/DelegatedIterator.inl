@@ -1,9 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Traversal_DelegatedIterator_inl_
-#define _Stroika_Foundation_Traversal_DelegatedIterator_inl_
-
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Traversal {
@@ -47,10 +44,8 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename EXTRA_DATA>
     DelegatedIterator<T, EXTRA_DATA>::DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData)
-        : Iterator<T> (make_unique<Rep> (delegateTo, extraData))
+        : Iterator<T>{make_unique<Rep> (delegateTo, extraData)}
     {
     }
 
 }
-
-#endif /* _Stroika_Foundation_Traversal_DelegatedIterator_inl_ */
