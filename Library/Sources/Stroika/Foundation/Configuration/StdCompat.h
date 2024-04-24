@@ -46,9 +46,9 @@ namespace Stroika::Foundation::Configuration::StdCompat {
 #endif
 
     /**
-    *  To allow interop between std::format and fmt(fmtlib)::format, publish the names into the namespace 'Stroika::Foundation::Configuration::StdCompat' and use those.
-    *  Lose this once I can fully depend upon std::format... --LGP 2024-03-12
-    */
+     *  To allow interop between std::format and fmt(fmtlib)::format, publish the names into the namespace 'Stroika::Foundation::Configuration::StdCompat' and use those.
+     *  Lose this once I can fully depend upon std::format... --LGP 2024-03-12
+     */
     using qStroika_Foundation_Characters_FMT_PREFIX_::format;
     using qStroika_Foundation_Characters_FMT_PREFIX_::format_args;
     using qStroika_Foundation_Characters_FMT_PREFIX_::format_error;

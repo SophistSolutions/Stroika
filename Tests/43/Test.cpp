@@ -550,7 +550,7 @@ GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
 #if qPlatform_Linux
                 if (e.code () == errc::no_such_file_or_directory) {
                     Stroika::Frameworks::Test::WarnTestIssue (
-                        "Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f(current_exception ()).As<wstring> ().c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                       Characters::Format("Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f,current_exception ()).As<wstring> ().c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                     return;
                 }
 #endif
