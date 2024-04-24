@@ -2,8 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
-#include "../Debug/Assertions.h"
-#include "Factory/SortedAssociation_Factory.h"
+#include "Stroika/Foundation/Containers/Factory/SortedAssociation_Factory.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers {
 

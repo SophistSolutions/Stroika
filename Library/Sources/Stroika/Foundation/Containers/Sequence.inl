@@ -2,10 +2,10 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
-#include "../Debug/Assertions.h"
-#include "Concrete/Sequence_stdvector.h"
-#include "Factory/Sequence_Factory.h"
-#include "Private/IterableUtils.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
+#include "Stroika/Foundation/Containers/Factory/Sequence_Factory.h"
+#include "Stroika/Foundation/Containers/Private/IterableUtils.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers {
 

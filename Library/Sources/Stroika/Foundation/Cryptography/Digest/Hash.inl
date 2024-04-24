@@ -3,8 +3,8 @@
  */
 #include <type_traits>
 
-#include "../Format.h"
-#include "ResultTypes.h"
+#include "Stroika/Foundation/Cryptography/Digest/ResultTypes.h"
+#include "Stroika/Foundation/Cryptography/Format.h"
 
 namespace Stroika::Foundation::Cryptography::Digest {
 

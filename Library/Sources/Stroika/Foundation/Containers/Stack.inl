@@ -3,10 +3,10 @@
  */
 #include <vector>
 
-#include "../Configuration/Concepts.h"
-#include "../Debug/Assertions.h"
-#include "Factory/Stack_Factory.h"
-#include "Private/IterableUtils.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Containers/Factory/Stack_Factory.h"
+#include "Stroika/Foundation/Containers/Private/IterableUtils.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers {
 

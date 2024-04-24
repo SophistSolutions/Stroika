@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Cryptography_Digest_SuperFastHash_h_
 #define _Stroika_Foundation_Cryptography_Digest_SuperFastHash_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdint>
 
-#include "../Digester.h"
+#include "Stroika/Foundation/Cryptography/Digest/Digester.h"
 
 /**
  *  \file

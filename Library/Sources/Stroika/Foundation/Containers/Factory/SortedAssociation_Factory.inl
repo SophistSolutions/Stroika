@@ -1,8 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/SortedAssociation_stdmultimap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
 
+namespace Stroika::Foundation::Containers::Concrete {
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    class SortedAssociation_stdmultimap;
+}
 namespace Stroika::Foundation::Containers::Factory {
 
     /*

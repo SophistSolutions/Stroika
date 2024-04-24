@@ -4,13 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_h_
 #define _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_h_
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../Configuration/Common.h"
-#include "../../Configuration/Concepts.h"
-#include "../../Debug/AssertExternallySynchronizedMutex.h"
-
-#include "../Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 /**
  *  \file

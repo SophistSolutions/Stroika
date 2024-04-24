@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/Association_Array.h"
-#include "../Concrete/Association_LinkedList.h"
-#include "../Concrete/Association_stdmultimap.h"
+#include "Stroika/Foundation/Containers/Concrete/Association_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Association_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Association_stdmultimap.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 

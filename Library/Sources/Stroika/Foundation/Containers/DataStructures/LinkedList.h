@@ -11,10 +11,9 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
-
-#include "../Common.h"
 
 /**
  *

@@ -3,10 +3,10 @@
  */
 #include <type_traits>
 
-#include "../Concrete/Mapping_Array.h"
-#include "../Concrete/Mapping_LinkedList.h"
-#include "../Concrete/Mapping_stdhashmap.h"
-#include "../Concrete/Mapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
     // avoid issue with #include deadly embrace

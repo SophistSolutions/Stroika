@@ -2,15 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
-#include "../Debug/Assertions.h"
-#include "../Traversal/IterableFromIterator.h"
-#include "Factory/MultiSet_Factory.h"
+#include "Stroika/Foundation/Containers/Factory/MultiSet_Factory.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Traversal/IterableFromIterator.h"
 
 namespace Stroika::Foundation::Containers {
 

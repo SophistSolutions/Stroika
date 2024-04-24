@@ -5,9 +5,9 @@
  *      PARTS OF THIS CODE MAYBE COVERED BY http://www.gnu.org/licenses/lgpl-2.1.txt - See
  *      http://www.azillionmonkeys.com/qed/hash.html
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Configuration/Endian.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
 
 #include "SuperFastHash.h"
 
@@ -16,14 +16,6 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::Digest;
-
-#undef get16bits
-#if (defined(__GNUC__) && defined(__i386__)) || defined(__WATCOMC__) || defined(_MSC_VER) || defined(__BORLANDC__) || defined(__TURBOC__)
-#define get16bits_ref_(d) (*((const uint16_t*)(d)))
-#endif
-#if !defined(get16bits_ref_)
-#define get16bits_ref_(d) ((((uint32_t)(((const uint8_t*)(d))[1])) << 8) + (uint32_t)(((const uint8_t*)(d))[0]))
-#endif
 
 namespace {
     inline uint16_t get16bits_ (const byte* p)
@@ -41,7 +33,6 @@ namespace {
                 AssertNotReached ();
                 result = 0;
         }
-        Ensure (get16bits_ref_ (p) == result);
         return result;
     }
 }

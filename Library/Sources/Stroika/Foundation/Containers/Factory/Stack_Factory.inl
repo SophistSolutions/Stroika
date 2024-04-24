@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/Stack_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Stack_LinkedList.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 

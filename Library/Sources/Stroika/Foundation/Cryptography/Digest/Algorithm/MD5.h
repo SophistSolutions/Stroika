@@ -6,8 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Digester.h"
-#include "../ResultTypes.h"
+#include "Stroika/Foundation/Cryptography/Digest/Digester.h"
+#include "Stroika/Foundation/Cryptography/Digest/ResultTypes.h"
 
 /**
  *  \file

@@ -2,11 +2,10 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Containers/DataStructures/STLContainerWrapper.h"
+#include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
-
-#include "../DataStructures/STLContainerWrapper.h"
-#include "../Private/IteratorImplHelper.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 

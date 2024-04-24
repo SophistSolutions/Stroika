@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/SparseDataHyperRectangle_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 

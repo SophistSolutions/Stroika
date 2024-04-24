@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include "../Digester.h"
+#include "Stroika/Foundation/Cryptography/Digest/Digester.h"
 
 /**
  *  \file

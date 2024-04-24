@@ -1,13 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Common.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Containers/DataStructures/Array.h"
+#include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
-
-#include "../DataStructures/Array.h"
-#include "../Private/IteratorImplHelper.h"
-#include "../Support/ReserveTweaks.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 

@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/Deque_DoublyLinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 

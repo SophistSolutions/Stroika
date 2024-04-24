@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/DenseDataHyperRectangle_Vector.h"
+#include "Stroika/Foundation/Containers/Concrete/DenseDataHyperRectangle_Vector.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename... INDEXES>

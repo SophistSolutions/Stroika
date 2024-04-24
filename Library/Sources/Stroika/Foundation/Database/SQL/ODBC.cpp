@@ -14,8 +14,7 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
-
-#include "../Exception.h"
+#include "Stroika/Foundation/Database/Exception.h"
 
 #include "ODBC.h"
 

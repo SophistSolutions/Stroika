@@ -3,9 +3,8 @@
  */
 #include <optional>
 
-#include "../../Debug/Assertions.h"
-
-#include "../Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers::DataStructures {
 

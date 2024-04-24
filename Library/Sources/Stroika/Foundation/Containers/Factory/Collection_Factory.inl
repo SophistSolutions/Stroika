@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/Collection_Array.h"
-#include "../Concrete/Collection_LinkedList.h"
-#include "../Concrete/Collection_stdmultiset.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_stdmultiset.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 

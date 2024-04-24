@@ -5,13 +5,13 @@
 #ifndef _Stroika_Foundation_Containers_Private_IterableUtils_h_
 #define _Stroika_Foundation_Containers_Private_IterableUtils_h_
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
-#include "../Common.h"
+#include "Stroika/Foundation/Containers/Common.h"
 
 /**
  *  Private utilities to support building subtypes of Containers::Iterable<T>

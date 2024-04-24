@@ -2,10 +2,10 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
-#include "../Common/Compare.h"
-#include "../Configuration/Concepts.h"
-#include "../Debug/Assertions.h"
-#include "Factory/Set_Factory.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Containers/Factory/Set_Factory.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers {
 
