@@ -10,10 +10,9 @@
 
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Common.h"
-
-#include "../Common.h"
 
 /**
  *
@@ -27,7 +26,7 @@
  *  that when debug is on, accesses are range-checked.
  *
  *      Array<T> also provides a dynamic sizing capability. It reallocs its
- *  underlying storgage is such a ways as to keep a buffer of n(currently 5)%
+ *  underlying storage is such a ways as to keep a buffer of n(currently 5)%
  *  extra, so that reallocs on resizes only occur logn times on n appends.
  *  To save even this space, you can call shrink_to_fit().
  *

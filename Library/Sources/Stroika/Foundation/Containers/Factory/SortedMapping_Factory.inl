@@ -1,8 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/SortedMapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 
+namespace Stroika::Foundation::Containers::Concrete {
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    class SortedMapping_stdmap; // avoid issue with #include deadly embrace
+}
 namespace Stroika::Foundation::Containers::Factory {
 
     /*

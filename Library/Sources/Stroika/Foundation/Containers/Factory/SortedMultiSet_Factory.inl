@@ -1,8 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/SortedMultiSet_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_stdmap.h"
 
+namespace Stroika::Foundation::Containers::Concrete {
+    template <typename T, typename TRAITS>
+    class SortedMultiSet_stdmap; // avoid issue with #include deadly embrace
+}
 namespace Stroika::Foundation::Containers::Factory {
 
     /*

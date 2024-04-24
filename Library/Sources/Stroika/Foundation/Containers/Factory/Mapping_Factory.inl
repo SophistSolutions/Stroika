@@ -9,6 +9,7 @@
 #include "../Concrete/Mapping_stdmap.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
+    // avoid issue with #include deadly embrace
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping_stdhashmap;
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

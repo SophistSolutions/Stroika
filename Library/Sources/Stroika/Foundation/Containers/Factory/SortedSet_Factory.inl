@@ -1,8 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Concrete/SortedSet_stdset.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 
+namespace Stroika::Foundation::Containers::Concrete {
+    template <typename T>
+    class SortedSet_stdset; // avoid issue with #include deadly embrace
+}
 namespace Stroika::Foundation::Containers::Factory {
 
     /*

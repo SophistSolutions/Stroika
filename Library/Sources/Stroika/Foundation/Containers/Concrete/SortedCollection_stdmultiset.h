@@ -1,20 +1,19 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_stdmultiset_h_
+#define _Stroika_Foundation_Containers_Concrete_SortedCollection_stdmultiset_h_
+
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <set>
 
-#include "../SortedCollection.h"
-
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_stdmultiset_h_
-#define _Stroika_Foundation_Containers_Concrete_SortedCollection_stdmultiset_h_
+#include "Stroika/Foundation/Containers/SortedCollection.h"
 
 /**
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  */
 
 namespace Stroika::Foundation::Containers::Concrete {

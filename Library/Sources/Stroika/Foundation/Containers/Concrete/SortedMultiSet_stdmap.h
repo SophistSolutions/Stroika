@@ -1,21 +1,21 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
-
-#include <map>
-
-#include "../SortedMultiSet.h"
-
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMultiSet_stdmap_h_
 #define _Stroika_Foundation_Containers_Concrete_SortedMultiSet_stdmap_h_ 1
 
+#include "Stroika/Foundation/StroikaPreComp.h"
+
+#include <map>
+
+#include "Stroika/Foundation/Containers/SortedMultiSet.h"
+
 /**
-  *  \file
-  *
-  *  \version    <a href="Code-Status.md#Beta">Beta</a>
-  *
-  */
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *
+ */
 
 namespace Stroika::Foundation::Containers::Concrete {
 
