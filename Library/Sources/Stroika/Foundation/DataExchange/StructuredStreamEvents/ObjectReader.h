@@ -22,6 +22,7 @@
 #include "Stroika/Foundation/Containers/SortedCollection.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
+#include "Stroika/Foundation/DataExchange/StructFieldMetaInfo.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/Common.h"
@@ -30,8 +31,6 @@
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Traversal/Range.h"
-
-#include "../StructFieldMetaInfo.h"
 
 #include "IConsumer.h"
 #include "Name.h"

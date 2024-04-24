@@ -7,8 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "../Common.h"
+#include "Stroika/Foundation/Containers/Common.h"
 
 /**
  *  Private utility to support building of Traversal::Iterator<> objects for concrete Containers.

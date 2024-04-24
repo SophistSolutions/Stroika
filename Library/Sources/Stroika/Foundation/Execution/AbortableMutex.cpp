@@ -4,8 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/StroikaConfig.h"
-
-#include "Thread.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 
 #include "AbortableMutex.h"
 

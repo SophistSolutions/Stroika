@@ -2,8 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Streams/EOFException.h"
-#include "TimeOutException.h"
 
 namespace Stroika::Foundation::Execution {
 

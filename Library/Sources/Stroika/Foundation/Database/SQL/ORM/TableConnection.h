@@ -9,12 +9,10 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/Database/SQL/Connection.h"
+#include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
+#include "Stroika/Foundation/Database/SQL/Statement.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-
-#include "../Connection.h"
-#include "../Statement.h"
-
-#include "Schema.h"
 
 /**
  *  \file

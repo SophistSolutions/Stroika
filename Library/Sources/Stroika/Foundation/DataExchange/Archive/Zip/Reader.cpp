@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 // @todo add Stroika wrapper on this (thirdpartyproducts)
 #ifdef HAVE_BZIP2
 #include "bzlib.h"
 #endif
 
-#include "../../../Characters/Format.h"
-#include "../../../Execution/Finally.h"
-#include "../../../Streams/MemoryStream.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Reader.h"
 

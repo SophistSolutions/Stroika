@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Statement.h"
+#include "Stroika/Foundation/Database/SQL/Statement.h"
 
 #include "Versioning.h"
 

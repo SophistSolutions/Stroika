@@ -7,13 +7,10 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/DataExchange/Variant/Reader.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/DataExchange/XML/SerializationConfiguration.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "../../VariantValue.h"
-
-#include "../Reader.h"
-
-#include "../../XML/SerializationConfiguration.h"
 
 /**
  *  \file
@@ -33,7 +30,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
      *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
 
-        define common struct (shared modeule - in common.h of this I guess? - for serializeation package parmas
+        define common struct (shared module - in common.h of this I guess? - for serializeation package parmas
         like "use this tag for arrays" (where empty is an option but hard to read back)", and namespace list, and
         do or don't include xml processing instruction
         */
@@ -45,7 +42,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         class Rep_;
 
     public:
-        Reader (const SerializationConfiguration& config = SerializationConfiguration ());
+        Reader (const SerializationConfiguration& config = {});
 
     public:
         nonvirtual SerializationConfiguration GetConfiguration () const;

@@ -6,10 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Memory/SharedByValue.h"
+//#include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "../VariantValue.h"
+//#include "Stroika/Foundation/DataExchange/VariantValue.h"
 
 /**
  *  \file

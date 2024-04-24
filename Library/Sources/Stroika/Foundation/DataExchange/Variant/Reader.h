@@ -8,10 +8,9 @@
 
 #include <istream>
 
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "../VariantValue.h"
 
 /**
  *  \file

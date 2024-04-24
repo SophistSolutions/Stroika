@@ -6,9 +6,8 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Database/Exception.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-
-#include "../../Exception.h"
 
 #include "Schema.h"
 

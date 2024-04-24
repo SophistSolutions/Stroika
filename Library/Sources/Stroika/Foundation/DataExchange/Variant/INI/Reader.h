@@ -8,10 +8,8 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Collection.h"
-
-#include "../../VariantValue.h"
-
-#include "../Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/Reader.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 
 #include "Profile.h"
 

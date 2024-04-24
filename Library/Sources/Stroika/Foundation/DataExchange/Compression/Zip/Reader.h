@@ -6,9 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "../Reader.h"
+#include "Stroika/Foundation/DataExchange/Compression/Reader.h"
 
 /**
  *  \file

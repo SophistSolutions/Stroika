@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_DataExchange_Archive_Zip_Reader_h_
 #define _Stroika_Foundation_DataExchange_Archive_Zip_Reader_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
-#include "../Reader.h"
+#include "Stroika/Foundation/DataExchange/Archive/Reader.h"
 
 /**
  *  \file

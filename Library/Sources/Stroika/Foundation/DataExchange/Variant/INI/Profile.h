@@ -9,8 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
-
-#include "../../VariantValue.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 
 /**
  *  \file
@@ -21,7 +20,7 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
     using Containers::Mapping;
 
     /**
-     *  Each 'section' of an INI file constists of name/value pairs.
+     *  Each 'section' of an INI file consists of name/value pairs.
      */
     struct Section {
         Mapping<String, String> fProperties;
@@ -35,7 +34,7 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
     };
 
     /**
-     *  An INI file is a series of sections - one of which maybe unnamed, and the remainered are named.
+     *  An INI file is a series of sections - one of which maybe unnamed, and the remaining are named.
      */
     struct Profile {
         Section                  fUnnamedSection;

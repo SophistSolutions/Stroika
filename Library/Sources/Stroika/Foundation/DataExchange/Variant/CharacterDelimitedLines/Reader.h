@@ -9,11 +9,9 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/Variant/Reader.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "../../VariantValue.h"
-
-#include "../Reader.h"
 
 /**
  *  \file

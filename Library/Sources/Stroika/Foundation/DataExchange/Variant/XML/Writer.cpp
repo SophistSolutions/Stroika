@@ -3,9 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
 #include "Stroika/Foundation/Streams/TextWriter.h"
-
-#include "../../XML/WriterUtils.h"
 
 #include "Writer.h"
 

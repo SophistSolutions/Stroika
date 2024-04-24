@@ -1,19 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <random>
 
-#include "../Characters/StringBuilder.h"
-#include "../Characters/ToString.h"
-#include "../Containers/Collection.h"
-#include "../Debug/Main.h"
-#include "../Debug/Trace.h"
-#include "../Time/Realtime.h"
-
-#include "Synchronized.h"
-#include "Thread.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Debug/Main.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "IntervalTimer.h"
 
@@ -37,7 +36,7 @@ Characters::String IntervalTimer::RegisteredTask::ToString () const
     sb << "Frequency: "sv << fFrequency << ", "sv;
     sb << "Hysteresis: "sv << fHysteresis;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

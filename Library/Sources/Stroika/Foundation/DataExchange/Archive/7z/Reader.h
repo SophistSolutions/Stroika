@@ -8,7 +8,7 @@
 
 #include "Stroika/Foundation/Streams/InputStream.h"
 
-#include "../Reader.h"
+#include "Stroika/Foundation/DataExchange/Archive/Reader.h"
 
 /**
  *  \file

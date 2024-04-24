@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Database_SQL_ORM_Versioning_h_
 #define _Stroika_Foundation_Database_SQL_ORM_Versioning_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../../../Configuration/Version.h"
-#include "../Connection.h"
-#include "Schema.h"
+#include "Stroika/Foundation//Configuration/Version.h"
+#include "Stroika/Foundation/Database/SQL/Connection.h"
+#include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 
 /**
  *  \file

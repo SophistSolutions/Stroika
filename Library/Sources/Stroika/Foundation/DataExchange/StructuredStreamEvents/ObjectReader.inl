@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../BadFormatException.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 
 namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader {
 

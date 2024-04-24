@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../OpenSSLCryptoStream.h"
+#include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 
 #include "AES.h"
 

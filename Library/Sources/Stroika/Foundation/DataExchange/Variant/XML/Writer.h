@@ -8,12 +8,11 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/DataExchange/Variant/Writer.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
+#include "Stroika/Foundation/DataExchange/XML/SerializationConfiguration.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
-
-#include "../../VariantValue.h"
-#include "../../XML/Common.h"
-#include "../../XML/SerializationConfiguration.h"
-#include "../Writer.h"
 
 /*
  * TODO:
@@ -39,7 +38,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
      *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
      *
-     * The arguemnt VariantValue must be composed of any combination of these types:
+     * The argument VariantValue must be composed of any combination of these types:
      *          o   VariantValue::eBoolean
      *          o   VariantValue::eInteger
      *          o   VariantValue::eFloat

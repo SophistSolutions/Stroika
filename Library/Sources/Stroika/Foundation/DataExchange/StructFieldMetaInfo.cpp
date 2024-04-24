@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../Characters/ToString.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 
-#include "StructFieldMetaInfo.h"
+#include "Stroika/Foundation/DataExchange/StructFieldMetaInfo.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -23,5 +23,5 @@ Characters::String StructFieldMetaInfo::ToString () const
     sb << "TypeInfo:"sv << fTypeInfo_ << ", "sv;
     sb << "PointerToMember:"sv << fPTR2MEM_;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
