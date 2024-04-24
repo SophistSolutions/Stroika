@@ -1,18 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "Stroika/Foundation/StroikaPreComp.h"
-
-#include "../Mapping.h"
-
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_Array_h_
 #define _Stroika_Foundation_Containers_Concrete_Mapping_Array_h_
+
+#include "Stroika/Foundation/StroikaPreComp.h"
+
+#include "Stroika/Foundation/Containers/Mapping.h"
 
 /**
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  */
 
 namespace Stroika::Foundation::Containers::Concrete {

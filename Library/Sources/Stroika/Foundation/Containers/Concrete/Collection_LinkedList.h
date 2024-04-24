@@ -1,19 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
-
-#include "../Collection.h"
-
 #ifndef _Stroika_Foundation_Containers_Concrete_Collection_LinkedList_h_
 #define _Stroika_Foundation_Containers_Concrete_Collection_LinkedList_h_
+
+#include "Stroika/Foundation/StroikaPreComp.h"
+
+#include "Stroika/Foundation/Containers/Collection.h"
 
 /**
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *
  */
 
 namespace Stroika::Foundation::Containers::Concrete {

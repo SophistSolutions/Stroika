@@ -8,6 +8,14 @@
 #include "../Concrete/Mapping_stdhashmap.h"
 #include "../Concrete/Mapping_stdmap.h"
 
+namespace Stroika::Foundation::Containers::Concrete {
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    class Mapping_stdhashmap;
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    class Mapping_Array;
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    class Mapping_LinkedList;
+}
 namespace Stroika::Foundation::Containers::Factory {
 
     /*

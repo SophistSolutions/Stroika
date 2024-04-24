@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#ifndef _Stroika_Foundation_Containers_Concrete_Mapping_stdhashmap_h_
+#define _Stroika_Foundation_Containers_Concrete_Mapping_stdhashmap_h_
+
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <unordered_map>
 
-#include "../../Common/Compare.h"
-#include "../../Cryptography/Digest/HashBase.h"
-#include "../Mapping.h"
-
-#ifndef _Stroika_Foundation_Containers_Concrete_Mapping_stdhashmap_h_
-#define _Stroika_Foundation_Containers_Concrete_Mapping_stdhashmap_h_
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note Alias
      *          Could have been called Mapping_stdunorderedmap - but that name would not be nearly as suggestive.
      *          the name std::unordered_map is something of an move towards the approach taken by Stroika - focusing
-     *          on data access patterns, rather than implementation data structure. But the API - truely has hash-table
+     *          on data access patterns, rather than implementation data structure. But the API - truly has hash-table
      *          written all over it (so the name is really misleading in std).
      * 
      *  \note   \em Implementation Details
