@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_TextInteractorMixins_h_
 #define _Stroika_Frameworks_Led_TextInteractorMixins_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    TextInteractorMixins
@@ -13,7 +13,7 @@
 
  */
 
-#include "TextInteractor.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
 namespace Stroika::Frameworks::Led {
 

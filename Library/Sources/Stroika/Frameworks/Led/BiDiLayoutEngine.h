@@ -20,8 +20,8 @@
 
  */
 
-#include "GDI.h"
-#include "Support.h"
+#include "Stroika/Frameworks/Led/GDI.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 namespace Stroika::Frameworks::Led {
 

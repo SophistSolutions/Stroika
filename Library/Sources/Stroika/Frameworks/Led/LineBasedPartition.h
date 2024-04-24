@@ -13,7 +13,7 @@
     up the text into pieces (partition elements). This is the most basic, default, standard kind of Partition.</p>
  */
 
-#include "PartitioningTextImager.h"
+#include "Stroika/Frameworks/Led/PartitioningTextImager.h"
 
 namespace Stroika::Frameworks::Led {
 

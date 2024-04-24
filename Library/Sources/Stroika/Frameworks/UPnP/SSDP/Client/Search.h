@@ -4,14 +4,14 @@
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Client_Search_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Client_Search_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <functional>
 
 #include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
 
-#include "../../Device.h"
-#include "../Advertisement.h"
+#include "Stroika/Frameworks/UPnP/Device.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 
 /**
  *  \file

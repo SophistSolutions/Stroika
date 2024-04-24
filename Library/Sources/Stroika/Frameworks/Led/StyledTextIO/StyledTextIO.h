@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_h_
 #define _Stroika_Frameworks_Led_StyledTextIO_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    StyledTextIO
@@ -37,12 +37,12 @@
 
 #include <set>
 
-#include "../../../Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
-#include "../StandardStyledTextImager.h" //  For StyledInfoSummaryRecord declaration
-#include "../StyledTextEmbeddedObjects.h"
-#include "../StyledTextImager.h"
-#include "../Support.h"
+#include "Stroika/Frameworks/Led/StandardStyledTextImager.h" //  For StyledInfoSummaryRecord declaration
+#include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
+#include "Stroika/Frameworks/Led/StyledTextImager.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 namespace Stroika::Frameworks::Led::StyledTextIO {
 

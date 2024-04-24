@@ -11,13 +11,13 @@
 #include <boost/json/basic_parser_impl.hpp>
 #endif
 
-#include "../../BadFormatException.h"
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Streams/StreamReader.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
@@ -40,7 +40,7 @@ namespace {
     /*
      * Parse strategy:
      *      o   Pre-pass to map all input to UNICODE - and then just handle a sequence of unicode strings
-     *      o   Classic resursive decent parser.
+     *      o   Classic recursive decent parser.
      *      o   Inline lexical analysis (cuz very simple)
      */
 
@@ -128,20 +128,20 @@ namespace {
     // throw if bad hex digit
     uint8_t HexChar2Num_ (char c)
     {
-        if ('0' <= c and c <= '9') {
+        if ('0' <= c and c <= '9') [[likely]] {
             return static_cast<uint8_t> (c - '0');
         }
-        if ('A' <= c and c <= 'F') {
-            return static_cast<uint8_t> ((c - 'A') + 10);
-        }
-        if ('a' <= c and c <= 'f') {
+        if ('a' <= c and c <= 'f') [[likely]] {
             return static_cast<uint8_t> ((c - 'a') + 10);
+        }
+        if ('A' <= c and c <= 'F') [[likely]] {
+            return static_cast<uint8_t> ((c - 'A') + 10);
         }
         static const auto kException_{BadFormatException{"JSON: bad hex digit after \\u"sv}};
         Execution::Throw (kException_);
     }
 
-    // 'in' is positioned to the start of string, and we read, leaving in possitioned just after the end of the string
+    // 'in' is positioned to the start of string, and we read, leaving in positioned just after the end of the string
     String Reader_String_ (MyBufferedStreamReader_& in)
     {
         Require (not in.IsAtEOF ());
@@ -790,7 +790,7 @@ public:
                 byte                                 buf[8 * 1024]; // experimentally - larger buffers didn't help speed
                 const size_t                         targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
                 size_t                               actualChunkSize;
-                boost::json::error_code              ec;
+                boost::system::error_code            ec;
                 while ((actualChunkSize = in.Read (span{buf, targetChunkSize}).size ()) != 0) {
                     ec.clear ();
                     size_t nParsed = p.write_some (true, reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
@@ -820,8 +820,8 @@ public:
                 const size_t        targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
                 size_t              actualChunkSize;
                 while ((actualChunkSize = in.Read (span{buf, targetChunkSize}).size ()) != 0) {
-                    boost::json::error_code ec;
-                    size_t                  nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
+                    boost::system::error_code ec;
+                    size_t                    nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
                     Assert (nParsed <= actualChunkSize);
                     if (nParsed < actualChunkSize) {
                         in.Seek (Whence::eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));

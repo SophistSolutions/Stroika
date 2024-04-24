@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_TextImager_h_
 #define _Stroika_Frameworks_Led_TextImager_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    TextImager
@@ -13,11 +13,11 @@
     does all the imaging - drawing of text to an output device.</p>
  */
 
-#include "BiDiLayoutEngine.h"
-#include "GDI.h"
-#include "Marker.h"
-#include "Support.h"
-#include "TextStore.h"
+#include "Stroika/Frameworks/Led/BiDiLayoutEngine.h"
+#include "Stroika/Frameworks/Led/GDI.h"
+#include "Stroika/Frameworks/Led/Marker.h"
+#include "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/TextStore.h"
 
 namespace Stroika::Frameworks::Led {
 

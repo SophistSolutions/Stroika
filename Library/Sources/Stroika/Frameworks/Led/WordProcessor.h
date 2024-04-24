@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_WordProcessor_h_
 #define _Stroika_Frameworks_Led_WordProcessor_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    WordProcessor
@@ -15,12 +15,12 @@
             </p>
  */
 
-#include "HiddenText.h"
-#include "IdleManager.h"
-#include "MarkerCover.h"
-#include "StandardStyledTextInteractor.h"
-#include "TextInteractorMixins.h"
-#include "WordWrappedTextInteractor.h"
+#include "Stroika/Frameworks/Led/HiddenText.h"
+#include "Stroika/Frameworks/Led/IdleManager.h"
+#include "Stroika/Frameworks/Led/MarkerCover.h"
+#include "Stroika/Frameworks/Led/StandardStyledTextInteractor.h"
+#include "Stroika/Frameworks/Led/TextInteractorMixins.h"
+#include "Stroika/Frameworks/Led/WordWrappedTextInteractor.h"
 
 namespace Stroika::Frameworks::Led {
 

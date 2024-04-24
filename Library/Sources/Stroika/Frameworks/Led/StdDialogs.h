@@ -13,13 +13,13 @@
     </p>
  */
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Config.h"
+#include "Stroika/Frameworks/Led/Config.h"
 
 #if defined(__cplusplus)
-#include "GDI.h"
-#include "Support.h"
+#include "Stroika/Frameworks/Led/GDI.h"
+#include "Stroika/Frameworks/Led/Support.h"
 #endif
 
 /*

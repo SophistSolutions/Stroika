@@ -9,10 +9,10 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 
-#include "../../Device.h"
-#include "../../DeviceDescription.h"
-#include "PeriodicNotifier.h"
-#include "SearchResponder.h"
+#include "Stroika/Frameworks/UPnP/Device.h"
+#include "Stroika/Frameworks/UPnP/DeviceDescription.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Server/PeriodicNotifier.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Server/SearchResponder.h"
 
 /*
  *  \file

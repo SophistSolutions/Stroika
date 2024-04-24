@@ -6,7 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Listener.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
 
 /*
  * TODO:

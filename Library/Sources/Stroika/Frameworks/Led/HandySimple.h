@@ -15,10 +15,9 @@
     get fixed in a future release?</p>
  */
 
-#include "GDI.h"
-
-#include "ChunkedArrayTextStore.h"
-#include "WordProcessor.h"
+#include "Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
+#include "Stroika/Frameworks/Led/GDI.h"
+#include "Stroika/Frameworks/Led/WordProcessor.h"
 
 namespace Stroika::Frameworks::Led {
 

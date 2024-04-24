@@ -13,7 +13,7 @@
     a very simple implementation of the @'TextStore' class.</p>
  */
 
-#include "TextStore.h"
+#include "Stroika/Frameworks/Led/TextStore.h"
 
 namespace Stroika::Frameworks::Led {
 

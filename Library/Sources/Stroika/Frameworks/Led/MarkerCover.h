@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_MarkerCover_h_
 #define _Stroika_Frameworks_Led_MarkerCover_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    MarkerCover
@@ -21,8 +21,8 @@
 #include <list>
 #include <vector>
 
-#include "Marker.h"
-#include "TextStore.h"
+#include "Stroika/Frameworks/Led/Marker.h"
+#include "Stroika/Frameworks/Led/TextStore.h"
 
 namespace Stroika::Frameworks::Led {
 

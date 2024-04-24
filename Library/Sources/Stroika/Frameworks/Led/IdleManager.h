@@ -17,7 +17,7 @@
 #include <map>
 #include <vector>
 
-#include "Support.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 namespace Stroika::Frameworks::Led {
 

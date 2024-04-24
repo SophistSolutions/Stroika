@@ -4,9 +4,9 @@
 #ifndef _Stroika_Frameworks_Led_TextInteractor_h_
 #define _Stroika_Frameworks_Led_TextInteractor_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 /*
 @MODULE:    TextInteractor
@@ -16,10 +16,10 @@
     behavior - such as keyclicks, mouse tracking, and the notion of @'TextInteractor::UpdateMode' s.</p>
  */
 
-#include "Command.h"
-#include "FlavorPackage.h"
-#include "SpellCheckEngine.h"
-#include "TextImager.h"
+#include "Stroika/Frameworks/Led/Command.h"
+#include "Stroika/Frameworks/Led/FlavorPackage.h"
+#include "Stroika/Frameworks/Led/SpellCheckEngine.h"
+#include "Stroika/Frameworks/Led/TextImager.h"
 
 namespace Stroika::Frameworks::Led {
 

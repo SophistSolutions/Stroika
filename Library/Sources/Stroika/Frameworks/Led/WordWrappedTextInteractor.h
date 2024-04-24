@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_WordWrappedTextInteractor_h_
 #define _Stroika_Frameworks_Led_WordWrappedTextInteractor_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    WordWrappedTextInteractor
@@ -13,8 +13,8 @@
     with mixing together @'WordWrappedTextImager' and @'TextInteractor'.</p>
  */
 
-#include "TextInteractorMixins.h"
-#include "WordWrappedTextImager.h"
+#include "Stroika/Frameworks/Led/TextInteractorMixins.h"
+#include "Stroika/Frameworks/Led/WordWrappedTextImager.h"
 
 namespace Stroika::Frameworks::Led {
 

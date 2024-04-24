@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_WordWrappedTextImager_h_
 #define _Stroika_Frameworks_Led_WordWrappedTextImager_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 /*
 @MODULE:    WordWrappedTextImager
@@ -14,7 +14,7 @@
     to standard text UI rules).</p>
  */
 
-#include "MultiRowTextImager.h"
+#include "Stroika/Frameworks/Led/MultiRowTextImager.h"
 
 namespace Stroika::Frameworks::Led {
 

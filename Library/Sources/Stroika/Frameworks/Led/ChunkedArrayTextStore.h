@@ -18,7 +18,7 @@
 
 #include "Stroika/Foundation/Cache/LRUCache.h"
 
-#include "TextStore.h"
+#include "Stroika/Frameworks/Led/TextStore.h"
 
 namespace Stroika::Frameworks::Led {
 

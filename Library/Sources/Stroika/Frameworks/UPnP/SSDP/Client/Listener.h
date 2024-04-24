@@ -11,8 +11,8 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
 
-#include "../../Device.h"
-#include "../Advertisement.h"
+#include "Stroika/Frameworks/UPnP/Device.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 
 /**
 *  \file
@@ -28,7 +28,7 @@
  *      @todo   Better docs on 'Firewall Note' - and maybe workaround suggestions.
  *
  *      @todo   Fix Result object do a better job summarizing original map of headers
- *              verus unused headers (now just all raw headers returned).
+ *              versus unused headers (now just all raw headers returned).
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Client {

@@ -4,16 +4,16 @@
 #ifndef _Stroika_Frameworks_Led_TextStore_h_
 #define _Stroika_Frameworks_Led_TextStore_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <list>
 #include <vector>
 
-#include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/Memory/BlockAllocated.h"
-#include "../../Foundation/Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
 
 /*
 @MODULE:    TextStore
@@ -31,9 +31,9 @@
     </ul>
  */
 
-#include "Marker.h"
-#include "Support.h"
-#include "TextBreaks.h"
+#include "Stroika/Frameworks/Led/Marker.h"
+#include "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/TextBreaks.h"
 
 namespace Stroika::Frameworks::Led {
 

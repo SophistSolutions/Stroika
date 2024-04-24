@@ -16,7 +16,7 @@
 
  */
 
-#include "StyledTextImager.h"
+#include "Stroika/Frameworks/Led/StyledTextImager.h"
 
 namespace Stroika::Frameworks::Led {
 
