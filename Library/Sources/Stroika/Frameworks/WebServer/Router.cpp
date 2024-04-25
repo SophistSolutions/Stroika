@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Characters/Format.h"
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Execution/Exceptions.h"
-#include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
-#include "../../Foundation/IO/Network/HTTP/Headers.h"
-#include "../../Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 
 #include "Router.h"
 

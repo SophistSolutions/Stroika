@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "../../Foundation/Debug/TimingTrace.h"
-#include "../../Foundation/IO/FileSystem/Common.h"
-#include "../../Foundation/IO/FileSystem/FileInputStream.h"
-#include "../../Foundation/IO/FileSystem/PathName.h"
-#include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
-#include "../../Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/Debug/TimingTrace.h"
+#include "Stroika/Foundation/IO/FileSystem/Common.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 #include "FileSystemRequestHandler.h"
 

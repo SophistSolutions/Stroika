@@ -3,9 +3,9 @@
  */
 #include <tuple>
 
-#include "../../../Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 
-#include "Basic.h"
+#include "Stroika/Frameworks/WebService/Server/Basic.h"
 
 namespace Stroika::Frameworks::WebService::Server::VariantValue {
 

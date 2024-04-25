@@ -10,8 +10,8 @@
 #include "Stroika/Frameworks/WebServer/RequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Response.h"
 
-#include "../Basic.h"
-#include "../OpenAPI/Specification.h"
+#include "Stroika/Frameworks/WebService/Server/Basic.h"
+#include "Stroika/Frameworks/WebService/OpenAPI/Specification.h"
 
 /*
  */

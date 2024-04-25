@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_WebServer_ConnectionManager_h_
 #define _Stroika_Framework_WebServer_ConnectionManager_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <list>
 #include <memory>
@@ -19,11 +19,11 @@
 #include "Stroika/Foundation/IO/Network/Listener.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
-#include "CORS.h"
-#include "Connection.h"
-#include "Request.h"
-#include "Response.h"
-#include "Router.h"
+#include "Stroika/Frameworks/WebServer/CORS.h"
+#include "Stroika/Frameworks/WebServer/Connection.h"
+#include "Stroika/Frameworks/WebServer/Request.h"
+#include "Stroika/Frameworks/WebServer/Response.h"
+#include "Stroika/Frameworks/WebServer/Router.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

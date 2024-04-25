@@ -11,14 +11,14 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/FloatConversion.h"
-#include "../../../Foundation/Characters/Format.h"
-#include "../../../Foundation/Containers/Sequence.h"
-#include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
-#include "../../../Foundation/Debug/Assertions.h"
-#include "../../../Foundation/Execution/Sleep.h"
-#include "../../../Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "WMICollector.h"
 
@@ -49,8 +49,8 @@ using Debug::AssertExternallySynchronizedMutex;
  ********************************************************************************
  */
 WMICollector::PerInstanceData_::PerInstanceData_ (const String& objectName, const String& instance, const Iterable<String>& counterNames)
-    : fObjectName_ (objectName)
-    , fInstance_ (instance)
+    : fObjectName_{objectName}
+    , fInstance_{instance}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::PerInstanceData_::PerInstanceData_"};

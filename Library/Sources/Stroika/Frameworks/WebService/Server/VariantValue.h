@@ -13,11 +13,11 @@
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 
-#include "../../WebServer/Request.h"
-#include "../../WebServer/RequestHandler.h"
-#include "../../WebServer/Response.h"
+#include "Stroika/Frameworks/WebServer/Request.h"
+#include "Stroika/Frameworks/WebServer/RequestHandler.h"
+#include "Stroika/Frameworks/WebServer/Response.h"
 
-#include "../Basic.h"
+#include "Stroika/Frameworks/WebService/Server/Basic.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

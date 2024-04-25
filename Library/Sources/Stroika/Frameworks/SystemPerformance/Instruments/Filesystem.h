@@ -14,8 +14,7 @@
 #include "Stroika/Foundation/IO/FileSystem/Disk.h"
 #include "Stroika/Foundation/IO/FileSystem/MountedFilesystem.h"
 #include "Stroika/Foundation/Time/Realtime.h"
-
-#include "../Instrument.h"
+#include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
 /*
  *  \file

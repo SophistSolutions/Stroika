@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 
 namespace Stroika::Frameworks::WebServer {
 

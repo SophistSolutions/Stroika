@@ -3,18 +3,18 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../../../Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
-#include "../../../../Foundation/Execution/Sleep.h"
-#include "../../../../Foundation/Execution/Thread.h"
-#include "../../../../Foundation/Execution/WaitForIOReady.h"
-#include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
-#include "../../../../Foundation/Streams/ExternallyOwnedSpanInputStream.h"
-#include "../../../../Foundation/Streams/MemoryStream.h"
-#include "../../../../Foundation/Streams/TextReader.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 
-#include "../Advertisement.h"
-#include "../Common.h"
 #include "SearchResponder.h"
 
 using std::byte;

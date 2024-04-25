@@ -9,27 +9,27 @@
 #include <Iphlpapi.h>
 #endif
 
-#include "../../../Foundation/Characters/FloatConversion.h"
-#include "../../../Foundation/Characters/String2Int.h"
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/Containers/Sequence.h"
-#include "../../../Foundation/Containers/Set.h"
-#include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
-#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "../../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "../../../Foundation/Debug/Assertions.h"
-#include "../../../Foundation/Debug/Trace.h"
-#if qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
-#endif
-#include "../../../Foundation/Execution/ProcessRunner.h"
-#include "../../../Foundation/Execution/Synchronized.h"
-#include "../../../Foundation/IO/FileSystem/FileInputStream.h"
-#include "../../../Foundation/Streams/InputStream.h"
-#include "../../../Foundation/Streams/MemoryStream.h"
-#include "../../../Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h"
 
-#include "../Support/InstrumentHelpers.h"
+#if qPlatform_Windows
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include "Network.h"
 
@@ -67,7 +67,7 @@ using Instruments::Network::Options;
 #endif
 
 #if qUseWMICollectionSupport_
-#include "../Support/WMICollector.h"
+#include "Stroika/Frameworks/SystemPerformance/Support/WMICollector.h"
 
 using SystemPerformance::Support::WMICollector;
 #endif

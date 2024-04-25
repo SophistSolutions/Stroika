@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_SystemPerformance_Instrument_h_
 #define _Stroika_Framework_SystemPerformance_Instrument_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <compare>
 #include <memory>
@@ -16,9 +16,8 @@
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Function.h"
-
-#include "Measurement.h"
-#include "MeasurementSet.h"
+#include "Stroika/Frameworks/SystemPerformance/Measurement.h"
+#include "Stroika/Frameworks/SystemPerformance/MeasurementSet.h"
 
 /**
  */

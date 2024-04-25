@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
-#include "../../Device.h"
+#include "Stroika/Frameworks/UPnP/Device.h"
 
 /*
  *  \file

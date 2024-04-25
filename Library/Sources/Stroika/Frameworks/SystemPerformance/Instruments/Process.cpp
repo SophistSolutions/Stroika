@@ -15,38 +15,39 @@
 
 #include <filesystem>
 
-#include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/String2Int.h"
-#include "../../../Foundation/Characters/StringBuilder.h"
-#include "../../../Foundation/Characters/ToString.h"
-#include "../../../Foundation/Configuration/SystemConfiguration.h"
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/Containers/MultiSet.h"
-#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "../../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "../../../Foundation/Debug/Assertions.h"
-#include "../../../Foundation/Debug/Trace.h"
-#include "../../../Foundation/Execution/Exceptions.h"
-#include "../../../Foundation/Execution/Module.h"
-#include "../../../Foundation/Execution/ProcessRunner.h"
-#include "../../../Foundation/Execution/Synchronized.h"
-#include "../../../Foundation/Execution/Thread.h"
-#if qPlatform_POSIX
-#include "../../../Foundation/Execution/Platform/POSIX/Users.h"
-#elif qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
-#include "../../../Foundation/Execution/Platform/Windows/Users.h"
-#endif
-#include "../../../Foundation/IO/FileSystem/FileInputStream.h"
-#include "../../../Foundation/IO/FileSystem/FileSystem.h"
-#include "../../../Foundation/IO/FileSystem/PathName.h"
-#include "../../../Foundation/Memory/BLOB.h"
-#include "../../../Foundation/Streams/MemoryStream.h"
-#include "../../../Foundation/Streams/TextReader.h"
-#include "../../../Foundation/Streams/iostream/FStreamSupport.h"
-#include "../../../Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Configuration/SystemConfiguration.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/MultiSet.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/iostream/FStreamSupport.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
-#include "../Support/InstrumentHelpers.h"
+#if qPlatform_POSIX
+#include "Stroika/Foundation/Execution/Platform/POSIX/Users.h"
+#elif qPlatform_Windows
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Users.h"
+#endif
+
+#include "Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h"
 
 #include "Process.h"
 
@@ -122,7 +123,7 @@ using Instruments::Process::ProcessType;
 #endif
 
 #if qUseWMICollectionSupport_
-#include "../Support/WMICollector.h"
+#include "Stroika/Frameworks/SystemPerformance/Support/WMICollector.h"
 
 using SystemPerformance::Support::WMICollector;
 #endif

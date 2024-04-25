@@ -3,15 +3,15 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../../Foundation/Characters/Format.h"
-#include "../../../Foundation/Characters/StringBuilder.h"
-#include "../../../Foundation/Characters/ToString.h"
-#include "../../../Foundation/Streams/ExternallyOwnedSpanInputStream.h"
-#include "../../../Foundation/Streams/MemoryStream.h"
-#include "../../../Foundation/Streams/TextReader.h"
-#include "../../../Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/TextWriter.h"
 
-#include "Common.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 
 #include "Advertisement.h"
 
@@ -44,7 +44,7 @@ String Advertisement::ToString () const
     sb << "Target : "sv << fTarget << ", "sv;
     sb << "Raw-Headers : "sv << fRawHeaders;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 ObjectVariantMapper Advertisement::kMapperGetter_ ()

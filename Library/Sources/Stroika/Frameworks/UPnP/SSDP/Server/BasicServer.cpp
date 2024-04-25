@@ -1,19 +1,20 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../../../Foundation/Characters/Format.h"
-#include "../../../../Foundation/Containers/Sequence.h"
-#include "../../../../Foundation/Debug/Trace.h"
-#include "../../../../Foundation/Execution/Sleep.h"
-#include "../../../../Foundation/Execution/Thread.h"
-#include "../../../../Foundation/IO/Network/LinkMonitor.h"
-#include "../../../../Foundation/IO/Network/Socket.h"
-#include "../../../../Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/IO/Network/LinkMonitor.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 
-#include "../Advertisement.h"
-#include "../Common.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Common.h"
+
 #include "BasicServer.h"
 
 using namespace Stroika::Foundation;

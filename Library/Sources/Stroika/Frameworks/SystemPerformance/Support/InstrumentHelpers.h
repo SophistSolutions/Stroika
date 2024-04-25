@@ -12,8 +12,7 @@
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Time/Realtime.h"
-
-#include "../Instrument.h"
+#include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
 /**
  *  \file

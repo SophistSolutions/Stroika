@@ -3,9 +3,9 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Containers/SortedMapping.h"
-#include "../../Foundation/Debug/Main.h"
-#include "../../Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/Debug/Main.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 
 #include "Capturer.h"
 

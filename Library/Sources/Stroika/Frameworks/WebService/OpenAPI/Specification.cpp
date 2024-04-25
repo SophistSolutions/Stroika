@@ -1,15 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../../Foundation/Characters/Format.h"
-#include "../../../Foundation/Characters/StringBuilder.h"
-#include "../../../Foundation/Characters/ToString.h"
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
-#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 
 #include "Specification.h"
 

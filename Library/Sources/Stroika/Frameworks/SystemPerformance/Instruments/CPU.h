@@ -4,13 +4,13 @@
 #ifndef _Stroika_Framework_SystemPerformance_Instruments_CPU_h_
 #define _Stroika_Framework_SystemPerformance_Instruments_CPU_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <optional>
 
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 
-#include "../Instrument.h"
+#include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
 /*
  *  \file

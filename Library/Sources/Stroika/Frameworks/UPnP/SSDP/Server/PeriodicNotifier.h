@@ -11,8 +11,8 @@
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
-#include "../../Device.h"
-#include "../Advertisement.h"
+#include "Stroika/Frameworks/UPnP/Device.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 
 /*
  *  \file

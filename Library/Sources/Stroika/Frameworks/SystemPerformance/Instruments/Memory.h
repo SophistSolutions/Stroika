@@ -9,8 +9,7 @@
 #include <optional>
 
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
-
-#include "../Instrument.h"
+#include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
 /*
  *  \file

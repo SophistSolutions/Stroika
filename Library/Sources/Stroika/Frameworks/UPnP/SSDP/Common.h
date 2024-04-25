@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Common_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Common_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"

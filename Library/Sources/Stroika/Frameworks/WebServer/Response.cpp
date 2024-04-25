@@ -1,27 +1,27 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
 
-#include "../../Foundation/Characters/CString/Utilities.h"
-#include "../../Foundation/Characters/CodeCvt.h"
-#include "../../Foundation/Characters/Format.h"
-#include "../../Foundation/Characters/StringBuilder.h"
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/Containers/Support/ReserveTweaks.h"
-#include "../../Foundation/DataExchange/BadFormatException.h"
-#include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Debug/Trace.h"
-#include "../../Foundation/Execution/Finally.h"
-#include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
-#include "../../Foundation/IO/Network/HTTP/Exception.h"
-#include "../../Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 
 #include "Response.h"
 

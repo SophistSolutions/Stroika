@@ -3,9 +3,9 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "../../Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 
 #include "DefaultFaultInterceptor.h"
 

@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 
-#include "../Instrument.h"
+#include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
 /*
  *  \file

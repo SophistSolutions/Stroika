@@ -14,8 +14,7 @@
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Execution/Process.h"
 #include "Stroika/Foundation/IO/FileSystem/Common.h"
-
-#include "../Instrument.h"
+#include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
 /*
  *

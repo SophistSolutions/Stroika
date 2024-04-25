@@ -1,21 +1,21 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <algorithm>
 #include <cstdlib>
 
-#include "../../Foundation/Characters/StringBuilder.h"
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Debug/Trace.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/IO/Network/HTTP/Headers.h"
-#include "../../Foundation/IO/Network/HTTP/Versions.h"
-#include "../../Foundation/Streams/InputSubStream.h"
-#include "../../Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Versions.h"
+#include "Stroika/Foundation/Streams/InputSubStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Request.h"
 

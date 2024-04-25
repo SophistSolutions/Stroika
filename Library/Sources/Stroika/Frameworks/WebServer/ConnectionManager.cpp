@@ -6,18 +6,18 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Debug/Trace.h"
-#include "../../Foundation/Execution/Sleep.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/IO/Network/HTTP/Exception.h"
-#include "../../Foundation/IO/Network/HTTP/Headers.h"
-#include "../../Foundation/IO/Network/HTTP/Methods.h"
-#include "../../Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
-#include "DefaultFaultInterceptor.h"
+#include "Stroika/Frameworks/WebServer/DefaultFaultInterceptor.h"
 
 #include "ConnectionManager.h"
 

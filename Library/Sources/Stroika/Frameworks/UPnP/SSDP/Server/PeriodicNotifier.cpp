@@ -3,14 +3,15 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../../../Foundation/Characters/Format.h"
-#include "../../../../Foundation/Characters/ToString.h"
-#include "../../../../Foundation/Execution/Sleep.h"
-#include "../../../../Foundation/Execution/Thread.h"
-#include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 
-#include "../Advertisement.h"
-#include "../Common.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Common.h"
+
 #include "PeriodicNotifier.h"
 
 using namespace Stroika::Foundation;

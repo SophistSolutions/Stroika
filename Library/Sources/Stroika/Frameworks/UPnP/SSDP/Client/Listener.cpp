@@ -5,19 +5,20 @@
 
 #include <vector>
 
-#include "../../../../Foundation/Characters/ToString.h"
-#include "../../../../Foundation/Containers/Bijection.h"
-#include "../../../../Foundation/Containers/Collection.h"
-#include "../../../../Foundation/Debug/Trace.h"
-#include "../../../../Foundation/Execution/Exceptions.h"
-#include "../../../../Foundation/Execution/Sleep.h"
-#include "../../../../Foundation/Execution/Thread.h"
-#include "../../../../Foundation/Execution/WaitForIOReady.h"
-#include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
-#include "../../../../Foundation/Streams/ExternallyOwnedSpanInputStream.h"
-#include "../../../../Foundation/Streams/TextReader.h"
-#include "../Advertisement.h"
-#include "../Common.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Bijection.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 
 #include "Listener.h"
 

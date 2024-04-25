@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
-#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "../../../Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 
-#include "Basic.h"
+#include "Stroika/Frameworks/WebService/Server/Basic.h"
 
 #include "VariantValue.h"
 

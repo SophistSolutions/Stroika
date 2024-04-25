@@ -3,26 +3,26 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../../Foundation/Characters/FloatConversion.h"
-#include "../../../Foundation/Characters/String2Int.h"
-#include "../../../Foundation/Configuration/SystemConfiguration.h"
-#include "../../../Foundation/Containers/Mapping.h"
-#include "../../../Foundation/Containers/Sequence.h"
-#include "../../../Foundation/Containers/Set.h"
-#include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
-#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "../../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "../../../Foundation/Debug/Assertions.h"
-#include "../../../Foundation/Debug/Trace.h"
-#include "../../../Foundation/Execution/Exceptions.h"
-#include "../../../Foundation/Execution/ProcessRunner.h"
-#include "../../../Foundation/Execution/Synchronized.h"
-#include "../../../Foundation/IO/FileSystem/FileInputStream.h"
-#include "../../../Foundation/Streams/InputStream.h"
-#include "../../../Foundation/Streams/MemoryStream.h"
-#include "../../../Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Configuration/SystemConfiguration.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
-#include "../Support/InstrumentHelpers.h"
+#include "Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h"
 
 #include "Memory.h"
 
@@ -53,7 +53,7 @@ using Instruments::Memory::Options;
 #endif
 
 #if qUseWMICollectionSupport_
-#include "../Support/WMICollector.h"
+#include "Stroika/Frameworks/SystemPerformance/Support/WMICollector.h"
 
 using SystemPerformance::Support::WMICollector;
 #endif
