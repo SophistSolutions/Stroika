@@ -97,7 +97,7 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger = [] (const LoggerMess
     switch (message.fMsg) {
         case Msg::eSuccessfullyReadFile:
             priority = Logger::eInfo;
-        break;
+            break;
         case Msg::eFailedToReadFile:
             priority = Logger::eWarning; // could be just because new system, no file
             break;
