@@ -265,29 +265,30 @@ CXXFLAGS+= -wd4701 -wd4702 -wd4706
 endif
 endif
 
-#
-# https://stroika.atlassian.net/browse/STK-948
-#
-# Crasher bug with Link-Time Code Generation on Visual Studio 2k19, and 2k21 (NOT 2k17)
-# So far, only happens on OpenSSL 3.0.7
-#		Finished generating code
-#		C:\Stroika\IntermediateFiles\Release-x86\ThirdPartyComponents\openssl\crypto\evp\evp_lib.c(539) : fatal error C1001: Internal compiler error.
-#		(compiler file 'D:\a\_work\1\s\src\vctools\Compiler\Utc\src\p2\main.c', line 224)
-#		To work around this problem, try simplifying or changing the program near the locations listed above.
-#		If possible please provide a repro here: https://developercommunity.visualstudio.com 
-#		Please choose the Technical Support command on the Visual C++ 
-#		Help menu, or open the Technical Support help file for more information
-#			-- LGP 2022-11-02
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq ($(ARCH),x86)
-ifeq ($(VERSION),3.0.7)
-ifneq ($(findstring -GL,$(CXXFLAGS)),)
-CFLAGS+= -GL-
-CXXFLAGS+= -GL-
-endif
-endif
-endif
-endif
+# #
+# # https://stroika.atlassian.net/browse/STK-948
+### CLOSED AS OF 2024-04-24 since havent seen in a long time adn well past this vs and openssl version
+# #
+# # Crasher bug with Link-Time Code Generation on Visual Studio 2k19, and 2k21 (NOT 2k17)
+# # So far, only happens on OpenSSL 3.0.7
+# #		Finished generating code
+# #		C:\Stroika\IntermediateFiles\Release-x86\ThirdPartyComponents\openssl\crypto\evp\evp_lib.c(539) : fatal error C1001: Internal compiler error.
+# #		(compiler file 'D:\a\_work\1\s\src\vctools\Compiler\Utc\src\p2\main.c', line 224)
+# #		To work around this problem, try simplifying or changing the program near the locations listed above.
+# #		If possible please provide a repro here: https://developercommunity.visualstudio.com 
+# #		Please choose the Technical Support command on the Visual C++ 
+# #		Help menu, or open the Technical Support help file for more information
+# #			-- LGP 2022-11-02
+# ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+# ifeq ($(ARCH),x86)
+# ifeq ($(VERSION),3.0.7)
+# ifneq ($(findstring -GL,$(CXXFLAGS)),)
+# CFLAGS+= -GL-
+# CXXFLAGS+= -GL-
+# endif
+# endif
+# endif
+# endif
 
 #
 # from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
