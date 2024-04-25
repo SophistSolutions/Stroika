@@ -64,8 +64,8 @@ namespace Stroika::Foundation::DataExchange {
      *             [] () -> ObjectVariantMapper {
      *                 ObjectVariantMapper mapper;
      *                 mapper.AddClass<MyData_> (initializer_list<StructFieldInfo> {
-     *                     { "Enabled", StructFieldMetaInfo{&MyData_::fEnabled} },
-     *                     { "Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt} },
+     *                     { "Enabled"sv, StructFieldMetaInfo{&MyData_::fEnabled} },
+     *                     { "Last-Synchronized-At"sv, StructFieldMetaInfo{&MyData_::fLastSynchronizedAt} },
      *                 });
      *                 return mapper;
      *             } (),
@@ -235,6 +235,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     struct OptionsFile::LoggerMessage {
         enum class Msg {
+            eSuccessfullyReadFile,
             eFailedToWriteFile,
             eFailedToReadFile,
             eFailedToParseReadFile,

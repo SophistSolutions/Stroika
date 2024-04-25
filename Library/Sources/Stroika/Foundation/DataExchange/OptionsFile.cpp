@@ -54,6 +54,8 @@ String OptionsFile::LoggerMessage::FormatMessage () const
         details = sb.str ();
     }
     switch (fMsg) {
+        case Msg::eSuccessfullyReadFile:
+            return Characters::Format ("Successfully read configuration file {}."_f, fFileName);
         case Msg::eFailedToWriteFile:
             return Characters::Format ("Failed to write file {}: {}."_f, fFileName, details);
         case Msg::eFailedToReadFile:
@@ -93,6 +95,9 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger = [] (const LoggerMess
     Logger::Priority priority = Logger::eError;
     using Msg                 = OptionsFile::LoggerMessage::Msg;
     switch (message.fMsg) {
+        case Msg::eSuccessfullyReadFile:
+            priority = Logger::eInfo;
+        break;
         case Msg::eFailedToReadFile:
             priority = Logger::eWarning; // could be just because new system, no file
             break;
@@ -205,6 +210,7 @@ optional<VariantValue> OptionsFile::Read ()
 #endif
             r = fModuleDataUpgrader_ (fModuleNameToFileVersionMapper_ (fModuleName_), *r);
         }
+        fLogger_ (LoggerMessage{LoggerMessage::Msg::eSuccessfullyReadFile, GetReadFilePath_ ()});
         return r;
     }
     catch (...) {
