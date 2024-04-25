@@ -5,8 +5,7 @@
 
 #include <cctype>
 
-#include "StroikaFoundation/Memory/StackBuffer.h"
-
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Frameworks/Led/Config.h"
 
 #include "TextStore.h"
