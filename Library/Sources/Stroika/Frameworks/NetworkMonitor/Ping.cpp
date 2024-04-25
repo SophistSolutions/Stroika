@@ -69,7 +69,7 @@ String Pinger::ResultType::ToString () const
     sb << "Ping-Time: "sv << fPingTime << ", "sv;
     sb << "Hop-Count: "sv << fHopCount;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -221,7 +221,7 @@ Characters::String SampleOptions::ToString () const
     sb << "Interval: "sv << fInterval << ", "sv;
     sb << "Count: "sv << fSampleCount;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -243,7 +243,7 @@ String SampleResults::ToString () const
         sb << "Exception-Count: "sv << fExceptionCount << ", "sv; // to see exceptions - run with sample-count = 1
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
