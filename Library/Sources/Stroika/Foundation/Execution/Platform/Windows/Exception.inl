@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/Characters/SDKString.h"
 
-#include "../../Throw.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 namespace Stroika::Foundation::Execution {
     using Characters::SDKString;
@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     template <typename WINDOWS_API_RESULT>
     inline void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test)
     {
-        if (test == 0) {
+        if (test == 0) [[unlikely]] {
             Execution::ThrowSystemErrNo (::GetLastError ()); // NOTE - REQUIRE GetLastError () MUST be != 0!!! Else assert error
         }
     }
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      */
     inline void ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
     {
-        if (win32ErrCode != ERROR_SUCCESS) {
+        if (win32ErrCode != ERROR_SUCCESS) [[unlikely]] {
             Execution::ThrowSystemErrNo (win32ErrCode);
         }
     }
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      */
     inline void ThrowIfNot_NO_ERROR (DWORD win32ErrCode)
     {
-        if (win32ErrCode != NO_ERROR) {
+        if (win32ErrCode != NO_ERROR) [[unlikely]] {
             Execution::ThrowSystemErrNo (win32ErrCode);
         }
     }

@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #if qPlatform_Windows
-#include "../../Foundation/Memory/Platform/Windows/Handle.h"
+#include "Stroika/Foundation/Memory/Platform/Windows/Handle.h"
 #endif
 
-#include "StandardStyledTextImager.h"
+#include "Stroika/Frameworks/Led/StandardStyledTextImager.h"
 
 #include "StyledTextEmbeddedObjects.h"
 

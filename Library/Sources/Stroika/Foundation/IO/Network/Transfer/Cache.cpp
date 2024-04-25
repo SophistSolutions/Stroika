@@ -6,10 +6,9 @@
 #include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/Time/Duration.h"
-
-#include "../HTTP/Headers.h"
-#include "../HTTP/Methods.h"
 
 #include "Cache.h"
 

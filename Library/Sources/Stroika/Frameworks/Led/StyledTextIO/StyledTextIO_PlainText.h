@@ -4,15 +4,15 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_PlainText_h_
 #define _Stroika_Frameworks_Led_StyledTextIO_PlainText_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
+
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO.h"
 
 /*
 @MODULE:    StyledTextIO_PlainText
 @DESCRIPTION:
         <p>Support reading/writing plain text to/from word-processing Src/Sink streams.</p>
  */
-
-#include "StyledTextIO.h"
 
 namespace Stroika::Frameworks::Led::StyledTextIO {
 

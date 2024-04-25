@@ -25,9 +25,9 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include <set>
 
-#include "../StyledTextIO/StyledTextIO_RTF.h"
-#include "../WordProcessor.h"
-#include "MFC.h"
+#include "Stroika/Frameworks/Led/Platform/MFC.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_RTF.h"
+#include "Stroika/Frameworks/Led/WordProcessor.h"
 
 namespace Stroika::Frameworks::Led::Platform {
 

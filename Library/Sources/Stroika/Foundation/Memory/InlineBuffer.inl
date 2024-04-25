@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Execution {
-    // Instead of #include "../Execution/Throw.h"
+    // Instead of #include "Stroika/Foundation/Execution/Throw.h"
     template <equality_comparable_with<nullptr_t> T>
     void ThrowIfNull (T p);
 }

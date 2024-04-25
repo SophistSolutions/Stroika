@@ -4,7 +4,15 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_RTF_h_
 #define _Stroika_Frameworks_Led_StyledTextIO_RTF_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
+
+#include <map>
+#include <memory>
+#include <vector>
+
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 /*
 @MODULE:    StyledTextIO_RTF
@@ -12,16 +20,6 @@
         <p>The knowledge of how to read RTF is in @'StyledTextIOReader_RTF' and the knowledge of how to write RTF is in
     @'StyledTextIOWriter_RTF'.</p>
  */
-
-#include <map>
-#include <memory>
-#include <vector>
-
-#include "../../../Foundation/Characters/CodePage.h"
-
-#include "../Support.h"
-
-#include "StyledTextIO.h"
 
 namespace Stroika::Frameworks::Led::StyledTextIO {
 

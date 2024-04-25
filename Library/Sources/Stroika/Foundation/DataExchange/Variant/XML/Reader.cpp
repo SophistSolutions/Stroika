@@ -4,9 +4,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
-
-#include "../../BadFormatException.h"
 
 #include "Reader.h"
 

@@ -20,8 +20,8 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
-#include "../AccessMode.h"
-#include "Common.h"
+#include "Stroika/Foundation/IO/AccessMode.h"
+#include "Stroika/Foundation/IO/FileSystem/Common.h"
 
 /**
  * TODO:

@@ -4,9 +4,8 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-
-#include "../LinearAlgebra/Matrix.h"
-#include "../LinearAlgebra/Vector.h"
+#include "Stroika/Foundation/Math/LinearAlgebra/Matrix.h"
+#include "Stroika/Foundation/Math/LinearAlgebra/Vector.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_ 1

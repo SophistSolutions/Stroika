@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../Characters/Format.h"
+#include "Stroika/Foundation/Characters/Format.h"
 
 namespace Stroika::Foundation::Execution::Resources {
 

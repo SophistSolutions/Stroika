@@ -3,8 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../HTTP/Headers.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "ICMP.h"

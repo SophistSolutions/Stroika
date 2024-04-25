@@ -5,8 +5,7 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
-
-#include "../IdleManager.h"
+#include "Stroika/Frameworks/Led/IdleManager.h"
 
 #include "Windows.h"
 

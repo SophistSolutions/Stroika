@@ -4,7 +4,9 @@
 #ifndef _Stroika_Frameworks_Led_LineBasedPartition_h_
 #define _Stroika_Frameworks_Led_LineBasedPartition_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
+
+#include "Stroika/Frameworks/Led/PartitioningTextImager.h"
 
 /*
 @MODULE:    LineBasedPartition
@@ -12,8 +14,6 @@
         <p>A LineBasedPartition is a concrete @'Partition' subclass in which the character '\n' is used to break
     up the text into pieces (partition elements). This is the most basic, default, standard kind of Partition.</p>
  */
-
-#include "Stroika/Frameworks/Led/PartitioningTextImager.h"
 
 namespace Stroika::Frameworks::Led {
 

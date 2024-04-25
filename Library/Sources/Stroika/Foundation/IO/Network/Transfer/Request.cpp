@@ -3,10 +3,9 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../HTTP/Headers.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 
 #include "Request.h"
 
@@ -42,5 +41,5 @@ String Request::ToString () const
     sb << "OverrideHeaders: "sv << fOverrideHeaders << ","sv;
     sb << "Data: "sv << fData << ","sv;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

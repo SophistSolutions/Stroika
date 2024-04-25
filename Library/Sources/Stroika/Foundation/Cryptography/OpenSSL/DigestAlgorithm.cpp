@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qHasFeature_OpenSSL
 #include <openssl/evp.h>
 #endif
 
-#include "../../Containers/Common.h"
-#include "../../Debug/Assertions.h"
-#include "../../Execution/Common.h"
-#include "../../Execution/Synchronized.h"
-#include "../../Memory/Optional.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "DigestAlgorithm.h"
 

@@ -7,11 +7,9 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/DataExchange/Variant/Writer.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
-
-#include "../../VariantValue.h"
-
-#include "../Writer.h"
 
 #include "Profile.h"
 

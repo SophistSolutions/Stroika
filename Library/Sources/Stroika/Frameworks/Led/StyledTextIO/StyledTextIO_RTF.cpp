@@ -1,28 +1,28 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <bitset>
 #include <cctype>
 #include <climits>
 #include <cstdio> // for a couple sprintf() calls - could pretty easily be avoided
 
-#include "../../../Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
 #if qPlatform_Windows
-#include "../../../Foundation/Characters/Platform/Windows/CodePage.h"
+#include "Stroika/Foundation/Characters/Platform/Windows/CodePage.h"
 #endif
-#include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/CodeCvt.h"
-#include "../../../Foundation/Characters/String.h"
-#include "../../../Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #if qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
-#include "../Config.h"
+#include "Stroika/Frameworks/Led/Config.h"
 
-#include "../Support.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 #include "StyledTextIO_RTF.h"
 

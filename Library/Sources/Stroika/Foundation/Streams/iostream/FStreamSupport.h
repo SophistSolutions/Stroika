@@ -4,13 +4,13 @@
 #ifndef _Stroika_Foundation_Streams_iostream_FStreamSupport_h_
 #define _Stroika_Foundation_Streams_iostream_FStreamSupport_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
 #include <fstream>
 
-#include "../../Characters/String.h"
-#include "../../IO/FileSystem/Common.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/IO/FileSystem/Common.h"
 
 namespace Stroika::Foundation::Streams::iostream {
 

@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-#include "../../Thread.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 
 #include "WaitSupport.h"
 

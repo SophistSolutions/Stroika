@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 
-#include "../Manager.h"
+#include "Stroika/Foundation/Execution/Resources/Manager.h"
 
 /**
  *  \file

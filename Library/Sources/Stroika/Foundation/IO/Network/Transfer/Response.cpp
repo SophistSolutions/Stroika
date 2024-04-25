@@ -3,13 +3,13 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../HTTP/Headers.h"
-#include "../HTTP/Methods.h"
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Response.h"

@@ -10,18 +10,15 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/IO/Network//HTTP/Status.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Cache.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Exception.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Request.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Response.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Time/Realtime.h"
-
-#include "../HTTP/Status.h"
-
-#include "../ConnectionOrientedStreamSocket.h"
-#include "../URI.h"
-
-#include "Cache.h"
-#include "Exception.h"
-#include "Request.h"
-#include "Response.h"
 
 /**
  *
@@ -45,7 +42,7 @@
  *                  ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
  *
  *      @todo   Add (optionally callable) Connect() method. Send etc connect on-demand as needed
- *              but sometimes its useful to pre-create connections (to reduce latnecy).
+ *              but sometimes its useful to pre-create connections (to reduce latency).
  *
  *      @todo   Redo Response to fully/properly support incremental read through streams. Must do
  *              CTOR on response object taking a stream, and then reasonably (tbd) how to handle
@@ -130,7 +127,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
 
     public:
         /**
-         *  force closed Connection. Can still call Send again, but that autocreates new Connection
+         *  force closed Connection. Can still call Send again, but that auto creates new Connection
          */
         nonvirtual void Close ();
 

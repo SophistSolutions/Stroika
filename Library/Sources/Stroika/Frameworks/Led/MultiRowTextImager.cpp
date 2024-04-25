@@ -1,14 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <climits>
 
-#include "../../Foundation/Memory/StackBuffer.h"
-
-#include "GDI.h"
-#include "Support.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Frameworks/Led/GDI.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 #include "MultiRowTextImager.h"
 
@@ -17,7 +16,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
 #if qStroika_Frameworks_Led_SupportGDI
-
 /*
  ********************************************************************************
  ********************************* MultiRowTextImager ***************************

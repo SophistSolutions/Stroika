@@ -11,17 +11,16 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #endif
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/CipherAlgorithm.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/DerivedKey.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/DigestAlgorithm.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/Exception.h"
 #include "Stroika/Foundation/Cryptography/SSL/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
-
-#include "../OpenSSL/CipherAlgorithm.h"
-#include "../OpenSSL/DerivedKey.h"
-#include "../OpenSSL/DigestAlgorithm.h"
-#include "../OpenSSL/Exception.h"
 
 /**
  *  \file

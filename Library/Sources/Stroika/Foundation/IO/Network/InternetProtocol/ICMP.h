@@ -11,9 +11,8 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Memory/Common.h"
-
-#include "../InternetAddress.h"
 
 /**
  *
@@ -37,10 +36,16 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
             ICMP_ECHO_REQUEST = 8,
             ICMP_TTL_EXPIRE   = 11,
         };
+#if 0
         static constexpr ICMP_PacketTypes ICMP_ECHO_REPLY   = ICMP_PacketTypes::ICMP_ECHO_REPLY;
         static constexpr ICMP_PacketTypes ICMP_DEST_UNREACH = ICMP_PacketTypes::ICMP_DEST_UNREACH;
         static constexpr ICMP_PacketTypes ICMP_ECHO_REQUEST = ICMP_PacketTypes::ICMP_ECHO_REQUEST;
         static constexpr ICMP_PacketTypes ICMP_TTL_EXPIRE   = ICMP_PacketTypes::ICMP_TTL_EXPIRE;
+#endif
+        using ICMP_PacketTypes::ICMP_DEST_UNREACH;
+        using ICMP_PacketTypes::ICMP_ECHO_REPLY;
+        using ICMP_PacketTypes::ICMP_ECHO_REQUEST;
+        using ICMP_PacketTypes::ICMP_TTL_EXPIRE;
 
         /**
          * ICMP packet header (does not include IP header).

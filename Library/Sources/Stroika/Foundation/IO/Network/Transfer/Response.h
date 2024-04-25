@@ -15,8 +15,8 @@
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-#include "../HTTP/Exception.h"
-#include "../HTTP/Status.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 
 #include "Request.h"
 

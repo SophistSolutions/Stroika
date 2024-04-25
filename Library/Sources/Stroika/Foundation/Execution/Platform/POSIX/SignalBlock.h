@@ -13,7 +13,7 @@
 #error "ONLY INCLUDE FOR POSIX"
 #endif
 
-#include "../../Signals.h"
+#include "Stroika/Foundation/Execution/Signals.h"
 
 /**
  *

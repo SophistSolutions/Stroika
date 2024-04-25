@@ -1,18 +1,17 @@
 /*/
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <bitset>
 #include <cctype>
 #include <climits>
 #include <cstdio> // for a couple sprintf() calls - could pretty easily be avoided
 
-#include "../../../Foundation/DataExchange/BadFormatException.h"
-#include "../../../Foundation/Memory/StackBuffer.h"
-
-#include "../StyledTextEmbeddedObjects.h"
-#include "../StyledTextImager.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
+#include "Stroika/Frameworks/Led/StyledTextImager.h"
 
 #include "StyledTextIO.h"
 

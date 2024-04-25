@@ -6,9 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../HTTP/Exception.h"
-
-#include "Response.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Response.h"
 
 /**
  *

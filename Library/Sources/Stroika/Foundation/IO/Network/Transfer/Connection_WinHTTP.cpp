@@ -20,14 +20,15 @@
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/Time/Date.h"
 #include "Stroika/Foundation/Time/DateTime.h"
+
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "../HTTP/Exception.h"
-#include "../HTTP/Headers.h"
 
 #include "Connection_WinHTTP.h"
 

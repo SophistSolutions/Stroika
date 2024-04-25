@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cstdio>
 
@@ -11,11 +11,10 @@
 #include <commdlg.h>
 #endif
 
-#include "../../Foundation/Characters/CString/Utilities.h"
-#include "../../Foundation/Characters/Format.h"
-#include "../../Foundation/Characters/LineEndings.h"
-
-#include "GDI.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Frameworks/Led/GDI.h"
 
 #include "StdDialogs.h"
 

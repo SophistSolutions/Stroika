@@ -6,7 +6,17 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include <Windows.h>
+
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Time/Realtime.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
 /*
 @MODULE:    Led_Win32
@@ -15,18 +25,6 @@
     the Led class library. It is not class-library specific. It only depends on the Win32 API.
     To get support specifically tuned to MFC - for example - see @'Led_MFC'.</p>
  */
-
-#include <Windows.h>
-
-#include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/Characters/CodePage.h"
-#include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/LineEndings.h"
-#include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Memory/StackBuffer.h"
-#include "Stroika/Foundation/Time/Realtime.h"
-
-#include "../TextInteractor.h"
 
 namespace Stroika::Frameworks::Led::Platform {
 

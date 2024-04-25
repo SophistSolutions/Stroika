@@ -4,9 +4,10 @@
 #ifndef _Stroika_Framework_Led_Command_h_
 #define _Stroika_Framework_Led_Command_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 /*
 @MODULE:    Command
@@ -16,8 +17,6 @@
     a @'CommandHandler' object. Two sorts of @'CommandHandler's are provided, @'SingleUndoCommandHandler', and
     @'MultiLevelUndoCommandHandler' - depending on whether you want to support multilevel undo or not.</p>
  */
-
-#include "Stroika/Frameworks/Led/Support.h"
 
 namespace Stroika::Frameworks::Led {
 

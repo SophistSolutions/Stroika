@@ -13,9 +13,8 @@
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-
-#include "../HTTP/Headers.h"
-#include "../HTTP/Methods.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 
 #include "Connection_libcurl.h"
 

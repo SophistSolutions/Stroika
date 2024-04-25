@@ -4,7 +4,11 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextImager_h_
 #define _Stroika_Frameworks_Led_StyledTextImager_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
+
+#include "Stroika/Frameworks/Led/MarkerCover.h"
+#include "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/TextImager.h"
 
 /*
 @MODULE:    StyledTextImager
@@ -13,10 +17,6 @@
     class of this module is @'StyledTextImager'</p>
 
  */
-
-#include "MarkerCover.h"
-#include "Support.h"
-#include "TextImager.h"
 
 #if qPlatform_MacOS
 struct TextStyle;

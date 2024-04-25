@@ -1,19 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cctype>
 #include <cstdio> // for sprintf()
 
-#include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/CodeCvt.h"
-#include "../../../Foundation/Characters/CodePage.h"
-#include "../../../Foundation/Characters/LineEndings.h"
-
-#include "../Config.h"
-
-#include "../StyledTextEmbeddedObjects.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Frameworks/Led/Config.h"
+#include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 
 #include "StyledTextIO_HTML.h"
 

@@ -7,15 +7,15 @@
 #include <climits>
 #include <cstdio> // for a couple sprintf() calls - could pretty easily be avoided
 
-#include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/CodeCvt.h"
-#include "../../../Foundation/Characters/CodePage.h"
-#include "../../../Foundation/Characters/LineEndings.h"
-#include "../../../Foundation/Characters/String.h"
-#include "../../../Foundation/DataExchange/BadFormatException.h"
-#include "../../../Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
-#include "../StyledTextEmbeddedObjects.h"
+#include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 
 #include "StyledTextIO_LedNative.h"
 

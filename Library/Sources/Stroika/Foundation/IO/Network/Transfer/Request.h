@@ -10,10 +10,9 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Time/Realtime.h"
-
-#include "../URI.h"
 
 /**
  *
@@ -30,7 +29,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     /**
      *  \note  DESIGN-NOTE:
-     *      Chose not move request/repsonse stuff to HTTP module- so re-usable in framework
+     *      Chose not move request/response stuff to HTTP module- so re-usable in framework
      *      code which does webserver, because though the abstract API is identical, we
      *      have very different needs about to what to specify/retrieve in one case or the other.
      *

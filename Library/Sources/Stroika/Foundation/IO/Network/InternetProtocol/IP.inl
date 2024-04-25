@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../HTTP/Exception.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 
 namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
 

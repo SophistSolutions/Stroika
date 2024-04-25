@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "../HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 
 #include "Exception.h"
 

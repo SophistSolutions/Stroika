@@ -1,11 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../Debug/Assertions.h"
-#include "../Traversal/Generator.h"
-#include "../Traversal/Partition.h"
-
-#include "Common.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Traversal/Generator.h"
+#include "Stroika/Foundation/Traversal/Partition.h"
 
 namespace Stroika::Foundation::Math::ReBin {
 

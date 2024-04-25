@@ -19,9 +19,8 @@ static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform ATL
 #include <atlbase.h>
 #include <atlcom.h>
 
-#include "../Config.h"
-
-#include "../Support.h"
+#include "Stroika/Frameworks/Led/Config.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 namespace Stroika::Frameworks::Led::Platform {
 

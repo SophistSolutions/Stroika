@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdio>
 
-#include "../Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
 
 #include "Format.h"
 

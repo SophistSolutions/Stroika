@@ -4,7 +4,9 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_HTML_h_
 #define _Stroika_Frameworks_Led_StyledTextIO_HTML_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
+
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO.h"
 
 /*
 @MODULE:    StyledTextIO_HTML
@@ -14,15 +16,13 @@
     @'StyledTextIOWriter_HTML'.</p>
  */
 
-#include "StyledTextIO.h"
-
 namespace Stroika::Frameworks::Led::StyledTextIO {
 
 /*
     @CONFIGVAR:     qThrowAwayMostUnknownHTMLTags
-    @DESCRIPTION:   <p>By default, on reading, we throw away or interpret losely most tags. This makes the reader
+    @DESCRIPTION:   <p>By default, on reading, we throw away or interpret loosely most tags. This makes the reader
                 very lossy, but produces the most human-readable result. For now control which behavior
-                you want via this compiletime flag. -- LGP 961015</p>
+                you want via this compile time flag. -- LGP 961015</p>
         */
 #ifndef qThrowAwayMostUnknownHTMLTags
 #define qThrowAwayMostUnknownHTMLTags 1

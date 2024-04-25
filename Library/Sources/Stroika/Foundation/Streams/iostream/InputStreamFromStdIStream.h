@@ -9,9 +9,8 @@
 #include <istream>
 
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "../InputStream.h"
-#include "../InternallySynchronizedInputStream.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedInputStream.h"
 
 /**
  *  \file

@@ -8,9 +8,8 @@
 
 #include <ostream>
 
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
-
-#include "../VariantValue.h"
 
 /**
  *  \file

@@ -4,12 +4,12 @@
 #ifndef _Stroika_Foundation_Cryptography_SSL_Common_h_
 #define _Stroika_Foundation_Cryptography_SSL_Common_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <string>
 #include <vector>
 
-#include "../../Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 
 /*
  * TODO:

@@ -6,14 +6,14 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Frameworks/Led/Support.h"
+
 /*
 @MODULE:    Led_Win32_FileRegistration
 @DESCRIPTION:
         <p>Functionality not directly related to Led - per-se, but often helpful in building Led-based applications.
     This code helps you to update the windows registration to say what file types you support.</p>
  */
-
-#include "../Support.h"
 
 namespace Stroika::Frameworks::Led::Platform {
 

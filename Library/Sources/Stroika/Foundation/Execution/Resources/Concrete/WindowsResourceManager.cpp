@@ -4,9 +4,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Execution/Resources/ResourceNotFoundException.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
-
-#include "../ResourceNotFoundException.h"
 
 #include "WindowsResourceManager.h"
 

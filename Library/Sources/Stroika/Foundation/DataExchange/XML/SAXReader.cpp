@@ -5,6 +5,7 @@
 
 #include <atomic>
 
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Finally.h"
@@ -12,8 +13,6 @@
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/MemoryAllocator.h"
 #include "Stroika/Foundation/Streams/InputStreamDelegationHelper.h"
-
-#include "../BadFormatException.h"
 
 #include "SAXReader.h"
 

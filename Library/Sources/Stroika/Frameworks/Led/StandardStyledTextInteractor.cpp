@@ -3,18 +3,16 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/DataExchange/BadFormatException.h"
-#include "../../Foundation/Traversal/Iterator.h"
-
-#include "StyledTextEmbeddedObjects.h"
-
-#include "StyledTextIO/StyledTextIO_HTML.h"
-#include "StyledTextIO/StyledTextIO_RTF.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
+#include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_HTML.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_RTF.h"
 
 #include "StandardStyledTextInteractor.h"
 
 #if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-#include "StyledTextIO/Led_StyledTextIO_LedNative.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/Led_StyledTextIO_LedNative.h"
 #endif
 
 using std::byte;
@@ -31,8 +29,7 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
  */
 StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                               size_t selectionStart, size_t selectionEnd)
-    : inherited ()
-    , fTextStore (textStore)
+    : fTextStore (textStore)
     , fStyleRunDatabase (textStyleDatabase)
     , fCurOffset (selectionStart)
     , fSelStart (selectionStart)

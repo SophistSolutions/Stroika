@@ -9,12 +9,11 @@
 #include <variant>
 
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
-
-#include "../BadFormatException.h"
-#include "../VariantValue.h"
 
 #include "Namespace.h"
 

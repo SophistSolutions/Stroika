@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_IO_Network_HTTP_Methods_h_
 #define _Stroika_Foundation_IO_Network_HTTP_Methods_h_ 1
 
-#include "../../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <string>
 
-#include "../../../Characters/RegularExpression.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
 
 /**
  */
@@ -35,7 +35,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     namespace MethodsRegEx {
         using namespace Characters;
-        // DIDNT DEFINE kANY nor kOptions because typically a mistake for users to be using them... Better to allow the system to handle autoamtically
+        // DIDNT DEFINE kANY  because typically a mistake for users to be using them... Better to allow the system to handle automatically
         //inline const RegularExpression kANY       = L".*"_RegEx; /*RegularExpression::kAny*/
         inline const RegularExpression kGet       = "GET"_RegEx;
         inline const RegularExpression kPut       = "PUT"_RegEx;
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         inline const RegularExpression kPost      = "POST"_RegEx;
         inline const RegularExpression kPostOrPut = "PUT|POST"_RegEx;
         inline const RegularExpression kDelete    = "DELETE"_RegEx;
-        //inline const RegularExpression kOptions   = "OPTIONS"_RegEx;
+        inline const RegularExpression kOptions   = "OPTIONS"_RegEx; // not typically used - handled automatically by webserver
     }
 
 }

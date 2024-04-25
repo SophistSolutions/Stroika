@@ -4,21 +4,17 @@
 #ifndef _Stroika_Foundation_IO_Network_Listener_h_
 #define _Stroika_Foundation_IO_Network_Listener_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <string>
-#include <vector>
-
-#include "../../Characters/String.h"
-
-#include "ConnectionOrientedStreamSocket.h"
-#include "SocketAddress.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
 /*
  * TODO:
  *      @todo   Add CTOR taking a LIST of sockaddr/callbacks (one for each).
  *
- *      @todo   Documenent carefully any threading issues (most likely requiremnt that callback goes
+ *      @todo   Document carefully any threading issues (most likely requirement that callback goes
  *              quickly - does little more than spin off another thread. Perhaps add internal feature
  *              for this class to protect itself by running those callbacks on a new or dedicated thread?
  *
@@ -26,7 +22,7 @@
  *
  *      @todo   Possibly need CTOR variant where user passes in Socket, instead of SockAddr?
  *
- *      @todo   Document clearly idea that lifetime of this object CONTROLS thread (doing listen). Destory
+ *      @todo   Document clearly idea that lifetime of this object CONTROLS thread (doing listen). Destroy
  *              object auto-destroys listening thread (and any running accepts callbacks).
  *
  *              May want a shutdown method - so user can control timeout?

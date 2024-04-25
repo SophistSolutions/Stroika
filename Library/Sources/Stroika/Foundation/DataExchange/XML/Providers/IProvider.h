@@ -9,10 +9,10 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
-#include "../Common.h"
-#include "../DOM.h"
-#include "../SAXReader.h"
-#include "../Schema.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
+#include "Stroika/Foundation/DataExchange/XML/DOM.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 
 /**
  *  \file

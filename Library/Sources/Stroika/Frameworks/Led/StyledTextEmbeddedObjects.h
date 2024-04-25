@@ -4,7 +4,12 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextEmbeddedObjects_h_
 #define _Stroika_Frameworks_Led_StyledTextEmbeddedObjects_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
+
+#include <memory>
+
+#include "Stroika/Frameworks/Led/StyledTextImager.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
 /*
 @MODULE:    StyledTextEmbeddedObjects
@@ -14,13 +19,8 @@
         <p>The objects we embed are of type @'SimpleEmbeddedObjectStyleMarker'. But this module also contains other classes
     to support the creation of these embedding markers, to get them properly inserted into the text. And this module
     contains many @'SimpleEmbeddedObjectStyleMarker' subclasses, such as @'StandardDIBStyleMarker', which utilize this
-    mechanism to display a particular data type as an emebdding.</p>
+    mechanism to display a particular data type as an embedding.</p>
  */
-
-#include <memory>
-
-#include "StyledTextImager.h"
-#include "TextInteractor.h"
 
 namespace Stroika::Frameworks::Led {
 

@@ -15,15 +15,13 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-
-#include "../URI.h"
-
-#include "CacheControl.h"
-#include "Cookie.h"
-#include "ETag.h"
-#include "IfNoneMatch.h"
-#include "KeepAlive.h"
-#include "TransferEncoding.h"
+#include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Cookie.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ETag.h"
+#include "Stroika/Foundation/IO/Network/HTTP/IfNoneMatch.h"
+#include "Stroika/Foundation/IO/Network/HTTP/KeepAlive.h"
+#include "Stroika/Foundation/IO/Network/HTTP/TransferEncoding.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 
 /**
  */
@@ -88,7 +86,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     constexpr auto kHeaderNameInOrderComparer = String::LessComparer{Characters::eCaseInsensitive};
 
     /**
-     * \brief roughly equivilent to Association<String,String>, except that the class is smart about certain
+     * \brief roughly equivalent to Association<String,String>, except that the class is smart about certain
      *        keys and will automatically fold them together.
      * 
      *  \note From https://www.rfc-editor.org/rfc/rfc7230#section-3.2.2

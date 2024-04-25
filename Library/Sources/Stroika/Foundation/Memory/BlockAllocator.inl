@@ -36,7 +36,7 @@
 #if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
 #include <cstdlib>
 
-#include "../Execution/Throw.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #endif
 
 namespace Stroika::Foundation::Memory {

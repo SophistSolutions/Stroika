@@ -3,8 +3,8 @@
  */
 #include <vector>
 
-#include "../../Characters/StringBuilder.h"
-#include "../../Characters/ToString.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 
 namespace Stroika::Foundation::Math::LinearAlgebra {
 
