@@ -10,8 +10,8 @@
 #include "Stroika/Frameworks/WebServer/RequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Response.h"
 
-#include "Stroika/Frameworks/WebService/Server/Basic.h"
 #include "Stroika/Frameworks/WebService/OpenAPI/Specification.h"
+#include "Stroika/Frameworks/WebService/Basic.h"
 
 /*
  */
@@ -43,8 +43,8 @@ namespace Stroika::Frameworks::WebService::Server {
     /**
      */
     struct DocsOptions {
-        String                           fH1Text           = "Operations";
-        String                           fIntroductoryText = ""; // div section of introductory text about operations
+        String                           fH1Text           = "Operations"sv;
+        String                           fIntroductoryText = ""sv; // div section of introductory text about operations
         Mapping<String, String>          fVariables2Substitute;
         String                           fCSSSection = kDefaultCSSSection;
         static const String              kDefaultCSSSection;
