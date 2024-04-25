@@ -32,10 +32,9 @@ DISABLE_COMPILER_MSC_WARNING_END (4459)
 #include <afxwin.h>
 #include <oleidl.h>
 
-#include "../IdleManager.h"
-#include "../TextInteractor.h"
-
-#include "Windows.h"
+#include "Stroika/Frameworks/Led/IdleManager.h"
+#include "Stroika/Frameworks/Led/Platform/Windows.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
 namespace Stroika::Frameworks::Led::Platform {
 

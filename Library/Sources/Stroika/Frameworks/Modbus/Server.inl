@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../Foundation/Configuration/Endian.h"
-#include "../../Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Frameworks::Modbus {
 

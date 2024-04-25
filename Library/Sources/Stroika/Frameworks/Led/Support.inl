@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
 
 namespace Stroika::Frameworks::Led {
 

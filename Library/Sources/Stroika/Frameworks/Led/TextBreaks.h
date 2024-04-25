@@ -4,7 +4,9 @@
 #ifndef _Stroika_Frameworks_Led_TextBreaks_h_
 #define _Stroika_Frameworks_Led_TextBreaks_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
+
+#include "Stroika/Frameworks/Led/Support.h"
 
 /*
 @MODULE:    TextBreaks
@@ -15,8 +17,6 @@
         <p>Though this module contains a few implementations, you probably just want to use the
     @'TextBreaks_DefaultImpl' implementation.</p>
  */
-
-#include "Support.h"
 
 namespace Stroika::Frameworks::Led {
 

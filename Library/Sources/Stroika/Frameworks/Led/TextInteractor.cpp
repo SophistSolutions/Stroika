@@ -1,23 +1,21 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cctype>
 #include <set>
 
-#include "../../Foundation/Characters/CString/Utilities.h"
-#include "../../Foundation/Characters/Character.h"
-#include "../../Foundation/Characters/CodePage.h"
-#include "../../Foundation/Characters/Format.h"
-
-#include "Config.h"
-
-#include "Command.h"
-#include "IdleManager.h"
-#include "Marker.h"
-#include "TextInteractor.h"
-#include "TextStore.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Frameworks/Led/Command.h"
+#include "Stroika/Frameworks/Led/Config.h"
+#include "Stroika/Frameworks/Led/IdleManager.h"
+#include "Stroika/Frameworks/Led/Marker.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
+#include "Stroika/Frameworks/Led/TextStore.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;

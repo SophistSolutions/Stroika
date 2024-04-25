@@ -1,22 +1,22 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "../../Foundation/Characters/Format.h"
-#include "../../Foundation/Characters/StringBuilder.h"
-#include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Configuration/Endian.h"
-#include "../../Foundation/Debug/Trace.h"
-#include "../../Foundation/IO/Network/Listener.h"
-#include "../../Foundation/IO/Network/Socket.h"
-#include "../../Foundation/IO/Network/SocketStream.h"
-#include "../../Foundation/Memory/BLOB.h"
-#include "../../Foundation/Memory/Bits.h"
-#include "../../Foundation/Memory/StackBuffer.h"
-#include "../../Foundation/Streams/BufferedInputStream.h"
-#include "../../Foundation/Streams/BufferedOutputStream.h"
-#include "../../Foundation/Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/IO/Network/Listener.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/IO/Network/SocketStream.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/Bits.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Streams/BufferedInputStream.h"
+#include "Stroika/Foundation/Streams/BufferedOutputStream.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include "Server.h"
 

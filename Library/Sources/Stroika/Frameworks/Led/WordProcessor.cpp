@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cctype>
 
@@ -11,16 +11,14 @@
 #include <shellapi.h>
 #endif
 
-#include "../../Foundation/Characters/CString/Utilities.h"
-#include "../../Foundation/Characters/Character.h"
-#include "../../Foundation/Characters/CodePage.h"
-#include "../../Foundation/Characters/Format.h"
-#include "../../Foundation/Characters/String.h"
-
-#include "Config.h"
-
-#include "SimpleTextStore.h"
-#include "StyledTextEmbeddedObjects.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Frameworks/Led/Config.h"
+#include "Stroika/Frameworks/Led/SimpleTextStore.h"
+#include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 
 #include "WordProcessor.h"
 
@@ -43,8 +41,7 @@ using Tablet_Acquirer        = WordProcessor::Tablet_Acquirer;
  ********************************************************************************
  */
 ParagraphDatabaseRep::ParagraphDatabaseRep (TextStore& textStore)
-    : inheritedMC (textStore, GetStaticDefaultParagraphInfo ())
-    , fPartition ()
+    : inheritedMC{textStore, GetStaticDefaultParagraphInfo ()}
 {
 #if qStroika_Frameworks_Led_SupportGDI
     //tmphack test - see if this fixes SPR#1129

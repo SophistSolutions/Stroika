@@ -7,11 +7,9 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/DataExchange/Variant/Reader.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "../../VariantValue.h"
-
-#include "../Reader.h"
 
 /**
  *  \file
@@ -22,7 +20,7 @@
  *      @todo   Review \u style Unicode characters (such as "\uFDD0") parsing. Its mostly right, but
  *              some sloppiness about surrogates, versus 4-byte wchar_t, versus char16_, char32_t, etc.
  *
- *      @todo   Should be able to REDO code which curerntly uses wstring::iterator to use TextStream -
+ *      @todo   Should be able to REDO code which currently uses wstring::iterator to use TextStream -
  *              its basically the same thing... (except for the issue of seekability)
  */
 

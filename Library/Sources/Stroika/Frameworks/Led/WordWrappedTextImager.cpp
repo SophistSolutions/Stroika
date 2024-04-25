@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cctype>
 
-#include "../../Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "WordWrappedTextImager.h"
 

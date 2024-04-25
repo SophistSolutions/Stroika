@@ -24,11 +24,11 @@
     </p>
  */
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "StyledTextImager.h"
-#include "Support.h"
-#include "TextInteractor.h"
+#include "Stroika/Frameworks/Led/StyledTextImager.h"
+#include "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
 namespace Stroika::Frameworks::Led {
 

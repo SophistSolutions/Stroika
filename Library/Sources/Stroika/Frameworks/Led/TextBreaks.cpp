@@ -1,15 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cctype>
 
-#include "../../Foundation/Characters/Character.h"
-#include "../../Foundation/Characters/CodeCvt.h"
-#include "../../Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/Character.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
 
-#include "Config.h"
+#include "Stroika/Frameworks/Led/Config.h"
 
 #include "TextBreaks.h"
 

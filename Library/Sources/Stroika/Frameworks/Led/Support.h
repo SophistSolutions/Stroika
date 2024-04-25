@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_Support_h_
 #define _Stroika_Frameworks_Led_Support_h_ 1
 
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <climits>
 #include <cstddef>
@@ -25,17 +25,18 @@
 #include <X11/Xatom.h>
 #endif
 
-#include "../../Foundation/Characters/SDKString.h"
-#include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Debug/CompileTimeFlagChecker.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Memory/Common.h"
-#include "../../Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Characters/SDKString.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Time/Realtime.h"
+#include "Stroika/Frameworks/Led/Config.h"
 
 #if qPlatform_Windows
-#include "../../Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 
 /*
@@ -46,9 +47,6 @@
     defines should just thunk down to the appropriate class library defines -
     where possible.</p>
  */
-
-#include "Config.h"
-
 namespace Stroika {
     using namespace std;
     using std::byte;

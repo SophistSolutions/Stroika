@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cctype>
 
-#include "../../Foundation/Memory/StackBuffer.h"
+#include "StroikaFoundation/Memory/StackBuffer.h"
 
-#include "Config.h"
+#include "Stroika/Frameworks/Led/Config.h"
 
 #include "TextStore.h"
 

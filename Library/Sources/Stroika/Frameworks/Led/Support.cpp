@@ -6,15 +6,15 @@
 #include <cctype>
 #include <cstdarg>
 
-#include "../../Foundation/Characters/CString/Utilities.h"
-#include "../../Foundation/Characters/CodeCvt.h"
-#include "../../Foundation/Characters/CodePage.h"
-#include "../../Foundation/Characters/Format.h"
-#include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/CodePage.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
-#include "Config.h" // For qPlatform_Windows etc defines...
+#include "Stroika/Frameworks/Led/Config.h" // For qPlatform_Windows etc defines...
 
 #if qPlatform_Windows
 #include <fcntl.h>
@@ -29,7 +29,7 @@
 #include <unistd.h>
 #endif
 
-#include "Support.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 #if qUseActiveXToOpenURLs
 #include <URLMon.h>
