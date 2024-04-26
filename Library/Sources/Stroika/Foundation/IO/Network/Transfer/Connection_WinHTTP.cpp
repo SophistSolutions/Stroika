@@ -56,7 +56,7 @@ using Stroika::Foundation::Memory::StackBuffer;
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasFeature_WinHTTP, qHasFeature_WinHTTP);
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  *  TODO:
@@ -145,8 +145,7 @@ namespace {
         virtual Response Send (const Request& request) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection_WinHTTP::Rep_::Send", L"request=%s",
-                                                                                         Characters::ToString (request).c_str ())};
+            Debug::TraceContextBumper ctx{"Connection_WinHTTP::Rep_::Send", "request={}"_f, request};
 #endif
             Request useRequest = request;
 
@@ -210,9 +209,9 @@ namespace {
 
             bool useSecureHTTP = fURL_.GetScheme () and fURL_.GetScheme ()->IsSecure ();
 
-            AutoWinHINTERNET_ hRequest (::WinHttpOpenRequest (*fConnectionHandle_, useRequest.fMethod.c_str (),
-                                                              fURL_.GetAuthorityRelativeResource ().c_str (), nullptr, WINHTTP_NO_REFERER,
-                                                              WINHTTP_DEFAULT_ACCEPT_TYPES, useSecureHTTP ? WINHTTP_FLAG_SECURE : 0));
+            AutoWinHINTERNET_ hRequest{::WinHttpOpenRequest (*fConnectionHandle_, useRequest.fMethod.c_str (),
+                                                             fURL_.GetAuthorityRelativeResource ().c_str (), nullptr, WINHTTP_NO_REFERER,
+                                                             WINHTTP_DEFAULT_ACCEPT_TYPES, useSecureHTTP ? WINHTTP_FLAG_SECURE : 0)};
 
             // See https://stroika.atlassian.net/browse/STK-442 - we pre-set to avoid double try on failure, but
             // we cannot IF we want to know if SSL connect failed (until I figure out how)
@@ -323,7 +322,7 @@ namespace {
                 wstring statusText = Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
                 status = static_cast<HTTP::Status> (_wtoi (statusStr.c_str ()));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (_T ("Status = %d"), status);
+                DbgTrace ("Status = {}"_f, status);
 #endif
             }
 
