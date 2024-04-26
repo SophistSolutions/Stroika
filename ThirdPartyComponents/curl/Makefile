@@ -200,8 +200,12 @@ ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 ifneq ($(LINKER),)
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
-else ifeq ($(LINKER), clang++-15)
-else ifeq ($(LINKER), clang++-16)
+endif
+# For some reason, fails with clang++14
+ifeq($(findstring clang,${LINKER}), clang)
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" z),false)
+LIBCURL_CONFIGURE += --without-zlib
+endif
 endif
 endif
 endif
