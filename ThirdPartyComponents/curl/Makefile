@@ -202,7 +202,7 @@ ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_E
 LIBCURL_CONFIGURE += --without-brotli
 endif
 # For some reason, fails with clang++14
-ifeq($(findstring clang,${LINKER}), clang)
+ifeq (clang,$(findstring clang,$(LINKER)))
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" z),false)
 LIBCURL_CONFIGURE += --without-zlib
 endif
