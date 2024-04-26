@@ -372,6 +372,27 @@ namespace {
                 URI    ShowAsExternalURI = v;
                 EXPECT_EQ (ShowAsExternalURI.As<String> (), "http://[::1]:9080/");
             }
+            void TestNotPCTEncodingColonOnURLPath_ ()
+            {
+                // From https://www.ietf.org/rfc/rfc2396.txt pchar         = unreserved | escaped | ":" | "@" | "&" | "=" | "+" | "$" | ","
+                {
+                    // uri='https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent'
+                    URI u{"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent"sv};
+                    EXPECT_EQ (u.GetAuthorityRelativeResource (), "/v1/models/gemini-pro:generateContent"sv); // Don't PCT-encode the :
+                }
+                {
+                    URI u{"https://generativelanguage.googleapis.com/v1/models/gemini-pro&generateContent"sv};
+                    EXPECT_EQ (u.GetAuthorityRelativeResource (), "/v1/models/gemini-pro&generateContent"sv); // &
+                }
+                {
+                    URI u{"https://generativelanguage.googleapis.com/v1/models/gemini-pro+generateContent"sv};
+                    EXPECT_EQ (u.GetAuthorityRelativeResource (), "/v1/models/gemini-pro+generateContent"sv); // +
+                }
+                {
+                    URI u{"https://generativelanguage.googleapis.com/v1/models/gemini-pro$generateContent"sv};
+                    EXPECT_EQ (u.GetAuthorityRelativeResource (), "/v1/models/gemini-pro$generateContent"sv); // $
+                }
+            }
         }
     }
 }
@@ -390,6 +411,7 @@ GTEST_TEST (Foundation_IO_Network, Test1_URI_)
     Private_::Test_UPNPBadURIIPv6_ ();
     Private_::Test_SetScheme_ ();
     Private_::Test_roundtrip_IPV6NumericHostname_ ();
+    Private_::TestNotPCTEncodingColonOnURLPath_ ();
 }
 
 GTEST_TEST (Foundation_IO_Network, Test2_InternetAddress_)

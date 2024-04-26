@@ -155,12 +155,14 @@ String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
         result << fPath_;
     }
     else {
-        static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
+        static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{
+            .allowSubDelims = false, .allowGenDelims = false, .allowPChar = true, .allowFragOrQueryChars = false, .allowPathCharacters = true};
         result << UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
     }
 
     if (fQuery_) {
-        static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
+        static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{
+            .allowSubDelims = false, .allowGenDelims = false, .allowPChar = false, .allowFragOrQueryChars = true};
         if (usingPCTEncodeFlag == eDecoded) {
             result << "?"sv << *fQuery_;
         }

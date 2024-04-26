@@ -462,6 +462,13 @@ u8string UniformResourceIdentification::PCTEncode (const u8string& s, const PCTE
                     encode = false;
             }
         }
+        if (useOptions.allowPChar) {
+            switch (c) {
+                case ':':
+                case '@':
+                    encode = false;
+            }
+        }
         if (useOptions.allowPathCharacters) {
             switch (c) {
                 case '/':

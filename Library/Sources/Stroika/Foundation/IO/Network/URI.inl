@@ -97,10 +97,12 @@ namespace Stroika::Foundation::IO::Network {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (same_as<RETURN_TYPE, String>) {
-            static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
+            static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{
+                .allowSubDelims = false, .allowGenDelims = false, .allowPChar = true, .allowFragOrQueryChars = false, .allowPathCharacters = true};
             Characters::StringBuilder result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
             if (fQuery_) {
-                static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
+                static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{
+                    .allowSubDelims = false, .allowGenDelims = false, .allowPChar = false, .allowFragOrQueryChars = true};
                 result << "?"sv << UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
             }
             return result.str ();
