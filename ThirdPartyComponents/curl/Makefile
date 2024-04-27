@@ -100,6 +100,17 @@ PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CON
 endif
 endif
 
+
+# Fails with CONFIGURATION=clang++-15-debug-libc++, not clear why - so just dont use sanitizers with curl /clang (not worth narrowing)
+ifeq (clang,$(findstring clang,$(LINKER)))
+CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+endif
+
+# curl uses LDFLAGS, so provide it (needed to find other libraries, sanitizer flags - for those other libs, etc).
+LDFLAGS:=${LDFLAGS} ${LinkerArgs_LibPath} ${LinkerArgs_ExtraPrefix} ${LinkerArgs_ExtraSuffix}
+LDFLAGS:=$(filter-out --std=%, $(LDFLAGS))
+
 ENVIRONMENT_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
 ENVIRONMENT_CONFIGURE_PREFIX=
@@ -111,6 +122,7 @@ ENVIRONMENT_CONFIGURE_PREFIX+= export AR=$(AR);
 ENVIRONMENT_CONFIGURE_PREFIX+= export RANLIB=$(RANLIB);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))";
 ENVIRONMENT_CONFIGURE_PREFIX+= export CPPFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CPPFLAGS))";
+ENVIRONMENT_CONFIGURE_PREFIX+= export LDFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(LDFLAGS))";
 endif
 
 
@@ -209,6 +221,8 @@ endif
 endif
 endif
 endif
+
+
 
 ##TMPHACK TO TEST
 # checking whether we are cross compiling... configure: error: in `/__w/Stroika/Stroika/IntermediateFiles/Debug/ThirdPartyComponents/curl':
