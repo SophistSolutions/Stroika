@@ -500,7 +500,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type
     auto i = fTypeMappingRegistry_.Lookup (forTypeInfo);
     if constexpr (qDebug) {
         if (not i.has_value ()) {
-            Debug::TraceContextBumper ctx{"ObjectVariantMapper::Lookup_", "(forTypeInfo = {}) - UnRegistered Type!"_f, forTypeInfo};
+            DbgTrace ("ObjectVariantMapper::Lookup_ (forTypeInfo = {}) - UnRegistered Type!"_f, forTypeInfo);   // failure almost always meand forgot to add dependent type earlier
         }
     }
     Require (i.has_value ()); // if not present, this is a usage error - only use types which are registered
