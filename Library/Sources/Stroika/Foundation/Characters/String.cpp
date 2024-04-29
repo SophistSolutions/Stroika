@@ -1135,6 +1135,16 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
     return result;
 }
 
+String String::AssureEndsWith (const Character& c, CompareOptions co) const
+{
+    if (EndsWith (c, co)) {
+        return *this;
+    }
+    StringBuilder sb = *this;
+    sb.Append (c);
+    return sb;
+}
+
 bool String::Matches (const RegularExpression& regEx) const
 {
     wstring tmp{As<wstring> ()};

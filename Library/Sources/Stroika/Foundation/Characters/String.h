@@ -669,6 +669,14 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief Return *this if it ends with argument character, or append 'c' so that it ends with a 'c'.
+         * 
+         *  \note this is to specific-purpose to be a very sensible API, but I find it pretty often pretty useful. So what-the-heck.
+         */
+        nonvirtual String AssureEndsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
+
+    public:
+        /**
          *  Apply the given regular expression return true if it matches this string. This only
          *  returns true if the expression matches the ENTIRE string - all the way to the end.
          *  @see FindEach() or @see Find - to find a set of things which match.
