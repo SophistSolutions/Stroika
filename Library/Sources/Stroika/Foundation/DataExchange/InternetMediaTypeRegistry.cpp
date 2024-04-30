@@ -601,7 +601,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         {
             Containers::Set<InternetMediaType> result;
             //
-            // rarely do we fetch all MIME types, so don't cache - just refetch each time
+            // rarely do we fetch all MIME types, so don't cache - just re-fetch each time
             //
             // On Windows, in registry, easiest way appears to be to enumerate ALL registry entries in HKCR that start with .,
             // and look for sub-field 'Content-type'
@@ -617,7 +617,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                         }
                         catch (...) {
                             // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                            DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, o, current_exception ());
+                            DbgTrace ("Ignoring exception parsing registry key ({}): {}"_f, o, current_exception ());
                             continue;
                         }
                         if (majorType) {
@@ -643,7 +643,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         }
         virtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
         {
-            // This is expensive to compute, and we could compute all and cache, but I dont think we will need to lookup very often, so just
+            // This is expensive to compute, and we could compute all and cache, but I don't think we will need to lookup very often, so just
             // compute as needed and cache a few
             return fContentType2FileSuffixesCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> Containers::Set<FileSuffixType> {
                 Containers::Set<FileSuffixType> result;
@@ -658,7 +658,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                             }
                             catch (...) {
                                 // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                                DbgTrace ("Ignoring exception looking parsing registry key ({}): {}"_f, o, current_exception ());
+                                DbgTrace ("Ignoring exception parsing registry key ({}): {}"_f, o, current_exception ());
                                 continue;
                             }
                             if (ct.GetType () == imt.GetType () and ct.GetSubType () == imt.GetSubType ()) {
