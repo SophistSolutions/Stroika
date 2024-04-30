@@ -1,0 +1,31 @@
+#!/bin/bash
+#       GetGCCVersion CC [-i]
+#       Outputs string with version string (e.g.) and exit 0
+#       If argument compiler NOT gcc, outputs "" and exit non-zero
+#       -i means return integer version#
+CC=$1
+INTEGERONLY=0
+for i in "$@" ; do
+    if [[ $i == "-i" ]] ; then
+        INTEGERONLY=1
+        break
+    fi
+done
+
+if [[ "$CC" =~ gcc.* ]]; then
+    true;
+elif [[ "$CC" =~ g\+\+.* ]]; then
+    true;
+else
+    exit 1;
+fi
+VER_=`($CC --version 2>/dev/null) | head -1 | sed 's/([^)]*)/x/' | awk '{print \$3;}'`
+if [ "$VER_" == "" ] ; then
+    exit 1;
+fi
+if [ $INTEGERONLY ] ; then
+    echo $VER_ | awk  '{printf("%d\n", $1)}'
+else
+    echo $VER_
+fi
+
