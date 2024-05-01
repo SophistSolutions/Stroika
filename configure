@@ -485,7 +485,11 @@ sub     GetGCCVersion_
 {
 	# no warnings;	#@todo sometimes gives warning about use of  uninitialized variable - not sure why - debug later
 	my $x = shift(@_);
-	return trim (`./ScriptsLib/GetGCCVersion $x`) * 1;	# times one to convert to number
+	my $v = trim (`./ScriptsLib/GetGCCVersion $x`);
+	if ($v == '') {
+		return 0;
+	}
+	return v * 1;	# times one to convert to number
 	# return trim (`($x --version 2>/dev/null) | head -1 | sed 's/([^)]*)/x/' | awk '{print \$3;}'`) * 1;
 }
 
@@ -494,7 +498,11 @@ sub     GetGCCVersion_
 sub     GetClangVersion_
 {
 	my $x = trim(shift(@_));
-	return trim (`./ScriptsLib/GetClangVersion $x`) * 1;	# times one to convert to number
+	my $v = trim (`./ScriptsLib/GetClangVersion $x`);
+	if ($v == '') {
+		return 0;
+	}
+	return v * 1;	# times one to convert to number
 	# my $firstLine = trim (`($x --version 2>/dev/null) | head -1`);
 	# if (not defined($firstLine)) {
 	# 	return 0;
