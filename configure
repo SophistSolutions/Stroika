@@ -489,8 +489,7 @@ sub     GetGCCVersion_
 	if ($v == '') {
 		return 0;
 	}
-	return v * 1;	# times one to convert to number
-	# return trim (`($x --version 2>/dev/null) | head -1 | sed 's/([^)]*)/x/' | awk '{print \$3;}'`) * 1;
+	return $v * 1;	# times one to convert to number
 }
 
 
@@ -502,26 +501,7 @@ sub     GetClangVersion_
 	if ($v == '') {
 		return 0;
 	}
-	return v * 1;	# times one to convert to number
-	# my $firstLine = trim (`($x --version 2>/dev/null) | head -1`);
-	# if (not defined($firstLine)) {
-	# 	return 0;
-	# }
-	# no warnings 'numeric';
-	# if (index($firstLine, "Apple ") == 0) {
-	# 	my $ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
-	# 	$ver = $ver * 1;
-	# 	return $ver;
-	# }
-	# else {
-	# 	my $ver = trim (`echo "$firstLine" |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$3;}'`);
-	# 	# Starting in ubuntu 20.10, they switched to the format used by crapple
-	# 	if ($ver == "version") {
-	# 		$ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
-	# 	}
-	# 	$ver = $ver * 1;
-	# 	return $ver;
-	# }
+	return $v * 1;	# times one to convert to number
 }
 
 sub     IsMSVCCompiler_
