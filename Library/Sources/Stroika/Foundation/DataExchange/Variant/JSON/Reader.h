@@ -70,7 +70,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
      *  \par Example Usage
      *      \code
      *          string  srcJSON  = "[101]"; // this srcJSON can be a stream, String, string or any of a number of sources (@see DataExchange::Variant::Read)
-     *          VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (srcJSON);
+     *          VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (srcJSON);
      *          // now unpack the result of the variant-value, with v1.GetType, v1.As<Sequence<VariantValue>> () etc...
      *      \endcode
      */

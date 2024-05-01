@@ -144,7 +144,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \par Example Usage
          *      \code
          *          Response r = clientConn.GET ();
-         *          VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+         *          VariantValue v = JSON::Reader{}.Read (r.GetDataBinaryInputStream ());
          *      \endcode
          */
         nonvirtual Streams::InputStream::Ptr<byte> GetDataBinaryInputStream () const;
