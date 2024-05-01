@@ -1052,8 +1052,14 @@ sub	SetDefaultForCompilerDriver_
 			my $skipSanCuzBroken = false;
 			# Sanitizers crash with gcc 11 and ubuntu 22.04 (not worth debugging right now...) -
 			# failure running some regtests - crash in leak sanitizer at end of run... --LGP 2024-05-01
-			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 12.0) {
-				$skipSanCuzBroken = true;
+			if (getUbuntuVersion() == 22.04) {
+				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13) {
+					$skipSanCuzBroken = true;
+				}
+				# with asan and ununtu 22.04, about 1/2 the tests fail (somewhat randomly, not always). --LGP 2024-05-01
+				if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 16.0) {
+					$skipSanCuzBroken = true;
+				}
 			}
 
 			if (!$skipSanCuzBroken and !$sanitizerFlagsNoneSet) {

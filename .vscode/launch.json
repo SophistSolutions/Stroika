@@ -8,7 +8,7 @@
       "name": "(gdb-UNIX) Launch EXE",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test32",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test02",
       //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-SystemPerformanceClient/SystemPerformanceClient",
       "args": ["-m"],
       "stopAtEntry": true,

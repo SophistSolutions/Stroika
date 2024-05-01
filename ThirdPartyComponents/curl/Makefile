@@ -106,6 +106,10 @@ ifeq (clang,$(findstring clang,$(LINKER)))
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
 endif
+ifeq ($(shell test `$(StroikaRoot)ScriptsLib/GetGCCVersion $(LINKER) -i` -lt 12; echo $$?), 0)
+CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+endif
 
 # curl uses LDFLAGS, so provide it (needed to find other libraries, sanitizer flags - for those other libs, etc).
 LDFLAGS:=${LDFLAGS} ${LinkerArgs_LibPath} ${LinkerArgs_ExtraPrefix} ${LinkerArgs_ExtraSuffix}
@@ -184,6 +188,9 @@ endif
 
 
 
+CLANG_VERSION_ := $(shell $(StroikaRoot)/ScriptsLib/GetClangVersion "$(LINKER)" -i)
+
+
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # https://stroika.atlassian.net/browse/STK-759
 ### On M1 Mac (even if running under rosetta) - really just one mac tested - 
@@ -213,6 +220,9 @@ ifneq ($(LINKER),)
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlidec),false)
+LIBCURL_CONFIGURE += --without-brotli
+endif
 # For some reason, fails with clang++14
 ifeq (clang,$(findstring clang,$(LINKER)))
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" z),false)
@@ -222,20 +232,13 @@ endif
 endif
 endif
 
-
-
-##TMPHACK TO TEST
-# checking whether we are cross compiling... configure: error: in `/__w/Stroika/Stroika/IntermediateFiles/Debug/ThirdPartyComponents/curl':
-# configure: error: cannot run C compiled programs.
-# If you meant to cross compile, use `--host'.
-# See `config.log' for more details
-
-## --LGP 2024-03-17 - failing on github actions only
-# LIBCURL_CONFIGURE += --without-zlib
-# LIBCURL_CONFIGURE += --without-ssl
-# LIBCURL_CONFIGURE += --without-brotli
-# LIBCURL_CONFIGURE += --without-zstd  
-
+### clang++15 on ubuntu 22 fails with brotli
+### configure: error: one or more libs available at link-time are not available run-time. Libs used at link-time: -lssl -lcrypto -lssl -lcrypto -lbrotlidec  -lz 
+ifeq (${DETECTED_HOST_OS}, Linux)
+ifeq ($(CLANG_VERSION_), 15)
+LIBCURL_CONFIGURE += --without-brotli
+endif
+endif
 
 ifeq ($(DETECTED_HOST_OS), Darwin)
 # https://stroika.atlassian.net/browse/STK-759
