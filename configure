@@ -494,25 +494,26 @@ sub     GetGCCVersion_
 sub     GetClangVersion_
 {
 	my $x = trim(shift(@_));
-	my $firstLine = trim (`($x --version 2>/dev/null) | head -1`);
-	if (not defined($firstLine)) {
-		return 0;
-	}
-	no warnings 'numeric';
-	if (index($firstLine, "Apple ") == 0) {
-		my $ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
-		$ver = $ver * 1;
-		return $ver;
-	}
-	else {
-		my $ver = trim (`echo "$firstLine" |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$3;}'`);
-		# Starting in ubuntu 20.10, they switched to the format used by crapple
-		if ($ver == "version") {
-			$ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
-		}
-		$ver = $ver * 1;
-		return $ver;
-	}
+	return trim (`./ScriptsLib/GetClangVersion $x`) * 1;	# times one to convert to number
+	# my $firstLine = trim (`($x --version 2>/dev/null) | head -1`);
+	# if (not defined($firstLine)) {
+	# 	return 0;
+	# }
+	# no warnings 'numeric';
+	# if (index($firstLine, "Apple ") == 0) {
+	# 	my $ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
+	# 	$ver = $ver * 1;
+	# 	return $ver;
+	# }
+	# else {
+	# 	my $ver = trim (`echo "$firstLine" |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$3;}'`);
+	# 	# Starting in ubuntu 20.10, they switched to the format used by crapple
+	# 	if ($ver == "version") {
+	# 		$ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
+	# 	}
+	# 	$ver = $ver * 1;
+	# 	return $ver;
+	# }
 }
 
 sub     IsMSVCCompiler_
