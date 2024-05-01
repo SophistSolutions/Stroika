@@ -12,6 +12,7 @@ for i in "$@" ; do
     fi
 done
 
+# @todo better than this name check is to run CC --version and see if it contains the string "GCC"
 if [[ "$CC" =~ gcc.* ]]; then
     true;
 elif [[ "$CC" =~ g\+\+.* ]]; then
