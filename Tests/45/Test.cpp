@@ -238,7 +238,7 @@ namespace {
                 Response r = *optResp;
                 EXPECT_TRUE (r.GetSucceeded ());
                 {
-                    VariantValue                  v  = Variant::JSON::Reader {}.Read (r.GetDataBinaryInputStream ());
+                    VariantValue                  v  = Variant::JSON::Reader{}.Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
                     DbgTrace ("POST parsed response:"_f);
                     for (auto i : vv) {
@@ -274,7 +274,7 @@ namespace {
                 Response r = c.PUT (URI{"http://httpbin.org/put"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
                 EXPECT_TRUE (r.GetSucceeded ()); // because throws on failure
                 {
-                    VariantValue                  v  = Variant::JSON::Reader {}.Read (r.GetDataBinaryInputStream ());
+                    VariantValue                  v  = Variant::JSON::Reader{}.Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
                     DbgTrace ("PUT parsed response:"_f);
                     for (auto i : vv) {
