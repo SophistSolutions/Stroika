@@ -89,13 +89,11 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
 
     /**
      *  Returns:
-     *      This returns the directory where an appliation may write temporary files -
+     *      This returns the directory where an application may write temporary files -
      *      files which should not be preserved across reboots (though the OS may not enforce this).
      *      This directory may or may not be current-user-specific.
-     *
-     *  \note   The 'T' variant of the function has fewer dependencies on other Stroika components
-     *          than the GetTemporary () function, and that is critical to its use in
-     *          the DbgTrace () code when tracing to a temporary file.
+     * 
+     *      Typically this is /tmp, or the value of %TEMP%, or $TMPDIR, or something like that.
      */
     filesystem::path GetTemporary ();
 

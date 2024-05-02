@@ -122,6 +122,8 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
 {
     filesystem::path fn = GetRootTempDir ();
     create_directories (fn);
+    return CreateTmpFile (fileBaseName, fn);
+    #if 0
     String basename = FromPath (fileBaseName.stem ());
     String ext      = FromPath (fileBaseName.extension ());
     if (ext.empty ()) {
@@ -153,6 +155,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
         DbgTrace ("Attempt to create file ({}) collided, so retrying ({} attempts)"_f, trialName, attempts);
     }
     Execution::Throw (Exception{"Unknown error creating file"sv}, "AppTempFileManager::GetTempFile (): failed to create tempfile");
+    #endif
 }
 
 filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
@@ -215,4 +218,50 @@ ScopedTmpFile::~ScopedTmpFile ()
     catch (...) {
         DbgTrace ("Ignoring exception clearing file in ScopedTmpFile::~ScopedTmpFile: {}"_f, current_exception ());
     }
+}
+
+/*
+ ********************************************************************************
+ *********************** FileSystem::ScopedTmpFile ******************************
+ ********************************************************************************
+ */
+filesystem::path FileSystem::CreateTmpFile (const filesystem::path& baseName)
+{
+    return CreateTmpFile (baseName, WellKnownLocations::GetTemporary ());
+}
+
+filesystem::path FileSystem::CreateTmpFile (const filesystem::path& baseName, const filesystem::path& inFolder)
+{
+    String basename = FromPath (baseName.stem ());
+    String ext      = FromPath (baseName.extension ());
+    if (ext.empty ()) {
+        ext = "txt"sv;
+    }
+    constexpr int kMaxAttempts_{100};
+    for (int attempts = 0; attempts < kMaxAttempts_; ++attempts) {
+        char buf[1024];
+        (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
+        filesystem::path trialName = inFolder / ToPath (basename + buf + ext);
+        if (not exists (trialName)) {
+#if qPlatform_Windows
+            if (HANDLE fd = ::CreateFile (trialName.native ().c_str (), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                          nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY, nullptr);
+                fd != INVALID_HANDLE_VALUE) {
+                ::CloseHandle (fd);
+                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, trialName);
+                WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
+                return trialName;
+            }
+#else
+            if (int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, filesystem::perms::all); fd >= 0) {
+                close (fd);
+                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, trialName);
+                WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
+                return trialName;
+            }
+#endif
+        }
+        DbgTrace ("Attempt to create file ({}) collided, so retrying ({} attempts)"_f, trialName, attempts);
+    }
+    Execution::Throw (Exception{"Unknown error creating temporary file"sv});
 }

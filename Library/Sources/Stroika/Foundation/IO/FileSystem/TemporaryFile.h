@@ -17,6 +17,57 @@
 namespace Stroika::Foundation::IO::FileSystem {
 
     /**
+     *  Creates an empty file with a random name (based on baseName) in inFolder (or if not specified, in the WellKnownLocations::GetTemporary () directory) and returns that filename.
+     *  These files are NOT automatically cleaned up by Stroika (for that see ScopedTmpFile).
+     * 
+     *  \note caller must assure 'inFolder' exists and is writeable'
+     */
+    filesystem::path CreateTmpFile (const filesystem::path& baseName);
+    filesystem::path CreateTmpFile (const filesystem::path& baseName, const filesystem::path& inFolder);
+
+    /**
+     *  Create the 'basenamed' temporary directory (no worries about name conflicts) from the argument filenameBase.
+     * 
+     *  Directory and its contents destroyed on destruction (exceptions caught internally and DbgTraced, but otherwise ignored).
+     * 
+     *  note references AppTempFileManager::sThe
+     */
+    class ScopedTmpDir {
+    public:
+        ScopedTmpDir (const String& fileNameBase);
+        ScopedTmpDir (const ScopedTmpDir&) = delete;
+        ~ScopedTmpDir ();
+        ScopedTmpDir& operator= (const ScopedTmpDir&) = delete;
+
+    public:
+        operator filesystem::path () const;
+
+    private:
+        filesystem::path fTmpDir_;
+    };
+
+    /**
+     *  Create the 'basenamed' temporary file (no worries about name conflicts) from the argument filenameBase (including file suffix).
+     * 
+     *  The file is removed on destruction (exceptions caught internally and DbgTraced, but otherwise ignored).
+     * 
+     *  note references AppTempFileManager::sThe
+     */
+    class ScopedTmpFile {
+    public:
+        ScopedTmpFile (const filesystem::path& fileBaseName);
+        ScopedTmpFile (const ScopedTmpFile&) = delete;
+        ~ScopedTmpFile ();
+        ScopedTmpFile& operator= (const ScopedTmpFile&) = delete;
+
+    public:
+        operator filesystem::path () const;
+
+    private:
+        filesystem::path fTmpFile_;
+    };
+    
+    /**
      *  Generally not used directly - prefer using ScopedTmpDir or ScopedTmpFile.
      *
      *  If used directly, you can make your own, or use AppTempFileManager::sThe.
@@ -63,7 +114,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     public:
         /**
-        *  require root_path is empt - just filename and possibly extention. If extension missing, maybe added automatically
+         *  require root_path is empty - just filename and possibly extention. If extension missing, maybe added automatically
          */
         nonvirtual filesystem::path GetTempFile (const filesystem::path& fileBaseName);
 
@@ -74,48 +125,6 @@ namespace Stroika::Foundation::IO::FileSystem {
         filesystem::path fTmpDir_;
     };
     inline AppTempFileManager AppTempFileManager::sThe;
-
-    /**
-     *  Create the 'basenamed' temporary directory (no worries about name conflicts) from the argument filenameBase.
-     * 
-     *  Directory and its contents destroyed on destruction (exceptions caught internally and DbgTraced, but otherwise ignored).
-     * 
-     *  note references AppTempFileManager::sThe
-     */
-    class ScopedTmpDir {
-    public:
-        ScopedTmpDir (const String& fileNameBase);
-        ScopedTmpDir (const ScopedTmpDir&) = delete;
-        ~ScopedTmpDir ();
-        ScopedTmpDir& operator= (const ScopedTmpDir&) = delete;
-
-    public:
-        operator filesystem::path () const;
-
-    private:
-        filesystem::path fTmpDir_;
-    };
-
-    /**
-     *  Create the 'basenamed' temporary file (no worries about name conflicts) from the argument filenameBase (including file suffix).
-     * 
-     *  The file is removed on destruction (exceptions caught internally and DbgTraced, but otherwise ignored).
-     * 
-     *  note references AppTempFileManager::sThe
-     */
-    class ScopedTmpFile {
-    public:
-        ScopedTmpFile (const filesystem::path& fileBaseName);
-        ScopedTmpFile (const ScopedTmpFile&) = delete;
-        ~ScopedTmpFile ();
-        ScopedTmpFile& operator= (const ScopedTmpFile&) = delete;
-
-    public:
-        operator filesystem::path () const;
-
-    private:
-        filesystem::path fTmpFile_;
-    };
 
 }
 
