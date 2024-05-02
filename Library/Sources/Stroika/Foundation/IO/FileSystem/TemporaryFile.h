@@ -66,7 +66,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     private:
         filesystem::path fTmpFile_;
     };
-    
+
     /**
      *  Generally not used directly - prefer using ScopedTmpDir or ScopedTmpFile.
      *
