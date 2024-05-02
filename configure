@@ -486,7 +486,7 @@ sub     GetGCCVersion_
 	# no warnings;	#@todo sometimes gives warning about use of  uninitialized variable - not sure why - debug later
 	my $x = shift(@_);
 	my $v = trim (`./ScriptsLib/GetGCCVersion $x`);
-	if ($v == '') {
+	if ($v eq '') {
 		return 0;
 	}
 	return $v * 1;	# times one to convert to number
@@ -498,7 +498,7 @@ sub     GetClangVersion_
 {
 	my $x = trim(shift(@_));
 	my $v = trim (`./ScriptsLib/GetClangVersion $x`);
-	if ($v == '') {
+	if ($v eq '') {
 		return 0;
 	}
 	return $v * 1;	# times one to convert to number
