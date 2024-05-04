@@ -54,6 +54,7 @@ namespace Stroika::Foundation::Characters {
      *      o   type_index, type_traits, or anything with a .name () which returns a const SDKChar* string.
      *      o   is_array<T>
      *      o   is_enum<T>
+     *      o   atomic<T> where T is a ToStringable type
      *      o   std::exception
      *      o   std::tuple
      *      o   std::variant

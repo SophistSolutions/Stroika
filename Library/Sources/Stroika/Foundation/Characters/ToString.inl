@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Characters {
                 sb << " "_k;
             }
             sb << "]"_k;
-            return sb.str ();
+            return sb;
         }
         template <typename T>
         inline String ToString (const T& t, StringShorteningPreference shortenPref = StringShorteningPreference::eDEFAULT, size_t maxLen2Display = 100)
@@ -175,19 +175,24 @@ namespace Stroika::Foundation::Characters {
         {
             return "{}"sv;
         }
+        template <IToString T1>
+        inline String ToString (const atomic<T1>& t)
+        {
+            return Characters::ToString (t.load ());
+        }
         template <typename T1>
         String ToString (const tuple<T1>& t)
         {
             StringBuilder sb;
             sb << "{"sv << Characters::ToString (t) << "}"sv;
-            return sb.str ();
+            return sb;
         }
         template <typename T1, typename T2>
         String ToString (const tuple<T1, T2>& t)
         {
             StringBuilder sb;
             sb << "{"sv << Characters::ToString (get<0> (t)) << ", "sv << Characters::ToString (get<1> (t)) << "}"sv;
-            return sb.str ();
+            return sb;
         }
         template <typename T1, typename T2, typename T3>
         String ToString (const tuple<T1, T2, T3>& t)
@@ -196,7 +201,7 @@ namespace Stroika::Foundation::Characters {
             sb << "{"sv;
             sb << Characters::ToString (get<0> (t)) << ", "sv << Characters::ToString (get<1> (t)) << ", "sv << Characters::ToString (get<2> (t));
             sb << "}"sv;
-            return sb.str ();
+            return sb;
         }
         template <typename T1, typename T2, typename T3, typename T4>
         String ToString (const tuple<T1, T2, T3>& t)
@@ -206,7 +211,7 @@ namespace Stroika::Foundation::Characters {
             sb << Characters::ToString (get<0> (t)) << ", "sv << Characters::ToString (get<1> (t))
                << ", "sv + Characters::ToString (get<2> (t)) << ", "sv << Characters::ToString (get<3> (t));
             sb << "}"sv;
-            return sb.str ();
+            return sb;
         }
         template <typename... TYPES>
         String ToString (const variant<TYPES...>& v)
@@ -275,7 +280,7 @@ namespace Stroika::Foundation::Characters {
             sb << "{"sv;
             sb << Characters::ToString (t.first) << ": "sv << Characters::ToString (t.second);
             sb << "}"sv;
-            return sb.str ();
+            return sb;
         }
         template <Private_::has_KeyValuePair_v T>
         String ToString (const T& t)
@@ -284,7 +289,7 @@ namespace Stroika::Foundation::Characters {
             sb << "{"sv;
             sb << Characters::ToString (t.fKey) << ": "sv << Characters::ToString (t.fValue);
             sb << "}"sv;
-            return sb.str ();
+            return sb;
         }
         template <Private_::has_CountedValue_v T>
         String ToString (const T& t)
@@ -293,7 +298,7 @@ namespace Stroika::Foundation::Characters {
             sb << "{"sv;
             sb << "'" << Characters::ToString (t.fValue) << "': "sv << Characters::ToString (t.fCount);
             sb << "}"sv;
-            return sb.str ();
+            return sb;
         }
         template <typename T>
         inline String ToString (const T& t)
