@@ -259,7 +259,7 @@ static_assert (std::formattable<std::filesystem::path, wchar_t>);
 static_assert (std::formattable<std::optional<int>, wchar_t>);
 static_assert (std::formattable<std::pair<int, char>, wchar_t>);
 static_assert (std::formattable<std::tuple<int>, wchar_t>);
-//static_assert (std::formattable<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but dont #include just for this
+//static_assert (std::formattable<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but don't #include just for this
 #endif
 
 /*
