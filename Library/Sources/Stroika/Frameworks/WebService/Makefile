@@ -25,6 +25,7 @@ vpath %cpp $(SrcDir)
 
 
 Objs	:=	\
+	$(ObjDir)JSONRPC${OBJ_SUFFIX}	\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

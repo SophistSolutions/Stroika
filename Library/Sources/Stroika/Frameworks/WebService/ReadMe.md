@@ -16,4 +16,6 @@ This framework depends on the Web-Server framework
 
 - [Basic.h](Basic.h)
 - [Client/](Client/) - proxies
+- [JSON-RPC.h](JSON-RPC.h)
+- [OpenAPI/](OpenAPI/)
 - [Server/](Server/) - stubs

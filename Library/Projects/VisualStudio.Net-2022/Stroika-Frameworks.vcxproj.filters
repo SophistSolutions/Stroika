@@ -265,6 +265,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.inl">
       <Filter>WebService\OpenAPI</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\JSONRPC.inl">
+      <Filter>WebService</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
@@ -465,6 +468,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.h">
       <Filter>WebService\OpenAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\JSONRPC.h">
+      <Filter>WebService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -730,6 +736,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\OpenAPI\Specification.cpp">
       <Filter>WebService\OpenAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\JSONRPC.cpp">
+      <Filter>WebService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
