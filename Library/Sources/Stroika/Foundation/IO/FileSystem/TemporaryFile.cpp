@@ -123,7 +123,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
     filesystem::path fn = GetRootTempDir ();
     create_directories (fn);
     return CreateTmpFile (fileBaseName, fn);
-    #if 0
+#if 0
     String basename = FromPath (fileBaseName.stem ());
     String ext      = FromPath (fileBaseName.extension ());
     if (ext.empty ()) {
@@ -155,7 +155,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
         DbgTrace ("Attempt to create file ({}) collided, so retrying ({} attempts)"_f, trialName, attempts);
     }
     Execution::Throw (Exception{"Unknown error creating file"sv}, "AppTempFileManager::GetTempFile (): failed to create tempfile");
-    #endif
+#endif
 }
 
 filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
