@@ -18,7 +18,7 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
                 if (auto om = get_if<Mapping<String, VariantValue>> (obj)) {
                     return VariantValue{*om};
                 }
-                else if (auto os = get_if < Sequence < VariantValue >> (obj)) {
+                else if (auto os = get_if<Sequence<VariantValue>> (obj)) {
                     return VariantValue{*os};
                 }
                 else {
