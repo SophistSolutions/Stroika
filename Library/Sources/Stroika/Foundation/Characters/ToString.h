@@ -185,6 +185,9 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \todo Would be nice to support type_info/typeid, but for tricky fact that type_info(const type_info&)=deleted, makes it largely not
          *        work. Probably missing some perfect forwarding someplace? And with that fixed maybe can work??? --LGP 2024-04-10
+         * 
+         *  \note this does NOT include atomic<T>, because atomic<T> is not copyable, and formattable requires that its argument
+         *        be copyable.
          */
         template <typename T>
         concept IUseToStringFormatterForFormatter_ =
@@ -206,7 +209,7 @@ namespace Stroika::Foundation::Characters {
                 not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
                                           qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
-        // sadly MSFT doesnt support all, and doesnt support __cplusplus with right value
+        // sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
 #if _MSC_VER
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
@@ -256,6 +259,7 @@ static_assert (std::formattable<std::filesystem::path, wchar_t>);
 static_assert (std::formattable<std::optional<int>, wchar_t>);
 static_assert (std::formattable<std::pair<int, char>, wchar_t>);
 static_assert (std::formattable<std::tuple<int>, wchar_t>);
+static_assert (std::formattable<std::atomic<int>, wchar_t>);
 //static_assert (std::formattable<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but dont #include just for this
 #endif
 

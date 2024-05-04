@@ -1464,6 +1464,9 @@ namespace {
             EXPECT_EQ (Characters::ToString (ca), "[ 1, 3, 5 ]");
             EXPECT_EQ (Characters::ToString (a), "[ 1, 3, 5 ]");
         }
+        {
+            EXPECT_EQ (Characters::ToString (atomic<int>{3}), "3");
+        }
     }
 }
 
@@ -1968,6 +1971,9 @@ namespace {
             String big = "1"_k.Repeat (1000);
             String a   = Characters::Format ("BIG shortened '{:.10}'"_f, big);
             DbgTrace ("a={}"_f, a);
+        }
+        {
+            // EXPECT_EQ ("{}"_f(atomic<int>{3}), "3");    // DOES NOT work because formattable requires T be copyable, and stdc++ requires atomic<T> not copyable
         }
     }
 }
