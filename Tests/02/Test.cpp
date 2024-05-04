@@ -234,6 +234,9 @@ namespace {
         EXPECT_TRUE (s1.size () == 13);
     }
 
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, Test1)
     {
         Debug::TraceContextBumper ctx{"Test1_"};
@@ -268,8 +271,10 @@ namespace {
             }
         }
     }
+}
 
-    void Test2_ ()
+namespace {
+    GTEST_TEST (Foundation_Characters, Test2_)
     {
         Debug::TraceContextBumper ctx{"Test2_"};
         Test2Helpers_::StressTestStrings ();
@@ -277,8 +282,10 @@ namespace {
         Test2Helpers_::StressTestBufferedStrings ();
 #endif
     }
+}
 
-    void Test3_ ()
+namespace {
+    GTEST_TEST (Foundation_Characters, Test3_)
     {
         Debug::TraceContextBumper ctx{"Test3_"};
         String                    t1;
@@ -339,8 +346,10 @@ namespace {
         EXPECT_TRUE (a[3] == "Fred");
         EXPECT_TRUE (a[2] != "Fred");
     }
+}
 
-    void Test4_ ()
+namespace {
+    GTEST_TEST (Foundation_Characters, Test4_)
     {
         Debug::TraceContextBumper ctx{"Test4_"};
         const wchar_t             frobaz[] = L"abc";
@@ -432,8 +441,10 @@ namespace {
         EXPECT_TRUE (t5[2] == 'D');
         EXPECT_TRUE (t5[3] == 'D');
     }
+}
 
-    void Test5_ ()
+namespace {
+    GTEST_TEST (Foundation_Characters, Test5_)
     {
         Debug::TraceContextBumper ctx{"Test5_"};
         String                    arr[100];
@@ -448,7 +459,9 @@ namespace {
         l             = new String[size_t (nSlots)];
         delete[] (l);
     }
+}
 
+namespace {
     namespace Test6_PRIVATE_ {
         template <typename STRING>
         STRING Test6_Helper_ (const STRING& a, int depth)
@@ -489,16 +502,19 @@ namespace {
 #endif
         }
     }
-    void Test6_ ()
+    GTEST_TEST (Foundation_Characters, Test6_)
     {
         using namespace Test6_PRIVATE_;
         Debug::TraceContextBumper ctx{"Test6_"};
         Test6_Helper_<String> ("Characters::String");
         Test6_Helper_<wstring> ("std::wstring");
     }
-    void Test7_Comparisons_ ()
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, Comparisons_)
     {
-        Debug::TraceContextBumper ctx{"Test7_Comparisons_"};
+        Debug::TraceContextBumper ctx{"Comparisons_"};
         EXPECT_TRUE (String{"1"} <= String{"1"});
         EXPECT_TRUE ("1" <= String{"1"});
         EXPECT_TRUE (String{"1"} <= "1");
@@ -527,10 +543,12 @@ namespace {
         EXPECT_TRUE (not(String{"apple"} > String{"apples"}));
         EXPECT_TRUE (not(String{"apple"} >= String{"apples"}));
     }
+}
 
-    void Test8_ReadOnlyStrings_ ()
+namespace {
+    GTEST_TEST (Foundation_Characters, ReadOnlyStrings_)
     {
-        Debug::TraceContextBumper ctx{"Test8_ReadOnlyStrings_"};
+        Debug::TraceContextBumper ctx{"ReadOnlyStrings_"};
         // NOTE - THIS TESTS String_Constant
         //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime;
         String s = String::FromStringConstant ("fred");
@@ -555,10 +573,12 @@ namespace {
             EXPECT_TRUE (s == "frxex");
         }
     }
+}
 
-    void Test8_ExternalMemoryOwnershipStrings_ ()
+namespace {
+    GTEST_TEST (Foundation_Characters, ExternalMemoryOwnershipStrings_)
     {
-        Debug::TraceContextBumper ctx{"Test8_ExternalMemoryOwnershipStrings_"};
+        Debug::TraceContextBumper ctx{"ExternalMemoryOwnershipStrings_"};
         String                    s = String::FromStringConstant ("fred");
         EXPECT_TRUE (s[0] == 'f');
         s.erase (3);
@@ -571,47 +591,50 @@ namespace {
         s = s.InsertAt ('x', 2);
         EXPECT_TRUE (s == "frxex");
     }
+}
 
-    namespace {
-        namespace Test9Support {
-            template <typename STRING>
-            void DoTest1 (STRING s)
-            {
-                STRING           t1 = s;
-                constexpr size_t kMaxCount_{100}; // NOTE - see https://stroika.atlassian.net/browse/STK-996
-                for (size_t i = 0; i < kMaxCount_; ++i) {
-                    t1 += L"X";
-                }
-                STRING t2 = t1;
-                if (t1 != t2) {
-                    EXPECT_TRUE (false);
-                }
+namespace {
+    namespace Test9Support {
+        template <typename STRING>
+        void DoTest1 (STRING s)
+        {
+            STRING           t1 = s;
+            constexpr size_t kMaxCount_{100}; // NOTE - see https://stroika.atlassian.net/browse/STK-996
+            for (size_t i = 0; i < kMaxCount_; ++i) {
+                t1 += L"X";
+            }
+            STRING t2 = t1;
+            if (t1 != t2) {
+                EXPECT_TRUE (false);
             }
         }
     }
-    void Test9_StringVersusStdCString_ ()
+    GTEST_TEST (Foundation_Characters, StringVersusStdCString_)
     {
-        Debug::TraceContextBumper ctx{"Test9_StringVersusStdCString_"};
+        Debug::TraceContextBumper ctx{"StringVersusStdCString_"};
         // EMBELLISH THIS MORE ONCE WE HAVE TIMING SUPPORT WORKING - SO WE CNA COMPARE PERFORMANCE - AND COME UP WITH MORE REASONABLE TESTS
         //
         //      -- LGP 2011-09-01
         Test9Support::DoTest1<String> ("Hello");
         Test9Support::DoTest1<std::wstring> (L"Hello");
     }
-    void Test10_ConvertToFromSTDStrings_ ()
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, ConvertToFromSTDStrings_)
     {
-        Debug::TraceContextBumper ctx{"Test10_ConvertToFromSTDStrings_"};
+        Debug::TraceContextBumper ctx{"ConvertToFromSTDStrings_"};
         const wstring             kT1 = L"abcdefh124123985213129314234";
         String                    t1  = kT1;
-        EXPECT_TRUE (t1.As<wstring> () == kT1);
-        EXPECT_TRUE (t1 == kT1);
+        EXPECT_EQ (t1.As<wstring> (), kT1);
+        EXPECT_EQ (t1, kT1);
     }
 }
 
 namespace {
-    void Test11_Trim_ ()
+    GTEST_TEST (Foundation_Characters, Trim_)
     {
-        Debug::TraceContextBumper ctx{"Test11_Trim_"};
+        Debug::TraceContextBumper ctx{"Trim_"};
         const String              kT1 = "  abc";
         EXPECT_TRUE (kT1.RTrim () == kT1);
         EXPECT_TRUE (kT1.LTrim () == kT1.Trim ());
@@ -624,43 +647,43 @@ namespace {
 }
 
 namespace {
-    void Test12_CodePageConverter_ ()
+    GTEST_TEST (Foundation_Characters, CodePageConverter_)
     {
-        Debug::TraceContextBumper ctx{"Test12_CodePageConverter_"};
+        Debug::TraceContextBumper ctx{"CodePageConverter_"};
         wstring                   w = L"<PHRMode";
         using namespace Characters;
         using namespace Memory;
-        EXPECT_TRUE ((CodeCvt<wchar_t>{WellKnownCodePages::kUTF8}.String2Bytes<string> (span{w}) == "<PHRMode"));
+        EXPECT_EQ ((CodeCvt<wchar_t>{WellKnownCodePages::kUTF8}.String2Bytes<string> (span{w})), "<PHRMode");
     }
 }
 
 namespace {
-    void Test13_ToLowerUpper_ ()
+    GTEST_TEST (Foundation_Characters, ToLowerUpper_)
     {
-        Debug::TraceContextBumper ctx{"Test13_ToLowerUpper_"};
+        Debug::TraceContextBumper ctx{"ToLowerUpper_"};
         String                    w = "Lewis";
-        EXPECT_TRUE (w.ToLowerCase () == "lewis");
-        EXPECT_TRUE (w.ToUpperCase () == "LEWIS");
-        EXPECT_TRUE (w == "Lewis");
+        EXPECT_EQ (w.ToLowerCase (), "lewis");
+        EXPECT_EQ (w.ToUpperCase (), "LEWIS");
+        EXPECT_EQ (w, "Lewis");
     }
 }
 
 namespace {
-    void Test15_StripAll_ ()
+    GTEST_TEST (Foundation_Characters, StripAll_)
     {
-        Debug::TraceContextBumper ctx{"Test15_StripAll_"};
+        Debug::TraceContextBumper ctx{"StripAll_"};
         String                    w = "Le wis";
-        EXPECT_TRUE (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == "Lewis");
+        EXPECT_EQ (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }), "Lewis");
 
         w = "This is a very good test    ";
-        EXPECT_TRUE (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == "Thisisaverygoodtest");
+        EXPECT_EQ (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }), "Thisisaverygoodtest");
     }
 }
 
 namespace {
-    void Test16_Format_ ()
+    GTEST_TEST (Foundation_Characters, Format_)
     {
-        Debug::TraceContextBumper ctx{"Test16_Format_"};
+        Debug::TraceContextBumper ctx{"Format_"};
         EXPECT_TRUE (CString::Format ("%d", 123) == "123");
         EXPECT_TRUE (CString::Format ("%s", "123") == "123");
 
@@ -685,7 +708,7 @@ namespace {
 }
 
 namespace {
-    namespace Test17_Private_ {
+    namespace TestFIND_Private_ {
         void Test17_Find_ ()
         {
             EXPECT_TRUE (String{"abc"}.Find ("b") == 1u);
@@ -844,21 +867,20 @@ namespace {
             }
         }
     }
-
-    void Test17_Find_ ()
+    GTEST_TEST (Foundation_Characters, Find_)
     {
-        Debug::TraceContextBumper ctx{"Test17_Find_"};
-        Test17_Private_::Test17_ReplaceAll_ ();
-        Test17_Private_::Test17_ReplaceAll_ ();
-        Test17_Private_::Test17_RegExp_ ();
-        Test17_Private_::docsTests_ ();
+        Debug::TraceContextBumper ctx{"Find_"};
+        TestFIND_Private_::Test17_ReplaceAll_ ();
+        TestFIND_Private_::Test17_ReplaceAll_ ();
+        TestFIND_Private_::Test17_RegExp_ ();
+        TestFIND_Private_::docsTests_ ();
     }
 }
 
 namespace {
-    void Test18_Compare_ ()
+    GTEST_TEST (Foundation_Characters, Compare_)
     {
-        Debug::TraceContextBumper ctx{"Test18_Compare_"};
+        Debug::TraceContextBumper ctx{"Compare_"};
         const String              kHELLOWorld = String{"Hello world"};
         EXPECT_TRUE ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, kHELLOWorld) == 0));
         EXPECT_TRUE ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, String{"Hello world"}) == 0));
@@ -874,9 +896,9 @@ namespace {
 }
 
 namespace {
-    void Test19_ConstCharStar_ ()
+    GTEST_TEST (Foundation_Characters, ConstCharStar_)
     {
-        Debug::TraceContextBumper ctx{"Test19_ConstCharStar_"};
+        Debug::TraceContextBumper ctx{"ConstCharStar_"};
         EXPECT_TRUE (wcscmp (String{"fred"}.c_str (), L"fred") == 0);
         EXPECT_TRUE (wcscmp (String{"0123456789abcde"}.c_str (), L"0123456789abcde") == 0);                                   // 15 chars
         EXPECT_TRUE (wcscmp (String{"0123456789abcdef"}.c_str (), L"0123456789abcdef") == 0);                                 // 16 chars
@@ -897,9 +919,9 @@ namespace {
 }
 
 namespace {
-    void Test20_CStringHelpers_ ()
+    GTEST_TEST (Foundation_Characters, CStringHelpers_)
     {
-        Debug::TraceContextBumper ctx{"Test20_CStringHelpers_"};
+        Debug::TraceContextBumper ctx{"CStringHelpers_"};
         EXPECT_TRUE (CString::Length ("hi") == 2);
         EXPECT_TRUE (CString::Length (L"hi") == 2);
         {
@@ -946,9 +968,9 @@ namespace {
             }
         }
     }
-    void Test21_StringNumericConversions_ ()
+    GTEST_TEST (Foundation_Characters, StringNumericConversions_)
     {
-        Debug::TraceContextBumper ctx{"Test21_StringNumericConversions_"};
+        Debug::TraceContextBumper ctx{"StringNumericConversions_"};
         {
             EXPECT_TRUE (CString::String2Int<int> ("-3") == -3);
             EXPECT_TRUE (CString::String2Int<int> ("3") == 3);
@@ -1129,9 +1151,9 @@ namespace {
 }
 
 namespace {
-    void Test22_StartsWithEndsWithMatch_ ()
+    GTEST_TEST (Foundation_Characters, StartsWithEndsWithMatch_)
     {
-        Debug::TraceContextBumper ctx{"Test22_StartsWithEndsWithMatch_"};
+        Debug::TraceContextBumper ctx{"StartsWithEndsWithMatch_"};
         EXPECT_TRUE (String{"abc"}.Matches (RegularExpression{"abc"}));
         EXPECT_TRUE (not(String{"abc"}.Matches (RegularExpression{"bc"})));
         EXPECT_TRUE (String{"abc"}.Matches (RegularExpression{".*bc"}));
@@ -1161,18 +1183,18 @@ namespace {
             return tmp;
         }
     }
-    void Test23_FormatV_ ()
+    GTEST_TEST (Foundation_Characters, FormatV_)
     {
         using namespace Test23_PRIVATE_;
-        Debug::TraceContextBumper ctx{"Test23_FormatV_"};
+        Debug::TraceContextBumper ctx{"FormatV_"};
         EXPECT_TRUE (Test23_help1_HELPER (L"joe%sx", L"1") == L"joe1x");
     }
 }
 
 namespace {
-    void Test24_Float2String ()
+    GTEST_TEST (Foundation_Characters, Float2String)
     {
-        Debug::TraceContextBumper ctx{"Test24_Float2String"};
+        Debug::TraceContextBumper ctx{"Float2String"};
         EXPECT_TRUE (FloatConversion::ToString (0.0) == "0");
         EXPECT_TRUE (FloatConversion::ToString (3000.5) == "3000.5");
         EXPECT_TRUE (FloatConversion::ToString (3000.500) == "3000.5");
@@ -1184,21 +1206,21 @@ namespace {
 }
 
 namespace {
-    void Test25_RemoveAt_ ()
+    GTEST_TEST (Foundation_Characters, RemoveAt_)
     {
-        Debug::TraceContextBumper ctx{"Test25_RemoveAt_"};
+        Debug::TraceContextBumper ctx{"RemoveAt_"};
         String                    x = "123";
         x                           = x.RemoveAt (1);
-        EXPECT_TRUE (x == "13");
+        EXPECT_EQ (x, "13");
         x = x.RemoveAt (0, 2);
         EXPECT_TRUE (x.empty ());
     }
 }
 
 namespace {
-    void Test26_Iteration_ ()
+    GTEST_TEST (Foundation_Characters, Iteration_)
     {
-        Debug::TraceContextBumper ctx{"Test26_Iteration_"};
+        Debug::TraceContextBumper ctx{"Iteration_"};
         {
             String x = "123";
             int    i = 0;
@@ -1212,9 +1234,9 @@ namespace {
 }
 
 namespace {
-    void Test27_Repeat_ ()
+    GTEST_TEST (Foundation_Characters, Repeat_)
     {
-        Debug::TraceContextBumper ctx{"Test27_Repeat_"};
+        Debug::TraceContextBumper ctx{"Repeat_"};
         {
             String x;
             String r = x.Repeat (5);
@@ -1230,9 +1252,9 @@ namespace {
 }
 
 namespace {
-    void Test28_ReplacementForStripTrailingCharIfAny_ ()
+    GTEST_TEST (Foundation_Characters, ReplacementForStripTrailingCharIfAny_)
     {
-        Debug::TraceContextBumper ctx{"Test28_ReplacementForStripTrailingCharIfAny_"};
+        Debug::TraceContextBumper ctx{"ReplacementForStripTrailingCharIfAny_"};
         auto StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String { return s.EndsWith (c) ? s.SubString (0, -1) : s; };
         EXPECT_TRUE (StripTrailingCharIfAny ("xxx", '.') == "xxx");
         EXPECT_TRUE (StripTrailingCharIfAny ("xxx.", '.') == "xxx");
@@ -1241,9 +1263,9 @@ namespace {
 }
 
 namespace {
-    void Test29_StringWithSequenceOfCharacter_ ()
+    GTEST_TEST (Foundation_Characters, StringWithSequenceOfCharacter_)
     {
-        Debug::TraceContextBumper ctx{"Test29_StringWithSequenceOfCharacter_"};
+        Debug::TraceContextBumper ctx{"StringWithSequenceOfCharacter_"};
         {
             String              initialString = "012345";
             Sequence<Character> s1            = Sequence<Character> (initialString); // THIS NEEDS TO BE MORE SEEMLESS
@@ -1254,9 +1276,9 @@ namespace {
 }
 
 namespace {
-    void Test30_LimitLength_ ()
+    GTEST_TEST (Foundation_Characters, LimitLength_)
     {
-        Debug::TraceContextBumper ctx{"Test30_LimitLength_"};
+        Debug::TraceContextBumper ctx{"LimitLength_"};
         if constexpr (qCompiler_vswprintf_on_elispisStr_Buggy) {
             EXPECT_TRUE (String{"12345"}.LimitLength (3) == "...");
         }
@@ -1268,9 +1290,9 @@ namespace {
 }
 
 namespace {
-    void Test31_OperatorINSERT_ostream_ ()
+    GTEST_TEST (Foundation_Characters, OperatorINSERT_ostream_)
     {
-        Debug::TraceContextBumper ctx{"Test31_OperatorINSERT_ostream_"};
+        Debug::TraceContextBumper ctx{"OperatorINSERT_ostream_"};
         wstringstream             out;
         out << String{"abc"};
         EXPECT_TRUE (out.str () == L"abc");
@@ -1278,9 +1300,9 @@ namespace {
 }
 
 namespace {
-    void Test32_StringBuilder_ ()
+    GTEST_TEST (Foundation_Characters, StringBuilder_)
     {
-        Debug::TraceContextBumper ctx{"Test32_StringBuilder_"};
+        Debug::TraceContextBumper ctx{"StringBuilder_"};
         {
             StringBuilder out;
             out << L"hi mom";
@@ -1298,9 +1320,9 @@ namespace {
 }
 
 namespace {
-    void Test33_Append_ ()
+    GTEST_TEST (Foundation_Characters, Append_)
     {
-        Debug::TraceContextBumper ctx{"Test33_Append_"};
+        Debug::TraceContextBumper ctx{"Append_"};
         String                    result;
         Character                 buf[]{'a', 'b', 'c', 'd'};
         for (int i = 0; i < 10; ++i) {
@@ -1313,9 +1335,9 @@ namespace {
 }
 
 namespace {
-    void Test44_LocaleUNICODEConversions_ ()
+    GTEST_TEST (Foundation_Characters, LocaleUNICODEConversions_)
     {
-        Debug::TraceContextBumper ctx{"Test44_LocaleUNICODEConversions_"};
+        Debug::TraceContextBumper ctx{"LocaleUNICODEConversions_"};
         EXPECT_TRUE (String{"abcdefgjij"}.AsNarrowSDKString (eIgnoreErrors) == "abcdefgjij"); // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
         auto testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
             bool initializedLocale = false;
@@ -1347,9 +1369,9 @@ namespace {
 }
 
 namespace {
-    void Test45_Tokenize_ ()
+    GTEST_TEST (Foundation_Characters, Tokenize_)
     {
-        Debug::TraceContextBumper ctx{"Test45_Tokenize_"};
+        Debug::TraceContextBumper ctx{"Tokenize_"};
         using Containers::Set;
         {
             String           t{"ABC DEF G"};
@@ -1382,9 +1404,9 @@ namespace {
 }
 
 namespace {
-    void Test46_CompareLHSRHS_ ()
+    GTEST_TEST (Foundation_Characters, CompareLHSRHS_)
     {
-        Debug::TraceContextBumper ctx{"Test46_CompareLHSRHS_"};
+        Debug::TraceContextBumper ctx{"CompareLHSRHS_"};
         const wchar_t*            i = L"One";
         Characters::String        n = "Two";
         if (i == n) {
@@ -1399,9 +1421,9 @@ namespace {
 }
 
 namespace {
-    void Test47_SubString_ ()
+    GTEST_TEST (Foundation_Characters, SubString_)
     {
-        Debug::TraceContextBumper ctx{"Test47_SubString_"};
+        Debug::TraceContextBumper ctx{"SubString_"};
         {
             String tmp{"This is good"};
             EXPECT_TRUE (tmp.SubString (5) == "is good");
@@ -1419,9 +1441,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Characters, Test48_ToString_)
+    GTEST_TEST (Foundation_Characters, ToString_)
     {
-        Debug::TraceContextBumper ctx{"Test48_ToString_"};
+        Debug::TraceContextBumper ctx{"ToString_"};
         EXPECT_EQ (ToString (3), "3");
         EXPECT_EQ (ToString (3u, ios_base::hex), "0x3");
         EXPECT_EQ (ToString (3u), "3");
@@ -1446,17 +1468,18 @@ namespace {
 }
 
 namespace {
-    void Test49_SetOfStringCTORIssue_ ()
+    GTEST_TEST (Foundation_Characters, SetOfStringCTORIssue_)
     {
-        Debug::TraceContextBumper ctx{"Test49_SetOfStringCTORIssue_"};
+        Debug::TraceContextBumper ctx{"SetOfStringCTORIssue_"};
         optional<String>          optString{String{}};
         Containers::Set<String>   s{*optString};
     }
 }
 
 namespace {
-    void Test50a_UnicodeStringLiterals_ ()
+    GTEST_TEST (Foundation_Characters, UnicodeStringLiterals_)
     {
+        Debug::TraceContextBumper ctx{"UnicodeStringLiterals_"};
         {
             const char16_t microChars16[] = u"\u00B5";
             const char32_t microChars32[] = U"\U000000B5";
@@ -1511,9 +1534,9 @@ namespace {
 }
 
 namespace {
-    void Test50_Utf8Conversions_ ()
+    GTEST_TEST (Foundation_Characters, Utf8Conversions_)
     {
-        Debug::TraceContextBumper ctx{"Test50_Utf8Conversions_"};
+        Debug::TraceContextBumper ctx{"Utf8Conversions_"};
         {
             EXPECT_TRUE (String::FromUTF8 (u8"phred") == String{"phred"});
             // Need char8_t to use this constructor
@@ -1611,9 +1634,9 @@ namespace {
 }
 
 namespace {
-    void Test51_Utf16Conversions_ ()
+    GTEST_TEST (Foundation_Characters, Utf16Conversions_)
     {
-        Debug::TraceContextBumper ctx{"Test51_Utf16Conversions_"};
+        Debug::TraceContextBumper ctx{"Utf16Conversions_"};
         {
             EXPECT_TRUE (u16string{u"phred"} == String{u16string{u"phred"}}.AsUTF16 ());
             EXPECT_TRUE (u16string{u"שלום"} == String{u16string{u"שלום"}}.AsUTF16 ()); // @todo CORRECT but misleading since file encoding doesnt match these characters
@@ -1686,9 +1709,9 @@ namespace {
 }
 
 namespace {
-    void Test52_Utf32Conversions_ ()
+    GTEST_TEST (Foundation_Characters, Utf32Conversions_)
     {
-        Debug::TraceContextBumper ctx{"Test52_Utf32Conversions_"};
+        Debug::TraceContextBumper ctx{"Utf32Conversions_"};
         {
             EXPECT_TRUE (u32string{U"phred"} == String{u32string{U"phred"}}.AsUTF32 ());
             EXPECT_TRUE (u32string{U"שלום"} == String{u32string{U"שלום"}}.AsUTF32 ());
@@ -1729,9 +1752,9 @@ namespace {
 }
 
 namespace {
-    void Test53_vswprintf_on_2_strings_longish_Buggy_ ()
+    GTEST_TEST (Foundation_Characters, vswprintf_on_2_strings_longish_Buggy_)
     {
-        Debug::TraceContextBumper ctx{"Test53_vswprintf_on_2_strings_longish_Buggy_"};
+        Debug::TraceContextBumper ctx{"vswprintf_on_2_strings_longish_Buggy_"};
         String                    b = L"…";
         if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
             try {
@@ -1746,9 +1769,9 @@ namespace {
 }
 
 namespace {
-    void Test54_StringAs_ ()
+    GTEST_TEST (Foundation_Characters, StringAs_)
     {
-        Debug::TraceContextBumper ctx{"Test54_StringAs_"};
+        Debug::TraceContextBumper ctx{"StringAs_"};
         EXPECT_TRUE (String{"hi mom"}.AsASCII () == "hi mom");
         {
             try {
@@ -1763,9 +1786,9 @@ namespace {
 }
 
 namespace {
-    void Test55_StringAscii_CTORs_ ()
+    GTEST_TEST (Foundation_Characters, StringAscii_CTORs_)
     {
-        Debug::TraceContextBumper ctx{"Test55_StringAscii_CTORs_"};
+        Debug::TraceContextBumper ctx{"StringAscii_CTORs_"};
         (void)String{"a"};
         try {
             (void)String{"\x81"};
@@ -1778,9 +1801,9 @@ namespace {
 }
 
 namespace {
-    void Test56_StdStringMoveCTORs_ ()
+    GTEST_TEST (Foundation_Characters, StdStringMoveCTORs_)
     {
-        Debug::TraceContextBumper ctx{"Test56_StdStringMoveCTORs_"};
+        Debug::TraceContextBumper ctx{"StdStringMoveCTORs_"};
         {
             wstring stuff{L"abc"};
             String  a{move (stuff)};
@@ -1790,9 +1813,9 @@ namespace {
 }
 
 namespace {
-    void Test57_Latin1_Tests_ ()
+    GTEST_TEST (Foundation_Characters, Latin1_Tests_)
     {
-        Debug::TraceContextBumper ctx{"Test57_Latin1_Tests_"};
+        Debug::TraceContextBumper ctx{"Latin1_Tests_"};
         /**
          *  Be careful with signed/unsigned issues using Latin1 characters and string
          *      A few random characters selected from https://en.wikipedia.org/wiki/Latin-1_Supplement
@@ -1837,9 +1860,9 @@ namespace {
 }
 
 namespace {
-    void Test58_CodeCVT_ ()
+    GTEST_TEST (Foundation_Characters, CodeCVT_)
     {
-        Debug::TraceContextBumper ctx{"Test58_CodeCVT_"};
+        Debug::TraceContextBumper ctx{"CodeCVT_"};
         auto                      codeCvtChar16Test = [] (CodeCvt<char16_t> ccvt) {
             constexpr char16_t        someRandomText[] = u"hello mom";
             span<const char16_t>      someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
@@ -1890,62 +1913,8 @@ namespace {
         }
     }
 }
-namespace {
-    GTEST_TEST (Foundation_Characters, all)
-    {
-        Debug::TraceContextBumper ctx{"DoRegressionTests_"};
-        Test2_ ();
-        Test3_ ();
-        Test4_ ();
-        Test5_ ();
-        Test6_ ();
-        Test7_Comparisons_ ();
-        Test8_ReadOnlyStrings_ ();
-        Test8_ExternalMemoryOwnershipStrings_ ();
-        Test9_StringVersusStdCString_ ();
-        Test10_ConvertToFromSTDStrings_ ();
-        Test11_Trim_ ();
-        Test12_CodePageConverter_ ();
-        Test13_ToLowerUpper_ ();
-        Test15_StripAll_ ();
-        Test16_Format_ ();
-        Test17_Find_ ();
-        Test18_Compare_ ();
-        Test19_ConstCharStar_ ();
-        Test20_CStringHelpers_ ();
-        Test21_StringNumericConversions_ ();
-        Test22_StartsWithEndsWithMatch_ ();
-        Test23_FormatV_ ();
-        Test24_Float2String ();
-        Test25_RemoveAt_ ();
-        Test26_Iteration_ ();
-        Test27_Repeat_ ();
-        Test28_ReplacementForStripTrailingCharIfAny_ ();
-        Test29_StringWithSequenceOfCharacter_ ();
-        Test30_LimitLength_ ();
-        Test31_OperatorINSERT_ostream_ ();
-        Test32_StringBuilder_ ();
-        Test33_Append_ ();
-        Test44_LocaleUNICODEConversions_ ();
-        Test45_Tokenize_ ();
-        Test46_CompareLHSRHS_ ();
-        Test47_SubString_ ();
-        Test49_SetOfStringCTORIssue_ ();
-        Test50a_UnicodeStringLiterals_ ();
-        Test50_Utf8Conversions_ ();
-        Test51_Utf16Conversions_ ();
-        Test52_Utf32Conversions_ ();
-        Test53_vswprintf_on_2_strings_longish_Buggy_ ();
-        Test54_StringAs_ ();
-        Test55_StringAscii_CTORs_ ();
-        Test56_StdStringMoveCTORs_ ();
-        Test57_Latin1_Tests_ ();
-        Test58_CodeCVT_ ();
-    }
-}
 
 namespace {
-
     GTEST_TEST (Foundation_Characters, New_Format)
     {
         Debug::TraceContextBumper ctx{"New_Format"};
