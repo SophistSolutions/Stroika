@@ -3048,6 +3048,21 @@ if ($onlyGenerateIfCompilerExists) {
 			$generate = false;
 			$generateBecause = "Libc++ only supports Clang 16 and later on ubuntu 24.04";
 		}
+		if (!$ubuntuVersion != 0) {
+			# needed for example of HOST OS is Ubuntu 24.04 (not necessarily OS in container)
+			my %already = map { $_ => 1 } @sanitizerFlags;
+			if(exists($already{'thread'})) {
+				my $randBits = `sudo cat /proc/sys/vm/mmap_rnd_bits < /dev/null`;
+				if ($randBits == '') {
+					$generate = false;
+					$generateBecause = "Cannot read mmap_rnd_bits and https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
+				}
+				if ($randBits > 28) {
+					$generate = false;
+					$generateBecause = "sudo sysctl vm.mmap_rnd_bits=28 to allow tsan: https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
+				}
+			}
+		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
 		foreach my $i (0 .. $#sanitizerFlags) {
