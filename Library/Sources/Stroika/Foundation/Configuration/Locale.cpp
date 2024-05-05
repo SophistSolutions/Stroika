@@ -6,8 +6,6 @@
 #include <set>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/SDKString.h"
-#include "Stroika/Foundation/Configuration/StroikaConfig.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 
@@ -95,8 +93,7 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
     Require (iso2LetterTerritoryCode.length () == 2); // may lift this in the future and make it optional
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Configuration::FindLocaleName"};
-    DbgTrace ("(%s,%s)"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode);
+    Debug::TraceContextBumper ctx{"Configuration::FindLocaleName", "{},{}"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode);
 #endif
 
     // This is a HORRIBLE way - but I know of no better (especially no better portable way).
