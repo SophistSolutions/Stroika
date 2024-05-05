@@ -1130,8 +1130,8 @@ namespace {
             EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (String{L"44.4333"}), 44.4333));
         }
         [[maybe_unused]] auto runLocaleIndepTest = [] () {
-            EXPECT_EQ (FloatConversion::ToString (3000.5) , "3000.5");
-            EXPECT_EQ (FloatConversion::ToString (30000.5) , "30000.5");
+            EXPECT_EQ (FloatConversion::ToString (3000.5), "3000.5");
+            EXPECT_EQ (FloatConversion::ToString (30000.5), "30000.5");
         };
         {
             // Verify change of locale has no effect on results
@@ -1144,11 +1144,11 @@ namespace {
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
             runLocaleIndepTest ();
         }
-        catch ([[maybe_unused]]const Configuration::LocaleNotFoundException& e) {
+        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
         {
-            EXPECT_EQ (String2Int ("0587:c413:5500:0000:0000:0000:0001]:60000") , 0);
+            EXPECT_EQ (String2Int ("0587:c413:5500:0000:0000:0000:0001]:60000"), 0);
         }
     }
 }
@@ -1190,7 +1190,7 @@ namespace {
     {
         using namespace Test23_PRIVATE_;
         Debug::TraceContextBumper ctx{"FormatV_"};
-        EXPECT_EQ (Test23_help1_HELPER (L"joe%sx", L"1") , L"joe1x");
+        EXPECT_EQ (Test23_help1_HELPER (L"joe%sx", L"1"), L"joe1x");
     }
 }
 
@@ -1198,13 +1198,13 @@ namespace {
     GTEST_TEST (Foundation_Characters, Float2String)
     {
         Debug::TraceContextBumper ctx{"Float2String"};
-        EXPECT_EQ (FloatConversion::ToString (0.0) , "0");
-        EXPECT_EQ (FloatConversion::ToString (3000.5) , "3000.5");
-        EXPECT_EQ (FloatConversion::ToString (3000.500) , "3000.5");
-        EXPECT_EQ (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{2}) , "3.1");
-        EXPECT_EQ (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}) , "3.12");
-        EXPECT_EQ (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}) , "31.2");
-        EXPECT_EQ (FloatConversion::ToString (30707548160.0) , "3.07075e+10");
+        EXPECT_EQ (FloatConversion::ToString (0.0), "0");
+        EXPECT_EQ (FloatConversion::ToString (3000.5), "3000.5");
+        EXPECT_EQ (FloatConversion::ToString (3000.500), "3000.5");
+        EXPECT_EQ (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{2}), "3.1");
+        EXPECT_EQ (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}), "3.12");
+        EXPECT_EQ (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}), "31.2");
+        EXPECT_EQ (FloatConversion::ToString (30707548160.0), "3.07075e+10");
     }
 }
 
