@@ -23,9 +23,6 @@ RUN apt-get -qq install -y clang++-16
 RUN apt-get -qq install -y clang++-17
 RUN apt-get -qq install -y clang++-18 && apt-get install -y libc++-18-dev libc++abi-18-dev
 
-# For some reason not installed on ubuntu 21.04, nor 22.04, nor 24.04 otherwise
-RUN apt-get -qq install -y libz.a
-
 #Only needed to run with valgrind regtests
 RUN apt-get -qq install -y valgrind
 

@@ -21,9 +21,6 @@ RUN apt-get update  # unclear why update needed but container build fails withou
 RUN apt-get -qq install -y clang++-14
 RUN apt-get -qq install -y clang++-15 && apt-get install -y libc++-15-dev libc++abi-15-dev
 
-# For some reason not installed on ubuntu 21.04, nor 22.04 otherwise
-RUN apt-get -qq install -y libz.a
-
 #Only needed to run with valgrind regtests
 RUN apt-get -qq install -y valgrind
 
