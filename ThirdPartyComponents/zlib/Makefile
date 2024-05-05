@@ -131,10 +131,9 @@ endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@#@#some hacks to make more similar to what I had before - not sure why this fixes things... --LGP 2023-05-11
-	@# BEFORE WE GOT RID OF THIS STUFF - LOSING zlib.pc causes trouble - losing the dyn libs - not clear why - not needed, but I think harmless - TEST --LGP 2024-05-04
-	@#rm -f ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz.so* ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz*.dylib ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/zlib.pc
-	@#rm -f ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz.so* ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz*.dylib
+	@# Don't leave around dynamic link libraries, because if we link against those (stored in Builds/CFG/ThirdPartyComponents/libs) - they wont
+	@# be found at runtime (for example breaking curl build but thats the tip of the iceburg) --LGP 2024-05-05
+	@rm -f ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz.so* ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz*.dylib
 endif
 
 
