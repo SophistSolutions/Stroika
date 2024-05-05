@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 /**
  *  \file
@@ -21,7 +22,7 @@
  *      @todo   Create better subtype exception for locale not found (with fields for what not found).
  *
  *      @todo   I think GetPlatformDefaultLocale() can be optimized to use a static copy of locale("") since
- *              I believe C++ now gaurantees multithreaded safe static construction and safe read only
+ *              I believe C++ now guarantees multithreaded safe static construction and safe read only
  *              access to objects (even from multiple reader threads).
  *
  *      @todo   verify and document if for windows this is LOCALE_USER_DEFAULT or LOCALE_SYSTEM_DEFAULT.
@@ -37,12 +38,24 @@
  *              from the client connection, for use in generating reports etc.
  *
  *      @todo   rewrite GetAvailableLocales and FindLocaleName() to look at source code for
- *              locale -a, and see what it does on posix systems, and to use EnumSystemLocales()
+ *              locale -a, and see what it does on POSIX systems, and to use EnumSystemLocales()
  *              and mapping to locale names, on windows platform (or better strategy if I can find it).
  *
  */
 
 namespace Stroika::Foundation::Configuration {
+
+    /**
+     */
+    class LocaleNotFoundException : public Execution::RuntimeErrorException<> {
+    public:
+        LocaleNotFoundException (const optional<Characters::String>& iso2LetterLanguageCode  = {},
+                                 const optional<Characters::String>& iso2LetterTerritoryCode = {});
+
+    public:
+        static const LocaleNotFoundException kThe;
+    };
+    inline const LocaleNotFoundException LocaleNotFoundException::kThe;
 
     /**
      *  In C++, the default locale is "C" (aka locale::classic ()), not the one

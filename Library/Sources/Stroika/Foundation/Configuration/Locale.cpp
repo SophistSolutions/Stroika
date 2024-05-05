@@ -22,6 +22,19 @@ using namespace Stroika::Foundation::Configuration;
 
 /*
  ********************************************************************************
+ ***************** Configuration::LocaleNotFoundException ***********************
+ ********************************************************************************
+ */
+LocaleNotFoundException::LocaleNotFoundException (const optional<String>& iso2LetterLanguageCode, const optional<String>& iso2LetterTerritoryCode)
+    : RuntimeErrorException{(iso2LetterLanguageCode.has_value () or iso2LetterTerritoryCode.has_value ())
+                                ? Characters::Format ("Locale ({}-{}) not found"_f, iso2LetterLanguageCode.value_or (""sv),
+                                                      iso2LetterTerritoryCode.value_or (""sv))
+                                : "Locale not found"_k}
+{
+}
+
+/*
+ ********************************************************************************
  *********** Configuration::UsePlatformDefaultLocaleAsDefaultLocale *************
  ********************************************************************************
  */
@@ -72,7 +85,7 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
     if (auto r = FindLocaleNameQuietly (iso2LetterLanguageCode, iso2LetterTerritoryCode)) {
         return *r;
     }
-    Execution::Throw (Execution::RuntimeErrorException{Characters::Format ("Locale ({}-{}) not found"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode)});
+    Execution::Throw (LocaleNotFoundException{iso2LetterLanguageCode, iso2LetterTerritoryCode});
 }
 
 optional<Characters::String> Configuration::FindLocaleNameQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
