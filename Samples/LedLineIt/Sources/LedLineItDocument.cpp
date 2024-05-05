@@ -404,7 +404,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
                 String x              = suggestedCodePage ? TextReader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
                                                           : TextReader::New (rawBytesBLOB).ReadAll ();
-                x                     = x.NoramlizeTextToNL ();
+                x                     = x.NormalizeTextToNL ();
                 Led_tString tx        = x.As<Led_tString> ();
                 size_t      charsRead = tx.length ();
                 const auto  fileData2 = span{tx};
