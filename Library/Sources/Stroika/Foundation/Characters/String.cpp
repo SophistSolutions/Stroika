@@ -796,7 +796,7 @@ void String::SetCharAt (Character c, size_t i)
     StringBuilder sb{*this};
     Require (i < size ());
     sb.SetAt (c, i);
-    *this = sb.str ();
+    *this = sb;
 }
 
 String String::InsertAt (span<const Character> s, size_t at) const
@@ -811,7 +811,7 @@ String String::InsertAt (span<const Character> s, size_t at) const
     StringBuilder                  sb{thisStrData.subspan (0, at)};
     sb.Append (s);
     sb.Append (thisStrData.subspan (at));
-    return sb.str ();
+    return sb;
 }
 
 String String::RemoveAt (size_t from, size_t to) const
@@ -1069,8 +1069,8 @@ String String::Replace (size_t from, size_t to, const String& replacement) const
     StringBuilder sb{thisSpan.subspan (0, from)};
     sb.Append (replacement);
     sb.Append (thisSpan.subspan (to));
-    Ensure (sb.str () == SubString (0, from) + replacement + SubString (to));
-    return sb.str ();
+    Ensure (sb == SubString (0, from) + replacement + SubString (to));
+    return sb;
 }
 
 bool String::StartsWith (const Character& c, CompareOptions co) const
@@ -1196,7 +1196,7 @@ String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const
             sb << i;
         }
     }
-    return sb.str ();
+    return sb;
 }
 
 String String::ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const
@@ -1210,10 +1210,10 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
             sb << i;
         }
     }
-    return sb.str ();
+    return sb;
 }
 
-String String::NoramlizeTextToNL () const
+String String::NormalizeTextToNL () const
 {
     PeekSpanData                   pds = GetPeekSpanData<ASCII> ();
     Memory::StackBuffer<Character> maybeIgnoreBuf;
@@ -1234,7 +1234,7 @@ String String::NoramlizeTextToNL () const
         sb << c;
     }
     if (everChanged) {
-        return sb.str ();
+        return sb;
     }
     else {
         return *this;
@@ -1698,7 +1698,7 @@ String StringCombiner::operator() (const String& lhs, const String& rhs, bool is
         sb << fSeparator;
     }
     sb << rhs;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -1734,9 +1734,9 @@ namespace Stroika::Foundation::Traversal {
             ++idx;
         });
 #if qDebug
-        Ensure (sb.str () == referenceResult);
+        Ensure (sb == referenceResult);
 #endif
-        return sb.str ();
+        return sb;
     }
 }
 

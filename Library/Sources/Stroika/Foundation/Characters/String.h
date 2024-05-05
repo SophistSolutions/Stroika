@@ -879,15 +879,15 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Replace any CR or LF or CRLF seqeunces with plan NL-terminated text.
+         *  Replace any CR or LF or CRLF sequences with plain NL-terminated text.
          */
-        nonvirtual String NoramlizeTextToNL () const;
+        nonvirtual String NormalizeTextToNL () const;
 
     public:
         /**
          *  Break this String into constituent parts. This is a simplistic API but at least handy as is.
          *
-         *  The caller can specify the token seperators by set, by lambda. This defaults to the lambda "isWhitespace".
+         *  The caller can specify the token separators by set, by lambda. This defaults to the lambda "isWhitespace".
          *
          *  This is often called 'Split' in other APIs. This is NOT (as is now) a replacement for flex, but just for
          *  simple, but common string splitting needs (though if I had a regexp param, it may approach the power of flex).
