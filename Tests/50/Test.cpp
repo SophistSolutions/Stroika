@@ -249,8 +249,12 @@ namespace {
     {
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale{});
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
-        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale ("en", "us"));
-
+        try {
+            TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale ("en", "us"));
+        }
+        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+        }
         // should add test like this...
         //EXPECT_TRUE (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
     }
@@ -346,7 +350,7 @@ namespace {
             EXPECT_TRUE (TimeOfDay::Parse ("3:00").GetAsSecondsCount () == 3 * 60 * 60);
             EXPECT_TRUE (TimeOfDay::Parse ("16:00").GetAsSecondsCount () == 16 * 60 * 60);
         }
-        {
+        try {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
@@ -365,6 +369,9 @@ namespace {
             EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41 AM");
             EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01 AM");
 #endif
+        }
+        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
         {
             EXPECT_TRUE (TimeOfDay{101}.Format (locale{}) == "00:01:41");
@@ -458,13 +465,16 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (Date::kMin);
             TestRoundTripFormatThenParseNoChange_ (Date::kMax);
         }
-        {
+        try {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
             Date                           d = Date{Year{1903}, April, DayOfMonth{5}};
             TestRoundTripFormatThenParseNoChange_ (d);
             EXPECT_TRUE (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903");
             EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903");
+        }
+        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
         {
             Date d = Date (1903y, April, 5d);
@@ -548,7 +558,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
-        {
+        try {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
             Date                           d = Date{Year{1903}, April, DayOfMonth{5}};
@@ -568,6 +578,9 @@ namespace {
             }
             DateTime dt2{d, TimeOfDay{60}};
             //TOFIX!EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+        }
+        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
         {
             Date d = Date{Year{1903}, April, DayOfMonth{6}};

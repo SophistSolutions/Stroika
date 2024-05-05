@@ -805,12 +805,15 @@ namespace {
                 EXPECT_TRUE (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                 locale::global (prevLocale);
             }
-            {
+            try {
                 // Verify change of locale has no effect on results
-                Configuration::ScopedUseLocale   tmpLocale{Configuration::FindNamedLocale ("en", "us")};
+                Configuration::ScopedUseLocale   tmpLocale{Configuration::FindNamedLocale ("en"sv, "us"sv)};
                 Streams::MemoryStream::Ptr<byte> tmpStrm = Streams::MemoryStream::New<byte> ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
-                EXPECT_TRUE (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
+                EXPECT_EQ (jsonExampleWithUpdatedMaxFilesReference, tmpStrm.As<string> ());
+            }
+            catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+                Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
             }
         }
     }
@@ -836,9 +839,12 @@ namespace {
             EXPECT_TRUE (v1 == v);
         };
         f ();
-        {
+        try {
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
             f ();
+        }
+        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
     }
 }
@@ -912,10 +918,13 @@ namespace {
                 EXPECT_TRUE (tmp.find (",") == string::npos);
             }
         };
-        {
+        try {
             doAll ();
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
             doAll ();
+        }
+        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
     }
 }

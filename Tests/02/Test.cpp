@@ -1141,7 +1141,7 @@ namespace {
         }
         try {
             // Verify change of locale has no effect on results
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
+            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en"sv, "us"sv)};
             runLocaleIndepTest ();
         }
         catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
