@@ -17,20 +17,24 @@
 namespace Stroika::Foundation::IO::FileSystem {
 
     /**
-     *  Creates an empty file with a random name (based on baseName) in inFolder (or if not specified, in the WellKnownLocations::GetTemporary () directory) and returns that filename.
+     *  Creates an empty file with a random/unique name (based on baseName) in inFolder (or if not specified, in the WellKnownLocations::GetTemporary () directory) and returns that filename.
      *  These files are NOT automatically cleaned up by Stroika (for that see ScopedTmpFile).
      * 
      *  \note caller must assure 'inFolder' exists and is writeable'
+     * 
+     *  require root_path is empty - just filename and possibly extention. If extension missing, maybe added automatically
+     * 
+     *  \note this actually creates (an empty) file
      */
-    filesystem::path CreateTmpFile (const filesystem::path& baseName);
-    filesystem::path CreateTmpFile (const filesystem::path& baseName, const filesystem::path& inFolder);
+    filesystem::path CreateTmpFile (const String& baseName);
+    filesystem::path CreateTmpFile (const String& baseName, const filesystem::path& inFolder);
 
     /**
      *  Create the 'basenamed' temporary directory (no worries about name conflicts) from the argument filenameBase.
      * 
      *  Directory and its contents destroyed on destruction (exceptions caught internally and DbgTraced, but otherwise ignored).
      * 
-     *  note references AppTempFileManager::sThe
+     *  note references AppTmpFileManager::sThe
      */
     class ScopedTmpDir {
     public:
@@ -51,11 +55,11 @@ namespace Stroika::Foundation::IO::FileSystem {
      * 
      *  The file is removed on destruction (exceptions caught internally and DbgTraced, but otherwise ignored).
      * 
-     *  note references AppTempFileManager::sThe
+     *  note references AppTmpFileManager::sThe
      */
     class ScopedTmpFile {
     public:
-        ScopedTmpFile (const filesystem::path& fileBaseName);
+        ScopedTmpFile (const String& fileBaseName);
         ScopedTmpFile (const ScopedTmpFile&) = delete;
         ~ScopedTmpFile ();
         ScopedTmpFile& operator= (const ScopedTmpFile&) = delete;
@@ -70,12 +74,12 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *  Generally not used directly - prefer using ScopedTmpDir or ScopedTmpFile.
      *
-     *  If used directly, you can make your own, or use AppTempFileManager::sThe.
+     *  If used directly, you can make your own, or use AppTmpFileManager::sThe.
      * 
-     *  AppTempFileManager::sThe CAN be overwritten, but best practice is to do so early in main (main thread)
+     *  AppTmpFileManager::sThe CAN be overwritten, but best practice is to do so early in main (main thread)
      *  before any threads have been created (which might create a race).
      */
-    class AppTempFileManager {
+    class AppTmpFileManager {
     public:
         /**
          */
@@ -87,9 +91,9 @@ namespace Stroika::Foundation::IO::FileSystem {
         /**
          *  In typical use, this won't be directly constructed - just use the default sThe
          */
-        AppTempFileManager (const AppTempFileManager&) = delete;
-        AppTempFileManager (const Options& options = {});
-        ~AppTempFileManager ();
+        AppTmpFileManager (const AppTmpFileManager&) = delete;
+        AppTmpFileManager (const Options& options = {});
+        ~AppTmpFileManager ();
 
     public:
         /**
@@ -97,9 +101,9 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  assignment.
          * 
          *  This maybe used as in main () {
-         *      AppTempFileManager::sThe = AppTempFileManager{AppTempFileManager::Options{... custom options}}
+         *      AppTmpFileManager::sThe = AppTmpFileManager{AppTmpFileManager::Options{... custom options}}
          */
-        AppTempFileManager& operator= (AppTempFileManager&& rhs);
+        AppTmpFileManager& operator= (AppTmpFileManager&& rhs) noexcept;
 
     public:
         /**
@@ -107,24 +111,25 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  This can be overwritten (assigned to), but following C++ thread safety rules, so best to do in the main thread before any
          *  thread could have begin accessing the object.
          */
-        static AppTempFileManager sThe;
+        static AppTmpFileManager sThe;
 
     public:
-        nonvirtual filesystem::path GetRootTempDir () const;
+        nonvirtual filesystem::path GetRootTmpDir () const;
 
     public:
         /**
          *  require root_path is empty - just filename and possibly extention. If extension missing, maybe added automatically
+         *  \note this actually creates (an empty) file
          */
-        nonvirtual filesystem::path GetTempFile (const filesystem::path& fileBaseName);
+        nonvirtual filesystem::path GetTmpFile (const String& fileBaseName);
 
     public:
-        nonvirtual filesystem::path GetTempDir (const String& dirNameBase);
+        nonvirtual filesystem::path GetTmpDir (const String& dirNameBase);
 
     private:
         filesystem::path fTmpDir_;
     };
-    inline AppTempFileManager AppTempFileManager::sThe;
+    inline AppTmpFileManager AppTmpFileManager::sThe;
 
 }
 

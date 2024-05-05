@@ -36,19 +36,19 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- *********************** FileSystem::AppTempFileManager *************************
+ ************************ FileSystem::AppTmpFileManager *************************
  ********************************************************************************
  */
 namespace {
-    filesystem::path GetSysTmpRelativePath_ (const AppTempFileManager::Options& o)
+    filesystem::path GetSysTmpRelativePath_ (const AppTmpFileManager::Options& o)
     {
         return o.fRelativePathInsideTmpDir.value_or (GetEXEPath ().stem ()); // @todo optimize this use of value_or cuz evaluates args always (sad)
     }
 }
 
-AppTempFileManager::AppTempFileManager (const Options& options)
+AppTmpFileManager::AppTmpFileManager (const Options& options)
 {
-    Debug::TraceContextBumper ctx{"AppTempFileManager::CTOR"};
+    Debug::TraceContextBumper ctx{"AppTmpFileManager::CTOR"};
     filesystem::path          tmpDir         = WellKnownLocations::GetTemporary ();
     filesystem::path          cleanedExePath = Execution::GetEXEPath ();
     filesystem::path          exeFileName    = cleanedExePath.stem ();
@@ -96,71 +96,38 @@ AppTempFileManager::AppTempFileManager (const Options& options)
     fTmpDir_ = tmpDir;
 }
 
-AppTempFileManager::~AppTempFileManager ()
+AppTmpFileManager::~AppTmpFileManager ()
 {
     if (not fTmpDir_.empty ()) {
-        DbgTrace (L"AppTempFileManager::DTOR: clearing {}"_f, fTmpDir_);
+        DbgTrace (L"AppTmpFileManager::DTOR: clearing {}"_f, fTmpDir_);
         try {
             remove_all (fTmpDir_);
         }
         catch (...) {
-            DbgTrace ("Ignoring exception clearly AppTempFileManager files: {}"_f, current_exception ());
+            DbgTrace ("Ignoring exception clearly AppTmpFileManager files: {}"_f, current_exception ());
         }
     }
 }
 
-AppTempFileManager& AppTempFileManager::operator= (AppTempFileManager&& rhs)
+AppTmpFileManager& AppTmpFileManager::operator= (AppTmpFileManager&& rhs) noexcept
 {
-    DbgTrace ("AppTempFileManager::DTOR: clearing {}"_f, fTmpDir_);
+    DbgTrace ("AppTmpFileManager::DTOR: clearing {}"_f, fTmpDir_);
     remove_all (fTmpDir_);
     fTmpDir_ = move (rhs.fTmpDir_); // prevents rhs DTOR from doing anything
     Assert (rhs.fTmpDir_.empty ()); // cuz of this...
     return *this;
 }
 
-filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBaseName)
+filesystem::path AppTmpFileManager::GetTmpFile (const String& fileBaseName)
 {
-    filesystem::path fn = GetRootTempDir ();
+    filesystem::path fn = GetRootTmpDir ();
     create_directories (fn);
     return CreateTmpFile (fileBaseName, fn);
-#if 0
-    String basename = FromPath (fileBaseName.stem ());
-    String ext      = FromPath (fileBaseName.extension ());
-    if (ext.empty ()) {
-        ext = "txt"sv;
-    }
-    for (int attempts = 0; attempts < 5; ++attempts) {
-        char buf[1024];
-        (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
-        filesystem::path trialName = fn / ToPath (basename + buf + ext);
-        if (not exists (trialName)) {
-#if qPlatform_Windows
-            if (HANDLE fd = ::CreateFile (trialName.native ().c_str (), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                          nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY, nullptr);
-                fd != INVALID_HANDLE_VALUE) {
-                ::CloseHandle (fd);
-                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, trialName);
-                WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
-                return trialName;
-            }
-#else
-            if (int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, filesystem::perms::all); fd >= 0) {
-                close (fd);
-                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, trialName);
-                WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
-                return trialName;
-            }
-#endif
-        }
-        DbgTrace ("Attempt to create file ({}) collided, so retrying ({} attempts)"_f, trialName, attempts);
-    }
-    Execution::Throw (Exception{"Unknown error creating file"sv}, "AppTempFileManager::GetTempFile (): failed to create tempfile");
-#endif
 }
 
-filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
+filesystem::path AppTmpFileManager::GetTmpDir (const String& dirNameBase)
 {
-    filesystem::path fn = GetRootTempDir ();
+    filesystem::path fn = GetRootTmpDir ();
     create_directories (fn);
     for (int attempts = 0; attempts < 5; ++attempts) {
         char buf[1024];
@@ -168,7 +135,7 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
         filesystem::path trialName = fn / ToPath (dirNameBase + buf);
         if (not is_directory (trialName)) {
             if (create_directories (trialName)) {
-                DbgTrace ("AppTempFileManager::GetTempDir (): returning '{}'"_f, trialName);
+                DbgTrace ("AppTmpFileManager::GetTempDir (): returning '{}'"_f, trialName);
                 WeakAssert (is_directory (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
@@ -176,7 +143,7 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
         DbgTrace ("Attempt to create directory collided, so retrying ({})"_f, trialName, attempts);
     }
     Execution::Throw (Exception{"Unknown error creating temporary directory"sv},
-                      "AppTempFileManager::GetTempDir (): failed to create tempdir");
+                      "AppTmpFileManager::GetTmpDir (): failed to create tmpdir");
 }
 
 /*
@@ -185,7 +152,7 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
  ********************************************************************************
  */
 ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
-    : fTmpDir_{AppTempFileManager::sThe.GetTempDir (fileNameBase)}
+    : fTmpDir_{AppTmpFileManager::sThe.GetTmpDir (fileNameBase)}
 {
 }
 
@@ -205,8 +172,8 @@ ScopedTmpDir::~ScopedTmpDir ()
  *********************** FileSystem::ScopedTmpFile ******************************
  ********************************************************************************
  */
-ScopedTmpFile::ScopedTmpFile (const filesystem::path& fileBaseName)
-    : fTmpFile_{AppTempFileManager::sThe.GetTempFile (fileBaseName)}
+ScopedTmpFile::ScopedTmpFile (const String& fileBaseName)
+    : fTmpFile_{AppTmpFileManager::sThe.GetTmpFile (fileBaseName)}
 {
 }
 
@@ -222,18 +189,20 @@ ScopedTmpFile::~ScopedTmpFile ()
 
 /*
  ********************************************************************************
- *********************** FileSystem::ScopedTmpFile ******************************
+ ************************ FileSystem::CreateTmpFile *****************************
  ********************************************************************************
  */
-filesystem::path FileSystem::CreateTmpFile (const filesystem::path& baseName)
+filesystem::path FileSystem::CreateTmpFile (const String& baseName)
 {
     return CreateTmpFile (baseName, WellKnownLocations::GetTemporary ());
 }
 
-filesystem::path FileSystem::CreateTmpFile (const filesystem::path& baseName, const filesystem::path& inFolder)
+filesystem::path FileSystem::CreateTmpFile (const String& baseName, const filesystem::path& inFolder)
 {
-    String basename = FromPath (baseName.stem ());
-    String ext      = FromPath (baseName.extension ());
+    filesystem::path baseNamePath = ToPath (baseName);
+    Require (not baseNamePath.has_root_path ());
+    String basename = FromPath (baseNamePath.stem ());
+    String ext      = FromPath (baseNamePath.extension ());
     if (ext.empty ()) {
         ext = "txt"sv;
     }
@@ -248,14 +217,14 @@ filesystem::path FileSystem::CreateTmpFile (const filesystem::path& baseName, co
                                           nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY, nullptr);
                 fd != INVALID_HANDLE_VALUE) {
                 ::CloseHandle (fd);
-                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, trialName);
+                DbgTrace ("AppTmpFileManager::GetTmpFile (): returning {}"_f, trialName);
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
 #else
             if (int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, filesystem::perms::all); fd >= 0) {
                 close (fd);
-                DbgTrace ("AppTempFileManager::GetTempFile (): returning {}"_f, trialName);
+                DbgTrace ("AppTmpFileManager::GetTmpFile (): returning {}"_f, trialName);
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }

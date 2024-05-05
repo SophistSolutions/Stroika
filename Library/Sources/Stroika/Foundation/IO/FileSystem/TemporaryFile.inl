@@ -6,10 +6,10 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     /*
      ********************************************************************************
-     *********************** FileSystem::AppTempFileManager *************************
+     ************************ FileSystem::AppTmpFileManager *************************
      ********************************************************************************
      */
-    inline filesystem::path AppTempFileManager::GetRootTempDir () const
+    inline filesystem::path AppTmpFileManager::GetRootTmpDir () const
     {
         return fTmpDir_;
     }
