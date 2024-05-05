@@ -47,5 +47,6 @@ RUN apt-get -qq install -y g++
 RUN apt-get -qq install -y libasan5 libasan6 libubsan1
 
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
+COPY Ubuntu2404-Small/.bash_profile /root
 
-CMD /bin/bash
+CMD /bin/bash -l
