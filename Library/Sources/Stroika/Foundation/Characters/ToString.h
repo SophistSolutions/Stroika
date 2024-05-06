@@ -214,7 +214,15 @@ namespace Stroika::Foundation::Characters {
 #if _MSC_VER
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
-#elif __cplusplus < 202100L /*202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240315)
+
+#if 0
+    In file included from ./GUID.h:15:
+    /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Characters/ToString.h:261:16: error: static assertion failed
+    261 | static_assert (std::formattable<std::pair<int, char>, wchar_t>);
+        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Characters/ToString.h:261:16: note: because 'std::formattable<std::pair<int, char>, wchar_t>' evaluated to false
+#endif
+#elif __cplusplus < 202100L /*202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412)
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
