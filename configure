@@ -3024,10 +3024,10 @@ if ($onlyGenerateIfCompilerExists) {
 			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 11 (v=" . $itsVersion . ") doesn't support chrono::month, etc";
 		}
 	}
+	my $ubuntuVersion = getUbuntuVersion();
 	# if flag to use libc++ - check if right version is available (but not on XCode)
 	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		my $ubuntuVersion = getUbuntuVersion();
 		if ($itsVersion <  14.0) {
 			$generate = false;
 			$generateBecause = "clang++-13 with libc++ doesn't support modern enough c++, and with libstdc++, some versions (ubuntu 22.04) work, and others (libg++ 13 and later) dont compile";
@@ -3048,19 +3048,19 @@ if ($onlyGenerateIfCompilerExists) {
 			$generate = false;
 			$generateBecause = "Libc++ only supports Clang 16 and later on ubuntu 24.04";
 		}
-		if (!$ubuntuVersion != 0) {
-			# needed for example of HOST OS is Ubuntu 24.04 (not necessarily OS in container)
-			my %already = map { $_ => 1 } @sanitizerFlags;
-			if(exists($already{'thread'})) {
-				my $randBits = `sudo cat /proc/sys/vm/mmap_rnd_bits < /dev/null`;
-				if ($randBits == '') {
-					$generate = false;
-					$generateBecause = "Cannot read mmap_rnd_bits and https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
-				}
-				if ($randBits > 28) {
-					$generate = false;
-					$generateBecause = "sudo sysctl vm.mmap_rnd_bits=28 to allow tsan: https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
-				}
+	}
+	if ($ubuntuVersion != 0) {
+		# needed for example of HOST OS is Ubuntu 24.04 (not necessarily OS in container)
+		my %already = map { $_ => 1 } @sanitizerFlags;
+		if(exists($already{'thread'})) {
+			my $randBits = `sudo cat /proc/sys/vm/mmap_rnd_bits < /dev/null`;
+			if ($randBits eq '') {
+				$generate = false;
+				$generateBecause = "Cannot read mmap_rnd_bits and https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
+			}
+			if ($randBits > 28) {
+				$generate = false;
+				$generateBecause = "sudo sysctl vm.mmap_rnd_bits=28 to allow tsan: https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
 			}
 		}
 	}
