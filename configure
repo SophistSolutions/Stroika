@@ -2401,7 +2401,7 @@ sub PostProcessOptions_ ()
 	}
 
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		my $clangVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
 		my $ubuntuVersion = getUbuntuVersion();
 		if ("$^O" eq "linux" && (22.04 <= $ubuntuVersion and  $ubuntuVersion <= 24.04)) {
 			# As of 2023-09-26 -  seen with clang++-15 Ubuntu 22.04 and with boost library
@@ -2420,17 +2420,17 @@ sub PostProcessOptions_ ()
 			# AND saw on ubuntu 23.10 with clang++-16
 			# AND saw on ubuntu 23.10 with clang++-17
 			# AND saw on ubuntu 24.04(prerelease) with clang++-18
-			if ($itsVersion < 19.0) {
+			if ($clangVersion < 19.0) {
 				$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 			}
 		}
 		if ("$^O" eq "darwin")  {
-			if ($itsVersion >= 14.0) {
+			if ($clangVersion >= 14.0) {
 				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
 			}
 		}
 		else {
-			if ($itsVersion >= 15.0) {
+			if ($clangVersion >= 15.0) {
 				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
 			}
 		}
