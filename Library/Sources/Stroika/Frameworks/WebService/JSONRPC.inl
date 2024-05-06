@@ -14,7 +14,7 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
         ObjectVariantMapper m;
         using SEQ_OR_MAP_ = variant<Mapping<String, VariantValue>, Sequence<VariantValue>>;
         m.Add<SEQ_OR_MAP_> (
-            [] (const ObjectVariantMapper& mapper, const SEQ_OR_MAP_* obj) -> VariantValue {
+            [] ([[maybe_unused]]const ObjectVariantMapper& mapper, const SEQ_OR_MAP_* obj) -> VariantValue {
                 if (auto om = get_if<Mapping<String, VariantValue>> (obj)) {
                     return VariantValue{*om};
                 }
@@ -26,7 +26,7 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
                     return VariantValue{};
                 }
             },
-            [] (const ObjectVariantMapper& mapper, const VariantValue& d, SEQ_OR_MAP_* intoObj) -> void {
+            [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, SEQ_OR_MAP_* intoObj) -> void {
                 if (d.GetType () == VariantValue::eMap) {
                     *intoObj = d.As<Mapping<String, VariantValue>> ();
                 }
