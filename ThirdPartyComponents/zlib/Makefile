@@ -13,12 +13,6 @@ endif
 
 include ${StroikaRoot}ScriptsLib/Makefile-Common.mk
 include ${StroikaRoot}/ScriptsLib/SharedMakeVariables-Default.mk
-
-ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
-CFLAGS:=$(filter-out -flto, $(CFLAGS))
-CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
-endif
-
 ifneq (${CONFIGURATION},)
 include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
