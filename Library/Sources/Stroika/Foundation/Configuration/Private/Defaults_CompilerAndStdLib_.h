@@ -902,6 +902,27 @@ raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
 
 #endif
 
+
+/*
+st.cpp:866: Failure
+Expected equality of these values:
+  kD.PrettyPrint ()
+    Which is: { 4-byte object <31-00 00-00>, 4-byte object <2E-00 00-00>, 4-byte object <30-00 00-00>, 4-byte object <30-00 00-00>, 4-byte object <33-00 00-00>, 4-byte object <00-00 00-00>, 4-byte object <20-00 00-00>, 4-byte object <73-00 00-00>, 4-byte object <65-00 00-00>, 4-byte object <63-00 00-00>, 4-byte object <6F-00 00-00>, 4-byte object <6E-00 00-00>, 4-byte object <64-00 00-00>, 4-byte object <73-00 00-00> }
+  "1.003 seconds"
+    Which is: 0x58bbf5
+*/
+#ifndef qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy
+
+#if defined(__GNUC__)
+// Only broken on my custom build of GCC 13 - release builds - and on ubuntu 22.04
+#define qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy  (__GNUC__ == 13)
+#else
+#define qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy 0
+#endif
+
+#endif
+
+
 /*
 
 raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
