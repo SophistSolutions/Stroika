@@ -155,7 +155,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             if (not result.empty ()) {
                 result << kCommaSpace_;
             }
-            result << Characters::Format ("{}"_f, nMonths) << kSpaceBeforeUnit_
+            result << "{}"_f(nMonths) << kSpaceBeforeUnit_
                    << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
             timeLeft -= nMonths * kSecondsPerMonth_;
         }
@@ -166,7 +166,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             if (not result.empty ()) {
                 result << kCommaSpace_;
             }
-            result << Characters::Format ("{}"_f, nDays) << kSpaceBeforeUnit_
+            result << "{}"_f(nDays) << kSpaceBeforeUnit_
                    << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
             timeLeft -= nDays * kSecondsPerDay_;
         }
@@ -178,7 +178,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 if (not result.empty ()) {
                     result << kCommaSpace_;
                 }
-                result << Characters::Format ("{}"_f, nHours) << kSpaceBeforeUnit_
+                result << "{}"_f (nHours) << kSpaceBeforeUnit_
                        << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
                 timeLeft -= nHours * kSecondsPerHour_;
             }
@@ -189,7 +189,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 if (not result.empty ()) {
                     result << kCommaSpace_;
                 }
-                result << Characters::Format ("{}"_f, nMinutes) << kSpaceBeforeUnit_
+                result << "{}"_f (nMinutes) << kSpaceBeforeUnit_
                        << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
                 timeLeft -= nMinutes * kSecondsPerMinute_;
             }
@@ -203,12 +203,12 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 }
                 // Map 3.242 to printing out 3.242, but 0.234 prints out as 234 milliseconds
                 if (fabs (timeLeft - timeLeftAsInt) < 0.001) {
-                    result << Characters::Format ("{}"_f, static_cast<int> (timeLeft)) << kSpaceBeforeUnit_
+                    result << "{}"_f (static_cast<int> (timeLeft)) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, timeLeftAsInt);
                     timeLeft -= static_cast<int> (timeLeft);
                 }
                 else {
-                    result << Characters::Format ("{:.3f}"_f, timeLeft) + kSpaceBeforeUnit_ + prettyPrintInfo.fLabels.fSeconds;
+                    result << "{:.3f}"_f (timeLeft) << kSpaceBeforeUnit_ << prettyPrintInfo.fLabels.fSeconds;
                     timeLeft = 0.0;
                 }
             }
@@ -292,9 +292,9 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
     }
     if (isNeg) {
         static const String kNeg_{"-"sv};
-        result = kNeg_ + result.str ();
+        result = kNeg_ + result;
     }
-    return result.str ();
+    return result;
 }
 
 Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
@@ -354,8 +354,7 @@ Duration Duration::operator- () const
 Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Duration::ParseTime_"};
-    DbgTrace ("(s = %s)", s.c_str ());
+    Debug::TraceContextBumper ctx{"Duration::ParseTime_", "s = {}"_f, s};
 #endif
     if (s.empty ()) {
         return kValueWhenEmptyRenderedAsNumber_;
@@ -482,7 +481,7 @@ DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 string Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"Duration::UnParseTime_", L"t = %e", t};
+    Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}"_f, t};
 #endif
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
