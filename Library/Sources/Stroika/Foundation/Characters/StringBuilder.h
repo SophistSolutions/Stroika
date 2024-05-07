@@ -15,8 +15,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- * Description:
- *
  * TODO:
  *      @todo   Add InsertAt() methods - like from String class (before I deprecate them).
  *              https://stroika.atlassian.net/browse/STK-34
@@ -65,6 +63,8 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  \brief Similar to String, but intended to more efficiently construct a String. Mutable type (String is largly immutable).
+     * 
+     *  Has operator String() co can be used by value most places you can use a String.
      * 
      *  @see String
      *  @see .Net StringBuilder - http://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /*
-         *  explicit operator T () provides an alternative syntax to As<> - depending on user
+         *  (mostly) explicit operator T () provides an alternative syntax to As<> - depending on user
          *  preference or context. Note - its important that this is explicit - to avoid
          *  creating overload problems.
          */
