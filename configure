@@ -1126,6 +1126,17 @@ sub	SetDefaultForCompilerDriver_
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) && IsTargettingASAN_()) {
 			$ENABLE_LTO = false;
 		}
+
+		# /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cbb0a.dir/link.txt --verbose=1
+		# /usr/bin/clang-18 -I/Sandbox/Stroika-Dev/Builds/clang++-18-release-libc++23/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-18-release-libc++23/ -I/Sandbox/Stroika-Dev/Builds/clang++-18-release-libc++23/ThirdPartyComponents/include/libxml2/ -DqDebug=0 -DqHasFeature_ATLMFC=0 -DqHasFeature_boost=1 -DqHasFeature_LibCurl=1 -DqHasFeature_fmtlib=0 -DqHasFeature_GoogleTest=1 -DqHasFeature_LZMA=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_sqlite=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_Xerces=0 -DqHasFeature_libxml2=1 -DqHasFeature_ZLib=1 -DqStroika_Foundation_Debug_Trace_TraceToFile=1 -DqStroika_Foundation_Debug_Trace_DefaultTracingOn=1 -DLIBXML_STATIC -O3 -g -flto  CMakeFiles/cmTC_cbb0a.dir/testCCompiler.c.o -o cmTC_cbb0a 
+		# /usr/bin/ld: /usr/lib/llvm-18/bin/../lib/LLVMgold.so: error loading plugin: /usr/lib/llvm-18/bin/../lib/LLVMgold.so: cannot open shared object file: No such file or directory
+		# clang-18: error: linker command failed with exit code 1 (use -v to see invocation)
+		# gmake[3]: *** [CMakeFiles/cmTC_cbb0a.dir/build.make:100: cmTC_cbb0a] Error 1
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "24.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 19) {
+			$ENABLE_LTO = false;
+		}
+
+
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) ) {
 				$ENABLE_LTO = true;
