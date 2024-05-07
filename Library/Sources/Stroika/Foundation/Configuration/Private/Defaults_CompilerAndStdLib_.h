@@ -902,7 +902,6 @@ raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
 
 #endif
 
-
 /*
 st.cpp:866: Failure
 Expected equality of these values:
@@ -915,13 +914,12 @@ Expected equality of these values:
 
 #if defined(__GNUC__)
 // Only broken on my custom build of GCC 13 - release builds - and on ubuntu 22.04
-#define qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy  (__GNUC__ == 13)
+#define qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy (__GNUC__ == 13)
 #else
 #define qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy 0
 #endif
 
 #endif
-
 
 /*
 

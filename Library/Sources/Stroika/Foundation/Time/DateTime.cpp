@@ -249,7 +249,7 @@ DateTime DateTime::Parse (const String& rep, LocaleIndependentFormat format)
 DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
 {
     if (rep.empty ()) [[unlikely]] {
-        Execution::Throw (FormatException::kThe);   // Since this API returns DateTime, not optional<>, no good value to return for empty argument (see ParseQuietly)
+        Execution::Throw (FormatException::kThe); // Since this API returns DateTime, not optional<>, no good value to return for empty argument (see ParseQuietly)
     }
     size_t nCharsConsumed;
     if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, &nCharsConsumed);
