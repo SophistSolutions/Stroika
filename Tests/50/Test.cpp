@@ -34,9 +34,9 @@ using Stroika::Foundation::Debug::TraceContextBumper;
 
 #if qHasFeature_GoogleTest
 namespace {
-    GTEST_TEST (Foundation_Time, Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_)
+    GTEST_TEST (Foundation_Time, AssumptionsAboutUnderlyingTimeLocaleLibrary_)
     {
-        TraceContextBumper ctx{"Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_"};
+        TraceContextBumper ctx{"AssumptionsAboutUnderlyingTimeLocaleLibrary_"};
 
         auto test_locale_time_get_date_order_no_order_Buggy = [] (const String& localeName) {
             TraceContextBumper ctx{"test_locale_time_get_date_order_no_order_Buggy"};
@@ -294,9 +294,9 @@ namespace {
 #endif
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_1_TestTickCountGrowsMonotonically_)
+    GTEST_TEST (Foundation_Time, TestTickCountGrowsMonotonically_)
     {
-        TraceContextBumper     ctx{"Test_1_TestTickCountGrowsMonotonically_"};
+        TraceContextBumper     ctx{"TestTickCountGrowsMonotonically_"};
         Time::TimePointSeconds start = Time::GetTickCount ();
         Execution::Sleep (100ms);
         EXPECT_TRUE (start <= Time::GetTickCount ());
@@ -304,9 +304,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_2_TestTimeOfDay_)
+    GTEST_TEST (Foundation_Time, TestTimeOfDay_)
     {
-        TraceContextBumper ctx{"Test_2_TestTimeOfDay_"};
+        TraceContextBumper ctx{"TestTimeOfDay_"};
         {
             optional<TimeOfDay> t;
             EXPECT_TRUE (not t.has_value ());
@@ -388,9 +388,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_3_TestDate_)
+    GTEST_TEST (Foundation_Time, TestDate_)
     {
-        TraceContextBumper ctx{"Test_3_TestDate_"};
+        TraceContextBumper ctx{"TestDate_"};
         auto               VERIFY_ROUNDTRIP_XML_ = [] (const Date& d) {
             EXPECT_TRUE (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format) == d);
         };
@@ -501,9 +501,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_4_TestDateTime_)
+    GTEST_TEST (Foundation_Time, TestDateTime_)
     {
-        TraceContextBumper ctx{"Test_4_TestDateTime_"};
+        TraceContextBumper ctx{"TestDateTime_"};
         {
             DateTime d{Date{Year{1903}, April, DayOfMonth{4}}};
             EXPECT_EQ (d.Format (DateTime::kISO8601Format), "1903-04-04");
@@ -748,9 +748,9 @@ namespace {
 // clang-format on
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_5_DateTimeTimeT_)
+    GTEST_TEST (Foundation_Time, DateTimeTimeT_)
     {
-        TraceContextBumper ctx{"Test_5_DateTimeTimeT_"};
+        TraceContextBumper ctx{"DateTimeTimeT_"};
         {
             DateTime d{Date{Year{2000}, April, DayOfMonth{20}}};
             EXPECT_TRUE (d.As<time_t> () == 956188800); // source - http://www.onlineconversion.com/unix_time.htm
@@ -780,9 +780,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_6_DateTimeStructTM_)
+    GTEST_TEST (Foundation_Time, DateTimeStructTM_)
     {
-        TraceContextBumper ctx{"Test_6_DateTimeStructTM_"};
+        TraceContextBumper ctx{"DateTimeStructTM_"};
         {
             struct tm x {};
             x.tm_hour    = 3;
@@ -792,19 +792,19 @@ namespace {
             x.tm_mday    = 15;
             DateTime  d  = DateTime{x};
             struct tm x2 = d.As<struct tm> ();
-            EXPECT_TRUE (x.tm_hour == x2.tm_hour);
-            EXPECT_TRUE (x.tm_min == x2.tm_min);
-            EXPECT_TRUE (x.tm_sec == x2.tm_sec);
-            EXPECT_TRUE (x.tm_year == x2.tm_year);
-            EXPECT_TRUE (x.tm_mday == x2.tm_mday);
+            EXPECT_EQ (x.tm_hour, x2.tm_hour);
+            EXPECT_EQ (x.tm_min, x2.tm_min);
+            EXPECT_EQ (x.tm_sec, x2.tm_sec);
+            EXPECT_EQ (x.tm_year, x2.tm_year);
+            EXPECT_EQ (x.tm_mday, x2.tm_mday);
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_7_Duration_)
+    GTEST_TEST (Foundation_Time, Duration_)
     {
-        TraceContextBumper ctx{"Test_7_Duration_"};
+        TraceContextBumper ctx{"Duration_"};
         {
             EXPECT_EQ (Duration{0}.As<time_t> (), 0);
             EXPECT_EQ (Duration{0}.As<String> (), "PT0S");
@@ -931,9 +931,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_8_DateTimeWithDuration_)
+    GTEST_TEST (Foundation_Time, DateTimeWithDuration_)
     {
-        TraceContextBumper ctx{"Test_8_DateTimeWithDuration_"};
+        TraceContextBumper ctx{"DateTimeWithDuration_"};
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3:00")};
             EXPECT_TRUE (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
@@ -959,9 +959,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_9_TZOffsetAndDaylightSavingsTime_)
+    GTEST_TEST (Foundation_Time, TZOffsetAndDaylightSavingsTime_)
     {
-        TraceContextBumper ctx{"Test_9_TZOffsetAndDaylightSavingsTime_"};
+        TraceContextBumper ctx{"TZOffsetAndDaylightSavingsTime_"};
         /*
          * I cannot think if any good way to test this stuff - since it depends on the current timezone and I cannot
          * see any good portbale way to change that (setenv (TZ) doest work on visual studio.net 2010).
@@ -990,9 +990,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_10_std_duration_)
+    GTEST_TEST (Foundation_Time, std_duration_)
     {
-        TraceContextBumper ctx{"Test_10_std_duration_"};
+        TraceContextBumper ctx{"std_duration_"};
         const Duration     k30Seconds = Duration{30.0};
         EXPECT_TRUE (k30Seconds.As<time_t> () == 30);
         EXPECT_TRUE (k30Seconds.As<String> () == "PT30S");
@@ -1010,9 +1010,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_11_DurationRange_)
+    GTEST_TEST (Foundation_Time, DurationRange_)
     {
-        TraceContextBumper ctx{"Test_11_DurationRange_"};
+        TraceContextBumper ctx{"DurationRange_"};
         using Traversal::Range;
         Range<Duration> d1;
         Range<Duration> d2 = Range<Duration>::FullRange ();
@@ -1024,9 +1024,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_12_DateRange_)
+    GTEST_TEST (Foundation_Time, DateRange_)
     {
-        TraceContextBumper ctx{"Test_12_DateRange_"};
+        TraceContextBumper ctx{"DateRange_"};
         using Traversal::DiscreteRange;
         {
             DiscreteRange<Date> d1;
@@ -1085,9 +1085,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_13_DateTimeRange_)
+    GTEST_TEST (Foundation_Time, DateTimeRange_)
     {
-        TraceContextBumper ctx{"Test_13_DateTimeRange_"};
+        TraceContextBumper ctx{"DateTimeRange_"};
         using Traversal::Range;
         {
             Range<DateTime> d1;
@@ -1107,9 +1107,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Test_14_timepoint_)
+    GTEST_TEST (Foundation_Time, timepoint_)
     {
-        TraceContextBumper ctx{"Test_14_timepoint_"};
+        TraceContextBumper ctx{"timepoint_"};
         // @see https://stroika.atlassian.net/browse/STK-619 - EXPECT_TRUE (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinity) == time_point<chrono::steady_clock>::max ());
         EXPECT_TRUE (Time::GetTickCount () + Time::kInfinity > chrono::steady_clock::now () + chrono::seconds (10000));
     }
