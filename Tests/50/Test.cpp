@@ -34,7 +34,7 @@ using Stroika::Foundation::Debug::TraceContextBumper;
 
 #if qHasFeature_GoogleTest
 namespace {
-    void Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ()
+    GTEST_TEST (Foundation_Time, Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_)
     {
         TraceContextBumper ctx{"Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_"};
 
@@ -294,8 +294,7 @@ namespace {
 #endif
 
 namespace {
-
-    void Test_1_TestTickCountGrowsMonotonically_ ()
+    GTEST_TEST (Foundation_Time, Test_1_TestTickCountGrowsMonotonically_)
     {
         TraceContextBumper     ctx{"Test_1_TestTickCountGrowsMonotonically_"};
         Time::TimePointSeconds start = Time::GetTickCount ();
@@ -305,8 +304,7 @@ namespace {
 }
 
 namespace {
-
-    void Test_2_TestTimeOfDay_ ()
+    GTEST_TEST (Foundation_Time, Test_2_TestTimeOfDay_)
     {
         TraceContextBumper ctx{"Test_2_TestTimeOfDay_"};
         {
@@ -390,14 +388,12 @@ namespace {
 }
 
 namespace {
-    void VERIFY_ROUNDTRIP_XML_ (const Date& d)
-    {
-        EXPECT_TRUE (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format) == d);
-    }
-
-    void Test_3_TestDate_ ()
+    GTEST_TEST (Foundation_Time, Test_3_TestDate_)
     {
         TraceContextBumper ctx{"Test_3_TestDate_"};
+        auto               VERIFY_ROUNDTRIP_XML_ = [] (const Date& d) {
+            EXPECT_TRUE (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format) == d);
+        };
         {
             Date d{Year{1903}, April, DayOfMonth{4}};
             TestRoundTripFormatThenParseNoChange_ (d);
@@ -505,8 +501,7 @@ namespace {
 }
 
 namespace {
-
-    void Test_4_TestDateTime_ ()
+    GTEST_TEST (Foundation_Time, Test_4_TestDateTime_)
     {
         TraceContextBumper ctx{"Test_4_TestDateTime_"};
         {
@@ -753,8 +748,7 @@ namespace {
 // clang-format on
 
 namespace {
-
-    void Test_5_DateTimeTimeT_ ()
+    GTEST_TEST (Foundation_Time, Test_5_DateTimeTimeT_)
     {
         TraceContextBumper ctx{"Test_5_DateTimeTimeT_"};
         {
@@ -786,8 +780,7 @@ namespace {
 }
 
 namespace {
-
-    void Test_6_DateTimeStructTM_ ()
+    GTEST_TEST (Foundation_Time, Test_6_DateTimeStructTM_)
     {
         TraceContextBumper ctx{"Test_6_DateTimeStructTM_"};
         {
@@ -809,14 +802,13 @@ namespace {
 }
 
 namespace {
-
-    void Test_7_Duration_ ()
+    GTEST_TEST (Foundation_Time, Test_7_Duration_)
     {
         TraceContextBumper ctx{"Test_7_Duration_"};
         {
             EXPECT_EQ (Duration{0}.As<time_t> (), 0);
-            EXPECT_EQ (Duration{0}.As<String> () , "PT0S");
-            EXPECT_EQ (Duration{0}.Format () , "0 seconds");
+            EXPECT_EQ (Duration{0}.As<String> (), "PT0S");
+            EXPECT_EQ (Duration{0}.Format (), "0 seconds");
         }
         {
             EXPECT_TRUE (Duration{3}.As<time_t> () == 3);
@@ -826,33 +818,33 @@ namespace {
         const int kSecondsPerDay = TimeOfDay::kMaxSecondsPerDay;
         {
             const Duration k30Days = Duration{"P30D"};
-            EXPECT_EQ (k30Days.As<time_t> () , 30 * kSecondsPerDay);
+            EXPECT_EQ (k30Days.As<time_t> (), 30 * kSecondsPerDay);
         }
         {
             const Duration k6Months = Duration{"P6M"};
-            EXPECT_EQ (k6Months.As<time_t> () , 6 * 30 * kSecondsPerDay);
+            EXPECT_EQ (k6Months.As<time_t> (), 6 * 30 * kSecondsPerDay);
         }
         {
             const Duration kP1Y = Duration{"P1Y"};
-            EXPECT_EQ (kP1Y.As<time_t> () , 365 * kSecondsPerDay);
+            EXPECT_EQ (kP1Y.As<time_t> (), 365 * kSecondsPerDay);
         }
         {
             const Duration kP2Y = Duration{"P2Y"};
-            EXPECT_EQ (kP2Y.As<time_t> () , 2 * 365 * kSecondsPerDay);
-            EXPECT_EQ (Duration{2 * 365 * kSecondsPerDay}.As<String> () , "P2Y");
+            EXPECT_EQ (kP2Y.As<time_t> (), 2 * 365 * kSecondsPerDay);
+            EXPECT_EQ (Duration{2 * 365 * kSecondsPerDay}.As<String> (), "P2Y");
         }
         {
             const Duration kHalfMinute = Duration{"PT0.5M"};
-            EXPECT_EQ (kHalfMinute.As<time_t> () , 30);
+            EXPECT_EQ (kHalfMinute.As<time_t> (), 30);
         }
         {
             const Duration kD = Duration{"PT0.1S"};
             EXPECT_EQ (kD.As<time_t> (), 0);
-            EXPECT_EQ (kD.As<double> () , 0.1);
+            EXPECT_EQ (kD.As<double> (), 0.1);
         }
         {
             const Duration kHalfMinute = Duration{"PT0.5M"};
-            EXPECT_EQ (kHalfMinute.PrettyPrint () , "30 seconds");
+            EXPECT_EQ (kHalfMinute.PrettyPrint (), "30 seconds");
         }
         {
             const Duration k3MS = Duration{"PT0.003S"};
@@ -860,17 +852,17 @@ namespace {
         }
         {
             const Duration kD = Duration{"PT1.003S"};
-            #if qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy
+#if qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy
             //cerr << "HI MOM: '" << kD.PrettyPrint ().AsNarrowSDKString () << "'" << endl;
-                VerifyTestResultWarning (kD.PrettyPrint () == "1.003 seconds");
-            #else
+            VerifyTestResultWarning (kD.PrettyPrint () == "1.003 seconds");
+#else
             EXPECT_EQ (kD.PrettyPrint (), "1.003 seconds");
-            #endif
+#endif
         }
         {
             const Duration kD = Duration{"PT0.000045S"};
             //EXPECT_TRUE (kD.PrettyPrint () == L"45 µs");   // SAD - but L"45 µs" 'works' but doesn't provide the RIGHT string portably
-            EXPECT_EQ (kD.PrettyPrint () , L"45 \u00b5s");
+            EXPECT_EQ (kD.PrettyPrint (), L"45 \u00b5s");
         }
         {
             // todo use constexpr
@@ -880,7 +872,7 @@ namespace {
         {
             // todo use constexpr
             const Duration kD = Duration{1.6e-6};
-            EXPECT_EQ (kD.PrettyPrint () , L"1.6 \u00b5s");
+            EXPECT_EQ (kD.PrettyPrint (), L"1.6 \u00b5s");
         }
         {
             // todo use constexpr
@@ -896,8 +888,8 @@ namespace {
         EXPECT_TRUE (Duration{"P30S"}.As<time_t> () == 30);
         EXPECT_TRUE (Duration{"PT30S"}.As<time_t> () == 30);
         EXPECT_TRUE (Duration{60}.As<String> () == "PT1M");
-        EXPECT_EQ (Duration{"-PT1H1S"}.As<time_t> () , -3601);
-        EXPECT_EQ (-Duration{"-PT1H1S"}.As<time_t> () , 3601);
+        EXPECT_EQ (Duration{"-PT1H1S"}.As<time_t> (), -3601);
+        EXPECT_EQ (-Duration{"-PT1H1S"}.As<time_t> (), 3601);
 
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1;
@@ -916,7 +908,7 @@ namespace {
         EXPECT_TRUE (Duration::min () < Duration{"P30S"} and Duration{"P30S"} < Duration::max ());
         {
             Duration d = Duration{"PT0.1S"};
-            EXPECT_EQ (d , "PT0.1S"_duration);
+            EXPECT_EQ (d, "PT0.1S"_duration);
             d += chrono::milliseconds{30};
             EXPECT_TRUE (Math::NearlyEquals (d.As<DurationSeconds::rep> (), static_cast<DurationSeconds::rep> (.130)));
         }
@@ -939,8 +931,7 @@ namespace {
 }
 
 namespace {
-
-    void Test_8_DateTimeWithDuration_ ()
+    GTEST_TEST (Foundation_Time, Test_8_DateTimeWithDuration_)
     {
         TraceContextBumper ctx{"Test_8_DateTimeWithDuration_"};
         {
@@ -968,8 +959,7 @@ namespace {
 }
 
 namespace {
-
-    void Test_9_TZOffsetAndDaylightSavingsTime_ ()
+    GTEST_TEST (Foundation_Time, Test_9_TZOffsetAndDaylightSavingsTime_)
     {
         TraceContextBumper ctx{"Test_9_TZOffsetAndDaylightSavingsTime_"};
         /*
@@ -1000,7 +990,7 @@ namespace {
 }
 
 namespace {
-    void Test_10_std_duration_ ()
+    GTEST_TEST (Foundation_Time, Test_10_std_duration_)
     {
         TraceContextBumper ctx{"Test_10_std_duration_"};
         const Duration     k30Seconds = Duration{30.0};
@@ -1020,7 +1010,7 @@ namespace {
 }
 
 namespace {
-    void Test_11_DurationRange_ ()
+    GTEST_TEST (Foundation_Time, Test_11_DurationRange_)
     {
         TraceContextBumper ctx{"Test_11_DurationRange_"};
         using Traversal::Range;
@@ -1034,7 +1024,7 @@ namespace {
 }
 
 namespace {
-    void Test_12_DateRange_ ()
+    GTEST_TEST (Foundation_Time, Test_12_DateRange_)
     {
         TraceContextBumper ctx{"Test_12_DateRange_"};
         using Traversal::DiscreteRange;
@@ -1095,7 +1085,7 @@ namespace {
 }
 
 namespace {
-    void Test_13_DateTimeRange_ ()
+    GTEST_TEST (Foundation_Time, Test_13_DateTimeRange_)
     {
         TraceContextBumper ctx{"Test_13_DateTimeRange_"};
         using Traversal::Range;
@@ -1117,33 +1107,11 @@ namespace {
 }
 
 namespace {
-    void Test_14_timepoint_ ()
+    GTEST_TEST (Foundation_Time, Test_14_timepoint_)
     {
         TraceContextBumper ctx{"Test_14_timepoint_"};
         // @see https://stroika.atlassian.net/browse/STK-619 - EXPECT_TRUE (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinity) == time_point<chrono::steady_clock>::max ());
         EXPECT_TRUE (Time::GetTickCount () + Time::kInfinity > chrono::steady_clock::now () + chrono::seconds (10000));
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Time, all)
-    {
-        TraceContextBumper ctx{"DoRegressionTests_"};
-        Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ();
-        Test_1_TestTickCountGrowsMonotonically_ ();
-        Test_2_TestTimeOfDay_ ();
-        Test_3_TestDate_ ();
-        Test_4_TestDateTime_ ();
-        Test_5_DateTimeTimeT_ ();
-        Test_6_DateTimeStructTM_ ();
-        Test_7_Duration_ ();
-        Test_8_DateTimeWithDuration_ ();
-        Test_9_TZOffsetAndDaylightSavingsTime_ ();
-        Test_10_std_duration_ ();
-        Test_11_DurationRange_ ();
-        Test_12_DateRange_ ();
-        Test_13_DateTimeRange_ ();
-        Test_14_timepoint_ ();
     }
 }
 #endif
