@@ -58,24 +58,29 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
 
     /**
      * Convert body to a mapping of name to value pairs (so they can be mapped to objects)
+     * 
+     *  This API presumes its argument is a 'request' (or BLOB with the body), which consists of a javascript object (Mapping<String,VariantValue>)
+     *  where the key in the mapping picks out parameter names, and the values in the mapping are the values of the parameters.
+     * 
+     *  This is a VERY common case.
      *
      *  \par Example Usage
      *      \code
-     *         static const String                         kValueParamName_ = "value"sv;
-     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromBody (m->request ());
-     *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
+     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromBody (m->rwRequest ());
+     *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue ("value"sv));
      *      \endcode
      *
      *  Supported BODY formats:
      *      o   DataExchange::InternetMediaTypes::kJSON
      *      o   application/x-www-form-urlencoded           *** @todo NOT YET IMPLEMENTED - BUT SHOULD BE SUPPORTED ***
      *
-     *  @see PickoutParamValuesFromURL () to just pickout params from URL
+     *  @see PickoutParamValuesFromURL () to just pick out params from URL
      *  @see PickoutParamValues () to pickout params from both url arg and body
      *
      *  \note - PickoutParamValuesFromBody map exceptions returned to IO::Network::HTTP::ClientErrorException
      */
     Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request);
+    Mapping<String, VariantValue> PickoutParamValuesFromBody (Request& request);
     Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType);
 
     /**

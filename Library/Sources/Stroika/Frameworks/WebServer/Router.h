@@ -54,7 +54,7 @@ namespace Stroika::Frameworks::WebServer {
      * 
      *      @todo - we probably want to add ability to generically parse out arguments from url, and include them to handler (as rails does - handy for ID in REST)
      *
-     *      @todo need more generic matchign to fit in (maybe optional matcher that takes URL?, or even full Request).
+     *      @todo need more generic matching to fit in (maybe optional matcher that takes URL?, or even full Request).
      *
      *        NOTE - may verb match and path match each OPTIONALS in class and have maybe a LIST of THINGS we know how to match.
      *             VERB
@@ -76,7 +76,45 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Any route to apply the handler, must match ALL argument constraints.
-         *  If verbMatch is omitted, it it assumed to be 
+         *  If verbMatch is omitted, it it assumed to be IO::Network::HTTP::MethodsRegEx::kGet (NOT RegularExpression::kAny)
+         * 
+         *  Note that the request handler is called with any String arguments based on the pathMatch regular expression
+         * 
+         *  \par Example Usage (GET with explicit method regexp)
+         *      \code
+         *          Route{HTTP::MethodsRegEx::kGet, "session(/?)"_RegEx, [this] (Message* m) {
+         *              WriteResponse (&m->rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
+         *          }},
+         *      \endcode
+         *
+         *  \par Example Usage (GET with defaulted GET method spec, and no arguments)
+         *      \code
+         *          Route{"session(/?)"_RegEx, [this] (Message* m) {
+         *              WriteResponse (&m->rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
+         *          }},
+         *      \endcode
+         * 
+         *  \par Example Usage (GET with arg parsed from URL path)
+         *      \code
+         *          Route{"resource/(.+)"_RegEx, [this] (Message* m, const String& resID) {
+         *              auto r = fWSImpl_->resource_GET (resID);
+         *              m->rwResponse().contentType  = get<InternetMediaType> (r);
+         *              m->rwResponse().write (get<BLOB> (r));
+         *          }},
+         *      \endcode
+         * 
+         *  \par Example Usage (POST, and grab params from Body)
+         *      \code
+         *          Route{HTTP::MethodsRegEx::kPost, "HR(/?)"_RegEx, [this] (Message* m) {
+         *              if (optional<InternetMediaType> ct = m->request ().contentType()) {
+         *                  WriteResponse (&m->rwResponse (), kHR_, kMapper.FromObject (fWSImpl_->HR_POST (*ct, m->rwRequest().GetBody ())));
+         *              }
+         *              else {
+         *                  Execution::Throw (Execution::RuntimeErrorException{"expected Content-Type HTTP Request header"});
+         *              }
+         *          }},
+         *      \endcode
+         * 
          */
         Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler);
         Route (const RegularExpression& pathMatch, const RequestHandler& handler);
@@ -87,7 +125,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * Check if the given request matches this Route.
          * Overload taking method/hostRelPath can be derived from request, but can be substituted with different values.
-         * Overload with optional matcehs returns variable matches in the regexp for the path
+         * Overload with optional matches returns variable matches in the regexp for the path
          * 
          * We interpret routes as matching against a relative path from the root
          */
@@ -96,6 +134,7 @@ namespace Stroika::Frameworks::WebServer {
                                  Sequence<String>* pathRegExpMatches = nullptr) const;
 
     private:
+        // @todo instead of two optionals - this should be 'variant'
         optional<pair<RegularExpression, RegularExpression>>                                               fVerbAndPathMatch_;
         optional<function<bool (const String& method, const String& hostRelPath, const Request& request)>> fRequestMatch_;
         RequestHandler                                                                                     fHandler_;

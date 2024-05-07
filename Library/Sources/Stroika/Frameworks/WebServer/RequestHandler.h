@@ -24,11 +24,16 @@ namespace Stroika::Frameworks::WebServer {
 
     /**
      * A request handler should be understood to be stateless - as far as the connection is concerned.
-     * ??? Maybe - or maybe have add/remove or notication so assocaited?? For now - assume stateless - and just called
-     * with HandleRequest ...
+     * 
+     *  Each handler is assumed to take an array of strings as arguments (or none). These string arguments come from
+     *  the regular expression MATCH of the URL (not from the body of the request, nor from the query string - unless thats part of the regexp matching).
      *
-     * Also - a RequestHandler should be careful about threads, as it could be called first on one thread, and
-     * then - possibly at the same time - on another thread. The same handler can be used multiple times (multiple sessions).
+     *  \notes
+     *      ??? Maybe - or maybe have add/remove or notication so assocaited?? For now - assume stateless - and just called
+     *      with HandleRequest ...
+     *      
+     *      Also - a RequestHandler should be careful about threads, as it could be called first on one thread, and
+     *      then - possibly at the same time - on another thread. The same handler can be used multiple times (multiple sessions).
      */
     class RequestHandler : public function<void (Message* message, const Containers::Sequence<Characters::String>& matchedArgs)> {
     public:

@@ -77,6 +77,10 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         RequireNotNull (request);
         return PickoutParamValuesFromBody (request->GetBody (), request->contentType ());
     }
+    inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request& request)
+    {
+        return PickoutParamValuesFromBody (request.GetBody (), request.contentType ());
+    }
 
     /*
      ********************************************************************************
