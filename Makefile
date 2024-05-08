@@ -515,7 +515,7 @@ basic-unix-test-configurations_g++_versions_:
 	./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
 	# g++-14
 	./configure g++-14-debug --config-tag Unix --compiler-driver g++-14 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure g++-14-release++2b --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+	./configure g++-14-release++23 --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
 
 basic-unix-test-configurations_clang++_versions_:
 	# clang-14

@@ -751,7 +751,8 @@ make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49
 #define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #elif defined(__GNUC__)
 // FIRST SEEN BROKEN IN GCC 13 and 12 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
-#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
+// also broken in g++-14???
+#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
 #else
 #define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy 0
 #endif

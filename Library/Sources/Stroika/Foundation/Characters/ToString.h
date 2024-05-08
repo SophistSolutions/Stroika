@@ -222,10 +222,12 @@ namespace Stroika::Foundation::Characters {
         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Characters/ToString.h:261:16: note: because 'std::formattable<std::pair<int, char>, wchar_t>' evaluated to false
 #endif
-#elif __cplusplus < 202100L /*202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412)
+#elif __cplusplus < 202302L /*202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) || (__cplusplus == 202302L && __GLIBCXX__ <= 20240412 )
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
+#endif
+#if !defined (__cpp_lib_formatters) || __cpp_lib_formatters < 202302L
             // available in C++23
             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
