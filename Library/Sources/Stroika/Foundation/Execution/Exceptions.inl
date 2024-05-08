@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Execution {
             return f ();
         }
         catch (...) {
-            using namespace Characters::Literals;
+            //using namespace Characters::Literals;
             //DbgTrace ("Mapping exception in TranslateExceptionToOptional to nullopt: {}"_f, current_exception ());
             using U = std::remove_cvref_t<std::invoke_result_t<F>>;
             return optional<U>{};
