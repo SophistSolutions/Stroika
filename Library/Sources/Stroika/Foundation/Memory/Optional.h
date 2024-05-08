@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Memory {
     /**
      *  Assign (overwriting) the value held by this optional (first argument) if one is present with destination (second) argument if engaged. Assigns from right to left.
      *
-     *  The point of this to to faciltate a common idiom, where you want to maintain an existing value unless you
+     *  The point of this to to facilitate a common idiom, where you want to maintain an existing value unless you
      *  get an update. This function is ANALAGOUS to
      *      if (o.has_value()) {
      *          destArgVal = *o;
@@ -160,9 +160,60 @@ namespace Stroika::Foundation::Memory {
     const T& ValueOfOrThrow (const optional<T>& t, const EXCEPT& throwIfNull = {});
 
     /**
+     *  wrappers on std c++23 monadic optional support, til we can assume c++23
+     */
+    template <typename T, class F>
+    constexpr auto And_Then (const optional<T>& o, F&& f)
+    {
+#if __cplusplus > 202302L || _HAS_CXX23 || (_LIBCPP_STD_VER >= 23)
+        return o.and_then (forward<F> (f));
+#else
+        if (*this)
+            return std::invoke (std::forward<F> (f), *o);
+        else
+            return std::remove_cvref_t<std::invoke_result_t<F, T>>{};
+#endif
+    }
+    /**
+     *  wrappers on std c++23 monadic optional support, til we can assume c++23
+     */
+    template <typename T, class F>
+    constexpr auto Or_Else (const optional<T>& o, F&& f)
+    {
+#if __cplusplus > 202302L || _HAS_CXX23 || (_LIBCPP_STD_VER >= 23)
+        return o.or_else (forward<F> (f));
+#else
+        if (o.has_value ()) {
+            return o;
+        }
+        else {
+            return forward<F> (f) ();
+        }
+#endif
+    }
+    /**
+     *  wrappers on std c++23 monadic optional support, til we can assume c++23
+     */
+    template <typename T, class F>
+    constexpr auto Transform (const optional<T>& o, F&& f)
+    {
+#if __cplusplus > 202302L || _HAS_CXX23 || (_LIBCPP_STD_VER >= 23)
+        return o.transform (forward<F> (f));
+#else
+        using U = std::remove_cv_t<std::invoke_result_t<F, T>>;
+        if (o.has_value ()) {
+            return optional<U>{forward<F> (f) (*o)};
+        }
+        else {
+            return optional<U>{};
+        }
+#endif
+    }
+
+    /**
      *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
      *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
-     *  derefrence and copy.
+     *  dereference and copy.
      *
      *  \par Example Usage
      *      \code
