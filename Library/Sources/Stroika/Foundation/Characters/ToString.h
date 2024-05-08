@@ -216,24 +216,15 @@ namespace Stroika::Foundation::Characters {
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
 
-#if 0
-    In file included from ./GUID.h:15:
-    /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Characters/ToString.h:261:16: error: static assertion failed
-    261 | static_assert (std::formattable<std::pair<int, char>, wchar_t>);
-        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Characters/ToString.h:261:16: note: because 'std::formattable<std::pair<int, char>, wchar_t>' evaluated to false
-#endif
-
 // 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
 #elif __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||              \
-    (__cplusplus == 202302L && __GLIBCXX__ <= 20240412)
+    (!defined (__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240412) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
 #endif
-
 // need to check _LIBCPP_STD_VER for LIBC++ and clang++16 on ubuntu 23.10
-#if (!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) && _LIBCPP_STD_VER >= 23)
+#if (!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
             // available in C++23
             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
@@ -278,6 +269,14 @@ static_assert (std::formattable<std::optional<int>, wchar_t>);
 static_assert (std::formattable<std::pair<int, char>, wchar_t>);
 static_assert (std::formattable<std::tuple<int>, wchar_t>);
 //static_assert (std::formattable<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but don't #include just for this
+#else
+static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::type_index, wchar_t>>);
+static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::exception_ptr, wchar_t>>);
+static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::type_index, wchar_t>>);
+static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::thread::id, wchar_t>>);
+static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, wchar_t>>);
+static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::optional<int>, wchar_t>>);
+//static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::tuple<int>, wchar_t>>);
 #endif
 
 /*
