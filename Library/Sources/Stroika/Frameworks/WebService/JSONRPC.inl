@@ -71,6 +71,8 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
     inline const Foundation::DataExchange::ObjectVariantMapper Response::kMapper = [] () {
         using namespace Foundation::DataExchange;
         ObjectVariantMapper m;
+        m += Error::kMapper;
+        m.AddCommonType<optional<Error>> ();
         // todo - could 'subclass' this to assure exactly one of result or error but not both, or maybe redo as
         // variant object so can be one thing or other?
         m.AddClass<Response> ({
