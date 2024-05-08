@@ -213,7 +213,8 @@ namespace Stroika::Foundation::Characters {
         // sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
 #if _MSC_VER
             // available in C++23
-            or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
+            or Configuration::IPair<remove_cvref_t<T>> or
+            Configuration::ITuple<remove_cvref_t<T>>
 
 #if 0
     In file included from ./GUID.h:15:
@@ -224,14 +225,15 @@ namespace Stroika::Foundation::Characters {
 #endif
 
 // 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
-#elif __cplusplus < 202101L  /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) || (__cplusplus == 202302L && __GLIBCXX__ <= 20240412 )
+#elif __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||              \
+    (__cplusplus == 202302L && __GLIBCXX__ <= 20240412)
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
 #endif
 
 // need to check _LIBCPP_STD_VER for LIBC++ and clang++16 on ubuntu 23.10
-#if (!defined (__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) && _LIBCPP_STD_VER >= 23)
+#if (!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) && _LIBCPP_STD_VER >= 23)
             // available in C++23
             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
