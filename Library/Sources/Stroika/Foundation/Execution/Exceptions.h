@@ -397,6 +397,15 @@ namespace Stroika::Foundation::Execution {
      */
     optional<error_code> GetAssociatedErrorCode (const exception_ptr& e) noexcept;
 
+    /**
+     *  Wrap the the argument function (typically a lambda) in an OPTIONAL of the argument type, and return nullopt - dropping the exception
+     *  on the floor.
+     * 
+     *  @todo When we support std c++23, do likewise for expected!!!
+     */
+    template <typename F>
+    inline auto TranslateExceptionToOptional (F&& f);
+
 }
 
 /*

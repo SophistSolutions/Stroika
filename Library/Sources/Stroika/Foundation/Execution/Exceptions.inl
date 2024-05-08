@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Execution {
     template <typename CALL>
     auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ())
     {
-        decltype (call ()) ret; // intentionally uninitialized since alway set at least once before read
+        decltype (call ()) ret; // intentionally uninitialized since always set at least once before read
         do {
             ret = call ();
             Execution::Thread::CheckForInterruption ();
@@ -210,6 +210,24 @@ namespace Stroika::Foundation::Execution {
     {
         if (returnValue == nullptr) [[unlikely]] {
             ThrowPOSIXErrNo (errno);
+        }
+    }
+
+    /*
+     ********************************************************************************
+     ************************** TranslateExceptionToOptional ************************
+     ********************************************************************************
+     */
+    template <typename F>
+    inline auto TranslateExceptionToOptional (F&& f)
+    {
+        try {
+            return f ();
+        }
+        catch (...) {
+            DbgTrace ("Mapping exception in TranslateExceptionToOptional to nullopt: "_f, current_exception ());
+            using U = std::remove_cvref_t<std::invoke_result_t<F>>;
+            return optional<U>{};
         }
     }
 
