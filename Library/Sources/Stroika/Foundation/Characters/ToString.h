@@ -222,12 +222,16 @@ namespace Stroika::Foundation::Characters {
         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Characters/ToString.h:261:16: note: because 'std::formattable<std::pair<int, char>, wchar_t>' evaluated to false
 #endif
-#elif __cplusplus < 202302L /*202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) || (__cplusplus == 202302L && __GLIBCXX__ <= 20240412 )
+
+// 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
+#elif __cplusplus < 202101L  /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) || (__cplusplus == 202302L && __GLIBCXX__ <= 20240412 )
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
 #endif
-#if !defined (__cpp_lib_formatters) || __cpp_lib_formatters < 202302L
+
+// need to check _LIBCPP_STD_VER for LIBC++ and clang++16 on ubuntu 23.10
+#if (!defined (__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) && _LIBCPP_STD_VER >= 23)
             // available in C++23
             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
@@ -258,7 +262,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroi
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
-#if __cplusplus > 202200L || _HAS_CXX23
+#if __cplusplus > 202200L || _HAS_CXX23 || (_LIBCPP_STD_VER >= 23)
 // various examples of things Stroika provides / assure support for regardless of C++ version
 static_assert (std::formattable<std::type_index, wchar_t>);
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
@@ -267,6 +271,7 @@ static_assert (std::formattable<std::thread::id, wchar_t>);
 static_assert (std::formattable<std::exception_ptr, wchar_t>);
 static_assert (std::formattable<std::type_index, wchar_t>);
 static_assert (std::formattable<std::filesystem::path, wchar_t>);
+static_assert (std::formattable<std::thread::id, wchar_t>);
 static_assert (std::formattable<std::optional<int>, wchar_t>);
 static_assert (std::formattable<std::pair<int, char>, wchar_t>);
 static_assert (std::formattable<std::tuple<int>, wchar_t>);
