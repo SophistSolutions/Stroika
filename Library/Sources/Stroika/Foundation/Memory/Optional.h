@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Memory {
         }
         else {
             return std::remove_cvref_t<std::invoke_result_t<F, T>>{};
-            }
+        }
 #endif
     }
     /**
