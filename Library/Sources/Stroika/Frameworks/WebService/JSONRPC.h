@@ -81,6 +81,10 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
 
         /**
          */
+        nonvirtual String ToString () const;
+
+        /**
+         */
         static const Foundation::DataExchange::ObjectVariantMapper kMapper;
     };
 
