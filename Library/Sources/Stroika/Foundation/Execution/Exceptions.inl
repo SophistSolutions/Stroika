@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowPOSIXErrNo (errno_t errNo)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx{L"Execution::ThrowPOSIXErrNo", L"(%d)", errNo};
+        TraceContenxtBumper tctx{"Execution::ThrowPOSIXErrNo", "{}"_f, errNo};
 #endif
         Require (errNo != 0);
 #if qPlatform_POSIX
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowSystemErrNo (int sysErr)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx{L"Execution::ThrowSystemErrNo (%d)", sysErr};
+        TraceContenxtBumper tctx{"Execution::ThrowSystemErrNo", "{}"_f, sysErr};
 #endif
         Require (sysErr != 0);
         error_code ec{sysErr, system_category ()};
@@ -225,7 +225,8 @@ namespace Stroika::Foundation::Execution {
             return f ();
         }
         catch (...) {
-            DbgTrace ("Mapping exception in TranslateExceptionToOptional to nullopt: "_f, current_exception ());
+            using namespace Characters::Literals;
+            //DbgTrace ("Mapping exception in TranslateExceptionToOptional to nullopt: {}"_f, current_exception ());
             using U = std::remove_cvref_t<std::invoke_result_t<F>>;
             return optional<U>{};
         }
