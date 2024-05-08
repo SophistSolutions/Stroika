@@ -168,10 +168,12 @@ namespace Stroika::Foundation::Memory {
 #if __cplusplus > 202302L || _HAS_CXX23 || (_LIBCPP_STD_VER >= 23)
         return o.and_then (forward<F> (f));
 #else
-        if (*this)
+        if (o.has_value ()) {
             return std::invoke (std::forward<F> (f), *o);
-        else
+        }
+        else {
             return std::remove_cvref_t<std::invoke_result_t<F, T>>{};
+            }
 #endif
     }
     /**
