@@ -210,19 +210,16 @@ namespace Stroika::Foundation::Characters {
                 not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
                                           qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
-        // sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
-#if _MSC_VER
-            // available in C++23
-            or Configuration::IPair<remove_cvref_t<T>> or
-            Configuration::ITuple<remove_cvref_t<T>>
 
+// sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
 // 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
-#elif __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||              \
+#if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||              \
     (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240412) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
             // available in C++23
             or Configuration::IPair<remove_cvref_t<T>> or
             Configuration::ITuple<remove_cvref_t<T>>
 #endif
+
 // need to check _LIBCPP_STD_VER for LIBC++ and clang++16 on ubuntu 23.10
 #if (!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
             // available in C++23
@@ -272,6 +269,9 @@ static_assert (std::formattable<std::tuple<int>, wchar_t>);
 #else
 static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::type_index, wchar_t>>);
 static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::exception_ptr, wchar_t>>);
+#if !qCompilerAndStdLib_FormatThreadId_Buggy
+static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::thread::id, wchar_t>>);
+#endif
 static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::type_index, wchar_t>>);
 static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::thread::id, wchar_t>>);
 static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, wchar_t>>);
