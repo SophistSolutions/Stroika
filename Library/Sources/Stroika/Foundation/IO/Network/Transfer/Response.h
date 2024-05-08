@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -57,10 +58,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *
      *      If the caller gets GetResponseStream() - then calls to GetBLOB() will fail. Note - we COULD have
      *      kept the bytes around from the response stream as it came in, but that could in principle be large,
-     *      and your probably using the Stream API to avoid having the entire thing in emmroy so we don't want
+     *      and your probably using the Stream API to avoid having the entire thing in memory so we don't want
      *      to needlessly thwart that.
      *
-     *      NOTE - as of 2014-10-08 - the only case thats implemented is the case of construction with a prefetched
+     *      NOTE - as of 2014-10-08 - the only case that's implemented is the case of construction with a prefetched
      *      BLOB, and then repsenting THAT as a binary stream if requested.
      *
      *  @todo    NOTE IMPLICATIONS ABOUT COIPYING.
@@ -68,9 +69,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *
      *          CTOR specifies this value and it cannot change and generally comes from request options.
      *          if streamed response, ILLEGAL to call GETBLOB() (throws IsStreamedResponse).
-     *          If streamed response, copy of Response object copies Stream itself, whcih is (cuz all streams are
-     *          logcially smart poitners to data) - so multiple readers interfere with one another. threadsafe byt
+     *          If streamed response, copy of Response object copies Stream itself, which is (cuz all streams are
+     *          logically smart pointers to data) - so multiple readers interfere with one another. threadsafe byt
      *          possibly not the expected behavior).
+     * 
+     *  @todo Subcalss from/Integrate with IO::Network::HTTP::Response
      */
     class Response {
     public:
@@ -84,7 +87,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         struct SSLResultInfo {
             String fSubjectCommonName; // hostname declared
             String fSubjectCompanyName;
-            String fStyleOfValidation; // a string saying how the cert was valided - for example 'Domain Controll Validated'
+            String fStyleOfValidation; // a string saying how the cert was valid - for example 'Domain Control Validated'
             String fIssuer;
 
             /**
@@ -138,7 +141,14 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
-         *  TBD how this will work - use with caution. Unclear if you call twice you get same stream. Want to evanutaly
+         *  Check the content-type of the argument (so far just JSON supported) and select the appropriate parser to return
+         *  the body/GetData as a VariantValue.
+         */
+        nonvirtual DataExchange::VariantValue GetBodyVariantValue ();
+
+    public:
+        /**
+         *  TBD how this will work - use with caution. Unclear if you call twice you get same stream. Want to eventually
          *  support delayed read (so return before all data read.
          *
          *  \par Example Usage

@@ -7,7 +7,8 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
@@ -36,9 +37,9 @@ String Response::SSLResultInfo::ToString () const
     sb << "Subject-Common-Name: "sv << fSubjectCommonName << ","sv;
     sb << "Subject-Company-Name: "sv << fSubjectCompanyName << ","sv;
     sb << "Issuer: "sv << fIssuer << ","sv;
-    sb << "Validation-Status: "sv << fValidationStatus << ","sv;
+    sb << "Validation-Status: "sv << fValidationStatus;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -71,9 +72,20 @@ String Response::ToString () const
     sb << "{"sv;
     sb << "Headers: "sv << fHeaders_ << ","sv;
     sb << "Status: "sv << fStatus_ << ","sv;
-    sb << "ServerEndpointSSLInfo_: "sv << fServerEndpointSSLInfo_ << ","sv;
+    sb << "ServerEndpointSSLInfo_: "sv << fServerEndpointSSLInfo_;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
+}
+
+DataExchange::VariantValue Response::GetBodyVariantValue ()
+{
+    if (auto oct = GetContentType ()) {
+        if (DataExchange::InternetMediaTypeRegistry::Get ().IsA (DataExchange::InternetMediaTypes::kJSON, *oct)) {
+            return DataExchange::Variant::JSON::Reader{}.Read (GetData ());
+        }
+    }
+    static const auto kExcept_ = Execution::RuntimeErrorException{"Unrecognized content type"sv};
+    Execution::Throw (kExcept_);
 }
 
 InputStream::Ptr<byte> Response::GetDataBinaryInputStream () const

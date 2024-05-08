@@ -96,7 +96,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          *  Access the HTTP request body Content-Type, if any given
-         *  A short-hand, equivilent to fetching headers().contentType(), provided because this is such a commonly accessed part of Request.
+         *  A short-hand, equivalent to fetching headers().contentType(), provided because this is such a commonly accessed part of Request.
          */
         Common::ExtendableProperty<optional<InternetMediaType>> contentType;
 

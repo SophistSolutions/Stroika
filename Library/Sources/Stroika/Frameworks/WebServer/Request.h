@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Request.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
@@ -57,6 +58,13 @@ namespace Stroika::Frameworks::WebServer {
          * Can call multiple times - but first time it blocks fetching data
          */
         nonvirtual Memory::BLOB GetBody ();
+
+    public:
+        /**
+         *  Check the content-type of the argument (so far just JSON supported) and select the appropriate parser to return
+         *  the body as a VariantValue. NOTE - this will block (calls GetBody()); and will throw if conversion problem/wrong contentType.
+         */
+        nonvirtual DataExchange::VariantValue GetBodyVariantValue ();
 
     public:
         /**

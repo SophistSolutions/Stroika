@@ -9,6 +9,8 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -74,6 +76,17 @@ Memory::BLOB Request::GetBody ()
         fBody_ = GetBodyStream ().ReadAll ();
     }
     return *fBody_;
+}
+
+DataExchange::VariantValue Request::GetBodyVariantValue ()
+{
+    if (auto oct = contentType ()) {
+        if (DataExchange::InternetMediaTypeRegistry::Get ().IsA (DataExchange::InternetMediaTypes::kJSON, *oct)) {
+            return DataExchange::Variant::JSON::Reader{}.Read (GetBody ());
+        }
+    }
+    static const auto kExcept_ = Execution::RuntimeErrorException{"Unrecognized content type"sv};
+    Execution::Throw (kExcept_);
 }
 
 Streams::InputStream::Ptr<byte> Request::GetBodyStream ()

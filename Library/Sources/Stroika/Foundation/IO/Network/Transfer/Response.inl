@@ -36,7 +36,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     {
         return HTTP::Exception::IsHTTPStatusOK (fStatus_);
     }
-
+    inline bool Response::GetFailed () const
+    {
+        return 400 <= fStatus_ and fStatus_ <= 599;
+    }
 }
 
 /*
