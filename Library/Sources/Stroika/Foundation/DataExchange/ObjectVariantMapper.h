@@ -86,11 +86,11 @@
  *                  to fill in, we could avoid this issue. However, doing so is NOT possible for the
  *                  automated 'struct' mapper (key). This is its core strategy - to construct an object and
  *                  then fill in (possibly a subset) of its fields. We would need to somehow automate
- *                  calling a particular CTOR instead and that seems tricky given C++'s meager metapramming
+ *                  calling a particular CTOR instead and that seems tricky given C++'s meager meta-programming
  *                  features.
  *
  *                  But I THINK it would be possible to define the TypeMappingDetails object to take EITHER
- *                  something in the currnet form, or something using "T" - and map between them. And then
+ *                  something in the current form, or something using "T" - and map between them. And then
  *                  users of a particular type (e.g. Range()) - could avoid calling the default ctor, and just
  *                  explicitly call the right CTOR.
  *
@@ -111,7 +111,7 @@
  *              sub-parts). Similarly - on the FromObject () code - generate a stream of 'write' like calls that
  *              contained atom Variants, and start-array/end-array/start-map/end-map calls.
  *
- *              This might allow this code to work better with a more effient json-reader/writer/xml/reader/writer
+ *              This might allow this code to work better with a more efficient json-reader/writer/xml/reader/writer
  *              that also used these sorts of intermediate objects.
  *
  *              Of course, this ALSO might be implementable without any API changes - just using a special 'rep' for
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          *  Structure to capture all the details of how to map between a VariantValue and an associated C++ structure.
-         *  This CAN be direclyly constructed, and passed into the ObjectVariantMapper (via the Add method), but more commonly
+         *  This CAN be directly constructed, and passed into the ObjectVariantMapper (via the Add method), but more commonly
          *  helpers like MakeCommonSerializer () or AddClass will be used.
          *
          *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
@@ -602,6 +602,19 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  Same as ToObject, but (just about) any exceptions mapped to just returning nullopt
+         * 
+         *  \note - if copying T produces an exception, that will still be propagated.
+         * 
+         *  The purpose of this method is to make it easier when the input source data may or may not contain the fields needed
+         *  to deserialize, and the caller wishes to map if they can, but simplify error handling (just ignore inability to read data)
+         *  in the case where it cannot be mapped).
+         */
+        template <typename T>
+        nonvirtual optional<T> ToObjectQuietly (const VariantValue& v) const;
+
+    public:
+        /**
          *  Returns the function that does the data mapping. This can be used as an optimization to
          *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
          */
@@ -624,7 +637,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          *  This creates serializers for many common types.
-         *      o   Bjjection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>
+         *      o   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>
          *      o   Collection<T>
          *      o   Traversal::DiscreteRange<T, TRAITS>
          *      o   KeyedCollection<T, KEY_TYPE, TRAITS>
@@ -674,7 +687,7 @@ namespace Stroika::Foundation::DataExchange {
          *  @see ResetToDefaultTypeRegistry () (int, short, String, etc).
          *
          *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesn't
-         *  fit what the deserailizer expects.
+         *  fit what the deserializer expects.
          *
          *  \note   For type Mapping<KEY,VALUE>, this could use either the mapping function
          *          MakeCommonSerializer_MappingWithStringishKey or MakeCommonSerializer_MappingAsArrayOfKeyValuePairs.
@@ -692,7 +705,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  @todo migrate this to be part of MakeCommonSerializer probably, but for now like AddClass, but less checking and doesnt add - just creates/returns
+         *  @todo migrate this to be part of MakeCommonSerializer probably, but for now like AddClass, but less checking and doesn't add - just creates/returns
          */
         template <typename T>
         static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
@@ -734,7 +747,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          *  This works on Any Mapping<KEY,VALUE>, where the Key can be Mapped to / from a String, using
-         *  an already defined typemapper (from KEY_TYPE to/from String) or be of type String.
+         *  an already defined type-mapper (from KEY_TYPE to/from String) or be of type String.
          *
          *  It produces a (JSON) output of { 'field1': value1, 'field2' : value2 ... } representation of the mapping.
          *

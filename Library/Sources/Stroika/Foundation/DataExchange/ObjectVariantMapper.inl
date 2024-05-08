@@ -305,6 +305,16 @@ namespace Stroika::Foundation::DataExchange {
         return ToObject<T> (ToObjectMapper<T> (), v);
     }
     template <typename T>
+    inline optional<T> ObjectVariantMapper::ToObjectQuietly (const VariantValue& v) const
+    {
+        try {
+            return ToObject<T> (ToObjectMapper<T> (), v);
+        }
+        catch (...) {
+            return nullopt;
+        }
+    }
+    template <typename T>
     inline VariantValue ObjectVariantMapper::FromObject (const FromObjectMapperType<T>& fromObjectMapper, const T& from) const
     {
         // define null fromObjectMapper as just retuning a null variant value
