@@ -404,7 +404,7 @@ namespace Stroika::Foundation::Execution {
      *  @todo When we support std c++23, do likewise for expected!!!
      */
     template <typename F>
-    inline auto TranslateExceptionToOptional (F&& f);
+    inline auto TranslateExceptionToOptional (F&& f) -> optional<remove_cvref_t<invoke_result_t<F>>>;
 
 }
 

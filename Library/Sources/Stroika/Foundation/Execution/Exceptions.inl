@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename F>
-    inline auto TranslateExceptionToOptional (F&& f)
+    inline auto TranslateExceptionToOptional (F&& f) -> optional<remove_cvref_t<invoke_result_t<F>>>
     {
         try {
             return f ();
@@ -227,8 +227,7 @@ namespace Stroika::Foundation::Execution {
         catch (...) {
             //using namespace Characters::Literals;
             //DbgTrace ("Mapping exception in TranslateExceptionToOptional to nullopt: {}"_f, current_exception ());
-            using U = std::remove_cvref_t<std::invoke_result_t<F>>;
-            return optional<U>{};
+            return nullopt;
         }
     }
 
