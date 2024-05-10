@@ -151,7 +151,7 @@ locale Configuration::FindNamedLocale (const Characters::String& iso2LetterLangu
  ******************** Configuration::FindNamedLocaleQuietly *********************
  ********************************************************************************
  */
-optional < locale> Configuration::FindNamedLocaleQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
+optional<locale> Configuration::FindNamedLocaleQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     if (auto o = FindLocaleNameQuietly (iso2LetterLanguageCode, iso2LetterTerritoryCode)) {
         return locale{o->AsNarrowSDKString ().c_str ()};
