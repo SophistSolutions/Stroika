@@ -77,6 +77,16 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().SetKeepAlives (keepAliveOptions);
     }
+    inline auto ConnectionOrientedStreamSocket::Ptr::GetTCPNoDelay () const -> bool
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        return _cref ().GetTCPNoDelay ();
+    }
+    inline void ConnectionOrientedStreamSocket::Ptr::SetTCPNoDelay (bool noDelay) const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        _ref ().SetTCPNoDelay (noDelay);
+    }
     inline shared_ptr<ConnectionOrientedStreamSocket::_IRep> ConnectionOrientedStreamSocket::Ptr::_GetSharedRep () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};

@@ -110,6 +110,7 @@ namespace {
         result.fAutomaticTCPDisconnectOnClose =
             Memory::NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
         result.fLinger = Memory::NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
+        result.fTCPNoDelay = Memory::NullCoalesce (result.fTCPNoDelay, Options::kDefault_TCPNoDelay);
         // result.fThreadPoolName; can remain nullopt
         result.fTCPBacklog = Memory::NullCoalesce (result.fTCPBacklog, ComputeConnectionBacklog_ (result));
 
@@ -121,7 +122,7 @@ namespace {
             // sporadic bug I'm seeing (hard to tell cuz what seems to happen is the web server not called, but Chrome debugger reports
             // CORS error and Chrome debugger not super clear here - not letting me see what it pulled from cache or even
             // mentioning - so I'm guessing - that it came from the cache.
-            // Anyhow, peicing things together, it appears that IF you are using CORS, you must set the vary header
+            // Anyhow, piecing things together, it appears that IF you are using CORS, you must set the vary header
             // to vary on origin.
             //
             // Note - we emit it as a default for all responses because https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary says:
@@ -253,6 +254,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"ConnectionManager::onConnect_", "s={}"_f, s};
 #endif
+    s.SetTCPNoDelay (*fEffectiveOptions_.fTCPNoDelay);
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_, *fEffectiveOptions_.fDefaultResponseHeaders,

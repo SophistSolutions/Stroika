@@ -88,9 +88,9 @@ namespace Stroika::Frameworks::WebServer {
 
             /**
              *  fDefaultResponseHeaders may be used to specify initial{default} values for some HTTP Response headers.
-             *  It can be used for specifying any non-standared HTTP headers to add to all responsed (like X-Foobar: value).
+             *  It can be used for specifying any non-standard HTTP headers to add to all responded (like X-Foobar: value).
              *  It can be used to specify a default 'Server' header.
-             *  This is equivilent to adding an interceptor early in the interceptor chain, and calling
+             *  This is equivalent to adding an interceptor early in the interceptor chain, and calling
              *      response.rwHeaders = *fDefaultResponseHeaders;
              * 
              *  Probably not a good idea to specify things like contentLength, etc here. That may produce bad results.
@@ -125,7 +125,7 @@ namespace Stroika::Frameworks::WebServer {
             /**
              *  This feature causes sockets to automatically flush their data - and avoid connection reset - when possible.
              *  This makes the closing socket process more costly and slow, so is optional, but is on by default because it makes
-             *  commmunications more releable.
+             *  communications more reliable.
              *
              *  Turn this on - especially - if you see connection reset when clients talk to the Stroika web-server (TCP RST sent).
              *
@@ -137,6 +137,13 @@ namespace Stroika::Frameworks::WebServer {
              * @see Socket::SetLinger () - SO_LINGER
              */
             optional<int> fLinger;
+
+            /**
+             *  Is the TCP_NODELAY algorithm being used? Generally - this increases latency, for the benefit of better bandwidth utilization.
+             * 
+             *  See https://brooker.co.za/blog/2024/05/09/nagle.html for hints about if its right for you?
+             */
+            optional<bool> fTCPNoDelay;
 
             /**
              * mostly for debugging - so easier to segrate names of threads if you have 
@@ -168,6 +175,7 @@ namespace Stroika::Frameworks::WebServer {
             static constexpr bool                                     kDefault_AutoComputeETagResponse{true};
             static constexpr Time::DurationSeconds                    kDefault_AutomaticTCPDisconnectOnClose{2.0s};
             static constexpr optional<int>                            kDefault_Linger{nullopt}; // intentionally optional-valued
+            static constexpr bool kDefault_TCPNoDelay{true}; // https://brooker.co.za/blog/2024/05/09/nagle.html (defaults to NO DELAY - disable Nagle - because we are carefully to only write once when the response is fully read)
         };
         static const Options kDefaultOptions;
 

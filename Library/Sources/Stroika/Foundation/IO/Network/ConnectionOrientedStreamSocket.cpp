@@ -260,10 +260,10 @@ namespace {
 #endif
 #if qPlatform_POSIX
             /*
-                 *  https://linux.die.net/man/2/write says "writes up to count bytes". So handle case where we get partial writes.
-                 *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
-                 *  docs aren't fully clear, so play it safe --LGP 2017-04-13
-                 */
+             *  https://linux.die.net/man/2/write says "writes up to count bytes". So handle case where we get partial writes.
+             *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
+             *  docs aren't fully clear, so play it safe --LGP 2017-04-13
+             */
             BreakWriteIntoParts_<byte> (start, end, numeric_limits<int>::max (), [this] (const byte* start, const byte* end) -> size_t {
                 Assert ((end - start) < numeric_limits<int>::max ());
                 ssize_t n = Handle_ErrNoResultInterruption ([this, &start, &end] () -> ssize_t { return ::write (fSD_, start, end - start); });
@@ -273,11 +273,11 @@ namespace {
             });
 #elif qPlatform_Windows
             /*
-                 *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
-                 *  file descriptors in windows implementation.
-                 *      WONT WORK:
-                 *          int       n   =   ::_write (fSD_, start, end - start);
-                 */
+             *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
+             *  file descriptors in windows implementation.
+             *      WONT WORK:
+             *          int       n   =   ::_write (fSD_, start, end - start);
+             */
             size_t maxSendAtATime = getsockopt<unsigned int> (SOL_SOCKET, SO_MAX_MSG_SIZE);
             BreakWriteIntoParts_<byte> (start, end, maxSendAtATime, [this, maxSendAtATime] (const byte* start, const byte* end) -> size_t {
                 Require (static_cast<size_t> (end - start) <= maxSendAtATime);
@@ -359,6 +359,16 @@ namespace {
             }
 #endif
         }
+        virtual bool GetTCPNoDelay () const override
+        {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            return static_cast<bool> (getsockopt<int> (IPPROTO_TCP, TCP_NODELAY));
+        }
+        virtual void SetTCPNoDelay (bool noDelay)
+        {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
+            setsockopt<int> (IPPROTO_TCP, TCP_NODELAY, noDelay);
+        }
         optional<Time::DurationSeconds> fAutomaticTCPDisconnectOnClose_;
 #if qDebug
         mutable atomic<int> fCurrentPendingReadsCount{};
@@ -388,7 +398,7 @@ Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::To
     }
 #endif
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

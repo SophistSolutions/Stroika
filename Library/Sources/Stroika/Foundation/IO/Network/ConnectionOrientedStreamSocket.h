@@ -210,6 +210,19 @@ namespace Stroika::Foundation::IO::Network {
              */
             nonvirtual void SetKeepAlives (const KeepAliveOptions& keepalive) const;
 
+        public:
+            /**
+             *  Is the TCP_NODELAY algorithm being used? Generally - this increases latency, for the benefit of better bandwidth utilization.
+             * 
+             *  See https://brooker.co.za/blog/2024/05/09/nagle.html for hints about if its right for you?
+             */
+            nonvirtual bool GetTCPNoDelay () const;
+
+        public:
+            /**
+             */
+            nonvirtual void SetTCPNoDelay (bool noDelay) const;
+
         protected:
             /**
              */
@@ -243,6 +256,8 @@ namespace Stroika::Foundation::IO::Network {
             virtual void             SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& waitFor)      = 0;
             virtual KeepAliveOptions GetKeepAlives () const                                                                 = 0;
             virtual void             SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                               = 0;
+            virtual bool             GetTCPNoDelay () const                                                                 = 0;
+            virtual void             SetTCPNoDelay (bool noDelay)                                                           = 0;
         };
 
         Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
