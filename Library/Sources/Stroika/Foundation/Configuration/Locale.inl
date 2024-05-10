@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Configuration {
      ********************** Configuration::ScopedUseLocale **************************
      ********************************************************************************
      */
-    inline ScopedUseLocale::ScopedUseLocale (const optional < locale >& l)
+    inline ScopedUseLocale::ScopedUseLocale (const optional<locale>& l)
     {
         if (l) {
             fPrev_ = locale::global (*l);
