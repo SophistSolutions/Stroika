@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Configuration {
         // From https://en.cppreference.com/w/cpp/locale/setlocale
         //      Can be "" for the user-preferred locale or "C" for the minimal locale
         // But https://en.cppreference.com/w/cpp/locale/locale/locale doesn't have similar language. So not clear
-        // this is guarnateed to work. But it seems to ...
+        // this is guaranteed to work. But it seems to ...
         //      -- LGP 2018-10-15
         return std::locale ("");
     }
@@ -25,13 +25,17 @@ namespace Stroika::Foundation::Configuration {
      ********************** Configuration::ScopedUseLocale **************************
      ********************************************************************************
      */
-    inline ScopedUseLocale::ScopedUseLocale (const locale& l)
-        : fPrev_{locale::global (l)}
+    inline ScopedUseLocale::ScopedUseLocale (const optional < locale >& l)
     {
+        if (l) {
+            fPrev_ = locale::global (*l);
+        }
     }
     inline ScopedUseLocale::~ScopedUseLocale ()
     {
-        IgnoreExceptionsForCall (locale::global (fPrev_));
+        if (fPrev_) {
+            IgnoreExceptionsForCall (locale::global (*fPrev_));
+        }
     }
 
 }

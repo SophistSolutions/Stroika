@@ -19,8 +19,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Create better subtype exception for locale not found (with fields for what not found).
- *
  *      @todo   I think GetPlatformDefaultLocale() can be optimized to use a static copy of locale("") since
  *              I believe C++ now guarantees multithreaded safe static construction and safe read only
  *              access to objects (even from multiple reader threads).
@@ -115,16 +113,33 @@ namespace Stroika::Foundation::Configuration {
     locale FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
 
     /**
+     */
+    optional<locale> FindNamedLocaleQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
+
+    /**
      *  Temporarily use the given argument locale.
+     *
+     *      \code
+     *          ScopedUseLocale useLocaleTmp{FindNamedLocaleQuietly("en", "us")};  // use the english US locale, if its available
+     *          do stuff with us locale (if available)
+     *      \endcode
+     *
+     *      \code
+     *          ScopedUseLocale useLocaleTmp{FindNamedLocale("en", "us")};  // use the english US locale, or throw
+     *          do stuff with us locale
+     *      \endcode
      */
     class ScopedUseLocale {
     private:
-        locale fPrev_;
+        optional<locale> fPrev_;
 
     public:
+        /**
+         *  if locale l provided, its used for the lifetime of the ScopedUseLocale locale (and on destructor the old locale is restored)
+         */
         ScopedUseLocale ()                       = delete;
         ScopedUseLocale (const ScopedUseLocale&) = delete;
-        ScopedUseLocale (const locale& l);
+        ScopedUseLocale (const optional<locale>& l);
         ~ScopedUseLocale ();
     };
 

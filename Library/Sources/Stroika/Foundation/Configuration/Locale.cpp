@@ -43,7 +43,7 @@ void Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
 
 /*
  ********************************************************************************
- ************************* Configuration::GetAvailableLocales *******************
+ *********************** Configuration::GetAvailableLocales *********************
  ********************************************************************************
  */
 #if 0
@@ -93,57 +93,68 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
     Require (iso2LetterTerritoryCode.length () == 2); // may lift this in the future and make it optional
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx
-    {"Configuration::FindLocaleName", "{},{}"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode);
+    Debug::TraceContextBumper ctx{"Configuration::FindLocaleName", "{},{}"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode};
 #endif
 
-        // This is a HORRIBLE way - but I know of no better (especially no better portable way).
-        // See todo for planned fixes
-        //  --LGP 2013-03-02
-        //
-        // Could make less heinous with memoizing, but not currently used much, and I plan todo much better impl...
-        set<String> part1{
-            iso2LetterLanguageCode,
-            iso2LetterLanguageCode.ToLowerCase (),
-            iso2LetterLanguageCode.ToUpperCase (),
-        };
-        static const set<String> part2{
-            "-"sv,
-            "_"sv,
-            "."sv,
-            " "sv,
-        };
-        set<String> part3{
-            iso2LetterTerritoryCode,
-            iso2LetterTerritoryCode.ToLowerCase (),
-            iso2LetterTerritoryCode.ToUpperCase (),
-        };
-        static const set<String> part4{
-            String{},
-            ".utf8"sv,
-        };
-        for (const auto& i1 : part1) {
-            for (const auto& i2 : part2) {
-                for (const auto& i3 : part3) {
-                    for (const auto& i4 : part4) {
+    // This is a HORRIBLE way - but I know of no better (especially no better portable way).
+    // See todo for planned fixes
+    //  --LGP 2013-03-02
+    //
+    // Could make less heinous with memoizing, but not currently used much, and I plan todo much better impl...
+    set<String> part1{
+        iso2LetterLanguageCode,
+        iso2LetterLanguageCode.ToLowerCase (),
+        iso2LetterLanguageCode.ToUpperCase (),
+    };
+    static const set<String> part2{
+        "-"sv,
+        "_"sv,
+        "."sv,
+        " "sv,
+    };
+    set<String> part3{
+        iso2LetterTerritoryCode,
+        iso2LetterTerritoryCode.ToLowerCase (),
+        iso2LetterTerritoryCode.ToUpperCase (),
+    };
+    static const set<String> part4{
+        String{},
+        ".utf8"sv,
+    };
+    for (const auto& i1 : part1) {
+        for (const auto& i2 : part2) {
+            for (const auto& i3 : part3) {
+                for (const auto& i4 : part4) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace ("***trying locale (i1 + i2 + i3 + i4)={}"_f, i1 + i2 + i3 + i4);
+                    DbgTrace ("***trying locale (i1 + i2 + i3 + i4)={}"_f, i1 + i2 + i3 + i4);
 #endif
-                        IgnoreExceptionsForCall (
-                            return String::FromNarrowSDKString (locale{(i1 + i2 + i3 + i4).AsNarrowSDKString ().c_str ()}.name ()));
-                    }
+                    IgnoreExceptionsForCall (return String::FromNarrowSDKString (locale{(i1 + i2 + i3 + i4).AsNarrowSDKString ().c_str ()}.name ()));
                 }
             }
         }
-        return nullopt;
     }
+    return nullopt;
+}
 
-    /*
+/*
  ********************************************************************************
  *************************** Configuration::FindNamedLocale *********************
  ********************************************************************************
  */
-    locale Configuration::FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
-    {
-        return locale{FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ()};
+locale Configuration::FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
+{
+    return locale{FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ()};
+}
+
+/*
+ ********************************************************************************
+ ******************** Configuration::FindNamedLocaleQuietly *********************
+ ********************************************************************************
+ */
+optional < locale> Configuration::FindNamedLocaleQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
+{
+    if (auto o = FindLocaleNameQuietly (iso2LetterLanguageCode, iso2LetterTerritoryCode)) {
+        return locale{o->AsNarrowSDKString ().c_str ()};
     }
+    return nullopt;
+}
