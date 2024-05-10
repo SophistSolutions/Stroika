@@ -1056,7 +1056,7 @@ namespace {
             const Iterable<String> kT1_{"a", "b"};
             const Iterable<String> kT2_{"a", "b", "c"};
 #if !qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
-            EXPECT_EQ (kT1_.Join (Characters::UnoverloadedToString<String>), "'a', 'b'");
+            EXPECT_EQ (kT1_.Join (Characters::UnoverloadedToString<String>), "a, b");
             EXPECT_EQ (kT1_.Join (Iterable<String>::kDefaultToStringConverter<String>), kT1_.Join ());
             EXPECT_EQ (kT1_.Join (Common::Identity{}, [] (auto l, auto r, bool) { return l + r; }), "ab");
             EXPECT_EQ (kT1_.Join (), "a, b");

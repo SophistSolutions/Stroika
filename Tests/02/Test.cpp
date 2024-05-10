@@ -1451,8 +1451,8 @@ namespace {
         EXPECT_EQ (ToString (3u, ios_base::hex), "0x3");
         EXPECT_EQ (ToString (3u), "3");
         EXPECT_TRUE (ToString (1.0).StartsWith ("1"));
-        EXPECT_EQ (ToString ("abc"), "'abc'");
-        EXPECT_EQ (ToString (String{"abc"}), "'abc'");
+        EXPECT_EQ (ToString ("abc"), "abc");
+        EXPECT_EQ (ToString (String{"abc"}), "abc");
         EXPECT_EQ (ToString ((initializer_list<int>{3, 4, 5})), "[ 3, 4, 5 ]");
         {
             using namespace Memory;
