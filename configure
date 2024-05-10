@@ -1050,6 +1050,9 @@ sub	SetDefaultForCompilerDriver_
 				}
 			}
 			if (getUbuntuVersion() == 23.10) {
+				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 12) {
+					$skipSanCuzBroken = true;
+				}
 				# with asan and ununtu 23.10, about 1/2 the tests fail (somewhat randomly, not always). --LGP 2024-05-07
 				if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 17.0) {
 					$skipSanCuzBroken = true;
