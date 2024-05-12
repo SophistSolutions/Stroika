@@ -6,6 +6,7 @@
 #if qPlatform_POSIX
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h> 
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -367,7 +368,7 @@ namespace {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             return static_cast<bool> (getsockopt<int> (IPPROTO_TCP, TCP_NODELAY));
         }
-        virtual void SetTCPNoDelay (bool noDelay)
+        virtual void SetTCPNoDelay (bool noDelay) override
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             setsockopt<int> (IPPROTO_TCP, TCP_NODELAY, noDelay);
