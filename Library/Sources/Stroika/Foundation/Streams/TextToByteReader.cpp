@@ -61,9 +61,11 @@ namespace {
         }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
+            // NB: CURRENTLY HARDWIRE CONVERT TO UTF8- but later allow params to specify convert-to
             Require (IsOpenRead ());
             Require (not intoBuffer.empty ());
             // first see if any partially translated bytes to return
+        Again:
             if (not fSrcBufferedSpan_.empty ()) [[unlikely]] {
                 auto copiedIntoSpan =
                     Memory::CopySpanData (fSrcBufferedSpan_.subspan (0, min (fSrcBufferedSpan_.size (), intoBuffer.size ())), intoBuffer);
@@ -72,25 +74,20 @@ namespace {
                 _fOffset += copiedIntoSpan.size ();
                 return intoBuffer.subspan (0, copiedIntoSpan.size ());
             }
-            // more likely - KISS for now - read one character from upstream and return appropriate number of bytes
+            // more likely - KISS for now - read one character from upstream, patch fSrcBufferedSpan_, and try again
             Assert (fSrcBufferedSpan_.empty ());
             Character readBuf[1];
             if (auto o = fSrc_.GetRepRWRef ().Read (span{readBuf}, blockFlag)) {
                 if (size_t nChars = o->size ()) {
-                    char8_t       buf[10];
-                    span<char8_t> convertedSpan = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
-                    auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoBuffer);
-                    if (copiedIntoSpan.size () < convertedSpan.size ()) {
-                        // save extra bytes in fSrcBufferedSpan_
-                        fSrcBufferedSpan_ =
-                            Memory::CopySpanData_StaticCast (convertedSpan.subspan (copiedIntoSpan.size ()), span<byte>{fSrcBufferedRawBytes_});
-                        Assert (1 <= fSrcBufferedSpan_.size () and fSrcBufferedSpan_.size () <= sizeof (fSrcBufferedRawBytes_));
+                    Assert (nChars == 1); // for now cuz we have small buffer - could enlarge
+                    fSrcBufferedSpan_ = Memory::SpanReInterpretCast<byte> (Characters::UTFConvert::kThe.ConvertSpan (
+                        span{readBuf, nChars}, Memory::SpanReInterpretCast<char8_t> (span{fSrcBufferedRawBytes_})));
+                    if (not fSrcBufferedSpan_.empty ()) {
+                        goto Again; // cuz it has data it can pull
                     }
-                    _fOffset += copiedIntoSpan.size ();
-                    return intoBuffer.subspan (0, copiedIntoSpan.size ());
                 }
                 else {
-                    // if we got here, nothing in our buf, and nothing upstream - EOF
+                    // if we got here (Read worked, but returned zero characters), nothing in our buf, and nothing upstream - EOF
                     return span<byte>{};
                 }
             }
