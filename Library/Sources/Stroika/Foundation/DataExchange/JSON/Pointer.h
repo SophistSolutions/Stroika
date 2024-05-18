@@ -17,8 +17,9 @@ namespace Stroika::Foundation::DataExchange::JSON {
     using Characters::String;
 
     /**
+     *  @see https://datatracker.ietf.org/doc/html/rfc6901/
      */
-    using JSONPointerType = String;
+    using PointerType = String;
 
 }
 

@@ -24,8 +24,8 @@ String JSON::Patch::OperationItemType::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "op: "sv << Characters::ToString (op) << ", "sv;
-    sb << "path: "sv << Characters::ToString (path) << ", "sv;
+    sb << "op: "sv << op << ", "sv;
+    sb << "path: "sv << path << ", "sv;
     if (value) {
         sb << "value: "sv << value;
     }

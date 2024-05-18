@@ -7,6 +7,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/JSON/Pointer.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 
@@ -35,7 +36,7 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
      */
     struct OperationItemType {
         OperationType          op;
-        JSONPointerType        path;
+        PointerType            path;
         optional<VariantValue> value;
 
         /**
@@ -59,6 +60,6 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "PATCH.inl"
+#include "Patch.inl"
 
 #endif /*_Stroika_Foundation_DataExchange_JSON_PATCH_h_*/
