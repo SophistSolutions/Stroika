@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t E>
     constexpr std::span<T, E> CopySpanData (span<const T, E> src, span<T, E> target)
     {
-        Require (src.size () <= target.size ());
+        Require (src.size_bytes () <= target.size_bytes ());
         Require (not Intersects (src, target));
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
         std::copy (src.begin (), src.end (), target.data ());
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Memory {
     template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
     constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
     {
-        Require (src.size () <= target.size ());
+        Require (src.size_bytes () <= target.size_bytes ());
         Require (not Intersects (src, target));
         TO_T* tb = target.data ();
         for (const auto& i : src) {

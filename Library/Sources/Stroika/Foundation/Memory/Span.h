@@ -99,9 +99,9 @@ namespace Stroika::Foundation::Memory {
      *  \brief Span-flavored memcpy/std::copy (copies from, to)
      *
      *  like std::copy, except copies the data the spans point to/reference. Target span maybe larger than src,
-     *  but must (require) be no smaller than src span.
+     *  but must (require) be no smaller than src span;
      * 
-     *  \req src.size () <= target.size ()
+     *  \req src.size_bytes () <= target.size_bytes ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
      *  \req not Intersects (src, target) - so non-overlapping
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
@@ -118,10 +118,13 @@ namespace Stroika::Foundation::Memory {
      *
      *  Same as CopySpanData, except does 'static cast' on data being copied.
      * 
+     *  \req src.size_bytes () <= target.size_bytes ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
+     *  \req not Intersects (src, target) - so non-overlapping
+     * 
      *  \returns the subspan of the target which was just filled in.
      * 
      *  \note sizeof (FROM_T) may differ from sizeof (TO_T). So this can be used to downshift char16_t data
-     *        to plain ASCII so long as the caller assures the source data is truely ascii first.
+     *        to plain ASCII so long as the caller assures the source data is truly ascii first.
      * 
      *  \req not Intersects (src, target) - so non-overlapping
      * 
