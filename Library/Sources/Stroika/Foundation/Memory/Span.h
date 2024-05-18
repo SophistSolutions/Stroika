@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Memory {
     /**
      *  Reinterpret a span of one thing, into a span of another (of the same total size in bytes).
      * 
-     *  This requirement of the same size in bytes means sizeof FROM_T must evently divide sizeof TO_T
+     *  This requirement of the same size in bytes means sizeof FROM_T must evenly divide sizeof TO_T
      * 
      *  \note - if you can tell that TO_T == std::byte obviously, then consider using std::as_bytes or std::as_writable_bytes
      */
