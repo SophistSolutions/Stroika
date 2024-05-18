@@ -41,17 +41,17 @@ ARG CHOCO_VERSION_ARG=""
 
 
 # install cygwin
-SHELL ["cmd", "/S", "/C"]
+SHELL ["powershell"]
 RUN choco install -y cygwin cyg-get
 # RUN choco install -y cyg-get
 
-# Add cygwin to the path
-SHELL ["powershell"]
-RUN  \
-    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
-    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
-RUN  \
-    [Environment]::SetEnvironmentVariable('HOME', 'c:\tools\cygwin\home', [EnvironmentVariableTarget]::Machine);
+# # Add cygwin to the path
+# SHELL ["powershell"]
+# RUN  \
+#     $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
+#     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
+# RUN  \
+#     [Environment]::SetEnvironmentVariable('HOME', 'c:\tools\cygwin\home', [EnvironmentVariableTarget]::Machine);
 
 # Install a bunch of components - mostly that Stroika builds will find handy
 # doxygen for generating docs - optional

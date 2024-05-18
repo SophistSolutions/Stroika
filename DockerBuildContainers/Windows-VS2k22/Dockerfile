@@ -25,15 +25,6 @@ FROM ${BASE_IMAGE}
 
 
 #
-# List of workloads and components to add from
-# https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?vs-2019&view=vs-2019
-#
-#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools \
-#    --add Microsoft.VisualStudio.Component.UniversalBuildTools \
-#    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
-#
-
-#
 # VS versions
 #       https://docs.microsoft.com/en-us/visualstudio/releases/2022/release-history
 #
@@ -53,14 +44,11 @@ ARG VS_17_9_2=https://download.visualstudio.microsoft.com/download/pr/5e7b923b-7
 ARG VS_17_9_3=https://download.visualstudio.microsoft.com/download/pr/472cc819-3436-4b61-a313-56f28c0243cc/4b19ecb2868ed96b49214937ce4b8a1916d81444203bbb70ee0516721e1e3026/vs_BuildTools.exe
 ARG VS_17_9_4=https://download.visualstudio.microsoft.com/download/pr/9b646c0b-a685-43ee-afa9-d8a12417dffd/d772a325302319628da424e7c9a9d8ad0223006994c6171c122fe65afddff915/vs_BuildTools.exe
 ARG VS_17_9_5=https://download.visualstudio.microsoft.com/download/pr/1afa33fc-e800-4714-9e19-31b928ea2572/37c03f9c6910a82640094dba06eeebe6cc50d7a6fe5f1090a8ad5c90c1715de6/vs_BuildTools.exe
+ARG VS_17_9_7=https://download.visualstudio.microsoft.com/download/pr/7e1f1b8d-73fe-448c-a4e0-0ea481025985/110c25702bb7e40f1c04da43e99afa3d54ee5adf45225908747ac26c1104b60a/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_9_5" \
+RUN Invoke-WebRequest "$env:VS_17_9_7" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
-
-## ALTERNATE COMPONENT LINES TO CONSIDER
-#    --add Microsoft.VisualStudio.Component.Windows10SDK.19041 \
-#    --add Microsoft.VisualStudio.Component.VC.143 \
 
 #
 # Where to look for list of these available components?
@@ -71,11 +59,15 @@ RUN Invoke-WebRequest "$env:VS_17_9_5" \
 #       https://learn.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2022
 #
 
-# ADD SOON Microsoft.VisualStudio.Component.VC.Modules.x86.x64
-
 # According to https://learn.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2022
 #   Microsoft.VisualStudio.Workload.VCTools contains many of these below components, but selecting the workload
 #   doesn't appear to do anything. So we have to install needed components manually anyhow...
+
+## ALTERNATE COMPONENT LINES TO CONSIDER
+#    --add Microsoft.VisualStudio.Component.Windows10SDK.19041 \
+#    --add Microsoft.VisualStudio.Component.VC.143 \
+
+# ADD SOON Microsoft.VisualStudio.Component.VC.Modules.x86.x64
 
 #
 # recommended or optional from Microsoft.VisualStudio.Workload.VCTools
