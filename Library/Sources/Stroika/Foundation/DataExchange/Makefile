@@ -32,6 +32,7 @@ Objs	:=	\
 SubDirs	:=	\
 	Archive \
 	Compression \
+	JSON \
 	Variant \
 	StructuredStreamEvents \
 	XML \

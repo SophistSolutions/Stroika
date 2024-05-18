@@ -217,6 +217,9 @@
     <Filter Include="Sources\DataExchange\XML\Providers">
       <UniqueIdentifier>{b9c2e3c6-3185-4bdc-9f3e-9c6b32952aad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\JSON">
+      <UniqueIdentifier>{a50ba3e7-577e-465c-9f89-a61b37a0c1fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -830,6 +833,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp">
       <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.cpp">
+      <Filter>Sources\DataExchange\JSON</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2192,6 +2198,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\LazyInitialized.h">
       <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Pointer.h">
+      <Filter>Sources\DataExchange\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.h">
+      <Filter>Sources\DataExchange\JSON</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3624,6 +3636,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\LazyInitialized.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Makefile">
+      <Filter>Sources\DataExchange\JSON</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Pointer.inl">
+      <Filter>Sources\DataExchange\JSON</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.inl">
+      <Filter>Sources\DataExchange\JSON</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -118,6 +118,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.cpp" />
@@ -479,6 +480,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Pointer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h" />
@@ -943,6 +946,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Pointer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md" />
