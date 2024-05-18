@@ -80,7 +80,6 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
 
 # Setup path to include msys tools (and mingw dir for jq)
 # ENV PATH="${PATH};${MSYS_ASDOS_DIR}\usr\bin;${MSYS_ASDOS_DIR}\mingw64\bin"
-
 SHELL ["powershell"]
 RUN  \
     $env:PATH =  $env:PATH + ';C:\msys64\usr\bin;C:\msys64\mingw64\bin'; \
@@ -90,7 +89,6 @@ RUN  \
 
 # Install a bunch of components - mostly that Stroika builds will find handy
 # xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16) - weirdly in vim package
-SHELL ["cmd", "/S", "/C"]
 RUN \
     pacman --noconfirm -S base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq vim && \
     pacman --noconfirm -Syuu
