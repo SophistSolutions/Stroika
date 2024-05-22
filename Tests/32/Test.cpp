@@ -1118,6 +1118,7 @@ namespace {
         using namespace Memory::Literals;
 // test case from https://datatracker.ietf.org/doc/html/rfc6901
 #if 0
+        // asserts out - SB OK - and seekable!
         static VariantValue kTestVariantxxx_ = DataExchange::Variant::JSON::Reader{}.Read (String{"{"
                                                                                                "\"foo\" : [ \"bar\", \"baz\" ],"
                                                                                                "\"\" : 0,"
@@ -1132,14 +1133,14 @@ namespace {
                                                                                                "}"sv});
 #endif
         static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read ("{"
-                                                                                        "\"foo\" : [ \"bar\", \"baz\" ],"
-                                                                                        "\"\" : 0"
+                                                                                        "\"foo\" : [ \"bar\", \"baz\" ]"
+                                                                                        ",\"\" : 0"
+                                                                                        ",\"a/b\" : 1"
+                                                                                        ",\"c%d\" : 2"
+                                                                                        ",\"e^f\" : 3"
+                                                                                        ",\"g|h\" : 4"
+                                                                                        ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
 #if 0
-                                                                                            " \"a/b\" : 1,"
-                                                                                            "  \"c%d\" : 2,"
-                                                                                            "\"e^f\" : 3,"
-                                                                                            "  \"g|h\" : 4,"
-                                                                                            "  \"i\\j\" : 5,"
                                                                                             //   "\"k\\\"l\": 6,\"
                                                                                       //      "  \" \" : 7,"
                                                                                             "  \"m~n\" : 8"
@@ -1149,6 +1150,17 @@ namespace {
         EXPECT_EQ (JSON::PointerType{"/foo"}.Apply (kTestVariant_), (VariantValue{Sequence<VariantValue>{"bar", "baz"}}));
         EXPECT_EQ (JSON::PointerType{"/foo/0"}.Apply (kTestVariant_), (VariantValue{"bar"}));
         EXPECT_EQ (JSON::PointerType{"/"}.Apply (kTestVariant_), (VariantValue{0}));
+        EXPECT_EQ (JSON::PointerType{"/a~1b"}.Apply (kTestVariant_), (VariantValue{1}));
+        EXPECT_EQ (JSON::PointerType{"/c%d"}.Apply (kTestVariant_), (VariantValue{2}));
+        EXPECT_EQ (JSON::PointerType{"/e^f"}.Apply (kTestVariant_), (VariantValue{3}));
+        EXPECT_EQ (JSON::PointerType{"/g|h"}.Apply (kTestVariant_), (VariantValue{4}));
+        EXPECT_EQ (JSON::PointerType{"/i\\j"}.Apply (kTestVariant_), (VariantValue{5}));
+
+#if 0
+    "/k\"l"      6
+    "/ "         7
+    "/m~0n"      8
+#endif
     }
 }
 #endif
