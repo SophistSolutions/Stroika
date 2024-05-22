@@ -20,6 +20,7 @@
 #if qHasFeature_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
+#include "Stroika/Foundation/DataExchange/JSON/Pointer.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Writer.h"
 #include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
@@ -1108,6 +1109,46 @@ namespace {
             sharedMemStream.CloseWrite ();
             EXPECT_TRUE (sharedMemStream.IsAtEOF ()); // now at EOF because input closed
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSONPointer_)
+    {
+        using namespace Memory::Literals;
+// test case from https://datatracker.ietf.org/doc/html/rfc6901
+#if 0
+        static VariantValue kTestVariantxxx_ = DataExchange::Variant::JSON::Reader{}.Read (String{"{"
+                                                                                               "\"foo\" : [ \"bar\", \"baz\" ],"
+                                                                                               "\"\" : 0,"
+                                                                                               " \"a/b\" : 1,"
+                                                                                               "  \"c%d\" : 2,"
+                                                                                               "\"e^f\" : 3,"
+                                                                                               "  \"g|h\" : 4,"
+                                                                                               "  \"i\\j\" : 5,"
+                                                                                               //   "\"k\\\"l\": 6,\"
+                                                                                               "  \" \" : 7,"
+                                                                                               "  \"m~n\" : 8"
+                                                                                               "}"sv});
+#endif
+        static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read ("{"
+                                                                                        "\"foo\" : [ \"bar\", \"baz\" ],"
+                                                                                        "\"\" : 0"
+#if 0
+                                                                                            " \"a/b\" : 1,"
+                                                                                            "  \"c%d\" : 2,"
+                                                                                            "\"e^f\" : 3,"
+                                                                                            "  \"g|h\" : 4,"
+                                                                                            "  \"i\\j\" : 5,"
+                                                                                            //   "\"k\\\"l\": 6,\"
+                                                                                      //      "  \" \" : 7,"
+                                                                                            "  \"m~n\" : 8"
+#endif
+                                                                                        "}"_blob);
+        EXPECT_EQ (JSON::PointerType{""}.Apply (kTestVariant_), kTestVariant_);
+        EXPECT_EQ (JSON::PointerType{"/foo"}.Apply (kTestVariant_), (VariantValue{Sequence<VariantValue>{"bar", "baz"}}));
+        EXPECT_EQ (JSON::PointerType{"/foo/0"}.Apply (kTestVariant_), (VariantValue{"bar"}));
+        EXPECT_EQ (JSON::PointerType{"/"}.Apply (kTestVariant_), (VariantValue{0}));
     }
 }
 #endif
