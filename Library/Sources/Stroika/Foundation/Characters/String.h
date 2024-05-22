@@ -1806,20 +1806,20 @@ namespace Stroika::Foundation::Characters {
 
     inline namespace Literals {
         /**
-     *  \brief shorthand for String::FromStringConstant { ARGUMENT }
-     *
-     *  \par Example:
-     *      \code
-     *          String s1 = "some-string"_k;
-     *          String s2 = String::FromStringConstant ("some-string");
-     *          String s3 = "some-string"sv;           // in most cases this will also work fine, and is preferable (since sv is part of C++ standard)
-     *      \endcode
-     *
-     *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
-     *        so it will work in some overload contexts where sv would fail.
-     * 
-     *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Latin1)
-     */
+         *  \brief shorthand for String::FromStringConstant { ARGUMENT }
+         *
+         *  \par Example:
+         *      \code
+         *          String s1 = "some-string"_k;
+         *          String s2 = String::FromStringConstant ("some-string");
+         *          String s3 = "some-string"sv;           // in most cases this will also work fine, and is preferable (since sv is part of C++ standard)
+         *      \endcode
+         *
+         *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
+         *        so it will work in some overload contexts where sv would fail.
+         * 
+         *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Latin1)
+         */
         String operator"" _k (const char* s, size_t len);
         String operator"" _k (const wchar_t* s, size_t len);
     }
