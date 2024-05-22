@@ -82,9 +82,8 @@ namespace {
                     Assert (nChars == 1); // for now cuz we have small buffer - could enlarge
                     fSrcBufferedSpan_ = Memory::SpanReInterpretCast<byte> (Characters::UTFConvert::kThe.ConvertSpan (
                         span{readBuf, nChars}, Memory::SpanReInterpretCast<char8_t> (span{fSrcBufferedRawBytes_})));
-                    if (not fSrcBufferedSpan_.empty ()) {
-                        goto Again; // cuz it has data it can pull
-                    }
+                    Assert (not fSrcBufferedSpan_.empty ()); // cuz at least one character
+                    goto Again;                              // cuz it has data it can pull
                 }
                 else {
                     // if we got here (Read worked, but returned zero characters), nothing in our buf, and nothing upstream - EOF
