@@ -44,9 +44,9 @@ namespace Stroika::Foundation::Memory {
 
     /**
      *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
-     *  change (except by assignement - being assigned over).
+     *  change (except by assignment - being assigned over).
      * 
-     *  A BLOB can be thought of as a 'forever' span<cosnt byte>.
+     *  A BLOB can be thought of as a 'forever' span<const byte>.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  \note its ILLEGAL and may cause grave disorder, if the caller changes the data passed to Attach() while the derived BLOB (or a copy) exists.
          * 
-         *  Typically this is intended to be used to wrap permanant constant data, such as static (text space) read-only data, ROM stuff, etc. It can be used to wrap
+         *  Typically this is intended to be used to wrap permanent constant data, such as static (text space) read-only data, ROM stuff, etc. It can be used to wrap
          *  data in memory mapped files, but IFF that file mapping will remain permanent (and data immutable). USE WITH CAUTION!
          * 
          *  \see also AttachAndDelete
@@ -443,6 +443,22 @@ namespace Stroika::Foundation::Memory {
 
         nonvirtual const _IRep& operator= (const _IRep&) = delete;
     };
+
+    inline namespace Literals {
+
+        /**
+         * @brief alias for BLOB::Attach - so treats argument as BLOB of bytes
+         *
+         *  \par Example Usage
+         *      \code
+         *           BLOB    b1  =   "hello"_blob;
+         *           Assert (b.size () == 5);
+         *           Assert (b[0] == static_cast<byte> ('h'));
+         *      \endcode
+         */
+        inline BLOB operator"" _blob (const char* str, size_t len);
+
+    }
 
 }
 

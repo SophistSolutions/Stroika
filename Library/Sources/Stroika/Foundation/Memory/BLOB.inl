@@ -333,4 +333,12 @@ namespace Stroika::Foundation::Memory {
         return (lSize < rSize) ? strong_ordering::less : strong_ordering::greater;
     }
 
+    inline namespace Literals {
+        inline BLOB operator"" _blob (const char* str, size_t len)
+        {
+            return BLOB::Attach (span<const byte>{reinterpret_cast<const byte*> (str), len});
+        }
+
+    }
+
 }

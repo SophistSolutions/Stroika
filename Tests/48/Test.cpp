@@ -276,6 +276,12 @@ namespace {
             auto           b2           = BLOB::FromBase64 (b2s);
             EXPECT_EQ (b1, b2);
         }
+        {
+            using namespace Memory;
+            auto b = "hello"_blob;
+            EXPECT_EQ (b.size (), 5);
+            EXPECT_EQ (b[0], static_cast<byte> ('h'));
+        }
     }
 }
 
