@@ -17,6 +17,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=	\
 	$(ObjDir)Patch${OBJ_SUFFIX}\
+	$(ObjDir)Pointer${OBJ_SUFFIX}\
 
 
 all:	$(Objs) $(SubDirs)

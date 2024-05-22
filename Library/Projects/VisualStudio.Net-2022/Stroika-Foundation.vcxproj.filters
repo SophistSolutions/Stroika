@@ -837,6 +837,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.cpp">
       <Filter>Sources\DataExchange\JSON</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Pointer.cpp">
+      <Filter>Sources\DataExchange\JSON</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">

@@ -35,9 +35,8 @@ String JSON::Patch::OperationItemType::ToString () const
 
 const DataExchange::ObjectVariantMapper JSON::Patch::OperationItemType::kMapper = [] () {
     ObjectVariantMapper mapper;
+    mapper += JSON::PointerType::kMapper;
     mapper.AddCommonType<OperationType> ();
-    mapper.AddCommonType<String> ();
-    mapper.AddCommonType<optional<String>> ();
     mapper.AddCommonType<optional<VariantValue>> ();
     mapper.AddClass<OperationItemType> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
         {"op"sv, StructFieldMetaInfo{&OperationItemType::op}},

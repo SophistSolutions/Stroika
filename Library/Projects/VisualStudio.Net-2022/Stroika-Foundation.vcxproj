@@ -119,6 +119,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Pointer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.cpp" />
