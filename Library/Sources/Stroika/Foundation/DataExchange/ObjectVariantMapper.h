@@ -417,6 +417,18 @@ namespace Stroika::Foundation::DataExchange {
          *              }
          *          );
          *      \endcode
+         * 
+         *      \code
+         *          inline const DataExchange::ObjectVariantMapper PointerType::kMapper = [] () {
+         *              DataExchange::ObjectVariantMapper mapper;
+         *              mapper.Add<PointerType> (
+         *                  [] (const ObjectVariantMapper& mapper, const PointerType* obj) -> VariantValue { return obj->As<String> (); },
+         *                  [] (const ObjectVariantMapper& mapper, const VariantValue& d, PointerType* intoObj) -> void {
+         *                      *intoObj = PointerType{d.As<String> ()};
+         *                  });
+         *              return mapper;
+         *          }();
+         *      \endcode
          *
          */
         nonvirtual void Add (const TypeMappingDetails& s);
