@@ -32,14 +32,11 @@ SHELL ["powershell"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
 # The default version of CHOCO CYGWIN fails to install as of 2024-03-08
-# Adding specific version to install worked around the problem
+# Adding specific version to install worked around the problem (no longer issue as of 2024-05-23, but keep around note for a bit)
 # ARG CHOCO_VERSION_ARG="--version 3.5.1"
 ARG CHOCO_VERSION_ARG=""
-#ARG CHOCO_VERSION_ARG = --version 3.5.1
-
 
 # install cygwin
-SHELL ["powershell"]
 RUN choco install -y cygwin cyg-get
 
 # # Add cygwin to the path

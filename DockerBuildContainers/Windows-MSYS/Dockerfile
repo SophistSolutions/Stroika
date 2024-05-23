@@ -57,13 +57,13 @@ FROM ${BASE_IMAGE}
 ARG MSYS_DIR=c:/msys64/
 ARG MSYS_ASDOS_DIR=c:\msys64
 ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
-ARG MSYS_20220118=https://github.com/msys2/msys2-installer/releases/download/2022-01-18/msys2-base-x86_64-20220118.sfx.exe
 ARG MSYS_20220904=https://github.com/msys2/msys2-installer/releases/download/2022-09-04/msys2-base-x86_64-20220904.sfx.exe
 ARG MSYS_20230127=https://github.com/msys2/msys2-installer/releases/download/2023-01-27/msys2-base-x86_64-20230127.sfx.exe
+ARG MSYS_20240507=https://github.com/msys2/msys2-installer/releases/download/2024-05-07/msys2-base-x86_64-20240507.sfx.exe
 SHELL ["powershell"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
   [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
-  iex ((New-Object System.Net.WebClient).DownloadFile("$env:MSYS_20230127",'msys2.exe')); \
+  iex ((New-Object System.Net.WebClient).DownloadFile("$env:MSYS_20240507",'msys2.exe')); \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
   function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
@@ -82,7 +82,6 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
 # Setup path to include msys tools (and mingw dir for jq)
 # ENV PATH="${PATH};${MSYS_ASDOS_DIR}\usr\bin;${MSYS_ASDOS_DIR}\mingw64\bin"
 #
-SHELL ["powershell"]
 RUN  \
     $env:PATH =  $env:PATH + ';C:\msys64\usr\bin;C:\msys64\mingw64\bin'; \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
@@ -91,8 +90,6 @@ RUN  \
 
 # Install a bunch of components - mostly that Stroika builds will find handy
 # xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16) - weirdly in vim package
-# SHELL ["cmd", "/S", "/C"]
-SHELL ["powershell"]
 RUN \
     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
     msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq vim'; \
@@ -103,7 +100,6 @@ COPY Windows-MSYS/.bash_profile $MSYS_DIR/home/
 
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # and much worse with windows (in part due to available shell commands)
-# CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
 CMD ["bash.exe", "--login"]
 
 ## @todo - NOT SURE A GOOD IDEA - EXPLAIN WHY WE CARE - think had todo with runnning -exec and coming up in a reasonable spot? And maybe
