@@ -26,12 +26,16 @@ FROM ${BASE_IMAGE}
 # ]
 # https://unrealcontainers.com/docs/environments/local-windows-10
 
-# install choco
+# install choco (from https://chocolatey.org/install#completely-offline-install)
 SHELL ["powershell"]
-ENV CHOCO_URL=https://chocolatey.org/install.ps1
-RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
- [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
- iex ((New-Object System.Net.WebClient).DownloadString("$env:CHOCO_URL"));
+
+## 1.1.1.1
+# MAYBE WORKAROUND NETWORKING PROBLEM
+# RUN \
+#     $n=Get-NetAdapter \
+#     Set-DnsClientServerAddress -InterfaceAlias $n[0].Name -ServerAddresses("8.8.8.8","8.8.4.4")
+
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
 # The default version of CHOCO CYGWIN fails to install as of 2024-03-08
 # Adding specific version to install worked around the problem
