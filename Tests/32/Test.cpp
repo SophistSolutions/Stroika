@@ -1204,7 +1204,7 @@ namespace {
             OperationItemType o{.op = OperationType::eAdd, .path = JSON::PointerType{"/foo/-"sv}, .value = "newItem"sv};
             VariantValue      vv = o.Apply (kTestVariant_);
             EXPECT_EQ (JSON::PointerType{"/foo"sv}.Apply (vv), (VariantValue{Sequence<VariantValue>{"bar"sv, "baz"sv, "newItem"sv}}));
-            EXPECT_EQ (JSON::PointerType{"/ "}.Apply (vv), (VariantValue{7}));  // only changed what we wanted to
+            EXPECT_EQ (JSON::PointerType{"/ "}.Apply (vv), (VariantValue{7})); // only changed what we wanted to
         }
         {
             OperationItemType o{.op = OperationType::eAdd, .path = JSON::PointerType{"/foo/0"sv}, .value = "newItem"sv};
@@ -1217,7 +1217,7 @@ namespace {
                                     "baz"sv,
                                 }}));
             EXPECT_EQ (JSON::PointerType{"/foo"sv}.Apply (vv), (VariantValue{Sequence<VariantValue>{"newItem"sv, "bar"sv, "baz"sv}}));
-            EXPECT_EQ (JSON::PointerType{"/ "}.Apply (vv), (VariantValue{7}));  // only changed what we wanted to
+            EXPECT_EQ (JSON::PointerType{"/ "}.Apply (vv), (VariantValue{7})); // only changed what we wanted to
         }
     }
 }
