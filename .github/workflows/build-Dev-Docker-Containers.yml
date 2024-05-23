@@ -100,12 +100,12 @@ jobs:
           # Was running out of space, and doesn't seem to be commandline way to set storage opts, so
           # add --storage-opts ["size=60GB"] or some such, to this file, and see if it works better, but not needed for now --LGP 2024-02-26
           echo "C:/ProgramData/Docker/config/daemon.json:" -n ; cat "C:/ProgramData/Docker/config/daemon.json"
-      - name: Build Windows Container Images (STEP1-vs2k22)
+      - name: Build Windows Container Images (sophistsolutionsinc/stroika-buildvm-windows-vs2k22)
         # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
         #   DIDNT WORKmake --directory DockerBuildContainers --no-print-directory EXTRA_DOCKER_BUILD_ARGS="--storage-opt 'size=50GB'" sophistsolutionsinc/stroika-buildvm-windows-vs2k22
         run: |
           make --directory DockerBuildContainers --no-print-directory sophistsolutionsinc/stroika-buildvm-windows-vs2k22
-      - name: Build Windows Container Images
+      - name: Build Windows Container Images (build-images)
         run: |
           make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_images }}" build-images
       - name: Tag Windows Container Images
