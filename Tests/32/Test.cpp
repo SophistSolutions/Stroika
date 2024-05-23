@@ -43,6 +43,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
@@ -1200,9 +1201,23 @@ namespace {
 
         using namespace DataExchange::JSON::Patch;
         {
-            OperationItemType o{.op = OperationType::eAdd, .path = JSON::PointerType{"/foo/-"}, .value = "newItem"sv};
+            OperationItemType o{.op = OperationType::eAdd, .path = JSON::PointerType{"/foo/-"sv}, .value = "newItem"sv};
             VariantValue      vv = o.Apply (kTestVariant_);
-            EXPECT_EQ (JSON::PointerType{"/foo"}.Apply (vv), (VariantValue{Sequence<VariantValue>{"bar", "baz", "newItem"}}));
+            EXPECT_EQ (JSON::PointerType{"/foo"sv}.Apply (vv), (VariantValue{Sequence<VariantValue>{"bar"sv, "baz"sv, "newItem"sv}}));
+            EXPECT_EQ (JSON::PointerType{"/ "}.Apply (vv), (VariantValue{7}));  // only changed what we wanted to
+        }
+        {
+            OperationItemType o{.op = OperationType::eAdd, .path = JSON::PointerType{"/foo/0"sv}, .value = "newItem"sv};
+            VariantValue      vv = o.Apply (kTestVariant_);
+
+            DbgTrace ("1={}"_f, JSON::PointerType{"/foo"sv}.Apply (vv));
+            DbgTrace ("2={}"_f, (VariantValue{Sequence<VariantValue>{
+                                    "newItem"sv,
+                                    "bar"sv,
+                                    "baz"sv,
+                                }}));
+            EXPECT_EQ (JSON::PointerType{"/foo"sv}.Apply (vv), (VariantValue{Sequence<VariantValue>{"newItem"sv, "bar"sv, "baz"sv}}));
+            EXPECT_EQ (JSON::PointerType{"/ "}.Apply (vv), (VariantValue{7}));  // only changed what we wanted to
         }
     }
 }

@@ -39,24 +39,24 @@ VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
     using SeqElt        = Context::SeqElt;
     VariantValue result = v;
     // @todo - very rough draft
-    DbgTrace ("*this={}"_f, *this);
+    //DbgTrace ("*this={}"_f, *this);
     switch (op) {
         case OperationType::eAdd: {
             if (optional<tuple<Context, VariantValue>> oMatch = this->path.ApplyWithContext (v)) {
-                DbgTrace ("oMa={}"_f, oMatch);
+                //DbgTrace ("oMa={}"_f, oMatch);
                 Context c = get<Context> (*oMatch);
                 if (c.fStack.empty ()) {
                     Execution::Throw (Execution::RuntimeErrorException{"? maybe sb assert"sv});
                 }
                 auto         stackTop = c.fStack.Pop ();
                 VariantValue vv       = get<VariantValue> (*oMatch); // not sure what this means? IGNORE?
-                DbgTrace ("c={}"_f, c);
-                DbgTrace ("vv={}"_f, vv);
-                DbgTrace ("value2add={}"_f, this->value);
+                //DbgTrace ("c={}"_f, c);
+                //DbgTrace ("vv={}"_f, vv);
+                //DbgTrace ("value2add={}"_f, this->value);
                 if (auto so = get_if<SeqElt> (&stackTop)) {
                     so->fOrigValue.Insert (so->fIndex, this->value);
                     result = c.ConstructNewFrom (VariantValue{so->fOrigValue});
-                    DbgTrace ("result={}"_f, result);
+                    //DbgTrace ("result={}"_f, result);
                 }
                 //roughly - take the current value (or stack top) - and apply add result to it and pop stack back to new value
             }
@@ -71,7 +71,7 @@ VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
             AssertNotImplemented ();
         } break;
     }
-    DbgTrace ("returning {}"_f, result);
+    //DbgTrace ("returning {}"_f, result);
     return result;
 }
 
