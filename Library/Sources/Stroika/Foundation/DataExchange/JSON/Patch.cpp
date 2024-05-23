@@ -35,7 +35,7 @@ String JSON::Patch::OperationItemType::ToString () const
 
 VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
 {
-    Debug::TraceContextBumper ctx{"JSON::Patch::OperationItemType::Apply", "*this={},v={}", *this, v};
+    Debug::TraceContextBumper ctx{"JSON::Patch::OperationItemType::Apply", "*this={},v={}"_f, *this, v};
     using Context       = JSON::PointerType::Context;
     using MapElt        = Context::MapElt;
     using SeqElt        = Context::SeqElt;
