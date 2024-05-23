@@ -35,11 +35,12 @@ String JSON::Patch::OperationItemType::ToString () const
 
 VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
 {
+    Debug::TraceContextBumper ctx{"JSON::Patch::OperationItemType::Apply", "*this={},v={}", *this, v};
     using Context       = JSON::PointerType::Context;
+    using MapElt        = Context::MapElt;
     using SeqElt        = Context::SeqElt;
     VariantValue result = v;
     // @todo - very rough draft
-    //DbgTrace ("*this={}"_f, *this);
     switch (op) {
         case OperationType::eAdd: {
             if (optional<tuple<Context, VariantValue>> oMatch = this->path.ApplyWithContext (v)) {
@@ -53,12 +54,18 @@ VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
                 //DbgTrace ("c={}"_f, c);
                 //DbgTrace ("vv={}"_f, vv);
                 //DbgTrace ("value2add={}"_f, this->value);
-                if (auto so = get_if<SeqElt> (&stackTop)) {
+                if (auto mo = get_if<MapElt> (&stackTop)) {
+                    mo->fOrigValue.Add (mo->fEltName, this->value);
+                    result = c.ConstructNewFrom (VariantValue{mo->fOrigValue});
+                }
+                else if (auto so = get_if<SeqElt> (&stackTop)) {
                     so->fOrigValue.Insert (so->fIndex, this->value);
                     result = c.ConstructNewFrom (VariantValue{so->fOrigValue});
-                    //DbgTrace ("result={}"_f, result);
                 }
-                //roughly - take the current value (or stack top) - and apply add result to it and pop stack back to new value
+                else {
+                    AssertNotReached (); // cuz must be one of those two types in variant
+                }
+                //DbgTrace ("result={}"_f, result);
             }
             else {
                 Execution::Throw (Execution::RuntimeErrorException{"operator add target not found"sv});
@@ -68,7 +75,7 @@ VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
             AssertNotImplemented ();
         } break;
         default: {
-            AssertNotImplemented ();
+            AssertNotReached ();
         } break;
     }
     //DbgTrace ("returning {}"_f, result);
