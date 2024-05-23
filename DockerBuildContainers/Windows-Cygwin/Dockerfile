@@ -29,12 +29,6 @@ FROM ${BASE_IMAGE}
 # install choco (from https://chocolatey.org/install#completely-offline-install)
 SHELL ["powershell"]
 
-## 1.1.1.1
-# MAYBE WORKAROUND NETWORKING PROBLEM
-# RUN \
-#     $n=Get-NetAdapter \
-#     Set-DnsClientServerAddress -InterfaceAlias $n[0].Name -ServerAddresses("8.8.8.8","8.8.4.4")
-
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
 # The default version of CHOCO CYGWIN fails to install as of 2024-03-08
@@ -47,15 +41,13 @@ ARG CHOCO_VERSION_ARG=""
 # install cygwin
 SHELL ["powershell"]
 RUN choco install -y cygwin cyg-get
-# RUN choco install -y cyg-get
 
 # # Add cygwin to the path
-# SHELL ["powershell"]
-# RUN  \
-#     $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
-#     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
-# RUN  \
-#     [Environment]::SetEnvironmentVariable('HOME', 'c:\tools\cygwin\home', [EnvironmentVariableTarget]::Machine);
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
+    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
+RUN  \
+    [Environment]::SetEnvironmentVariable('HOME', 'c:\tools\cygwin\home', [EnvironmentVariableTarget]::Machine);
 
 # Install a bunch of components - mostly that Stroika builds will find handy
 # doxygen for generating docs - optional
@@ -68,7 +60,6 @@ COPY Windows-Cygwin/.bash_profile ./tools/cygwin/home
 
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # and much worse with windows (in part due to available shell commands)
-# CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
 CMD ["bash.exe", "--login"]
 
 ### NOTE TO RUN
