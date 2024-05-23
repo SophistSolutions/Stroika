@@ -24,6 +24,7 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
     // SEE https://www.rfc-editor.org/rfc/rfc6902
 
     /**
+     *  @todo more OperationType values  
      */
     enum class OperationType {
         eAdd,
@@ -39,6 +40,8 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
         PointerType            path;
         optional<VariantValue> value;
 
+        nonvirtual VariantValue Apply (const VariantValue& v) const;
+
         /**
          *  @see Characters::ToString ();
          */
@@ -50,6 +53,9 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
     /**
      */
     struct OperationItemsType : Containers::Sequence<OperationItemType> {
+
+        nonvirtual VariantValue Apply (const VariantValue& v) const;
+
         static const DataExchange::ObjectVariantMapper kMapper;
     };
 

@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Stack.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 
@@ -20,6 +21,7 @@ namespace Stroika::Foundation::DataExchange::JSON {
 
     using Characters::String;
     using Containers::Sequence;
+    using Containers::Stack;
 
     /**
      *  @see https://datatracker.ietf.org/doc/html/rfc6901/
@@ -35,9 +37,40 @@ namespace Stroika::Foundation::DataExchange::JSON {
 
     public:
         /**
+         *  When applying a JSONPointer to a VariantValue, sometimes you just want the result. Sometimes
+         *  you want info about the surrounding object (to modify).
+         */
+        struct Context {
+            struct MapElt {
+                Mapping<String, VariantValue> fOrigValue;
+                String                        fEltName;
+                bool operator== (const MapElt&) const = default; // @todo understand why this declaration needed (Iterable<>find...)
+            };
+            struct SeqElt {
+                Sequence<VariantValue> fOrigValue;
+                size_t                 fIndex;
+
+                bool operator== (const SeqElt&) const = default; // @todo understand why this declaration needed (Iterable<>find...)
+            };
+            Stack<variant<MapElt, SeqElt>> fStack;
+
+            /**
+             */
+            optional<VariantValue> ConstructNewFrom (const optional<VariantValue>& leafToUse) const;
+        };
+
+    public:
+        /**
          *  Some references might be to non-existent objects, so return nullopt in that case - like bad array reference, or missing object member.
          */
         nonvirtual optional<VariantValue> Apply (const VariantValue& v) const;
+
+    public:
+        /**
+         *  Some references might be to non-existent objects, so return nullopt in that case - like bad array reference, or missing object member.
+         */
+        nonvirtual optional<tuple<Context, VariantValue>> ApplyWithContext (const VariantValue& v) const;
+        nonvirtual optional<VariantValue> ApplyWithContext (const VariantValue& v, Context* contextOut) const;
 
     public:
         /**

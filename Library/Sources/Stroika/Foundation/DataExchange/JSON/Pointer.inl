@@ -16,9 +16,21 @@ namespace Stroika::Foundation::DataExchange::JSON {
     {
         if constexpr (same_as<T, String>) {
             Characters::StringBuilder sb;
-            fComponents_.Apply ([&] (const String& s) { sb << "/"sv << s.ReplaceAll ("~"sv, "~0"sv).ReplaceAll ("/"sv, "~1"); });
+            fComponents_.Apply ([&] (const String& s) { sb << "/"sv << s.ReplaceAll ("~"sv, "~0"sv).ReplaceAll ("/"sv, "~1"sv); });
             return sb;
         }
+    }
+    inline optional<VariantValue> PointerType::Apply (const VariantValue& v) const
+    {
+        return this->ApplyWithContext (v, nullptr);
+    }
+    inline auto PointerType::ApplyWithContext (const VariantValue& v) const -> optional<tuple<Context, VariantValue>>
+    {
+        Context c;
+        if (auto o = this->ApplyWithContext (v, &c)) {
+            return make_tuple (c, *o);
+        }
+        return nullopt;
     }
     inline const DataExchange::ObjectVariantMapper PointerType::kMapper = [] () {
         DataExchange::ObjectVariantMapper mapper;
@@ -28,4 +40,5 @@ namespace Stroika::Foundation::DataExchange::JSON {
                                  });
         return mapper;
     }();
+
 }

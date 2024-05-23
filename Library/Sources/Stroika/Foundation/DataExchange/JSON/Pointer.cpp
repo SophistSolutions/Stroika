@@ -19,6 +19,50 @@ using namespace Stroika::Foundation::DataExchange::JSON;
 
 /*
  ********************************************************************************
+ *********************** JSON::PointerType::Context *****************************
+ ********************************************************************************
+ */
+namespace {
+    using MapElt = JSON::PointerType::Context::MapElt;
+    using SeqElt = JSON::PointerType::Context::SeqElt;
+    auto PopOneAtAtATPopOneAtAtATime_ (Stack<variant<MapElt, SeqElt>> stack, const optional<VariantValue>& leafToUse) -> optional<VariantValue>
+    {
+        if (stack.empty ()) {
+            return leafToUse;
+        }
+        variant<MapElt, SeqElt> cur = stack.Pop ();
+        if (auto om = get_if<MapElt> (&cur)) {
+            Mapping<String, VariantValue> r = om->fOrigValue;
+            if (leafToUse) {
+                r.Add (om->fEltName, leafToUse);
+            }
+            return PopOneAtAtATPopOneAtAtATime_ (stack, VariantValue{r});
+        }
+        else if (auto os = get_if<SeqElt> (&cur)) {
+            Sequence<VariantValue> r = os->fOrigValue;
+            if (os->fIndex > r.size ()) {
+                static const auto kExcept_ = DataExchange::BadFormatException{"JSON Patch had array reference outside bounds of array"sv};
+                Execution::Throw (kExcept_);
+            }
+            if (leafToUse) {
+                r.Insert (os->fIndex, *leafToUse);
+            }
+            return PopOneAtAtATPopOneAtAtATime_ (stack, VariantValue{r});
+        }
+        else {
+            AssertNotReached (); // always one kind of context or another
+            return nullopt;
+        }
+    }
+}
+
+optional<VariantValue> JSON::PointerType::Context::ConstructNewFrom (const optional<VariantValue>& leafToUse) const
+{
+    return PopOneAtAtATPopOneAtAtATime_ (fStack, leafToUse);
+}
+
+/*
+ ********************************************************************************
  ******************************** JSON::PointerType *****************************
  ********************************************************************************
  */
@@ -74,10 +118,10 @@ JSON::PointerType::PointerType (const String& s)
     }
 }
 
-optional<VariantValue> JSON::PointerType::Apply (const VariantValue& v) const
+auto JSON::PointerType::ApplyWithContext (const VariantValue& v, Context* contextOut) const -> optional<VariantValue>
 {
     VariantValue curNode = v;
-    for (auto component : this->fComponents_) {
+    for (String component : this->fComponents_) {
         switch (curNode.GetType ()) {
             case VariantValue::eArray: {
                 size_t                 i  = Characters::String2Int<size_t> (component);
@@ -86,6 +130,9 @@ optional<VariantValue> JSON::PointerType::Apply (const VariantValue& v) const
                     return nullopt;
                 }
                 curNode = sv[i];
+                if (contextOut != nullptr) {
+                    contextOut->fStack.Push (Context::SeqElt{.fOrigValue = sv, .fIndex = i});
+                }
             } break;
             case VariantValue::eMap: {
                 Mapping<String, VariantValue> mv = curNode.As<Mapping<String, VariantValue>> ();
@@ -94,6 +141,9 @@ optional<VariantValue> JSON::PointerType::Apply (const VariantValue& v) const
                 }
                 else {
                     return nullopt;
+                }
+                if (contextOut != nullptr) {
+                    contextOut->fStack.Push (Context::MapElt{.fOrigValue = mv, .fEltName = component});
                 }
             } break;
             default: {

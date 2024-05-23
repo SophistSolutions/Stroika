@@ -33,6 +33,30 @@ String JSON::Patch::OperationItemType::ToString () const
     return sb;
 }
 
+VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
+{
+    VariantValue result = v;
+    // @todo - very rough draft
+    switch (op) {
+        case OperationType::eAdd: {
+            if (auto oMatch = this->path.ApplyWithContext (v)) {
+                //roughly - take the current value (or stack top) - and apply add result to it and pop stack back to new value
+            }
+            else {
+                Execution::Throw (Execution::RuntimeErrorException{"operator add target not found"});
+            }
+            AssertNotImplemented ();
+        } break;
+        case OperationType::eRemove: {
+            AssertNotImplemented ();
+        } break;
+        default: {
+            AssertNotImplemented ();
+        } break;
+    }
+    return result;
+}
+
 const DataExchange::ObjectVariantMapper JSON::Patch::OperationItemType::kMapper = [] () {
     ObjectVariantMapper mapper;
     mapper += JSON::PointerType::kMapper;
@@ -57,3 +81,10 @@ const DataExchange::ObjectVariantMapper JSON::Patch::OperationItemsType::kMapper
     mapper.AddCommonType<OperationItemsType> ();
     return mapper;
 }();
+
+VariantValue JSON::Patch::OperationItemsType::Apply (const VariantValue& v) const
+{
+    VariantValue result = v;
+    this->Sequence<OperationItemType>::Apply ([&] (const OperationItemType& op) { result = op.Apply (result); });
+    return result;
+}

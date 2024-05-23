@@ -1120,30 +1120,30 @@ namespace {
         // Saw assertion error cuz not seekable here, but doesn't seem to happen anymore - not sure what was happening? --LGP 2024-05-22
         // I THINK an issue with code in DataExchange::JSON::Reader::BoostRep_::Read - but cannot see anything wrong and cannot repro issue
         VariantValue readAsString = DataExchange::Variant::JSON::Reader{}.Read ("{"
-                                                                                       "\"foo\" : [ \"bar\", \"baz\" ]"
-                                                                                       ",\"\" : 0"
-                                                                                       ",\"a/b\" : 1"
-                                                                                       ",\"c%d\" : 2"
-                                                                                       ",\"e^f\" : 3"
-                                                                                       ",\"g|h\" : 4"
-                                                                                       ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
-                                                                                       ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
-                                                                                       ",\" \": 7"
-                                                                                       ",\"m~n\" : 8"
-                                                                                       "}"_k);
-         VariantValue readAsBLOB = DataExchange::Variant::JSON::Reader{}.Read ("{"
-                                                                                        "\"foo\" : [ \"bar\", \"baz\" ]"
-                                                                                        ",\"\" : 0"
-                                                                                        ",\"a/b\" : 1"
-                                                                                        ",\"c%d\" : 2"
-                                                                                        ",\"e^f\" : 3"
-                                                                                        ",\"g|h\" : 4"
-                                                                                        ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
-                                                                                        ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
-                                                                                        ",\" \": 7"
-                                                                                        ",\"m~n\" : 8"
-                                                                                        "}"_blob);
-         EXPECT_EQ (readAsString, readAsBLOB);
+                                                                                "\"foo\" : [ \"bar\", \"baz\" ]"
+                                                                                ",\"\" : 0"
+                                                                                ",\"a/b\" : 1"
+                                                                                ",\"c%d\" : 2"
+                                                                                ",\"e^f\" : 3"
+                                                                                ",\"g|h\" : 4"
+                                                                                ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
+                                                                                ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
+                                                                                ",\" \": 7"
+                                                                                ",\"m~n\" : 8"
+                                                                                "}"_k);
+        VariantValue readAsBLOB   = DataExchange::Variant::JSON::Reader{}.Read ("{"
+                                                                                  "\"foo\" : [ \"bar\", \"baz\" ]"
+                                                                                  ",\"\" : 0"
+                                                                                  ",\"a/b\" : 1"
+                                                                                  ",\"c%d\" : 2"
+                                                                                  ",\"e^f\" : 3"
+                                                                                  ",\"g|h\" : 4"
+                                                                                  ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
+                                                                                ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
+                                                                                ",\" \": 7"
+                                                                                  ",\"m~n\" : 8"
+                                                                                  "}"_blob);
+        EXPECT_EQ (readAsString, readAsBLOB);
     }
 }
 
