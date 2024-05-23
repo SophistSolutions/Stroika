@@ -67,7 +67,7 @@ IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
 
 build-images:
-	${MAKE} --silent ${IMAGES}
+	${MAKE} ${IMAGES}
 
 
 ## Detailed recipies for each image type
