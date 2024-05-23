@@ -105,56 +105,58 @@ String JSON::PointerType::Context::ToString () const
  ******************************** JSON::PointerType *****************************
  ********************************************************************************
  */
-template <>
-JSON::PointerType::PointerType (const String& s)
-{
-    optional<Character> prevChar;
-    bool                startedSection = false;
-    StringBuilder       curSectionSB;
-    // return true if handled, and throw if bad character following
-    auto maybeHandleCharAfterTwiddle = [&] (Character c) -> bool {
-        if (prevChar == '~') {
-            switch (c.GetCharacterCode ()) {
-                case '0':
-                    curSectionSB << '~';
-                    break;
-                case '1':
-                    curSectionSB << '/';
-                    break;
-                default:
-                    static const auto kExcept_ = DataExchange::BadFormatException{"Expected 0 or 1 after ~ in JSON Pointer"sv};
-                    Execution::Throw (kExcept_);
-                    break;
+namespace Stroika::Foundation::DataExchange::JSON {
+    template <>
+    PointerType::PointerType (const String& s)
+    {
+        optional<Character> prevChar;
+        bool                startedSection = false;
+        StringBuilder       curSectionSB;
+        // return true if handled, and throw if bad character following
+        auto maybeHandleCharAfterTwiddle = [&] (Character c) -> bool {
+            if (prevChar == '~') {
+                switch (c.GetCharacterCode ()) {
+                    case '0':
+                        curSectionSB << '~';
+                        break;
+                    case '1':
+                        curSectionSB << '/';
+                        break;
+                    default:
+                        static const auto kExcept_ = DataExchange::BadFormatException{"Expected 0 or 1 after ~ in JSON Pointer"sv};
+                        Execution::Throw (kExcept_);
+                        break;
+                }
+                prevChar = c;
+                return true;
+            }
+            return false;
+        };
+        s.Apply ([&] (Character c) {
+            if (maybeHandleCharAfterTwiddle (c)) {
+                return;
+            }
+            if (c == '/') {
+                if (startedSection) {
+                    fComponents_.Append (curSectionSB);
+                    curSectionSB.clear ();
+                }
+                startedSection = true;
+            }
+            else if (startedSection) {
+                if (c != '~') {
+                    curSectionSB << c;
+                }
+            }
+            else {
+                static const auto kExcept_ = DataExchange::BadFormatException{"Expected / to start section of JSON Pointer"sv};
+                Execution::Throw (kExcept_);
             }
             prevChar = c;
-            return true;
+        });
+        if (prevChar == '/' or not curSectionSB.empty ()) {
+            fComponents_.Append (curSectionSB);
         }
-        return false;
-    };
-    s.Apply ([&] (Character c) {
-        if (maybeHandleCharAfterTwiddle (c)) {
-            return;
-        }
-        if (c == '/') {
-            if (startedSection) {
-                fComponents_.Append (curSectionSB);
-                curSectionSB.clear ();
-            }
-            startedSection = true;
-        }
-        else if (startedSection) {
-            if (c != '~') {
-                curSectionSB << c;
-            }
-        }
-        else {
-            static const auto kExcept_ = DataExchange::BadFormatException{"Expected / to start section of JSON Pointer"sv};
-            Execution::Throw (kExcept_);
-        }
-        prevChar = c;
-    });
-    if (prevChar == '/' or not curSectionSB.empty ()) {
-        fComponents_.Append (curSectionSB);
     }
 }
 
