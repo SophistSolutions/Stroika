@@ -105,6 +105,7 @@ String JSON::PointerType::Context::ToString () const
  ******************************** JSON::PointerType *****************************
  ********************************************************************************
  */
+template <>
 JSON::PointerType::PointerType (const String& s)
 {
     optional<Character> prevChar;
