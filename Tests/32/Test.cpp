@@ -20,6 +20,7 @@
 #if qHasFeature_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
+#include "Stroika/Foundation/DataExchange/JSON/Patch.h"
 #include "Stroika/Foundation/DataExchange/JSON/Pointer.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Writer.h"
@@ -1177,6 +1178,32 @@ namespace {
         EXPECT_EQ (JSON::PointerType{"/k\"l"}.Apply (kTestVariant_), (VariantValue{6}));
         EXPECT_EQ (JSON::PointerType{"/ "}.Apply (kTestVariant_), (VariantValue{7}));
         EXPECT_EQ (JSON::PointerType{"/m~0n"}.Apply (kTestVariant_), (VariantValue{8}));
+    }
+}
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSONPPatch1_)
+    {
+        using namespace Memory::Literals;
+        // test case from https://datatracker.ietf.org/doc/html/rfc6901
+        static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read ("{"
+                                                                                        "\"foo\" : [ \"bar\", \"baz\" ]"
+                                                                                        ",\"\" : 0"
+                                                                                        ",\"a/b\" : 1"
+                                                                                        ",\"c%d\" : 2"
+                                                                                        ",\"e^f\" : 3"
+                                                                                        ",\"g|h\" : 4"
+                                                                                        ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
+                                                                                        ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
+                                                                                        ",\" \": 7"
+                                                                                        ",\"m~n\" : 8"
+                                                                                        "}"_blob);
+
+        using namespace DataExchange::JSON::Patch;
+        {
+            OperationItemType o{.op = OperationType::eAdd, .path = JSON::PointerType{"/foo/-"}, .value = "newItem"sv};
+            VariantValue      vv = o.Apply (kTestVariant_);
+            EXPECT_EQ (JSON::PointerType{"/foo"}.Apply (vv), (VariantValue{Sequence<VariantValue>{"bar", "baz", "newItem"}}));
+        }
     }
 }
 #endif

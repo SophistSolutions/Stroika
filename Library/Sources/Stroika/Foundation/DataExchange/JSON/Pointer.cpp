@@ -19,6 +19,36 @@ using namespace Stroika::Foundation::DataExchange::JSON;
 
 /*
  ********************************************************************************
+ ************************ JSON::PointerType::MapElt *****************************
+ ********************************************************************************
+ */
+String JSON::PointerType::Context::MapElt::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "orig: " << fOrigValue << ", "sv;
+    sb << "eltName: " << fEltName;
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
+ *********************** JSON::PointerType::SeqElt ******************************
+ ********************************************************************************
+ */
+String JSON::PointerType::Context::SeqElt::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "orig: " << fOrigValue << ", "sv;
+    sb << "index: " << this->fIndex;
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
  *********************** JSON::PointerType::Context *****************************
  ********************************************************************************
  */
@@ -59,6 +89,15 @@ namespace {
 optional<VariantValue> JSON::PointerType::Context::ConstructNewFrom (const optional<VariantValue>& leafToUse) const
 {
     return PopOneAtAtATPopOneAtAtATime_ (fStack, leafToUse);
+}
+
+String JSON::PointerType::Context::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "stack: " << fStack;
+    sb << "}"sv;
+    return sb;
 }
 
 /*

@@ -45,12 +45,20 @@ namespace Stroika::Foundation::DataExchange::JSON {
                 Mapping<String, VariantValue> fOrigValue;
                 String                        fEltName;
                 bool operator== (const MapElt&) const = default; // @todo understand why this declaration needed (Iterable<>find...)
+
+                /**
+                 */
+                String ToString () const;
             };
             struct SeqElt {
                 Sequence<VariantValue> fOrigValue;
                 size_t                 fIndex;
 
                 bool operator== (const SeqElt&) const = default; // @todo understand why this declaration needed (Iterable<>find...)
+
+                /**
+                 */
+                String ToString () const;
             };
             Stack<variant<MapElt, SeqElt>> fStack;
 
@@ -59,6 +67,10 @@ namespace Stroika::Foundation::DataExchange::JSON {
              *  to replace the 'value' that would have been returned by Apply (or ApplyWithContext).
              */
             optional<VariantValue> ConstructNewFrom (const optional<VariantValue>& leafToUse) const;
+
+            /**
+             */
+            String ToString () const;
         };
 
     public:
