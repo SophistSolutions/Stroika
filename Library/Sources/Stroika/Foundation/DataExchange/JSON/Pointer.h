@@ -55,6 +55,8 @@ namespace Stroika::Foundation::DataExchange::JSON {
             Stack<variant<MapElt, SeqElt>> fStack;
 
             /**
+             *  Take the context in 'this' - and treat all offsets as Set (not remove or add); leafToUse only applied
+             *  to replace the 'value' that would have been returned by Apply (or ApplyWithContext).
              */
             optional<VariantValue> ConstructNewFrom (const optional<VariantValue>& leafToUse) const;
         };

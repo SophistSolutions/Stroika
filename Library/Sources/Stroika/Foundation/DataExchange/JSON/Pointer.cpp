@@ -45,7 +45,7 @@ namespace {
                 Execution::Throw (kExcept_);
             }
             if (leafToUse) {
-                r.Insert (os->fIndex, *leafToUse);
+                r.SetAt (os->fIndex, *leafToUse);
             }
             return PopOneAtAtATPopOneAtAtATime_ (stack, VariantValue{r});
         }
@@ -124,12 +124,12 @@ auto JSON::PointerType::ApplyWithContext (const VariantValue& v, Context* contex
     for (String component : this->fComponents_) {
         switch (curNode.GetType ()) {
             case VariantValue::eArray: {
-                size_t                 i  = Characters::String2Int<size_t> (component);
                 Sequence<VariantValue> sv = curNode.As<Sequence<VariantValue>> ();
-                if (i >= sv.size ()) {
+                size_t                 i  = component == "-"sv ? sv.size () : Characters::String2Int<size_t> (component);
+                if (i > sv.size ()) {
                     return nullopt;
                 }
-                curNode = sv[i];
+                curNode = i == sv.size () ? VariantValue{} : sv[i];
                 if (contextOut != nullptr) {
                     contextOut->fStack.Push (Context::SeqElt{.fOrigValue = sv, .fIndex = i});
                 }
