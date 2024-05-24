@@ -128,7 +128,7 @@ namespace {
                                 sb += "NULL"sv;
                             }
                             sb += ";";
-                            return sb.str ();
+                            return sb;
                         }();
                         fDB_.Exec (insertSQL);
                     }

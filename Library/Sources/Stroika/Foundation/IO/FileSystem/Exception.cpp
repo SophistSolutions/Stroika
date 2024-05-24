@@ -30,7 +30,7 @@ Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const path
     if (not p2.empty ()) {
         sb << " {"sv << String{p2.wstring ()}.LimitLength (25, StringShorteningPreference::ePreferKeepRight) << "}"sv;
     }
-    return sb.str ();
+    return sb;
 }
 
 Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const Characters::String& message, const path& p1, const path& p2)
@@ -42,7 +42,7 @@ Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const Char
     if (not p2.empty ()) {
         sb << " {"sv << String{p2.wstring ()}.LimitLength (25, StringShorteningPreference::ePreferKeepRight) << "}"sv;
     }
-    return sb.str ();
+    return sb;
 }
 
 void Exception::ThrowPOSIXErrNo (errno_t errNo, const path& p1, const path& p2)

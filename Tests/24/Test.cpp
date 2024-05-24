@@ -95,7 +95,7 @@ namespace {
                 sb << L"Name: " << fName << L",";
                 sb << L"Priority: " << fPriority;
                 sb << L"}";
-                return sb.str ();
+                return sb;
             }
         };
 

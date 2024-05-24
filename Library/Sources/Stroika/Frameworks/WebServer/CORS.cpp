@@ -36,5 +36,5 @@ Characters::String CORSOptions::ToString () const
         sb << "Allowed-Headers"sv << fAllowedHeaders;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

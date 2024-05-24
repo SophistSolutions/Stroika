@@ -47,7 +47,7 @@ Characters::String Traceroute::Options::SampleInfo::ToString () const
     sb << "Interval: "sv << fInterval << ", "sv;
     sb << "Count: "sv << fSampleCount;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -72,7 +72,7 @@ String Traceroute::Options::ToString () const
         sb << "Sample: "sv << *fSampleInfo;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -87,7 +87,7 @@ String Hop::ToString () const
     sb << "Time: "sv << fTime << ", "sv;
     sb << "Address: "sv << fAddress;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

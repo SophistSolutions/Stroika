@@ -78,5 +78,5 @@ String Message::ToString () const
     sb << "Request: "sv << fRequest_ << ", "sv;
     sb << "Response: "sv << fResponse_;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

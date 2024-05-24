@@ -76,7 +76,7 @@ String XPath::Expression::ToString () const
     sb << "expression: "sv << fRep_->GetExpression ();
     // @todo add options
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

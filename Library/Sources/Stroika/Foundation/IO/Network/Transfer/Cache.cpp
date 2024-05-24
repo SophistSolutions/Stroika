@@ -56,7 +56,7 @@ namespace {
                 StringBuilder sb = Element::ToString ().SubString (0, -1);
                 sb << ", ExpiresDefault: "sv << fExpiresDefault;
                 sb << "}"sv;
-                return sb.str ();
+                return sb;
             }
             optional<Time::DateTime> fExpiresDefault;
         };
@@ -312,7 +312,7 @@ String Transfer::Cache::Element::ToString () const
     sb << ", OtherHeaders: "sv << fOtherHeaders;
     sb << ", Body: "sv << fBody;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

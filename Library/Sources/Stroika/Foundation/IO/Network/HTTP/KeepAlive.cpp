@@ -60,7 +60,7 @@ optional<KeepAlive> KeepAlive::Merge (const optional<KeepAlive>& lhs, const opti
 String KeepAlive::AsValue () const
 {
     StringBuilder sb; // ? is this a BUG or needs some explanation - LGP 2023-09-24
-    return sb.str ();
+    return sb;
 }
 
 String KeepAlive::ToString () const
@@ -74,5 +74,5 @@ String KeepAlive::ToString () const
         sb << "Timeout: "sv << *fTimeout;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

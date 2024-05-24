@@ -55,7 +55,7 @@ String ObjectVariantMapper::TypeMappingDetails::ToString () const
     sb << "for-type: "sv << fForType;
     // @todo maybe also print function pointers? Not sure a good reason
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -69,7 +69,7 @@ String ObjectVariantMapper::TypesRegistry::ToString () const
     sb << "{"sv;
     sb << "type-mappers: "sv << fSerializers_.Keys (); // for now the values are not interesting
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -538,7 +538,7 @@ String ObjectVariantMapper::ToString () const
     sb << "{"sv;
     sb << "type-map-registry: "sv << fTypeMappingRegistry_;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 //  https://stroika.atlassian.net/browse/STK-910

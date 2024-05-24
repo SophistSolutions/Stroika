@@ -30,7 +30,7 @@ String SQL::Utils::QuoteStringForDB (const String& s)
             }
             sb << c;
         }
-        return sb.str ();
+        return sb;
     }
     else {
         return s;

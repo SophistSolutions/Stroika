@@ -80,7 +80,7 @@ Characters::String SignalHandler::ToString () const
         sb << "target-type: "sv << stdFuncTarget.target_type ();
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

@@ -135,5 +135,5 @@ String Request::ToString () const
     sb << "URL: "sv << fURL_ << ", "sv;
     sb << "Headers: "sv << fHeaders_;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

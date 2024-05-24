@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
             sb << "No-Improvement-Threshold: "sv << fNoImprovementThreshold << ","sv;
         }
         sb << "}"sv;
-        return sb.str ();
+        return sb;
     }
 
     /*
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
         sb << "Score: "sv << fScore << ","sv;
         sb << "Iteration-Count: "sv << fIterationCount;
         sb << "}"sv;
-        return sb.str ();
+        return sb;
     }
 
     /*

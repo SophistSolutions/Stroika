@@ -216,7 +216,7 @@ namespace {
                     sb += L"tunerInfoD: " + Characters::Format ("{:.10e}"_f, tunerInfoD) + ",";
                     sb += L"tunerInfoM: " + Characters::Format ("{:.10e}"_f, tunerInfoM);
                     sb += L"}";
-                    return sb.str ();
+                    return sb;
                 }
             };
             static constexpr double kDACcountMax_          = 65536;

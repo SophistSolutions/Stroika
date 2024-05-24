@@ -72,7 +72,7 @@ String SystemConfiguration::BootInformation::ToString () const
     sb << "{"sv;
     sb << "Booted-At: "sv << fBootedAt;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 };
 
 /*
@@ -88,7 +88,7 @@ String SystemConfiguration::CPU::CoreDetails::ToString () const
     sb << "Socket-ID: "sv << fSocketID << ", "sv;
     sb << "Model-Name: "sv << fModelName;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -102,7 +102,7 @@ String SystemConfiguration::CPU::ToString () const
     sb << "{"sv;
     sb << "Cores: "sv << fCores;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 };
 
 /*
@@ -118,7 +118,7 @@ String SystemConfiguration::Memory::ToString () const
     sb << "Total-Physical-RAM: "sv << fTotalPhysicalRAM << ", "sv;
     sb << "Total-Virtual-RAM: "sv << fTotalVirtualRAM;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 };
 
 /*
@@ -130,9 +130,9 @@ String SystemConfiguration::ComputerNames::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Hostname: "sv << fHostname << ", "sv;
+    sb << "Hostname: "sv << fHostname;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 };
 
 /*
@@ -152,10 +152,10 @@ String SystemConfiguration::OperatingSystem::ToString () const
     sb << "RFC1945-Compat-Product-Token-With-Version: "sv + fRFC1945CompatProductTokenWithVersion + ", "sv;
     sb << "Bits: "sv << fBits << ", "sv;
     if (fPreferedInstallerTechnology) {
-        sb << "Prefered-Installer-Technology: "sv << *fPreferedInstallerTechnology << ", "sv;
+        sb << "Preferred-Installer-Technology: "sv << *fPreferedInstallerTechnology;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 };
 
 /*
@@ -172,9 +172,9 @@ String SystemConfiguration::ToString () const
     sb << "Memory: "sv << fMemory << ", "sv;
     sb << "Actual-Operating-System: "sv << fActualOperatingSystem << ", "sv;
     sb << "Apparent-Operating-System: "sv << fApparentOperatingSystem << ", "sv;
-    sb << "Computer-Names: "sv << fComputerNames << ", "sv;
+    sb << "Computer-Names: "sv << fComputerNames;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 };
 
 /*

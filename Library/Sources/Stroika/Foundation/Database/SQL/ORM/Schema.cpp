@@ -297,7 +297,7 @@ String ORM::Schema::StandardSQLStatements::CreateTable () const
         addField (*fTable.fSpecialCatchAll);
     }
     sb << ");"sv;
-    return sb.str ();
+    return sb;
 }
 
 String ORM::Schema::StandardSQLStatements::Insert () const
@@ -342,7 +342,7 @@ String ORM::Schema::StandardSQLStatements::Insert () const
         addFieldValueVariableName (*fTable.fSpecialCatchAll);
     }
     sb << ");"sv;
-    return sb.str ();
+    return sb;
 }
 
 String ORM::Schema::StandardSQLStatements::DeleteByID () const
@@ -353,7 +353,7 @@ String ORM::Schema::StandardSQLStatements::DeleteByID () const
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
     sb << "DELETE FROM "sv + fTable.fName << " WHERE "sv << indexField.fName << "=:"sv << indexField.fName << ";"sv;
-    return sb.str ();
+    return sb;
 }
 
 String ORM::Schema::StandardSQLStatements::GetByID () const
@@ -364,7 +364,7 @@ String ORM::Schema::StandardSQLStatements::GetByID () const
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
     sb << "SELECT * FROM "sv + fTable.fName << " WHERE "sv + indexField.fName << "=:"sv << indexField.fName << ";"sv;
-    return sb.str ();
+    return sb;
 }
 
 String ORM::Schema::StandardSQLStatements::UpdateByID () const
@@ -397,7 +397,7 @@ String ORM::Schema::StandardSQLStatements::UpdateByID () const
         addSetField (*fTable.fSpecialCatchAll);
     }
     sb << " WHERE "sv << indexField.fName << "=:"sv << indexField.fName << ";"sv;
-    return sb.str ();
+    return sb;
 }
 
 String ORM::Schema::StandardSQLStatements::GetAllElements () const
@@ -407,5 +407,5 @@ String ORM::Schema::StandardSQLStatements::GetAllElements () const
      *   Select * from DEVICES;
      */
     sb << "SELECT * FROM "sv + fTable.fName << ";"sv;
-    return sb.str ();
+    return sb;
 }

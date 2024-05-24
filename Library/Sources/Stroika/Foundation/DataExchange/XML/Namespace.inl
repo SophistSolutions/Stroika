@@ -39,7 +39,7 @@ namespace Stroika::Foundation::DataExchange::XML {
             sb << "prefixedNamespaces: "sv << fPrefixedNS_;
         }
         sb << "}"sv;
-        return sb.str ();
+        return sb;
     }
 
     /*

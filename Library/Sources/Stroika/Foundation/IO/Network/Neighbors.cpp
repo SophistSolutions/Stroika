@@ -183,7 +183,7 @@ String NeighborsMonitor::Neighbor::ToString () const
     sb << "HardwareAddress:"sv << fHardwareAddress << ","sv;
     sb << "InterfaceID:"sv << fInterfaceID;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

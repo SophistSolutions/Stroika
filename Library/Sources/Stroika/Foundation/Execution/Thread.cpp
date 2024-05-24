@@ -325,10 +325,10 @@ Characters::String Thread::Ptr::Rep_::ToString () const
         sb << "initialPriority: "sv << fInitialPriority_.load () << ", "sv;
     }
 #if qPlatform_Windows
-    sb << "throwInterruptExceptionInsideUserAPC: "sv << fThrowInterruptExceptionInsideUserAPC_ << ", "sv;
+    sb << "throwInterruptExceptionInsideUserAPC: "sv << fThrowInterruptExceptionInsideUserAPC_;
 #endif
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()

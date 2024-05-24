@@ -22,19 +22,19 @@ String Name::ToString () const
     StringBuilder sb;
     sb << "{";
     if (fNamespace) {
-        sb << "namespace: " << *fNamespace << ", ";
+        sb << "namespace: "sv << *fNamespace << ", "sv;
     }
     if (fPublicID) {
-        sb << "fPublicID: " << *fPublicID << ", ";
+        sb << "fPublicID: "sv << *fPublicID << ", "sv;
     }
     if (fSystemID) {
-        sb << "systemID: " << *fSystemID << ", ";
+        sb << "systemID: "sv << *fSystemID << ", "sv;
     }
     if (sb.size () > 3) {             // so a comma there
         sb.ShrinkTo (sb.size () - 2); // lose comma
     }
-    sb << "}";
-    return sb.str ();
+    sb << "}"sv;
+    return sb;
 }
 
 /*

@@ -406,5 +406,5 @@ String Connection::ToString (bool abbreviatedOutput) const
     }
     sb << "Connection-Started-At: "sv << fConnectionStartedAt_;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

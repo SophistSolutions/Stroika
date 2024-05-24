@@ -2631,7 +2631,7 @@ public:
             err = ::unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof (filename_inzip), NULL, 0, NULL, 0);
             if (err != UNZ_OK) [[unlikely]] {
                 using namespace Characters;
-                Execution::Throw (Execution::RuntimeErrorException{Format (L"error {} with zipfile in unzGetCurrentFileInfo64"_f, err)});
+                Execution::Throw (Execution::RuntimeErrorException{Format ("error {} with zipfile in unzGetCurrentFileInfo64"_f, err)});
                 break;
             }
             if ((i + 1) < gi.number_entry) {

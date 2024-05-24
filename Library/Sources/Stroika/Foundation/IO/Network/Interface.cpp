@@ -113,7 +113,7 @@ String Interface::WirelessInfo::ToString () const
     sb << "AuthAlgorithm: "sv << fAuthAlgorithm << ", "sv;
     sb << "Cipher: "sv << fCipher;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -128,7 +128,7 @@ String Interface::Bindings::ToString () const
     sb << "BoundAddressRanges: "sv << fAddressRanges << ", "sv;
     sb << "BoundAddresses: "sv << fAddresses;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 /*
  ********************************************************************************
@@ -173,7 +173,7 @@ String Interface::ToString () const
         sb << "Status: "sv << *fStatus;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

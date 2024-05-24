@@ -43,7 +43,7 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
         /**
          *  Apply the operation to the argument VariantValue object, and return the mutated result.
          * 
-         *  \note - as of Stroika v3.0d6 - QUITE INCOMPLETE IMPLEMENTATION - but alot of the infrastucture there to complete it (jsonpointer search/update - but thats not 100%).
+         *  \note - @todo - as of Stroika v3.0d6 - QUITE INCOMPLETE IMPLEMENTATION - but alot of the infrastucture there to complete it (jsonpointer search/update - but thats not 100%).
          */
         nonvirtual VariantValue Apply (const VariantValue& v) const;
 

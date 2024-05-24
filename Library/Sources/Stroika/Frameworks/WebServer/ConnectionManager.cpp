@@ -67,9 +67,9 @@ Characters::String WebServer::ConnectionManager::Statistics::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     sb << "ThreadPool-Size: "sv << fThreadPoolSize << ", "sv;
-    sb << "ThreadPool-Statistics: "sv << fThreadPoolStatistics << ", "sv;
+    sb << "ThreadPool-Statistics: "sv << fThreadPoolStatistics;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Database::SQL {
         sb << "{"sv;
         sb << " disposition: "sv << _fRep->GetDisposition ();
         sb << "}"sv;
-        return sb.str ();
+        return sb;
     }
 
 }

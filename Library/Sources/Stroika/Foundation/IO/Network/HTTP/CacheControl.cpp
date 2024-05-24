@@ -127,5 +127,5 @@ String CacheControl::As () const
         handleComma ();
         sb << Characters::Format ("min-fresh={}"_f, *fMinFresh);
     }
-    return sb.str ();
+    return sb;
 }

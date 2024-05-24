@@ -95,7 +95,9 @@
     "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
 #if __GNUC__ > 14
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Info: This version of Stroika (consider newer Stroika) untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG "      \
+    "DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 
@@ -120,7 +122,8 @@
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: This version of Stroika is untested with this release (> 17.9) of Microsoft Visual Studio.net / Visual C++ - USING "         \
+    "Warning: This version of Stroika (check newer version of Stroika) is untested with this release (> 17.9) of Microsoft Visual "        \
+    "Studio.net / Visual C++ - USING "                                                                                                     \
     "PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif

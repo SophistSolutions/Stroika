@@ -274,7 +274,7 @@ String Authority::As (optional<StringPCTEncodedFlag> pctEncode) const
     if (fPort_) {
         sb << ":"sv << static_cast<unsigned int> (*fPort_);
     }
-    return sb.str ();
+    return sb;
 }
 
 String Authority::ToString () const

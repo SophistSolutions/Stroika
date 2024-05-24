@@ -283,7 +283,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     if (stderrSubset) {
         sb << "; "sv + stderrSubset->LimitLength (100);
     }
-    return sb.str ();
+    return sb;
 }
 #elif qPlatform_Windows
 String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
@@ -304,7 +304,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     if (stderrSubset) {
         sb << "; "sv << stderrSubset->LimitLength (100);
     }
-    return sb.str ();
+    return sb;
 }
 #endif
 
@@ -428,7 +428,7 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
     for (const String& i : fArgs_) {
         sb << " "sv << i;
     }
-    return sb.str ();
+    return sb;
 }
 
 optional<String> ProcessRunner::GetWorkingDirectory ()

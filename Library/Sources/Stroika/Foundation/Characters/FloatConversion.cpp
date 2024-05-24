@@ -49,7 +49,7 @@ String FloatConversion::ToStringOptions::ToString () const
         sb << "Scientific-Notation: "sv << (int)*fFloatFormat_ << ","sv;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 namespace {

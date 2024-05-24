@@ -24,5 +24,5 @@ String Measurement::ToString () const
     sb << "Type: "sv << fType << ", "sv;
     sb << "Value: "sv << fValue;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

@@ -130,5 +130,5 @@ String Request::ToString () const
     StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
     // @todo add stuff about body
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

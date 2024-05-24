@@ -68,7 +68,7 @@ String Rule::ToString () const
 #endif
     sb << "Enabled: "sv << fEnabled << ","sv;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

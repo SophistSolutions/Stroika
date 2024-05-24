@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Cache {
         sb << "ApparentlyDistinctAddCalls: "sv << fApparentlyDistinctAddCalls << ", "sv;
         sb << "ProbabilityOfFalsePositive: "sv << ProbabilityOfFalsePositive ();
         sb << "}"sv;
-        return sb.str ();
+        return sb;
     }
 
     /*

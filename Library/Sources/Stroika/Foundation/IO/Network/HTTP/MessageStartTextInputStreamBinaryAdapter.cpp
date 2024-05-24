@@ -135,7 +135,7 @@ public:
             } break;
         }
         sb << "}"sv;
-        return sb.str ();
+        return sb;
     }
 
 protected:

@@ -411,7 +411,7 @@ String Response::ToString () const
     sb << "CodePage: "sv << fCodePage_ << ", "sv;
     sb << "BodyBytes: "sv << fBodyBytes_ << ", "sv;
     sb << "HeadMode: "sv << fHeadMode_ << ", "sv;
-    sb << "ETagDigester: "sv << String{fETagDigester_ ? "true"sv : "false"sv} << ", "sv;
+    sb << "ETagDigester: "sv << String{fETagDigester_ ? "true"sv : "false"sv};
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

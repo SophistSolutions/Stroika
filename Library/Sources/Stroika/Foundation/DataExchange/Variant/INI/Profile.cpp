@@ -36,10 +36,10 @@ String Profile::ToString () const
         sb << "UnnamedSection: "sv << fUnnamedSection << ","sv;
     }
     if (not fNamedSections.empty ()) {
-        sb << "NamedSections: "sv << fNamedSections << ","sv;
+        sb << "NamedSections: "sv << fNamedSections;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

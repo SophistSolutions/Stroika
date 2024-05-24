@@ -305,10 +305,10 @@ String MountedFilesystemType::ToString () const
         sb << "FileSystem-Type: '"sv << *fFileSystemType << "', "sv;
     }
     if (fVolumeID) {
-        sb << "Volume-ID: '"sv << *fVolumeID << "', "sv;
+        sb << "Volume-ID: '"sv << *fVolumeID;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

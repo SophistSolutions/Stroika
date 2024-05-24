@@ -60,14 +60,14 @@ String CIDR::As<String> () const
 {
     StringBuilder sb;
     sb << fBaseAddress_.As<String> () << "/"sv << (int)fSignificantBits_;
-    return sb.str ();
+    return sb;
 }
 
 String Network::CIDR::ToString () const
 {
     StringBuilder sb;
     sb << fBaseAddress_ << "/"sv << (int)fSignificantBits_;
-    return sb.str ();
+    return sb;
 }
 
 Traversal::DiscreteRange<InternetAddress> Network::CIDR::GetRange () const

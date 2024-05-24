@@ -55,10 +55,10 @@ String DiskInfoType::ToString () const
         sb << "Device-Kind: '"sv << *fDeviceKind << "', "sv;
     }
     if (fSizeInBytes) {
-        sb << "Size-In-Bytes: "sv << *fSizeInBytes << ", "sv;
+        sb << "Size-In-Bytes: "sv << *fSizeInBytes;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

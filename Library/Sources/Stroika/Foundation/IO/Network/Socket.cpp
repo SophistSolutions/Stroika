@@ -175,5 +175,5 @@ String Socket::Ptr::ToString () const
         }
         sb << "}"sv;
     }
-    return sb.str ();
+    return sb;
 }

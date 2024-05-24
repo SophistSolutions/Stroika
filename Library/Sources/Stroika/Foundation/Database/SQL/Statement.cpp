@@ -34,7 +34,7 @@ String Statement::ColumnDescription::ToString () const
     sb << "name: "sv << fName << ", "sv;
     sb << "type: "sv << fType;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -49,7 +49,7 @@ String Statement::ParameterDescription::ToString () const
     sb << "name: "sv << fName << ", "sv;
     sb << "value: "sv << fValue;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -182,5 +182,5 @@ String Statement::ToString () const
     sb << "Column-Descriptions: "sv << GetColumns () << ", "sv;
     sb << "Original-SQL: "sv << GetSQL ();
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

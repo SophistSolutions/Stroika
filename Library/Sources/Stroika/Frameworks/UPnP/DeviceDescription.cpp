@@ -41,7 +41,7 @@ String DeviceDescription::Icon::ToString () const
     sb << "ColorDepth : "sv << fColorDepth << ", "sv;
     sb << "URL: "sv << fURL;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -58,7 +58,7 @@ String DeviceDescription::Service::ToString () const
     sb << "Control-URL: "sv << fControlURL << ", "sv;
     sb << "Event-Sub-URL: "sv << fEventSubURL;
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*
@@ -103,7 +103,7 @@ String DeviceDescription::ToString () const
         sb << "Services: "sv << fServices;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 ObjectVariantMapper DeviceDescription::mkMapper_ ()

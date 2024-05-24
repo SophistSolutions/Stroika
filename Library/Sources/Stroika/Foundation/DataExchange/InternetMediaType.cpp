@@ -90,7 +90,7 @@ String InternetMediaType::As () const
     for (const auto& p : fParameters_) {
         sb << "; "sv << p.fKey << ": "sv << p.fValue;
     }
-    return sb.str ();
+    return sb;
 }
 
 strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rhs) const

@@ -110,5 +110,5 @@ String Response::ToString () const
     sb << "Status-And-Override-Reason: "sv << fStatusAndOverrideReason_ << ", "sv;
     sb << "Headers: "sv << this->headers ();
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }

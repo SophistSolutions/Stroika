@@ -54,7 +54,7 @@ String Ping::Options::ToString () const
         sb << "Packet-Payload-Size: "sv << *fPacketPayloadSize;
     }
     sb << "}"sv;
-    return sb.str ();
+    return sb;
 }
 
 /*

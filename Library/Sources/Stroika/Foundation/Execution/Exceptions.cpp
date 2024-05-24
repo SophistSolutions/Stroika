@@ -153,7 +153,7 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombined
     else {
         sb += Characters::Format ("{{{}: {}}}"_f, Characters::String::FromNarrowSDKString (errCode.category ().name ()), errCode.value ());
     }
-    return sb.str ();
+    return sb;
 }
 
 void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code errCode)
