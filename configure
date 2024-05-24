@@ -1355,9 +1355,6 @@ sub	SetDefaultForPlatform_
 		else {
 			$COMPILER_DRIVER = "gcc";
 		}
-		#$COMPILER_DRIVER = "clang++";
-		#$COMPILER_DRIVER = "gcc";
-		#$COMPILER_DRIVER = "g++ -V5.0";
 	}
 }
 
@@ -2423,7 +2420,7 @@ sub PostProcessOptions_ ()
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $clangVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
 		my $ubuntuVersion = getUbuntuVersion();
-		if ("$^O" eq "linux" && (22.04 <= $ubuntuVersion and  $ubuntuVersion <= 24.04)) {
+		if ("$^O" eq "linux" && (22.04 <= $ubuntuVersion and $ubuntuVersion <= 24.04)) {
 			# As of 2023-09-26 -  seen with clang++-15 Ubuntu 22.04 and with boost library
 			#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
 			#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
