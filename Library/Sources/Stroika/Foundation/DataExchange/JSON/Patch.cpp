@@ -43,6 +43,7 @@ VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
     // @todo - very rough draft
     switch (op) {
         case OperationType::eAdd: {
+            // WORKS FOR ONE SIMPLE TEST CASE - MUST CAREFULLY RECONSIDER ALGORIUTHM - MAYBE RIGHT - BUT AT LEAST NOT VERY FAR OFF...
             if (optional<tuple<Context, VariantValue>> oMatch = this->path.ApplyWithContext (v)) {
                 //DbgTrace ("oMa={}"_f, oMatch);
                 Context c = get<Context> (*oMatch);

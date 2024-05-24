@@ -40,6 +40,11 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
         PointerType            path;
         optional<VariantValue> value;
 
+        /**
+         *  Apply the operation to the argument VariantValue object, and return the mutated result.
+         * 
+         *  \note - as of Stroika v3.0d6 - QUITE INCOMPLETE IMPLEMENTATION - but alot of the infrastucture there to complete it (jsonpointer search/update - but thats not 100%).
+         */
         nonvirtual VariantValue Apply (const VariantValue& v) const;
 
         /**
@@ -54,6 +59,9 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
      */
     struct OperationItemsType : Containers::Sequence<OperationItemType> {
 
+        /**
+         *  Apply each operation in sequence to the argument VariantValue object, and return the mutated result.
+         */
         nonvirtual VariantValue Apply (const VariantValue& v) const;
 
         static const DataExchange::ObjectVariantMapper kMapper;
