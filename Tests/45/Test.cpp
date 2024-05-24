@@ -752,7 +752,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_IO_Network_Transfer, all)
     {
         Test_1_SimpleConnnectionTests_::DoTests_ ();
         Test_2_SimpleFetch_httpbin_::DoTests_ ();
