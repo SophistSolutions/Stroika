@@ -14,9 +14,11 @@ BRANCH="${BRANCH:-v3-Dev}"
 VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 DOCKER="${DOCKER:-docker.exe}"
 
+# Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
+DOCKER_NETWORK="${DOCKER_NETWORK:-Default Switch}"
+
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
 
-# Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
 
 # FYI possible error: https://stackoverflow.com/questions/67162945/docker-for-windows-the-requested-resource-is-in-use-error-when-mem-limit-is-set
 
@@ -27,7 +29,7 @@ $DOCKER run \
     --storage-opt "size=100GB" \
     --memory 8G \
     --cpus 8\
-    --network "Default Switch" \
+    --network "$DOCKER_NETWORK" \
     --name $CONTAINER_NAME \
     $CONTAINER_IMAGE
 
