@@ -34,7 +34,8 @@ namespace Stroika::Foundation::DataExchange::JSON {
         /**
          */
         template <Characters::IConvertibleToString STRINGISH_TYPE = String>
-        PointerType (STRINGISH_TYPE&& s = STRINGISH_TYPE{});
+        PointerType (STRINGISH_TYPE&& s);
+        PointerType () = default;
 
     public:
         /**
@@ -116,8 +117,8 @@ namespace Stroika::Foundation::DataExchange::JSON {
         // components are raw strings and must match nodes exactly (unescaped already)
         Sequence<String> fComponents_;
     };
-            template <>
-        PointerType::PointerType (const String& s);
+    template <>
+    PointerType::PointerType (const String& s);
 
 }
 
