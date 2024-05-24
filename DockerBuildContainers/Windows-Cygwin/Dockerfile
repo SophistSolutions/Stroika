@@ -29,7 +29,11 @@ FROM ${BASE_IMAGE}
 # install choco (from https://chocolatey.org/install#completely-offline-install)
 SHELL ["powershell"]
 
-RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+RUN \
+    Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    $ErrorActionPreference = "Stop"; \
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
 # The default version of CHOCO CYGWIN fails to install as of 2024-03-08
 # Adding specific version to install worked around the problem (no longer issue as of 2024-05-23, but keep around note for a bit)
@@ -41,7 +45,7 @@ RUN choco install -y cygwin cyg-get
 
 # # Add cygwin to the path
 RUN  \
-    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
+    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin'; \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 RUN  \
     [Environment]::SetEnvironmentVariable('HOME', 'c:\tools\cygwin\home', [EnvironmentVariableTarget]::Machine);
