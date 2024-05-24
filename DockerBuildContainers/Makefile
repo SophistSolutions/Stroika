@@ -67,7 +67,7 @@ IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
 
 build-images:
-	${MAKE} ${IMAGES}
+	${MAKE} --no-print-directory ${IMAGES}
 
 
 ## Detailed recipies for each image type
@@ -81,10 +81,10 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2404-small:
 	docker build -f Ubuntu2404-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2404-small .
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:
-	# Sadly docker build doesn't work with symbolic links
-	cp ../ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
+	@# Sadly docker build doesn't work with symbolic links
+	@cp ../ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
 	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
-	rm -f Ubuntu2204-RegressionTests/BuildGCC
+	@rm -f Ubuntu2204-RegressionTests/BuildGCC
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests:
 	docker build -f Ubuntu2310-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests .
