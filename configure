@@ -2888,10 +2888,17 @@ sub	WriteConfigFile_
 	print (OUT "    </ExtraMakeDefines>\n");
 
 	print (OUT "    <PkgConfigNames>");
+	{
+		my $firstTime = true;
 		foreach my $var (@packageCfgNames) {
-			print (OUT " $var");
+			if (!$firstTime) {
+				print (OUT " ");
+			}
+			$firstTime = false;
+			print (OUT "$var");
 		}
-	print (OUT "    </PkgConfigNames>\n");
+	}
+	print (OUT "</PkgConfigNames>\n");
 
 
 	
