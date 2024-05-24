@@ -35,8 +35,6 @@ namespace Stroika::Foundation::DataExchange::JSON {
          */
         template <Characters::IConvertibleToString STRINGISH_TYPE = String>
         PointerType (STRINGISH_TYPE&& s = STRINGISH_TYPE{});
-        template <>
-        PointerType (const String& s);
 
     public:
         /**
