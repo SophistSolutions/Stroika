@@ -116,6 +116,8 @@ namespace Stroika::Foundation::DataExchange::JSON {
         // components are raw strings and must match nodes exactly (unescaped already)
         Sequence<String> fComponents_;
     };
+            template <>
+        PointerType::PointerType (const String& s);
 
 }
 

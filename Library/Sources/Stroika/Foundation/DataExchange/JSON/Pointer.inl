@@ -11,8 +11,6 @@ namespace Stroika::Foundation::DataExchange::JSON {
      ******************************** JSON::PointerType *****************************
      ********************************************************************************
      */
-            template <>
-        PointerType::PointerType (const String& s);
     template <Characters::IConvertibleToString STRINGISH_TYPE>
     inline PointerType::PointerType (STRINGISH_TYPE&& s)
         : PointerType{static_cast<const String&> (String{s})}
