@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
             sb << "Max-Iterations: "sv << fMaxIterations << ","sv;
         }
         if (fNoImprovementThreshold) {
-            sb << "No-Improvement-Threshold: "sv << fNoImprovementThreshold << ","sv;
+            sb << "No-Improvement-Threshold: "sv << fNoImprovementThreshold;
         }
         sb << "}"sv;
         return sb;
