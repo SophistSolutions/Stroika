@@ -62,8 +62,9 @@ ARG MSYS_20230127=https://github.com/msys2/msys2-installer/releases/download/202
 ARG MSYS_20240507=https://github.com/msys2/msys2-installer/releases/download/2024-05-07/msys2-base-x86_64-20240507.sfx.exe
 SHELL ["powershell"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
-  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
-  iex ((New-Object System.Net.WebClient).DownloadFile("$env:MSYS_20240507",'msys2.exe')); \
+  $ErrorActionPreference = "Stop"; \
+  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12'; \
+  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20240507" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
   function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
