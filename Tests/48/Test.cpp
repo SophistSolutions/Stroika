@@ -279,7 +279,7 @@ namespace {
         {
             using namespace Memory;
             auto b = "hello"_blob;
-            EXPECT_EQ (b.size (), 5);
+            EXPECT_EQ (b.size (), 5u);
             EXPECT_EQ (b[0], static_cast<byte> ('h'));
         }
     }
