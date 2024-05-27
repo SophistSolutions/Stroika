@@ -803,6 +803,9 @@ sub     FillInToolsPathAdditionsIfNeeded_
 			$TOOLS_PATH_ADDITIONS =  trim (`cygpath --mixed --path \"$x)\"`);
 			$VSVARS_VSINSTALLDIR = GetMSVCVarName_('VSINSTALLDIR');
 			$VSVARS_WindowsSdkDir = GetMSVCVarName_('WindowsSdkDir');
+			if ($VSVARS_WindowsSdkDir eq "") {
+				print STDERR "WARNING: VSVARS_WindowsSdkDir empty\n";
+			}
 			$VSVARS_WindowsSDKVersion = GetMSVCVarName_('WindowsSDKVersion');
 			if (substr ($VSVARS_WindowsSDKVersion,length($VSVARS_WindowsSDKVersion)-1, 1) eq '\\') {
 				$VSVARS_WindowsSDKVersion = substr ($VSVARS_WindowsSDKVersion,0, length($VSVARS_WindowsSDKVersion)-1);
