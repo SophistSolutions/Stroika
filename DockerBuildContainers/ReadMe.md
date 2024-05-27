@@ -85,6 +85,19 @@ And, first thing when you run docker image, cat /Getting-Started-With-Stroika.md
 cat /Getting-Started-With-Stroika.md
 ```
 
+#### Windows troubleshooting
+
+DNS is generally broken with docker/windows. 
+
+Docker Engine Config file:
+~~~
+{
+  "dns": [
+    "8.8.8.8"
+  ]
+}
+~~~
+
 ## Docker Files
 
 - Basics

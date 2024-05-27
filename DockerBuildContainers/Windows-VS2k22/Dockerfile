@@ -42,7 +42,7 @@ ARG VS_17_9_7=https://download.visualstudio.microsoft.com/download/pr/7e1f1b8d-7
 ARG VS_17_10_0=https://download.visualstudio.microsoft.com/download/pr/4bc0c2da-4e6d-4a88-9eaa-0748022737fb/a96393451a176f8ec4571814c0e467d3b8bc32e2cafaa42df870e28e278fc344/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_10_0" \
+RUN Invoke-WebRequest "$env:VS_17_9_7" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 #
@@ -85,8 +85,8 @@ RUN Invoke-WebRequest "$env:VS_17_10_0" \
 #       Windows10SDK.20348 is apparently the final Windows 10 SDK (WAG/been this number for a while).
 #       Windows10SDK.22621 appears to be a windows 11 SDK (not my typo) - still untested using this instead
 #       of the windows 10 SDK... try next release... --LGP 2024-02-24
-ARG USE_WINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.20348"
-#ARG USE_WINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.22621"
+#ARG USE_WINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.20348"
+ARG USE_WINSDK="--add Microsoft.VisualStudio.Component.Windows11SDK.22621"
 
 # Attempt to save a little space - running out of space on github actions; but didn't materially help --LGP 2024-02-26
 # ARG REMOVE_WINSDK="--remove Microsoft.VisualStudio.Component.Windows10SDK.10240 --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 --remove Microsoft.VisualStudio.Component.Windows81SDK"

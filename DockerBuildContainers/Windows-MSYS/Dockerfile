@@ -63,7 +63,7 @@ ARG MSYS_20240507=https://github.com/msys2/msys2-installer/releases/download/202
 SHELL ["powershell"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
   $ErrorActionPreference = 'Stop'; \
-  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12'; \
+  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12,Tls13'; \
   Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20240507" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
