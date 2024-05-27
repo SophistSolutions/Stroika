@@ -34,7 +34,7 @@ static_assert (is_same_v<UnsignedOfIf<string>, string>);
 
 #if qHasFeature_GoogleTest
 namespace {
-    void Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ()
+    GTEST_TEST (Foundation_Common, Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_)
     {
         Debug::TraceContextBumper ctx{"{}::Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ()"};
         {
@@ -53,7 +53,6 @@ namespace {
 namespace {
     namespace Test02_Properties_ {
         namespace Private_ {
-
             struct Headers {
             public:
                 Headers ();
@@ -127,89 +126,79 @@ namespace {
                 return *this;
             }
         }
-        void Run ()
-        {
-            Private_::Headers h;
-            EXPECT_TRUE (h.contentLength1 == 0);
-            h.contentLength1 = 2;
-            EXPECT_TRUE (h.contentLength2 == 2);
-            h.contentLength2 = 4;
-            EXPECT_TRUE (h.contentLength1 == 4);
-            Private_::Headers h2 = h;
-            EXPECT_TRUE (h2.contentLength1 == 4);
-            h.contentLength2 = 5;
-            EXPECT_TRUE (h.contentLength1 == 5);
-            EXPECT_TRUE (h2.contentLength1 == 4);
-
-            {
-                // event handlers
-                EXPECT_TRUE (h2.contentLength4 == 4);
-                h2.contentLength4 = 5;
-                EXPECT_TRUE (h2.contentLength4 == 5);
-                bool firstEventHanlderCalled{false};
-                h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
-                    DbgTrace ("first event handler called"_f);
-                    firstEventHanlderCalled = true;
-                    return PropertyCommon::PropertyChangedEventResultType::eContinueProcessing;
-                });
-                h2.contentLength4 = 6;
-                EXPECT_TRUE (h2.contentLength4 == 6);
-                bool secondEventHanlderCalled{false};
-                EXPECT_TRUE (firstEventHanlderCalled);
-                h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
-                    DbgTrace ("second event handler called"_f);
-                    secondEventHanlderCalled = true;
-                    return PropertyCommon::PropertyChangedEventResultType::eSilentlyCutOffProcessing;
-                });
-                h2.contentLength4 = 7;
-                EXPECT_TRUE (secondEventHanlderCalled);
-                EXPECT_TRUE (h2.contentLength4 == 6); // because event handler returned PropertyChangedEventResultType::eSilentlyCutOffProcessing, this time NO
-            }
-        }
     }
-}
-
-namespace {
-    namespace Test3_CommonGUID_ {
-        void DoIt ()
-        {
-            using Common::GUID;
-            {
-                GUID g1 = GUID::GenerateNew ();
-                GUID g2 = GUID::GenerateNew ();
-                VerifyTestResultWarning (g1 != g2);
-                VerifyTestResultWarning (g1 < g2 or g2 < g1);
-            }
-            {
-                GUID g1 = GUID::GenerateNew ();
-                EXPECT_TRUE (GUID{g1.As<Characters::String> ()} == g1);
-                EXPECT_TRUE (GUID{g1.As<string> ()} == g1);
-                EXPECT_TRUE (GUID{g1.As<Memory::BLOB> ()} == g1);
-            }
-        }
-    }
-}
-
-namespace {
-    namespace Test4_Compare_ {
-        void DoIt ()
-        {
-            static_assert (IEqualsComparer<equal_to<int>, int>);
-            static_assert (not IEqualsComparer<less<int>, int>);
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Common, all)
+    GTEST_TEST (Foundation_Common, Properties_)
     {
-        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_"};
-        Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ();
-        Test02_Properties_::Run ();
-        Test3_CommonGUID_::DoIt ();
-        Test4_Compare_::DoIt ();
+        Debug::TraceContextBumper ctx{"{}::Properties_"};
+        using namespace Test02_Properties_;
+        Private_::Headers h;
+        EXPECT_TRUE (h.contentLength1 == 0);
+        h.contentLength1 = 2;
+        EXPECT_TRUE (h.contentLength2 == 2);
+        h.contentLength2 = 4;
+        EXPECT_TRUE (h.contentLength1 == 4);
+        Private_::Headers h2 = h;
+        EXPECT_TRUE (h2.contentLength1 == 4);
+        h.contentLength2 = 5;
+        EXPECT_TRUE (h.contentLength1 == 5);
+        EXPECT_TRUE (h2.contentLength1 == 4);
+
+        {
+            // event handlers
+            EXPECT_TRUE (h2.contentLength4 == 4);
+            h2.contentLength4 = 5;
+            EXPECT_TRUE (h2.contentLength4 == 5);
+            bool firstEventHanlderCalled{false};
+            h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
+                DbgTrace ("first event handler called"_f);
+                firstEventHanlderCalled = true;
+                return PropertyCommon::PropertyChangedEventResultType::eContinueProcessing;
+            });
+            h2.contentLength4 = 6;
+            EXPECT_TRUE (h2.contentLength4 == 6);
+            bool secondEventHanlderCalled{false};
+            EXPECT_TRUE (firstEventHanlderCalled);
+            h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
+                DbgTrace ("second event handler called"_f);
+                secondEventHanlderCalled = true;
+                return PropertyCommon::PropertyChangedEventResultType::eSilentlyCutOffProcessing;
+            });
+            h2.contentLength4 = 7;
+            EXPECT_TRUE (secondEventHanlderCalled);
+            EXPECT_TRUE (h2.contentLength4 == 6); // because event handler returned PropertyChangedEventResultType::eSilentlyCutOffProcessing, this time NO
+        }
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Common, Test3_CommonGUID_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test3_CommonGUID_"};
+        using Common::GUID;
+        {
+            GUID g1 = GUID::GenerateNew ();
+            GUID g2 = GUID::GenerateNew ();
+            VerifyTestResultWarning (g1 != g2);
+            VerifyTestResultWarning (g1 < g2 or g2 < g1);
+        }
+        {
+            GUID g1 = GUID::GenerateNew ();
+            EXPECT_TRUE (GUID{g1.As<Characters::String> ()} == g1);
+            EXPECT_TRUE (GUID{g1.As<string> ()} == g1);
+            EXPECT_TRUE (GUID{g1.As<Memory::BLOB> ()} == g1);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Common, Test4_Compare_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test4_Compare_"};
+        static_assert (IEqualsComparer<equal_to<int>, int>);
+        static_assert (not IEqualsComparer<less<int>, int>);
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])

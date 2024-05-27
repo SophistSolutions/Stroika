@@ -34,7 +34,7 @@ using Test::ArchtypeClasses::NotCopyable;
 
 #if qHasFeature_GoogleTest
 namespace {
-    void Test1_Optional ()
+    GTEST_TEST (Foundation_Memory_, Test1_Optional_)
     {
         {
             using Characters::String;
@@ -98,7 +98,7 @@ namespace {
         }
         {
             constexpr optional<int> x{1};
-            EXPECT_TRUE (x == 1);
+            EXPECT_EQ (x, 1);
         }
         {
             optional<int>                     d;
@@ -120,7 +120,10 @@ namespace {
             EXPECT_TRUE (optional<int>{-9999} > optional<int>{});
         }
     }
-    void Test2_SharedByValue ()
+}
+
+namespace {
+    GTEST_TEST (Foundation_Memory_, Test2_SharedByValue)
     {
         using Memory::BLOB;
         // par Example Usage from doc header
@@ -128,7 +131,10 @@ namespace {
         SharedByValue<vector<byte>> c = b; // copied by reference until 'c' or 'b' changed values
         EXPECT_TRUE (c.cget () == b.cget ());
     }
-    void Test_4_Optional_Of_Mapping_Copy_Problem_ ()
+}
+
+namespace {
+    GTEST_TEST (Foundation_Memory_, Test_4_Optional_Of_Mapping_Copy_Problem_)
     {
         using namespace Stroika::Foundation::Memory;
         using namespace Stroika::Foundation::Containers;
@@ -147,11 +153,16 @@ namespace {
         // fails to compile prior to 2013-09-09
         ol1 = ol2;
     }
+}
 
-    // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
-    // SB nested inside function where used...
-    //  --LGP 2014-02-26
-    namespace {
+namespace {
+    GTEST_TEST (Foundation_Memory_, Test_6_Bits_)
+    {
+        //TEST now if compiler bug gone and works... --LGP 2024-05-25
+        // 
+        // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
+        // SB nested inside function where used...
+        //  --LGP 2014-02-26
         struct X_ {
             int a = 0;
         };
@@ -169,13 +180,6 @@ namespace {
                 return shared_from_this ();
             }
         };
-    }
-
-}
-
-namespace {
-    void Test_6_Bits_ ()
-    {
         {
             EXPECT_TRUE (BitSubstring (0x3, 0, 1) == 1);
             EXPECT_TRUE (BitSubstring (0x3, 1, 2) == 1);
@@ -198,7 +202,7 @@ namespace {
 }
 
 namespace {
-    void Test_7_BLOB_ ()
+    GTEST_TEST (Foundation_Memory_, Test_7_BLOB_)
     {
         {
             vector<uint8_t> b  = {1, 2, 3, 4, 5};
@@ -286,163 +290,165 @@ namespace {
 }
 
 namespace {
-    namespace Test9a_Buffer_ {
-        void DoTest ()
+    GTEST_TEST (Foundation_Memory_, Test9a_Buffer_)
+    {
         {
-            {
-                InlineBuffer<int> x0{0};
-                InlineBuffer<int> x1{x0};
-                x0 = x1;
-            }
-            {
-                // Test using String elements, since those will test construction/reserve logic
-                using Characters::String;
-                InlineBuffer<String> buf1{3};
-                for (int i = 0; i < 1000; i++) {
-                    buf1.push_back (String{L"hi mom"});
-                }
-                InlineBuffer<String> buf2{buf1};
-                buf1.resize (0);
-            }
-            {
-                InlineBuffer<int> x0{4};
-                InlineBuffer<int> assign2;
-                assign2 = x0;
-                EXPECT_TRUE (x0.size () == assign2.size ()); // test regression fixed 2019-03-20
-                EXPECT_TRUE (x0.size () == 4);
-            }
+            InlineBuffer<int> x0{0};
+            InlineBuffer<int> x1{x0};
+            x0 = x1;
         }
-    }
-    namespace Test9b_StackBuffer_ {
-        void DoTest ()
         {
-            {
-                StackBuffer<int> x0{0};
+            // Test using String elements, since those will test construction/reserve logic
+            using Characters::String;
+            InlineBuffer<String> buf1{3};
+            for (int i = 0; i < 1000; i++) {
+                buf1.push_back (String{"hi mom"});
             }
-            {
-                // Test using String elements, since those will test construction/reserve logic
-                using Characters::String;
-                StackBuffer<String> buf1{3};
-                for (int i = 0; i < 1000; i++) {
-                    buf1.push_back (String{L"hi mom"});
-                }
-                buf1.resize (0);
-            }
-            {
-                StackBuffer<int> x0{4};
-                StackBuffer<int> assign2;
-                EXPECT_TRUE (x0.size () == 4);
-            }
+            InlineBuffer<String> buf2{buf1};
+            buf1.resize (0);
+        }
+        {
+            InlineBuffer<int> x0{4};
+            InlineBuffer<int> assign2;
+            assign2 = x0;
+            EXPECT_TRUE (x0.size () == assign2.size ()); // test regression fixed 2019-03-20
+            EXPECT_TRUE (x0.size () == 4);
         }
     }
 }
 
 namespace {
-    namespace Test10_OptionalSelfAssign_ {
-        void DoTest ()
+    GTEST_TEST (Foundation_Memory_, Test9b_StackBuffer_)
+    {
         {
-            {
+            StackBuffer<int> x0{0};
+        }
+        {
+            // Test using String elements, since those will test construction/reserve logic
+            using Characters::String;
+            StackBuffer<String> buf1{3};
+            for (int i = 0; i < 1000; i++) {
+                buf1.push_back (String{L"hi mom"});
+            }
+            buf1.resize (0);
+        }
+        {
+            StackBuffer<int> x0{4};
+            StackBuffer<int> assign2;
+            EXPECT_EQ (x0.size (), 4u);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Memory_, Test10_OptionalSelfAssign_)
+    {
+        {
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
-                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
 #endif
-                // ASSIGN
-                {
-                    optional<int> x;
-                    x = x;
-                }
-                {
-                    optional<Characters::String> x;
-                    x = x;
-                }
-                {
-                    optional<int> x{1};
-                    x = x;
-                }
-                {
-                    optional<Characters::String> x{L"x"};
-                    x = x;
-                }
+            // ASSIGN
+            {
+                optional<int> x;
+                x = x;
             }
-            // note - see https://stroika.atlassian.net/browse/STK-556 - we DON'T support Optional self-move
+            {
+                optional<Characters::String> x;
+                x = x;
+            }
+            {
+                optional<int> x{1};
+                x = x;
+            }
+            {
+                optional<Characters::String> x{L"x"};
+                x = x;
+            }
+        }
+        // note - see https://stroika.atlassian.net/browse/STK-556 - we DON'T support Optional self-move
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
+    }
+}
+
+namespace {
+    namespace Private_ {
+        struct X1 {
+            int a;
+            int b;
+        };
+        struct X2 {
+        public:
+            int a;
+        private:
+            int b;
+
+        public:
+            void* getBAddr ()
+            {
+                return &b;
+            }
+         static   auto getBAddrOffset ()
+            {
+             return &X2::b;
+            }
+
+        private:
+            FRIEND_TEST (Foundation_Memory_, Test11_ObjectFieldUtilities_);
+        };
+    }
+    GTEST_TEST (Foundation_Memory_, Test11_ObjectFieldUtilities_)
+    {
+        {
+            EXPECT_TRUE (OffsetOf (&Private_::X1::a) == 0);
+            EXPECT_TRUE (OffsetOf (&Private_::X1::b) >= sizeof (int));
+        }
+        {
+            Private_::X1 t;
+            static_assert (is_standard_layout_v<Private_::X1>);
+            void* aAddr = &t.a;
+            void* bAddr = &t.b;
+            EXPECT_TRUE (GetObjectOwningField (aAddr, &Private_::X1::a) == &t);
+            EXPECT_TRUE (GetObjectOwningField (bAddr, &Private_::X1::b) == &t);
+        }
+        {
+            // Check and warning but since X2 is not standard layout, this isn't guaranteed to work
+            Private_::X2 t;
+            static_assert (not is_standard_layout_v<Private_::X2>);
+            void* aAddr = &t.a;
+            void* bAddr = t.getBAddr ();
+            VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
+            VerifyTestResultWarning (GetObjectOwningField (bAddr, Private_::X2::getBAddrOffset()) == &t);
         }
     }
 }
 
 namespace {
-    namespace Test11_ObjectFieldUtilities_ {
-        void DoTest ();
-        namespace Private_ {
-            struct X1 {
-                int a;
-                int b;
-            };
-            struct X2 {
-            public:
-                int a;
-
-            private:
-                int b;
-
-            private:
-                friend void Test11_ObjectFieldUtilities_::DoTest ();
-            };
-        }
-        void DoTest ()
+    struct Person {
+        int firstName;
+        int lastName;
+    };
+    struct NotDefaultConstructible {
+        NotDefaultConstructible () = delete;
+        constexpr NotDefaultConstructible (int)
         {
-            {
-                EXPECT_TRUE (OffsetOf (&Private_::X1::a) == 0);
-                EXPECT_TRUE (OffsetOf (&Private_::X1::b) >= sizeof (int));
-            }
-            {
-                Private_::X1 t;
-                static_assert (is_standard_layout_v<Private_::X1>);
-                void* aAddr = &t.a;
-                void* bAddr = &t.b;
-                EXPECT_TRUE (GetObjectOwningField (aAddr, &Private_::X1::a) == &t);
-                EXPECT_TRUE (GetObjectOwningField (bAddr, &Private_::X1::b) == &t);
-            }
-            {
-                // Check and warning but since X2 is not standard layout, this isn't guaranteed to work
-                Private_::X2 t;
-                static_assert (not is_standard_layout_v<Private_::X2>);
-                void* aAddr = &t.a;
-                void* bAddr = &t.b;
-                VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
-                VerifyTestResultWarning (GetObjectOwningField (bAddr, &Private_::X2::b) == &t);
-            }
         }
-    }
-}
-
-namespace {
-    namespace Test12_OffsetOf_ {
-        struct Person {
-            int firstName;
-            int lastName;
-        };
-        struct NotDefaultConstructible {
-            NotDefaultConstructible () = delete;
-            constexpr NotDefaultConstructible (int)
-            {
-            }
-            int firstName{};
-            int lastName{};
-        };
-        void DoTest ()
+        int firstName{};
+        int lastName{};
+    };
+    GTEST_TEST (Foundation_Memory_, Test12_OffsetOf_)
+    {
         {
-            {
-                [[maybe_unused]] size_t kOffset_ = OffsetOf (&Person::lastName);
-                EXPECT_TRUE (OffsetOf (&Person::firstName) == 0);
-            }
-            {
-                [[maybe_unused]] size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
-                EXPECT_TRUE (OffsetOf (&NotDefaultConstructible::firstName) == 0);
-            }
+            [[maybe_unused]] size_t kOffset_ = OffsetOf (&Person::lastName);
+            EXPECT_TRUE (OffsetOf (&Person::firstName) == 0);
+        }
+        {
+            [[maybe_unused]] size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
+            EXPECT_TRUE (OffsetOf (&NotDefaultConstructible::firstName) == 0);
+        }
 #if 0
             // disabled til we can figure out a way to get this constexpr version of OffsetOf() working...
             {
@@ -450,162 +456,136 @@ namespace {
                 static_assert (OffsetOf_Constexpr (&Person::firstName) == 0);
             }
 #endif
-        }
     }
 
 }
 
 namespace {
-    namespace Test13_Resize_ {
-        void DoTest ()
-        {
-            size_t           currentCapacity = 0;
-            unsigned int     countOfReallocCopies{};
-            constexpr size_t kCountOfResizes_ = 500 * 1024;
-            for (size_t len = 0; len < kCountOfResizes_; ++len) {
-                if (len > currentCapacity) {
-                    size_t newCapacity = Containers::Support::ReserveTweaks::GetScaledUpCapacity (len);
-                    EXPECT_TRUE (newCapacity >= len);
-                    currentCapacity = newCapacity;
-                    //DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs, and allocated size=%d", len, log (len), countOfReallocCopies, newCapacity);
-                    if (len > 1) {
-                        EXPECT_TRUE (countOfReallocCopies < log (len) * 4); // grows roughly logarithmically, but factor depends on scaling in GetScaledUpCapacity
-                    }
-                    ++countOfReallocCopies;
-                }
-            }
-            DbgTrace (L"For {} ({} its log) resizes, we got {} reallocs"_f, kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
-            VerifyTestResultWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
-        }
-    }
-}
-
-namespace {
-    namespace Test14_OffsetOf_ {
-        namespace Private_ {
-            struct s {
-                float a;
-                char  b;
-                char  bb;
-                int   c;
-                s () = delete; // no constructor
-            };
-#pragma pack(push, 1)
-            struct s2 {
-                float  a;
-                char   b;
-                char   bb;
-                int    c;
-                double d;
-                char   e;
-            };
-#pragma pack(pop)
-            struct a {
-                int i;
-                int j;
-            };
-            struct b {
-                int i;
-                int k;
-            };
-            struct ab : public a, public b {};
-            DISABLE_COMPILER_MSC_WARNING_START (4121);
-            DISABLE_COMPILER_MSC_WARNING_START (4324);
-            struct alignas (16) al {
-                float a;
-                alignas (8) char b;
-                char bb;
-                char arr[20];
-            };
-#pragma pack(push, 2)
-            struct al2 {
-                char a;
-                int  b;
-                char c;
-            };
-#pragma pack(pop)
-            DISABLE_COMPILER_MSC_WARNING_END (4121);
-            DISABLE_COMPILER_MSC_WARNING_END (4324);
-        }
-
-        void DoTest ()
-        {
-            using namespace Private_;
-            // no constructor, default aligning
-            EXPECT_TRUE (OffsetOf (&s::a) == 0);
-            EXPECT_TRUE (OffsetOf (&s::b) == sizeof (float));
-            EXPECT_TRUE (OffsetOf (&s::bb) == sizeof (float) + sizeof (char));
-            EXPECT_TRUE (OffsetOf (&s::c) == alignof (s) * 2); // aligned b with bb
-
-            // no alignment
-            EXPECT_TRUE (OffsetOf (&s2::a) == 0);
-            EXPECT_TRUE (OffsetOf (&s2::b) == sizeof (float));
-            EXPECT_TRUE (OffsetOf (&s2::bb) == sizeof (float) + sizeof (char));
-            EXPECT_TRUE (OffsetOf (&s2::c) == sizeof (float) + sizeof (char) * 2);
-            EXPECT_TRUE (OffsetOf (&s2::d) == sizeof (float) + sizeof (char) * 2 + sizeof (int));
-            EXPECT_TRUE (OffsetOf (&s2::e) == sizeof (float) + sizeof (char) * 2 + sizeof (int) + sizeof (double));
-            static_assert (is_standard_layout_v<s2>);
-            EXPECT_TRUE (OffsetOf (&s2::a) == offsetof (s2, a));
-            EXPECT_TRUE (OffsetOf (&s2::b) == offsetof (s2, b));
-            EXPECT_TRUE (OffsetOf (&s2::bb) == offsetof (s2, bb));
-            EXPECT_TRUE (OffsetOf (&s2::c) == offsetof (s2, c));
-            EXPECT_TRUE (OffsetOf (&s2::d) == offsetof (s2, d));
-            EXPECT_TRUE (OffsetOf (&s2::e) == offsetof (s2, e));
-
-            // simply
-            EXPECT_TRUE (OffsetOf (&a::i) == 0);
-            EXPECT_TRUE (OffsetOf (&a::j) == sizeof (int));
-            EXPECT_TRUE (OffsetOf (&b::i) == 0);
-            EXPECT_TRUE (OffsetOf (&b::k) == sizeof (int));
-
-            // other based
-            //Assert (OffsetOf(&ab::j) == sizeof (int));
-            //Assert (OffsetOf<ab> (&ab::k) == sizeof (int) * 3);
-
-            // special alignments
-            EXPECT_TRUE (OffsetOf (&al::a) == 0);
-            EXPECT_TRUE (OffsetOf (&al::b) == 8);
-            EXPECT_TRUE (OffsetOf (&al::bb) == 9);
-            // Assert (OffsetOf (&al::arr) == 16);
-
-            EXPECT_TRUE (OffsetOf (&al2::a) == 0);
-            EXPECT_TRUE (OffsetOf (&al2::b) == 2);
-            EXPECT_TRUE (OffsetOf (&al2::c) == 6);
-        }
-    }
-}
-
-namespace {
-    namespace Test15_Span_ {
-        void DoTest ()
-        {
-            {
-                char buf1[1024];
-                char buf2[1024];
-                EXPECT_TRUE (not Intersects (span{buf1}, span{buf2}));
-                EXPECT_TRUE (Intersects (span{buf1}, span{buf1}));
-                EXPECT_TRUE (Intersects (span{buf1}.subspan (3, 10), span{buf1}.subspan (4, 10)));
-            }
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Memory_, Test13_Resize_)
     {
-        Test1_Optional ();
-        Test2_SharedByValue ();
-        Test_4_Optional_Of_Mapping_Copy_Problem_ ();
-        Test_6_Bits_ ();
-        Test_7_BLOB_ ();
-        Test9a_Buffer_::DoTest ();
-        Test9b_StackBuffer_::DoTest ();
-        Test10_OptionalSelfAssign_::DoTest ();
-        Test11_ObjectFieldUtilities_::DoTest ();
-        Test12_OffsetOf_::DoTest ();
-        Test13_Resize_::DoTest ();
-        Test14_OffsetOf_::DoTest ();
-        Test15_Span_::DoTest ();
+        size_t           currentCapacity = 0;
+        unsigned int     countOfReallocCopies{};
+        constexpr size_t kCountOfResizes_ = 500 * 1024;
+        for (size_t len = 0; len < kCountOfResizes_; ++len) {
+            if (len > currentCapacity) {
+                size_t newCapacity = Containers::Support::ReserveTweaks::GetScaledUpCapacity (len);
+                EXPECT_TRUE (newCapacity >= len);
+                currentCapacity = newCapacity;
+                //DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs, and allocated size=%d", len, log (len), countOfReallocCopies, newCapacity);
+                if (len > 1) {
+                    EXPECT_TRUE (countOfReallocCopies < log (len) * 4); // grows roughly logarithmically, but factor depends on scaling in GetScaledUpCapacity
+                }
+                ++countOfReallocCopies;
+            }
+        }
+        DbgTrace (L"For {} ({} its log) resizes, we got {} reallocs"_f, kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
+        VerifyTestResultWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
+    }
+}
+
+namespace {
+    namespace Private_ {
+        struct s {
+            float a;
+            char  b;
+            char  bb;
+            int   c;
+            s () = delete; // no constructor
+        };
+#pragma pack(push, 1)
+        struct s2 {
+            float  a;
+            char   b;
+            char   bb;
+            int    c;
+            double d;
+            char   e;
+        };
+#pragma pack(pop)
+        struct a {
+            int i;
+            int j;
+        };
+        struct b {
+            int i;
+            int k;
+        };
+        struct ab : public a, public b {};
+        DISABLE_COMPILER_MSC_WARNING_START (4121);
+        DISABLE_COMPILER_MSC_WARNING_START (4324);
+        struct alignas (16) al {
+            float a;
+            alignas (8) char b;
+            char bb;
+            char arr[20];
+        };
+#pragma pack(push, 2)
+        struct al2 {
+            char a;
+            int  b;
+            char c;
+        };
+#pragma pack(pop)
+        DISABLE_COMPILER_MSC_WARNING_END (4121);
+        DISABLE_COMPILER_MSC_WARNING_END (4324);
+    }
+
+    GTEST_TEST (Foundation_Memory_, Test14_OffsetOf_)
+    {
+        using namespace Private_;
+        // no constructor, default aligning
+        EXPECT_TRUE (OffsetOf (&s::a) == 0);
+        EXPECT_TRUE (OffsetOf (&s::b) == sizeof (float));
+        EXPECT_TRUE (OffsetOf (&s::bb) == sizeof (float) + sizeof (char));
+        EXPECT_TRUE (OffsetOf (&s::c) == alignof (s) * 2); // aligned b with bb
+
+        // no alignment
+        EXPECT_TRUE (OffsetOf (&s2::a) == 0);
+        EXPECT_TRUE (OffsetOf (&s2::b) == sizeof (float));
+        EXPECT_TRUE (OffsetOf (&s2::bb) == sizeof (float) + sizeof (char));
+        EXPECT_TRUE (OffsetOf (&s2::c) == sizeof (float) + sizeof (char) * 2);
+        EXPECT_TRUE (OffsetOf (&s2::d) == sizeof (float) + sizeof (char) * 2 + sizeof (int));
+        EXPECT_TRUE (OffsetOf (&s2::e) == sizeof (float) + sizeof (char) * 2 + sizeof (int) + sizeof (double));
+        static_assert (is_standard_layout_v<s2>);
+        EXPECT_TRUE (OffsetOf (&s2::a) == offsetof (s2, a));
+        EXPECT_TRUE (OffsetOf (&s2::b) == offsetof (s2, b));
+        EXPECT_TRUE (OffsetOf (&s2::bb) == offsetof (s2, bb));
+        EXPECT_TRUE (OffsetOf (&s2::c) == offsetof (s2, c));
+        EXPECT_TRUE (OffsetOf (&s2::d) == offsetof (s2, d));
+        EXPECT_TRUE (OffsetOf (&s2::e) == offsetof (s2, e));
+
+        // simply
+        EXPECT_TRUE (OffsetOf (&a::i) == 0);
+        EXPECT_TRUE (OffsetOf (&a::j) == sizeof (int));
+        EXPECT_TRUE (OffsetOf (&b::i) == 0);
+        EXPECT_TRUE (OffsetOf (&b::k) == sizeof (int));
+
+        // other based
+        //Assert (OffsetOf(&ab::j) == sizeof (int));
+        //Assert (OffsetOf<ab> (&ab::k) == sizeof (int) * 3);
+
+        // special alignments
+        EXPECT_TRUE (OffsetOf (&al::a) == 0);
+        EXPECT_TRUE (OffsetOf (&al::b) == 8);
+        EXPECT_TRUE (OffsetOf (&al::bb) == 9);
+        // Assert (OffsetOf (&al::arr) == 16);
+
+        EXPECT_TRUE (OffsetOf (&al2::a) == 0);
+        EXPECT_TRUE (OffsetOf (&al2::b) == 2);
+        EXPECT_TRUE (OffsetOf (&al2::c) == 6);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Memory_, Test15_Span_)
+    {
+        {
+            char buf1[1024];
+            char buf2[1024];
+            EXPECT_TRUE (not Intersects (span{buf1}, span{buf2}));
+            EXPECT_TRUE (Intersects (span{buf1}, span{buf1}));
+            EXPECT_TRUE (Intersects (span{buf1}.subspan (3, 10), span{buf1}.subspan (4, 10)));
+        }
     }
 }
 #endif
