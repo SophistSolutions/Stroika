@@ -21,41 +21,17 @@ help:
 	@echo "And first thing when you run docker image, cat /Getting-Started-With-Stroika.md"
 
 
-#
-# Due to https://stroika.atlassian.net/browse/STK-742 - you may see the error message building "Invoke-WebRequest : The remote name could not be resolved"
-#
-#		replace
-#			make build-images
-#		with
-#			DOCKER_NETWORK="Default Switch" make build-images
-#
-#	Cannot find any way to change the default network for docker build, but it appears you can override
-#	it with --network XXX and that that XXX defaults to nat (not documented I can find, but empirically).
-#
-DOCKER_NETWORK?=
-DOCKER_DNS_OVERRIDE?=
 
+# Was originally mostly for https://stroika.atlassian.net/browse/STK-742, but better workaround in ReadMe.md file.
 EXTRA_DOCKER_BUILD_ARGS=
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-ifeq ($(DOCKER_NETWORK),)
-DOCKER_NETWORK=nat
-endif
-# ifeq ($(DOCKER_DNS_OVERRIDE),)
-# DOCKER_DNS_OVERRIDE=8.8.8.8
-# endif
+#
 # to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
 # in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
 # Build with -m 4GB cuz default of 1GB pages alot
 #EXTRA_DOCKER_BUILD_ARGS= --storage-opts "size 100GB" 
 #
 endif
-
-ifneq ($(DOCKER_NETWORK),)
-EXTRA_DOCKER_BUILD_ARGS +=	--network "${DOCKER_NETWORK}"
-endif
-# ifneq ($(DOCKER_DNS_OVERRIDE),)
-# EXTRA_DOCKER_BUILD_ARGS +=	--dns="${DOCKER_DNS_OVERRIDE}"
-# endif
 
 
 ## NOTE: Since these can be slow/big, the IMAGES arg can be given on the commandline to override this

@@ -87,9 +87,9 @@ cat /Getting-Started-With-Stroika.md
 
 #### Windows troubleshooting
 
-DNS is generally broken with docker/windows. 
+DNS is generally broken with docker/windows (https://stroika.atlassian.net/browse/STK-742).
 
-Docker Engine Config file:
+An easy workaround: Docker Engine Config file:
 ~~~
 {
   "dns": [
