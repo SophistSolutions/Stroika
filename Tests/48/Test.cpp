@@ -159,7 +159,7 @@ namespace {
     GTEST_TEST (Foundation_Memory_, Test_6_Bits_)
     {
         //TEST now if compiler bug gone and works... --LGP 2024-05-25
-        // 
+        //
         // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
         // SB nested inside function where used...
         //  --LGP 2014-02-26
@@ -383,6 +383,7 @@ namespace {
         struct X2 {
         public:
             int a;
+
         private:
             int b;
 
@@ -391,9 +392,9 @@ namespace {
             {
                 return &b;
             }
-         static   auto getBAddrOffset ()
+            static auto getBAddrOffset ()
             {
-             return &X2::b;
+                return &X2::b;
             }
 
         private:
@@ -421,7 +422,7 @@ namespace {
             void* aAddr = &t.a;
             void* bAddr = t.getBAddr ();
             VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
-            VerifyTestResultWarning (GetObjectOwningField (bAddr, Private_::X2::getBAddrOffset()) == &t);
+            VerifyTestResultWarning (GetObjectOwningField (bAddr, Private_::X2::getBAddrOffset ()) == &t);
         }
     }
 }
