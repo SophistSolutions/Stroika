@@ -40,9 +40,23 @@ ORIGs CURRENT:	$(ZIPPED_SOURCES_FILE_)
 	unzip -q $(ZIPPED_SOURCES_FILE_) -d $@
 
 
+PRODUCED_OUTPUT_ARTIFACTS_=	\
+	${StroikaRoot}ThirdPartyComponents/StrawberryPerl/CURRENT		\
+	${StroikaRoot}ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin/perl.exe	\
+
 all:	
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/strawberry-perl Build $(PERL_VERSION_):"
 	@$(MAKE) --silent CURRENT
+	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) check
+
+
+check:
+ifeq (${CONFIGURATION},)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+	@${StroikaRoot}ScriptsLib/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "strawberry-perl ${libxml2_VERSION_} - Checking ... "
+	@${StroikaRoot}ScriptsLib/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
+	@${ECHO} " Stroika/ThirdPartyComponents/strawberry-perl -    [Succeeded]";
 
 
 clean:
