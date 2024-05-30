@@ -104,6 +104,10 @@ else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
+	@if [ "$@" != "ORIGs" ] ; then \
+		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Extracting ... ";\
+		patch -p0 $@/tools/build/src/tools/msvc.jam Patches/MSVC144-Jam.Patch >> $@/PATCHING.OUT;\
+	fi
 
 
 clobber:	clean
@@ -183,7 +187,6 @@ $(B2FullPath):
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 # BOOTSTRAP_TOOLSET?=msvc
 BOOTSTRAP_TOOLSET?=
-# BOOTSTRAP_TOOLSET?=vc143
 endif
 
 bootstrap_:
