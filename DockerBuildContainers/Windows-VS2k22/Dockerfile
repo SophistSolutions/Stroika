@@ -42,7 +42,7 @@ ARG VS_17_9_7=https://download.visualstudio.microsoft.com/download/pr/7e1f1b8d-7
 ARG VS_17_10_0=https://download.visualstudio.microsoft.com/download/pr/4bc0c2da-4e6d-4a88-9eaa-0748022737fb/a96393451a176f8ec4571814c0e467d3b8bc32e2cafaa42df870e28e278fc344/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_9_7" \
+RUN Invoke-WebRequest "$env:VS_17_10_0" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 #
