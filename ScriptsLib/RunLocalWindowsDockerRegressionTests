@@ -7,9 +7,9 @@
 #
 #       for var in "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
 #
-CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22}"
+CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22}"
 CONTAINER_NAME="${CONTAINER_NAME:-DockerWindowsStroikaRegressionTester1}"
-USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_VS2k22-In-Docker}"
+USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_MSYS-VS2k22-In-Docker}"
 BRANCH="${BRANCH:-v3-Dev}"
 VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 DOCKER="${DOCKER:-docker.exe}"
