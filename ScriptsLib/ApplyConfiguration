@@ -332,48 +332,61 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "$var\n");
 	}
 
-	print (OUT "\n\nLinkerArgs_LibPath := $LinkerArgs_LibPath\n");
-	print (OUT "LinkerArgs_LibDependencies := $LinkerArgs_LibDependencies\n");
-
 	print (OUT "\n\n");
-	print (OUT "# Extra dynamically computed link(cppflags) lines\n");
-	if (not (trim($PkgConfigNames) eq "")) {
-		my $extraPkgConfigArgs = "";
-		# This msvc-syntax hack FIXES libxml2, but BREAKS GoogleTest, that already generates in the right format for windows.
-		# Not sure if I want to go with patching .pc files, or this trick. Must see what others do - so leave this out for now--LGP 2023-12-21
-		# if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		# 	$extraPkgConfigArgs = " --msvc-syntax";
-		# }
-		# Use `` so this is only evaluated when linking, not other times when the Configuration.mk file is loaded
-		print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config $extraPkgConfigArgs --static --libs $PkgConfigNames`\n");
-		# Do likewise --cflags-only-I for CPPFLAGS
-		print (OUT "#CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags-only-I $PkgConfigNames`\n");
+	print (OUT "#Script to map filenames to native format (for windows)\n");
+	print (OUT "##	EG USE AS:   CPPFLAGS += -I\"\$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,\${StroikaRoot})/Builds...\"\n");
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
+		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
+	}
+	else {
+		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$1\n");
+		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$1\n");
 	}
 
-
-
 	print (OUT "\n\n");
-
-	WriteStroikaConfigMakeHeader_CachedLineItem_("LIB_SUFFIX");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("OBJ_SUFFIX");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("EXE_SUFFIX");
-
-	
-	print (OUT "\n");
-	print (OUT "\n");
-
-	print (OUT "#Linker-Driver\n");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("LINKER");
-
-	print (OUT "#\n");
-	print (OUT "EXTRA_COMPILER_ARGS :=	$EXTRA_COMPILER_ARGS\n");
-
+	print (OUT "\n\n");
+	print (OUT "#Linker flags\n");
+	print (OUT "LinkerArgs_LibPath := $LinkerArgs_LibPath\n");
+	print (OUT "LinkerArgs_LibDependencies := $LinkerArgs_LibDependencies\n");
 	print (OUT "#\n");
 	print (OUT "LinkerArgs_ExtraPrefix :=	$LinkerArgs_ExtraPrefix\n");
 	print (OUT "LinkerArgs_ExtraSuffix :=	$LinkerArgs_ExtraSuffix\n");
 
 	print (OUT "IncludeDebugSymbolsInExecutables :=	$IncludeDebugSymbolsInExecutables\n");
 	print (OUT "IncludeDebugSymbolsInLibraries :=	$IncludeDebugSymbolsInLibraries\n");
+	print (OUT "#Linker-Driver\n");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LINKER");
+
+	print (OUT "\n\n# Extra dynamically computed link(cppflags) lines\n");
+	if (not (trim($PkgConfigNames) eq "")) {
+		my $extraPkgConfigArgs = "";
+		# Use `` so this is only evaluated when linking, not other times when the Configuration.mk file is loaded
+		print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config $extraPkgConfigArgs --static --libs $PkgConfigNames`\n");
+		# Do likewise --cflags-only-I for CPPFLAGS???
+		# (pkg-config doesn't distinguish cppflags/cflags?)
+		# so maybe here should just append CFLAGS?
+		## Also - sadly - PKG_CONFIG_PATH doesn't work right with MSYS, so don't do that way  (vaguely related to https://stroika.atlassian.net/browse/STK-1005 )
+		#		Cannot use c:/Sandbox... path in PKG_CONFIG, and using /c/... path works, but then produces something that wont work with visual studio.
+		#		--LGP 2024-05-31
+		#print (OUT "CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags $PkgConfigNames`\n");
+		# print (OUT "CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags-only-other $PkgConfigNames`\n");
+		if (index ($PkgConfigNames, "libxml-2.0") != -1) {
+			print (OUT "CPPFLAGS += -I\"\$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,\${StroikaRoot})/Builds/$activeConfiguration/ThirdPartyComponents/include/libxml2\"\n");
+			print (OUT "CPPFLAGS += -DLIBXML_STATIC\n");
+		}
+	}
+
+	print (OUT "\n\n#File Suffixes");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LIB_SUFFIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("OBJ_SUFFIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("EXE_SUFFIX");
+
+	print (OUT "\n");
+	print (OUT "\n");
+
+	print (OUT "#\n");
+	print (OUT "EXTRA_COMPILER_ARGS :=	$EXTRA_COMPILER_ARGS\n");
 
 
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
@@ -448,14 +461,6 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "OUT_ARG_PREFIX_NATIVE := -o \n");
 	}
 
-	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
-		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
-	}
-	else {
-		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$1\n");
-		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$1\n");
-	}
 
 	print (OUT "\n");
 
@@ -683,7 +688,6 @@ sub WriteVSCodeCPPExtensionConfigFile
 		}
 	}
 
-
 	# Add myDefaultIncludePath environment-variable if missing
 	{
 		local $envVars = `jq ".env" < $vsCodeCppExtensionCng`;
@@ -748,6 +752,13 @@ sub WriteVSCodeCPPExtensionConfigFile
 			$newCfgObj .= " , ";
 			$newCfgObj .= "\\\"$element\\\"";
 		}
+		# # WORKAROUND til we have https://stroika.atlassian.net/browse/STK-1005 addressed
+		if (index ($PkgConfigNames, "libxml-2.0") != -1) {
+			$newCfgObj .= " , ";
+			my $element = trim (`realpath --canonicalize-missing Builds/$activeConfiguration/ThirdPartyComponents/include/libxml2`) . "/";
+			$element = trim ("`cygpath --mixed --path \"$element\"`");
+			$newCfgObj .= "\\\"$element\\\"";
+		}
 		$newCfgObj .= "]";
 	}
 	{
@@ -764,6 +775,16 @@ sub WriteVSCodeCPPExtensionConfigFile
 				local $v = substr($element, 2);
 				$newCfgObj .= "\\\"$v\\\"";
 			}
+		}
+		# # WORKAROUND til we have https://stroika.atlassian.net/browse/STK-1005 addressed
+		if (index ($PkgConfigNames, "libxml-2.0") != -1) {
+			if ($first) {
+				$first = false;
+			}
+			else {
+				$newCfgObj .= " , ";
+			}
+			$newCfgObj .= "\\\"LIBXML_STATIC\\\"";	# cannot use pkg-config for this because then wouldn't be seen in .vscode etc
 		}
 		$newCfgObj .= "]";
 	}
