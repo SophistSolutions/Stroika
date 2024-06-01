@@ -18,7 +18,8 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
-VERSION=8.7.1
+VERSION=8.8.0
+#VERSION=8.7.1
 #VERSION=8.6.0
 #VERSION=7.86.0
 BASENAME=curl-$(VERSION)
