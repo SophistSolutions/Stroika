@@ -14,6 +14,11 @@ using namespace Stroika::Foundation::Characters;
 
 #if qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
 template <>
+String Characters::UnoverloadedToString (const int& arg)
+{
+    return ToString (arg);
+}
+template <>
 String Characters::UnoverloadedToString (const unsigned long& arg)
 {
     return ToString (arg);
