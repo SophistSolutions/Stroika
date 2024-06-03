@@ -824,7 +824,8 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+// and broken in GCC 12 with raspberrypi-g++-12-release-sanitize_address 
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #else
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy 0
 #endif
