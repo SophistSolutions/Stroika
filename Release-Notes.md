@@ -29,6 +29,11 @@ especially those they need to be aware of when upgrading.
       - VS_17_10_1 in docker container
     - readme docs
 
+- All Source Files
+  - Use Stroika-root relative paths instead of . relative paths #includes (so things line up better, copy-pasta better, and slightly clearer, though slightly more verbose)
+  - lose include guards from .inl files and normalize formatting - since always included inside .h inside include guard
+
+
 - Characters
   - String
     - new String::AssureEndsWith
@@ -63,6 +68,10 @@ especially those they need to be aware of when upgrading.
     - new CommandLine class; options support, inclding autogenerateing 'Usage' from Options; and updated all the regtests
       and samples to use the new CommandLine code
 
+- IO
+  - Network
+    - fix includes so MacOS includes TCP_NODELAY define
+
 
 - ThirdPartyComponents
   - boost 1.85.0
@@ -82,6 +91,10 @@ especially those they need to be aware of when upgrading.
 
 - Regression Tests
   - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
+
+
+
+---------------------
 
 commit b1af12f7bdb751548e45fd2556089b41db4bc145
 Author: Lewis Pringle <lewis@sophists.com>
@@ -323,12 +336,6 @@ Date:   Wed Mar 13 14:36:32 2024 -0400
 
     experimental new Format overload
 
-commit 483f3bb3d1fec0d14dc4679ee8a72f4a422917ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 14:37:54 2024 -0400
-
-    minor regtest tweaks
-
 commit 0e86346777ae41750b986b5d54630c03c3302e47
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Mar 13 15:35:49 2024 -0400
@@ -395,12 +402,6 @@ Date:   Thu Mar 14 13:52:46 2024 -0400
 
     up a few _LIBCPP_VERSION BWA defines - cuz broken in version 18 of lib as well (tested on untunu 24.04)
 
-commit 9372402a164b3d232be88a8534cb57c461091687
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Mar 14 13:56:43 2024 -0400
-
-    running out of space on codeql analyze - try debug-symbols false to see if corrects
-
 commit 2b9d4bb10926d1f6d6ea5b0a8497421453f4021d
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri Mar 15 10:46:23 2024 -0400
@@ -412,17 +413,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri Mar 15 10:52:28 2024 -0400
 
     maybe got new format stuff working on clang++15
-
-commit 20e1adaa19fff201b05e4041ba1cb9f95ba645b2
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 15 16:15:38 2024 -0400
-
-
-commit 7bc1efcc74dece96022b4773dd3ef31a99aa88f5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 15 16:15:49 2024 -0400
-
-    lose added fetchurl - appears bad
 
 commit 0b49ba06bdecad25b3447c6422ba2ac0baa086a7
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -453,18 +443,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Fri Mar 15 20:17:21 2024 -0400
 
     more use of <ContraintInMemberClassSeparateDeclare_BWA_Helper_
-
-commit 6b64518bc15220365ff58bbea29c4646df3389f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 15 20:32:47 2024 -0400
-
-    mostly comsetic and fixed one typo
-
-commit fd6c85a6db0888f5f60fdb26366981f729b41841
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 15 20:33:53 2024 -0400
-
-    fixed minor bugs caught by sanitzers
 
 commit 94594ac69228380c0294a3a29ce1fcd8e753a98e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -574,24 +552,6 @@ Date:   Tue Mar 19 10:41:12 2024 -0400
 
     adjust test case so compiles with clang++15
 
-commit 68255e1f5bdccbce382be667898f55a91ee0f681
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 10:41:49 2024 -0400
-
-    use Stroika-rel instead of . rel paths in more includes
-
-commit f6a38ce33093e7a3b92ddd40da6739563c0a095c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 10:45:35 2024 -0400
-
-    use Stroika-rel path in a few more includes
-
-commit 8517c508ef42761755e7b64ffd967d9a5d49dfa9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 12:00:49 2024 -0400
-
-    use Stroika-rel path in a few more includes
-
 commit 615aaa1cb3e0fcaa05ad657f910bce371e55f190
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 19 14:55:01 2024 -0400
@@ -687,12 +647,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 20 12:02:06 2024 -0400
 
     cosmetic tweaks to webservice frameworks docs page
-
-commit 1a09854fbd46ea6cc7398679a6520567bac9339f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 20 14:28:03 2024 -0400
-
-    minor tweak to WS docs
 
 commit 411ba2dbd64f92a3cab9d89f39a8b6c119bb9362
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1384,59 +1338,17 @@ Date:   Sun Apr 21 16:17:58 2024 -0700
 
     some mosty cosmetic renames and lose one empty .cpp file
 
-commit 0ce09c111c60296339a5eeed16a5f3a72192935d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 21 17:46:22 2024 -0700
-
-    mostly cosmetic include name/path pattern cleanup
-
 commit ac96b9bf1c45c5442914d6d321e5c0ee2b204d94
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 21 17:51:53 2024 -0700
 
     qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy define and BWA
 
-commit 716fa4752084c702eac6ad70c42e2bbc4b88ec84
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 22 07:44:48 2024 -0700
-
-    fixed typos; and more path include normalizaiton
-
 commit 3001fcb26fbe800f072ad9c5c1cea9c477a7b5e7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 22 08:53:51 2024 -0700
 
-    tweak #include pathnames; and qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy value
-
-commit 2d980e3d0241adf33862fb6ebf14a75a05ba8dd4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 22 08:59:26 2024 -0700
-
-    more #include namepath cleanups
-
-commit 2d57826077bb22d2f8fe0af8598b93b266774657
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 22 14:06:20 2024 -0400
-
-    fixed typo in DenseDataHyperRectangle_Factory.inl
-
-commit d4116de2b038fc65ae3d05e660fdc6f144efb9ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 22 14:28:58 2024 -0400
-
-    workaround include nesting issue (temporarily)
-
-commit dcc999eb58bd412893bb66dba8aa4b11f486e122
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 22 12:14:50 2024 -0700
-
-    lose include guards from .inl files and normalize formatting - since always included inside .h inside include guard
-
-commit b8681496a434e37886b8f2a59701e778d7c5c42d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 23 10:56:35 2024 -0700
-
-    lose include guards from .inl files and normalize formatting - since always included inside .h inside include guard (anda  few minor other cleanups_
+    qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy value
 
 commit 032041b648b8f2f2efa015617afd543eab7179b0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1450,41 +1362,11 @@ Date:   Wed Apr 24 08:28:28 2024 -0400
 
     cosmetic; and qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++16
 
-commit f39cdaab260695e806097c9e65ed517e54bc0412
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 24 06:16:15 2024 -0700
-
-    more include name cleanups and deadly embrace workarounds
-
-commit f17944e0612fd86d66cf1577f9659f7d5fd1ff20
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 24 08:35:48 2024 -0700
-
-    more include name cleanups and deadly embrace workarounds
-
-commit 48a03298ed0dfaaf6c6347d5cca0cccdcee15792
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 24 09:39:44 2024 -0700
-
-    more include name cleanups and deadly embrace workarounds and other minor cleanups
-
-commit 9d05790d5cef02b6caeb508b7c2bc2b46ecbdab4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 24 11:39:23 2024 -0700
-
-    more include name cleanups and deadly embrace workarounds and other minor cleanups
-
 commit c020f63e9a4c0b8bdeea628b05ff949c0e9b0489
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Apr 25 09:58:32 2024 -0400
 
     clang14/15 dont work with boost cobalt
-
-commit 945f61816369b621b918dbd69978e9788e03699a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 25 07:34:54 2024 -0700
-
-    hopefully finsihed cleanup #include pathnames
 
 commit 6eb9508a337f370361ad66992f770669ff0f416f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1636,12 +1518,6 @@ Date:   Sun May 5 08:57:24 2024 -0400
 
     Minor cleanups to names and args in TemporaryFile code (not fully backward compat but SB simple enuf to update/adapt)
 
-commit 2306043566e6db8dc09c39fa43313e3e8beff0fd
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun May 5 10:51:00 2024 -0400
-
-    react to typo/name change
-
 commit 6106a5f99bcb68e27e39eb3975ca8d2d7986c6f1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun May 5 15:29:22 2024 -0400
@@ -1665,12 +1541,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon May 6 09:44:53 2024 -0400
 
     fixed configure script to better check for https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
-
-commit 7cccb0b8499cba1c05059a1548fbe62ebdfea23a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon May 6 14:48:38 2024 -0400
-
-    Minor configure script cleanup
 
 commit e11bc3346c43ea2f7e2c50837781f2ab737c5c62
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -1788,12 +1658,6 @@ Date:   Wed May 8 17:57:29 2024 -0400
 
     fixed minor regression in JSONRPC Response::kMapper
 
-commit 3c83bd26c937156507413e0fb658ec278262b079
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 9 06:58:06 2024 -0400
-
-    tweak definition of TranslateExceptionToOptional
-
 commit 33baef24ff7bcb280400423ad56eebac6c632e00
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu May 9 20:53:17 2024 -0400
@@ -1803,12 +1667,6 @@ Date:   Thu May 9 20:53:17 2024 -0400
 commit 95c73ff0c87f820f2dd428aca36ec6ac0189c59a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 10 07:50:43 2024 -0400
-
-    ScopedUseLocale now works with optional locale argument, and new FindNamedLocaleQuietly function and docs
-
-commit 9e851592541684c05a0d7bbbfaca2cb77805dc0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 10 07:50:54 2024 -0400
 
     ScopedUseLocale now works with optional locale argument, and new FindNamedLocaleQuietly function and docs
 
@@ -1823,18 +1681,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 10 16:28:09 2024 -0400
 
     ConnectionOrientedStreamSocke Get/SetTCPNoDelay support; and use in ConnectionManager options - and default to TRUE there
-
-commit 085318f7b3d0e250f218087d9a0de56ed7e441a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 12 01:40:21 2024 +0200
-
-    Hopefully fix includes so MacOS includes TCP_NODELAY
-
-commit 68081ce3e4dae48e449e6180839b30784208e412
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 12 02:27:49 2024 +0200
-
-    another attempt to fic TCP_NODELAY build issue for macos
 
 commit 5d7969135a2e1043bfeec16e05acd4017d81d77b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2052,9 +1898,9 @@ Date:   Mon Jun 3 08:32:56 2024 -0400
 
     need extra BWA for arm for qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
 
-
 docker 17.10.1 msvc
 
+disable asaon on ubuntu 23.10 and g++12 since doesnt appear to work
 
 ----------------------------------
 
