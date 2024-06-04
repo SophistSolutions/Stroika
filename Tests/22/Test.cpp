@@ -69,7 +69,7 @@ namespace {
             Set<int> s7{v.begin (), v.end ()};
             Set<int> s8{move (s1)};
             Set<int> s9{1, 2, 3};
-            EXPECT_EQ (s9.size (), 3);
+            EXPECT_EQ (s9.size (), 3u);
             Set<int> s10{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
         }
         void TestCTORFromOtherContainer_ ()
