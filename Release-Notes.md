@@ -14,10 +14,20 @@ especially those they need to be aware of when upgrading.
 - Build System
   - github actions workflow(s)
     - lose extra git checkout on windows (just set Path to same place used to and dont checkout via container) - fixes bug when run on tag
-    - use upload/artifacts@v4 ; use actions/checkout@v4
+    - use upload/artifacts@v4 ; use actions/checkout@v4; and login action - mostly to address warnings from github action runs that they were out of date
+    - Improved logic for copying tracelog files out of containers so they show up as artifacts in github action run
+    - refactor building containers (to work around size limits)
+    - lose ubuntu 20.04 from github action configs we build
+    - many space-savings hacks due to run out of space building problems
+  - MacOS
+    - use MacOS-13 with XCode-15.2
+    - use MacOS-14 with XCode-15.3
+    - github actions macos add more info about running xcode
+
   - DockerFile
     - Windows
       - VS_17_10_1 in docker container
+    - readme docs
 
 - Characters
   - String
@@ -39,9 +49,13 @@ especially those they need to be aware of when upgrading.
   - XML
     - XML::DOM::Element code Append, and SetAttribute allow value to be VariantValue, and just silently As<String> it
     - cleanup XML DOM RootElement default namespace code for ReplaceRootElement
-    - maybe fix libxml2 issue with default namespaces not working properly
     - Added Document::Ptr::LookupOneElement / Lookup / LookupElements
-    - XML/Providers/LibXML2.cpp - support resolver
+    - LibXML2
+      - New resolver support code
+      - fix exception safety bug in XPathLookupHelper_ LibXML2
+      - expose get/set Standalone flag to XML document, and change default for libxml2 to standalone as I had with Xerces
+      - fixed libxml2 entity reference writing support (must call xmlEncodeSpecialChars before xmlNodeSetContent)
+      - maybe fix libxml2 issue with default namespaces not working properly
 
 - Execution
   - generalized/added concepots to Execution::ThrowIfNull utility
@@ -51,138 +65,23 @@ especially those they need to be aware of when upgrading.
 
 
 - ThirdPartyComponents
-  -  boost 1.85.0
-  -  openssl 3.3.0
-  -  sqlite 3.45.3
+  - boost 1.85.0
+  - libcurl
+    - lots of hacks to get the latest version building on UNIX 
+      - some versions fail to build with libbrotli (esp with clang++)
+      - lose std= setting to linker
+    - VERSION 8.8.0
+  - openssl 
+    - VERSION 3.3.0
+    - disable https://stroika.atlassian.net/browse/STK-948 openssl lib build workaround
+  - sqlite
+    - VERSION 3.46.0
+  - libxml2
+    - VERSION 2.12.7
 
 
-
-
-commit 3322c1435095dea3e69fa811ee45f62d08046826
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 08:57:08 2024 -0500
-
-    github action experiemnt with diff way to specify stroika share with dockercontainer in github actions
-
-commit 014e609a52550e379e0b8edd5e59b956eb9d73e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 09:16:30 2024 -0500
-
-    more attempts to fix windows github action
-
-commit c065b7afd9e47b71b0b8d9054fb042cd1d267e5f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 09:43:03 2024 -0500
-
-    Another attempt at .github action windows fix
-
-commit 912671df26fc1f51b6a8c21ded8a0d6b4c13740a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 10:25:52 2024 -0500
-
-    small fixes to recent LibXML2 resolver code
-
-commit ca35b1b2bf77d5b640a0da654f5142b6c11b6a00
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 10:45:53 2024 -0500
-
-    Cosmetic cleanups to LibXML2 resolver code (seems to work now)
-
-commit 3d869918673cf045abe0092798039fc09c8ba8f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 10:52:59 2024 -0500
-
-    another try at github action windows docker vbind fix
-
-commit 162dd6cc57a8eed9e3c059f6d482f6bcf8fb78e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 13:56:32 2024 -0500
-
-    another try at github action windows docker vbind fix
-
-commit 62e0f53d694e4e925954ae91184d886d8099bf76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 14:57:28 2024 -0500
-
-    another try at github action windows docker vbind fix
-
-commit 663ac69bd674734ab6be52c4594219e2dce2d818
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 18:19:59 2024 -0500
-
-    another try at github action windows docker vbind fix
-
-commit 0b2f0405efec2abbfa57b29328345ea407866ba7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 3 19:38:04 2024 -0500
-
-    another try at github action windows docker vbind fix
-
-commit f3652c36138e8de326a2462981e345609843bd1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 4 09:47:56 2024 -0500
-
-    more attempts to get windows github actions owrking again
-
-commit 9f26875916fc4291bc83a066c06e1247abb92e44
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 4 10:17:33 2024 -0500
-
-    fix exception safety bug in XPathLookupHelper_ LibXML2
-
-commit add789dec016572e9462fee32c3f53725c8bb1c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 4 10:34:27 2024 -0500
-
-    fix exception safety bug in XPathLookupHelper_ LibXML2
-
-commit ebd5f7d581b5a837425dfc728a0f6180edb1fd2c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 08:35:20 2024 -0500
-
-    progress on github action windows docker issue
-
-commit faabb0a4d8b57abf52e355b42f9b2380afd60873
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 08:36:10 2024 -0500
-
-    progress on github action windows docker issue
-
-commit 9f4a0166885c19483698ef2fcb4494304f4123f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 10:09:29 2024 -0500
-
-    progress on github action windows docker issue
-
-commit 935eba3931148a8b871cd209b65afc1055613e57
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 11:42:03 2024 -0500
-
-    more tweaks to workaround issue with github action
-
-commit b9a77314c35b1fe18a12f91869a82c8fcee7880f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 13:06:15 2024 -0500
-
-    more tweaks to workaround issue with github action
-
-commit 5a2bc91a390829c580fdc7c7eafa410d738ece6c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 14:29:31 2024 -0500
-
-    more tweaks to workaround issue with github action
-
-commit 5bf903aff64b588f6e44bab82a27c4f05ddd609d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 17:41:58 2024 -0500
-
-    more tweaks to workaround issue with github action
-
-commit edc82e8e20e47dbc58493d45f101bf88136ffe82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 20:34:25 2024 -0500
-
-    more tweaks to workaround issue with github action
+- Regression Tests
+  - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
 
 commit b1af12f7bdb751548e45fd2556089b41db4bc145
 Author: Lewis Pringle <lewis@sophists.com>
@@ -190,29 +89,11 @@ Date:   Tue Mar 5 22:01:03 2024 -0500
 
     begin experimental qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin support
 
-commit 029d530e26da779719e2e713b8533a811c173a49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 22:16:11 2024 -0500
-
-    more tweaks to workaround issue with github action
-
-commit f80a85706b8da6f2b7c79236a60cbc890b882e9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 10:14:56 2024 -0500
-
-    more tweaks to workaround issue with github action
-
 commit 9ee6797ae4a02134711a0bfab77e932e9d16274b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 6 11:09:38 2024 -0500
 
     new regtests for qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin; and fixes to support so now passing
-
-commit a95ff265f554197265821911e62ce1b6a58fe570
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 11:37:04 2024 -0500
-
-    more tweaks to workaround issue with github action
 
 commit 9fead19ba9cf9736e8d6659d74e1e6a2ba14b1a5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -220,59 +101,17 @@ Date:   Wed Mar 6 13:35:21 2024 -0500
 
     added Release-Logging configuraiton to default-configurations for Skel
 
-commit da2a495929cfdfcbfd092377432a0cb66ce4c50b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 13:37:56 2024 -0500
-
-    more tweaks to workaround issue with github action
-
 commit 59808e96f7e5221bd5018e341a319d466352f877
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 6 15:05:56 2024 -0500
 
     Added operator<< for (ostream,String) - using AsNarrowSDKString(eIgnoreErrors) - and documented why; use eIgnoreErrors on a few other AsNarrowSDKString calls; and lose a bunch of AsNarrowSDKString calls as no longer necesary (places wehre I was writing to cerr for exmaple)
 
-commit efebcd3308610f18fd395068c5b8b2ed29c69ad2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 18:13:44 2024 -0500
-
-    More fiddling with docker github action windows copying out files
-
-commit 06dd8e4720cfff47dc456c25dda91d6b9f8f7010
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 20:05:16 2024 -0500
-
-    More fiddling with docker github action windows copying out files
-
-commit 99198644debecdb787758a141a704bdd49fe8326
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 20:06:58 2024 -0500
-
-    More fiddling with docker github action windows copying out files
-
-commit e00947b51372d3b25fcb569e60fcb498c320643d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 22:40:29 2024 -0500
-
-    More fiddling with docker github action windows copying out files
-
-commit 1dbfee7ad5d43ba952b6b7e37b4f7be716de383f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 07:37:20 2024 -0500
-
-    test another 'fix' to .github action docker container copy problem
-
 commit 1dfa6cb47acbe46f6dc412e1018e82c4f9825c12
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 7 08:27:55 2024 -0500
 
     begin experimentation with new std::format code (Stroika Characters::Fmt for now)
-
-commit 6f9281ab4a22248cfcfbbf6cdefea3b99b8b269a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 11:07:58 2024 -0500
-
-    test another 'fix' to .github action docker container copy problem
 
 commit 806fa7afcc1583bec45c34b04890d747cf95ae17
 Author: Lewis Pringle <lewis@sophists.com>
@@ -286,12 +125,6 @@ Date:   Thu Mar 7 13:50:17 2024 -0500
 
     temporarily wrap new std::format code in if __cpp_lib_format >= 202207L
 
-commit 302164aed73976f799d2809b46ae25e2d8a0fd24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 14:01:30 2024 -0500
-
-    Minor cleanups to github actions - use newer versions (Experiment due to warnings from ui) and cleanup some cruft from windows github action experiments (seems probbaly fixed)
-
 commit a38f49797399c9eaa787d45936e299d0eb81818b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 7 14:09:27 2024 -0500
@@ -303,12 +136,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 7 15:09:14 2024 -0500
 
     __cpp_lib_format BWA
-
-commit 45adb6932a6c3fe096267f3e511ed85f8b9c44f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 17:10:06 2024 -0500
-
-    maybe another test fix for .github action window docker comms
 
 commit 9fad72b431748041017f35674a17c48f8c574a24
 Author: Lewis Pringle <lewis@sophists.com>
@@ -328,41 +155,11 @@ Date:   Thu Mar 7 20:05:38 2024 -0500
 
     maybe workaround (experiemnting() wth regression due to change in version of upload artifact tool
 
-commit 609be9772f209d3c16ff22ce48550647a7ddb9d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 20:39:58 2024 -0500
-
-    update docker containers avail
-
-commit 9348837f0e5cb8dbc459d0eaacb77b1d25892fb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 20:45:29 2024 -0500
-
-    docke rreadme docs
-
-commit 9d92b70cc11441e7ec713fd9e3d60d9714c83d8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 8 06:03:28 2024 -0500
-
-    adaopt .github workflow for new uplodate-artifact@v4
-
-commit c07bf255b5ab465103f869515f0ba9a9414a4c8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 8 09:18:54 2024 -0500
-
-    more fixes to github actions
-
 commit 8495d481c0a6f72de4630815e8ff20c1fd3bace8
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Mar 8 09:29:05 2024 -0500
 
     BUILD_DEV_IMAGES flag building docker images - so maybe can avoid running  out of space on github actions - dont need to build there
-
-commit b07bb6d38c14e8fab6c82a40830d08a8d2c82f1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 8 16:19:20 2024 -0500
-
-    github action upgrade warnings
 
 commit 8420efc146fd3dce944b78da2551de087d95c256
 Author: Lewis Pringle <lewis@sophists.com>
@@ -393,42 +190,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Mar 9 10:45:22 2024 -0500
 
     very experiemental appraoch to std::formatter<..., char>
-
-commit 79fbb4c7123992d408e7558fc3fd04a2c89c8a55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 9 11:17:57 2024 -0500
-
-    rewrote a bit of docker build makefile so can workaround space issues with docker builds in github actions
-
-commit 487792b7bda2cf1121c4f14f2ce8764b1e9cee15
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 9 11:36:11 2024 -0500
-
-    Draft matrix strategy for github actions for building containers (to work around size limits)
-
-commit adedc2669e1994448029f3d8bc31d5c34a72dc7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 9 11:41:16 2024 -0500
-
-    WIP on .github action changes for building containers
-
-commit 9f1bca87a57cb076e12ae04a86eadc693d53b3a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 10 09:12:35 2024 -0400
-
-    split docker build in github actions
-
-commit a0002dfe861b74c81df32915490f394c93c5462a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 10 09:14:47 2024 -0400
-
-    split docker build in github actions
-
-commit c0d950ba94d7a10ac449db25c6c7da46a9bd0529
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 10 09:33:22 2024 -0400
-
-    more refactors of github docker container build action
 
 commit b383e6a5e46de341290df97a6376e62763c5da0f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -484,12 +245,6 @@ Date:   Tue Mar 12 10:42:43 2024 -0400
 
     expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
 
-commit b6c1d971627a03765115e46c08baa442076940cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 10:48:37 2024 -0400
-
-    expose get/set Standalone flag to XML document, and change default for libxml2 to standalone as I had with Xerces
-
 commit ac290b11b5e6b43d04b17d83dcf588fe544a5564
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 12 11:33:51 2024 -0400
@@ -501,18 +256,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Tue Mar 12 12:21:28 2024 -0400
 
     progress on libfmt makefile
-
-commit dc0001074f411df0c5579f2b97d6e0549166a353
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 13:23:34 2024 -0400
-
-    lose ubuntu 20.04 from github action configs we build
-
-commit bb1b92f96ae433d5499990920e64c9db11c5114c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 17:59:34 2024 -0400
-
-    fixed libxml2 entity reference writing support (must call xmlEncodeSpecialChars before xmlNodeSetContent)
 
 commit b9d12c5289b76a33bc8a4c84a1c491f8e2ff713c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -568,41 +311,11 @@ Date:   Wed Mar 13 10:37:31 2024 -0400
 
     got std::format stuff working on macos - at least minimally
 
-commit 409d0e4283e835deb01c2cc2da3761b01bde9352
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 11:19:24 2024 -0400
-
-    github actions use xcode 15.3
-
-commit 3b234926c6af3aeb1f474812950e748e1796fad0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 12:04:12 2024 -0400
-
-    xcode 15.2 on github cuz 15.3 Not yet available
-
-commit 34f35a27d3bb24142567fc19bcec57f5d3a92f51
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 13 12:38:35 2024 -0400
-
-    github actions macos add more info about running xcode
-
 commit 1a5d4e69ebf536ab70a9a3d799176dc6c88c5076
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Mar 13 13:35:02 2024 -0400
 
     use -fexperimental-library on clang++-15 - seems to address <format> issue
-
-commit 29742a792751b7bfa0a633c7c93a4362c1682483
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 14:22:50 2024 -0400
-
-    minor recent makefile fix
-
-commit 932fba65a3c7fce6b5a80e326147dc9b80744d4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 14:35:58 2024 -0400
-
-    minor tweaks to new regtests
 
 commit 85fbffd107f823259ae714ca202101a453709cae
 Author: Lewis Pringle <lewis@sophists.com>
@@ -652,12 +365,6 @@ Date:   Thu Mar 14 11:14:52 2024 -0400
 
     fix minir configure script regression
 
-commit e616be16310bd1d910649a8758e2e65d8f54ae88
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 14 11:35:38 2024 -0400
-
-    hack to maybe workaround issue buildign wtih github actions
-
 commit 1486e3385de8b2018972f00e301bb00246710623
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 14 12:06:33 2024 -0400
@@ -669,12 +376,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Mar 14 13:13:44 2024 -0400
 
     mostly cosmetic, and lose no longer needed -fexperimental-library hack
-
-commit 1ae4360708324660a8312f23b040719e49ef13af
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 14 13:14:02 2024 -0400
-
-    sqlite 3.45.2
 
 commit 8a243b5383d2bd56ab4d6c1ffca4f813b71ae5a7
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -700,36 +401,6 @@ Date:   Thu Mar 14 13:56:43 2024 -0400
 
     running out of space on codeql analyze - try debug-symbols false to see if corrects
 
-commit 6813f307ee444b68d9bdfa3906bb0464d8e2cce4
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 14 14:13:08 2024 -0400
-
-    add IntermediateFiles/Debug/ThirdPartyComponents/curl/CONFIGURE-OUT.txt to logs archived to debug curl build problem
-
-commit 84d75968355e4ad5dfbe5830efd6295c19c27709
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 14 15:40:25 2024 -0400
-
-    thirdpartycomponents curl build: lose CONFIGURE lines for a bunch of subcomponents no longer used(in curl from warnings) and a couple filter-out hacks to address (try) on github actions
-
-commit b15a7e6311a13e3e4524bce81266e89664b4c9ab
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 14 17:10:38 2024 -0400
-
-    skip sanitizer by default on ubuntu 22.04 and clang++ since seems to cause trouble with curl and not worth debugging now
-
-commit 706b317a691257def9283c58640bf3b81492fa8c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 15 10:12:26 2024 -0400
-
-    use curl 8.6.0 (disable libpsp)
-
-commit e22c62af982bbb3476fae2204d030507e9ef00b8
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 15 10:23:17 2024 -0400
-
-    undid many of last few hacks to curl makefiles/configure for clang++ - didnt help but still other issues remina (not with curl but with clang)
-
 commit 2b9d4bb10926d1f6d6ea5b0a8497421453f4021d
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri Mar 15 10:46:23 2024 -0400
@@ -746,7 +417,6 @@ commit 20e1adaa19fff201b05e4041ba1cb9f95ba645b2
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri Mar 15 16:15:38 2024 -0400
 
-    more logigng cuz a problem on github actions i cannopt reporduce on my own container
 
 commit 7bc1efcc74dece96022b4773dd3ef31a99aa88f5
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -796,47 +466,11 @@ Date:   Fri Mar 15 20:33:53 2024 -0400
 
     fixed minor bugs caught by sanitzers
 
-commit 20ee895dbc8eda81a1636de7b55727c0aca30d3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 15 21:21:01 2024 -0400
-
-    TMPHACK TO TEST BUILD ON GITHUB
-
-commit e2710a90d360db0df294a11940a1bcc4460a2962
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 15 22:16:43 2024 -0400
-
-    divide and conquer - debug why  configure fail on github action
-
-commit 70d8fd7208fed488da909ef6bb0678f4cf8748f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 16 06:32:24 2024 -0400
-
-    divide and conquer - debug why  configure fail on github action
-
-commit cf467ee1e7ed16eaecb8fa84157743c67166022d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 16 06:44:05 2024 -0400
-
-    divide and conquer - debug why  configure fail on github action
-
 commit 94594ac69228380c0294a3a29ce1fcd8e753a98e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Mar 16 07:14:26 2024 -0400
 
     fiddling with StdCompat
-
-commit 98845822f3436ccb4a2f48d372b6f3e85422d0e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 16 07:19:26 2024 -0400
-
-    slight curl makefile cleanups and more debugging of github action issue
-
-commit 6048831c0c697f3c7c8fd696545a1c3914c6a3a0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 16 07:36:16 2024 -0400
-
-    more fiddling with libbrotli issue on curl build on github workflws
 
 commit 43598d119ede0927d824e7858fa949b08cc78895
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -844,119 +478,11 @@ Date:   Sat Mar 16 07:47:48 2024 -0400
 
     more StdCompat compat changes
 
-commit dbfe518733863e85bd2a923bfb4fed462249afb5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 16 07:48:05 2024 -0400
-
-    nearly final BWA for curl build brotli issue
-
-commit cd7a08ef7a0fa503242f31a2a6535aa0e1dfc3ff
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 16 07:56:42 2024 -0400
-
-    cleanup debug crap for github action failure - seems OK now
-
-commit ec007d830be8c75b263e2fe7af777e7c561f50d0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 16 07:57:03 2024 -0400
-
-    cleanup some github action hacks used to debug failure with clang++-15
-
-commit a77d762f0969f7155b164b63265a6e25f92d2a91
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Mar 16 08:12:54 2024 -0400
-
-    same github action for brotli/curl hack needed for clang++16 as 15
-
 commit 517e3bbbfcb116a04e642e55ebf9c6bcba1712da
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sat Mar 16 08:13:16 2024 -0400
 
     workaround issue compiling clang17 google test with c++23
-
-commit 04710624794165a7560cdba60d00c01e917a5629
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Mar 16 09:06:46 2024 -0400
-
-    more hacks to test workaround for github action libcurl  issue
-
-commit 87ff7602f7e231afdad6163e0c10b3664ce2efa7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Mar 16 09:19:17 2024 -0400
-
-    again debug github action issue with libcurl buiod
-
-commit 77f89eb0740b1e87d0d690dcf91274f2b0d55dd2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 17 20:23:10 2024 -0400
-
-    Again debugging issue with github actions and 22.04 and libcurl
-
-commit df0edd491f34a3b5ae7e062688decbb831a7b542
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 17 20:31:57 2024 -0400
-
-    Again debugging issue with github actions and 22.04 and libcurl
-
-commit 77d2681fe72ace008463f013d66f6562fd5a824c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 17 20:52:15 2024 -0400
-
-    Again debugging issue with github actions and 22.04 and libcurl
-
-commit 19494145eab1ca60c76e92893742df88d2812502
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 17 21:41:44 2024 -0400
-
-    Another try at debuging issue with github actions
-
-commit d42014fc07132f503c5288008a0534af3cb6beba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 17 21:43:22 2024 -0400
-
-    MacOS 14 github action test
-
-commit 83cd54272b3c5c8986410d82521ea7fd5d91f10a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 17 22:13:17 2024 -0400
-
-    MacOS 14 github action test
-
-commit f44e7d04e9faf5c7ec9e4ad2d97a5432de1e7ad9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 08:22:31 2024 -0400
-
-    Another try at debuging issue with github actions
-
-commit 639b973b8de4c6fb3b595e51d95074960503caae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 09:47:03 2024 -0400
-
-    see what else failing on macos 14 besides curl (and try xcode 15.3)
-
-commit ca0d30fb533788b41f4832deeeb889d1a2a60dd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 09:59:50 2024 -0400
-
-    dont test macos14 / xcode 1.3 yet on github - not ready
-
-commit dc5af829620b6404dbb3e51c6c30470823a8ab64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 10:04:43 2024 -0400
-
-    ore attempts to debug githubaction only bug with building curl with clang++
-
-commit 2e7e5179b3da7dcee00aab5071ac2499bab1ea78
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 10:07:08 2024 -0400
-
-    ore attempts to debug githubaction only bug with building curl with clang++
-
-commit 47eea6ffceb7d80d502c6d3846cb4bf9bcb04bfd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 10:13:02 2024 -0400
-
-    more attempts to debug githubaction only bug with building curl with clang++
 
 commit 21c21cac5aa89a434dedf7271010a28c770b1444
 Author: Lewis Pringle <lewis@sophists.com>
@@ -987,30 +513,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Mar 18 14:38:43 2024 -0400
 
     fixed Configuration::StdCompat usage
-
-commit b1ed4f8743e6aa5f22afaefe3d0c589bc3196ae6
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Mar 18 15:07:16 2024 -0400
-
-    re-enable libcurl on clang++16 ubuntu2310 build
-
-commit 2bd3643a7f9b599068d16f3cd181538206747e3b
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Mar 18 16:05:30 2024 -0400
-
-    try to archive coredumps if any - from github actions
-
-commit 00759c707efed6bbfe395002ec27137676261753
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Mar 18 16:08:46 2024 -0400
-
-    disable some space-saver hacks from linux github actions as maybe explains diff in failures
-
-commit 450993999dddee4986fc58c83d9e7aa08e6b2de1
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Mar 18 16:42:57 2024 -0400
-
-    disable clang++ test in github actions - just seems very random - not sure where the bug is - but only under github actions - not when I run container locally
 
 commit 55dd65d35ebc3f46dd30c7efa1a7cc01853320c2
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -1240,12 +742,6 @@ Date:   Fri Mar 22 20:45:14 2024 -0400
 
     fix call to StdCompat::vformat - need to adjust stringview param
 
-commit eec8b1869592688598c1eda4d30b8f1b51d69904
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 23 08:08:56 2024 -0400
-
-    added a few hacks to github actions to debug something I cannot reproduce locally
-
 commit f4a02f757edc407faeb94083cc308539318229fb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Mar 23 09:09:22 2024 -0400
@@ -1263,24 +759,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Mar 23 09:20:18 2024 -0400
 
     lots of cleanups to ObjectVariantMapper: DbgTrace (new style), and static const kException_
-
-commit 7b0e69b390f87f7f4055c2ff69155cb3b82ec75a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 23 18:39:34 2024 -0400
-
-    try to save space on github action builds unix
-
-commit 94f689afedfd2517e68f0a8675c13e405368b7d2
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 23 18:45:29 2024 -0400
-
-    maybe save more space so builds complete
-
-commit ca0c1e008661d1ff92fb39d6c0a4dd5bb24ce54b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 23 18:48:36 2024 -0400
-
-    re-nabled hacks to save space
 
 commit 9e4508b384cc22b75e00ec6fd4028517427cdb3d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1342,12 +820,6 @@ Date:   Tue Mar 26 16:14:38 2024 -0400
 
     Lose bad impl of VFormat - keep better one; and added HACK in VFormat() to not fail as badly when using ASCII format specifiier (still alot of work todo here)
 
-commit b71a6b32aee7834538b6e1ca80b91161ccbd559b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 16:14:57 2024 -0400
-
-    Minor regtest cleanups
-
 commit 0f8c0d5ff7dafbb622bd690bee8f5da2fdee4f96
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 26 20:12:23 2024 -0400
@@ -1383,13 +855,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 27 09:34:15 2024 -0400
 
     progress on UNICODING FormatString better - so even if arg is ascii
-
-commit b7f0e0d5434d859208d8c2cc6be580b52856c1e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 27 09:53:02 2024 -0400
-
-    some regtests for recent FormatString sematnics changes
-    git push
 
 commit 160e543737d18b020fa95a02573982e3221c5bf4
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -1451,24 +916,6 @@ Date:   Fri Mar 29 09:55:59 2024 -0400
 
     was calling ScriptsLib/MakeVersionFile with 5 args, but inorning any past 3 - which worked badly when I added new optional 4th param! - so fixed calls and added the optional 4th (namespace) param
 
-commit eda14e3270a28aec46991bb263539de51b3c3336
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 29 09:56:37 2024 -0400
-
-    curl 8.7.1
-
-commit b979ec9bcabc402b8a14b50c3b51b7743815bafd
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 29 09:57:05 2024 -0400
-
-    cosmetic makefile tweaks
-
-commit ac810d556994d7ba68c381b40a1d0abe580ac633
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 29 10:16:46 2024 -0400
-
-    libxml2 2.12.6
-
 commit 1ca8c9e857a9612bf94242e0af1bfe56f881e054
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Mar 29 10:43:18 2024 -0400
@@ -1480,18 +927,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Mar 29 11:56:38 2024 -0400
 
     more tweaks to Scripts/MakeVersionFile (#define protecter)
-
-commit a87043aef8a1629e57da8f4b7061829abd1cf30a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 30 10:24:21 2024 -0400
-
-    a few experiemnts saving space on github actions cuz failing out of disk space
-
-commit b80a7218d4f2be0ff71e3fa8fd29c4fab41c8a90
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 30 10:52:46 2024 -0400
-
-    fixed typo in github action spacesave change
 
 commit 0ac72052a7d6d031036ff83a5d843783ef2fc211
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1535,12 +970,6 @@ Date:   Mon Apr 1 20:10:50 2024 -0400
 
     more cleanup of new Assertion code (warnings wchar_t)
 
-commit b891525777512861f7ce406908c03812950dd2bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 2 07:40:46 2024 -0400
-
-    also add rm lib-andrioid from unix github action to save space
-
 commit 5586bc6c8dbacf0ee6604347c262b4e50b08597e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Apr 2 07:54:23 2024 -0400
@@ -1571,24 +1000,6 @@ Date:   Tue Apr 2 13:08:44 2024 -0400
 
     qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken on clang++16 too (or something similar - maybe bad name)
 
-commit 6eb3e76f594bc2a87c24e93807cc50e7333dfa9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 2 14:47:31 2024 -0400
-
-    test possible fix to github action linux disk space issue - delete library objs
-
-commit 0a8c059980ddd4ba6bd14e6dd431a38666631793
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 2 14:56:28 2024 -0400
-
-    more tweaks to github action space saver logging
-
-commit 7c337f7a5b1b5f6e11fb3db369bcb1cc019df367
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Apr 3 09:26:51 2024 -0400
-
-    -O1 didnt help size (made worse) for g++-12 build on github actions
-
 commit bf9a58400fa4b1600fa0f6d527daf8855623eba1
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Apr 3 09:27:21 2024 -0400
@@ -1601,23 +1012,11 @@ Date:   Wed Apr 3 09:27:52 2024 -0400
 
     qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-17
 
-commit 8af185bc944784424a94ff89050042fcd6190d4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 3 09:33:37 2024 -0400
-
-    github actions added macos 14 and xcode 13 to test
-
 commit 7d30ef69b5318574e32f2ddfea68432628f2967b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 3 12:27:46 2024 -0400
 
     on macos - copy out BUILD-CONF-TOOLS-OUT.txt to see why its failing
-
-commit 5b810c2c09c1f2f908ec49073a1faf9adac8d9f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 10:28:27 2024 -0400
-
-    on macos14 - failed to find glibtoolize so add to curl/makefile check_prerequisites_
 
 commit cf568eb0d5a8041a59cff996690a6cdd0d4f6a64
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1631,41 +1030,11 @@ Date:   Thu Apr 4 11:03:46 2024 -0400
 
     needed glibtoolize on macos but not elswehre so lose from recent additions to prereq
 
-commit a7ab23533d52018af9e2d9e99e3592b8b8bf2d56
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 11:05:03 2024 -0400
-
-    for macos 14 need brew install libidn2 - gitbub actions
-
-commit efbeb30edde9cf2412a794adf80b14e8a8d10abf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 12:29:05 2024 -0400
-
-    more stuff to debug .github action issue with macos 14
-
 commit fe1177c0b703cf5b4a25034ff26c552297eecc8d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Apr 4 12:32:27 2024 -0400
 
     experimental fix to libid2n not found for macos14
-
-commit dc34f9652ee71065359c55bd6fd1f3608cb34977
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 12:54:33 2024 -0400
-
-    undo workaflow hacks for github actions and just leave in the workaround for https://github.com/actions/runner-images/issues/9638 issue
-
-commit 2d4c6ebfea0f652274fbd6b31079565807410511
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 14:37:02 2024 -0400
-
-    github action xcode configs/macos configs to regularly build
-
-commit e9c682e425629605e35e487458fe412fa7a3432d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 14:38:49 2024 -0400
-
-    lose no longer needed logfile copy from github actions
 
 commit 1dbe8b8bd0ce57c6dfea8f519aba4aca10a8e345
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2105,12 +1474,6 @@ Date:   Wed Apr 24 11:39:23 2024 -0700
 
     more include name cleanups and deadly embrace workarounds and other minor cleanups
 
-commit 437e109a87775ce5be6e57dc4b2139a46b772848
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Apr 25 09:47:25 2024 -0400
-
-    disable https://stroika.atlassian.net/browse/STK-948 openssl lib build workaround
-
 commit c020f63e9a4c0b8bdeea628b05ff949c0e9b0489
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Apr 25 09:58:32 2024 -0400
@@ -2135,23 +1498,11 @@ Date:   Fri Apr 26 06:07:26 2024 -0700
 
     Minor tweaks to IO/Network/Transfer/Connection_WinHTTP.cpp
 
-commit f4895535eff0a9436118a7301d24fba44e0d1081
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Apr 26 10:06:37 2024 -0400
-
-    Possibly workaround issue with building libcurl with clang++14 on ubuntu 22.04 - zlib dependency issue
-
 commit a649fc69db96b870ea33f75abc2666ff0f26fa29
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Apr 26 08:30:30 2024 -0700
 
     new regtest TestNotPCTEncodingColonOnURLPath_ and improved AsString (dont pctencode certain cahracters esp : in path)
-
-commit 8f9849caed411af5a26ccda8c5f84f4015e7fba0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Apr 27 09:20:07 2024 -0400
-
-    perhaps workaround clang build problem with curl (set LDFLAGS and unset sanitizers)
 
 commit b6f2c0a94958493e1067adf9196503e15382e9eb
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2164,12 +1515,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Apr 29 20:44:59 2024 -0400
 
     refactored some configure logic into new ./ScriptsLib/GetGCCVersion script
-
-commit 1596968fafc039e36d3963d00b69f37a63450f8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 1 06:43:33 2024 -0700
-
-    Docs and cosmetic cleanups
 
 commit 295d81ec9dd95aaf5832ee98187e57c81af75468
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -2370,12 +1715,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 7 11:39:18 2024 -0400
 
     Comments and new overload of PickoutParamValuesFromBody
-
-commit 3c753787658ad4564a93bc2062688432454a5a51
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 7 11:51:21 2024 -0400
-
-    mostly cosmetic regtest cleanup
 
 commit 42b7ce60d7f97d997c9dee3c1f913a7deaa47c7a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2593,12 +1932,6 @@ Date:   Thu May 23 13:28:39 2024 +0100
 
     Minor prorgress on JSON::Merge
 
-commit caf10cfa3b24fcd78d22a294a6bd992e2141b451
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 13:32:12 2024 +0100
-
-    tweak messages in github action
-
 commit 1577cd750ee28e076b46b7a949bc874c44cb791a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 23 14:59:54 2024 +0100
@@ -2659,18 +1992,6 @@ Date:   Fri May 24 17:40:30 2024 -0400
 
     hopefully fixed powershell typo in windows dockerfile
 
-commit c1d24012dcfbe4fb734895681da92d9a401350a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 25 07:43:58 2024 -0400
-
-    tweak github action file
-
-commit cc531ef04d94bf6d812ae0d8c9750767a965d1ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 26 21:57:05 2024 -0400
-
-    cleanup regtests (GTEST structure)
-
 commit f461d412bb5aa2a78db90e4d2c0778e4df92dd76
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 27 10:52:47 2024 -0400
@@ -2719,29 +2040,11 @@ Date:   Fri May 31 06:43:15 2024 -0400
 
     tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
 
-commit 631acf8ec8bc80dc9fa0e4dca91a77818d2a912c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 1 09:07:48 2024 -0400
-
-    libxml 2.12.7
-
 commit a188b1475141ba0996e1acfebb3c6cf7648d260d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jun 1 09:08:51 2024 -0400
 
     cleanups to PkgConfigNames handling - moved some workarounds from configure to ApplyConfigurations - much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
-
-commit 22dacbb42cf7ebf8b10e26425dc835061c5a7533
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 1 09:09:17 2024 -0400
-
-    curl 8.8.0
-
-commit 781d0d0759a3062a222419b1431d0f175cadaaa1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 1 09:09:35 2024 -0400
-
-    sqlite 3460000
 
 commit c16479f2cc510233db3a090aee8057eb381465c4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2749,11 +2052,6 @@ Date:   Mon Jun 3 08:32:56 2024 -0400
 
     need extra BWA for arm for qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
 
-commit b1ae100d4a55eece3017ee5c7754bf3fccec1bb5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 3 08:34:24 2024 -0400
-
-    start 3.0d6 release
 
 docker 17.10.1 msvc
 
