@@ -10,6 +10,12 @@ especially those they need to be aware of when upgrading.
 
 ### NOTES FOR 3.0d6
 
+##### TLDR
+- _f strings and new Format () API
+  - MAJOR change - deprecated c-style sprintf style - Characters::Format
+  - replaced with new _f strings API - based on c++20 formattable feature
+
+##### DETAILS
 
 - Build System
   - github actions workflow(s)
@@ -24,6 +30,9 @@ especially those they need to be aware of when upgrading.
     - use MacOS-14 with XCode-15.3
     - github actions macos add more info about running xcode
 
+  - configure
+    - simplified configure handling of DoSetThirdPartyComponents_ and fixed bug (setting fmtlib sometimes)
+
   - DockerFile
     - Windows
       - VS_17_10_1 in docker container
@@ -33,14 +42,51 @@ especially those they need to be aware of when upgrading.
   - Use Stroika-root relative paths instead of . relative paths #includes (so things line up better, copy-pasta better, and slightly clearer, though slightly more verbose)
   - lose include guards from .inl files and normalize formatting - since always included inside .h inside include guard
 
-
 - Characters
   - String
     - new String::AssureEndsWith
+  - _f strings and new Format () API
+    - MAJOR change - deprecated c-style sprintf style - Characters::Format, and Characters::VFormat
+    - replaced with new _f strings API - based on c++20 formattable feature
+    - Used for DbgTrace, and Execution::Logger API, and a few others (anywhere we did format api/vformat)
+    - Integrate with ToString()
+      - formatter calls Characters::ToString () and _f strings automatically do this so no need for most explicit calls
+        to Characters::ToString()
+    
+    fix qStroika_Foundation_Characters_FMT_PREFIX compat in one more case
+    formatter pair/filesystem::path support (experimental); and lose unneeded ToString()s in a few more places
+    small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
+    for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
+    Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
+
+    qCompilerAndStdLib_FormatRangeRestriction_Buggy define and BWA
+
+    more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
+    COmment out range support in IUseToStringFormatterForFormatter_
+    fix typo; fixed range support on IUseToStringFormatterForFormatter_
+    IUseToStringFormatterForFormatter_ also chekcs IKeyValuePair
+    define new Configuraiton::ITuple concept and use in IUseToStringFormatterForFormatter_
+
+    Added IVariant to ToString (formatter) support
+
+
+    TraceContextBumper restructure CTORs, and deprecate old format based API (sprintf strings); and used new API instead of deprecated one throughtout most of Stroika
+    TraceContextBumper support new style format strings (and a couple test cases)
+
 
 - Concepts
   - Added IStdOptional and ExtractStdOptionalOf_t utilities/concepts
   - ICountedValue concept (use ICOuntedValue in ToString)
+  - IKeyValuePair concept
+  - Configuration::IOptional; 
+  - Configuration::IPair
+  - IVariant concept
+
+- Configuration
+  - StdCompat
+    - migrate backward compatability compiler support here - for APIs that are really stdc++ newer apis but not fully supported by call compilers (polyfill layer)
+    - StdCompat::vformat
+    - chrono stdcompat
 
 - Containers
   - Added Set::contains (LC) for stl compat
@@ -72,7 +118,6 @@ especially those they need to be aware of when upgrading.
   - Network
     - fix includes so MacOS includes TCP_NODELAY define
 
-
 - ThirdPartyComponents
   - boost 1.85.0
   - libcurl
@@ -80,6 +125,10 @@ especially those they need to be aware of when upgrading.
       - some versions fail to build with libbrotli (esp with clang++)
       - lose std= setting to linker
     - VERSION 8.8.0
+  - fmtlib
+    - https://github.com/fmtlib/fmt/releases
+    - configure support so only builds if needed - cuz using stdlib that doesn't have it.
+
   - openssl 
     - VERSION 3.3.0
     - disable https://stroika.atlassian.net/browse/STK-948 openssl lib build workaround
@@ -120,53 +169,17 @@ Date:   Wed Mar 6 15:05:56 2024 -0500
 
     Added operator<< for (ostream,String) - using AsNarrowSDKString(eIgnoreErrors) - and documented why; use eIgnoreErrors on a few other AsNarrowSDKString calls; and lose a bunch of AsNarrowSDKString calls as no longer necesary (places wehre I was writing to cerr for exmaple)
 
-commit 1dfa6cb47acbe46f6dc412e1018e82c4f9825c12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 08:27:55 2024 -0500
-
-    begin experimentation with new std::format code (Stroika Characters::Fmt for now)
-
 commit 806fa7afcc1583bec45c34b04890d747cf95ae17
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 7 11:30:30 2024 -0500
 
     is_constant_validated in EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_
 
-commit a83146a96d1ce651dcb1d2bf0efa1bb83f4d5be2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 13:50:17 2024 -0500
-
-    temporarily wrap new std::format code in if __cpp_lib_format >= 202207L
-
-commit a38f49797399c9eaa787d45936e299d0eb81818b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 14:09:27 2024 -0500
-
-    qCompilerAndStdLib_FormatRangeRestriction_Buggy define and BWA
-
-commit 9575b32a2732a9a8539f0b6d9e5c4c172ddd9b34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 15:09:14 2024 -0500
-
-    __cpp_lib_format BWA
-
-commit 9fad72b431748041017f35674a17c48f8c574a24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 19:47:00 2024 -0500
-
-    tried ToString support with Fmt - but not working - so commented out
-
 commit 90328d238d851bbaa430740091b9c905f0e1cfee
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Mar 7 19:53:48 2024 -0500
 
     DOCKER: lose support for ubuntu 20.04 and add for 24.04; updated BuildGCC script and use it in docker container for 22.04 so it builds gcc 13; other related makefile cleanups/simplifications
-
-commit a7d487caeac4156d04e951cf6fbae2ccd60b44f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 20:05:38 2024 -0500
-
-    maybe workaround (experiemnting() wth regression due to change in version of upload artifact tool
 
 commit 8495d481c0a6f72de4630815e8ff20c1fd3bace8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -186,23 +199,11 @@ Date:   Sat Mar 9 07:26:42 2024 -0500
 
     disable cygwin docker build while installer broken
 
-commit 635247be5e95eadc53ded83c0d2947a3875be243
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 9 09:40:51 2024 -0500
-
-    progress prototyping std::formatter support for Stk strings
-
 commit 4b53c3c3089a12aa994fcecbad30c359602a2c55
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Mar 9 09:43:14 2024 -0500
 
     more disabling cygwin til build system fixed
-
-commit dc99a783a4b8ac6054c26595e988f961ec00214b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 9 10:45:22 2024 -0500
-
-    very experiemental appraoch to std::formatter<..., char>
 
 commit b383e6a5e46de341290df97a6376e62763c5da0f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -222,12 +223,6 @@ Date:   Mon Mar 11 10:31:53 2024 -0400
 
     re-enable docker build of cygwin code - since downloads appear fixed
 
-commit be7a75db668122334575b448777abcb1d2c5345e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 11 10:32:24 2024 -0400
-
-    early test of new DbgTrace2 functionality (new format based DbgTrace)
-
 commit bc0a6956349c0322c81884f3aaa7c3f960ca27a3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Mar 11 11:15:47 2024 -0400
@@ -239,12 +234,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Mon Mar 11 14:42:38 2024 -0400
 
     disbale clang++-15 on with libc++ on ubuntu 24.04
-
-commit dfd3dd5153e84dd8f5a9b3dfbb96521f693c9f22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 11 15:59:32 2024 -0400
-
-    More progress on new protype Fmt / formatter code
 
 commit ffc609824278c52ae649d75abd46b2e8c9eb7532
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -258,137 +247,16 @@ Date:   Tue Mar 12 10:42:43 2024 -0400
 
     expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
 
-commit ac290b11b5e6b43d04b17d83dcf588fe544a5564
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 11:33:51 2024 -0400
-
-    draft fmtlib support - not enabled or building yet
-
-commit 685563c92c4b663e63fccb264c08cddd51f9a0ba
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Mar 12 12:21:28 2024 -0400
-
-    progress on libfmt makefile
-
 commit b9d12c5289b76a33bc8a4c84a1c491f8e2ff713c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 12 18:11:02 2024 -0400
 
     docker container VS_17_9_3
 
-commit c06430b0f4dfe246c22614f465aa0344153ba7c4
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Mar 12 20:07:51 2024 -0400
-
-    progress on libfmt thirdpartycompoents makefile
-
-commit 6270afaf146d115e13dd8bf69604f06f24c3f9ac
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Mar 12 20:34:44 2024 -0400
-
-    build (configure) fmtlib if not available as part of sdk; and started adding detection/compat support between fmtlib and std lib (but a problem with wide char stuff)
-
-commit 2d727beb0ee506b395f90b899b4806879681d244
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 20:55:26 2024 -0400
-
-    looks like clang++17 maybe needed for std::format? - test
-
-commit a42ae9943b39629651e25a10fc72ac6f1b5abb23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 20:55:53 2024 -0400
-
-    more experimental support for supporting std::format with fmtlib as backup
-
-commit 979528adc2035997a826c9921b7ff40f550707f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 21:12:59 2024 -0400
-
-    cosmetic and possible hack to get _f format strings working - enuf to test
-
-commit 734dc2a17617e7ceea3c145aaa5fb29f3a078d92
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 13 09:41:33 2024 -0400
-
-    progress on new fmt lib support
-
-commit e2f34dd2a061dd7d97ac63f7272c7d2b5cc5eba1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 10:09:11 2024 -0400
-
-    more tweaks to fmt lib code - including successful test of _f
-
-commit 2eadfa75dd0ae186d8dd7f9a77c596bf67700968
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 10:37:31 2024 -0400
-
-    got std::format stuff working on macos - at least minimally
-
-commit 1a5d4e69ebf536ab70a9a3d799176dc6c88c5076
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 13 13:35:02 2024 -0400
-
-    use -fexperimental-library on clang++-15 - seems to address <format> issue
-
-commit 85fbffd107f823259ae714ca202101a453709cae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 14:36:32 2024 -0400
-
-    experimental new Format overload
-
-commit 0e86346777ae41750b986b5d54630c03c3302e47
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 13 15:35:49 2024 -0400
-
-    more fixes for fmtlib g++-12 support
-
-commit 371e204dde5b6ce764f8d9a9ff2d38fccd585374
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 13 17:03:17 2024 -0400
-
-    fmtlib makefile cleanups
-
-commit 4d920e44b10cdd9c38daf117be9b703738fda5fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 13 17:31:46 2024 -0400
-
-    misc fmtlib fixes/progress
-
-commit c17c8ccfa893a087ad5455db89549454e5f6ee4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 14 10:54:32 2024 -0400
-
-    Configure more careful about whnen to build fmtlib and fix regtest for running with fmtlib
-
-commit 9ddb1f8bb5ee8d6d1982a470673ed581a7ecf99c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 14 11:11:19 2024 -0400
 
     configure getXCOde version script along with using it to check if xcode < 15.3 and only turning on fmtlib then (for xcode builds)
-
-commit 7e01a10b94adc06319b1723bbe8a26b56655bd98
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 14 11:14:52 2024 -0400
-
-    fix minir configure script regression
-
-commit 1486e3385de8b2018972f00e301bb00246710623
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 14 12:06:33 2024 -0400
-
-    cleanup DbgTrace support of _f strings
-
-commit 336954f1cf8a10050c655f6d426d8641a9e4448a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 14 13:13:44 2024 -0400
-
-    mostly cosmetic, and lose no longer needed -fexperimental-library hack
-
-commit 8a243b5383d2bd56ab4d6c1ffca4f813b71ae5a7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 14 13:14:40 2024 -0400
-
-    configure: minor cosmetic; and lose -fexperimental-library hack - caused too much trouble and just up fmtlib requirement for clang++ to 16
 
 commit cc29ac24bc27300a904a48698a06b88173ded296
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -401,18 +269,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Thu Mar 14 13:52:46 2024 -0400
 
     up a few _LIBCPP_VERSION BWA defines - cuz broken in version 18 of lib as well (tested on untunu 24.04)
-
-commit 2b9d4bb10926d1f6d6ea5b0a8497421453f4021d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 15 10:46:23 2024 -0400
-
-    maybe got new format stuff working on clang++15
-
-commit 97533b28cec7afa758e738560f9556a157d50d01
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 15 10:52:28 2024 -0400
-
-    maybe got new format stuff working on clang++15
 
 commit 0b49ba06bdecad25b3447c6422ba2ac0baa086a7
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -444,59 +300,11 @@ Date:   Fri Mar 15 20:17:21 2024 -0400
 
     more use of <ContraintInMemberClassSeparateDeclare_BWA_Helper_
 
-commit 94594ac69228380c0294a3a29ce1fcd8e753a98e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 16 07:14:26 2024 -0400
-
-    fiddling with StdCompat
-
-commit 43598d119ede0927d824e7858fa949b08cc78895
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 16 07:47:48 2024 -0400
-
-    more StdCompat compat changes
-
 commit 517e3bbbfcb116a04e642e55ebf9c6bcba1712da
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sat Mar 16 08:13:16 2024 -0400
 
     workaround issue compiling clang17 google test with c++23
-
-commit 21c21cac5aa89a434dedf7271010a28c770b1444
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 11:15:15 2024 -0400
-
-    a few DbgTrace calls translated from PCT-format style to new BRACE fmt style with _f strings
-
-commit 1e26d97bc70a91f34fef696305c4a8fae6d9370f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 11:41:57 2024 -0400
-
-    minor tweaks to DbgTrace checkins
-
-commit 8efd34df6ba9be5175f9c229f82205a86d8f8c92
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Mar 18 12:01:29 2024 -0400
-
-    dont bother testing c++23 on clang++ 15 and 14
-
-commit 701ddaddd104b9a36436a10cb8b883adf3e1c9bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 14:09:53 2024 -0400
-
-    migrate some std c++ compat layer code to new module Configuration::StdCompat
-
-commit 88b4d6dd3961385e817bcb6eda9fee93f1c9cc94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 14:38:43 2024 -0400
-
-    fixed Configuration::StdCompat usage
-
-commit 55dd65d35ebc3f46dd30c7efa1a7cc01853320c2
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Mar 18 17:12:53 2024 -0400
-
-    simplified configure handling of DoSetThirdPartyComponents_ and fixed bug (setting fmtlib sometimes)
 
 commit c97cfae1e6908b9f254586bbce7626f7934d9788
 Author: Lewis Pringle <lewis@sophists.com>
@@ -527,12 +335,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Mar 18 21:56:26 2024 -0400
 
     draft support for generating docs link to openapi content
-
-commit 8654609519eca6b2cb6f1f555fc1103f1a7441bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 08:33:36 2024 -0400
-
-    forgot missing makefiles + minor tweaks
 
 commit 3b2918edfe40f5d1884f8de665844892caa52051
 Author: Lewis Pringle <lewis@sophists.com>
@@ -576,23 +378,11 @@ Date:   Tue Mar 19 19:30:28 2024 -0400
 
     bug defines (incliding qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy) for g++-14 Ubuntu 24.04 support
 
-commit b369a985bf866ba05e355fdc58a071ddf7593618
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 19:34:02 2024 -0400
-
-    restrugure some Configuration::StdCompat workarounds
-
 commit c49ba3b78a1fe1a6af9edbd5e2d57d80898296d1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 19 19:51:44 2024 -0400
 
     new Execution::LazyInitialized
-
-commit c21ca2eb51b24378bf98cfcfa7fb503e40d7bc6e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 19:56:51 2024 -0400
-
-    fix qStroika_Foundation_Characters_FMT_PREFIX compat in one more case
 
 commit 6f53c388e63237560b5feab47e75118f2ad91459
 Author: Lewis Pringle <lewis@sophists.com>
@@ -666,12 +456,6 @@ Date:   Thu Mar 21 14:02:28 2024 -0400
 
     HasMakefileBugWorkaround_lto_skipping_undefined_incompatible broken on clang++-17 too (ubuntu 23.10)
 
-commit 060c17741ac4924d6076a33a852639de39624bb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 21 14:03:45 2024 -0400
-
-    TraceContextBumper support new style format strings (and a couple test cases)
-
 commit b24f458522d2c7def17a9174a26f9d28bb46a051
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 21 14:50:40 2024 -0400
@@ -684,35 +468,11 @@ Date:   Fri Mar 22 16:24:52 2024 -0400
 
     ..._lto_skipping_undefined_incompatib broken with clang++-18
 
-commit faff3860202551ca8d8d44ec8e28460fa2667237
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 22 16:49:28 2024 -0400
-
-    TraceContextBumper restructure CTORs, and deprecate old format based API (sprintf strings); and used new API instead of deprecated one throughtout most of Stroika
-
-commit 087bb5dffc6bca6f173f9b343989a56dee611c50
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 22 20:45:14 2024 -0400
-
-    fix call to StdCompat::vformat - need to adjust stringview param
-
-commit f4a02f757edc407faeb94083cc308539318229fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 23 09:09:22 2024 -0400
-
-    tweaked skel sample app to use Execution::CommandLine and new _f string for tracecontnextdumper
-
-commit 05dd350b0eb50738c8c67ad1530fdfdbe947c92e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 23 09:19:23 2024 -0400
-
-    fixed regression(s) in TraceContextBumper - noexcept DTOR and change of type of fSavedContextName_ so careful with old FormatV
-
 commit db958c81c7cbeb686ba5ea6c59744b4f7bcb306a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Mar 23 09:20:18 2024 -0400
 
-    lots of cleanups to ObjectVariantMapper: DbgTrace (new style), and static const kException_
+    lots of cleanups to ObjectVariantMapper: and static const kException_
 
 commit 9e4508b384cc22b75e00ec6fd4028517427cdb3d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -744,83 +504,17 @@ Date:   Tue Mar 26 09:23:48 2024 -0400
 
     Execution::Logger cleanups: support multiple loggers; and better document use and setting logger to log to stdout
 
-commit eed198cb763d7372c12c248e60fcaf929f51d3fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 10:12:45 2024 -0400
-
-    Added draft of VFormat
-
-commit 91ceebcc5efbe3b5c017b82ca71e2447922f2761
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 10:13:11 2024 -0400
-
-    FormatString support in Logger - and deprecated sprintf style strings
-
-commit 2c8f0ddd44eecb8263cb8e953d16c14573600b52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 11:18:35 2024 -0400
-
-    cleanup/react to logger Formatter changes
-
 commit ca7b8869be758169195886b1fd349ceb41a5e047
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Tue Mar 26 11:47:39 2024 -0400
 
     g++-14 LTO workarounds/disable some warnings in configure
 
-commit 4425d23d1a28ee9d1b0e910bbf0c5b4dd3e7888f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 16:14:38 2024 -0400
-
-    Lose bad impl of VFormat - keep better one; and added HACK in VFormat() to not fail as badly when using ASCII format specifiier (still alot of work todo here)
-
-commit 0f8c0d5ff7dafbb622bd690bee8f5da2fdee4f96
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 20:12:23 2024 -0400
-
-    hopefully progress on new Format code - deprecate Fmt - and cleanups to VFormat using (fixed) FormatString - still alot of testing/configs test verify
-
-commit 2583765f180e23b5a0936b831c25d11d6b0c42c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 20:34:03 2024 -0400
-
-    use some use of (new/and now deprecated) Fmt - use Format instead with _f strings
-
-commit 2d8e687b8c940e00236625cddcf190dd20ca2845
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 21:08:36 2024 -0400
-
-    More progress on Format code - maybe got Format working on ASCII format strings iwth UNICODE resuls - testing
-
-commit 1541b6a3ee28dfdc3ed89d63ea79a5cc364233e9
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Mar 26 22:44:11 2024 -0400
-
-    fixed fmtlib compat with new VFormat
-
-commit e16a969a32eec18c4162d5518a6753c8ce17d297
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 27 08:15:13 2024 -0400
-
-    fixed fmtlib compat with new VFormat
-
-commit 923ea1785ba74c474b63eb0b567e556764a6e746
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 27 09:34:15 2024 -0400
-
-    progress on UNICODING FormatString better - so even if arg is ascii
-
 commit 160e543737d18b020fa95a02573982e3221c5bf4
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Wed Mar 27 11:06:23 2024 -0400
 
     qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy broken on clang++18 too
-
-commit 3bb244fa7fae2e34d7fd58aa7b7703c85d098845
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 27 12:09:47 2024 -0400
-
-    More String::Format code cleanups
 
 commit a2fd692e74890417e5ca6cacb1edb6c8b9dd7546
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -839,12 +533,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 27 14:07:12 2024 -0400
 
     Character::CheckASCII now constexpr
-
-commit af20e039d5b9a67e5689916a24dec27a870db57c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 27 14:10:19 2024 -0400
-
-    tweak to checking on FormatString
 
 commit 8530d0a47e84b948f50dffe9854917bb1686039c
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -887,12 +575,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Mar 30 10:54:59 2024 -0400
 
     deprecate framework/webserver/reponse/printf and instead added write () overload taking FormatString and updated some usage to use it
-
-commit b5d8e4975bd7163e5cd9026a47770ce6085dccfc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 1 14:26:23 2024 -0400
-
-    Deprecate C-Format-String overload of DbgTrace and updated most code to not use older API
 
 commit f23a68620eea51f70e5f9b5dfd3c0652cd2e02e2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -941,12 +623,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Apr 2 11:08:36 2024 -0400
 
     Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
-
-commit 0d4610cb47dfe69672a6797c3c744ab01ecddcbc
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Apr 2 12:45:31 2024 -0400
-
-    cleanup DbgTrace calls in Xerces code
 
 commit 34770cb0170365ebc11297b703bbe99ca3b94abb
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1062,12 +738,6 @@ Date:   Fri Apr 5 21:53:19 2024 -0400
 
     qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken for clang++18
 
-commit 73f1cbd52f4824d3e2337f29f7c5417f11f58985
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 6 23:30:24 2024 -0400
-
-    formatter pair/filesystem::path support (experimental); and lose unneeded ToString()s in a few more places
-
 commit c96bff1711dc70442e0bac5912040241590bd2d3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Apr 6 23:36:47 2024 -0400
@@ -1079,84 +749,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 7 08:21:22 2024 -0400
 
     maybe fix qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for clang/macos
-
-commit 2a5115cc3570b517fee2eb47ac231a4a2e563e03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 7 14:35:41 2024 -0400
-
-    more ToString()simplifications due to formatter changes (recent)
-
-commit 7e6d1ae025d0c3991ad5cdcca5af9d09478d5248
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 7 15:10:38 2024 -0400
-
-    more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
-
-commit 38a39616b68224c1c23f87a7179d4ab455084f16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 7 15:17:08 2024 -0400
-
-    test fix for chrono stdcompat
-
-commit ff5263a29e9ba282663427e71c7b0f00c272a0c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 08:25:36 2024 -0400
-
-    COmment out range support in IUseToStringFormatterForFormatter_
-
-commit 1805a19f895053a5003966bba0155a84128ecc1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 09:35:42 2024 -0400
-
-    fix typo; fixed range support on IUseToStringFormatterForFormatter_
-
-commit 8c164a32ca2f86c6f809a5c841a3ecea6ca69884
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 11:13:19 2024 -0400
-
-    IKeyValuePair concept
-
-commit b68564eed4cf1d737a11d2c3c042aed597a0f066
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 11:14:10 2024 -0400
-
-    IUseToStringFormatterForFormatter_ also chekcs IKeyValuePair
-
-commit 494653d7065f218578bf6d469820b6531e206d94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 12:09:18 2024 -0400
-
-    Configuration::IOptional; Configuration::IPair
-
-commit affd7dd1c23d28b30605ab99e5e2f46542d2c1a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 12:42:48 2024 -0400
-
-    define new Configuraiton::ITuple concept and use in IUseToStringFormatterForFormatter_
-
-commit dbe360a704092c692974ccd26ed553e6c784c3af
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 15:23:38 2024 -0400
-
-    Draft IVariant concept
-
-commit efbdb93cee5ddbbb508a4e64e9ade50dfb21c001
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 15:37:52 2024 -0400
-
-    Added IVariant to ToString (formatter) support
-
-commit 5d3798cd4f1e4025092fe69b6c511f6847e03f09
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 8 21:14:53 2024 -0400
-
-    minor cleanups to DbgTrace usage - much simplificaiton due to recent format changes
-
-commit 99a9a19de1040897e4821c9d558e7a99e902b682
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 9 12:24:26 2024 -0400
-
-    lose more Characters::ToString () calls - in ToString methods
 
 commit c1a61c93dc859a769c77c1621e242bb5359e9ecb
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -1236,35 +828,11 @@ Date:   Wed Apr 10 16:30:02 2024 -0400
 
     typo fxiews and regtests for stack of exceptions capture
 
-commit 8f819fe5ff1027dd410d9664fb250dbdab1c3484
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 11 10:00:59 2024 -0400
-
-    small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
-
-commit a2844d1b00ac11bab49b729b21550193929e8012
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 11 13:20:05 2024 -0400
-
-    for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
-
-commit 0b0f10d5ae6bb35dc61a93aa46edabbfb43dcd04
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Apr 11 14:17:34 2024 -0400
-
-    maybe fix typos breaking build on fmtlib systems
-
 commit d5a737df69b0724bdc8c3944f633c61cbf75c1fe
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Thu Apr 11 14:18:26 2024 -0400
 
     Added g++12 and removed g++-14-arm-linux-gnueabihf from ubuntu 24.04 dockerfile to reflect availability:
-
-commit f8cf005a0c8d8b5c18e80b61448e49611634e55e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 12 10:48:17 2024 -0400
-
-    fixed internal debugtrace typo
 
 commit 0606a2b7da84ac84043399777239571bccaeb393
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1278,59 +846,11 @@ Date:   Sat Apr 13 12:57:21 2024 -0400
 
     celanup URL Network regtests and add regtest for [] on IPv6 addresses
 
-commit c748d1e725812cc25561f71c801d148bc8f3fc0a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 14 17:32:54 2024 -0400
-
-    deprecated old style Characters::Format - and convered some usages
-
-commit 1f9905b4c295818e251f46cebc861b9ee1736313
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 16 00:29:20 2024 -0400
-
-    tons of misc cleanups but mostly convert of old style Characters::Format to new style (_f strings)
-
-commit 38102c0fa5dadcc4b88c311de1cd2ee5c5282c08
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 16 09:11:28 2024 -0700
-
-    fixed some issues with recent CHaracters::format changes
-
-commit 45c3db6b80ec9c55d3d21d33de292e98393ca08f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 16 09:42:28 2024 -0700
-
-    more propgress on new Format code
-
-commit e8e3813041f93c5ea378349e534bafec51469e92
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 19 09:28:16 2024 -0700
-
-    More progress converting to new style format strings
-
-commit a7dedec1b814b01429915d5e89b5e88adbdb374a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 21 09:23:29 2024 -0700
-
-    fixed ToString formatter code to work on subclasses of exception; and a few more cleanups to ToString formatter usage
-
-commit 8619fa95db915e924da7f4330993e5ddbc1cdb77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 21 10:05:30 2024 -0700
-
-    a few more minor cleaups to ToString formater usage, and possible workaround for gcc13 lto bug;
-
 commit 0341e70b4dc2f990b4ee2edc671bf6d6cc624b5a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 21 14:39:29 2024 -0700
 
     attempt to workaround g++ 13 lto compiler bug
-
-commit b7453d3d4525eab7ff97e02a4647793d67e47286
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 21 15:05:00 2024 -0700
-
-    more cleanups to new FormatString code - and another possible test workaround for g++13 lto issue
 
 commit aa977c03dda1f54a1bf25a6b82b1ea0eb6961a95
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1396,25 +916,13 @@ commit 0b489a3b9d53726e3c2a9a4fa43c14d96be251e7
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Apr 29 20:44:59 2024 -0400
 
-    refactored some configure logic into new ./ScriptsLib/GetGCCVersion script
-
-commit 295d81ec9dd95aaf5832ee98187e57c81af75468
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 1 11:13:36 2024 -0400
-
-    todo on GetGCCVersion script
+     new ./ScriptsLib/GetGCCVersion script (and used in configure)
 
 commit 99b5448785d10db7ea31fba039f88e2f615192aa
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed May 1 11:13:49 2024 -0400
 
-    draft Scripts/GetClangVersion script
-
-commit ceca5eef49922ad7aea78842fb0c0b01f912060e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 1 11:15:32 2024 -0400
-
-    configure uses new Scripts/GetClangVersion script
+    draft Scripts/GetClangVersion script (and used in configure)
 
 commit 5272094afb1e6db9cb4c51f25125d012cc92f99c
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1452,23 +960,11 @@ Date:   Thu May 2 07:31:49 2024 -0700
 
     docs cleanups; new IO::Filesystem::CreateTmpFile and use that in AppTempFileManager
 
-commit bed8d480999d3594b975ff82071f14bd63b44516
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 4 11:06:54 2024 -0400
-
-    add regtest that atomic<int> is ToStringable but document why it doesn't work with _f strings - std::formtablle requires copyable argument and std::atomic<T> not copyable (not clear why)
-
 commit 83bc2bb47109eb793b88e456ef2cbd3a064f3976
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat May 4 12:23:44 2024 -0400
 
     first draft JSONRPC support in WebService framework
-
-commit 88a55cdc6fc8436b06f7b9cda2fb3434fd0dc8bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 4 12:36:03 2024 -0400
-
-    fixed ToString(atomic<>) support and other minor cleanups"
 
 commit c85dc913f87d28227ffc86f9caeb8e59f9a78109
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -1529,12 +1025,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun May 5 16:58:37 2024 -0400
 
     cosmeitc and workarounds for missing locale in regtests
-
-commit 6773ea2350fa4938d107e85339fa2d769e61befa
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon May 6 09:27:04 2024 -0400
-
-    Adjust bug defines for IUseToStringFormatterForFormatter_ and clang++-18 with gcc stdlib
 
 commit a8d18b7b70d465255a289e8180dc916358adc505
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1669,12 +1159,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 10 07:50:43 2024 -0400
 
     ScopedUseLocale now works with optional locale argument, and new FindNamedLocaleQuietly function and docs
-
-commit dfa7dc586c522ba360f6a06afafed9731702a0c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 10 08:52:37 2024 -0400
-
-    Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
 
 commit 97df7ed6434bee0f0f81892589332b0a904e262a
 Author: Lewis Pringle <lewis@sophists.com>
