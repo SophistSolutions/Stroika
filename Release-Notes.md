@@ -34,9 +34,29 @@ especially those they need to be aware of when upgrading.
     - simplified configure handling of DoSetThirdPartyComponents_ and fixed bug (setting fmtlib sometimes)
 
   - DockerFile
+    - readme docs
     - Windows
       - VS_17_10_1 in docker container
-    - readme docs
+      - simplify furhter the docker build scripts for windows ; msys esp
+      - MSYS - use 2024-05-07 exe now
+      - simplify (still experimental) workarounds for  https://stroika.atlassian.net/browse/STK-742 docker windows dns issue
+      - Lots of dockerfile cleanups/simplifications
+      - ErrorActionPreference stop on dockerfile and other small tweaks to how I fetch MSYS (hoping to address random DNS issue)
+    - Ubuntu
+      - Added g++12 and removed g++-14-arm-linux-gnueabihf from ubuntu 24.04 dockerfile to reflect availability:
+      - fix other docker contianers to also print hello message about Getting started
+      - Added stroika ubuntu dev container 2310
+      - lose support for ubuntu 20.04 and add for 24.04; updated BuildGCC script and use it in docker container for 22.04 so it builds gcc 13; other related makefile cleanups/simplifications
+    - Makefile
+      - BUILD_DEV_IMAGES flag building docker images - so maybe can avoid running  out of space on github actions - dont need to build there
+
+
+    tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
+
+
+- Compiler Bug Defines/BWA
+  - need extra BWA for arm for qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
+
 
 - All Source Files
   - Use Stroika-root relative paths instead of . relative paths #includes (so things line up better, copy-pasta better, and slightly clearer, though slightly more verbose)
@@ -92,6 +112,19 @@ especially those they need to be aware of when upgrading.
   - Added Set::contains (LC) for stl compat
 
 - DataExchange
+  - JSON
+    - JSON Pointer/JSON Patch
+      - new draft support
+        - Draft (but more or less complete/real) support for JSON::PointerType
+        - regtests for jsonpointer
+        - finished jsonpointer regtest and added new one for issue with reading JSON from String
+        - JSON PointerType Support Context and ApplyWithContext (for use in Patch, but still incomplete)
+        - Minor prorgress on JSON::Merge
+        - Bit more progress on JSON Patch code - one simple test case working - but lots of work to go
+        - tweaks to JSON::Patch code (mostly regtest)
+        - small progress on JSON::Patch code
+        - JSON::PointerType CTOR (stringish) - not just string - making use easier
+
   - VariantValue
     - VariantValue cleanup of As<> template (IAnyOf) and take nullopt or nullptr
     - Improved VariantValue As<> function to handle optional
@@ -115,6 +148,9 @@ especially those they need to be aware of when upgrading.
       and samples to use the new CommandLine code
 
 - IO
+  - Filesystem
+    - qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin support, and regtests (ToPath)
+
   - Network
     - fix includes so MacOS includes TCP_NODELAY define
 
@@ -140,28 +176,18 @@ especially those they need to be aware of when upgrading.
 
 - Regression Tests
   - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
+    update regtest docs - new 24.04 ubuntu lose 20.04
+    disbale clang++-15 on with libc++ on ubuntu 24.04
+
+- Skel
+  - added Release-Logging configuraiton to default-configurations for Skel
+
+- OS/BugDEfines
+    qCompilerAndStdLib_stacktraceLinkError_Buggy BWA for gcc 13 / ununtu 24.04
 
 
 
 ---------------------
-
-commit b1af12f7bdb751548e45fd2556089b41db4bc145
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 5 22:01:03 2024 -0500
-
-    begin experimental qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin support
-
-commit 9ee6797ae4a02134711a0bfab77e932e9d16274b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 11:09:38 2024 -0500
-
-    new regtests for qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin; and fixes to support so now passing
-
-commit 9fead19ba9cf9736e8d6659d74e1e6a2ba14b1a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 13:35:21 2024 -0500
-
-    added Release-Logging configuraiton to default-configurations for Skel
 
 commit 59808e96f7e5221bd5018e341a319d466352f877
 Author: Lewis Pringle <lewis@sophists.com>
@@ -175,83 +201,11 @@ Date:   Thu Mar 7 11:30:30 2024 -0500
 
     is_constant_validated in EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_
 
-commit 90328d238d851bbaa430740091b9c905f0e1cfee
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 7 19:53:48 2024 -0500
-
-    DOCKER: lose support for ubuntu 20.04 and add for 24.04; updated BuildGCC script and use it in docker container for 22.04 so it builds gcc 13; other related makefile cleanups/simplifications
-
-commit 8495d481c0a6f72de4630815e8ff20c1fd3bace8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 8 09:29:05 2024 -0500
-
-    BUILD_DEV_IMAGES flag building docker images - so maybe can avoid running  out of space on github actions - dont need to build there
-
-commit 8420efc146fd3dce944b78da2551de087d95c256
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 8 20:32:11 2024 -0500
-
-    draft of setting version string for choco instlal - but didn't enable cuz didnt help
-
-commit f9346bcc42f3dc8be9dbfd41be99e8d16c7063f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 9 07:26:42 2024 -0500
-
-    disable cygwin docker build while installer broken
-
-commit 4b53c3c3089a12aa994fcecbad30c359602a2c55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 9 09:43:14 2024 -0500
-
-    more disabling cygwin til build system fixed
-
-commit b383e6a5e46de341290df97a6376e62763c5da0f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 10 09:43:50 2024 -0400
-
-    re-enabled cygwin contaner building since data back online
-
-commit b51524668c3d54217e73f3e4efcde3e4614904ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 10 16:50:25 2024 -0400
-
-    disable cygwin build docker again - still broken
-
-commit b111f604a07272cf5be4cbe6b6d19eab2ced9da0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 11 10:31:53 2024 -0400
-
-    re-enable docker build of cygwin code - since downloads appear fixed
-
-commit bc0a6956349c0322c81884f3aaa7c3f960ca27a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 11 11:15:47 2024 -0400
-
-    update regtest docs - new 24.04 ubuntu lose 20.04
-
-commit 62e1cd5941f568854419ba0cf2e13c05ab25b3a1
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Mar 11 14:42:38 2024 -0400
-
-    disbale clang++-15 on with libc++ on ubuntu 24.04
-
-commit ffc609824278c52ae649d75abd46b2e8c9eb7532
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Mar 12 10:30:45 2024 -0400
-
-    qCompilerAndStdLib_stacktraceLinkError_Buggy BWA for gcc 13 / ununtu 24.04
-
 commit 171ce17eebb0ba01459dfb5876d5db2a90fa7798
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 12 10:42:43 2024 -0400
 
     expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
-
-commit b9d12c5289b76a33bc8a4c84a1c491f8e2ff713c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 18:11:02 2024 -0400
-
-    docker container VS_17_9_3
 
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 14 11:11:19 2024 -0400
@@ -341,12 +295,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 19 08:59:21 2024 -0400
 
     Added OpenAPI Specification Get/Set Servers methods
-
-commit 134b8b28ffb2544d0d36ea700e1392fea2a37c1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 09:46:09 2024 -0400
-
-    Added stroika ubuntu dev container 2310
 
 commit 720e0216ba79f8cc55e9786d1188eba0c1b87d01
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -456,12 +404,6 @@ Date:   Thu Mar 21 14:02:28 2024 -0400
 
     HasMakefileBugWorkaround_lto_skipping_undefined_incompatible broken on clang++-17 too (ubuntu 23.10)
 
-commit b24f458522d2c7def17a9174a26f9d28bb46a051
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 21 14:50:40 2024 -0400
-
-    use VS_17_9_4 in docker container
-
 commit e869debb8fda2fe29ee83511f1bd21e1d26cd98e
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Fri Mar 22 16:24:52 2024 -0400
@@ -557,12 +499,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Mar 29 09:55:59 2024 -0400
 
     was calling ScriptsLib/MakeVersionFile with 5 args, but inorning any past 3 - which worked badly when I added new optional 4th param! - so fixed calls and added the optional 4th (namespace) param
-
-commit 1ca8c9e857a9612bf94242e0af1bfe56f881e054
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 29 10:43:18 2024 -0400
-
-    VS_17_9_5 for docker container
 
 commit 9f24332a5834f9ad0a0d535c332fce89d7ccfd68
 Author: Lewis Pringle <lewis@sophists.com>
@@ -828,12 +764,6 @@ Date:   Wed Apr 10 16:30:02 2024 -0400
 
     typo fxiews and regtests for stack of exceptions capture
 
-commit d5a737df69b0724bdc8c3944f633c61cbf75c1fe
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Apr 11 14:18:26 2024 -0400
-
-    Added g++12 and removed g++-14-arm-linux-gnueabihf from ubuntu 24.04 dockerfile to reflect availability:
-
 commit 0606a2b7da84ac84043399777239571bccaeb393
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Apr 13 12:56:46 2024 -0400
@@ -977,12 +907,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sun May 5 07:30:18 2024 -0400
 
     unpdate CMD -l and bash profile for Ubuntu 24.04 small container so prints message about reading Getting Started
-
-commit 722e84f525aa0eac88e84bc14b3b1727c51f00c5
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun May 5 07:33:32 2024 -0400
-
-    fix other docker contianers to also print hello message about Getting started
 
 commit 0f302f0acbd7e441d06232036989c9dbd6cafa74
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -1166,30 +1090,6 @@ Date:   Fri May 10 16:28:09 2024 -0400
 
     ConnectionOrientedStreamSocke Get/SetTCPNoDelay support; and use in ConnectionManager options - and default to TRUE there
 
-commit 5d7969135a2e1043bfeec16e05acd4017d81d77b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 18 13:40:55 2024 +0200
-
-    simplify furhter the docker build scripts for windows ; msys esp - and hopefully now works again (quirks of networking settings) - ; and update dto VS_17_9_7
-
-commit c4c796d29a68370e8548981d931a0b10bed6fbd5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 18 14:04:49 2024 +0200
-
-    Added early draft of JSON::Patch support (based on WTF code)
-
-commit fce0a05dede345b94f15e8e791d1f821859a9ed7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 18 14:18:48 2024 +0200
-
-    minor cleanups to JSONPatch code and fixed typo
-
-commit 4ef62136a580622c0ddaa1556c5788336cf5f7e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 18 14:19:16 2024 +0200
-
-    slightl cleanups to dockerfiles
-
 commit 4a999c2594e3ee36f60c6696d835fcb5dd803800
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat May 18 16:15:14 2024 +0200
@@ -1220,107 +1120,11 @@ Date:   Wed May 22 10:20:33 2024 +0200
 
     Minor tweak / fix to TextToByteReader
 
-commit e5975cfebe3d984d22161e3536efb5ff81997459
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 22 10:30:22 2024 +0200
-
-    Draft (but more or less complete/real) support for JSON::PointerType
-
-commit f94685c174e22193457d93239553fc2691739e4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 22 10:30:45 2024 +0200
-
-    regtests for jsonpointer
-
-commit 2c49098cf64785aced351e30b7396bab5e4f5259
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 22 16:12:19 2024 +0200
-
-    finished jsonpointer regtest and added new one for issue with reading JSON from String
-
-commit 14380ccc63f22b567b28996d81987b5e93066dc2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 22 17:17:03 2024 +0200
-
-    cleanup regtests - cannot repro problem I thiought I saw
-
-commit 2f63056b692d32fab38c0b2f713a3d61b1ea7bef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 08:13:46 2024 +0100
-
-    minor tweaks to Dockerfiles for windows
-
-commit 0036923e6b862983b10cb7487283d7c18abafd34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 13:02:41 2024 +0100
-
-    JSON PointerType Support Context and ApplyWithContext (for use in Patch, but still incomplete)
-
-commit 911a19b79f3d4f489f0e9a325d20f242eda97913
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 13:28:39 2024 +0100
-
-    Minor prorgress on JSON::Merge
-
-commit 1577cd750ee28e076b46b7a949bc874c44cb791a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 14:59:54 2024 +0100
-
-    Bit more progress on JSON Patch code - one simple test case working - but lots of work to go
-
-commit 4195df4defd009b88a6c8b05c524a640e48860c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 13:49:31 2024 -0400
-
-    tweaks to JSON::Patch code (mostly regtest)
-
-commit 46a56853d9119fe895db90739ba8e4d571cad770
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 15:18:11 2024 -0400
-
-    fix small recent regression in dockerfile cleanups for windows
-
-commit 0e1d2bfa646a1842fc02669c4a4450b93d65f92e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 15:19:24 2024 -0400
-
-    small progress on JSON::Patch code
-
-commit cf07c541c5035fa2cb8c5a0600fc8a76a8c2f6db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 15:44:26 2024 -0400
-
-    more cleanups to windows dockerfiles; and for MSYS - use 2024-05-07 exe now
-
-commit 415272beb9ec357ea3acee4ad0ad3797c43802c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 23 16:51:02 2024 -0400
-
-    JSON::PointerType CTOR (stringish) - not just string - making use easier
-
 commit d100b216b320f11be24e9d61a6009178ed32b84a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 24 10:52:32 2024 -0400
 
     Support _MSC_VER_2k22_17Pt10_ bug defines
-
-commit d5396c4ca008d9fddaa5326092d3ae3c356fb4a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 24 16:19:46 2024 -0400
-
-    ErrorActionPreference stop on dockerfile and other small tweaks to how I fetch MSYS (hoping to address random DNS issue)
-
-commit 5705fb86bd3cbb5fe0dd9402db0d2437ffa3ad9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 24 16:20:13 2024 -0400
-
-    minor cleanup to /RunLocalWindowsDockerRegressionTests to address randombroken dns issue
-
-commit cfe42cab217d27f50883dcaff6a92b56c47a53f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 24 17:40:30 2024 -0400
-
-    hopefully fixed powershell typo in windows dockerfile
 
 commit f461d412bb5aa2a78db90e4d2c0778e4df92dd76
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1333,12 +1137,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 27 11:48:51 2024 -0400
 
     use Windows11SDK.22621; VS_17_9_7 revert cuz build problems;
-
-commit 34cc7efda23fa15d22cdca325ba7ca28e749176d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 27 17:34:06 2024 -0400
-
-    simplify (still experimental) workarounds for  https://stroika.atlassian.net/browse/STK-742 docker windows dns issue
 
 commit 7ac0d67bf0771875e02879d1811d0cb41fba3654
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1358,31 +1156,11 @@ Date:   Thu May 30 16:51:29 2024 -0400
 
     Patch to msvc.jam file to support latest visual studio compiler
 
-commit 3ea89c4e575a9224d14c042eeecb546ce4635912
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 30 16:52:03 2024 -0400
-
-    docker container uses VS_17_10_0
-
-commit fef987c712cd0762de4503f8e60367539ef64d61
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 31 06:43:15 2024 -0400
-
-    tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
-
 commit a188b1475141ba0996e1acfebb3c6cf7648d260d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jun 1 09:08:51 2024 -0400
 
     cleanups to PkgConfigNames handling - moved some workarounds from configure to ApplyConfigurations - much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
-
-commit c16479f2cc510233db3a090aee8057eb381465c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 3 08:32:56 2024 -0400
-
-    need extra BWA for arm for qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
-
-docker 17.10.1 msvc
 
 disable asaon on ubuntu 23.10 and g++12 since doesnt appear to work
 
