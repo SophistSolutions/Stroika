@@ -627,22 +627,24 @@ sub WriteVS2kIntellisenseConfigFile
 	# for the make without requiring the user to add it to their user/system path
 	# by default
 	#
-	local $defCygwinStkBuildPath = GetCygwinPathVar2Add_();
-	local $msysStkBuildPath = GetMSYSPathVar2Add_();
-	print (OUT "\n");
-	print (OUT "  <PropertyGroup Label=\"UserMacros\">\n");
-	print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath;$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
-	print (OUT "    <JOBS_FLAG>-j 5</JOBS_FLAG>\n");
-	print (OUT "  </PropertyGroup>\n");
-	if ("$^O" == "msys") {
-		print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
-		print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath</StroikaBuildToolsExtraPath>\n");
+	if ("$^O" == "msys" or "$^O" == "cygwin") {
+		local $defCygwinStkBuildPath = GetCygwinPathVar2Add_();
+		local $msysStkBuildPath = GetMSYSPathVar2Add_();
+		print (OUT "\n");
+		print (OUT "  <PropertyGroup Label=\"UserMacros\">\n");
+		print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath;$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
+		print (OUT "    <JOBS_FLAG>-j 5</JOBS_FLAG>\n");
 		print (OUT "  </PropertyGroup>\n");
-	}
-	elsif ("$^O" == "cygwin") {
-		print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
-		print (OUT "    <StroikaBuildToolsExtraPath>$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
-		print (OUT "  </PropertyGroup>\n");
+		if ("$^O" == "msys") {
+			print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
+			print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath</StroikaBuildToolsExtraPath>\n");
+			print (OUT "  </PropertyGroup>\n");
+		}
+		elsif ("$^O" == "cygwin") {
+			print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
+			print (OUT "    <StroikaBuildToolsExtraPath>$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
+			print (OUT "  </PropertyGroup>\n");
+		}
 	}
 
 ### Unclear if/why this would be needed
