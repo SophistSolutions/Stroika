@@ -3073,7 +3073,7 @@ if ($onlyGenerateIfCompilerExists) {
 			$generateBecause = "Libc++ only supports Clang 16 and later on ubuntu 24.04";
 		}
 	}
-	if ($ubuntuVersion != 0) {
+	if ($generate && $ubuntuVersion != 0) {
 		# needed for example of HOST OS is Ubuntu 24.04 (not necessarily OS in container)
 		my %already = map { $_ => 1 } @sanitizerFlags;
 		if(exists($already{'thread'})) {
@@ -3088,7 +3088,21 @@ if ($onlyGenerateIfCompilerExists) {
 			}
 		}
 	}
-	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
+	if ($generate && $ubuntuVersion == 22.04) {
+		# needed for [34] Foundation::DataExchange::XML - scp ../Builds/raspberrypi-g++-12-release-sanitize_address/Tests/Test34...; ssh lewis@192.168.244.32   /tmp/Test34 --gtest_brief
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
+				# maybe only needed for release builds - but fine tune tests later in the cycle, and also not checking if arm only issue
+				my %already = map { $_ => 1 } @sanitizerFlags;
+				if(exists($already{'address'})) {
+					$generate = false;
+					$generateBecause = "bogus failure on raspberrypi-g++-12-release-sanitize_address/Tests/Test34 - so skipping asan by default - for this target";
+				}
+			}
+
+		}
+	}
+	if ($generate && defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
 		foreach my $i (0 .. $#sanitizerFlags) {
 			if ($sanitizerFlags[$i] eq "thread") {
 				$generate = false;
