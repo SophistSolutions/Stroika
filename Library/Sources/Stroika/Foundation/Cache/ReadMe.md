@@ -24,7 +24,7 @@ Cache Types:
 
 - TimedCache - [TimedCache.h](TimedCache.h)
 
-  Keeps track of all items - indexed by Key - but throws away items which are any more stale than given by the TIMEOUT. Staleness is defined as time since item was added.
+  Keeps track of all items - indexed by Key - but throws away items which are any more stale than given by the minimumAllowedFreshness (associated with the cache, not passed in to each lookup call). Staleness is defined as time since item was added.
 
 Other:
 
