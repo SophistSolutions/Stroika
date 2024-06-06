@@ -14,6 +14,8 @@ especially those they need to be aware of when upgrading.
 - _f strings and new Format () API (based on new std::format<>)
   - MAJOR change - deprecated c-style sprintf style - Characters::Format
   - replaced with new _f strings API - based on c++20 formattable feature
+- Added Ubuntu 24.04 support
+  - workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
 
 ##### DETAILS
 
@@ -25,6 +27,8 @@ especially those they need to be aware of when upgrading.
     - refactor building containers (to work around size limits)
     - lose ubuntu 20.04 from github action configs we build
     - many space-savings hacks due to run out of space building problems
+    - Windows
+      - lose rebaseall thing cuz done on msys and cygwin not sure needed on any but failing on cygwin
   - MacOS
     - use MacOS-13 with XCode-15.2
     - use MacOS-14 with XCode-15.3
@@ -32,6 +36,7 @@ especially those they need to be aware of when upgrading.
 
   - configure
     - simplified configure handling of DoSetThirdPartyComponents_ and fixed bug (setting fmtlib sometimes)
+    - workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
 
   - DockerFile
     - readme docs
@@ -51,8 +56,20 @@ especially those they need to be aware of when upgrading.
       - BUILD_DEV_IMAGES flag building docker images - so maybe can avoid running  out of space on github actions - dont need to build there
 
 
-    tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
+- ScriptsLib/
+  - optional USE_NMAESPACE arg to ScriptsLib/MakeVersionFile
+  - was calling ScriptsLib/MakeVersionFile with 5 args, but inorning any past 3 - which worked badly when I added new optional 4th param! - so fixed calls and added the optional 4th (namespace) param
+  - more tweaks to Scripts/MakeVersionFile (#define protecter)
+  - tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
+  -  new ./ScriptsLib/GetGCCVersion script (and used in configure)
+  - draft Scripts/GetClangVersion script (and used in configure)
 
+- Supported Platforms
+  - ubuntu lose 20.04
+  - added 24.04
+
+- Supported Compilers
+  - Added makefile configs for clang++17 and clang++18, and g++-14
 
 - Compiler Bug Defines/BWA
   - need extra BWA for arm for qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
@@ -100,19 +117,21 @@ especially those they need to be aware of when upgrading.
   - g++-14 LTO workarounds/disable some warnings in configure
   - for Ubuntu 24.04 - disable LTO by default on clang++18 (and earlier)
   - check HasMakefileBugWorkaround_lto_skipping_undefined_incompatible on building zlib as well - needed for clang++-18 on ubuntu 24.04
-
+  - Support _MSC_VER_2k22_17Pt10_ bug defines
+  - up a few _LIBCPP_VERSION BWA defines - cuz broken in version 18 of lib as well (tested on untunu 24.04)
+  - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible brokne on clang++16 and ubuntu 24.04 as well
 
 - All Source Files
   - Use Stroika-root relative paths instead of . relative paths #includes (so things line up better, copy-pasta better, and slightly clearer, though slightly more verbose)
   - lose include guards from .inl files and normalize formatting - since always included inside .h inside include guard
 
 - Characters
+  - Character
+    - Character::Compare now takes size_t template arg for spans
+    - Character::CheckASCII now constexpr
+    - fixed exception thrown in Character class
   - String
     - new String::AssureEndsWith
-  - Character
-
-    Character::Compare now takes size_t template arg for spans
-
   - _f strings and new Format () API
     - MAJOR change - deprecated c-style sprintf style - Characters::Format, and Characters::VFormat
     - replaced with new _f strings API - based on c++20 formattable feature
@@ -121,13 +140,11 @@ especially those they need to be aware of when upgrading.
     - Integrate with ToString()
       - formatter calls Characters::ToString () and _f strings automatically do this so no need for most explicit calls
         to Characters::ToString()
-    
 
     formatter pair/filesystem::path support (experimental); and lose unneeded ToString()s in a few more places
     small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
     for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
     Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
-
 
     more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
     COmment out range support in IUseToStringFormatterForFormatter_
@@ -136,7 +153,6 @@ especially those they need to be aware of when upgrading.
     define new Configuraiton::ITuple concept and use in IUseToStringFormatterForFormatter_
 
     Added IVariant to ToString (formatter) support
-
 
     TraceContextBumper restructure CTORs, and deprecate old format based API (sprintf strings); and used new API instead of deprecated one throughtout most of Stroika
     TraceContextBumper support new style format strings (and a couple test cases)
@@ -196,8 +212,9 @@ especially those they need to be aware of when upgrading.
 - Execution
   - generalized/added concepots to Execution::ThrowIfNull utility
   - CommandLine
-    - new CommandLine class; options support, inclding autogenerateing 'Usage' from Options; and updated all the regtests
-      and samples to use the new CommandLine code
+    - new CommandLine class; options support, inclding autogenerateing 'Usage' from Options; and updated
+      all the regtests and samples to use the new CommandLine code
+  - LazyInitialized **new class**
 
 - IO
   - Filesystem
@@ -205,16 +222,28 @@ especially those they need to be aware of when upgrading.
 
   - Network
     - fix includes so MacOS includes TCP_NODELAY define
+    - URL Host Host::As () always wraps IPv6 addr with [] - not just if pct encoding
+    - cleanup URL Network regtests and add regtest for [] on IPv6 addresses
 
 - Memory
   - BLOB
     - expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
     - Added _blob literal for Memory::BLOB (attach) - and regtest for it
+- Streams
+  - Minor tweak / fix to TextToByteReader
 
 - Frameworks
+  - WebServer
+    - Added fThreadPoolSize to WebServer::ConnectionManager statistics
+
   - WebService
     - JSONRPC
       - draft JSONRPC support (just define a few objects, and ObjectVariantMappers - maybe not much more todo)
+    - OpenAPI
+      - super early draft of Stroika/Frameworks/WebService/OpenAPI/ support
+        <br/>(generating docs link to openapi content)
+    - Docs Gen
+      <br/>cosmetic tweaks to webservice frameworks docs page
 
 - ThirdPartyComponents
   - boost 1.85.0
@@ -234,7 +263,8 @@ especially those they need to be aware of when upgrading.
     - VERSION 3.46.0
   - libxml2
     - VERSION 2.12.7
-
+  - StrawberryPerl
+    StrawberryPerl check on build
 
 - Regression Tests
   - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
@@ -243,7 +273,6 @@ especially those they need to be aware of when upgrading.
 
 - Skel
   - added Release-Logging configuraiton to default-configurations for Skel
-
 
 
 ---------------------
@@ -265,107 +294,17 @@ Date:   Thu Mar 14 13:51:49 2024 -0400
 
     only do configure BWA for ununtu 22.04 since comment says all thats needed - see if more needed
 
-commit 01faa4128d4945661dc7541d2d5206d46943af15
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Mar 14 13:52:46 2024 -0400
-
-    up a few _LIBCPP_VERSION BWA defines - cuz broken in version 18 of lib as well (tested on untunu 24.04)
-
-commit 0b49ba06bdecad25b3447c6422ba2ac0baa086a7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 15 17:12:54 2024 -0400
-
-    HasMakefileBugWorkaround_lto_skipping_undefined_incompatible brokne on clang++16 and ubuntu 24.04 as well
-
-commit 5b2f2fff98cc34a0d7e7c01118d78aca29d11887
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 15 17:13:29 2024 -0400
-
-    Added makefile configs for clang++17 and clang++18, and g++-14
-
-commit cec5693f5efe76c5bd48a3bad56b2ec1e00e5a15
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 15 20:17:21 2024 -0400
-
-    more use of <ContraintInMemberClassSeparateDeclare_BWA_Helper_
-
-commit 517e3bbbfcb116a04e642e55ebf9c6bcba1712da
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Mar 16 08:13:16 2024 -0400
-
-    workaround issue compiling clang17 google test with c++23
-
-commit d1b7959eea18f74e8c98df9b1a8c33f60d066b55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 18:42:22 2024 -0400
-
-    fLongNameCaseSensitive option support for CommandName::Options
-
-commit ad656315b11395c06fa55ccc03db83fc01482a40
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 21:49:46 2024 -0400
-
-    super early draft of Stroika/Frameworks/WebService/OpenAPI/ support
-
-commit 47ced386c75805dd84eada7655c36dc4d2877813
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 21:56:26 2024 -0400
-
-    draft support for generating docs link to openapi content
-
-commit 3b2918edfe40f5d1884f8de665844892caa52051
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 08:59:21 2024 -0400
-
-    Added OpenAPI Specification Get/Set Servers methods
-
-commit 720e0216ba79f8cc55e9786d1188eba0c1b87d01
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Mar 19 10:41:12 2024 -0400
-
-    adjust test case so compiles with clang++15
-
-commit 615aaa1cb3e0fcaa05ad657f910bce371e55f190
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 14:55:01 2024 -0400
-
-    VariantValue writers now const; added another overload to OpenAPI/Specification AS method; fixadmade WriterSSString/WriteAs BLOB writer mehtods no discard and fixed (that) bug with OpenAPI/Specification write code
-
 commit 70f8cd7baacc6a84db24247d80c1bbd7757b3478
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 19 15:16:13 2024 -0400
 
     InternetMediaTypeRegistry::CheckIsA () utility
 
-commit c49ba3b78a1fe1a6af9edbd5e2d57d80898296d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 19:51:44 2024 -0400
-
-    new Execution::LazyInitialized
-
-commit 6f53c388e63237560b5feab47e75118f2ad91459
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 20:05:32 2024 -0400
-
-    Added Execution::LazyInitialized
-
 commit 373a7f0e5e8d9b5f0a6bc772e4cd8d406da350ab
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Mar 20 08:10:12 2024 -0400
 
     tweak output of framework WebService::Server::WriteDocsPage
-
-commit 04abaf4bdf4f389d34297d7b59212f2b385c92de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 20 12:02:06 2024 -0400
-
-    cosmetic tweaks to webservice frameworks docs page
-
-commit 411ba2dbd64f92a3cab9d89f39a8b6c119bb9362
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 20 15:12:46 2024 -0400
-
-    Added fThreadPoolSize to WebServer::ConnectionManager statistics
 
 commit db958c81c7cbeb686ba5ea6c59744b4f7bcb306a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -379,12 +318,6 @@ Date:   Sat Mar 23 20:05:22 2024 -0400
 
     VariantValue - cleanup DbgTrace usage; and in a few cases added stuff to teh thrown exception about why failed
 
-commit 8151ef6836ff271a2d5f694fe7bb42555582121c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 23 22:25:00 2024 -0400
-
-    lose uplodate of Tests/Test01 - tests passing now
-
 commit 33d152c6e0ad795e6abb8836c32ac9d06128a77e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 26 09:22:14 2024 -0400
@@ -396,30 +329,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 26 09:23:48 2024 -0400
 
     Execution::Logger cleanups: support multiple loggers; and better document use and setting logger to log to stdout
-
-commit 1cfb48264436e1b5d36afcb8198566b7d32c5f53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 27 14:07:12 2024 -0400
-
-    Character::CheckASCII now constexpr
-
-commit d0a50797d50958e061b62d1d414cb5781bc3b2bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 29 08:58:10 2024 -0400
-
-    optional USE_NMAESPACE arg to ScriptsLib/MakeVersionFile
-
-commit 97fedccfa3f1292337abfa935b1ad87b8d43a9ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 29 09:55:59 2024 -0400
-
-    was calling ScriptsLib/MakeVersionFile with 5 args, but inorning any past 3 - which worked badly when I added new optional 4th param! - so fixed calls and added the optional 4th (namespace) param
-
-commit 9f24332a5834f9ad0a0d535c332fce89d7ccfd68
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 29 11:56:38 2024 -0400
-
-    more tweaks to Scripts/MakeVersionFile (#define protecter)
 
 commit 0ac72052a7d6d031036ff83a5d843783ef2fc211
 Author: Lewis Pringle <lewis@sophists.com>
@@ -456,12 +365,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 1 20:10:50 2024 -0400
 
     more cleanup of new Assertion code (warnings wchar_t)
-
-commit 5586bc6c8dbacf0ee6604347c262b4e50b08597e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 2 07:54:23 2024 -0400
-
-    fixed exception thrown in Character class
 
 commit ee625f29db48078b61ad62fba1a4476eb20acc1b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -595,18 +498,6 @@ Date:   Wed Apr 10 16:30:02 2024 -0400
 
     typo fxiews and regtests for stack of exceptions capture
 
-commit 0606a2b7da84ac84043399777239571bccaeb393
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 13 12:56:46 2024 -0400
-
-    URL Host Host::As () always wraps IPv6 addr with [] - not just if pct encoding
-
-commit aa2af3a0e3d7f6c728db3416bc40aa7becfbf47d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 13 12:57:21 2024 -0400
-
-    celanup URL Network regtests and add regtest for [] on IPv6 addresses
-
 commit 0341e70b4dc2f990b4ee2edc671bf6d6cc624b5a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 21 14:39:29 2024 -0700
@@ -649,18 +540,6 @@ Date:   Sat Apr 27 06:20:52 2024 -0700
 
     tweak DbgTrace for ObjectVariantMapper::Lookup_ failure
 
-commit 0b489a3b9d53726e3c2a9a4fa43c14d96be251e7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Apr 29 20:44:59 2024 -0400
-
-     new ./ScriptsLib/GetGCCVersion script (and used in configure)
-
-commit 99b5448785d10db7ea31fba039f88e2f615192aa
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 1 11:13:49 2024 -0400
-
-    draft Scripts/GetClangVersion script (and used in configure)
-
 commit 5272094afb1e6db9cb4c51f25125d012cc92f99c
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed May 1 11:16:58 2024 -0400
@@ -679,29 +558,11 @@ Date:   Wed May 1 15:03:48 2024 -0700
 
     clenaup compiler warnings and DbgTrace output (new format code) for TimingTrace
 
-commit 90c3f8b4c6c61c73c8717b6281fd7cee14980276
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 1 18:07:21 2024 -0400
-
-    cleanup configure regrssion warnings
-
-commit 842b4d41b106b939f8af9a9244a434b931fa56f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 1 20:08:31 2024 -0400
-
-    fix small configure regression
-
 commit eb763c8049eeb52e1573cce5930238702267bba1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 2 07:31:49 2024 -0700
 
     docs cleanups; new IO::Filesystem::CreateTmpFile and use that in AppTempFileManager
-
-commit c85dc913f87d28227ffc86f9caeb8e59f9a78109
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat May 4 22:09:16 2024 -0400
-
-    workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
 
 commit 610e26a4acf19c14b127a4b69ed6fb3d8657f654
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -861,24 +722,6 @@ Date:   Sat May 18 16:43:52 2024 +0200
 
     fixed bug in Streams/TextToByteReader Read code reading multibyte unicode - untested - but hopefully right now
 
-commit 3df7538592cbc0cf2331fd93ee8d0b32c32c2b51
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 21 08:23:33 2024 +0200
-
-    lose rebaseall thing cuz done on msys and cygwin not sure needed on any but failing on cygwin
-
-commit 482ebbe426db470ea2eb9091280a16170ef543c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 22 10:20:33 2024 +0200
-
-    Minor tweak / fix to TextToByteReader
-
-commit d100b216b320f11be24e9d61a6009178ed32b84a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 24 10:52:32 2024 -0400
-
-    Support _MSC_VER_2k22_17Pt10_ bug defines
-
 commit f461d412bb5aa2a78db90e4d2c0778e4df92dd76
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 27 10:52:47 2024 -0400
@@ -890,12 +733,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 27 11:48:51 2024 -0400
 
     use Windows11SDK.22621; VS_17_9_7 revert cuz build problems;
-
-commit 7ac0d67bf0771875e02879d1811d0cb41fba3654
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 28 10:44:22 2024 -0400
-
-    StrawberryPerl check on build
 
 commit e7feb9dde6918dfe1b03d8056401089222ba48fd
 Author: Lewis Pringle <lewis@sophists.com>
@@ -916,7 +753,8 @@ Date:   Sat Jun 1 09:08:51 2024 -0400
     cleanups to PkgConfigNames handling - moved some workarounds from configure to ApplyConfigurations - much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
 
 disable asaon on ubuntu 23.10 and g++12 since doesnt appear to work
-
+configure: skip using asan configure change for 23.10 ubuntu - not supported version so not worth diggigin
+   configure: IsTargettingSanitizer_ refactor of configure code (minor - sb now change in behavior)
 ----------------------------------
 
 
