@@ -16,23 +16,27 @@ especially those they need to be aware of when upgrading.
   - replaced with new _f strings API - based on c++20 formattable feature
 - Added Ubuntu 24.04 support
   - workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
+- Execution::Logger - allow multiple appenders, and use new _f strings
+- DataExchange::JSON {Pointer and Merge - draft support}
 
 ##### DETAILS
 
 - Build System
   - github actions workflow(s)
+    - more tweaks to hacks2savespace for linux
     - lose extra git checkout on windows (just set Path to same place used to and dont checkout via container) - fixes bug when run on tag
     - use upload/artifacts@v4 ; use actions/checkout@v4; and login action - mostly to address warnings from github action runs that they were out of date
     - Improved logic for copying tracelog files out of containers so they show up as artifacts in github action run
     - refactor building containers (to work around size limits)
     - lose ubuntu 20.04 from github action configs we build
     - many space-savings hacks due to run out of space building problems
+    - MacOS
+      - use MacOS-13 with XCode-15.2
+      - use MacOS-14 with XCode-15.3
+      - github actions macos add more info about running xcode
+      - on macos - copy out BUILD-CONF-TOOLS-OUT.txt to see why its failing
     - Windows
       - lose rebaseall thing cuz done on msys and cygwin not sure needed on any but failing on cygwin
-  - MacOS
-    - use MacOS-13 with XCode-15.2
-    - use MacOS-14 with XCode-15.3
-    - github actions macos add more info about running xcode
 
   - configure
     - simplified configure handling of DoSetThirdPartyComponents_ and fixed bug (setting fmtlib sometimes)
@@ -47,6 +51,7 @@ especially those they need to be aware of when upgrading.
       - simplify (still experimental) workarounds for  https://stroika.atlassian.net/browse/STK-742 docker windows dns issue
       - Lots of dockerfile cleanups/simplifications
       - ErrorActionPreference stop on dockerfile and other small tweaks to how I fetch MSYS (hoping to address random DNS issue)
+      - use Windows11SDK.22621;
     - Ubuntu
       - Added g++12 and removed g++-14-arm-linux-gnueabihf from ubuntu 24.04 dockerfile to reflect availability:
       - fix other docker contianers to also print hello message about Getting started
@@ -120,133 +125,148 @@ especially those they need to be aware of when upgrading.
   - Support _MSC_VER_2k22_17Pt10_ bug defines
   - up a few _LIBCPP_VERSION BWA defines - cuz broken in version 18 of lib as well (tested on untunu 24.04)
   - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible brokne on clang++16 and ubuntu 24.04 as well
+  - avoid asan on some tests cuz broken on clang++16 ubuntu 23.10 sometimes
+  - fixed a few compiler bug defines for g++-14
 
 - All Source Files
   - Use Stroika-root relative paths instead of . relative paths #includes (so things line up better, copy-pasta better, and slightly clearer, though slightly more verbose)
   - lose include guards from .inl files and normalize formatting - since always included inside .h inside include guard
 
-- Characters
-  - Character
-    - Character::Compare now takes size_t template arg for spans
-    - Character::CheckASCII now constexpr
-    - fixed exception thrown in Character class
-  - String
-    - new String::AssureEndsWith
-  - _f strings and new Format () API
-    - MAJOR change - deprecated c-style sprintf style - Characters::Format, and Characters::VFormat
-    - replaced with new _f strings API - based on c++20 formattable feature
-    - Used for DbgTrace, and Execution::Logger API, and a few others (anywhere we did format api/vformat)
-    - qStroika_Foundation_Characters_FMT_PREFIX
-    - Integrate with ToString()
-      - formatter calls Characters::ToString () and _f strings automatically do this so no need for most explicit calls
-        to Characters::ToString()
+- Library
+  - Foundation
+    - Characters
+      - Character
+        - Character::Compare now takes size_t template arg for spans
+        - Character::CheckASCII now constexpr
+        - fixed exception thrown in Character class
+      - String
+        - new String::AssureEndsWith
+      - _f strings and new Format () API
+        - MAJOR change - deprecated c-style sprintf style - Characters::Format, and Characters::VFormat
+        - replaced with new _f strings API - based on c++20 formattable feature
+        - Used for DbgTrace, and Execution::Logger API, and a few others (anywhere we did format api/vformat)
+        - qStroika_Foundation_Characters_FMT_PREFIX
+        - Integrate with ToString()
+          - formatter calls Characters::ToString () and _f strings automatically do this so no need for most explicit calls
+            to Characters::ToString()
+        formatter pair/filesystem::path support (experimental); and lose unneeded ToString()s in a few more places
+        small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
+        for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
+        Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
+        more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
+        COmment out range support in IUseToStringFormatterForFormatter_
+        fix typo; fixed range support on IUseToStringFormatterForFormatter_
+        IUseToStringFormatterForFormatter_ also chekcs IKeyValuePair
+        define new Configuraiton::ITuple concept and use in IUseToStringFormatterForFormatter_
+        more tweaks/tests for IUseToStringFormatterForFormatter_
+        progress enhancing IUseToStringFormatterForFormatter_ - test carefullybefore adding more cases
+        perhaps fix clang++16 support for IUseToStringFormatterForFormatter_
+        IUseToStringFormatterForFormatter_ tweaks for differnt compiler/libs combos - still probably alot todo here
+        more converts of DbgTrace and Format calls to new style, and IUseToStringFormatterForFormatter_ fixes for MSFT compilers (quirky way to check for stdc++23)
+        More IUseToStringFormatterForFormatter_ fixes for diff compilers
+        More tweaks with IUseToStringFormatterForFormatter_ definition and static asserts to test and a few use cases
+        more tweaks to IUseToStringFormatterForFormatter_ bug/missing feature defines
+        Added IVariant to ToString (formatter) support
+        TraceContextBumper restructure CTORs, and deprecate old format based API (sprintf strings); and used new API instead of deprecated one throughtout most of Stroika
+        TraceContextBumper support new style format strings (and a couple test cases)
+    - Concepts
+      - Added IStdOptional and ExtractStdOptionalOf_t utilities/concepts
+      - ICountedValue concept (use ICOuntedValue in ToString)
+      - IKeyValuePair concept
+      - Configuration::IOptional; 
+      - Configuration::IPair
+      - IVariant concept
+    - Configuration
+      - Enumeration
+        - is_constant_validated in EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_
+        - EnumNames support for Characters::CompareOptions
+      - StdCompat
+        - migrate backward compatability compiler support here - for APIs that are really stdc++ newer apis but not fully supported by call compilers (polyfill layer)
+        - StdCompat::vformat
+        - chrono stdcompat
+    - Containers
+      - Added Set::contains (LC) for stl compat
+    - DataExchange
+      - JSON
+        - JSON Pointer/JSON Patch
+          - new draft support
+            - Draft (but more or less complete/real) support for JSON::PointerType
+            - regtests for jsonpointer
+            - finished jsonpointer regtest and added new one for issue with reading JSON from String
+            - JSON PointerType Support Context and ApplyWithContext (for use in Patch, but still incomplete)
+            - Minor prorgress on JSON::Merge
+            - Bit more progress on JSON Patch code - one simple test case working - but lots of work to go
+            - tweaks to JSON::Patch code (mostly regtest)
+            - small progress on JSON::Patch code
+            - JSON::PointerType CTOR (stringish) - not just string - making use easier
+      - ObjectVariantMapper
+        - ObjectVariantMapper::ToObjectQuietly () new function
 
-    formatter pair/filesystem::path support (experimental); and lose unneeded ToString()s in a few more places
-    small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
-    for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
-    Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
-
-    more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
-    COmment out range support in IUseToStringFormatterForFormatter_
-    fix typo; fixed range support on IUseToStringFormatterForFormatter_
-    IUseToStringFormatterForFormatter_ also chekcs IKeyValuePair
-    define new Configuraiton::ITuple concept and use in IUseToStringFormatterForFormatter_
-
-    Added IVariant to ToString (formatter) support
-
-    TraceContextBumper restructure CTORs, and deprecate old format based API (sprintf strings); and used new API instead of deprecated one throughtout most of Stroika
-    TraceContextBumper support new style format strings (and a couple test cases)
-
-
-- Concepts
-  - Added IStdOptional and ExtractStdOptionalOf_t utilities/concepts
-  - ICountedValue concept (use ICOuntedValue in ToString)
-  - IKeyValuePair concept
-  - Configuration::IOptional; 
-  - Configuration::IPair
-  - IVariant concept
-
-- Configuration
-  - Enumeration
-    - is_constant_validated in EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_
-    - EnumNames support for Characters::CompareOptions
-
-  - StdCompat
-    - migrate backward compatability compiler support here - for APIs that are really stdc++ newer apis but not fully supported by call compilers (polyfill layer)
-    - StdCompat::vformat
-    - chrono stdcompat
-
-- Containers
-  - Added Set::contains (LC) for stl compat
-
-- DataExchange
-  - JSON
-    - JSON Pointer/JSON Patch
-      - new draft support
-        - Draft (but more or less complete/real) support for JSON::PointerType
-        - regtests for jsonpointer
-        - finished jsonpointer regtest and added new one for issue with reading JSON from String
-        - JSON PointerType Support Context and ApplyWithContext (for use in Patch, but still incomplete)
-        - Minor prorgress on JSON::Merge
-        - Bit more progress on JSON Patch code - one simple test case working - but lots of work to go
-        - tweaks to JSON::Patch code (mostly regtest)
-        - small progress on JSON::Patch code
-        - JSON::PointerType CTOR (stringish) - not just string - making use easier
-
-  - VariantValue
-    - VariantValue cleanup of As<> template (IAnyOf) and take nullopt or nullptr
-    - Improved VariantValue As<> function to handle optional
-    - VariantValue::Set overloads
-    - template<typename T> VariantValue::operator T () const same as VariantValue::As<T> () - but explicit
-  - XML
-    - XML::DOM::Element code Append, and SetAttribute allow value to be VariantValue, and just silently As<String> it
-    - cleanup XML DOM RootElement default namespace code for ReplaceRootElement
-    - Added Document::Ptr::LookupOneElement / Lookup / LookupElements
-    - LibXML2
-      - New resolver support code
-      - fix exception safety bug in XPathLookupHelper_ LibXML2
-      - expose get/set Standalone flag to XML document, and change default for libxml2 to standalone as I had with Xerces
-      - fixed libxml2 entity reference writing support (must call xmlEncodeSpecialChars before xmlNodeSetContent)
-      - maybe fix libxml2 issue with default namespaces not working properly
-
-- Execution
-  - generalized/added concepots to Execution::ThrowIfNull utility
-  - CommandLine
-    - new CommandLine class; options support, inclding autogenerateing 'Usage' from Options; and updated
-      all the regtests and samples to use the new CommandLine code
-  - LazyInitialized **new class**
-
-- IO
-  - Filesystem
-    - qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin support, and regtests (ToPath)
-
-  - Network
-    - fix includes so MacOS includes TCP_NODELAY define
-    - URL Host Host::As () always wraps IPv6 addr with [] - not just if pct encoding
-    - cleanup URL Network regtests and add regtest for [] on IPv6 addresses
-
-- Memory
-  - BLOB
-    - expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
-    - Added _blob literal for Memory::BLOB (attach) - and regtest for it
-- Streams
-  - Minor tweak / fix to TextToByteReader
-
-- Frameworks
-  - WebServer
-    - Added fThreadPoolSize to WebServer::ConnectionManager statistics
-
-  - WebService
-    - JSONRPC
-      - draft JSONRPC support (just define a few objects, and ObjectVariantMappers - maybe not much more todo)
-    - OpenAPI
-      - super early draft of Stroika/Frameworks/WebService/OpenAPI/ support
-        <br/>(generating docs link to openapi content)
-    - Docs Gen
-      <br/>cosmetic tweaks to webservice frameworks docs page
+      - VariantValue
+        - VariantValue cleanup of As<> template (IAnyOf) and take nullopt or nullptr
+        - Improved VariantValue As<> function to handle optional
+        - VariantValue::Set overloads
+        - template<typename T> VariantValue::operator T () const same as VariantValue::As<T> () - but explicit
+      - XML
+        - XML::DOM::Element code Append, and SetAttribute allow value to be VariantValue, and just silently As<String> it
+        - cleanup XML DOM RootElement default namespace code for ReplaceRootElement
+        - Added Document::Ptr::LookupOneElement / Lookup / LookupElements
+        - LibXML2
+          - New resolver support code
+          - fix exception safety bug in XPathLookupHelper_ LibXML2
+          - expose get/set Standalone flag to XML document, and change default for libxml2 to standalone as I had with Xerces
+          - fixed libxml2 entity reference writing support (must call xmlEncodeSpecialChars before xmlNodeSetContent)
+          - maybe fix libxml2 issue with default namespaces not working properly
+    - Debug
+      - Assertion
+        - Cleanuup/re-orig macors in Assertions.h
+        - tmphack disable printf in DefaultAssertionHandler_ temporarily
+        - more cleanup of new Assertion code (warnings wchar_t)
+        - Assert handlers now use wchar_t - fixing a number of rare/minor problems; and simplifying its use of DbgTrace
+    - Execution
+      - generalized/added concepots to Execution::ThrowIfNull utility
+      - CommandLine
+        - new CommandLine class; options support, inclding autogenerateing 'Usage' from Options; and updated
+          all the regtests and samples to use the new CommandLine code
+      - LazyInitialized **new class**
+      - new utility TranslateExceptionToOptional
+      - Logger
+        - support multiple loggers; 
+        - better document use and setting logger to log to stdout
+    - IO
+      - Filesystem
+        - qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin support, and regtests (ToPath)
+        - AdoptFDPolicy no longer has eDEFAULT - since there is no safe value - force specification by callers - so deprecated a couple FileInput/OutputStream New () overloads
+      - Network
+        - fix includes so MacOS includes TCP_NODELAY define
+        - URL Host Host::As () always wraps IPv6 addr with [] - not just if pct encoding
+        - cleanup URL Network regtests and add regtest for [] on IPv6 addresses
+    - Memory
+      - BLOB
+        - expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
+        - Added _blob literal for Memory::BLOB (attach) - and regtest for it
+      - Span
+        - cleanup docs / rationale on assertions for CopySpanData
+    - Streams
+      - Minor tweak / fix to TextToByteReader
+  - Frameworks
+    - Led
+      - fixed warning about delter on shared_ptr
+    - WebServer
+      - Added fThreadPoolSize to WebServer::ConnectionManager statistics
+      - deprecate framework/webserver/reponse/printf and instead added write () overload taking FormatString and updated some usage to use it
+    - WebService
+      - JSONRPC
+        - draft JSONRPC support (just define a few objects, and ObjectVariantMappers - maybe not much more todo)
+      - OpenAPI
+        - super early draft of Stroika/Frameworks/WebService/OpenAPI/ support
+          <br/>(generating docs link to openapi content)
+      - Docs Gen
+        <br/>cosmetic tweaks to webservice frameworks docs page
 
 - ThirdPartyComponents
   - boost 1.85.0
+    - clang14/15 dont work with boost cobalt
   - libcurl
     - lots of hacks to get the latest version building on UNIX 
       - some versions fail to build with libbrotli (esp with clang++)
@@ -273,7 +293,6 @@ especially those they need to be aware of when upgrading.
 
 - Skel
   - added Release-Logging configuraiton to default-configurations for Skel
-
 
 ---------------------
 
@@ -318,77 +337,17 @@ Date:   Sat Mar 23 20:05:22 2024 -0400
 
     VariantValue - cleanup DbgTrace usage; and in a few cases added stuff to teh thrown exception about why failed
 
-commit 33d152c6e0ad795e6abb8836c32ac9d06128a77e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 09:22:14 2024 -0400
-
-    IO/FileStream cleanups : AdoptFDPolicy no longer has eDEFAULT - since there is no safe value - force specification by callers - so deprecated a couple FileInput/OutputStream New () overloads ; and docs
-
-commit a79bc90912b9f1edb8f63428b3f1bb9e715e27c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 26 09:23:48 2024 -0400
-
-    Execution::Logger cleanups: support multiple loggers; and better document use and setting logger to log to stdout
-
-commit 0ac72052a7d6d031036ff83a5d843783ef2fc211
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 30 10:54:59 2024 -0400
-
-    deprecate framework/webserver/reponse/printf and instead added write () overload taking FormatString and updated some usage to use it
-
-commit f23a68620eea51f70e5f9b5dfd3c0652cd2e02e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 1 17:11:32 2024 -0400
-
-    Cleanuup/re-orig macors in Assertions.h
-
-commit 80924a513d0b75473fed15860a77987cec1d9c98
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Apr 1 17:15:56 2024 -0400
-
-    tmphack disable printf in DefaultAssertionHandler_ temporarily
-
-commit 672ff9f9c778678d1d4ddb6dac333c1a2296e07b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 1 18:00:23 2024 -0400
-
-    Assert handlers now use wchar_t - fixing a number of rare/minor problems; and simplifying its use of DbgTrace
-
 commit 9e6109f4a12bc9e271bcb3e7c1df00dd3d73dacf
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Apr 1 18:18:35 2024 -0400
 
     react to limit __PRETTY_FUNCTION etc just works as non-unicode - for now - on gcc at least
 
-commit 319dd154dae8f71f1b241a7ce3dc913b383c2857
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 1 20:10:50 2024 -0400
-
-    more cleanup of new Assertion code (warnings wchar_t)
-
-commit ee625f29db48078b61ad62fba1a4476eb20acc1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 2 10:49:30 2024 -0400
-
-    more tweaks to hacks2savespace for linux
-
 commit 5f9e9f9cfc9910ca766e158eadc2c1ce10c245d7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Apr 2 11:08:36 2024 -0400
 
     Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
-
-commit bf9a58400fa4b1600fa0f6d527daf8855623eba1
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Apr 3 09:27:21 2024 -0400
-
-    fixed warning about delter on shared_ptr
-
-commit 7d30ef69b5318574e32f2ddfea68432628f2967b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 3 12:27:46 2024 -0400
-
-    on macos - copy out BUILD-CONF-TOOLS-OUT.txt to see why its failing
 
 commit cf568eb0d5a8041a59cff996690a6cdd0d4f6a64
 Author: Lewis Pringle <lewis@sophists.com>
@@ -420,18 +379,6 @@ Date:   Fri Apr 5 11:59:08 2024 -0400
 
     qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities and a bit more support for it (arrays)
 
-commit 1a3101e6267ee24296583bc5fe5b422d1d4ff49e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 5 16:12:50 2024 -0400
-
-    progress enhancing IUseToStringFormatterForFormatter_ - test carefullybefore adding more cases
-
-commit 0040b58863b113e65fdad8a05ebba9b301a7fcd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 5 17:52:29 2024 -0400
-
-    more tweaks/tests for IUseToStringFormatterForFormatter_
-
 commit 64c9903154786176040fa1e2057aafb53d31835d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Apr 5 19:11:36 2024 -0400
@@ -443,36 +390,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Apr 6 23:36:47 2024 -0400
 
     more simplifications of DbgTrace due to Formatter improvements
-
-commit c1a61c93dc859a769c77c1621e242bb5359e9ecb
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Apr 9 14:43:52 2024 -0400
-
-    perhaps fix clang++16 support for IUseToStringFormatterForFormatter_
-
-commit 274e0c8718216b5cf237156be44677d8dae31c99
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 10 10:14:20 2024 -0400
-
-    IUseToStringFormatterForFormatter_ tweaks for differnt compiler/libs combos - still probably alot todo here
-
-commit 22edabafab9b5253954a98825577c52d5bc27a73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 10:18:32 2024 -0400
-
-    more converts of DbgTrace and Format calls to new style, and IUseToStringFormatterForFormatter_ fixes for MSFT compilers (quirky way to check for stdc++23)
-
-commit baa0cde9f85ee85ada824623cda8b6fd28f6ae00
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 10:26:25 2024 -0400
-
-    More IUseToStringFormatterForFormatter_ fixes for diff compilers
-
-commit 1e551839203d0433da18c14d47433e03629d1166
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 12:19:21 2024 -0400
-
-    More tweaks with IUseToStringFormatterForFormatter_ definition and static asserts to test and a few use cases
 
 commit c6c16f79762bcfa2bdaa28559d23ab1745a95280
 Author: Lewis Pringle <lewis@sophists.com>
@@ -497,24 +414,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 10 16:30:02 2024 -0400
 
     typo fxiews and regtests for stack of exceptions capture
-
-commit 0341e70b4dc2f990b4ee2edc671bf6d6cc624b5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 21 14:39:29 2024 -0700
-
-    attempt to workaround g++ 13 lto compiler bug
-
-commit aa977c03dda1f54a1bf25a6b82b1ea0eb6961a95
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 21 16:17:58 2024 -0700
-
-    some mosty cosmetic renames and lose one empty .cpp file
-
-commit c020f63e9a4c0b8bdeea628b05ff949c0e9b0489
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Apr 25 09:58:32 2024 -0400
-
-    clang14/15 dont work with boost cobalt
 
 commit 6eb9508a337f370361ad66992f770669ff0f416f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -612,55 +511,17 @@ Date:   Mon May 6 09:44:53 2024 -0400
 
     fixed configure script to better check for https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
 
-commit 9645e6ed4813eb7059a20a99696f83a060152c31
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue May 7 10:21:40 2024 -0400
-
-    Revert "check HasMakefileBugWorkaround_lto_skipping_undefined_incompatible on building zlib as well - needed for clang++-18 on ubuntu 24.04"
-    
-    This reverts commit e11bc3346c43ea2f7e2c50837781f2ab737c5c62.
-
-commit d304d0fa104629649e8dfd17982497ede356bab0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue May 7 11:22:58 2024 -0400
-
-    Minor cleanups to Time code
-
 commit 5c7f91594e4f850ad82e432b8c721b7b68439717
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 7 11:39:18 2024 -0400
 
     Comments and new overload of PickoutParamValuesFromBody
 
-commit 42b7ce60d7f97d997c9dee3c1f913a7deaa47c7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 7 11:58:20 2024 -0400
-
-    More mostly cosmetic regtst cleanups
-
-commit 9eb4b43d86468d0a6a01794c7b1dc5451c360044
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue May 7 12:03:55 2024 -0400
-
-    avoid asan on some tests cuz broken on clang++16 ubuntu 23.10 sometimes
-
-commit 9dc273683048e6e4e5dde8b78f309f7d053b0eb4
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed May 8 07:52:14 2024 -0400
-
-    fixed a few compiler bug defines for g++-14
-
 commit 5777fecea473c46b9b4cc166c5dcce292a4d7e60
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed May 8 11:04:36 2024 -0400
 
     more tweaks to debug settings for clang++-16 and new formatter code
-
-commit c403c14167c774cf91fe15f11e4a52ca5b113784
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 8 11:37:01 2024 -0400
-
-    ObjectVariantMapper::ToObjectQuietly () new function
 
 commit fb77fb5a9919654785182c144eb55a1e4c034d04
 Author: Lewis Pringle <lewis@sophists.com>
@@ -680,18 +541,6 @@ Date:   Wed May 8 13:25:40 2024 -0400
 
     WebServer/Request and IO/Network/Transfer/Response now have GetBodyVariantValue () utility function - which checks the content type and then reads JSON and maps to VariantValue - not new functionality - just simple wrapper for common case
 
-commit 0293d3735700e00393abc19f8c81c60518fa8d65
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed May 8 13:45:18 2024 -0400
-
-    more tweaks to IUseToStringFormatterForFormatter_ bug/missing feature defines
-
-commit 0ea2ea00dbbe64fbc15fa7ed4e286d43bbd136b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 8 17:39:11 2024 -0400
-
-    new utility TranslateExceptionToOptional
-
 commit 33baef24ff7bcb280400423ad56eebac6c632e00
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu May 9 20:53:17 2024 -0400
@@ -710,12 +559,6 @@ Date:   Fri May 10 16:28:09 2024 -0400
 
     ConnectionOrientedStreamSocke Get/SetTCPNoDelay support; and use in ConnectionManager options - and default to TRUE there
 
-commit 4a999c2594e3ee36f60c6696d835fcb5dd803800
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 18 16:15:14 2024 +0200
-
-    cleanup docs / rationale on assertions for CopySpanData
-
 commit a4ca9d0e253cd7c6eff57ab0eadd45a414549504
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat May 18 16:43:52 2024 +0200
@@ -727,12 +570,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 27 10:52:47 2024 -0400
 
     minor tweak to configure script - warning VSVARS_WindowsSdkDir
-
-commit 4184995b9b7a54957cc242fcb8ab8282dbcfe323
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 27 11:48:51 2024 -0400
-
-    use Windows11SDK.22621; VS_17_9_7 revert cuz build problems;
 
 commit e7feb9dde6918dfe1b03d8056401089222ba48fd
 Author: Lewis Pringle <lewis@sophists.com>
