@@ -18,6 +18,9 @@ especially those they need to be aware of when upgrading.
   - workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
 - Execution::Logger - allow multiple appenders, and use new _f strings
 - DataExchange::JSON {Pointer and Merge - draft support}
+- githyb action macos:  fix to libid2n not found for macos14 (reported to github actions support, but they ignored/misunderstood)
+
+
 
 ##### DETAILS
 
@@ -35,12 +38,22 @@ especially those they need to be aware of when upgrading.
       - use MacOS-14 with XCode-15.3
       - github actions macos add more info about running xcode
       - on macos - copy out BUILD-CONF-TOOLS-OUT.txt to see why its failing
+      - fix to libid2n not found for macos14 (reported to github actions support, but they ignored/misunderstood)
     - Windows
       - lose rebaseall thing cuz done on msys and cygwin not sure needed on any but failing on cygwin
+
+  - MacOS
+    - experiemnt adding brew install autoconf and libtool for build requirements
+    - needed glibtoolize on macos but not elswehre so lose from recent additions to prereq
 
   - configure
     - simplified configure handling of DoSetThirdPartyComponents_ and fixed bug (setting fmtlib sometimes)
     - workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
+    - disable asan on ubuntu 23.10 and g++11 - cuz fails there too
+    - configure: changes so defaults sanitizers off for gcc 11, since appears broken on Ubuntu 22.04 with gcc-11, and much newer versions to worry about first
+    - configure tweaks for ubuntu 22.04 so dont use sanitizrs for gcc < 13 and clang 15 or earlier (by default with --apply-debug) - 
+      since appears to not work; and various issues with latest curl build and clang and old gcc too fixed (maybe same issue with asan)
+    - only do configure BWA for ununtu 22.04 since comment says all thats needed - see if more needed
 
   - DockerFile
     - readme docs
@@ -201,12 +214,20 @@ especially those they need to be aware of when upgrading.
             - JSON::PointerType CTOR (stringish) - not just string - making use easier
       - ObjectVariantMapper
         - ObjectVariantMapper::ToObjectQuietly () new function
+        - lots of cleanups to ObjectVariantMapper: and static const kException_
+        - qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
+          - new config/feature
+          - minor activity tweak to ObjectVariantMapper; exerimental use of precision in Format/Acitivity strings in ObjectVariantMapper
+        - tweak DbgTrace for ObjectVariantMapper::Lookup_ failure
+      - InternetMediaType
+        - InternetMediaTypeRegistry::CheckIsA () utility
 
       - VariantValue
         - VariantValue cleanup of As<> template (IAnyOf) and take nullopt or nullptr
         - Improved VariantValue As<> function to handle optional
         - VariantValue::Set overloads
         - template<typename T> VariantValue::operator T () const same as VariantValue::As<T> () - but explicit
+        - VariantValue - cleanup DbgTrace usage; and in a few cases added stuff to teh thrown exception about why failed
       - XML
         - XML::DOM::Element code Append, and SetAttribute allow value to be VariantValue, and just silently As<String> it
         - cleanup XML DOM RootElement default namespace code for ReplaceRootElement
@@ -241,12 +262,15 @@ especially those they need to be aware of when upgrading.
         - fix includes so MacOS includes TCP_NODELAY define
         - URL Host Host::As () always wraps IPv6 addr with [] - not just if pct encoding
         - cleanup URL Network regtests and add regtest for [] on IPv6 addresses
+        - new regtest TestNotPCTEncodingColonOnURLPath_ and improved AsString (dont pctencode certain cahracters esp : in path)
+        - Minor tweaks to IO/Network/Transfer/Connection_WinHTTP.cpp
     - Memory
       - BLOB
         - expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
         - Added _blob literal for Memory::BLOB (attach) - and regtest for it
       - Span
         - cleanup docs / rationale on assertions for CopySpanData
+      - new Memory::{Transform,And_Then,Or_Else trivial wrappers on c++23 monadic new functions that work on older c++ (polyfill)
     - Streams
       - Minor tweak / fix to TextToByteReader
   - Frameworks
@@ -285,6 +309,9 @@ especially those they need to be aware of when upgrading.
     - VERSION 2.12.7
   - StrawberryPerl
     StrawberryPerl check on build
+  - zlib
+    - changed zlib build to only remove sofiles/dlls not zlib.pc file (losing lib/pkgconfig/zlib.pc etc from zlib build)
+    - no longer needed to install libz.a on regression test images
 
 - Regression Tests
   - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
@@ -307,36 +334,6 @@ Date:   Thu Mar 14 11:11:19 2024 -0400
 
     configure getXCOde version script along with using it to check if xcode < 15.3 and only turning on fmtlib then (for xcode builds)
 
-commit cc29ac24bc27300a904a48698a06b88173ded296
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Mar 14 13:51:49 2024 -0400
-
-    only do configure BWA for ununtu 22.04 since comment says all thats needed - see if more needed
-
-commit 70f8cd7baacc6a84db24247d80c1bbd7757b3478
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 19 15:16:13 2024 -0400
-
-    InternetMediaTypeRegistry::CheckIsA () utility
-
-commit 373a7f0e5e8d9b5f0a6bc772e4cd8d406da350ab
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 20 08:10:12 2024 -0400
-
-    tweak output of framework WebService::Server::WriteDocsPage
-
-commit db958c81c7cbeb686ba5ea6c59744b4f7bcb306a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 23 09:20:18 2024 -0400
-
-    lots of cleanups to ObjectVariantMapper: and static const kException_
-
-commit 9e4508b384cc22b75e00ec6fd4028517427cdb3d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 23 20:05:22 2024 -0400
-
-    VariantValue - cleanup DbgTrace usage; and in a few cases added stuff to teh thrown exception about why failed
-
 commit 9e6109f4a12bc9e271bcb3e7c1df00dd3d73dacf
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Apr 1 18:18:35 2024 -0400
@@ -349,59 +346,11 @@ Date:   Tue Apr 2 11:08:36 2024 -0400
 
     Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
 
-commit cf568eb0d5a8041a59cff996690a6cdd0d4f6a64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 10:30:01 2024 -0400
-
-    experiemnt adding brew install autoconf and libtool for build requirements
-
-commit 015e6962ad6ce70785c78abbcdefbbd75937c3bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 11:03:46 2024 -0400
-
-    needed glibtoolize on macos but not elswehre so lose from recent additions to prereq
-
-commit fe1177c0b703cf5b4a25034ff26c552297eecc8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 12:32:27 2024 -0400
-
-    experimental fix to libid2n not found for macos14
-
 commit 1dbc83d50070903ac33e37566229b97a0e0a254d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Apr 5 11:30:22 2024 -0400
 
     Added Execution::DeclareActivity in data exchange class decoder - so more clear where issue is when decoding json
-
-commit 37c70bde2112479947807f0377f39ca9de9c84b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 5 11:59:08 2024 -0400
-
-    qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities and a bit more support for it (arrays)
-
-commit 64c9903154786176040fa1e2057aafb53d31835d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 5 19:11:36 2024 -0400
-
-    cleanup some use of DbgTrace now that we support more of ToString stuff with formatters
-
-commit c96bff1711dc70442e0bac5912040241590bd2d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 6 23:36:47 2024 -0400
-
-    more simplifications of DbgTrace due to Formatter improvements
-
-commit c6c16f79762bcfa2bdaa28559d23ab1745a95280
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 15:41:12 2024 -0400
-
-    minor activity tweak to ObjectVarinatMapper
-
-commit fc7d9a10f0fbf48916a9fc6cc04cf2782ba90e73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 16:28:39 2024 -0400
-
-    exerimental use of precision in Format/Acitivity strings in ObjevtVarinatMapper
 
 commit bcdf8fe4ed31e87e9a53d27f3a099040bee1cc58
 Author: Lewis Pringle <lewis@sophists.com>
@@ -413,43 +362,13 @@ commit 29e2de418c8873923489a0d4af5685c98d340ed1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 10 16:30:02 2024 -0400
 
-    typo fxiews and regtests for stack of exceptions capture
+    regtests for stack of exceptions capture
 
 commit 6eb9508a337f370361ad66992f770669ff0f416f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Apr 25 12:26:45 2024 -0700
 
     OptionsFile now generates eSuccessfullyReadFile message by default
-
-commit 299113aab21a0fb050a40a9268f7925d525c5d49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 26 06:07:26 2024 -0700
-
-    Minor tweaks to IO/Network/Transfer/Connection_WinHTTP.cpp
-
-commit a649fc69db96b870ea33f75abc2666ff0f26fa29
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 26 08:30:30 2024 -0700
-
-    new regtest TestNotPCTEncodingColonOnURLPath_ and improved AsString (dont pctencode certain cahracters esp : in path)
-
-commit b6f2c0a94958493e1067adf9196503e15382e9eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 27 06:20:52 2024 -0700
-
-    tweak DbgTrace for ObjectVariantMapper::Lookup_ failure
-
-commit 5272094afb1e6db9cb4c51f25125d012cc92f99c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 1 11:16:58 2024 -0400
-
-    configure: changes so defaults sanitizers off for gcc 11, since appears broken on Ubuntu 22.04 with gcc-11, and much newer versions to worry about first
-
-commit 6a9070a68016ca8322743226a555f3f1d43a7a12
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 1 17:18:19 2024 -0400
-
-    configure tweaks for ubuntu 22.04 so dont use sanitizrs for gcc < 13 and clang 15 or earlier (by default with --apply-debug) - since appears to not work; and various issues with latest curl build and clang and old gcc too fixed (maybe same issue with asan)
 
 commit 85ec9a6d6fdcfbf74194eb68d4bf18cc2d8c896d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -468,24 +387,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sun May 5 07:30:18 2024 -0400
 
     unpdate CMD -l and bash profile for Ubuntu 24.04 small container so prints message about reading Getting Started
-
-commit 0f302f0acbd7e441d06232036989c9dbd6cafa74
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun May 5 07:38:30 2024 -0400
-
-    try losing hack about losing lib/pkgconfig/zlib.pc etc from zlib build (and .so files) - at least if we need better comment why
-
-commit 22b522bd1bc104ead5c4daffc266d61700fdf466
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun May 5 07:48:46 2024 -0400
-
-    changed zlib build to only remove sofiles/dlls not zlib.pc file
-
-commit 06c7eadab9ccba498927c6c9a9d8118cc7cda4f1
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun May 5 08:03:36 2024 -0400
-
-    no longer needed to install libz.a on regression test images (I think - still testing)
 
 commit 6b35516d34d7c60e490b78beeb1771af13221abb
 Author: Lewis Pringle <lewis@sophists.com>
@@ -529,23 +430,11 @@ Date:   Wed May 8 12:15:56 2024 -0400
 
     improved static_assert() checks and feature flag checking for ToString/Formatter behavior (still a bit of a mess)
 
-commit 7a7f1afbc24a89525bbe6910a0c11c08aef6a499
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 8 12:41:24 2024 -0400
-
-    cosmmetic; and new Memory::{Transform,And_Then,Or_Else trivial wrappers on c++23 monadic new functions that work on older c++ (polyfill)
-
 commit 5fa7c150e181cf267e07c028b8979051355f93c0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 8 13:25:40 2024 -0400
 
     WebServer/Request and IO/Network/Transfer/Response now have GetBodyVariantValue () utility function - which checks the content type and then reads JSON and maps to VariantValue - not new functionality - just simple wrapper for common case
-
-commit 33baef24ff7bcb280400423ad56eebac6c632e00
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu May 9 20:53:17 2024 -0400
-
-    disable asan on ubuntu 23.10 and g++11 - cuz fails there too
 
 commit 95c73ff0c87f820f2dd428aca36ec6ac0189c59a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -592,6 +481,9 @@ Date:   Sat Jun 1 09:08:51 2024 -0400
 disable asaon on ubuntu 23.10 and g++12 since doesnt appear to work
 configure: skip using asan configure change for 23.10 ubuntu - not supported version so not worth diggigin
    configure: IsTargettingSanitizer_ refactor of configure code (minor - sb now change in behavior)
+
+
+
 ----------------------------------
 
 
