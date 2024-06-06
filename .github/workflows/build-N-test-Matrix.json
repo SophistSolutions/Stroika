@@ -84,6 +84,21 @@
     },
     {
         "build_job": "Linux",
+        "displayTargetName": "ubuntu-22.04-g++-All3rdParty (Debug)",
+        "compiler": "g++-12",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
+        "COMMENT-1": "SKIP cuz runs out of disk space",
+        "run_on_branch": "never"
+    },
+    {
+        "comment": "ubuntu 23.10"
+    },
+    {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-23.10-g++-13",
         "compiler": "g++-13",
         "runs_on": "ubuntu-latest",
@@ -136,18 +151,6 @@
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
         "run_on_branch": "v3-Release"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-g++-All3rdParty (Debug)",
-        "compiler": "g++-12",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
-        "cpp_version": "c++20",
-        "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
-        "COMMENT-1": "SKIP cuz runs out of disk space",
-        "run_on_branch": "never"
     },
     {},
     {

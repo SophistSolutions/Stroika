@@ -1,7 +1,7 @@
 [
     {
         "comment": "Linux",
-        "comment2": "ubuntu 20.04"
+        "comment2": "ubuntu 22.04"
     },
     {
         "build_job": "Linux",
@@ -10,10 +10,18 @@
         "container_images": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-small sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests"
     },
     {
+        "comment": "Linux",
+        "comment2": "ubuntu 23.10"
+    },
+    {
         "build_job": "Linux",
         "runs_on": "ubuntu-latest",
         "displayTargetName": "stroika-buildvm-ubuntu2310*",
         "container_images": "sophistsolutionsinc/stroika-buildvm-ubuntu2310-small sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests"
+    },
+    {
+        "comment": "Linux",
+        "comment2": "ubuntu 24.04"
     },
     {
         "build_job": "Linux",
