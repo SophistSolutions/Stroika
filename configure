@@ -546,15 +546,15 @@ sub getXCodeVersion_
 	}
 }
 
-sub     IsTargettingASAN_
+sub     IsTargettingSanitizer_
 {
+	my $x = shift(@_);
 	my %already = map { $_ => 1 } @sanitizerFlags;
-	if(exists($already{'address'})) {
+	if(exists($already{$x})) {
 		return true;
 	}
 	return false;
 }
-
 
 sub     NeedsFmtLib_
 {
@@ -1060,11 +1060,10 @@ sub	SetDefaultForCompilerDriver_
 			}
 
 			if (!$skipSanCuzBroken and !$sanitizerFlagsNoneSet) {
-				my %already = map { $_ => 1 } @sanitizerFlags;
-				if(!exists($already{'address'})) {
+				if (!IsTargettingSanitizer_ ('address')) {
 					push @sanitizerFlags, 'address';
 				}
-				if(!exists($already{'undefined'})) {
+				if (!IsTargettingSanitizer_ ('undefined')) {
 					push @sanitizerFlags, 'undefined';
 				}
 				$sanitizerFlagsIsDefined = true;
@@ -1074,8 +1073,7 @@ sub	SetDefaultForCompilerDriver_
 		### if is msvc and version > 19.29 (which is 16.10), enable asan
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037) {
 			if (!$sanitizerFlagsNoneSet) {
-				my %already = map { $_ => 1 } @sanitizerFlags;
-				if(!exists($already{'address'})) {
+				if (!IsTargettingSanitizer_ ('address')) {
 					push @sanitizerFlags, 'address';
 				}
 				# note ubsan not yet supported --LGP 2022-01-04
@@ -1132,7 +1130,7 @@ sub	SetDefaultForCompilerDriver_
 		#	==2050532==ABORTING
 		#
 		# MAYBE add check for only if gcc version < 14 (seen in gcc 13.2)
-		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) && IsTargettingASAN_()) {
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) && IsTargettingSanitizer_ ('address')) {
 			$ENABLE_LTO = false;
 		}
 
@@ -1263,7 +1261,7 @@ sub	SetDefaultForCompilerDriver_
 	## LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost...
 	## https://learn.microsoft.com/en-us/answers/questions/864574/enabling-address-sanitizer-results-in-error-lnk203
 	## https://learn.microsoft.com/en-us/cpp/sanitizers/error-container-overflow?view=msvc-170
-	if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037 && IsTargettingASAN_()) {
+	if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037 && IsTargettingSanitizer_ ('address')) {
 		## Workaround issue which started in 17.6 compiler
 		push @CPPFLAGS, '-D_DISABLE_VECTOR_ANNOTATION';
 		push @CPPFLAGS, '-D_DISABLE_STRING_ANNOTATION';
@@ -1994,8 +1992,7 @@ sub	ParseCommandLine_Remaining_
 					$sanitizerFlagsNoneSet = true;
 				}
 				else {
-					my %already = map { $_ => 1 } @sanitizerFlags;
-					if(!exists($already{$flag})) {
+					if (!IsTargettingSanitizer_ ($flag)) {
 						push @sanitizerFlags, $flag;
 					}
 				}
@@ -2472,7 +2469,7 @@ sub PostProcessOptions_ ()
 			if ($isVisualStudio) {
 				# https://stroika.atlassian.net/browse/STK-984
 				my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
-				if(IsTargettingASAN_() and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
+				if(IsTargettingSanitizer_ ('address') and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
 					FillInToolsPathAdditionsIfNeeded_();
 					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");
 					# ls -l /c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/
@@ -2527,8 +2524,7 @@ sub PostProcessOptions_ ()
 	}
 
 	if ($autoIncludeTSAN_OPTIONSIfAppropriate) {
-		my %already = map { $_ => 1 } @sanitizerFlags;
-		if(exists($already{'thread'})) {
+		if (!IsTargettingSanitizer_ ('thread')) {
 			# prepend, so stuff already there takes precedence
 			if (not ($RUN_PREFIX eq "")) {
 				$RUN_PREFIX = " " . $RUN_PREFIX;
@@ -3026,14 +3022,13 @@ if ($onlyGenerateIfCompilerExists) {
 
 	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && getUbuntuVersion() == 20.04) {
 		# https://bugs.launchpad.net/ubuntu/+source/gcc-9/+bug/2029910
-		my %already = map { $_ => 1 } @sanitizerFlags;
-		if (exists($already{'thread'})) {
+		if (IsTargettingSanitizer_ ('thread')) {
 			$generate = false;
 			$generateBecause = "tsan not working in Ubuntu 20.04";
 		}
-		elsif (exists($already{'leak'})) {
+		elsif (IsTargettingSanitizer_ ('leak')) {
 			$generate = false;
-			$generateBecause = "leak sanitizer not working in Ubuntu 20.04)";
+			$generateBecause = "leak not working in Ubuntu 20.04";
 		}
 	}
 
@@ -3075,8 +3070,7 @@ if ($onlyGenerateIfCompilerExists) {
 	}
 	if ($generate && $ubuntuVersion != 0) {
 		# needed for example of HOST OS is Ubuntu 24.04 (not necessarily OS in container)
-		my %already = map { $_ => 1 } @sanitizerFlags;
-		if(exists($already{'thread'})) {
+		if(IsTargettingSanitizer_ ('thread')) {
 			my $randBits = `sudo cat /proc/sys/vm/mmap_rnd_bits < /dev/null`;
 			if ($randBits eq '') {
 				$generate = false;
@@ -3093,8 +3087,7 @@ if ($onlyGenerateIfCompilerExists) {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
 				# maybe only needed for release builds - but fine tune tests later in the cycle, and also not checking if arm only issue
-				my %already = map { $_ => 1 } @sanitizerFlags;
-				if(exists($already{'address'})) {
+				if (IsTargettingSanitizer_ ('address')) {
 					$generate = false;
 					$generateBecause = "bogus failure on raspberrypi-g++-12-release-sanitize_address/Tests/Test34 - so skipping asan by default - for this target";
 				}
