@@ -12,7 +12,7 @@ Cache Types:
 
 - BloomFilter - [BloomFilter.h](BloomFilter.h)
 
-  a Bloom filter is a probablistic set
+  a Bloom filter is a probablistic set, which returns either "probably in set" or "definitely not in set"
 
 - CallerStalenessCache - [CallerStalenessCache.h](CallerStalenessCache.h)
 
@@ -35,6 +35,7 @@ Other:
 - [Statistics.h](Statistics.h)
 - [SynchronizedCallerStalenessCache.h](SynchronizedCallerStalenessCache.h)
 - [SynchronizedLRUCache.h](SynchronizedLRUCache.h)
+- [SynchronizedTimedCache.h](SynchronizedTimedCache.h)
 
 TODO:
 
