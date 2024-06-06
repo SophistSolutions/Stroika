@@ -11,7 +11,7 @@ especially those they need to be aware of when upgrading.
 ### NOTES FOR 3.0d6
 
 ##### TLDR
-- _f strings and new Format () API
+- _f strings and new Format () API (based on new std::format<>)
   - MAJOR change - deprecated c-style sprintf style - Characters::Format
   - replaced with new _f strings API - based on c++20 formattable feature
 
@@ -56,6 +56,50 @@ especially those they need to be aware of when upgrading.
 
 - Compiler Bug Defines/BWA
   - need extra BWA for arm for qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
+  - qCompilerAndStdLib_FormatRangeRestriction_Buggy define and BWA
+  - qCompilerAndStdLib_stacktraceLinkError_Buggy BWA for gcc 13 / ununtu 24.04
+  - qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy BWA for clang++-18
+  - bug defines (incliding qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy) for g++-14 Ubuntu 24.04 support
+  - new qCompilerAndStdLib_template_map_tuple_insert_Buggy define and BWA
+  - added qCompilerAndStdLib_StdBacktraceCompile_Buggy define and workaround
+  - updated bug define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
+  - qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy broken on clang++18 too
+  - support qCompilerAndStdLib_vector_constexpr_Buggy for _GLIBCXX_RELEASE == 11
+  - fixes for qCompilerAndStdLib_vector_constexpr_Buggy
+  - qCompilerAndStdLib_vector_constexpr_warning_Buggy BWA
+  - qCompilerAndStdLib_vector_constexpr_warning_Buggy ONLY works for _GLIBCXX_RELEASE==13
+  - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken on clang++16 too (or something similar - maybe bad name)
+  - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-17
+  - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken with clang++-18
+  - draft qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER so xcode compiles with new formatter code
+  - updated def for qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER bug define
+  - progress on BWA for qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
+  - renamed qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER -> qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+  - fixed typo; and qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken in clang++-18
+  - qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken for clang++18
+  - maybe fix qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for clang/macos
+  - qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY and minor cosmetic
+  - cosmetic and renamed qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY -> qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+  - better workaround for qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+  - qCompilerAndStdLib_FormatThreadId_Buggy BWA
+  - additiopnal place broken for what I think is qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy - same bug basically
+  - qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy define and BWA
+  - qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy value
+  - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++15 as well
+  - cosmetic; and qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++16
+  - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken on clang++17 too
+  - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken on clang++18 ubuntu 24.04
+  - new qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy Bug define/workaround
+  - compiler bug defines for clang++-17
+  - clang++-16/17 with libcstd++ doesn't support c++23 mode - in configure script so can lose one workaround in googletest makefile
+  - configure: only set HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for clang++16 and earlier (seems OK with clang++-17)
+  - Add another case for BWA for HasMakefileBugWorkaround_lto_skipping_undefined_incompatible
+  - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible broken on clang++-17 too (ubuntu 23.10)
+  - ..._lto_skipping_undefined_incompatib broken with clang++-18
+  - compiler bug defines for clang++-18
+  - g++-14 LTO workarounds/disable some warnings in configure
+  - for Ubuntu 24.04 - disable LTO by default on clang++18 (and earlier)
+  - check HasMakefileBugWorkaround_lto_skipping_undefined_incompatible on building zlib as well - needed for clang++-18 on ubuntu 24.04
 
 
 - All Source Files
@@ -65,21 +109,25 @@ especially those they need to be aware of when upgrading.
 - Characters
   - String
     - new String::AssureEndsWith
+  - Character
+
+    Character::Compare now takes size_t template arg for spans
+
   - _f strings and new Format () API
     - MAJOR change - deprecated c-style sprintf style - Characters::Format, and Characters::VFormat
     - replaced with new _f strings API - based on c++20 formattable feature
     - Used for DbgTrace, and Execution::Logger API, and a few others (anywhere we did format api/vformat)
+    - qStroika_Foundation_Characters_FMT_PREFIX
     - Integrate with ToString()
       - formatter calls Characters::ToString () and _f strings automatically do this so no need for most explicit calls
         to Characters::ToString()
     
-    fix qStroika_Foundation_Characters_FMT_PREFIX compat in one more case
+
     formatter pair/filesystem::path support (experimental); and lose unneeded ToString()s in a few more places
     small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
     for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
     Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
 
-    qCompilerAndStdLib_FormatRangeRestriction_Buggy define and BWA
 
     more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
     COmment out range support in IUseToStringFormatterForFormatter_
@@ -103,6 +151,10 @@ especially those they need to be aware of when upgrading.
   - IVariant concept
 
 - Configuration
+  - Enumeration
+    - is_constant_validated in EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_
+    - EnumNames support for Characters::CompareOptions
+
   - StdCompat
     - migrate backward compatability compiler support here - for APIs that are really stdc++ newer apis but not fully supported by call compilers (polyfill layer)
     - StdCompat::vformat
@@ -154,6 +206,16 @@ especially those they need to be aware of when upgrading.
   - Network
     - fix includes so MacOS includes TCP_NODELAY define
 
+- Memory
+  - BLOB
+    - expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
+    - Added _blob literal for Memory::BLOB (attach) - and regtest for it
+
+- Frameworks
+  - WebService
+    - JSONRPC
+      - draft JSONRPC support (just define a few objects, and ObjectVariantMappers - maybe not much more todo)
+
 - ThirdPartyComponents
   - boost 1.85.0
   - libcurl
@@ -182,9 +244,6 @@ especially those they need to be aware of when upgrading.
 - Skel
   - added Release-Logging configuraiton to default-configurations for Skel
 
-- OS/BugDEfines
-    qCompilerAndStdLib_stacktraceLinkError_Buggy BWA for gcc 13 / ununtu 24.04
-
 
 
 ---------------------
@@ -194,18 +253,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 6 15:05:56 2024 -0500
 
     Added operator<< for (ostream,String) - using AsNarrowSDKString(eIgnoreErrors) - and documented why; use eIgnoreErrors on a few other AsNarrowSDKString calls; and lose a bunch of AsNarrowSDKString calls as no longer necesary (places wehre I was writing to cerr for exmaple)
-
-commit 806fa7afcc1583bec45c34b04890d747cf95ae17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 7 11:30:30 2024 -0500
-
-    is_constant_validated in EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_
-
-commit 171ce17eebb0ba01459dfb5876d5db2a90fa7798
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 12 10:42:43 2024 -0400
-
-    expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
 
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 14 11:11:19 2024 -0400
@@ -236,18 +283,6 @@ Date:   Fri Mar 15 17:13:29 2024 -0400
 
     Added makefile configs for clang++17 and clang++18, and g++-14
 
-commit 9959e2f0e83d206361c41a5934f9277b78759ca7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 15 17:13:59 2024 -0400
-
-    additiopnal place broken for what I think is qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy - same bug basically
-
-commit 4ad3821675039f78396980513c80497ceb565e02
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 15 17:52:53 2024 -0400
-
-    qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy BWA for clang++-18
-
 commit cec5693f5efe76c5bd48a3bad56b2ec1e00e5a15
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Fri Mar 15 20:17:21 2024 -0400
@@ -259,18 +294,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sat Mar 16 08:13:16 2024 -0400
 
     workaround issue compiling clang17 google test with c++23
-
-commit c97cfae1e6908b9f254586bbce7626f7934d9788
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 18:41:00 2024 -0400
-
-    Character::Compare now takes size_t template arg for spans
-
-commit 75dcf95471a3bf9fa97afdbd500b0cdfa5ebd6f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 18 18:41:50 2024 -0400
-
-    EnumNames support for Characters::CompareOptions
 
 commit d1b7959eea18f74e8c98df9b1a8c33f60d066b55
 Author: Lewis Pringle <lewis@sophists.com>
@@ -314,18 +337,6 @@ Date:   Tue Mar 19 15:16:13 2024 -0400
 
     InternetMediaTypeRegistry::CheckIsA () utility
 
-commit a3be6fc070b507a4aa8b9290f7ba9e08ff13ec9f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Mar 19 15:23:12 2024 -0400
-
-    Add another case for BWA for HasMakefileBugWorkaround_lto_skipping_undefined_incompatible
-
-commit 04e1c36ac7923ffddd660c8ca6fdaa0348a0420a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Mar 19 19:30:28 2024 -0400
-
-    bug defines (incliding qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy) for g++-14 Ubuntu 24.04 support
-
 commit c49ba3b78a1fe1a6af9edbd5e2d57d80898296d1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 19 19:51:44 2024 -0400
@@ -344,42 +355,6 @@ Date:   Wed Mar 20 08:10:12 2024 -0400
 
     tweak output of framework WebService::Server::WriteDocsPage
 
-commit f2f0b8129e6e7d8856ccc9f181f4c43eae40ca15
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 20 09:43:45 2024 -0400
-
-    new qCompilerAndStdLib_template_map_tuple_insert_Buggy define and BWA
-
-commit b691c5a56cd688699a9645aacd03faec02bb6cce
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 20 10:03:51 2024 -0400
-
-    compiler bug defines for clang++-17
-
-commit 6d607bcf30c4203c32d0a092a21814a0ce1b74ff
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 20 10:10:00 2024 -0400
-
-    more clang++-17 bug define fixes
-
-commit 2739d4c4d7bf2bbee0eecb80276becf2b92cda52
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 20 11:14:34 2024 -0400
-
-    clang++-16/17 with libcstd++ doesn't support c++23 mode - in configure script so can lose one workaround in googletest makefile
-
-commit e5d70fcf2bfecffb33d33459c6e4fe0b608b0053
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 20 11:30:15 2024 -0400
-
-    configure: only set HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for clang++16 and earlier (seems OK with clang++-17)
-
-commit d7c71a2b61e56158f0ff0c3c6e22984613df2490
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 20 11:30:47 2024 -0400
-
-    added qCompilerAndStdLib_StdBacktraceCompile_Buggy define and workaround
-
 commit 04abaf4bdf4f389d34297d7b59212f2b385c92de
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 20 12:02:06 2024 -0400
@@ -391,24 +366,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 20 15:12:46 2024 -0400
 
     Added fThreadPoolSize to WebServer::ConnectionManager statistics
-
-commit 236afaa99133f148e200251049e8ac76fe8fc5f5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 21 13:32:05 2024 -0400
-
-    updated bug define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
-
-commit 44aca8b23ddc89cd8bd31b98ae46154022472670
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 21 14:02:28 2024 -0400
-
-    HasMakefileBugWorkaround_lto_skipping_undefined_incompatible broken on clang++-17 too (ubuntu 23.10)
-
-commit e869debb8fda2fe29ee83511f1bd21e1d26cd98e
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 22 16:24:52 2024 -0400
-
-    ..._lto_skipping_undefined_incompatib broken with clang++-18
 
 commit db958c81c7cbeb686ba5ea6c59744b4f7bcb306a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -428,12 +385,6 @@ Date:   Sat Mar 23 22:25:00 2024 -0400
 
     lose uplodate of Tests/Test01 - tests passing now
 
-commit afc07e146f5a74c9568026d979d8cfca2e1bad92
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Mar 26 09:14:34 2024 -0400
-
-    compiler bug defines for clang++-18
-
 commit 33d152c6e0ad795e6abb8836c32ac9d06128a77e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 26 09:22:14 2024 -0400
@@ -446,47 +397,11 @@ Date:   Tue Mar 26 09:23:48 2024 -0400
 
     Execution::Logger cleanups: support multiple loggers; and better document use and setting logger to log to stdout
 
-commit ca7b8869be758169195886b1fd349ceb41a5e047
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Mar 26 11:47:39 2024 -0400
-
-    g++-14 LTO workarounds/disable some warnings in configure
-
-commit 160e543737d18b020fa95a02573982e3221c5bf4
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 27 11:06:23 2024 -0400
-
-    qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy broken on clang++18 too
-
-commit a2fd692e74890417e5ca6cacb1edb6c8b9dd7546
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 27 13:35:35 2024 -0400
-
-    support qCompilerAndStdLib_vector_constexpr_Buggy for _GLIBCXX_RELEASE == 11
-
-commit b7d85ae26c490522c728928b628d408925a032ae
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Mar 27 13:47:32 2024 -0400
-
-    fixes for qCompilerAndStdLib_vector_constexpr_Buggy
-
 commit 1cfb48264436e1b5d36afcb8198566b7d32c5f53
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 27 14:07:12 2024 -0400
 
     Character::CheckASCII now constexpr
-
-commit 8530d0a47e84b948f50dffe9854917bb1686039c
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Mar 28 12:49:16 2024 -0400
-
-    qCompilerAndStdLib_vector_constexpr_warning_Buggy BWA
-
-commit cfeb154776c37a090bf4aab03ce2ca8a0fb7a137
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 29 08:53:09 2024 -0400
-
-    qCompilerAndStdLib_vector_constexpr_warning_Buggy ONLY works for _GLIBCXX_RELEASE==13
 
 commit d0a50797d50958e061b62d1d414cb5781bc3b2bf
 Author: Lewis Pringle <lewis@sophists.com>
@@ -560,23 +475,11 @@ Date:   Tue Apr 2 11:08:36 2024 -0400
 
     Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
 
-commit 34770cb0170365ebc11297b703bbe99ca3b94abb
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Apr 2 13:08:44 2024 -0400
-
-    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken on clang++16 too (or something similar - maybe bad name)
-
 commit bf9a58400fa4b1600fa0f6d527daf8855623eba1
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Apr 3 09:27:21 2024 -0400
 
     fixed warning about delter on shared_ptr
-
-commit ce251c808353ac3696518dcecc799836843ec4b8
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Apr 3 09:27:52 2024 -0400
-
-    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-17
 
 commit 7d30ef69b5318574e32f2ddfea68432628f2967b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -602,12 +505,6 @@ Date:   Thu Apr 4 12:32:27 2024 -0400
 
     experimental fix to libid2n not found for macos14
 
-commit 1dbe8b8bd0ce57c6dfea8f519aba4aca10a8e345
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 4 14:41:14 2024 -0400
-
-    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken with clang++-18
-
 commit 1dbc83d50070903ac33e37566229b97a0e0a254d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Apr 5 11:30:22 2024 -0400
@@ -626,23 +523,11 @@ Date:   Fri Apr 5 16:12:50 2024 -0400
 
     progress enhancing IUseToStringFormatterForFormatter_ - test carefullybefore adding more cases
 
-commit 924a178a81a5ce9e05d80e4b7dc596dfb88b0f71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 5 17:37:32 2024 -0400
-
-    draft qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER so xcode compiles with new formatter code
-
 commit 0040b58863b113e65fdad8a05ebba9b301a7fcd3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Apr 5 17:52:29 2024 -0400
 
     more tweaks/tests for IUseToStringFormatterForFormatter_
-
-commit cf5831c8f406aef7502718c1b1e3a8e4e5367237
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Apr 5 18:04:09 2024 -0400
-
-    updated def for qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER bug define
 
 commit 64c9903154786176040fa1e2057aafb53d31835d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -650,41 +535,11 @@ Date:   Fri Apr 5 19:11:36 2024 -0400
 
     cleanup some use of DbgTrace now that we support more of ToString stuff with formatters
 
-commit 2165bd1dfaabfa1702d200ef4d7d153b6abba5e3
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Apr 5 19:25:06 2024 -0400
-
-    progress on BWA for qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
-
-commit b3d492e580688b66adbc4535b00e41735857633a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 5 19:29:56 2024 -0400
-
-    renamed qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER -> qCompilerAndStdLib_template_concept_matcher_requires_Buggy
-
-commit fb4b69817e17b5e1128edf0f1313b464cd132863
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Apr 5 19:40:31 2024 -0400
-
-    fixed typo; and qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken in clang++-18
-
-commit f50abd33a39f1190668d847dd7bc730715826c73
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Apr 5 21:53:19 2024 -0400
-
-    qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken for clang++18
-
 commit c96bff1711dc70442e0bac5912040241590bd2d3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Apr 6 23:36:47 2024 -0400
 
     more simplifications of DbgTrace due to Formatter improvements
-
-commit c9c9cf1fe593cf64a5dbb10174cd57db1418f868
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 7 08:21:22 2024 -0400
-
-    maybe fix qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for clang/macos
 
 commit c1a61c93dc859a769c77c1621e242bb5359e9ecb
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -715,30 +570,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 10 12:19:21 2024 -0400
 
     More tweaks with IUseToStringFormatterForFormatter_ definition and static asserts to test and a few use cases
-
-commit 40c3bbd7aeb28629cf91d5d666b02b25d314eb52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 13:34:08 2024 -0400
-
-    qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY and minor cosmetic
-
-commit 9191116961d5133563fb8e24225639eebf8f140a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 13:41:58 2024 -0400
-
-    cosmetic and renamed qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY -> qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-
-commit bdd7485da7520a5a495d03a90d7960caa74f9155
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 13:55:06 2024 -0400
-
-    better workaround for qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-
-commit 7fe591c2a554e61f2fed9996e7934871c7fdcfb7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 10 14:11:19 2024 -0400
-
-    qCompilerAndStdLib_FormatThreadId_Buggy BWA
 
 commit c6c16f79762bcfa2bdaa28559d23ab1745a95280
 Author: Lewis Pringle <lewis@sophists.com>
@@ -787,30 +618,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 21 16:17:58 2024 -0700
 
     some mosty cosmetic renames and lose one empty .cpp file
-
-commit ac96b9bf1c45c5442914d6d321e5c0ee2b204d94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 21 17:51:53 2024 -0700
-
-    qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy define and BWA
-
-commit 3001fcb26fbe800f072ad9c5c1cea9c477a7b5e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 22 08:53:51 2024 -0700
-
-    qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy value
-
-commit 032041b648b8f2f2efa015617afd543eab7179b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 23 18:05:54 2024 -0400
-
-    qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++15 as well
-
-commit e06c9c7379013af839973f0f604d4c0af796d15c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 24 08:28:28 2024 -0400
-
-    cosmetic; and qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++16
 
 commit c020f63e9a4c0b8bdeea628b05ff949c0e9b0489
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -890,12 +697,6 @@ Date:   Thu May 2 07:31:49 2024 -0700
 
     docs cleanups; new IO::Filesystem::CreateTmpFile and use that in AppTempFileManager
 
-commit 83bc2bb47109eb793b88e456ef2cbd3a064f3976
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 4 12:23:44 2024 -0400
-
-    first draft JSONRPC support in WebService framework
-
 commit c85dc913f87d28227ffc86f9caeb8e59f9a78109
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sat May 4 22:09:16 2024 -0400
@@ -913,12 +714,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sun May 5 07:38:30 2024 -0400
 
     try losing hack about losing lib/pkgconfig/zlib.pc etc from zlib build (and .so files) - at least if we need better comment why
-
-commit 1fdc57d7d61572b51caa4d736ddb44e515150541
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 5 07:41:11 2024 -0400
-
-    qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken on clang++17 too
 
 commit 22b522bd1bc104ead5c4daffc266d61700fdf466
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -956,18 +751,6 @@ Date:   Mon May 6 09:44:53 2024 -0400
 
     fixed configure script to better check for https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
 
-commit e11bc3346c43ea2f7e2c50837781f2ab737c5c62
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon May 6 14:49:15 2024 -0400
-
-    check HasMakefileBugWorkaround_lto_skipping_undefined_incompatible on building zlib as well - needed for clang++-18 on ubuntu 24.04
-
-commit 2670e5434110d7d138569d52880563a1aa4be666
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue May 7 10:21:02 2024 -0400
-
-    for Ubuntu 24.04 - disable LTO by default on clang++18 (and earlier)
-
 commit 9645e6ed4813eb7059a20a99696f83a060152c31
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Tue May 7 10:21:40 2024 -0400
@@ -976,23 +759,11 @@ Date:   Tue May 7 10:21:40 2024 -0400
     
     This reverts commit e11bc3346c43ea2f7e2c50837781f2ab737c5c62.
 
-commit f7186ea9db4e22182f53821747a015b79f0e934e
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue May 7 10:55:35 2024 -0400
-
-    qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken on clang++18 ubuntu 24.04
-
 commit d304d0fa104629649e8dfd17982497ede356bab0
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue May 7 11:22:58 2024 -0400
 
     Minor cleanups to Time code
-
-commit d1d4220557bc2a3553c4c5bf989ea3a2511fd89e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue May 7 11:37:17 2024 -0400
-
-    regtest cleanups - and new qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy Bug define/workaround
 
 commit 5c7f91594e4f850ad82e432b8c721b7b68439717
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1023,12 +794,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed May 8 11:04:36 2024 -0400
 
     more tweaks to debug settings for clang++-16 and new formatter code
-
-commit 8b9ee6390272637576e3c7049c4e63d1912e2b0f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 8 11:20:23 2024 -0400
-
-    Added JSONRPC::Error::ToString ()
 
 commit c403c14167c774cf91fe15f11e4a52ca5b113784
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1066,12 +831,6 @@ Date:   Wed May 8 17:39:11 2024 -0400
 
     new utility TranslateExceptionToOptional
 
-commit abb958c2f2563d0c2a55b19e19d5d38746ce5ab2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 8 17:57:29 2024 -0400
-
-    fixed minor regression in JSONRPC Response::kMapper
-
 commit 33baef24ff7bcb280400423ad56eebac6c632e00
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu May 9 20:53:17 2024 -0400
@@ -1107,12 +866,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 21 08:23:33 2024 +0200
 
     lose rebaseall thing cuz done on msys and cygwin not sure needed on any but failing on cygwin
-
-commit 6e092ce2a4366be631bb9f5607cd46609b21c499
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 22 10:20:00 2024 +0200
-
-    Added _blob literal for Memory::BLOB (attach) - and regtest for it
 
 commit 482ebbe426db470ea2eb9091280a16170ef543c9
 Author: Lewis Pringle <lewis@sophists.com>
