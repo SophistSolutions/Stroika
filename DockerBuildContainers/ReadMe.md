@@ -87,7 +87,7 @@ cat /Getting-Started-With-Stroika.md
 
 #### Windows troubleshooting
 
-DNS is generally broken with docker/windows (https://stroika.atlassian.net/browse/STK-742).
++ DNS is generally broken with docker/windows (https://stroika.atlassian.net/browse/STK-742).
 
 An easy workaround: Docker Engine Config file:
 ~~~
@@ -98,6 +98,12 @@ An easy workaround: Docker Engine Config file:
 }
 ~~~
 
++ "Reports of corruption during runs/builds"
+
+There could be many causes, but one I've noticed is if the host PC runs out of disk space, instead of reporting as running out of disk space,
+docker frequently reports this as corruption and 500 errors and no other indication of what is going wrong.
+
+
 ## Docker Files
 
 - Basics
@@ -106,14 +112,15 @@ An easy workaround: Docker Engine Config file:
       -  [Ubuntu2004-Small/DockerFile](Ubuntu2004-Small/DockerFile)
       -  [Ubuntu2204-Small/DockerFile](Ubuntu2204-Small/DockerFile)
     - Windows
-      -  [Windows-Cygwin-VS2k22/DockerFile](Windows-Cygwin-VS2k22/DockerFile)
-      -  [Windows-MSYS-VS2k22/DockerFile](Windows-MSYS-VS2k22/DockerFile)
+      -  [Windows-VS2k22/DockerFile](Windows-VS2k22/DockerFile)   **build first**
+      -  [Windows-Cygwin/DockerFile](Windows-Cygwin/DockerFile)   **based on VS2k... image**
+      -  [Windows-MSYS/DockerFile](Windows-MSYS/DockerFile)       **based on VS2k... image**
 - Derived
   - Linux
     - Ubuntu
-      -  [Ubuntu2004-RegressionTests/DockerFile](Ubuntu2004-RegressionTests/DockerFile)
       -  [Ubuntu2204-RegressionTests/DockerFile](Ubuntu2204-RegressionTests/DockerFile)
-    - Stroika-Dev
+      -  [Ubuntu2404-RegressionTests/DockerFile](Ubuntu2404-RegressionTests/DockerFile)
+   - Stroika-Dev
       -  [Stroika-Dev/DockerFile](Stroika-Dev/DockerFile)
 
 ## Create and setup for ssh Stroika-Dev images
