@@ -193,6 +193,8 @@ especially those they need to be aware of when upgrading.
       - Enumeration
         - is_constant_validated in EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_
         - EnumNames support for Characters::CompareOptions
+      - Locale
+        - ScopedUseLocale now works with optional locale argument, and new FindNamedLocaleQuietly function and docs
       - StdCompat
         - migrate backward compatability compiler support here - for APIs that are really stdc++ newer apis but not fully supported by call compilers (polyfill layer)
         - StdCompat::vformat
@@ -219,6 +221,8 @@ especially those they need to be aware of when upgrading.
           - new config/feature
           - minor activity tweak to ObjectVariantMapper; exerimental use of precision in Format/Acitivity strings in ObjectVariantMapper
         - tweak DbgTrace for ObjectVariantMapper::Lookup_ failure
+      - OptionsFile
+        - OptionsFile now generates eSuccessfullyReadFile message by default
       - InternetMediaType
         - InternetMediaTypeRegistry::CheckIsA () utility
 
@@ -244,6 +248,9 @@ especially those they need to be aware of when upgrading.
         - tmphack disable printf in DefaultAssertionHandler_ temporarily
         - more cleanup of new Assertion code (warnings wchar_t)
         - Assert handlers now use wchar_t - fixing a number of rare/minor problems; and simplifying its use of DbgTrace
+      - TimingTrace
+        - Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        - clenaup compiler warnings and DbgTrace output (new format code) for TimingTrace
     - Execution
       - generalized/added concepots to Execution::ThrowIfNull utility
       - CommandLine
@@ -258,21 +265,25 @@ especially those they need to be aware of when upgrading.
       - Filesystem
         - qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin support, and regtests (ToPath)
         - AdoptFDPolicy no longer has eDEFAULT - since there is no safe value - force specification by callers - so deprecated a couple FileInput/OutputStream New () overloads
+        - docs cleanups
+        - new IO::Filesystem::CreateTmpFile and use that in AppTempFileManager
       - Network
         - fix includes so MacOS includes TCP_NODELAY define
         - URL Host Host::As () always wraps IPv6 addr with [] - not just if pct encoding
         - cleanup URL Network regtests and add regtest for [] on IPv6 addresses
         - new regtest TestNotPCTEncodingColonOnURLPath_ and improved AsString (dont pctencode certain cahracters esp : in path)
         - Minor tweaks to IO/Network/Transfer/Connection_WinHTTP.cpp
+        - ConnectionOrientedStreamSocket::{Get/Set}TCPNoDelay support; and use in ConnectionManager options - and default to TRUE there
     - Memory
       - BLOB
         - expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
         - Added _blob literal for Memory::BLOB (attach) - and regtest for it
       - Span
         - cleanup docs / rationale on assertions for CopySpanData
-      - new Memory::{Transform,And_Then,Or_Else trivial wrappers on c++23 monadic new functions that work on older c++ (polyfill)
+      - new Memory::{Transform,And_Then,Or_Else} trivial wrappers on c++23 monadic new functions that work on older c++ (polyfill)
     - Streams
       - Minor tweak / fix to TextToByteReader
+      - fixed bug in Streams/TextToByteReader Read code reading multibyte unicode - untested - but hopefully right now
   - Frameworks
     - Led
       - fixed warning about delter on shared_ptr
@@ -291,6 +302,7 @@ especially those they need to be aware of when upgrading.
 - ThirdPartyComponents
   - boost 1.85.0
     - clang14/15 dont work with boost cobalt
+    - Patch to msvc.jam file to support latest visual studio compiler so boost 1_85_0 works with visual studio 17.10.x (latest compiler)
   - libcurl
     - lots of hacks to get the latest version building on UNIX 
       - some versions fail to build with libbrotli (esp with clang++)
@@ -315,8 +327,9 @@ especially those they need to be aware of when upgrading.
 
 - Regression Tests
   - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
-    update regtest docs - new 24.04 ubuntu lose 20.04
-    disbale clang++-15 on with libc++ on ubuntu 24.04
+  - update regtest docs - new 24.04 ubuntu lose 20.04
+  - disbale clang++-15 on with libc++ on ubuntu 24.04
+  - cosmeitc and workarounds for missing locale in regtests
 
 - Skel
   - added Release-Logging configuraiton to default-configurations for Skel
@@ -340,18 +353,6 @@ Date:   Mon Apr 1 18:18:35 2024 -0400
 
     react to limit __PRETTY_FUNCTION etc just works as non-unicode - for now - on gcc at least
 
-commit 5f9e9f9cfc9910ca766e158eadc2c1ce10c245d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 2 11:08:36 2024 -0400
-
-    Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
-
-commit 1dbc83d50070903ac33e37566229b97a0e0a254d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 5 11:30:22 2024 -0400
-
-    Added Execution::DeclareActivity in data exchange class decoder - so more clear where issue is when decoding json
-
 commit bcdf8fe4ed31e87e9a53d27f3a099040bee1cc58
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 10 16:29:37 2024 -0400
@@ -363,24 +364,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 10 16:30:02 2024 -0400
 
     regtests for stack of exceptions capture
-
-commit 6eb9508a337f370361ad66992f770669ff0f416f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 25 12:26:45 2024 -0700
-
-    OptionsFile now generates eSuccessfullyReadFile message by default
-
-commit 85ec9a6d6fdcfbf74194eb68d4bf18cc2d8c896d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 1 15:03:48 2024 -0700
-
-    clenaup compiler warnings and DbgTrace output (new format code) for TimingTrace
-
-commit eb763c8049eeb52e1573cce5930238702267bba1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 2 07:31:49 2024 -0700
-
-    docs cleanups; new IO::Filesystem::CreateTmpFile and use that in AppTempFileManager
 
 commit 610e26a4acf19c14b127a4b69ed6fb3d8657f654
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -400,12 +383,6 @@ Date:   Sun May 5 15:29:22 2024 -0400
 
     Added and used Configuration::LocaleNotFoundException exceotuiob and used that to improve retgest (avaoid fail on missing locale)
 
-commit 6a27e64e32ea99b74496f9b5500c487117732e25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 5 16:58:37 2024 -0400
-
-    cosmeitc and workarounds for missing locale in regtests
-
 commit a8d18b7b70d465255a289e8180dc916358adc505
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon May 6 09:44:53 2024 -0400
@@ -417,12 +394,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 7 11:39:18 2024 -0400
 
     Comments and new overload of PickoutParamValuesFromBody
-
-commit 5777fecea473c46b9b4cc166c5dcce292a4d7e60
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 8 11:04:36 2024 -0400
-
-    more tweaks to debug settings for clang++-16 and new formatter code
 
 commit fb77fb5a9919654785182c144eb55a1e4c034d04
 Author: Lewis Pringle <lewis@sophists.com>
@@ -436,24 +407,6 @@ Date:   Wed May 8 13:25:40 2024 -0400
 
     WebServer/Request and IO/Network/Transfer/Response now have GetBodyVariantValue () utility function - which checks the content type and then reads JSON and maps to VariantValue - not new functionality - just simple wrapper for common case
 
-commit 95c73ff0c87f820f2dd428aca36ec6ac0189c59a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 10 07:50:43 2024 -0400
-
-    ScopedUseLocale now works with optional locale argument, and new FindNamedLocaleQuietly function and docs
-
-commit 97df7ed6434bee0f0f81892589332b0a904e262a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 10 16:28:09 2024 -0400
-
-    ConnectionOrientedStreamSocke Get/SetTCPNoDelay support; and use in ConnectionManager options - and default to TRUE there
-
-commit a4ca9d0e253cd7c6eff57ab0eadd45a414549504
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 18 16:43:52 2024 +0200
-
-    fixed bug in Streams/TextToByteReader Read code reading multibyte unicode - untested - but hopefully right now
-
 commit f461d412bb5aa2a78db90e4d2c0778e4df92dd76
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 27 10:52:47 2024 -0400
@@ -465,12 +418,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 28 16:25:59 2024 -0400
 
     experiment with boost BOOTSTRAP_TOOLSET flags for windows fiddle to workaround build issue with new msvc
-
-commit 334ce7cc6135faf7da7e3a24ac5fdef440f7ca62
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 30 16:51:29 2024 -0400
-
-    Patch to msvc.jam file to support latest visual studio compiler
 
 commit a188b1475141ba0996e1acfebb3c6cf7648d260d
 Author: Lewis Pringle <lewis@sophists.com>
