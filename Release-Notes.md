@@ -46,7 +46,7 @@ especially those they need to be aware of when upgrading.
     - experiemnt adding brew install autoconf and libtool for build requirements
     - needed glibtoolize on macos but not elswehre so lose from recent additions to prereq
 
-  - configure
+  - configure / ApplyConfiguration
     - simplified configure handling of DoSetThirdPartyComponents_ and fixed bug (setting fmtlib sometimes)
     - workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
     - disable asan on ubuntu 23.10 and g++11 - cuz fails there too
@@ -54,6 +54,14 @@ especially those they need to be aware of when upgrading.
     - configure tweaks for ubuntu 22.04 so dont use sanitizrs for gcc < 13 and clang 15 or earlier (by default with --apply-debug) - 
       since appears to not work; and various issues with latest curl build and clang and old gcc too fixed (maybe same issue with asan)
     - only do configure BWA for ununtu 22.04 since comment says all thats needed - see if more needed
+    - configure script - warning on bad VSVARS_WindowsSdkDir
+    - disable asaon on ubuntu 23.10 and g++12 since doesnt appear to work
+    - configure: skip using asan configure change for 23.10 ubuntu - not supported version so not worth diggigin
+    - configure: IsTargettingSanitizer_ refactor of configure code (minor - sb now change in behavior)
+    - configure getXCOde version script along with using it to check if xcode < 15.3 and only turning on fmtlib then (for xcode builds)
+    - fixed configure script to better check for asan/memory issue - https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
+    - cleanups to PkgConfigNames handling - moved some workarounds from configure to ApplyConfigurations -
+      much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
 
   - DockerFile
     - readme docs
@@ -70,6 +78,7 @@ especially those they need to be aware of when upgrading.
       - fix other docker contianers to also print hello message about Getting started
       - Added stroika ubuntu dev container 2310
       - lose support for ubuntu 20.04 and add for 24.04; updated BuildGCC script and use it in docker container for 22.04 so it builds gcc 13; other related makefile cleanups/simplifications
+      - updated Dockerfile CMD -l and bash profile for Ubuntu 24.04 small container so prints message about reading Getting Started
     - Makefile
       - BUILD_DEV_IMAGES flag building docker images - so maybe can avoid running  out of space on github actions - dont need to build there
 
@@ -154,6 +163,9 @@ especially those they need to be aware of when upgrading.
         - fixed exception thrown in Character class
       - String
         - new String::AssureEndsWith
+      - Added operator<< for (ostream,String) - using AsNarrowSDKString(eIgnoreErrors) - and documented why;
+        use eIgnoreErrors on a few other AsNarrowSDKString calls;
+        and lose a bunch of AsNarrowSDKString calls as no longer necesary (places wehre I was writing to cerr for exmaple)
       - _f strings and new Format () API
         - MAJOR change - deprecated c-style sprintf style - Characters::Format, and Characters::VFormat
         - replaced with new _f strings API - based on c++20 formattable feature
@@ -195,6 +207,7 @@ especially those they need to be aware of when upgrading.
         - EnumNames support for Characters::CompareOptions
       - Locale
         - ScopedUseLocale now works with optional locale argument, and new FindNamedLocaleQuietly function and docs
+        - Added and used Configuration::LocaleNotFoundException and used that to improve retgest (avoid fail on missing locale)
       - StdCompat
         - migrate backward compatability compiler support here - for APIs that are really stdc++ newer apis but not fully supported by call compilers (polyfill layer)
         - StdCompat::vformat
@@ -245,13 +258,14 @@ especially those they need to be aware of when upgrading.
     - Debug
       - Assertion
         - Cleanuup/re-orig macors in Assertions.h
-        - tmphack disable printf in DefaultAssertionHandler_ temporarily
-        - more cleanup of new Assertion code (warnings wchar_t)
         - Assert handlers now use wchar_t - fixing a number of rare/minor problems; and simplifying its use of DbgTrace
       - TimingTrace
         - Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
         - clenaup compiler warnings and DbgTrace output (new format code) for TimingTrace
     - Execution
+      - Activity
+        - fix docs and impl of CaptureCurrentActivities so clear keeps TOP of stack as most specific activity and bottom of stack as first/original outer actiivity
+        - regtests for stack of exceptions capture
       - generalized/added concepots to Execution::ThrowIfNull utility
       - CommandLine
         - new CommandLine class; options support, inclding autogenerateing 'Usage' from Options; and updated
@@ -266,7 +280,7 @@ especially those they need to be aware of when upgrading.
         - qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin support, and regtests (ToPath)
         - AdoptFDPolicy no longer has eDEFAULT - since there is no safe value - force specification by callers - so deprecated a couple FileInput/OutputStream New () overloads
         - docs cleanups
-        - new IO::Filesystem::CreateTmpFile and use that in AppTempFileManager
+        - new IO::Filesystem::CreateTmpFile and use that in AppTempFileManager, and minor cleanups to names and args in TemporaryFile code (not fully backward compat but SB simple enuf to update/adapt)
       - Network
         - fix includes so MacOS includes TCP_NODELAY define
         - URL Host Host::As () always wraps IPv6 addr with [] - not just if pct encoding
@@ -274,6 +288,8 @@ especially those they need to be aware of when upgrading.
         - new regtest TestNotPCTEncodingColonOnURLPath_ and improved AsString (dont pctencode certain cahracters esp : in path)
         - Minor tweaks to IO/Network/Transfer/Connection_WinHTTP.cpp
         - ConnectionOrientedStreamSocket::{Get/Set}TCPNoDelay support; and use in ConnectionManager options - and default to TRUE there
+        - WebServer/Request and IO/Network/Transfer/Response now have GetBodyVariantValue () utility function -
+          which checks the content type and then reads JSON and maps to VariantValue - not new functionality - just simple wrapper for common case
     - Memory
       - BLOB
         - expose base64 encoding options in BLOB::AsBase64, and add regtest (probbaly more needed)
@@ -290,6 +306,7 @@ especially those they need to be aware of when upgrading.
     - WebServer
       - Added fThreadPoolSize to WebServer::ConnectionManager statistics
       - deprecate framework/webserver/reponse/printf and instead added write () overload taking FormatString and updated some usage to use it
+      - Docs
     - WebService
       - JSONRPC
         - draft JSONRPC support (just define a few objects, and ObjectVariantMappers - maybe not much more todo)
@@ -298,7 +315,7 @@ especially those they need to be aware of when upgrading.
           <br/>(generating docs link to openapi content)
       - Docs Gen
         <br/>cosmetic tweaks to webservice frameworks docs page
-
+      - new overload of PickoutParamValuesFromBody
 - ThirdPartyComponents
   - boost 1.85.0
     - clang14/15 dont work with boost cobalt
@@ -311,7 +328,6 @@ especially those they need to be aware of when upgrading.
   - fmtlib
     - https://github.com/fmtlib/fmt/releases
     - configure support so only builds if needed - cuz using stdlib that doesn't have it.
-
   - openssl 
     - VERSION 3.3.0
     - disable https://stroika.atlassian.net/browse/STK-948 openssl lib build workaround
@@ -324,115 +340,15 @@ especially those they need to be aware of when upgrading.
   - zlib
     - changed zlib build to only remove sofiles/dlls not zlib.pc file (losing lib/pkgconfig/zlib.pc etc from zlib build)
     - no longer needed to install libz.a on regression test images
-
 - Regression Tests
   - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
   - update regtest docs - new 24.04 ubuntu lose 20.04
   - disbale clang++-15 on with libc++ on ubuntu 24.04
   - cosmeitc and workarounds for missing locale in regtests
-
 - Skel
-  - added Release-Logging configuraiton to default-configurations for Skel
+  - added Release-Logging configuraiton to default-configurations for Skelq
 
----------------------
-
-commit 59808e96f7e5221bd5018e341a319d466352f877
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 6 15:05:56 2024 -0500
-
-    Added operator<< for (ostream,String) - using AsNarrowSDKString(eIgnoreErrors) - and documented why; use eIgnoreErrors on a few other AsNarrowSDKString calls; and lose a bunch of AsNarrowSDKString calls as no longer necesary (places wehre I was writing to cerr for exmaple)
-
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 14 11:11:19 2024 -0400
-
-    configure getXCOde version script along with using it to check if xcode < 15.3 and only turning on fmtlib then (for xcode builds)
-
-commit 9e6109f4a12bc9e271bcb3e7c1df00dd3d73dacf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Apr 1 18:18:35 2024 -0400
-
-    react to limit __PRETTY_FUNCTION etc just works as non-unicode - for now - on gcc at least
-
-commit bcdf8fe4ed31e87e9a53d27f3a099040bee1cc58
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 16:29:37 2024 -0400
-
-    fix docs and impl of CaptureCurrentActivities so clear keeps TOP of stack as most specific activity and bottom of stack as first/original outer actiivity
-
-commit 29e2de418c8873923489a0d4af5685c98d340ed1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 10 16:30:02 2024 -0400
-
-    regtests for stack of exceptions capture
-
-commit 610e26a4acf19c14b127a4b69ed6fb3d8657f654
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun May 5 07:30:18 2024 -0400
-
-    unpdate CMD -l and bash profile for Ubuntu 24.04 small container so prints message about reading Getting Started
-
-commit 6b35516d34d7c60e490b78beeb1771af13221abb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 5 08:57:24 2024 -0400
-
-    Minor cleanups to names and args in TemporaryFile code (not fully backward compat but SB simple enuf to update/adapt)
-
-commit 6106a5f99bcb68e27e39eb3975ca8d2d7986c6f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 5 15:29:22 2024 -0400
-
-    Added and used Configuration::LocaleNotFoundException exceotuiob and used that to improve retgest (avaoid fail on missing locale)
-
-commit a8d18b7b70d465255a289e8180dc916358adc505
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon May 6 09:44:53 2024 -0400
-
-    fixed configure script to better check for https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
-
-commit 5c7f91594e4f850ad82e432b8c721b7b68439717
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 7 11:39:18 2024 -0400
-
-    Comments and new overload of PickoutParamValuesFromBody
-
-commit fb77fb5a9919654785182c144eb55a1e4c034d04
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 8 12:15:56 2024 -0400
-
-    improved static_assert() checks and feature flag checking for ToString/Formatter behavior (still a bit of a mess)
-
-commit 5fa7c150e181cf267e07c028b8979051355f93c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 8 13:25:40 2024 -0400
-
-    WebServer/Request and IO/Network/Transfer/Response now have GetBodyVariantValue () utility function - which checks the content type and then reads JSON and maps to VariantValue - not new functionality - just simple wrapper for common case
-
-commit f461d412bb5aa2a78db90e4d2c0778e4df92dd76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 27 10:52:47 2024 -0400
-
-    minor tweak to configure script - warning VSVARS_WindowsSdkDir
-
-commit e7feb9dde6918dfe1b03d8056401089222ba48fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 28 16:25:59 2024 -0400
-
-    experiment with boost BOOTSTRAP_TOOLSET flags for windows fiddle to workaround build issue with new msvc
-
-commit a188b1475141ba0996e1acfebb3c6cf7648d260d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 1 09:08:51 2024 -0400
-
-    cleanups to PkgConfigNames handling - moved some workarounds from configure to ApplyConfigurations - much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
-
-disable asaon on ubuntu 23.10 and g++12 since doesnt appear to work
-configure: skip using asan configure change for 23.10 ubuntu - not supported version so not worth diggigin
-   configure: IsTargettingSanitizer_ refactor of configure code (minor - sb now change in behavior)
-
-
-
-----------------------------------
-
+---
 
 ### 3.0d5 {2024-02-28} {[diff](../../compare/v3.0d4...v3.0d5)}
 
