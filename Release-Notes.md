@@ -7,23 +7,24 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+---
 
-### NOTES FOR 3.0d6
+### 3.0d6 {2024-06-xx} {[diff](../../compare/v3.0d5...v3.0d6)} --DRAFT
 
-##### TLDR
+#### TLDR
 - _f strings and new Format () API (based on new std::format<>)
   - MAJOR change - deprecated c-style sprintf style - Characters::Format
   - replaced with new _f strings API - based on c++20 formattable feature
-- Added Ubuntu 24.04 support
-  - workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
+- Added Ubuntu 24.04 support (workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX), Lose Ubuntu 20.04 support, added VS_17_10_1, clang 17/18 g++14
 - Execution::Logger - allow multiple appenders, and use new _f strings
 - DataExchange::JSON {Pointer and Merge - draft support}
 - githyb action macos:  fix to libid2n not found for macos14 (reported to github actions support, but they ignored/misunderstood)
 
+#### Upgrade Notes (3.0d5 to 3.0d6)
+- Replace all use of c-style format strings with _f strings (using new {} stdc++ style format)
+  - this includes DbgTrace calls, Execution::Logger, String::Format () - really not needed anymore - and more
 
-
-##### DETAILS
-
+#### Change Details
 - Build System
   - github actions workflow(s)
     - more tweaks to hacks2savespace for linux
@@ -41,11 +42,9 @@ especially those they need to be aware of when upgrading.
       - fix to libid2n not found for macos14 (reported to github actions support, but they ignored/misunderstood)
     - Windows
       - lose rebaseall thing cuz done on msys and cygwin not sure needed on any but failing on cygwin
-
   - MacOS
     - experiemnt adding brew install autoconf and libtool for build requirements
     - needed glibtoolize on macos but not elswehre so lose from recent additions to prereq
-
   - configure / ApplyConfiguration
     - simplified configure handling of DoSetThirdPartyComponents_ and fixed bug (setting fmtlib sometimes)
     - workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX
@@ -62,7 +61,6 @@ especially those they need to be aware of when upgrading.
     - fixed configure script to better check for asan/memory issue - https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
     - cleanups to PkgConfigNames handling - moved some workarounds from configure to ApplyConfigurations -
       much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
-
   - DockerFile
     - readme docs
     - Windows
@@ -81,8 +79,6 @@ especially those they need to be aware of when upgrading.
       - updated Dockerfile CMD -l and bash profile for Ubuntu 24.04 small container so prints message about reading Getting Started
     - Makefile
       - BUILD_DEV_IMAGES flag building docker images - so maybe can avoid running  out of space on github actions - dont need to build there
-
-
 - ScriptsLib/
   - optional USE_NMAESPACE arg to ScriptsLib/MakeVersionFile
   - was calling ScriptsLib/MakeVersionFile with 5 args, but inorning any past 3 - which worked badly when I added new optional 4th param! - so fixed calls and added the optional 4th (namespace) param
@@ -90,14 +86,11 @@ especially those they need to be aware of when upgrading.
   - tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
   -  new ./ScriptsLib/GetGCCVersion script (and used in configure)
   - draft Scripts/GetClangVersion script (and used in configure)
-
 - Supported Platforms
   - ubuntu lose 20.04
   - added 24.04
-
 - Supported Compilers
   - Added makefile configs for clang++17 and clang++18, and g++-14
-
 - Compiler Bug Defines/BWA
   - need extra BWA for arm for qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
   - qCompilerAndStdLib_FormatRangeRestriction_Buggy define and BWA
@@ -128,7 +121,6 @@ especially those they need to be aware of when upgrading.
   - qCompilerAndStdLib_FormatThreadId_Buggy BWA
   - additiopnal place broken for what I think is qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy - same bug basically
   - qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy define and BWA
-  - qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy value
   - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++15 as well
   - cosmetic; and qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++16
   - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken on clang++17 too
@@ -149,11 +141,9 @@ especially those they need to be aware of when upgrading.
   - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible brokne on clang++16 and ubuntu 24.04 as well
   - avoid asan on some tests cuz broken on clang++16 ubuntu 23.10 sometimes
   - fixed a few compiler bug defines for g++-14
-
 - All Source Files
   - Use Stroika-root relative paths instead of . relative paths #includes (so things line up better, copy-pasta better, and slightly clearer, though slightly more verbose)
   - lose include guards from .inl files and normalize formatting - since always included inside .h inside include guard
-
 - Library
   - Foundation
     - Characters
@@ -238,7 +228,6 @@ especially those they need to be aware of when upgrading.
         - OptionsFile now generates eSuccessfullyReadFile message by default
       - InternetMediaType
         - InternetMediaTypeRegistry::CheckIsA () utility
-
       - VariantValue
         - VariantValue cleanup of As<> template (IAnyOf) and take nullopt or nullptr
         - Improved VariantValue As<> function to handle optional
@@ -326,6 +315,7 @@ especially those they need to be aware of when upgrading.
       - lose std= setting to linker
     - VERSION 8.8.0
   - fmtlib
+    - new dependency (iff needed cuz missing from stdlib)
     - https://github.com/fmtlib/fmt/releases
     - configure support so only builds if needed - cuz using stdlib that doesn't have it.
   - openssl 
@@ -348,6 +338,34 @@ especially those they need to be aware of when upgrading.
 - Skel
   - added Release-Logging configuraiton to default-configurations for Skelq
 
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 14, 15, 16, 17, 18; XCode: 15.2, 15.3}
+  - MSVC: { 17.10.1 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 14.4 - arm64/m1 chip
+    - 14.3, 14.4 on github actions
+  - Linux: { Ubuntu: [22.04, 23.10, 24.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, DEBIABVERSION###), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+
 ---
 
 ### 3.0d5 {2024-02-28} {[diff](../../compare/v3.0d4...v3.0d5)}
@@ -361,7 +379,6 @@ especially those they need to be aware of when upgrading.
 - Improved clock/realtime clock support (Time::DurationSeconds replaced with use of chrono more directly).
 
 #### Upgrade Notes (3.0d4 to 3.0d5)
-
 - Iterable::Map() - generally if you have templated arguments, probbaly just try deleting them and the defaults will do fine.
    If not, then specify container as sole template argument, rather than mapped_type followed by container type
 - BIG streams changes - not backward compatible
@@ -371,7 +388,6 @@ especially those they need to be aware of when upgrading.
 - due to new ASSUME_ATTRIBUTE macro, and experimental use of it in Assert/Require macros, some assert/require calls may need to be wrapped in #if qDebug
 
 #### Change Details
-
 - Compilers support changes
   - no longer support XCode 14 - since I dont have easy way to run/debug there now
   - 17.9.1
