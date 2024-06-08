@@ -26,7 +26,7 @@ echo "Running docker build (${CONTAINER_IMAGE} for ${USE_TEST_BASENAME})(usually
 $DOCKER run \
     --detach \
     --interactive \
-    --storage-opt "size=100GB" \
+    --storage-opt "size=125GB" \
     --memory 8G \
     --cpus 8\
     --network "$DOCKER_NETWORK" \
