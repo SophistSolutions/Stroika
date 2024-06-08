@@ -61,6 +61,8 @@ especially those they need to be aware of when upgrading.
     - fixed configure script to better check for asan/memory issue - https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
     - cleanups to PkgConfigNames handling - moved some workarounds from configure to ApplyConfigurations -
       much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
+  - Skel
+    - skel makefile .notparallel fix
   - DockerFile
     - readme docs
     - Windows
@@ -164,26 +166,26 @@ especially those they need to be aware of when upgrading.
         - Integrate with ToString()
           - formatter calls Characters::ToString () and _f strings automatically do this so no need for most explicit calls
             to Characters::ToString()
-        formatter pair/filesystem::path support (experimental); and lose unneeded ToString()s in a few more places
-        small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
-        for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
-        Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
-        more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
-        COmment out range support in IUseToStringFormatterForFormatter_
-        fix typo; fixed range support on IUseToStringFormatterForFormatter_
-        IUseToStringFormatterForFormatter_ also chekcs IKeyValuePair
-        define new Configuraiton::ITuple concept and use in IUseToStringFormatterForFormatter_
-        more tweaks/tests for IUseToStringFormatterForFormatter_
-        progress enhancing IUseToStringFormatterForFormatter_ - test carefullybefore adding more cases
-        perhaps fix clang++16 support for IUseToStringFormatterForFormatter_
-        IUseToStringFormatterForFormatter_ tweaks for differnt compiler/libs combos - still probably alot todo here
-        more converts of DbgTrace and Format calls to new style, and IUseToStringFormatterForFormatter_ fixes for MSFT compilers (quirky way to check for stdc++23)
-        More IUseToStringFormatterForFormatter_ fixes for diff compilers
-        More tweaks with IUseToStringFormatterForFormatter_ definition and static asserts to test and a few use cases
-        more tweaks to IUseToStringFormatterForFormatter_ bug/missing feature defines
-        Added IVariant to ToString (formatter) support
-        TraceContextBumper restructure CTORs, and deprecate old format based API (sprintf strings); and used new API instead of deprecated one throughtout most of Stroika
-        TraceContextBumper support new style format strings (and a couple test cases)
+        - formatter pair/filesystem::path support (experimental); and lose unneeded ToString()s in a few more places
+        - small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
+        - for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
+        - Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
+        - more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
+        - COmment out range support in IUseToStringFormatterForFormatter_
+        - fix typo; fixed range support on IUseToStringFormatterForFormatter_
+        - IUseToStringFormatterForFormatter_ also chekcs IKeyValuePair
+        - define new Configuraiton::ITuple concept and use in IUseToStringFormatterForFormatter_
+        - more tweaks/tests for IUseToStringFormatterForFormatter_
+        - progress enhancing IUseToStringFormatterForFormatter_ - test carefullybefore adding more cases
+        - perhaps fix clang++16 support for IUseToStringFormatterForFormatter_
+        - IUseToStringFormatterForFormatter_ tweaks for differnt compiler/libs combos - still probably alot todo here
+        - more converts of DbgTrace and Format calls to new style, and IUseToStringFormatterForFormatter_ fixes for MSFT compilers (quirky way to check for stdc++23)
+        - More IUseToStringFormatterForFormatter_ fixes for diff compilers
+        - More tweaks with IUseToStringFormatterForFormatter_ definition and static asserts to test and a few use cases
+        - more tweaks to IUseToStringFormatterForFormatter_ bug/missing feature defines
+        - Added IVariant to ToString (formatter) support
+        - TraceContextBumper restructure CTORs, and deprecate old format based API (sprintf strings); and used new API instead of deprecated one throughtout most of Stroika
+        - TraceContextBumper support new style format strings (and a couple test cases)
     - Concepts
       - Added IStdOptional and ExtractStdOptionalOf_t utilities/concepts
       - ICountedValue concept (use ICOuntedValue in ToString)
@@ -246,7 +248,7 @@ especially those they need to be aware of when upgrading.
           - maybe fix libxml2 issue with default namespaces not working properly
     - Debug
       - Assertion
-        - Cleanuup/re-orig macors in Assertions.h
+        - Cleanup/re-orig macors in Assertions.h
         - Assert handlers now use wchar_t - fixing a number of rare/minor problems; and simplifying its use of DbgTrace
       - TimingTrace
         - Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
@@ -326,7 +328,7 @@ especially those they need to be aware of when upgrading.
   - libxml2
     - VERSION 2.12.7
   - StrawberryPerl
-    StrawberryPerl check on build
+    - check on build
   - zlib
     - changed zlib build to only remove sofiles/dlls not zlib.pc file (losing lib/pkgconfig/zlib.pc etc from zlib build)
     - no longer needed to install libz.a on regression test images
