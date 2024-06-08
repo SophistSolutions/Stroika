@@ -9,6 +9,11 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
+#not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
+# make clobber all you don't want those to happen at the same time. And make libraries samples wouldn't really work since all the libraries
+# have to be built before the samples etc...
+.NOTPARALLEL:
+
 
 #Handy shortcut
 CONFIGURATION_TAGS?=$(TAGS)
