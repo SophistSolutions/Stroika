@@ -9,11 +9,10 @@
 #include <cstdint>
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/Algorithm.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
-
-#include "Algorithm/Algorithm.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

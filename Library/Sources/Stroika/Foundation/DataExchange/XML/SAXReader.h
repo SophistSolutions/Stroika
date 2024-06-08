@@ -8,11 +8,10 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/IConsumer.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Execution/ProgressMonitor.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "Common.h"
-#include "Schema.h"
 
 /**
  *  \file

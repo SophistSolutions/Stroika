@@ -16,9 +16,8 @@
 #include "Stroika/Foundation/Characters/SDKChar.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 #include "Stroika/Foundation/Time/Realtime.h"
-
-#include "CompileTimeFlagChecker.h"
 
 /**
  *  \file

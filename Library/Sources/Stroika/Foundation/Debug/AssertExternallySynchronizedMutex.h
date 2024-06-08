@@ -17,9 +17,8 @@
 #include <thread>
 
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "Assertions.h"
-#include "Sanitizer.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 
 /**
  *  \file
@@ -27,8 +26,8 @@
  *  \version    <a href="Code-Status.md#Release">Release</a>
  *
  *  TODO:
- *      @todo   see if fSharedLocks_ can be replaced wtih LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
- *              bugs. Quickie attempt at profiling yeilds that that time is NOT spent with the locks but with the remove()
+ *      @todo   see if fSharedLocks_ can be replaced with LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
+ *              bugs. Quickie attempt at profiling yields that that time is NOT spent with the locks but with the remove()
  *              code (since I switched from multiset to forward_list, so maybe cuz of that). Or could be bad measurement (I just
  *              test on DEBUG builds).
  * 
@@ -90,7 +89,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  In debug builds, it enforces this fact through assertions.
      *
-     *  \note   This doesn't guarnantee catching all races, but it catches many incorrect thread usage cases
+     *  \note   This doesn't guarantee catching all races, but it catches many incorrect thread usage cases
      *
      *  \note   ***Not Cancelation Point***
      *

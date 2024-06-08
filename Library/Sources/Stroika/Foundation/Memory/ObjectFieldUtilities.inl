@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/Debug/Assertions.h"
 
-#include "Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Memory {
 

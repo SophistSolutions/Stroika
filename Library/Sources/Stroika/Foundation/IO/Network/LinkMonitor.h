@@ -18,8 +18,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Execution/Function.h"
-
-#include "InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 
 /**
  *  \file

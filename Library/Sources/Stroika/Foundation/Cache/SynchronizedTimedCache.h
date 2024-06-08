@@ -9,7 +9,7 @@
 #include <mutex>
 #include <shared_mutex>
 
-#include "TimedCache.h"
+#include "Stroika/Foundation/Cache/TimedCache.h"
 
 /**
  *      \file

@@ -10,8 +10,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "Common.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
 
 /*
  * TODO:
@@ -20,7 +19,7 @@
  *      @todo   Add support for Schema validation
  *              and optionally more stuff � for how to map between variant structure and schema.
  *              Maybe have virtual API to make certain decisions?
- *              Will need experience/experimation to get right
+ *              Will need experience/experimentation to get right
  */
 
 namespace Stroika::Foundation::DataExchange::XML {

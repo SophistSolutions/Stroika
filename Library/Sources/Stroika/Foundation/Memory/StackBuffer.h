@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "InlineBuffer.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
 
 /**
  *  \file

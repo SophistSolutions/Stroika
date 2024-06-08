@@ -7,8 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Concepts.h"
-
-#include "Mapping.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 
 /**
  *

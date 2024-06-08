@@ -8,8 +8,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Math/Statistics.h"
-
-#include "Generator.h"
+#include "Stroika/Foundation/Traversal/Generator.h"
 
 namespace Stroika::Foundation::Traversal {
 

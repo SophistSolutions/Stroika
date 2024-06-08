@@ -11,7 +11,7 @@
 #include <memory>
 #include <mutex>
 
-#include "Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  *  \file

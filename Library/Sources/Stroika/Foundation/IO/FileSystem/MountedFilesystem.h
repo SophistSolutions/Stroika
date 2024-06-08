@@ -12,8 +12,7 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
-
-#include "Disk.h"
+#include "Stroika/Foundation/IO/FileSystem/Disk.h"
 
 /**
  *  \file

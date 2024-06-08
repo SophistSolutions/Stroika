@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "Compare.h"
+#include "Stroika/Foundation/Common/Compare.h"
 
 namespace Stroika::Foundation::Common {
 

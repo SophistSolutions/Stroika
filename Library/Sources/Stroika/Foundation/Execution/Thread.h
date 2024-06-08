@@ -13,11 +13,10 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Signals.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
-
-#include "Exceptions.h"
-#include "Signals.h"
 
 /**
  *  \file

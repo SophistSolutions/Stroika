@@ -22,10 +22,9 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/DataExchange/DefaultSerializer.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 #include "Stroika/Foundation/Traversal/Range.h"
-
-#include "InternetProtocol/IP.h"
 
 /**
  *  \file

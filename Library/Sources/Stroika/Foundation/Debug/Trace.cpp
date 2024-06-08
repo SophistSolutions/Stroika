@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Module.h"
@@ -30,8 +31,6 @@
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #endif
-
-#include "Trace.h"
 
 using namespace Stroika::Foundation;
 

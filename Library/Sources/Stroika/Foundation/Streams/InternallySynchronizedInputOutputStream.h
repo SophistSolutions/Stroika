@@ -8,7 +8,7 @@
 
 #include <mutex>
 
-#include "InputOutputStream.h"
+#include "Stroika/Foundation/Streams/InputOutputStream.h"
 
 /*
  *  \file

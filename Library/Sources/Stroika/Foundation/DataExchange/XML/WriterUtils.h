@@ -9,11 +9,10 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
 #include "Stroika/Foundation/Time/Date.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
-
-#include "Common.h"
 
 /*
  * TODO:

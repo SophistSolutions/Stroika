@@ -10,9 +10,8 @@
 #include <set>
 
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "ConditionVariable.h"
-#include "SpinLock.h"
+#include "Stroika/Foundation/Execution/ConditionVariable.h"
+#include "Stroika/Foundation/Execution/SpinLock.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

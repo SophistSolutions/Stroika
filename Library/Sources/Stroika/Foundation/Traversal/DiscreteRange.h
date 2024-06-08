@@ -6,8 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Iterable.h"
-#include "Range.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 /**
  *  \file

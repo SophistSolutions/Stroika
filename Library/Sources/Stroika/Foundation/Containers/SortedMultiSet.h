@@ -7,9 +7,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Concepts.h"
-
-#include "DefaultTraits/MultiSet.h"
-#include "MultiSet.h"
+#include "Stroika/Foundation/Containers/DefaultTraits/MultiSet.h"
+#include "Stroika/Foundation/Containers/MultiSet.h"
 
 /**
  *  \file

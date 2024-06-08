@@ -9,18 +9,17 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#if qPlatform_Windows
-#include "Stroika/Foundation/Characters/Platform/Windows/SmartBSTR.h"
-#endif
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Linguistics/Words.h"
+
 #if qPlatform_Windows
+#include "Stroika/Foundation/Characters/Platform/Windows/SmartBSTR.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "Stroika/Foundation/Linguistics/Words.h"
 
 #include "TimeOfDay.h"
 

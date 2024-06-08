@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "WaitForIOReady.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
 
 /**
  *  \file

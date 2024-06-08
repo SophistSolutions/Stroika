@@ -7,8 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "CompileTimeFlagChecker.h"
+#include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 
 /**
  *  \file

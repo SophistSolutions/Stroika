@@ -8,9 +8,8 @@
 
 #include <mutex>
 
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Time/Duration.h"
-
-#include "TimeOutException.h"
 
 namespace Stroika::Foundation::Execution {
 

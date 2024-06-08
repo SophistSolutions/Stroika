@@ -20,8 +20,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
-
-#include "Iterator.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 /**
  *  \file

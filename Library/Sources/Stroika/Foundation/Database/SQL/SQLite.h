@@ -18,13 +18,12 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Database/SQL/Connection.h"
+#include "Stroika/Foundation/Database/SQL/Statement.h"
+#include "Stroika/Foundation/Database/SQL/Transaction.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
-
-#include "Connection.h"
-#include "Statement.h"
-#include "Transaction.h"
 
 /**
  *  \file

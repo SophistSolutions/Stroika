@@ -16,9 +16,8 @@
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/DataExchange/ValidationStrategy.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Time/Common.h"
 #include "Stroika/Foundation/Traversal/Range.h"
-
-#include "Common.h"
 
 /**
  *  \file

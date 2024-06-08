@@ -11,10 +11,9 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Time/DateTime.h"
-
 #include "Stroika/Foundation/IO/AccessMode.h"
 #include "Stroika/Foundation/IO/FileSystem/Common.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 /**
  *  \file

@@ -16,10 +16,9 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Empty.h"
 #include "Stroika/Foundation/Configuration/TypeHints.h"
-
-#include "Common.h"
-#include "Finally.h"
-#include "SpinLock.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/SpinLock.h"
 
 /**
  *  \file

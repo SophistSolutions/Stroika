@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Queue.h"
+#include "Stroika/Foundation/Containers/Queue.h"
 
 /*
  *

@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
-#include "DirectoryIterator.h"
+#include "Stroika/Foundation/IO/FileSystem/DirectoryIterator.h"
 
 /**
  * TODO:

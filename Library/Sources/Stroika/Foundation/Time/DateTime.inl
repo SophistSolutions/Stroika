@@ -3,7 +3,7 @@
  */
 #include <chrono>
 
-#include "Clock.h"
+#include "Stroika/Foundation/Time/Clock.h"
 
 namespace Stroika::Foundation::Time {
 

@@ -8,13 +8,12 @@
 
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
+#include "Stroika/Foundation/DataExchange/XML/Namespace.h"
+#include "Stroika/Foundation/DataExchange/XML/Resource.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "Common.h"
-#include "Namespace.h"
-#include "Resource.h"
 
 /**
  *  \file

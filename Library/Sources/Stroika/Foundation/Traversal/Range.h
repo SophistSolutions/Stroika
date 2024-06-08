@@ -14,8 +14,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "Common.h"
+#include "Stroika/Foundation/Traversal/Common.h"
 
 /**
  *  \file

@@ -8,9 +8,8 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-
-#include "Connection.h"
 
 /**
  *  \file

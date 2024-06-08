@@ -28,10 +28,12 @@
  *              Existing windows code uses deprecated APIs.
  */
 
+#if 0
 namespace Stroika::Foundation::IO::FileSystem {
     using Characters::SDKString;
     using Characters::String;
 }
+#endif
 
 /**
  *  These WellKnownLocations routines always return a valid directory (if createIfNotPresent)
@@ -64,7 +66,7 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
     /**
      *  Returns:
      *      Return directory which contains top-level application data - which should
-     *      be persistent. Store long-term applicaiton data (which is not user specific)
+     *      be persistent. Store long-term application data (which is not user specific)
      *      such as databases etc here.
      *
      *      POSIX:

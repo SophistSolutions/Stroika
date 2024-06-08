@@ -33,9 +33,8 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
+#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
 #include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
-
-#include "IProvider.h"
 
 /**
  *  \file

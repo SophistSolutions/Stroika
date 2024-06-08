@@ -8,8 +8,7 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Queue.h"
-
-#include "ConditionVariable.h"
+#include "Stroika/Foundation/Execution/ConditionVariable.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

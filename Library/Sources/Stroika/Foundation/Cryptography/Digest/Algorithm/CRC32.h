@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include "Algorithm.h"
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/Algorithm.h"
 
 /**
  *  \file

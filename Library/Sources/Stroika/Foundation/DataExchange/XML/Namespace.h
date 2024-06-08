@@ -9,9 +9,8 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
-
-#include "Common.h"
 
 namespace Stroika::Foundation::DataExchange::XML {
 

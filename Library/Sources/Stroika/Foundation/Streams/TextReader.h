@@ -10,8 +10,7 @@
 
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/UTFConvert.h"
-
-#include "InputStream.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
  *  \file

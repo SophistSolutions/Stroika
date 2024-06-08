@@ -8,9 +8,8 @@
 
 #include <chrono>
 
+#include "Stroika/Foundation/Time/Clock.h"
 #include "Stroika/Foundation/Traversal/Common.h"
-
-#include "Clock.h"
 
 /**
  *  \file

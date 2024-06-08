@@ -9,9 +9,8 @@
 #include <mutex>
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/SpinLock.h"
 #include "Stroika/Foundation/Memory/Common.h"
-
-#include "SpinLock.h"
 
 /**
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
@@ -33,7 +32,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  This is very similar to have a single static variable of type T, except that instead of
      *  having T constructed at global execution time, and destroyed at global object destruction time,
-     *  it happens when the first owner comes into existence and when the last owner goes out of existance.
+     *  it happens when the first owner comes into existence and when the last owner goes out of existence.
      *
      *  For example - if the shared data object creates threads, it can be a problem having this destroyed in
      *  a static (file scope) lifetime.

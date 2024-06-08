@@ -10,10 +10,9 @@
 #include <mutex>
 
 #include "Stroika/Foundation/Containers/Collection.h"
-
-#include "Function.h"
-#include "Thread.h"
-#include "WaitableEvent.h"
+#include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 
 /**
  *  \file

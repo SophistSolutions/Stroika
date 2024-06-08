@@ -16,11 +16,10 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #if qPlatform_Windows
-#include "Platform/Windows/WinSock.h"
+#include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #endif
-
-#include "SocketAddress.h"
 
 #if qPlatform_Linux or qPlatform_MacOS
 using IPPROTO = int;

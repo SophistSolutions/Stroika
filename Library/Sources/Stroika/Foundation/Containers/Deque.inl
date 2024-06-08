@@ -4,7 +4,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
-#include "Factory/Deque_Factory.h"
+#include "Stroika/Foundation/Containers/Factory/Deque_Factory.h"
 
 namespace Stroika::Foundation::Containers {
 

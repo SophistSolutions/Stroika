@@ -1,10 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "IterableFromIterator.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Traversal/IterableFromIterator.h"
 
 namespace Stroika::Foundation::Traversal {
 

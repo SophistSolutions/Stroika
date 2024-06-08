@@ -16,8 +16,8 @@
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
-#include "Common.h"
-#include "DefaultTraits/MultiSet.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Containers/DefaultTraits/MultiSet.h"
 
 /**
  *  \file

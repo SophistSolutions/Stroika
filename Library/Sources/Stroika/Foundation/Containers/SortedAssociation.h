@@ -7,8 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Concepts.h"
-
-#include "Association.h"
+#include "Stroika/Foundation/Containers/Association.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

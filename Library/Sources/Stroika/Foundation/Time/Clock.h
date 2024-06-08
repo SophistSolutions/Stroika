@@ -8,6 +8,8 @@
 
 #include <chrono>
 
+#include "Stroika/Foundation/Common/Common.h"
+
 /**
  *  \file
  *

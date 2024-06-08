@@ -12,9 +12,8 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Set.h"
-
-#include "Function.h"
-#include "Signals.h"
+#include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/Signals.h"
 
 /**
  * Description:

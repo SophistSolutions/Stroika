@@ -5,9 +5,8 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Execution/Finally.h"
-
-#include "EOFException.h"
-#include "EWouldBlock.h"
+#include "Stroika/Foundation/Streams/EOFException.h"
+#include "Stroika/Foundation/Streams/EWouldBlock.h"
 
 namespace Stroika::Foundation::Streams::InputStream {
 

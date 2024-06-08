@@ -11,11 +11,10 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/CipherAlgorithm.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/DigestAlgorithm.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Common.h"
-
-#include "CipherAlgorithm.h"
-#include "DigestAlgorithm.h"
 
 /**
  *  \file

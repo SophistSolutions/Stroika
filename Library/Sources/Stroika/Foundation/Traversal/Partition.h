@@ -7,8 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Math/Common.h"
-
-#include "Iterable.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
 
 /**
  *  \file

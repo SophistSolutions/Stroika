@@ -10,8 +10,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/SpinLock.h"
 #include "Stroika/Foundation/Math/Common.h"
-
-#include "Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  *  \brief qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ provides a lock-free 

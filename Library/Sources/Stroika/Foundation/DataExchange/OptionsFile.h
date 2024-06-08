@@ -11,13 +11,11 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Version.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/Variant/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/Writer.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
-
-#include "Variant/Reader.h"
-#include "Variant/Writer.h"
-
-#include "ObjectVariantMapper.h"
-#include "VariantValue.h"
 
 /**
  *  \file

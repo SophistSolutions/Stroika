@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "Generator.h"
+#include "Stroika/Foundation/Traversal/Generator.h"
 
 namespace Stroika::Foundation::Traversal {
 

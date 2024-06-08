@@ -9,8 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
-
-#include "Range.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 /**
  *  \file

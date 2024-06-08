@@ -10,8 +10,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
-
-#include "Common.h"
+#include "Stroika/Foundation/IO/FileSystem/Common.h"
 
 /**
  *  \file

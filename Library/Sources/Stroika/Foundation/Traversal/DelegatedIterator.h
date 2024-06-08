@@ -8,8 +8,7 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
-
-#include "Iterator.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 /**
  *  \file

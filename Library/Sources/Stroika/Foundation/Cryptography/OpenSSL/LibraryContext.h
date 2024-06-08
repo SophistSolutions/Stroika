@@ -20,8 +20,8 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
-#include "CipherAlgorithm.h"
-#include "DigestAlgorithm.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/CipherAlgorithm.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/DigestAlgorithm.h"
 
 /**
  *  \file

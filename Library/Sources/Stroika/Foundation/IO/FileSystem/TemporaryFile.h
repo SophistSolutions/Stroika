@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Common.h"
+#include "Stroika/Foundation/IO/FileSystem/Common.h"
 
 /**
  *  \file

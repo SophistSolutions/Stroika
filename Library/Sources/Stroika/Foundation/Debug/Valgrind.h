@@ -35,7 +35,7 @@
 #endif
 
 #if qStroika_FeatureSupported_Valgrind
-#include "valgrind/memcheck.h"
+#include <valgrind/memcheck.h>
 #endif
 
 /**

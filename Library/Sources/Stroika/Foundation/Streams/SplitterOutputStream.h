@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "OutputStream.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 /**
  *  \file

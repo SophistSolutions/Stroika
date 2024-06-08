@@ -8,9 +8,8 @@
 
 #include <string>
 
+#include "Stroika/Foundation/Characters/Character.h"
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "Character.h"
 
 namespace Stroika::Foundation::Characters {
 

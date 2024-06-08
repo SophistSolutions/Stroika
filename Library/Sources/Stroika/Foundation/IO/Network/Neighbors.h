@@ -11,10 +11,9 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Time/Duration.h"
-
-#include "Interface.h"
-#include "InternetAddress.h"
 
 /**
  *  \file

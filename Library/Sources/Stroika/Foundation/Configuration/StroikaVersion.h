@@ -7,9 +7,9 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if defined(__cplusplus)
-#include "Common.h"
+#include "Stroika/Foundation/Configuration/Common.h"
 #endif
-#include "VersionDefs.h"
+#include "Stroika/Foundation/Configuration/VersionDefs.h"
 
 /**
  *  \file

@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "Common.h"
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Cryptography/SSL/Common.h"
 
 namespace Stroika::Foundation::Cryptography::SSL {
 

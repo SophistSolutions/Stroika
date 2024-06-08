@@ -9,13 +9,13 @@
 #include <compare>
 #include <string>
 
-#include "InternetAddress.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "UniformResourceIdentification.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/UniformResourceIdentification.h"
 
 /**
  *  \file

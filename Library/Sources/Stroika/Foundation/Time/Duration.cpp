@@ -13,8 +13,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Linguistics/MessageUtilities.h"
 #include "Stroika/Foundation/Math/Common.h"
-
-#include "Duration.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;

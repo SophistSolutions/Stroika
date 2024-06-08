@@ -20,12 +20,11 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Time/Common.h"
+#include "Stroika/Foundation/Time/Date.h"
+#include "Stroika/Foundation/Time/TimeOfDay.h"
+#include "Stroika/Foundation/Time/Timezone.h"
 #include "Stroika/Foundation/Traversal/Range.h"
-
-#include "Common.h"
-#include "Date.h"
-#include "TimeOfDay.h"
-#include "Timezone.h"
 
 /**
  *  \file

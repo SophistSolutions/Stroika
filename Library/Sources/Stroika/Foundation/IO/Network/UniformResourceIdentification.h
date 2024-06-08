@@ -14,9 +14,8 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
-
-#include "InternetAddress.h"
-#include "Port.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/Port.h"
 
 /**
  *  \file

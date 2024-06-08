@@ -11,10 +11,9 @@
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
 #include "Stroika/Foundation/Execution/Activity.h"
 #endif
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/CheckedConverter.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-
-#include "BadFormatException.h"
-#include "CheckedConverter.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module (note the extra long name since its in a header)
 //#define Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_ 1

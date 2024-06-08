@@ -6,9 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
-
-#include "InputStream.h"
 
 /**
  *  \file

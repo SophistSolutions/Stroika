@@ -9,11 +9,10 @@
  */
 #include <set> // tmphack for sloppy RetainAll implementation
 
+#include "Stroika/Foundation/Containers/Factory/Mapping_Factory.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Traversal/Generator.h"
-
-#include "Factory/Mapping_Factory.h"
 
 namespace Stroika::Foundation::Containers {
 

@@ -6,9 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Connection.h"
-#include "Statement.h"
-#include "Transaction.h"
+#include "Stroika/Foundation/Database/SQL/Connection.h"
+#include "Stroika/Foundation/Database/SQL/Statement.h"
+#include "Stroika/Foundation/Database/SQL/Transaction.h"
 
 /*
  *  \file

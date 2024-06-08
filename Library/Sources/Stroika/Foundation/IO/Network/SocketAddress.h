@@ -14,8 +14,8 @@
 #include <WS2tcpip.h>
 #endif
 
-#include "InternetAddress.h"
-#include "Port.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/Port.h"
 
 /**
  * TODO:

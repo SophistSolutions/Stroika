@@ -13,9 +13,8 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-
-#include "Connection.h"
 
 /**
  *  \file
@@ -31,7 +30,7 @@ namespace Stroika::Foundation::Database::SQL {
     using DataExchange::VariantValue;
 
     /**
-     *  'Statement' is a non-copyable (but moveable) object, referencing a particalar SQL Connection object.
+     *  'Statement' is a non-copyable (but moveable) object, referencing a particular SQL Connection object.
      *
      *  \note - Design Note - we use String for the result-column-name - and could use int or Atom. But
      *        String slightly simpler, and nearly as performant, so going with that for now.

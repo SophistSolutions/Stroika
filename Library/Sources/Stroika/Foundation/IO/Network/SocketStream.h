@@ -7,9 +7,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/Streams/InputOutputStream.h"
-
-#include "ConnectionOrientedStreamSocket.h"
 
 /**
  *  \file

@@ -10,7 +10,7 @@
 #include <ios>
 #include <locale>
 #include <ranges>
-#include <sstream> //tmphack for my current formatter
+//#include <sstream> //tmphack for my current formatter
 
 #include "Stroika/Foundation/Characters/Character.h"
 #include "Stroika/Foundation/Characters/String.h"

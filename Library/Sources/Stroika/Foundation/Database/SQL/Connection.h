@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
-#include "EngineProperties.h"
+#include "Stroika/Foundation/Database/SQL/EngineProperties.h"
 
 /**
  *  \file

@@ -2,8 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
-#include "Private/IterableUtils.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Containers/Private/IterableUtils.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers {

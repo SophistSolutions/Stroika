@@ -16,9 +16,8 @@
 #include "Stroika/Foundation/Containers/Adapters/Adder.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/NullMutex.h"
-
-#include "BlockAllocated.h"
-#include "Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  *  \file

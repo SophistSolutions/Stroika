@@ -10,8 +10,7 @@
 #include <optional>
 
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "Iterator.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 /**
  *  \file

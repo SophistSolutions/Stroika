@@ -10,8 +10,7 @@
 #include <cstdint>
 
 #include "Stroika/Foundation/Characters/String.h"
-
-#include "VersionDefs.h"
+#include "Stroika/Foundation/Configuration/VersionDefs.h"
 
 /**
  *  \file

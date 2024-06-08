@@ -7,15 +7,14 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Empty.h"
-
-#include "BlockAllocator.h"
+#include "Stroika/Foundation/Memory/BlockAllocator.h"
 
 /**
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  @todo   Document why we didnt use BlockAllocated<T> : T ... issue is that wouldnt work for non-class T, such
+ *  @todo   Document why we didn't use BlockAllocated<T> : T ... issue is that wouldn't work for non-class T, such
  *          as int.
  *
  *  @todo   We should either add a VARIANT or template parameter to BlockAllocated<> saying whether we
@@ -31,7 +30,7 @@
  *
  *  \brief  Allow use of block-allocation im classes which uses DECLARE_USE_BLOCK_ALLOCATION()
  *
- *  Allow use of block-allocation. The main reason to disable it indescriminantly
+ *  Allow use of block-allocation. The main reason to disable it indiscriminately
  *  is for debugging purposes (looking for memory leaks). But others may have other
  *  reasons.
  *

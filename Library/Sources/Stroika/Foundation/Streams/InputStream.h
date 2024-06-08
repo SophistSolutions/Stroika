@@ -11,11 +11,9 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Streams/EWouldBlock.h"
+#include "Stroika/Foundation/Streams/Stream.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
-
-#include "EWouldBlock.h"
-
-#include "Stream.h"
 
 /**
  *  \file

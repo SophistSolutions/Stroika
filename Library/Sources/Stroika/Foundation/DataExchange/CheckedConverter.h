@@ -7,8 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-
-#include "BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 
 /**
  *  \file

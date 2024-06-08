@@ -6,8 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "InputStream.h"
-#include "OutputStream.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/OutputStream.h"
 
 /**
  *  \file

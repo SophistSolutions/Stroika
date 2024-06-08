@@ -9,10 +9,9 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
-
-#include "Common.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

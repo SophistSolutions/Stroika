@@ -14,9 +14,8 @@
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
-
-#include "CIDR.h"
-#include "InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/CIDR.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 
 /**
  *  \file

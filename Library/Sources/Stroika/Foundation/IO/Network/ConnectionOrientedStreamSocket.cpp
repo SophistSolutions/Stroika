@@ -15,11 +15,9 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
+#include "Stroika/Foundation/IO/Network/Socket-Private_.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
-
-#include "Socket-Private_.h"
-
-#include "ConnectionOrientedStreamSocket.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -39,7 +37,7 @@ namespace {
             : inherited{sd}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("Constructed BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_ with sd=%x", (int)sd);
+            DbgTrace ("Constructed BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_ with sd={:x}"_f, (int)sd);
 #endif
         }
         Rep_ ()            = delete;

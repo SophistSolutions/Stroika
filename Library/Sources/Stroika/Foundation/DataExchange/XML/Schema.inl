@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/Streams/TextReader.h"
 
-#include "Providers/IProvider.h"
+#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
 
 namespace Stroika::Foundation::DataExchange::XML::Schema {
 

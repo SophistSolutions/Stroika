@@ -2,6 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
+#include "Stroika/Foundation/Debug/Assertions.h"
+
 namespace Stroika::Foundation::Time {
 
     namespace Private_ {

@@ -19,10 +19,9 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Time/Common.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 #include "Stroika/Foundation/Traversal/Range.h"
-
-#include "Common.h"
-#include "Realtime.h"
 
 /**
  *  \file

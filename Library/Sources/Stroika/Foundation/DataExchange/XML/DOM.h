@@ -11,11 +11,10 @@
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/DataExchange/XML/Namespace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
-
-#include "Namespace.h"
 
 namespace Stroika::Foundation::DataExchange::XML::Schema {
     class Ptr;

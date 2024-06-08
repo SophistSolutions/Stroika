@@ -11,8 +11,7 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Configuration/TypeHints.h"
-
-#include "Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  *  \file

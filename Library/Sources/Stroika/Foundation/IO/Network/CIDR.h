@@ -9,9 +9,8 @@
 #include <compare>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
-
-#include "InternetAddress.h"
 
 /**
  *  \file

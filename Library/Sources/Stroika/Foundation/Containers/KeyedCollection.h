@@ -9,10 +9,9 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
-
-#include "Collection.h"
 
 /*
  *  \file

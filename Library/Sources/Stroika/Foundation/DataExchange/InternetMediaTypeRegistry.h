@@ -12,10 +12,9 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeNotSupportedException.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
-
-#include "InternetMediaType.h"
-#include "InternetMediaTypeNotSupportedException.h"
 
 /**
  *  \file

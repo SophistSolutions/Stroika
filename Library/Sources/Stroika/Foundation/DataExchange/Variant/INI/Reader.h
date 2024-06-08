@@ -8,10 +8,9 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/DataExchange/Variant/INI/Profile.h"
 #include "Stroika/Foundation/DataExchange/Variant/Reader.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
-
-#include "Profile.h"
 
 /**
  *  \file
@@ -92,6 +91,7 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
         nonvirtual Profile ReadProfile (istream& in);
         nonvirtual Profile ReadProfile (wistream& in);
     };
+
 }
 
 /*

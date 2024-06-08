@@ -10,9 +10,8 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
-
-#include "DiscreteRange.h"
-#include "DisjointRange.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Traversal/DisjointRange.h"
 
 /**
  *  \file

@@ -7,8 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Concepts.h"
-
-#include "KeyedCollection.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
 
 /**
  *  \file

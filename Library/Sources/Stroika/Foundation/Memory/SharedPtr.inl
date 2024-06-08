@@ -3,11 +3,10 @@
  */
 #include <mutex>
 
-#include "BlockAllocated.h"
-
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/SpinLock.h"
 #include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Memory {
     DISABLE_COMPILER_MSC_WARNING_START (4996);

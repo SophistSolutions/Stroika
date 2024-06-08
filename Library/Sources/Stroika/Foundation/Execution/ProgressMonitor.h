@@ -13,9 +13,8 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-
-#include "Thread.h"
 
 /**
  * TODO:

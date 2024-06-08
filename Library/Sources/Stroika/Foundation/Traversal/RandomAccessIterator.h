@@ -9,8 +9,7 @@
 #include <iterator>
 
 #include "Stroika/Foundation/Configuration/Common.h"
-
-#include "BidirectionalIterator.h"
+#include "Stroika/Foundation/Traversal/BidirectionalIterator.h"
 
 /**
  *

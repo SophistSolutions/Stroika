@@ -15,9 +15,8 @@ static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libx
 #include <libxml/xpathInternals.h>
 
 #include "Stroika/Foundation//DataExchange/XML/Common.h"
+#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
 #include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
-
-#include "IProvider.h"
 
 /**
  *  \file

@@ -10,8 +10,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
-
-#include "InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 
 /**
  *  \file
@@ -21,7 +20,7 @@
  * TODO:
  *      @todo   DNS::Default() vs DNS::kThe???
  * 
- *      @todo   How to add/integrate alternate dns impelmentations (maybe rename this to network-name-resolver???)
+ *      @todo   How to add/integrate alternate dns implementations (maybe rename this to network-name-resolver???)
  * 
  *      @todo   add CTOR args for DNS resolve instances with params like timeouts.
  *
