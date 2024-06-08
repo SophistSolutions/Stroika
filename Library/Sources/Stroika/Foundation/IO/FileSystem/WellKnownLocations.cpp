@@ -26,6 +26,7 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
 using Characters::SDKChar;
+using Characters::SDKString;
 
 /*
  ********************************************************************************
