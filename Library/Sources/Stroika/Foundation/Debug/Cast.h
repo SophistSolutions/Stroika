@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "Assertions.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 /**
  *  \file
