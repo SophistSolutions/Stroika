@@ -58,21 +58,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 bool IO::FileSystem::Ptr::Access (const filesystem::path& fileFullPath, AccessMode accessMode) const noexcept
 {
 // @todo FIX to only do ONE system call, not two!!!
-#if qPlatform_Windows
-    if ((accessMode & AccessMode::eRead) == AccessMode::eRead) {
-        DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
-        if (attribs == INVALID_FILE_ATTRIBUTES) {
-            return false;
-        }
-    }
-    if ((accessMode & AccessMode::eWrite) == AccessMode::eWrite) {
-        DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
-        if ((attribs == INVALID_FILE_ATTRIBUTES) or (attribs & FILE_ATTRIBUTE_READONLY)) {
-            return false;
-        }
-    }
-    return true;
-#elif qPlatform_POSIX
+#if qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
     if ((accessMode & AccessMode::eRead) == AccessMode::eRead) {
@@ -82,6 +68,20 @@ bool IO::FileSystem::Ptr::Access (const filesystem::path& fileFullPath, AccessMo
     }
     if ((accessMode & AccessMode::eWrite) == AccessMode::eWrite) {
         if (access (fileFullPath.c_str (), W_OK) != 0) {
+            return false;
+        }
+    }
+    return true;
+#elif qPlatform_Windows
+    if ((accessMode & AccessMode::eRead) == AccessMode::eRead) {
+        DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
+        if (attribs == INVALID_FILE_ATTRIBUTES) {
+            return false;
+        }
+    }
+    if ((accessMode & AccessMode::eWrite) == AccessMode::eWrite) {
+        DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
+        if ((attribs == INVALID_FILE_ATTRIBUTES) or (attribs & FILE_ATTRIBUTE_READONLY)) {
             return false;
         }
     }
