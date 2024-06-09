@@ -18,7 +18,7 @@ especially those they need to be aware of when upgrading.
 - Added Ubuntu 24.04 support (workaround tsan issue with /proc/sys/vm/mmap_rnd_bits and LINUX), Lose Ubuntu 20.04 support, added VS_17_10_1, clang 17/18 g++14
 - Execution::Logger - allow multiple appenders, and use new _f strings
 - DataExchange::JSON {Pointer and Merge - draft support}
-- githyb action macos:  fix to libid2n not found for macos14 (reported to github actions support, but they ignored/misunderstood)
+- github action macos:  fix to libid2n not found for macos14 (reported to github actions support, but they ignored/misunderstood)
 
 #### Upgrade Notes (3.0d5 to 3.0d6)
 - Replace all use of c-style format strings with _f strings (using new {} stdc++ style format)
@@ -63,6 +63,12 @@ especially those they need to be aware of when upgrading.
       much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
   - Skel
     - skel makefile .notparallel fix
+    - added Release-Logging configuraiton to default-configurations for Skelq
+  - Regression Tests
+    - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
+    - update regtest docs - new 24.04 ubuntu lose 20.04
+    - disbale clang++-15 on with libc++ on ubuntu 24.04
+    - cosmeitc and workarounds for missing locale in regtests
   - DockerFile
     - readme docs
     - Windows
@@ -81,68 +87,63 @@ especially those they need to be aware of when upgrading.
       - updated Dockerfile CMD -l and bash profile for Ubuntu 24.04 small container so prints message about reading Getting Started
     - Makefile
       - BUILD_DEV_IMAGES flag building docker images - so maybe can avoid running  out of space on github actions - dont need to build there
-- ScriptsLib/
-  - optional USE_NMAESPACE arg to ScriptsLib/MakeVersionFile
-  - was calling ScriptsLib/MakeVersionFile with 5 args, but inorning any past 3 - which worked badly when I added new optional 4th param! - so fixed calls and added the optional 4th (namespace) param
-  - more tweaks to Scripts/MakeVersionFile (#define protecter)
-  - tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
-  -  new ./ScriptsLib/GetGCCVersion script (and used in configure)
-  - draft Scripts/GetClangVersion script (and used in configure)
-- Supported Platforms
-  - ubuntu lose 20.04
-  - added 24.04
-- Supported Compilers
-  - Added makefile configs for clang++17 and clang++18, and g++-14
-- Compiler Bug Defines/BWA
-  - need extra BWA for arm for qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
-  - qCompilerAndStdLib_FormatRangeRestriction_Buggy define and BWA
-  - qCompilerAndStdLib_stacktraceLinkError_Buggy BWA for gcc 13 / ununtu 24.04
-  - qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy BWA for clang++-18
-  - bug defines (incliding qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy) for g++-14 Ubuntu 24.04 support
-  - new qCompilerAndStdLib_template_map_tuple_insert_Buggy define and BWA
-  - added qCompilerAndStdLib_StdBacktraceCompile_Buggy define and workaround
-  - updated bug define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
-  - qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy broken on clang++18 too
-  - support qCompilerAndStdLib_vector_constexpr_Buggy for _GLIBCXX_RELEASE == 11
-  - fixes for qCompilerAndStdLib_vector_constexpr_Buggy
-  - qCompilerAndStdLib_vector_constexpr_warning_Buggy BWA
-  - qCompilerAndStdLib_vector_constexpr_warning_Buggy ONLY works for _GLIBCXX_RELEASE==13
-  - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken on clang++16 too (or something similar - maybe bad name)
-  - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-17
-  - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken with clang++-18
-  - draft qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER so xcode compiles with new formatter code
-  - updated def for qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER bug define
-  - progress on BWA for qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
-  - renamed qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER -> qCompilerAndStdLib_template_concept_matcher_requires_Buggy
-  - fixed typo; and qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken in clang++-18
-  - qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken for clang++18
-  - maybe fix qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for clang/macos
-  - qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY and minor cosmetic
-  - cosmetic and renamed qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY -> qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-  - better workaround for qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-  - qCompilerAndStdLib_FormatThreadId_Buggy BWA
-  - additiopnal place broken for what I think is qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy - same bug basically
-  - qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy define and BWA
-  - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++15 as well
-  - cosmetic; and qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken for clang++16
-  - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken on clang++17 too
-  - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy broken on clang++18 ubuntu 24.04
-  - new qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy Bug define/workaround
-  - compiler bug defines for clang++-17
-  - clang++-16/17 with libcstd++ doesn't support c++23 mode - in configure script so can lose one workaround in googletest makefile
-  - configure: only set HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for clang++16 and earlier (seems OK with clang++-17)
-  - Add another case for BWA for HasMakefileBugWorkaround_lto_skipping_undefined_incompatible
-  - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible broken on clang++-17 too (ubuntu 23.10)
-  - ..._lto_skipping_undefined_incompatib broken with clang++-18
-  - compiler bug defines for clang++-18
-  - g++-14 LTO workarounds/disable some warnings in configure
-  - for Ubuntu 24.04 - disable LTO by default on clang++18 (and earlier)
-  - check HasMakefileBugWorkaround_lto_skipping_undefined_incompatible on building zlib as well - needed for clang++-18 on ubuntu 24.04
-  - Support _MSC_VER_2k22_17Pt10_ bug defines
-  - up a few _LIBCPP_VERSION BWA defines - cuz broken in version 18 of lib as well (tested on untunu 24.04)
-  - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible brokne on clang++16 and ubuntu 24.04 as well
-  - avoid asan on some tests cuz broken on clang++16 ubuntu 23.10 sometimes
-  - fixed a few compiler bug defines for g++-14
+  - ScriptsLib/
+    - optional USE_NMAESPACE arg to ScriptsLib/MakeVersionFile
+    - was calling ScriptsLib/MakeVersionFile with 5 args, but inorning any past 3 - which worked badly when I added new optional 4th param! - so fixed calls and added the optional 4th (namespace) param
+    - more tweaks to Scripts/MakeVersionFile (#define protecter)
+    - tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
+    - new ./ScriptsLib/GetGCCVersion script (and used in configure)
+    - draft Scripts/GetClangVersion script (and used in configure)
+  - Supported Platforms
+    - ubuntu lose 20.04
+    - added 24.04
+  - Supported Compilers
+    - Added makefile configs for clang++17 and clang++18, and g++-14
+
+  - Compiler Bug Defines/BWA
+    - BWA_Helper_ContraintInMemberClassSeparateDeclare_
+    - qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy BWA for clang++-18
+    - qCompilerAndStdLib_FormatRangeRestriction_Buggy define and BWA
+    - qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy: need extra BWA for arm
+    - bug defines (incliding qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy) for g++-14 Ubuntu 24.04 support
+    - qCompilerAndStdLib_stacktraceLinkError_Buggy BWA for gcc 13 / ununtu 24.04
+    - updated bug define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
+    - new qCompilerAndStdLib_template_map_tuple_insert_Buggy define and BWA
+    - added qCompilerAndStdLib_StdBacktraceCompile_Buggy define and workaround
+    - qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy broken on clang++18 too
+    - support qCompilerAndStdLib_vector_constexpr_Buggy for _GLIBCXX_RELEASE == 11
+    - fixes for qCompilerAndStdLib_vector_constexpr_Buggy
+    - qCompilerAndStdLib_vector_constexpr_warning_Buggy BWA (ONLY works for _GLIBCXX_RELEASE==13)
+    - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken on clang++16 thru clang++18
+    - draft qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER so xcode compiles with new formatter code
+    - updated def for qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER bug define
+    - progress on BWA for qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER
+    - renamed qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER -> qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+    - fixed typo; and qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken in clang++-18
+    - qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken for clang++18
+    - maybe fix qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for clang/macos
+    - qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY and minor cosmetic
+    - cosmetic and renamed qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY -> qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+    - better workaround for qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+    - qCompilerAndStdLib_FormatThreadId_Buggy BWA
+    - additiopnal place broken for what I think is qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy - same bug basically
+    - qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy define and BWA
+    - new qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy Bug define/workaround
+    - compiler bug defines for clang++-17
+    - clang++-16/17 with libcstd++ doesn't support c++23 mode - in configure script so can lose one workaround in googletest makefile
+    - configure: only set HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for clang++16 and earlier (seems OK with clang++-17)
+    - Add another case for BWA for HasMakefileBugWorkaround_lto_skipping_undefined_incompatible
+    - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible broken on clang++-17 too (ubuntu 23.10)
+    - ..._lto_skipping_undefined_incompatib broken with clang++-18
+    - compiler bug defines for clang++-18
+    - g++-14 LTO workarounds/disable some warnings in configure
+    - for Ubuntu 24.04 - disable LTO by default on clang++18 (and earlier)
+    - check HasMakefileBugWorkaround_lto_skipping_undefined_incompatible on building zlib as well - needed for clang++-18 on ubuntu 24.04
+    - Support _MSC_VER_2k22_17Pt10_ bug defines
+    - up a few _LIBCPP_VERSION BWA defines - cuz broken in version 18 of lib as well (tested on untunu 24.04)
+    - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible brokne on clang++16 and ubuntu 24.04 as well
+    - avoid asan on some tests cuz broken on clang++16 ubuntu 23.10 sometimes
+    - fixed a few compiler bug defines for g++-14
 - All Source Files
   - Use Stroika-root relative paths instead of . relative paths #includes (so things line up better, copy-pasta better, and slightly clearer, though slightly more verbose)
   - lose include guards from .inl files and normalize formatting - since always included inside .h inside include guard
@@ -170,30 +171,20 @@ especially those they need to be aware of when upgrading.
         - small progress on formatters for String/ToString - - and regtest to fiddle - trying to mkae String formatter like wstring formatter for starters
         - for now - String and ToString formatters redirect to String (and wstring) formatters, so inherit all those format specs. Considering alternatives, but thats it for now
         - Lose (quoting) feature of ToString(String) - wrapping in quotes and doing StringShorteningPreference by default - maybe re-enable in some form, but probably more like std new formatting code (? in format string)
-        - more tweaks to IUseToStringFormatterForFormatter_ - start support for ranges
-        - COmment out range support in IUseToStringFormatterForFormatter_
-        - fix typo; fixed range support on IUseToStringFormatterForFormatter_
-        - IUseToStringFormatterForFormatter_ also chekcs IKeyValuePair
-        - define new Configuraiton::ITuple concept and use in IUseToStringFormatterForFormatter_
-        - more tweaks/tests for IUseToStringFormatterForFormatter_
         - progress enhancing IUseToStringFormatterForFormatter_ - test carefullybefore adding more cases
         - perhaps fix clang++16 support for IUseToStringFormatterForFormatter_
         - IUseToStringFormatterForFormatter_ tweaks for differnt compiler/libs combos - still probably alot todo here
         - more converts of DbgTrace and Format calls to new style, and IUseToStringFormatterForFormatter_ fixes for MSFT compilers (quirky way to check for stdc++23)
-        - More IUseToStringFormatterForFormatter_ fixes for diff compilers
-        - More tweaks with IUseToStringFormatterForFormatter_ definition and static asserts to test and a few use cases
-        - more tweaks to IUseToStringFormatterForFormatter_ bug/missing feature defines
-        - Added IVariant to ToString (formatter) support
         - TraceContextBumper restructure CTORs, and deprecate old format based API (sprintf strings); and used new API instead of deprecated one throughtout most of Stroika
         - TraceContextBumper support new style format strings (and a couple test cases)
-    - Concepts
-      - Added IStdOptional and ExtractStdOptionalOf_t utilities/concepts
-      - ICountedValue concept (use ICOuntedValue in ToString)
-      - IKeyValuePair concept
-      - Configuration::IOptional; 
-      - Configuration::IPair
-      - IVariant concept
     - Configuration
+      - Concepts
+        - New Configuration::IStdOptional and Configuration::ExtractStdOptionalOf_t utilities/concepts
+        - New Configuration::ICountedValue concept
+        - New Configuration::IKeyValuePair concept
+        - New Configuration::IOptional; 
+        - New Configuration::IPair
+        - New Configuration::IVariant concept
       - Enumeration
         - is_constant_validated in EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_
         - EnumNames support for Characters::CompareOptions
@@ -210,15 +201,10 @@ especially those they need to be aware of when upgrading.
       - JSON
         - JSON Pointer/JSON Patch
           - new draft support
-            - Draft (but more or less complete/real) support for JSON::PointerType
-            - regtests for jsonpointer
-            - finished jsonpointer regtest and added new one for issue with reading JSON from String
+            - Draft (but more or less complete/real) support for JSON::PointerType (and regtests)
             - JSON PointerType Support Context and ApplyWithContext (for use in Patch, but still incomplete)
-            - Minor prorgress on JSON::Merge
-            - Bit more progress on JSON Patch code - one simple test case working - but lots of work to go
-            - tweaks to JSON::Patch code (mostly regtest)
-            - small progress on JSON::Patch code
-            - JSON::PointerType CTOR (stringish) - not just string - making use easier
+            - Draft support for JSON::Merge
+            - Draft support forJSON Patch code - one simple test case working - but lots of work to go, and did simple regtest
       - ObjectVariantMapper
         - ObjectVariantMapper::ToObjectQuietly () new function
         - lots of cleanups to ObjectVariantMapper: and static const kException_
@@ -270,7 +256,6 @@ especially those they need to be aware of when upgrading.
       - Filesystem
         - qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin support, and regtests (ToPath)
         - AdoptFDPolicy no longer has eDEFAULT - since there is no safe value - force specification by callers - so deprecated a couple FileInput/OutputStream New () overloads
-        - docs cleanups
         - new IO::Filesystem::CreateTmpFile and use that in AppTempFileManager, and minor cleanups to names and args in TemporaryFile code (not fully backward compat but SB simple enuf to update/adapt)
       - Network
         - fix includes so MacOS includes TCP_NODELAY define
@@ -332,13 +317,6 @@ especially those they need to be aware of when upgrading.
   - zlib
     - changed zlib build to only remove sofiles/dlls not zlib.pc file (losing lib/pkgconfig/zlib.pc etc from zlib build)
     - no longer needed to install libz.a on regression test images
-- Regression Tests
-  - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
-  - update regtest docs - new 24.04 ubuntu lose 20.04
-  - disbale clang++-15 on with libc++ on ubuntu 24.04
-  - cosmeitc and workarounds for missing locale in regtests
-- Skel
-  - added Release-Logging configuraiton to default-configurations for Skelq
 
 #### Release-Validation
 - Compilers Tested/Supported
