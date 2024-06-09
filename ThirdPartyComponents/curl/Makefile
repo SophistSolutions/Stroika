@@ -18,6 +18,10 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
+#
+# CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
+#
+
 VERSION=8.8.0
 #VERSION=8.7.1
 #VERSION=8.6.0
@@ -28,9 +32,6 @@ TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
 
-#
-# CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
-#
 
 FETCHURLS=
 FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
