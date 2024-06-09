@@ -321,7 +321,7 @@ especially those they need to be aware of when upgrading.
     - https://github.com/fmtlib/fmt/releases
     - configure support so only builds if needed - cuz using stdlib that doesn't have it.
   - openssl 
-    - VERSION 3.3.0
+    - VERSION 3.3.1
     - disable https://stroika.atlassian.net/browse/STK-948 openssl lib build workaround
   - sqlite
     - VERSION 3.46.0
