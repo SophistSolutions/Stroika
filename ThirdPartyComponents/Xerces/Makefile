@@ -24,6 +24,11 @@ endif
 
 QUICK_BUILD ?= 1
 
+
+#
+# CHECK FOR UPDATED VERSIONS http://xerces.apache.org/xerces-c/
+#
+
 VERSION=3.2.5
 #VERSION=3.2.4
 #VERSION=3.2.3
@@ -55,9 +60,6 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-#
-# CHECK FOR UPDATED VERSIONS http://xerces.apache.org/xerces-c/
-#
 
 FETCHURLS=
 #
