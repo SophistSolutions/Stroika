@@ -758,7 +758,9 @@ sub WriteVSCodeCPPExtensionConfigFile
 		if (index ($PkgConfigNames, "libxml-2.0") != -1) {
 			$newCfgObj .= " , ";
 			my $element = trim (`realpath --canonicalize-missing Builds/$activeConfiguration/ThirdPartyComponents/include/libxml2`) . "/";
-			$element = trim ("`cygpath --mixed --path \"$element\"`");
+			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+				$element = trim ("`cygpath --mixed --path \"$element\"`");
+			}
 			$newCfgObj .= "\\\"$element\\\"";
 		}
 		$newCfgObj .= "]";
