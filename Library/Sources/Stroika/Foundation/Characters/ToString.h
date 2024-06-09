@@ -8,6 +8,7 @@
 
 #include <ios>
 #include <optional>
+#include <sstream>
 #include <thread>
 #include <tuple>
 #include <typeindex>
