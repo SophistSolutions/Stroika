@@ -3085,7 +3085,7 @@ if ($onlyGenerateIfCompilerExists) {
 	if ($generate && $ubuntuVersion == 22.04) {
 		# needed for [34] Foundation::DataExchange::XML - scp ../Builds/raspberrypi-g++-12-release-sanitize_address/Tests/Test34...; ssh lewis@192.168.244.32   /tmp/Test34 --gtest_brief
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
+			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0 && $ARCH eq "armhf") {
 				# maybe only needed for release builds - but fine tune tests later in the cycle, and also not checking if arm only issue
 				if (IsTargettingSanitizer_ ('address')) {
 					$generate = false;
@@ -3099,7 +3099,7 @@ if ($onlyGenerateIfCompilerExists) {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14.0) {
 				# maybe only needed for release builds - but fine tune tests later in the cycle, and also not checking if arm only issue
-				if (IsTargettingSanitizer_ ('address')) {
+				if (IsTargettingSanitizer_ ('address') && $ARCH eq "armhf") {
 					$generate = false;
 					$generateBecause = "bogus failure on raspberrypi-g++-12-release-sanitize_address/Tests/Test34 - so skipping asan by default - for this target";
 				}
