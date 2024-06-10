@@ -28,6 +28,7 @@ namespace Stroika::Foundation::DataExchange::JSON {
      * 
      *  Note this really only supports fully looking up data in an VariantValue, not (yet) providing the ability
      *  to index to update a VariantValue (like add to an array elt - need fancier Apply API support for that).
+     *          @todo https://stroika.atlassian.net/browse/STK-1007 - improve API to allow update
      */
     class PointerType {
     public:

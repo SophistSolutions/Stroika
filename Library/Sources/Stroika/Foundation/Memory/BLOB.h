@@ -22,12 +22,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- * TODO:
- *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <byte> and
- *              only (or handle differently) random access iterators versus just plain forward iterators.
- *
- *      @todo   Do CTOR that uses iterator start/end not just const byte* start, const byte* end.
- *
  */
 
 namespace Stroika::Foundation::Characters {
@@ -56,15 +50,15 @@ namespace Stroika::Foundation::Memory {
      *      This is like memcmp() - bytewise unsigned comparison
      * 
      *  \note Interactions with Memory::MemoryMappedFileReader
-     *        We provide no AUTOMATIC way to combine these, because its not safe (in general, but can be given specific applicaiton
+     *        We provide no AUTOMATIC way to combine these, because its not safe (in general, but can be given specific application
      *        knowledge). And it can be quite efficient. So use BLOB::Adopt() on some existing MemoryMappedFileReader - but its up to use/
-     *        application to assure the lifetime of the filereader is > any copies of the shared_rep derived from the adopted BLOB.
+     *        application to assure the lifetime of the file reader is > any copies of the shared_rep derived from the adopted BLOB.
      * 
      *  \note Performance
      *      o   Copying a BLOB is just copying a shared_ptr
      *      o   Allocation should be extremely cheap, due to the use of make_shared<> or allocate_shared<> or 
      *          Memory::UseBlockAllocationIfAppropriate<>
-     *          which should use the block allocation storage mechansism, which is generally a lock free very fast allocator.
+     *          which should use the block allocation storage mechanism, which is generally a lock free very fast allocator.
      *          And the use of InlineBuffer<64> means that allocation of BLOBs of size <= 64 should requite no calls to the
      *          global ::operator new/malloc/free/delete
      */

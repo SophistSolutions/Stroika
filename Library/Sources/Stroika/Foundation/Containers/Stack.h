@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \note When copying an Iterable<> or range, the copy is done by repeatedly pushing
-         *        the arguments in the revsere order they are encountered, thus preserving the 'iteration order'
+         *        the arguments in the reverse order they are encountered, thus preserving the 'iteration order'
          *        of argument and copied stack.
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>

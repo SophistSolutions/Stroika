@@ -40,7 +40,7 @@ namespace Stroika::Foundation::DataExchange {
      *  @todo - CLEANUP DOCS
      */
     struct AtomManager_Default {
-        typedef ptrdiff_t                 AtomInternalType;
+        using AtomInternalType                   = ptrdiff_t;
         static constexpr AtomInternalType kEmpty = -1;
         // This API must accept an empty string as argument and return kEmpty
         static AtomInternalType Intern (const String& s);
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::DataExchange {
     };
 
     struct AtomManager_CaseInsensitive {
-        typedef ptrdiff_t                 AtomInternalType;
+        using AtomInternalType                   = ptrdiff_t;
         static constexpr AtomInternalType kEmpty = -1;
         static AtomInternalType           Intern (const String& s);
         static String                     Extract (AtomInternalType atomI);
