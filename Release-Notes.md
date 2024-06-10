@@ -219,13 +219,13 @@ especially those they need to be aware of when upgrading.
       - VariantValue
         - VariantValue cleanup of As<> template (IAnyOf) and take nullopt or nullptr
         - Improved VariantValue As<> function to handle optional
-        - VariantValue::Set overloads
         - template<typename T> VariantValue::operator T () const same as VariantValue::As<T> () - but explicit
         - VariantValue - cleanup DbgTrace usage; and in a few cases added stuff to teh thrown exception about why failed
       - XML
         - XML::DOM::Element code Append, and SetAttribute allow value to be VariantValue, and just silently As<String> it
         - cleanup XML DOM RootElement default namespace code for ReplaceRootElement
         - Added Document::Ptr::LookupOneElement / Lookup / LookupElements
+        - DOM::Element::SetValue overloads
         - LibXML2
           - New resolver support code
           - fix exception safety bug in XPathLookupHelper_ LibXML2
