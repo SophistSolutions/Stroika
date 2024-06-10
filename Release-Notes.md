@@ -94,6 +94,8 @@ especially those they need to be aware of when upgrading.
     - tweak ScriptsLib/RunLocalWindowsDockerRegressionTests
     - new ./ScriptsLib/GetGCCVersion script (and used in configure)
     - draft Scripts/GetClangVersion script (and used in configure)
+    - RunLocalWindowsDockerRegressionTests
+      - workaround bugs in latest windows docker desktop - copying files indide docker with a mount, not using docker cp - which doesnt appear to work anymore for windows containers
   - Supported Platforms
     - ubuntu lose 20.04
     - added 24.04
