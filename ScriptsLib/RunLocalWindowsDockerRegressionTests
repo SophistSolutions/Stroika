@@ -31,7 +31,7 @@ fi
 
 # FYI possible error: https://stackoverflow.com/questions/67162945/docker-for-windows-the-requested-resource-is-in-use-error-when-mem-limit-is-set
 
-echo "Running docker build (${CONTAINER_IMAGE} for ${USE_TEST_BASENAME})(usually takes about 10 hrs)"
+echo "Running docker build (${CONTAINER_IMAGE} for ${USE_TEST_BASENAME})(usually takes about 7 hrs)"
 $DOCKER run \
     ${DOCKER_RUN_ARGS_} \
     --storage-opt "size=125GB" \
