@@ -61,6 +61,7 @@ especially those they need to be aware of when upgrading.
     - fixed configure script to better check for asan/memory issue - https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
     - cleanups to PkgConfigNames handling - moved some workarounds from configure to ApplyConfigurations -
       much more to cleanup/fix - but OK for now (as good as ever) - related to https://stroika.atlassian.net/browse/STK-1005
+    - fix bug where configure --no-sanitize address didn't fully remove references to address
   - Skel
     - skel makefile .notparallel fix
     - added Release-Logging configuraiton to default-configurations for Skelq

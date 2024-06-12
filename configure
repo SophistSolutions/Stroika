@@ -2455,14 +2455,18 @@ sub PostProcessOptions_ ()
 			my %inNoSanitizeList = map { $_ => 1 } @noSanitizerFlags;
 			my $crap2Add2CZZFlags = "";
 			$crap2Add2CZZFlags .= "-fsanitize=";
+			my @effectiveSanitizerFlags = ();
 			foreach my $i (0 .. $#sanitizerFlags) {
 				if(!exists($inNoSanitizeList{$sanitizerFlags[$i]})) {
 					$crap2Add2CZZFlags .= $sanitizerFlags[$i];
 					if ($i < $#sanitizerFlags) {
 						$crap2Add2CZZFlags .= ",";
 					}
+					
+					push @effectiveSanitizerFlags, $sanitizerFlags[$i];
 				}
 			}
+			@sanitizerFlags = @effectiveSanitizerFlags;	# subtract out no-sanitize entries
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 				$LinkerArgs_ExtraPrefix .= " " . $crap2Add2CZZFlags;
 			}
