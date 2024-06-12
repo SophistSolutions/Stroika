@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 3.0d6 {2024-06-xx} {[diff](../../compare/v3.0d5...v3.0d6)} --DRAFT
+### 3.0d6 {2024-06-13} {[diff](../../compare/v3.0d5...v3.0d6)} --DRAFT
 
 #### TLDR
 - _f strings and new Format () API (based on new std::format<>)
@@ -54,8 +54,8 @@ especially those they need to be aware of when upgrading.
       since appears to not work; and various issues with latest curl build and clang and old gcc too fixed (maybe same issue with asan)
     - only do configure BWA for ununtu 22.04 since comment says all thats needed - see if more needed
     - configure script - warning on bad VSVARS_WindowsSdkDir
-    - disable asaon on ubuntu 23.10 and g++12 since doesnt appear to work
-    - configure: skip using asan configure change for 23.10 ubuntu - not supported version so not worth diggigin
+    - disable asan on ubuntu 23.10 and g++12 since doesnt appear to work
+    - configure: skip using asan configure change for 23.10 ubuntu - not supported version so not worth diggiging into (maybe mmap_rnd_bits issue)
     - configure: IsTargettingSanitizer_ refactor of configure code (minor - sb now change in behavior)
     - configure getXCOde version script along with using it to check if xcode < 15.3 and only turning on fmtlib then (for xcode builds)
     - fixed configure script to better check for asan/memory issue - https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kern... issue
@@ -64,12 +64,12 @@ especially those they need to be aware of when upgrading.
     - fix bug where configure --no-sanitize address didn't fully remove references to address
   - Skel
     - skel makefile .notparallel fix
-    - added Release-Logging configuraiton to default-configurations for Skelq
+    - added Release-Logging configuraiton to default-configurations for Skel
   - Regression Tests
     - Cleanup several more regtests to follow gtest 'tests' pattern better (instead of one massive all test).
     - update regtest docs - new 24.04 ubuntu lose 20.04
     - disbale clang++-15 on with libc++ on ubuntu 24.04
-    - cosmeitc and workarounds for missing locale in regtests
+    - cosmetic and workarounds for missing locale in regtests
   - DockerFile
     - readme docs
     - Windows
@@ -102,7 +102,6 @@ especially those they need to be aware of when upgrading.
     - added 24.04
   - Supported Compilers
     - Added makefile configs for clang++17 and clang++18, and g++-14
-
   - Compiler Bug Defines/BWA
     - BWA_Helper_ContraintInMemberClassSeparateDeclare_
     - qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy BWA for clang++-18
@@ -115,7 +114,6 @@ especially those they need to be aware of when upgrading.
     - added qCompilerAndStdLib_StdBacktraceCompile_Buggy define and workaround
     - qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy broken on clang++18 too
     - support qCompilerAndStdLib_vector_constexpr_Buggy for _GLIBCXX_RELEASE == 11
-    - fixes for qCompilerAndStdLib_vector_constexpr_Buggy
     - qCompilerAndStdLib_vector_constexpr_warning_Buggy BWA (ONLY works for _GLIBCXX_RELEASE==13)
     - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken on clang++16 thru clang++18
     - draft qCOMPILER_BUG_MAYBE_TEMPLATE_OPTIONAL_CONCEPT_MATCHER so xcode compiles with new formatter code
@@ -126,25 +124,20 @@ especially those they need to be aware of when upgrading.
     - qCompilerAndStdLib_template_concept_matcher_requires_Buggy broken for clang++18
     - maybe fix qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for clang/macos
     - qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY and minor cosmetic
-    - cosmetic and renamed qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY -> qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-    - better workaround for qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+    - cosmetic and renamed qCOMPILER_BUG_TIMEPOINT_FLOAT_BUGGY -> qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy; and better workaround for qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
     - qCompilerAndStdLib_FormatThreadId_Buggy BWA
     - additiopnal place broken for what I think is qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy - same bug basically
     - qCompilerAndStdLib_LTOForgetsAnIlineSometimes_Buggy define and BWA
     - new qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy Bug define/workaround
     - compiler bug defines for clang++-17
     - clang++-16/17 with libcstd++ doesn't support c++23 mode - in configure script so can lose one workaround in googletest makefile
-    - configure: only set HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for clang++16 and earlier (seems OK with clang++-17)
-    - Add another case for BWA for HasMakefileBugWorkaround_lto_skipping_undefined_incompatible
-    - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible broken on clang++-17 too (ubuntu 23.10)
-    - ..._lto_skipping_undefined_incompatib broken with clang++-18
+    - configure: only set HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for clang++16 and earlier (seems OK with clang++-17, except broken on clang++-17 too (ubuntu 23.10), 18 sometimes too); Add another case for BWA for HasMakefileBugWorkaround_lto_skipping_undefined_incompatible
     - compiler bug defines for clang++-18
     - g++-14 LTO workarounds/disable some warnings in configure
     - for Ubuntu 24.04 - disable LTO by default on clang++18 (and earlier)
     - check HasMakefileBugWorkaround_lto_skipping_undefined_incompatible on building zlib as well - needed for clang++-18 on ubuntu 24.04
     - Support _MSC_VER_2k22_17Pt10_ bug defines
     - up a few _LIBCPP_VERSION BWA defines - cuz broken in version 18 of lib as well (tested on untunu 24.04)
-    - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible brokne on clang++16 and ubuntu 24.04 as well
     - avoid asan on some tests cuz broken on clang++16 ubuntu 23.10 sometimes
     - fixed a few compiler bug defines for g++-14
 - All Source Files
