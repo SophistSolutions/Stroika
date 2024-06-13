@@ -327,7 +327,7 @@ namespace Stroika::Frameworks::Led {
                 gets a box drawn around it (on the outside bounds). These 'cell bounds' may not exactly touch each other on the
                 edges by so that they SHARE the border separating each from its sibling. Also - they may not touch because
                 of cell spacing (@'WordProcessorTable::GetCellSpacing').</p>
-                    <p>The actaul 'edit window' within a cell is inset by its cell margins. This value defaults
+                    <p>The actual 'edit window' within a cell is inset by its cell margins. This value defaults
                 to that provided by @'WordProcessorTable::GetDefaultCellMargins', but at some point (maybe for 3.1?)
                 will be overridable on a per-cell basis.</p>
     */

@@ -122,7 +122,7 @@ void HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
         <p>This routine assures that after the call - all text in the given range is encapsulated by a hidden-text
     marker or markers.</p>
         <p>Note - this does <em>NOT</em> actually hide the text. You must then call @'HidableTextMarkerOwner::HideAll' and give
-    it the same range given this function to get the text to actaully disapear from the screen.</p>
+    it the same range given this function to get the text to actually disapear from the screen.</p>
         <p>See also @'HidableTextMarkerOwner::MakeRegionUnHidable'</p>
 */
 void HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)

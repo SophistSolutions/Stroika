@@ -123,7 +123,7 @@ namespace Stroika::Frameworks::Led {
         virtual TWIPS ComputeIthTab (size_t i) const = 0;
         /*
         @DESCRIPTION:   <p>Given a distance from the left margin, find the immediately following tabstops position.
-            This is what is actaully used in the imagers to compute where to draw text. It can logically
+            This is what is actually used in the imagers to compute where to draw text. It can logically
             be implemented by walking the tabstoplist and calling @'TabStopList::ComputeIthTab', and
             returning the next one after the one past(or equal to) <code>afterPos</code>.</p>
                 <p>Note - this used to take/return Distance - but in Led 3.0 - it changed to take/return TWIPS (see SPR#0767);</p>

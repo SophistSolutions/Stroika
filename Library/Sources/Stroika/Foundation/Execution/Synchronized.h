@@ -652,7 +652,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void _NoteLockStateChanged (const wchar_t* m) const;
 
     private:
-        ReadLockType_ fSharedLock_{}; // MAYBE unused if actaul readlock held elsewhere, like in subclass
+        ReadLockType_ fSharedLock_{}; // MAYBE unused if actual readlock held elsewhere, like in subclass
 
     private:
         friend class Synchronized;

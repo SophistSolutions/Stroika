@@ -2310,7 +2310,7 @@ void TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedT
             The 'startOfInsert' / 'endOfInsert' passed here refer to the region of text which must be preserved.
             The actual selection saved will be the currently selected text at the time this method is called.</p>
                 <p>Note - the startOfInsert/endOfInsert can differ from the selection region because things like
-            SmartCutAndPaste can expand the affected area of text to BEYOND what was actaully selected by the user.</p>
+            SmartCutAndPaste can expand the affected area of text to BEYOND what was actually selected by the user.</p>
                 <p>This method operatates by calling @'TextInteractor::PostInteractiveUndoPostHelper' with the
             beforeRep argument given this function and an afterRep computed herein.</p>
                 <p>NB: As of Led 3.1a6 - we require that fCommandHandler != nullptr to call this.</p>

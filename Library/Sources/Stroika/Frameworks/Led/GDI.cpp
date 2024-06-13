@@ -1172,7 +1172,7 @@ void Tablet::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led
      *
      *  NB: This code assumes we're pointing at an 8-bit COLOR-LOOKUP-TABLE based Image
      *
-     *  Note - this also may be modifying MUCH MORE than is actaully needed. It goes all the way to the
+     *  Note - this also may be modifying MUCH MORE than is actually needed. It goes all the way to the
      *  end of the ROW of pixels - but we could be using much less.
      *
      *  In order to remedy that - I tried constructing the DIBSECTION on the fly - instead of caching it. That turned
