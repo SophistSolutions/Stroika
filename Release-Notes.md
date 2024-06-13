@@ -341,6 +341,8 @@ especially those they need to be aware of when upgrading.
 - Known (minor) issues with regression test output
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+  - Ubuntu 24.04
+    - TSAN somewhat broken - https://stroika.atlassian.net/browse/STK-1010
 
 ---
 
