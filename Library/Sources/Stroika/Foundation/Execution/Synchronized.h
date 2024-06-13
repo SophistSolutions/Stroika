@@ -768,6 +768,7 @@ namespace Stroika::Foundation::Execution {
         conditional_t<kSpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
 
     /**
+     *  \note - TimedSynchronized doesn't do shared_locks - just a single mutex lock (that is recursive, and allows timeouts)
      */
     template <typename T>
     using TimedSynchronized = Synchronized<T, Synchronized_Traits<recursive_timed_mutex>>;
