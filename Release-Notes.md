@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 3.0d6 {2024-06-13} {[diff](../../compare/v3.0d5...v3.0d6)} --DRAFT
+### 3.0d6 {2024-06-13} {[diff](../../compare/v3.0d5...v3.0d6)}
 
 #### TLDR
 - _f strings and new Format () API (based on new std::format<>)
@@ -26,6 +26,12 @@ especially those they need to be aware of when upgrading.
 
 #### Change Details
 - Build System
+  - Supported Platforms Changes
+    - ubuntu lose 20.04
+    - added 24.04
+  - Supported Compilers
+    - Added makefile configs for clang++17 and clang++18, and g++-14
+    - Added VS2k22 19.10.x
   - github actions workflow(s)
     - more tweaks to hacks2savespace for linux
     - lose extra git checkout on windows (just set Path to same place used to and dont checkout via container) - fixes bug when run on tag
@@ -97,11 +103,6 @@ especially those they need to be aware of when upgrading.
     - draft Scripts/GetClangVersion script (and used in configure)
     - RunLocalWindowsDockerRegressionTests
       - workaround bugs in latest windows docker desktop - copying files indide docker with a mount, not using docker cp - which doesnt appear to work anymore for windows containers
-  - Supported Platforms
-    - ubuntu lose 20.04
-    - added 24.04
-  - Supported Compilers
-    - Added makefile configs for clang++17 and clang++18, and g++-14
   - Compiler Bug Defines/BWA
     - BWA_Helper_ContraintInMemberClassSeparateDeclare_
     - qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy BWA for clang++-18
