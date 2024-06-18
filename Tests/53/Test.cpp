@@ -37,7 +37,7 @@ namespace {
      *  all the logic /options for HTTP interface.
      *
      *  This particular organization also makes it easy to save instance variables with the webserver (like a pointer to a handler)
-     *  and accesss them from the Route handler functions.
+     *  and access them from the Route handler functions.
      */
     struct MyWebServer_ {
 
@@ -52,23 +52,30 @@ namespace {
          */
         ConnectionManager fConnectionMgr_;
 
-        MyWebServer_ (uint16_t portNumber)
-            : kRoutes_{Route{""_RegEx, DefaultPage_}, Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
+        optional<HTTP ::TransferEncoding> fUseTransferEncoding_;
+
+        MyWebServer_ (uint16_t portNumber, optional<HTTP::TransferEncoding> transferEncoding)
+            : kRoutes_{Route{""_RegEx, [this] (Request* req, Response* res) { DefaultPage_ (req, res); }},
+                       Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, [this] (Message* message) { SetAppState_ (message); }},
                        Route{"FRED"_RegEx,
-                             [] (Request*, Response* response) {
+                             [this] (Request*, Response* response) {
                                  response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                                  response->write (L"FRED");
                              }}}
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
+            , fUseTransferEncoding_{transferEncoding}
         {
         }
         // Can declare arguments as Request*,Response*
-        static void DefaultPage_ (Request*, Response* response)
+        void DefaultPage_ (Request*, Response* response)
         {
             //constexpr bool kUseTransferCoding_ = true;
-            constexpr bool kUseTransferCoding_ = false;
-            if (kUseTransferCoding_) {
-                response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::eChunked;
+            //            constexpr bool kUseTransferCoding_ = false;
+            //          if (kUseTransferCoding_) {
+            //            response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::eChunked;
+            //      }
+            if (fUseTransferEncoding_) {
+                response->rwHeaders ().transferEncoding = *fUseTransferEncoding_;
             }
             response->contentType = DataExchange::InternetMediaTypes::kHTML;
             response->writeln ("<html><body>"sv);
@@ -83,8 +90,11 @@ namespace {
             response->writeln ("</body></html>"sv);
         }
         // Can declare arguments as Message* message
-        static void SetAppState_ (Message* message)
+        void SetAppState_ (Message* message)
         {
+            if (fUseTransferEncoding_) {
+                message->rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
+            }
             message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
             String argsAsString                = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
             message->rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
@@ -98,7 +108,7 @@ namespace {
     {
         const auto   portNumber = 8082;
         const auto   quitAfter  = 1s;
-        MyWebServer_ myWebServer{portNumber};               // listen and dispatch while this object exists
+        MyWebServer_ myWebServer{portNumber, nullopt};               // listen and dispatch while this object exists
         Execution::WaitableEvent{}.WaitQuietly (quitAfter); // leave it running for a bit
     }
 }
@@ -107,7 +117,22 @@ namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleCurlTestTalk2Server)
     {
         const IO::Network::PortType     portNumber = 8082;
-        MyWebServer_                    myWebServer{portNumber}; // listen and dispatch while this object exists
+        MyWebServer_                    myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        auto                            c = IO::Network::Transfer::Connection::New ();
+        IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
+        EXPECT_TRUE (r.GetSucceeded ());
+        EXPECT_TRUE (r.GetData ().size () > 1);
+        String response = r.GetDataTextInputStream ().ReadAll ();
+        DbgTrace (L"response={}"_f, response);
+        EXPECT_TRUE (response.StartsWith ("<html>"));
+        EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
+    }
+}
+namespace {
+    GTEST_TEST (Frameworks_WebServer, SimpleCurlTestWithChunkedEncodingResponse)
+    {
+        const IO::Network::PortType     portNumber = 8082;
+        MyWebServer_ myWebServer{portNumber, HTTP::TransferEncoding::eChunked}; // listen and dispatch while this object exists
         auto                            c = IO::Network::Transfer::Connection::New ();
         IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
         EXPECT_TRUE (r.GetSucceeded ());

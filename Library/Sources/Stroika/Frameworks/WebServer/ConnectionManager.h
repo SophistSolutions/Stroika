@@ -146,7 +146,7 @@ namespace Stroika::Frameworks::WebServer {
             optional<bool> fTCPNoDelay;
 
             /**
-             * mostly for debugging - so easier to segrate names of threads if you have 
+             * mostly for debugging - so easier to segregate names of threads if you have 
              * multiple thread pools/connection managers
              */
             optional<String> fThreadPoolName;
