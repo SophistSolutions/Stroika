@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 
 /**
  */
@@ -15,7 +15,7 @@
 namespace Stroika::Foundation::IO::Network::HTTP {
 
     using Characters::String;
-    using Containers::Set;
+    using Containers::Sequence;
 
     /**
      *  \brief Transfer-Encoding is a hop-by-hop header, that is applied to a message between two nodes, not to a resource itself. Each segment of a multi-node connection can use different Transfer-Encoding values. If you want to compress data over the whole connection, use the end-to-end Content-Encoding header instead
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     /**
      */
-    class TransferEncodings : public Set<TransferEncoding> {
+    class TransferEncodings : public Sequence<TransferEncoding> {
     public:
         TransferEncodings (const Traversal::Iterable<TransferEncoding>& src);
         TransferEncodings (TransferEncoding tc);

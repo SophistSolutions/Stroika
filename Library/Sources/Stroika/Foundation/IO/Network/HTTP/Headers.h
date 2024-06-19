@@ -165,7 +165,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Add (or sometimes replace) the given header name/value pair. Whether this replaces
          *  or adds depends on the particular headerName. Some which are recognized to appear just once
-         *  are replaced (such as Cookie); Some are recognied as appearing multiple times (such as Set-Cookie)
+         *  are replaced (such as Cookie); Some are recognized as appearing multiple times (such as Set-Cookie)
          *  and these are appended. Use Set/Remove to avoid ambiguity.
          */
         nonvirtual void Add (const String& headerName, const String& value);
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         *  Remove ALL occurrances of the given header name.
+         *  Remove ALL occurrences of the given header name.
          *  For the two-arg overload, remove the given header with teh given value.
          * 
          *  Returns the number of items removed.
@@ -281,7 +281,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  \par Example Usage
          *      \code
-         *          optional<uint64_t> contentLenghth = fHeaders_.contentLength;
+         *          optional<uint64_t> contentLength = fHeaders_.contentLength;
          *      \endcode         
          */
         Common::ExtendableProperty<optional<uint64_t>> contentLength;
@@ -378,11 +378,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Property with the optional<Set<TransferEncoding>> value of the Transfer-Encoding header.
          *
          *  This is very typically OMITTED, and when present in a Response Header, its typically value will just be TransferEncoding::eChunked
-         *  because the default - TransferEncoding::eIdentity is undertood when the header is missing.
+         *  because the default - TransferEncoding::eIdentity is understood when the header is missing.
          * 
          *  \note - this is generally NOT to be used for compression (though it can be).
          * 
-         *  \note because a TransferEncodings object with the single entry eIdentity is the default, that state is treated as equivilent to missing (so assign of such an array to this property results in it being missing)
+         *  \note because a TransferEncodings object with the single entry eIdentity is the default, that state is treated as equivalent to missing (so assign of such an array to this property results in it being missing)
          */
         Common::ExtendableProperty<optional<TransferEncodings>> transferEncoding;
 
@@ -437,15 +437,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         // that are very commonly checked for, so their check/update will be a bit quicker.
         Collection<KeyValuePair<String, String>> fExtraHeaders_;
         optional<CacheControl>                   fCacheControl_;
-        optional<uint64_t> fContentLength_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<uint64_t> fContentLength_; // must access through property to access extended property handlers (except root getter/setter)
         optional<InternetMediaType> fContentType_;
         optional<CookieList>        fCookieList_; // store optional cuz often missing, and faster init
         optional<Time::DateTime>    fDate_;
-        optional<HTTP::ETag>  fETag_; // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<String>      fHost_;
-        optional<IfNoneMatch> fIfNoneMatch_;
-        optional<CookieList>  fSetCookieList_; // store optional cuz often missing, and faster init
-        optional<TransferEncodings> fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<HTTP::ETag>        fETag_; // must access through property to access extended property handlers (except root getter/setter)
+        optional<String>            fHost_;
+        optional<IfNoneMatch>       fIfNoneMatch_;
+        optional<CookieList>        fSetCookieList_; // store optional cuz often missing, and faster init
+        optional<TransferEncodings> fTransferEncoding_; // must access through property to access extended property handlers (except root getter/setter)
         optional<Containers::Set<String>>                              fVary_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };

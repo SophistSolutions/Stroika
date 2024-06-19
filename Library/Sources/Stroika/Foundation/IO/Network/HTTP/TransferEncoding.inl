@@ -10,11 +10,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      ********************************************************************************
      */
     inline TransferEncodings::TransferEncodings (const Traversal::Iterable<TransferEncoding>& src)
-        : Set<TransferEncoding>{src}
+        : Sequence<TransferEncoding>{src}
     {
     }
     inline TransferEncodings::TransferEncodings (TransferEncoding tc)
-        : Set<TransferEncoding>{tc}
+        : Sequence<TransferEncoding>{tc}
     {
     }
 

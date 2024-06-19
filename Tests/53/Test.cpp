@@ -108,7 +108,7 @@ namespace {
     {
         const auto   portNumber = 8082;
         const auto   quitAfter  = 1s;
-        MyWebServer_ myWebServer{portNumber, nullopt};               // listen and dispatch while this object exists
+        MyWebServer_ myWebServer{portNumber, nullopt};      // listen and dispatch while this object exists
         Execution::WaitableEvent{}.WaitQuietly (quitAfter); // leave it running for a bit
     }
 }
@@ -131,9 +131,9 @@ namespace {
 namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleCurlTestWithChunkedEncodingResponse)
     {
-        const IO::Network::PortType     portNumber = 8082;
+        const IO::Network::PortType portNumber = 8082;
         MyWebServer_ myWebServer{portNumber, HTTP::TransferEncoding::eChunked}; // listen and dispatch while this object exists
-        auto                            c = IO::Network::Transfer::Connection::New ();
+        auto         c                    = IO::Network::Transfer::Connection::New ();
         IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
         EXPECT_TRUE (r.GetSucceeded ());
         EXPECT_TRUE (r.GetData ().size () > 1);
