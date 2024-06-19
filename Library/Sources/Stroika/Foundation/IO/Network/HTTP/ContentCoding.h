@@ -19,7 +19,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     /**
      *  \brief Content coding values indicate an encoding transformation that has been or can be applied to an entity. Content codings are primarily used to allow a document to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Frequently, the entity is stored in coded form, transmitted directly, and only decoded by the recipient.
      * 
-     *  \note   Configuration::DefaultNames<> supported
+     *  All content-coding values are case-insensitive. 
+     * 
+     *  HTTP/1.1 uses content-coding values in the Accept-Encoding (section 14.3) and Content-Encoding (section 14.11) header fields. 
+     * 
+     *  \see https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.5
      */
     struct ContentCoding {
     public:
@@ -34,27 +38,30 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         template <Characters::IConvertibleToString STRING_LIKE>
         ContentCoding (STRING_LIKE&& name);
 
-    private:
-        AtomType fRep_;
-
     public:
         /**
+         *  compress The encoding format produced by the common UNIX file compression program "compress". This format is an adaptive Lempel-Ziv-Welch coding (LZW).
          */
         static const ContentCoding kCompress;
+
         /**
+         *  deflate The "zlib" format defined in RFC 1950 [31] in combination with the "deflate" compression mechanism described in RFC 1951 [29].
          */
         static const ContentCoding kDeflate;
+
         /**
+         *  gzip An encoding format produced by the file compression program "gzip" (GNU zip) as described in RFC 1952 [25]. This format is a Lempel-Ziv coding (LZ77) with a 32 bit CRC
          */
         static const ContentCoding kGZip;
+
         /**
+         * identity The default (identity) encoding; the use of no transformation whatsoever. This content-coding is used only in the Accept- Encoding header, and SHOULD NOT be used in the Content-Encoding header.
          */
         static const ContentCoding kIdentity;
+
+    private:
+        AtomType fRep_;
     };
-    const inline ContentCoding ContentCoding::kCompress{"compress"sv};
-    const inline ContentCoding ContentCoding::kDeflate{"deflate"sv};
-    const inline ContentCoding ContentCoding::kGZip{"gzip"sv};
-    const inline ContentCoding ContentCoding::kIdentity{"identity"sv};
 
 }
 

@@ -18,5 +18,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         : fRep_{forward<STRING_LIKE> (name)}
     {
     }
+    const inline ContentCoding ContentCoding::kCompress{"compress"sv};
+    const inline ContentCoding ContentCoding::kDeflate{"deflate"sv};
+    const inline ContentCoding ContentCoding::kGZip{"gzip"sv};
+    const inline ContentCoding ContentCoding::kIdentity{"identity"sv};
 
 }
