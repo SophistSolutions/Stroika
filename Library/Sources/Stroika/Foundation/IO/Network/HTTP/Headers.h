@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ContentCoding.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Cookie.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ETag.h"
 #include "Stroika/Foundation/IO/Network/HTTP/IfNoneMatch.h"
