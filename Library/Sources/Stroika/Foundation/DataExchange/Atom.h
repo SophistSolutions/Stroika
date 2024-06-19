@@ -38,6 +38,8 @@ namespace Stroika::Foundation::DataExchange {
      * like block allocation - gains in performance due to not ever having to free anything
      *
      *  @todo - CLEANUP DOCS
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct AtomManager_Default {
         using AtomInternalType                   = ptrdiff_t;
@@ -48,6 +50,10 @@ namespace Stroika::Foundation::DataExchange {
         static String Extract (AtomInternalType atomI);
     };
 
+    /*
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     */
     struct AtomManager_CaseInsensitive {
         using AtomInternalType                   = ptrdiff_t;
         static constexpr AtomInternalType kEmpty = -1;
