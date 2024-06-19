@@ -62,7 +62,7 @@ namespace Stroika::Foundation::DataExchange {
          *  in the string may not be preserved.
          *      "Matching of media type and subtype; is ALWAYS case-insensitive"
          *
-         *  If type provided, subType must be as well (require). And no paramters allowed if type is empty.
+         *  If type provided, subType must be as well (require). And no parameters allowed if type is empty.
          *  The one-argument String overload parses the Content-Type in the usual way.
          */
         InternetMediaType ()                         = default;
