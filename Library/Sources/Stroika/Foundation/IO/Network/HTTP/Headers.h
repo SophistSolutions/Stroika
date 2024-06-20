@@ -378,7 +378,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<Set<TransferEncoding>> value of the Transfer-Encoding header.
          *
-         *  This is very typically OMITTED, and when present in a Response Header, its typically value will just be TransferEncoding::eChunked
+         *  This is very typically OMITTED, and when present in a Response Header, its typically value will just be TransferEncoding::kChunked
          *  because the default - TransferEncoding::eIdentity is understood when the header is missing.
          * 
          *  \note - this is generally NOT to be used for compression (though it can be).

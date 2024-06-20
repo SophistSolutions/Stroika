@@ -103,7 +103,7 @@ namespace {
             //constexpr bool kUseTransferCoding_ = true;
             constexpr bool kUseTransferCoding_ = false;
             if (kUseTransferCoding_) {
-                response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::eChunked;
+                response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
             }
             response->contentType = DataExchange::InternetMediaTypes::kHTML;
             response->writeln ("<html><body>"sv);
