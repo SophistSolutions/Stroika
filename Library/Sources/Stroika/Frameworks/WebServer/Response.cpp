@@ -61,7 +61,7 @@ namespace {
 }
 
 Response::Response (Response&& src)
-    // Would be nice to use inherited src move, but PITA, becaue then would need to duplicate creating the properties below.
+    // Would be nice to use inherited src move, but PITA, because then would need to duplicate creating the properties below.
     : Response{src.fSocket_, src.fUnderlyingOutStream_, src.headers ()}
 {
     fState_        = src.fState_;
@@ -121,6 +121,16 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                        }
                    }
                }}
+    , contentEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                          const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentEncoding);
+                          AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                          return thisObj->headers ().contentEncoding ();
+                      },
+                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCT) {
+                          Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentEncoding);
+                          AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                          thisObj->rwHeaders ().contentEncoding = newCT;
+                      }}
     , state{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
@@ -216,8 +226,26 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         this->autoComputeETag = false;
         return PropertyChangedEventResultType::eContinueProcessing;
     });
+#if 0
+    this->rwHeaders ().contentEncoding.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+        Require (this->headersCanBeSet ());
+        // NYI...
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
+        // adjust filtered...
+        return PropertyChangedEventResultType::eContinueProcessing;
+    });
+#endif
     fInChunkedModeCache_ = this->headers ().transferEncoding () and
                            this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked); // can be set by initial headers (in CTOR)
+}
+
+void Response::StateTransition_ (State to)
+{
+    Require (fState_ <= to);
+    if (to != fState_) {
+        // dbgtrace transition
+        fState_ = to;
+    }
 }
 
 bool Response::InChunkedMode_ () const
@@ -271,13 +299,13 @@ void Response::Flush ()
         }
         const char kCRLF[] = "\r\n";
         fUseOutStream_.WriteRaw (span{kCRLF, ::strlen (kCRLF)});
-        fState_ = State::ePreparingBodyAfterHeadersSent;
+        StateTransition_ (State::ePreparingBodyAfterHeadersSent);
     }
     // write BYTES to fOutStream
     if (not fBodyBytes_.empty ()) {
         Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"bytes.size: %lld", static_cast<long long> (fBodyBytes_.size ()));
+        DbgTrace ("bytes.size: {}"_f, static_cast<long long> (fBodyBytes_.size ()));
 #endif
         // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html - body must not be sent for not-modified
         if (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified) {
@@ -302,7 +330,7 @@ bool Response::End ()
                 fUseOutStream_.Write (as_bytes (span{kEndChunk_}));
             }
             Flush ();
-            fState_ = State::eCompleted;
+            StateTransition_ (State::eCompleted);
         }
         catch (...) {
             DbgTrace (L"Exception during Response::End () automaticaly triggers Response::Abort()"_f);
@@ -343,7 +371,7 @@ void Response::Redirect (const URI& url)
     updatableHeaders.location   = url;
     this->status                = HTTP::StatusCodes::kMovedPermanently;
     Flush ();
-    fState_ = State::eCompleted;
+    StateTransition_ (State::eCompleted);
 }
 
 void Response::write (const byte* s, const byte* e)
@@ -375,7 +403,7 @@ void Response::write (const byte* s, const byte* e)
         }
     }
     if (fState_ == State::ePreparingHeaders) {
-        fState_ = State::ePreparingBodyBeforeHeadersSent; // NO MATTER WHAT - even if we havne't sent headers, mark that we are in a new state, so callers are forced to set headers BEFORE doing their first write
+        StateTransition_ (State::ePreparingBodyBeforeHeadersSent); // NO MATTER WHAT - even if we havne't sent headers, mark that we are in a new state, so callers are forced to set headers BEFORE doing their first write
     }
 }
 

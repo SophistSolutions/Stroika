@@ -127,6 +127,16 @@ namespace Stroika::Frameworks::WebServer {
         Common::Property<Characters::CodePage> codePage;
 
     public:
+        /**
+        * && todo - for now - only support empty. BUt soon support == deflate, and maybe eventually more
+        * 
+        * equilv to setting rwHeaders.contentEncoding.... -- try to make it so...
+        * 
+        * probably need to cleanup code for chunked transfer - and need to udnerstand diff between deflate as a transfer encoding vs. content encoding...
+         */
+        Common::Property<optional<HTTP::ContentEncodings>> contentEncoding;
+
+    public:
         /*
          * \brief inherited Common::Property <optional<InternetMediaType>> contentType;
          *
@@ -138,7 +148,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  \note about states - certain properties (declared here and inherited) - like rwHeaders, and writes to properites like (XXX) cannot be done
+         *  \note about states - certain properties (declared here and inherited) - like rwHeaders, and writes to properties like (XXX) cannot be done
          *        unless the current state is ePreparingHeaders; and these are generally checked with assertions.
          */
         enum class State : uint8_t {
@@ -281,6 +291,9 @@ namespace Stroika::Frameworks::WebServer {
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
+    private:
+        nonvirtual void StateTransition_ (State to);
 
     private:
         nonvirtual bool InChunkedMode_ () const;

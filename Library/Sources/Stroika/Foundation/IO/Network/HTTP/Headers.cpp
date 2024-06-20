@@ -104,7 +104,7 @@ Headers::Headers ()
                      }
                      thisObj->SetExtras_ (HeaderName::kConnection, v);
                  }}
-    , contentEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ContentEncoding> {
+    , contentEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ContentEncodings> {
                           const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentEncoding);
                           AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                           return thisObj->fContentEncoding_;

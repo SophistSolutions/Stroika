@@ -285,8 +285,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          *  \see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.11
+         * 
+         *  \note - docs not super clear, but it appears there CAN be more than one encoding, and they are done in order, one after the other
          */
-        Common::Property<optional<ContentEncoding>> contentEncoding;
+        Common::Property<optional<ContentEncodings>> contentEncoding;
 
     public:
         /**
@@ -452,7 +454,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         Collection<KeyValuePair<String, String>> fExtraHeaders_;
         optional<ContentEncodings>               fAcceptEncodings_; // request header only
         optional<CacheControl>                   fCacheControl_;
-        optional<ContentEncoding>                fContentEncoding_;
+        optional<ContentEncodings>               fContentEncoding_;
         optional<uint64_t> fContentLength_; // must access through property to access extended property handlers (except root getter/setter)
         optional<InternetMediaType> fContentType_;
         optional<CookieList>        fCookieList_; // store optional cuz often missing, and faster init

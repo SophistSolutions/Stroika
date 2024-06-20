@@ -363,7 +363,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Apply the (template argument) EQUALS_COMPARER to each element in the Iterable<T> and
          *  return true iff found. This invokes no virtual methods dependent (except MakeIterable or some such)
-         *  and so gains no performance benefits from the organizaiton of the underlying Iterable<T>. This
+         *  and so gains no performance benefits from the organization of the underlying Iterable<T>. This
          *  is just a short hand for the direct iteration one would trivially code by hand. Still - its
          *  easier to call Contains() that to code that loop!
          *
@@ -562,7 +562,7 @@ namespace Stroika::Foundation::Traversal {
          *  operator bool () method of Iterator<T>).
          * 
          *  \note This is much like First(), except that it optional takes a different starting point, and 
-         *        it returns an Iterator<T> intead of an optional<T>
+         *        it returns an Iterator<T> instead of an optional<T>
          *        First () - often more handy.
          * 
          *  \note though semantically similar to iterating, it maybe faster, due to delegating 'search' to backend container

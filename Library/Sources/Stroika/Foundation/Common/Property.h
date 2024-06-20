@@ -619,7 +619,7 @@ namespace Stroika::Foundation::Common {
      *        are not generally copied.
      * 
      *        Though its up to any object which uses properties, its generally presumed and recommended that of you copy objects
-     *        O1 (of type O, with EvtendedableProperty P) to object O2, then the event hanlders watcing properties P (from O1)
+     *        O1 (of type O, with EvtendedableProperty P) to object O2, then the event handlers watching properties P (from O1)
      *        will NOT be copied to object O2 (to its property P).
      * 
      *  \note @todo - it we use a std::forward_list in the interest of being very cheap when not used (often), but this class is a PITA, if we need to
