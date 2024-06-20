@@ -221,6 +221,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\CacheControl.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentEncoding.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.cpp" />
@@ -613,7 +614,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\CacheControl.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentCoding.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentEncoding.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ETag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
@@ -1077,7 +1078,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\CacheControl.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentCoding.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentEncoding.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ETag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />

@@ -840,6 +840,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Pointer.cpp">
       <Filter>Sources\DataExchange\JSON</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentEncoding.cpp">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2208,7 +2211,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.h">
       <Filter>Sources\DataExchange\JSON</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentCoding.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentEncoding.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3652,7 +3655,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.inl">
       <Filter>Sources\DataExchange\JSON</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentCoding.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentEncoding.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ReadMe.md">

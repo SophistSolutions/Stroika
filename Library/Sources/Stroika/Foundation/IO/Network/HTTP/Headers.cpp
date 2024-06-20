@@ -31,7 +31,17 @@ namespace {
  ********************************************************************************
  */
 Headers::Headers ()
-    : accessControlAllowOrigin{
+    : acceptEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ContentEncodings> {
+                         const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::acceptEncoding);
+                         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                         return thisObj->fAcceptEncodings_;
+                     },
+                     [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newAcceptEncodings) {
+                         Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::acceptEncoding);
+                         AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                         thisObj->fAcceptEncodings_ = newAcceptEncodings;
+                     }}
+    , accessControlAllowOrigin{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
               const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
               AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
@@ -94,6 +104,16 @@ Headers::Headers ()
                      }
                      thisObj->SetExtras_ (HeaderName::kConnection, v);
                  }}
+    , contentEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ContentEncoding> {
+                          const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentEncoding);
+                          AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                          return thisObj->fContentEncoding_;
+                      },
+                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto newContentEncoding) {
+                          Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentEncoding);
+                          AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                          thisObj->fContentEncoding_ = newContentEncoding;
+                      }}
     , contentLength{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<uint64_t> {
                         const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength);
                         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
@@ -258,7 +278,7 @@ Headers::Headers (const Headers& src)
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{src.fThisAssertExternallySynchronized_};
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
-    // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
+    // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficient way to avoid duplicative code
     fExtraHeaders_     = src.fExtraHeaders_;
     fCacheControl_     = src.fCacheControl_;
     fContentType_      = src.fContentType_;

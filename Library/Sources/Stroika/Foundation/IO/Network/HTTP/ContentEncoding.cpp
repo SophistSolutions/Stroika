@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "TransferEncoding.h"
+#include "ContentEncoding.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -12,17 +12,18 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 
 /*
  ********************************************************************************
- ************************* HTTPs::TransferEncoding ******************************
+ ************************** HTTPs::ContentEncoding ******************************
  ********************************************************************************
  */
 template <>
-String TransferEncodings::As<String> () const
+String ContentEncodings::As<String> () const
 {
     return String::Join (Map<Iterable<String>> ([] (auto i) { return Characters::ToString (i); }), ", "sv);
 }
 
-TransferEncodings TransferEncodings::Parse (const String& headerValue)
+ContentEncodings ContentEncodings::Parse (const String& headerValue)
 {
-    return TransferEncodings{
-        headerValue.Tokenize ({','}).Map<Iterable<TransferEncoding>> ([] (const String& i) { return TransferEncoding{i.Trim ()}; })};
+    // @todo more complex - can have ; and = stuff we drop on floor...
+    return ContentEncodings{
+        headerValue.Tokenize ({','}).Map<Iterable<ContentEncoding>> ([] (const String& i) { return ContentEncoding{i.Trim ()}; })};
 }

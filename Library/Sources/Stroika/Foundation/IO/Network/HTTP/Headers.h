@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
-#include "Stroika/Foundation/IO/Network/HTTP/ContentCoding.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ContentEncoding.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Cookie.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ETag.h"
 #include "Stroika/Foundation/IO/Network/HTTP/IfNoneMatch.h"
@@ -43,15 +43,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     namespace HeaderName {
 
         constexpr string_view kAcceptEncoding                = "Accept-Encoding"sv;
-        constexpr string_view kAllow                         = "Allow"sv;
         constexpr string_view kAccessControlAllowCredentials = "Access-Control-Allow-Credentials"sv;
         constexpr string_view kAccessControlAllowOrigin      = "Access-Control-Allow-Origin"sv;
         constexpr string_view kAccessControlAllowHeaders     = "Access-Control-Allow-Headers"sv;
         constexpr string_view kAccessControlAllowMethods     = "Access-Control-Allow-Methods"sv;
         constexpr string_view kAccessControlRequestHeaders   = "Access-Control-Request-Headers"sv;
         constexpr string_view kAccessControlMaxAge           = "Access-Control-Max-Age"sv;
+        constexpr string_view kAllow                         = "Allow"sv;
         constexpr string_view kAuthorization                 = "Authorization"sv;
         constexpr string_view kCacheControl                  = "Cache-Control"sv;
+        constexpr string_view kContentEncoding               = "Content-Encoding"sv;
         constexpr string_view kContentLength                 = "Content-Length"sv;
         constexpr string_view kContentType                   = "Content-Type"sv;
         constexpr string_view kConnection                    = "Connection"sv;
@@ -204,6 +205,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  \see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
+         */
+        Common::Property<optional<ContentEncodings>> acceptEncoding;
+
+    public:
+        /**
          *  Property with the optional<String> value of the Access-Control-Allow-Origin header.
          *  \see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
          *
@@ -274,6 +281,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Header mostly just used for HTTP 1.1 and earlier.
          */
         Common::Property<optional<ConnectionValue>> connection;
+
+    public:
+        /**
+         *  \see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.11
+         */
+        Common::Property<optional<ContentEncoding>> contentEncoding;
 
     public:
         /**
@@ -437,7 +450,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         // them dynamically lookup in fExtraHeaders_. Just put the ones here in special variables
         // that are very commonly checked for, so their check/update will be a bit quicker.
         Collection<KeyValuePair<String, String>> fExtraHeaders_;
+        optional<ContentEncodings>               fAcceptEncodings_; // request header only
         optional<CacheControl>                   fCacheControl_;
+        optional<ContentEncoding>                fContentEncoding_;
         optional<uint64_t> fContentLength_; // must access through property to access extended property handlers (except root getter/setter)
         optional<InternetMediaType> fContentType_;
         optional<CookieList>        fCookieList_; // store optional cuz often missing, and faster init

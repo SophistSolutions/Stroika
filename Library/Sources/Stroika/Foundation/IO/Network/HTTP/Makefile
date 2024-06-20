@@ -19,8 +19,9 @@ endif
 vpath %cpp $(SrcDir)
 
 Objs	:=	\
-	$(ObjDir)ClientErrorException${OBJ_SUFFIX}\
 	$(ObjDir)CacheControl${OBJ_SUFFIX}\
+	$(ObjDir)ClientErrorException${OBJ_SUFFIX}\
+	$(ObjDir)ContentEncoding${OBJ_SUFFIX}\
 	$(ObjDir)Cookie${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)Headers${OBJ_SUFFIX}\
