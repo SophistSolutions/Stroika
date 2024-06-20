@@ -39,6 +39,21 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         ContentCoding (STRING_LIKE&& name);
 
     public:
+        bool operator== (const ContentCoding& rhs) const = default;
+
+    public:
+        /**
+         *  \note  - though three way comparable, ordering is NOT alphabetical
+         */
+        auto operator<=> (const ContentCoding& rhs) const = default;
+
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+
+    public:
         /**
          *  compress The encoding format produced by the common UNIX file compression program "compress". This format is an adaptive Lempel-Ziv-Welch coding (LZW).
          */

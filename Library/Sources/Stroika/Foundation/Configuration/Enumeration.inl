@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Configuration {
     {
         /*
          *  NB: this is only safe returning an internal pointer, because the pointer is internal to
-         *  static, immudatable data - the basic_array associated with this EnumNames<> structure.
+         *  static, immutable data - the basic_array associated with this EnumNames<> structure.
          */
         RequireNotNull (name);
         for (const_iterator i = fEnumNames_.begin (); i != fEnumNames_.end (); ++i) {

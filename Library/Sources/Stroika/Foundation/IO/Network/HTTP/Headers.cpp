@@ -233,7 +233,7 @@ Headers::Headers ()
                            Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
                            AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                            if (newTransferEncodings && newTransferEncodings->length () == 1 &&
-                               newTransferEncodings->Contains (TransferEncoding::eIdentity)) {
+                               newTransferEncodings->Contains (TransferEncoding::kIdentity)) {
                                thisObj->fTransferEncoding_ = nullopt;
                            }
                            else {

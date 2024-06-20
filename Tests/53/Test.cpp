@@ -72,7 +72,7 @@ namespace {
             //constexpr bool kUseTransferCoding_ = true;
             //            constexpr bool kUseTransferCoding_ = false;
             //          if (kUseTransferCoding_) {
-            //            response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::eChunked;
+            //            response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
             //      }
             if (fUseTransferEncoding_) {
                 response->rwHeaders ().transferEncoding = *fUseTransferEncoding_;
@@ -132,7 +132,7 @@ namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleCurlTestWithChunkedEncodingResponse)
     {
         const IO::Network::PortType portNumber = 8082;
-        MyWebServer_ myWebServer{portNumber, HTTP::TransferEncoding::eChunked}; // listen and dispatch while this object exists
+        MyWebServer_ myWebServer{portNumber, HTTP::TransferEncoding::kChunked}; // listen and dispatch while this object exists
         auto         c                    = IO::Network::Transfer::Connection::New ();
         IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
         EXPECT_TRUE (r.GetSucceeded ());

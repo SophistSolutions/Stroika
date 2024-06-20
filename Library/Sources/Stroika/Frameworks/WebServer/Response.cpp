@@ -181,7 +181,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         // react to a change in the transferCoding setting by updating our flags (cache) - and updating the contentLength header properly
         Require (this->headersCanBeSet ());
         // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
-        fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
+        fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::kChunked);
         // note - no need to reset contentLength header itself, just assure its auto-computed (so it will returned as null)
         fAutoComputeContentLength_ = true;
         return PropertyChangedEventResultType::eContinueProcessing;
@@ -217,13 +217,13 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         return PropertyChangedEventResultType::eContinueProcessing;
     });
     fInChunkedModeCache_ = this->headers ().transferEncoding () and
-                           this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
+                           this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked); // can be set by initial headers (in CTOR)
 }
 
 bool Response::InChunkedMode_ () const
 {
     Ensure (fInChunkedModeCache_ ==
-            (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
+            (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked)));
     return fInChunkedModeCache_;
 }
 

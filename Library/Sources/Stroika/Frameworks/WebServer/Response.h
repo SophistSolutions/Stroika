@@ -51,7 +51,7 @@ namespace Stroika::Frameworks::WebServer {
      *  \note Set headers (with this->rwHeaders()...) as early as practical (before calling write or Flush).
      *  \note To use chunked transfer encoding (NOT THE DEFAULT) - call
      *      \code
-     *        response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::eChunked;
+     *        response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
      *        ... then do 
      *        response->write (...);
      *      \endcode
@@ -200,7 +200,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * This begins sending the parts of the message which have already been accumulated to the client.
          * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
-         * IFF you first set the respose.transferEncoding mode to TransferEncoding::eChunked.
+         * IFF you first set the respose.transferEncoding mode to TransferEncoding::kChunked.
          *
          * This does NOT End the response, and it CAN be called arbitrarily many times (even after the response has completed - though
          * its pointless then).
@@ -253,7 +253,7 @@ namespace Stroika::Frameworks::WebServer {
          *  Note for string and wchar_t* writes, this uses this->codePage to encode the characters.
          * 
          *  \req not this->responseCompleted ()
-         *  \req not this->responseStatusSent () or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)))
+         *  \req not this->responseStatusSent () or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked)))
          */
         nonvirtual void write (const BLOB& b);
         nonvirtual void write (const byte* start, const byte* end);

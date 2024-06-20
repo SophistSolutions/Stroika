@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/Atom.h"
 
 /**
  */
@@ -27,14 +28,62 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      * 
      *  \note   Configuration::DefaultNames<> supported
      */
-    enum class TransferEncoding {
-        eChunked,
-        eCompress,
-        eDeflate,
-        eGZip,
-        eIdentity,
+    struct TransferEncoding {
+    public:
+        /**
+         */
+        using AtomType = DataExchange::Atom<DataExchange::AtomManager_CaseInsensitive>;
 
-        Stroika_Define_Enum_Bounds (eChunked, eIdentity)
+    public:
+        /**
+         */
+        TransferEncoding (AtomType a);
+        template <Characters::IConvertibleToString STRING_LIKE>
+        TransferEncoding (STRING_LIKE&& name);
+
+    public:
+        bool operator== (const TransferEncoding& rhs) const = default;
+
+    public:
+        /**
+         *  \note  - though three way comparable, ordering is NOT alphabetical
+         */
+        auto operator<=> (const TransferEncoding& rhs) const = default;
+
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+
+    public:
+        /**
+         * identity The default (identity) encoding; the use of no transformation whatsoever. This content-coding is used only in the Accept- Encoding header, and SHOULD NOT be used in the Content-Encoding header.
+         */
+        static const TransferEncoding kChunked;
+
+        /**
+         *  compress The encoding format produced by the common UNIX file compression program "compress". This format is an adaptive Lempel-Ziv-Welch coding (LZW).
+         */
+        static const TransferEncoding kCompress;
+
+        /**
+         *  deflate The "zlib" format defined in RFC 1950 [31] in combination with the "deflate" compression mechanism described in RFC 1951 [29].
+         */
+        static const TransferEncoding kDeflate;
+
+        /**
+         *  gzip An encoding format produced by the file compression program "gzip" (GNU zip) as described in RFC 1952 [25]. This format is a Lempel-Ziv coding (LZ77) with a 32 bit CRC
+         */
+        static const TransferEncoding kGZip;
+
+        /**
+         * identity The default (identity) encoding; the use of no transformation whatsoever. This content-coding is used only in the Accept- Encoding header, and SHOULD NOT be used in the Content-Encoding header.
+         */
+        static const TransferEncoding kIdentity;
+
+    private:
+        AtomType fRep_;
     };
 
     /**

@@ -18,11 +18,11 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 template <>
 String TransferEncodings::As<String> () const
 {
-    return String::Join (Map<Iterable<String>> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }));
+    return String::Join (Map<Iterable<String>> ([] (auto i) { return Characters::ToString (i); }));
 }
 
 TransferEncodings TransferEncodings::Parse (const String& headerValue)
 {
-    return TransferEncodings{headerValue.Tokenize ({','}).Map<Iterable<TransferEncoding>> (
-        [] (const String& i) { return Configuration::DefaultNames<TransferEncoding>{}.PeekValue (i.As<wstring> ().c_str ()); })};
+    return TransferEncodings{
+        headerValue.Tokenize ({','}).Map<Iterable<TransferEncoding>> ([] (const String& i) { return TransferEncoding{i.Trim ()}; })};
 }
