@@ -52,9 +52,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          */
-        template <typename T>
-        nonvirtual String As () const
-            requires (same_as<T, String>);
+        template <Configuration::IAnyOf<String, ContentEncoding::AtomType> T>
+        nonvirtual T As () const;
 
     public:
         /**
@@ -64,6 +63,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  \brief 'compress' format - no longer well supported - discouraged.
+         * 
          *  compress The encoding format produced by the common UNIX file compression program "compress". This format is an adaptive Lempel-Ziv-Welch coding (LZW).
          */
         static const ContentEncoding kCompress;
@@ -77,6 +78,18 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  gzip An encoding format produced by the file compression program "gzip" (GNU zip) as described in RFC 1952 [25]. This format is a Lempel-Ziv coding (LZ77) with a 32 bit CRC
          */
         static const ContentEncoding kGZip;
+
+        /**
+         *  Brotli compression algorithm
+         */
+        static const ContentEncoding kBR;
+
+        /**
+         *  \brief probably fastest/best, but NYI in Stroika as of 2024-06-20
+         * 
+         *  zstd compression algorithm
+         */
+        static const ContentEncoding kZStd;
 
         /**
          * identity The default (identity) encoding; the use of no transformation whatsoever. This content-coding is used only in the Accept- Encoding header, and SHOULD NOT be used in the Content-Encoding header.

@@ -57,7 +57,7 @@ namespace {
     }};
 
     /**
-     *  You don't need to specify any of this, but its a good idea to propery identify your application.
+     *  You don't need to specify any of this, but its a good idea to properly identify your application.
      */
     const ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
         Headers h;
@@ -70,7 +70,7 @@ namespace {
      *  all the logic /options for HTTP interface.
      *
      *  This particular organization also makes it easy to save instance variables with the webserver (like a pointer to a handler)
-     *  and accesss them from the Route handler functions.
+     *  and access them from the Route handler functions.
      */
     struct MyWebServer_ {
 
@@ -80,7 +80,7 @@ namespace {
         const Sequence<Route> kRoutes_;
 
         /**
-         *  The connectionMgr specifies parameters that govenern the procedural behavior of your webserver.
+         *  The connectionMgr specifies parameters that govern the procedural behavior of your webserver.
          *  For example, caching settings go here, thread pool settings, network bindings, and so on.
          */
         ConnectionManager fConnectionMgr_;
@@ -100,8 +100,8 @@ namespace {
         // Can declare arguments as Request*,Response*
         static void DefaultPage_ (Request*, Response* response)
         {
-            //constexpr bool kUseTransferCoding_ = true;
-            constexpr bool kUseTransferCoding_ = false;
+            constexpr bool kUseTransferCoding_ = true;
+            //constexpr bool kUseTransferCoding_ = false;
             if (kUseTransferCoding_) {
                 response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
             }

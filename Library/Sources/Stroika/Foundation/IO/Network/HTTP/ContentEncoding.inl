@@ -20,11 +20,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         : fRep_{forward<STRING_LIKE> (name)}
     {
     }
-    template <typename T>
-    inline String ContentEncoding::As () const
-        requires (same_as<T, String>)
+    template <Configuration::IAnyOf<String, ContentEncoding::AtomType> T>
+    inline T ContentEncoding::As () const
     {
-        return this->ToString ();
+        if constexpr (same_as<T, String>) {
+            return this->ToString ();
+        }
+        if constexpr (same_as<T, ContentEncoding::AtomType>) {
+            return fRep_;
+        }
     }
     inline String ContentEncoding::ToString () const
     {
@@ -33,6 +37,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     const inline ContentEncoding ContentEncoding::kCompress{"compress"sv};
     const inline ContentEncoding ContentEncoding::kDeflate{"deflate"sv};
     const inline ContentEncoding ContentEncoding::kGZip{"gzip"sv};
+    const inline ContentEncoding ContentEncoding::kBR{"br"sv};
+    const inline ContentEncoding ContentEncoding::kZStd{"zstd"sv};
     const inline ContentEncoding ContentEncoding::kIdentity{"identity"sv};
 
     /*

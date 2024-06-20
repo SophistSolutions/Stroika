@@ -96,10 +96,10 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  If true (defaults true), the content-length will be automatically computed.. Assigning to the contentLength
+         *  If true (defaults true), the content-length will be automatically computed. Assigning to the contentLength
          *  header will automatically set this to false.
          * 
-         *  \req this->state == ePreparingHeaders (before first write to body) to set
+         *  \req this->state == ePreparingHeaders (before first write to body) to set, but can always be read
          */
         Common::Property<bool> autoComputeContentLength;
 

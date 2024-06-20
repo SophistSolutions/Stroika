@@ -3,6 +3,7 @@
  */
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ContentEncoding.h"
 
 namespace Stroika::Foundation::IO::Network::HTTP {
 
@@ -25,10 +26,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         return Characters::ToString (fRep_);
     }
     const inline TransferEncoding TransferEncoding::kChunked{"chunked"sv};
-    const inline TransferEncoding TransferEncoding::kCompress{"compress"sv};
-    const inline TransferEncoding TransferEncoding::kDeflate{"deflate"sv};
-    const inline TransferEncoding TransferEncoding::kGZip{"gzip"sv};
-    const inline TransferEncoding TransferEncoding::kIdentity{"identity"sv};
+    const inline TransferEncoding TransferEncoding::kCompress{ContentEncoding::kCompress.As<AtomType> ()};
+    const inline TransferEncoding TransferEncoding::kDeflate{ContentEncoding::kDeflate.As<AtomType> ()};
+    const inline TransferEncoding TransferEncoding::kGZip{ContentEncoding::kGZip.As<AtomType> ()};
+    const inline TransferEncoding TransferEncoding::kIdentity{ContentEncoding::kIdentity.As<AtomType> ()};
 
     /*
      ********************************************************************************

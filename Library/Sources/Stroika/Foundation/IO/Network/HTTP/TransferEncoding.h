@@ -25,8 +25,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *
      *  This is (probably mostly) obsoleted in HTTP 2.0(@todo read up); and we don't currently intend to support compress etc here 
      *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
-     * 
-     *  \note   Configuration::DefaultNames<> supported
      */
     struct TransferEncoding {
     public:
