@@ -23,7 +23,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      * 
      *  TransferEncoding is typically identity (in which case omitted) or chucked (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding)
      *
-     *  This is (probably mostly) osboelted in HTTP 2.0(@todo read up); and we dont currently intned to support compress etc here 
+     *  This is (probably mostly) obsoleted in HTTP 2.0(@todo read up); and we don't currently intend to support compress etc here 
      *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
      * 
      *  \note   Configuration::DefaultNames<> supported
@@ -42,13 +42,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         TransferEncoding (STRING_LIKE&& name);
 
     public:
-        bool operator== (const TransferEncoding& rhs) const = default;
+        nonvirtual bool operator== (const TransferEncoding& rhs) const = default;
 
     public:
         /**
          *  \note  - though three way comparable, ordering is NOT alphabetical
          */
-        auto operator<=> (const TransferEncoding& rhs) const = default;
+        nonvirtual auto operator<=> (const TransferEncoding& rhs) const = default;
 
     public:
         /**

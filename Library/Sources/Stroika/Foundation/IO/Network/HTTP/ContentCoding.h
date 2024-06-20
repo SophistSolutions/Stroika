@@ -39,13 +39,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         ContentCoding (STRING_LIKE&& name);
 
     public:
-        bool operator== (const ContentCoding& rhs) const = default;
+        nonvirtual bool operator== (const ContentCoding& rhs) const = default;
 
     public:
         /**
          *  \note  - though three way comparable, ordering is NOT alphabetical
          */
-        auto operator<=> (const ContentCoding& rhs) const = default;
+        nonvirtual auto operator<=> (const ContentCoding& rhs) const = default;
 
     public:
         /**
