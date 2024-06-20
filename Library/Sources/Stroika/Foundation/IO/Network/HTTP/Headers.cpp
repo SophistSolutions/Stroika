@@ -280,7 +280,9 @@ Headers::Headers (const Headers& src)
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficient way to avoid duplicative code
     fExtraHeaders_     = src.fExtraHeaders_;
+    fAcceptEncodings_  = src.fAcceptEncodings_;
     fCacheControl_     = src.fCacheControl_;
+    fContentEncoding_  = src.fContentEncoding_;
     fContentType_      = src.fContentType_;
     fCookieList_       = src.fCookieList_;
     fDate_             = src.fDate_;
@@ -301,7 +303,9 @@ Headers::Headers (Headers&& src)
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = move (src.fExtraHeaders_);
+    fAcceptEncodings_  = move (src.fAcceptEncodings_);
     fCacheControl_     = move (src.fCacheControl_);
+    fContentEncoding_  = move (src.fContentEncoding_);
     fContentType_      = move (src.fContentType_);
     fCookieList_       = move (src.fCookieList_);
     fDate_             = move (src.fDate_);
@@ -337,8 +341,10 @@ Headers& Headers::operator= (const Headers& rhs)
     AssertExternallySynchronizedMutex::WriteContext critSec2{fThisAssertExternallySynchronized_};
     if (this != &rhs) {
         fExtraHeaders_     = rhs.fExtraHeaders_;
+        fAcceptEncodings_  = rhs.fAcceptEncodings_;
         fCacheControl_     = rhs.fCacheControl_;
         fContentLength_    = rhs.fContentLength_;
+        fContentEncoding_  = rhs.fContentEncoding_;
         fContentType_      = rhs.fContentType_;
         fCookieList_       = rhs.fCookieList_;
         fDate_             = rhs.fDate_;
@@ -358,8 +364,10 @@ Headers& Headers::operator= (Headers&& rhs) noexcept
     AssertExternallySynchronizedMutex::WriteContext critSec2{fThisAssertExternallySynchronized_};
     if (this != &rhs) {
         fExtraHeaders_     = move (rhs.fExtraHeaders_);
+        fAcceptEncodings_  = move (rhs.fAcceptEncodings_);
         fCacheControl_     = move (rhs.fCacheControl_);
         fContentLength_    = move (rhs.fContentLength_);
+        fContentEncoding_  = move (rhs.fContentEncoding_);
         fContentType_      = move (rhs.fContentType_);
         fCookieList_       = move (rhs.fCookieList_);
         fDate_             = move (rhs.fDate_);
@@ -383,12 +391,18 @@ void Headers::SetAssertExternallySynchronizedMutexContext (const shared_ptr<Asse
 optional<String> Headers::LookupOne (const String& name) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl)) {
+    if (kHeaderNameEqualsComparer (name, HeaderName::kAcceptEncoding)) {
+        return fAcceptEncodings_ ? fAcceptEncodings_->As<String> () : optional<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl)) {
         return fCacheControl_ ? fCacheControl_->As<String> () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kContentLength)) {
         auto cl = this->contentLength ();
         return cl ? Characters::Format ("{}"_f, *cl) : optional<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kContentEncoding)) {
+        return fContentEncoding_ ? fContentEncoding_->As<String> () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kContentType)) {
         return fContentType_ ? fContentType_->As<String> () : optional<String>{};
@@ -497,11 +511,17 @@ void Headers::AddAll (const Headers& headers)
 {
     // more efficient to add each fields than converting arg to collection and then applying each mappnig back
     fExtraHeaders_ += headers.fExtraHeaders_;
+    if (headers.fAcceptEncodings_) {
+        fAcceptEncodings_ = *headers.fAcceptEncodings_;
+    }
     if (headers.fCacheControl_) {
         fCacheControl_ = *headers.fCacheControl_;
     }
     if (auto cl = headers.contentLength ()) {
         this->contentLength = *cl;
+    }
+    if (headers.fContentEncoding_) {
+        fContentEncoding_ = *headers.fContentEncoding_;
     }
     if (headers.fContentType_) {
         fContentType_ = *headers.fContentType_;
@@ -549,11 +569,25 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
             // nullopt means remove, and value is what we replace with
         }
     }
-    if (kHeaderNameEqualsComparer (headerName, HeaderName::kCacheControl)) {
+    if (kHeaderNameEqualsComparer (headerName, HeaderName::kAcceptEncoding)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fAcceptEncodings_ != nullopt) ? 1 : 0;
+        }
+        fAcceptEncodings_ = value ? ContentEncodings::Parse (*value) : optional<ContentEncodings>{};
+        return true;
+    }
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kCacheControl)) {
         if (nRemoveals != nullptr) {
             *nRemoveals = (value == nullopt and fCacheControl_ != nullopt) ? 1 : 0;
         }
         fCacheControl_ = value ? CacheControl::Parse (*value) : optional<CacheControl>{};
+        return true;
+    }
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentEncoding)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fContentEncoding_ != nullopt) ? 1 : 0;
+        }
+        this->contentEncoding = value ? ContentEncoding{*value} : optional<ContentEncoding>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentLength)) {
@@ -698,11 +732,17 @@ Collection<KeyValuePair<String, String>> Headers::As () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Collection<KeyValuePair<String, String>>       results = fExtraHeaders_;
+    if (fAcceptEncodings_) {
+        results.Add ({HeaderName::kAcceptEncoding, fAcceptEncodings_->As<String> ()});
+    }
     if (fCacheControl_) {
         results.Add ({HeaderName::kCacheControl, fCacheControl_->As<String> ()});
     }
     if (auto cl = this->contentLength ()) {
         results.Add ({HeaderName::kContentLength, Characters::Format ("{}"_f, static_cast<long long> (*cl))});
+    }
+    if (fContentEncoding_) {
+        results.Add ({HeaderName::kContentEncoding, fContentEncoding_->As<String> ()});
     }
     if (fContentType_) {
         results.Add ({HeaderName::kContentType, fContentType_->As<String> ()});

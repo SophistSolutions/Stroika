@@ -20,6 +20,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         : fRep_{forward<STRING_LIKE> (name)}
     {
     }
+    template <typename T>
+    inline String ContentEncoding::As () const
+        requires (same_as<T, String>)
+    {
+        return this->ToString ();
+    }
     inline String ContentEncoding::ToString () const
     {
         return Characters::ToString (fRep_);

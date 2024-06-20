@@ -51,6 +51,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         */
+        template <typename T>
+        nonvirtual String As () const
+            requires (same_as<T, String>);
+
+    public:
+        /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
