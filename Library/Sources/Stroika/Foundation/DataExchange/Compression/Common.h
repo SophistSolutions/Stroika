@@ -61,7 +61,7 @@ namespace Stroika::Foundation::DataExchange::Compression {
          */
         nonvirtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src);
         nonvirtual BLOB                   Transform (const BLOB& src);
-        
+
         /**
          */
         nonvirtual optional<Stats> GetStats () const;

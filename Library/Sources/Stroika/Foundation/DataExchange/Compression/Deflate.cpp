@@ -168,10 +168,15 @@ namespace {
         }
     };
     struct DeflateRep_ : BaseRep_ {
-        DeflateRep_ (const Streams::InputStream::Ptr<byte>& in)
+        Deflate::Compress::Options fOptions_;
+        DeflateRep_ (const Streams::InputStream::Ptr<byte>& in, Deflate::Compress::Options o)
             : BaseRep_{in}
+            , fOptions_{o}
         {
-            int level = Z_DEFAULT_COMPRESSION;
+            Require (not o.fCompressionLevel.has_value () or (0 <= o.fCompressionLevel and o.fCompressionLevel <= 1));
+            int level = o.fCompressionLevel ? Z_BEST_SPEED + Math::Round<int> (*o.fCompressionLevel * (Z_BEST_COMPRESSION - Z_BEST_SPEED))
+                                            : Z_DEFAULT_COMPRESSION;
+            Assert (level == Z_DEFAULT_COMPRESSION or (Z_BEST_SPEED <= level and level <= Z_BEST_COMPRESSION));
             ThrowIfZLibErr_ (::deflateInit (&fZStream_, level));
         }
         virtual ~DeflateRep_ ()
@@ -232,10 +237,15 @@ namespace {
 Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
 {
     struct MyRep_ : IRep {
-        shared_ptr<DeflateRep_>        fDelegate2;
+        Deflate::Compress::Options fOptions_;
+        shared_ptr<DeflateRep_>    fDelegate2;
+        MyRep_ (const Deflate::Compress::Options& o)
+            : fOptions_{o}
+        {
+        }
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<DeflateRep_> (src);
+            fDelegate2 = make_shared<DeflateRep_> (src, fOptions_);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
@@ -243,9 +253,9 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
             return nullopt;
         }
     };
-    return Compression::Ptr{make_shared<MyRep_> ()};
+    return Compression::Ptr{make_shared<MyRep_> (o)};
 }
-Compression::Ptr Deflate::Decompress::New (const Deflate::Decompress::Options& o)
+Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decompress::Options& o)
 {
     struct MyRep_ : IRep {
         shared_ptr<InflateRep_>        fDelegate2;

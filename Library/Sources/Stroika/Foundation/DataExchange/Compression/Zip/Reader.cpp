@@ -7,6 +7,8 @@
 
 #include "Reader.h"
 
+/// FILE DEPRECATED
+
 #if qHasFeature_ZLib
 // SEE http://www.zlib.net/zlib_how.html
 #include <zlib.h>

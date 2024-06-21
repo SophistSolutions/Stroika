@@ -8,6 +8,8 @@
 
 #include "Stroika/Foundation/DataExchange/Compression/Reader.h"
 
+/// FILE DEPRECATED
+
 /**
  *  \file
  *
@@ -27,7 +29,7 @@ namespace Stroika::Foundation::DataExchange::Compression::Zip {
      *          Assert (kSample1_ == Compression::Zip::Reader{}.Decompress (compressed));
      *      \endcode
      */
-    class Reader : public DataExchange::Compression::Reader {
+    class [[deprecated ("Since Stroika v3.0d7 - use Deflate::(De-)Compress::New")]] Reader : public DataExchange::Compression::Reader {
     public:
         Reader ();
     };

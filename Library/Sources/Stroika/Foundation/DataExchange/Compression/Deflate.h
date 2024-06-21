@@ -17,7 +17,7 @@
  */
 
 namespace Stroika::Foundation::DataExchange::Compression::Deflate {
-#if qHasFeature_ZLib
+
     /**
      *  \par Example Usage
      *      \code
@@ -28,13 +28,16 @@ namespace Stroika::Foundation::DataExchange::Compression::Deflate {
      */
     namespace Compress {
         struct Options : Compression::Compress::Options {};
+#if qHasFeature_ZLib
         Ptr New (const Options& o = {});
+#endif
     }
     namespace Decompress {
         struct Options : Compression::Decompress::Options {};
+#if qHasFeature_ZLib
         Ptr New (const Options& o = {});
-    }
 #endif
+    }
 
 }
 
