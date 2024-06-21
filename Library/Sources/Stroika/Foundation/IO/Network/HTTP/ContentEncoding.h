@@ -76,6 +76,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
         /**
          *  gzip An encoding format produced by the file compression program "gzip" (GNU zip) as described in RFC 1952 [25]. This format is a Lempel-Ziv coding (LZ77) with a 32 bit CRC
+         *
+         *  \note "gzip is deflate, and extra headers and check sum"
+         *        https://stackoverflow.com/questions/7243705/what-is-the-advantage-of-gzip-vs-deflate-compression
          */
         static const ContentEncoding kGZip;
 
