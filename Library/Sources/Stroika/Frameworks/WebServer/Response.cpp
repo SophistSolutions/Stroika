@@ -60,6 +60,10 @@ namespace {
     constexpr size_t kResponseBufferReallocChunkSizeReserve_ = 16 * 1024;
 }
 
+namespace {
+    constexpr char kCRLF_[] = "\r\n";
+}
+
 Response::Response (Response&& src)
     // Would be nice to use inherited src move, but PITA, because then would need to duplicate creating the properties below.
     : Response{src.fSocket_, src.fUnderlyingOutStream_, src.headers ()}
@@ -226,15 +230,6 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         this->autoComputeETag = false;
         return PropertyChangedEventResultType::eContinueProcessing;
     });
-#if 0
-    this->rwHeaders ().contentEncoding.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-        Require (this->headersCanBeSet ());
-        // NYI...
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
-        // adjust filtered...
-        return PropertyChangedEventResultType::eContinueProcessing;
-    });
-#endif
     fInChunkedModeCache_ = this->headers ().transferEncoding () and
                            this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked); // can be set by initial headers (in CTOR)
 }
@@ -243,7 +238,9 @@ void Response::StateTransition_ (State to)
 {
     Require (fState_ <= to);
     if (to != fState_) {
-        // dbgtrace transition
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("Response::StateTransition_ (from={}, to={})"_f, fState_, to);
+#endif
         fState_ = to;
     }
 }
@@ -270,8 +267,7 @@ InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const Interne
 void Response::Flush ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Response::Flush"};
-    DbgTrace ("fState_ = {}"_f, fState_);
+    Debug::TraceContextBumper ctx{"Response::Flush", "fState_ = {}"_f, fState_};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
 
@@ -294,11 +290,10 @@ void Response::Flush ()
                 fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"headers: %s", Characters::ToString (this->headers ().As<> ()).c_str ());
+            DbgTrace ("headers: {}"_f, headers ());
 #endif
         }
-        const char kCRLF[] = "\r\n";
-        fUseOutStream_.WriteRaw (span{kCRLF, ::strlen (kCRLF)});
+        fUseOutStream_.WriteRaw (span{kCRLF_, ::strlen (kCRLF_)});
         StateTransition_ (State::ePreparingBodyAfterHeadersSent);
     }
     // write BYTES to fOutStream
@@ -392,8 +387,7 @@ void Response::write (const byte* s, const byte* e)
                 string n = CString::Format ("%x\r\n", static_cast<unsigned int> (e - s));
                 fUseOutStream_.WriteRaw (span{n.data (), n.size ()});
                 fUseOutStream_.WriteRaw (span{s, e});
-                const char kCRLF[] = "\r\n";
-                fUseOutStream_.WriteRaw (span{kCRLF, strlen (kCRLF)});
+                fUseOutStream_.WriteRaw (span{kCRLF_, strlen (kCRLF_)});
             }
         }
         else {
@@ -403,7 +397,7 @@ void Response::write (const byte* s, const byte* e)
         }
     }
     if (fState_ == State::ePreparingHeaders) {
-        StateTransition_ (State::ePreparingBodyBeforeHeadersSent); // NO MATTER WHAT - even if we havne't sent headers, mark that we are in a new state, so callers are forced to set headers BEFORE doing their first write
+        StateTransition_ (State::ePreparingBodyBeforeHeadersSent); // NO MATTER WHAT - even if we haven't sent headers, mark that we are in a new state, so callers are forced to set headers BEFORE doing their first write
     }
 }
 
