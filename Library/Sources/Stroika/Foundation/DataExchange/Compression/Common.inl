@@ -19,11 +19,17 @@ namespace Stroika::Foundation::DataExchange::Compression {
     }
     inline InputStream::Ptr<byte> Ptr::Transform (const InputStream::Ptr<byte>& src)
     {
+        RequireNotNull (get ());
         return get ()->Transform (src);
     }
     inline BLOB Ptr::Transform (const BLOB& src)
     {
         return Transform (src.As<InputStream::Ptr<byte>> ()).ReadAll ();
+    }
+    inline auto Ptr::GetStats () const -> optional<Stats>
+    {
+        RequireNotNull (get ());
+        return get ()->GetStats ();
     }
 
 }

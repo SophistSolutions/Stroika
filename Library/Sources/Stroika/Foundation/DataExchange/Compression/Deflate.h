@@ -10,6 +10,8 @@
 
 /**
  *  \file
+ * 
+ *  https://en.wikipedia.org/wiki/Deflate
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */

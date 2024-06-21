@@ -18,19 +18,37 @@ namespace Stroika::Foundation::DataExchange::Compression {
     using namespace Streams;
     using Memory::BLOB;
 
+    /**
+     */
     struct Stats {
-        optional<float> fCompression; // 0 is complete compression, and 1.0 is same size as original
+        /**
+         *  \brief compressed size / src data size
+         *  
+         *      0 is complete compression, and 1.0 is same size as original (can possibly be > 1.0)
+         */
+        optional<float> fCompression;
     };
 
     /**
      *  API NOT synchronized - use one at a time
+     * 
+     *  Reason Transform API not re-entrant is so you can optionally accumulate state, and return it only at the end.
+     *  Would need to hook that state into Stream - or into instance of compressor - and that's intrinsically non-re-entrant.
+     * 
+     *  Could have done API so that inputStream was passed into New(). Didn't see any strong reason one way or the other.
+     *  Could have named 'Transform' operator()() or used std::function - but again - no strong reasons one way or the other.
      */
     struct IRep {
-        // req not ongoing transform on this instance (if re-used, last transform must be completed, meaning EOF returned, or exception thrown
+        /**
+         * req not ongoing transform on this instance (if re-used, last transform must be completed, meaning EOF returned, or exception thrown
+         */
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src) = 0;
-        // return null (depends on implementation) or stats about current ongoing or last completed transformation.
+        /**
+         * return null (depends on implementation) or stats about current ongoing or last completed transformation.
+         */
         virtual optional<Stats> GetStats () const = 0;
     };
+
     /**
      */
     struct Ptr : shared_ptr<IRep> {
@@ -39,17 +57,29 @@ namespace Stroika::Foundation::DataExchange::Compression {
         Ptr (Ptr&&) noexcept = default;
         Ptr (const shared_ptr<IRep>& s);
         Ptr (shared_ptr<IRep>&& s) noexcept;
+        /**
+         */
         nonvirtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src);
         nonvirtual BLOB                   Transform (const BLOB& src);
+        
+        /**
+         */
         nonvirtual optional<Stats> GetStats () const;
     };
 
     namespace Compress {
+        /**
+         */
         struct Options {
-            optional<float> fCompressionLevel; // 0 is least, and 1.0 is most compression/highest compression
+            /**
+             * 0 is least, and 1.0 is most compression/highest compression
+             */
+            optional<float> fCompressionLevel;
         };
     }
     namespace Decompress {
+        /**
+         */
         struct Options {};
     }
 
