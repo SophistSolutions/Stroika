@@ -543,9 +543,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Writer.cpp">
       <Filter>Sources\DataExchange\Variant</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.cpp">
-      <Filter>Sources\DataExchange\Compression</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp">
       <Filter>Sources\DataExchange\Compression\Zip</Filter>
     </ClCompile>
@@ -842,6 +839,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentEncoding.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.cpp">
+      <Filter>Sources\DataExchange\Compression</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2213,6 +2213,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ContentEncoding.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.h">
+      <Filter>Sources\DataExchange\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Common.h">
+      <Filter>Sources\DataExchange\Compression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3660,6 +3666,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ReadMe.md">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Common.inl">
+      <Filter>Sources\DataExchange\Compression</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

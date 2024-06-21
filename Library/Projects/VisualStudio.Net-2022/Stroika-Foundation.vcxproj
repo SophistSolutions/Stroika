@@ -114,7 +114,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp" />
@@ -476,6 +476,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.h" />
@@ -941,6 +943,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\ReadMe.md" />
