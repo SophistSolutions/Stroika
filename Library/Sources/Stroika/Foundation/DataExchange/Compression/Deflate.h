@@ -19,6 +19,17 @@
 namespace Stroika::Foundation::DataExchange::Compression::Deflate {
 
     /**
+     *  Check at compile time if deflate is supported.
+     */
+    constexpr bool kSupported =
+#if qHasFeature_ZLib
+        true
+#else
+        false
+#endif
+        ;
+
+    /**
      *  \par Example Usage
      *      \code
      *          Memory::BLOB  kSample1_   =     Memory::BLOB::Hex ("aa1234abcd01010102030405");
