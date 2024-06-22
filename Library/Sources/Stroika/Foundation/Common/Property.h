@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <concepts>
 #include <forward_list>
 #include <functional>
 #include <mutex>
@@ -19,10 +20,10 @@
  * 
  *  Notes:
  *      I've long thought about doing something like this, but only recently got frustrated with
- *      the ulginess of tons of getters and setters. So I googled for solutions, and was suprised
+ *      the ugliness of tons of getters and setters. So I googled for solutions, and was surprised
  *      there was so little traction behind adding this feature to C++ (from C#).
  * 
- *      These links give a few hints about dicussions of adding this feature to c++:
+ *      These links give a few hints about discussions of adding this feature to c++:
  *          *   http://www.open-std.org/Jtc1/sc22/wg21/docs/papers/2004/n1615.pdf
  *          *   https://stackoverflow.com/questions/40559828/c-properties-with-setter-and-getter
  *          *   https://www.reddit.com/r/cpp/comments/61m9r1/what_do_you_think_about_properties_in_the_c/
@@ -31,7 +32,7 @@
  *      @todo   Consider redoing so type of Getter/Setter embedded into the class, so it can 
  *              be saved RAW, and not converted to a function pointer. Trickier to do construction,
  *              but probably possible with template guides. But only bother if there is a clear
- *              performance betenfit, because this is simpler.
+ *              performance benefit, because this is simpler.
  * 
  */
 
@@ -134,8 +135,9 @@ namespace Stroika::Foundation::Common {
         ReadOnlyProperty ()                        = delete;
         ReadOnlyProperty (const ReadOnlyProperty&) = delete;
         ReadOnlyProperty (ReadOnlyProperty&&)      = delete;
-        template <typename G>
-        constexpr ReadOnlyProperty (G getter);
+        template <invocable<const ReadOnlyProperty<T>*> G>
+        constexpr ReadOnlyProperty (G getter)
+            requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>);
 
     public:
         nonvirtual ReadOnlyProperty& operator= (const ReadOnlyProperty&)  = delete;
@@ -214,7 +216,7 @@ namespace Stroika::Foundation::Common {
         WriteOnlyProperty ()                         = delete;
         WriteOnlyProperty (const WriteOnlyProperty&) = delete;
         WriteOnlyProperty (WriteOnlyProperty&&)      = delete;
-        template <typename S>
+        template <invocable<WriteOnlyProperty<T>*, T> S>
         constexpr WriteOnlyProperty (S setter);
 
     public:
@@ -228,13 +230,13 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  Alternate syntax for setting the value.
+         *  Alternate syntax for setting the property value.
          */
         nonvirtual void Set (Configuration::ArgByValueType<T> value);
 
     public:
         /**
-         *  Alternate syntax for setting the value.
+         *  Alternate syntax for setting the property value.
          */
         nonvirtual void operator() (Configuration::ArgByValueType<T> value);
 
@@ -412,8 +414,9 @@ namespace Stroika::Foundation::Common {
         Property ()                = delete;
         Property (const Property&) = delete;
         Property (Property&&)      = delete;
-        template <typename G, typename S>
-        Property (G getter, S setter);
+        template <invocable<const ReadOnlyProperty<T>*> G, invocable<WriteOnlyProperty<remove_cvref_t<T>>*, remove_cvref_t<T>> S>
+        Property (G getter, S setter)
+            requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>);
 
     public:
         /**
@@ -436,17 +439,23 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
+     *  \brief ConstantProperty is a 'virtual constant' - computed once at app startup, and thence forward just the cached constant value
+     * 
      *  A ConstantProperty is just something that makes a function returning a value look
      *  like a constant, except that the ConstantProperty calls the construction function once, lazily;
      * 
      *  This can be useful if you have a logical constant, but one that depends on other 'logical constants'
      *  but want to avoid the nasty C++ deadly embrace of startup intermodule initialization.
+     *
+     *  In C++, you sometimes want to define a global constant, but run into problems because of order of initialization
+     *  of global constants (across files). This class solves that problem by allowing you to manage the construction
+     *  timing of your constant in a provided function, 
      * 
      *  This isn't guaranteed to always solve that problem no matter what, it allows you to declare a constant
      *  globally, and yet delay when its constructed until its first used (as opposed to some unspecified time
      *  before main).
      * 
-     *  \note Prior to Stroika v2.1b12, this was called VirtualConstant
+     *  \note \alias Prior to Stroika v2.1b12, this was called VirtualConstant
      * 
      *  \note Unlike other properties (which are generally associated with some object)
      *        ConstantProperty objects generally are not associated with a particular object.
@@ -455,34 +464,20 @@ namespace Stroika::Foundation::Common {
      *        Don't inherit from ReadOnlyProperty because if it already defining extra function object
      *        we don't need. API OK (though more general than needed).
      * 
+     *  \par Example Usage
+     *      \code
+     *          inline String                 kXGetter_ () { return "X"; }
+     *          const ConstantProperty<String> kX {kXGetter_};
+     *          ...
+     *          const String a = kX;
+     *      \endcode
+     *
      * 
 &&&& OLD DOCS FROM VIRTUALCONSTNAT - SOME HELPFUL
-
-     * \brief Declare what appears to be a constant, but where the value is derived from a function call result (the first time) its used (so lazy initialize)
-     *
-     *  In C++, you sometimes want to define a global constant, but run into problems because of order of initialization
-     *  of global constants (across files). This class solves that problem by allowing you to manage the construction
-     *  timing of your constant in a provided function, 
-     *
-     *  Allow use of regular constant declaration use when we have
-     *  an underlying system where the constant is actually FETECHED from the argument function.
-     * 
-     *  \note - this one-time-computed constant value is then CACHED (so re-used), and called LAZILY, so you can count on
-     *          it not being called until the data is first required. This requires a little extra space, but is
-     *          always desirable (lazy compute) because otherwise you would use const T, instead of const VirtualConstant<T>.
-     *
      *  This doesn't work perfectly (e.g. see below about operator.) - but its pretty usable.
      * 
      *  \note The basic idea - any time you have a constant whose initializer depends on other constants and get into trouble
      *        with mutual constructor order issues before main, replace the dependent constant with a VirtualConstant
-     *
-     *  \par Example Usage
-     *      \code
-     *          inline String                 kXGetter_ () { return "X"; }
-     *          const VirtualConstant<String> kX {kXGetter_};
-     *          ...
-     *          const String a = kX;
-     *      \endcode
      *
      *  \par Example Usage
      *      \code
@@ -509,18 +504,10 @@ namespace Stroika::Foundation::Common {
      *          optional<T> {} == VirtualConstant<T,...> {} won't work. To workaround, simply
      *          apply () after the VirtualConstant<> instance.
      *
-     *  \note   constexpr VirtualConstant<> not yet supported, but hopefully will be soon. In the meantime,
-     *          it is suggested to use inline const variable declarations.
-     *  
      *  TODO:
-     *      @todo   See https://stackoverflow.com/questions/53977787/constexpr-version-of-stdfunction - and
-     *              get constexpr version of VirtualConstant working
-     * 
      *      @todo   Using optional<> and fValueInitialized_ (once_flag) is REDUNDANT, and wasteful of space.
      *              But re-using these APIs is tricky without keeping both 'flags'. Probably just store in byte array
      *              (re-implementing parts of Optional) - and do right magic destruct/etc...
-
-
      */
     template <typename T>
     class ConstantProperty {
@@ -530,8 +517,9 @@ namespace Stroika::Foundation::Common {
          *  just once, and LAZILY, the first time the given VirtualConstant value is required.
          */
         ConstantProperty () = delete;
-        template <typename F>
-        constexpr ConstantProperty (F oneTimeGetter);
+        template <invocable F>
+        constexpr ConstantProperty (F oneTimeGetter)
+            requires (convertible_to<invoke_result_t<F>, T>);
 
     public:
         /**
@@ -558,7 +546,7 @@ namespace Stroika::Foundation::Common {
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  const inline Execution::VirtualConstant<InternetMediaType> kPNG...
+         *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG...
          *
          *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsImageFormat ();
          *      \endcode
@@ -572,7 +560,7 @@ namespace Stroika::Foundation::Common {
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  const inline Execution::VirtualConstant<InternetMediaType> kPNG = ...
+         *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG = ...
          *
          *          bool checkIsImage2 = PredefinedInternetMediaType::kPNG->IsImageFormat ();
          *      \endcode
@@ -608,18 +596,18 @@ namespace Stroika::Foundation::Common {
      *     to base class.
      * 
      *     'Events' approach nice in that it is more generally useful (listeners could be largely unrelated - external - like vtable methods
-     *     vs 'function' ptr objects). But its COSTLY when not used (must maintain a list of callbacks, or worse two). Can mittigate cost
+     *     vs 'function' ptr objects). But its COSTLY when not used (must maintain a list of callbacks, or worse two). Can mitigate cost
      *     as mentioned above, by only having subclass of Property (PropertyWithEvents) that supports events.
      * 
      *     REPLACING the GETTER/SETTER seems quite viable, except that it appears to really kill modularity. No way (I can think of) within
      *     c++ to capture any kind of public/private thing. Anybody would be replacing GETTERS or SETTERS (if anybody can) (cannot use
      *     protected cuz not subclassing, and forcing extra subclassing would be awkward).
      * 
-     *  \note since properties and therefore ExtendableProperty cannot be copied, its natural to note that their 'eventhandlers' also
+     *  \note since properties and therefore ExtendableProperty cannot be copied, its natural to note that their 'event handlers' also
      *        are not generally copied.
      * 
      *        Though its up to any object which uses properties, its generally presumed and recommended that of you copy objects
-     *        O1 (of type O, with EvtendedableProperty P) to object O2, then the event handlers watching properties P (from O1)
+     *        O1 (of type O, with ExtendableProperty P) to object O2, then the event handlers watching properties P (from O1)
      *        will NOT be copied to object O2 (to its property P).
      * 
      *  \note @todo - it we use a std::forward_list in the interest of being very cheap when not used (often), but this class is a PITA, if we need to
@@ -638,8 +626,9 @@ namespace Stroika::Foundation::Common {
         ExtendableProperty ()                          = delete;
         ExtendableProperty (const ExtendableProperty&) = delete;
         ExtendableProperty (ExtendableProperty&&)      = delete;
-        template <typename G, typename S>
-        ExtendableProperty (G getter, S setter);
+        template <invocable<const ExtendableProperty<T>*> G, invocable<ExtendableProperty<T>*, remove_cvref_t<T>> S>
+        ExtendableProperty (G getter, S setter)
+            requires (convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>);
 
     public:
         /**

@@ -13,9 +13,10 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <typename G>
+    template <invocable<const ReadOnlyProperty<T>*> G>
     constexpr ReadOnlyProperty<T>::ReadOnlyProperty (G getter)
-        : fGetter_ (getter) // no uniform initialization because this may involve conersions
+        requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>)
+        : fGetter_ (getter) // no uniform initialization because this may involve conversions
     {
     }
     template <typename T>
@@ -61,9 +62,9 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <typename S>
+    template <invocable<WriteOnlyProperty<T>*, T> S>
     constexpr WriteOnlyProperty<T>::WriteOnlyProperty (S setter)
-        : fSetter_ (setter) // no uniform initialization because this may involve conersions
+        : fSetter_ (setter) // no uniform initialization because this may involve conversions
     {
     }
     template <typename T>
@@ -89,8 +90,9 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <typename G, typename S>
+    template <invocable<const ReadOnlyProperty<T>*> G, invocable<WriteOnlyProperty<remove_cvref_t<T>>*, remove_cvref_t<T>> S>
     inline Property<T>::Property (G getter, S setter)
+        requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>)
         : ReadOnlyProperty<T>{getter}
         , WriteOnlyProperty<decayed_value_type>{setter}
     {
@@ -120,8 +122,9 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <typename F>
+    template <invocable F>
     constexpr ConstantProperty<T>::ConstantProperty (F oneTimeGetter)
+        requires (convertible_to<invoke_result_t<F>, T>)
         : fOneTimeGetter_{oneTimeGetter}
     {
     }
@@ -154,8 +157,9 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <typename G, typename S>
+    template <invocable<const ExtendableProperty<T>*> G, invocable<ExtendableProperty<T>*, remove_cvref_t<T>> S>
     ExtendableProperty<T>::ExtendableProperty (G getter, S setter)
+        requires (convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>)
         : Property<T>{[getter] ([[maybe_unused]] const auto* property) -> typename Property<T>::base_value_type {
                           // Subtle - but the 'property' here refers to 'this' (ExtendableProperty). The getter itself will want to extract the parent object, but
                           // unlike other getter/setters, here the auto property is already for this object.
