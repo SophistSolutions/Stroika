@@ -57,6 +57,10 @@ namespace Stroika::Foundation::DataExchange::Compression {
         Ptr (Ptr&&) noexcept = default;
         Ptr (const shared_ptr<IRep>& s);
         Ptr (shared_ptr<IRep>&& s) noexcept;
+
+        Ptr& operator= (const Ptr&) = default;
+        Ptr& operator= (Ptr&&)      = default;
+
         /**
          */
         nonvirtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src);
