@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *          Debug::TraceContextBumper ctx{L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ()};
+     *          Debug::TraceContextBumper ctx{"OptionsFile::ReadRaw", "readfilename={}"_f, GetReadFilePath_ ()};
      *      \endcode
      *
      *      Generates log output (assuming ReadRaw is quick and doesn't do more DbgTrace calls):
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *          Debug::TraceContextBumper ctx { Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ()) };
+     *          Debug::TraceContextBumper ctx { Stroika_Foundation_Debug_OptionalizeTraceArgs ("OptionsFile::ReadRaw", L"readfilename={}"_f, GetReadFilePath_ ().c_str ()) };
      *          DbgTrace (L"x");
      *      \endcode
      *
