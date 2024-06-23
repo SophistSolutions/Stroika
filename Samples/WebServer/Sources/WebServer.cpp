@@ -100,9 +100,17 @@ namespace {
         // Can declare arguments as Request*,Response*
         static void DefaultPage_ (Request*, Response* response)
         {
-            constexpr bool kUseTransferCoding_ = true;
-            //constexpr bool kUseTransferCoding_ = false;
-            if (kUseTransferCoding_) {
+            constexpr bool kUseChunkedTransferCoding_ = true;
+            //constexpr bool kUseChunkedTransferCoding_ = false;
+            // new way --NYI
+            if (kUseChunkedTransferCoding_) {
+                response->automaticTransferChunkSize = 10;
+            }
+            else {
+                response->automaticTransferChunkSize = Response::kNoChunkedTransfer;
+            }
+            // old way
+            if (kUseChunkedTransferCoding_) {
                 response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
             }
             response->contentType = DataExchange::InternetMediaTypes::kHTML;

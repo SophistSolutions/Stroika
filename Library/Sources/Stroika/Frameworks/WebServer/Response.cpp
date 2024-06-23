@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -41,7 +42,7 @@ using PropertyChangedEventResultType = Common::PropertyCommon::PropertyChangedEv
 using Debug::AssertExternallySynchronizedMutex;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -49,8 +50,8 @@ using Debug::AssertExternallySynchronizedMutex;
  ********************************************************************************
  */
 namespace {
-    // Based on looking at a handlful of typical file sizes...5k to 80k, but ave around
-    // 25 and median abit above 32k. Small, not very representative sampling. And the more we use
+    // Based on looking at a handful of typical file sizes...5k to 80k, but ave around
+    // 25 and median a bit above 32k. Small, not very representative sampling. And the more we use
     // subscripts (script src=x) this number could shrink.
     //
     // MAY want to switch to using InlineBuffer<byte> - but before doing so, do some cleanups of its bugs and make sure
@@ -95,17 +96,17 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                               thisObj->fETagDigester_ = nullopt;
                           }
                       }}
-    , autoComputeContentLength{
+    , automaticTransferChunkSize{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::automaticTransferChunkSize);
               AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
-              return thisObj->fAutoComputeContentLength_;
+              return thisObj->fAutoTransferChunkSize_;
           },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeValue) {
-              Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const optional<size_t>& newAutoComputeValue) {
+              Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::automaticTransferChunkSize);
               AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
               Require (thisObj->state () == State::ePreparingHeaders);
-              thisObj->fAutoComputeContentLength_ = newAutoComputeValue;
+              thisObj->fAutoTransferChunkSize_ = newAutoComputeValue;
           }}
     , codePage{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                    const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
@@ -125,16 +126,32 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                        }
                    }
                }}
-    , contentEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-                          const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentEncoding);
-                          AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
-                          return thisObj->headers ().contentEncoding ();
-                      },
-                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCT) {
-                          Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentEncoding);
-                          AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
-                          thisObj->rwHeaders ().contentEncoding = newCT;
-                      }}
+    , bodyEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                       const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::bodyEncoding);
+                       AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                       return thisObj->fBodyEncoding_;
+                   },
+                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCT) {
+                       Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::bodyEncoding);
+                       AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                       thisObj->fBodyEncoding_ = newCT;
+                   }}
+    , chunkedTransferMode{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::chunkedTransferMode);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+        auto                                           te = thisObj->headers ().transferEncoding ();
+        return te and te->Contains (HTTP::TransferEncoding::kChunked);
+    }}
+    , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                      const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
+                      AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                      return thisObj->headers ().contentType ();
+                  },
+                  [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCT) {
+                      Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
+                      AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                      thisObj->rwHeaders ().contentType = newCT;
+                  }}
     , state{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
@@ -148,7 +165,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , responseStatusSent{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
-        return thisObj->fState_ != State::ePreparingHeaders and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent;
+        return thisObj->fState_ != State::ePreparingHeaders /* and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent*/;
     }}
     , responseCompleted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
@@ -159,6 +176,17 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
         return thisObj->fAborted_;
+    }}
+    , hasEntityBody{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::hasEntityBody);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+        if (thisObj->fHeadMode_) {
+            return false;
+        }
+        if (thisObj->status () == HTTP::StatusCodes::kNotModified) {
+            return false;
+        }
+        return thisObj->fRawBytesWritten_ > 0; //??? - better way to tell???
     }}
     , fSocket_{s}
     , fUnderlyingOutStream_{outStream}
@@ -184,35 +212,25 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         });
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     }
-    this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-        Require (this->headersCanBeSet ());
-        this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue)
-                                                                        : optional<InternetMediaType>{};
-        return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
-    });
     this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
         AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
-        // react to a change in the transferCoding setting by updating our flags (cache) - and updating the contentLength header properly
         Require (this->headersCanBeSet ());
-        // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
-        fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::kChunked);
-        // note - no need to reset contentLength header itself, just assure its auto-computed (so it will returned as null)
-        fAutoComputeContentLength_ = true;
         return PropertyChangedEventResultType::eContinueProcessing;
     });
-    // auto-compute the content-length if fAutoComputeContentLength_ is true
-    this->rwHeaders ().contentLength.rwPropertyReadHandlers ().push_front ([this] (const auto& baseValue) -> optional<uint64_t> {
-        if (this->fAutoComputeContentLength_) {
-            return this->InChunkedMode_ () ? optional<uint64_t>{} : fBodyBytes_.size ();
+    // auto-compute the content-length unless chunked transfer
+    this->rwHeaders ().contentLength.rwPropertyReadHandlers ().push_front ([this] ([[maybe_unused]] const auto& baseValue) -> optional<uint64_t> {
+        if (this->chunkedTransferMode ()) {
+            return nullopt;
         }
-        return baseValue;
+        //if (this->responseStatusSent ()) {
+        return GetPossiblyEncodedBody_ ().size ();
+        //}
+        //return nullopt;
     });
     this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-        Require (this->headersCanBeSet ());
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
-        // if someone explicitly sets the content-Length, then stop auto-computing contentLength
-        this->autoComputeContentLength = false;
-        return PropertyChangedEventResultType::eContinueProcessing;
+        RequireNotReached (); // since v3.0d7 - disallow
+                              //        return PropertyChangedEventResultType::eContinueProcessing;
+        return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
     });
     // auto-compute the etag if autoComputeETag (fETagDigester_.has_value()) is true
     this->rwHeaders ().ETag.rwPropertyReadHandlers ().push_front ([this] (const auto& baseETagValue) -> optional<HTTP::ETag> {
@@ -230,26 +248,59 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         this->autoComputeETag = false;
         return PropertyChangedEventResultType::eContinueProcessing;
     });
-    fInChunkedModeCache_ = this->headers ().transferEncoding () and
-                           this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked); // can be set by initial headers (in CTOR)
 }
 
 void Response::StateTransition_ (State to)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
+    Debug::TraceContextBumper ctx{"Response::StateTransition_", "from={}, to={}"_f, static_cast<State> (fState_), static_cast<State> (to)};
+#endif
     Require (fState_ <= to);
     if (to != fState_) {
+        if ((fState_ == State::ePreparingHeaders /* or fState_ == State::ePreparingBodyBeforeHeadersSent*/) and to == State::eHeadersSent) {
+            if (fBodyEncoding_) {
+                if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
+                    if (this->chunkedTransferMode ()) {
+                        HTTP::TransferEncodings htc = *headers ().transferEncoding ();
+                        htc.Append (HTTP::TransferEncoding::kDeflate);
+                        rwHeaders ().transferEncoding = htc;
+                    }
+                    else {
+                        rwHeaders ().contentEncoding = HTTP::ContentEncoding::kDeflate;
+                        fCurrentCompression_         = DataExchange::Compression::Deflate::Compress::New ();
+                    }
+                }
+            }
+            {
+                auto   curStatusInfo = this->statusAndOverrideReason ();
+                Status curStatus     = get<0> (curStatusInfo);
+                String statusMsg =
+                    Memory::NullCoalesce (get<1> (curStatusInfo), IO::Network::HTTP::Exception::GetStandardTextForStatus (curStatus, true));
+                wstring  version = L"1.1";
+                wstring  tmp     = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
+                u8string utf8    = String{tmp}.AsUTF8 ();
+                fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
+            }
+            {
+                for (const auto& i : this->headers ().As<> ()) {
+                    u8string utf8 = Characters::Format ("{}: {}\r\n"_f, i.fKey, i.fValue).AsUTF8 ();
+                    fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
+                    DbgTrace ("headers-line-: {}"_f, utf8);
+                }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Response::StateTransition_ (from={}, to={})"_f, fState_, to);
+                DbgTrace ("headers: {}"_f, headers ());
 #endif
-        fState_ = to;
-    }
-}
+            }
+            fUseOutStream_.WriteRaw (span{kCRLF_, ::strlen (kCRLF_)});
+        }
 
-bool Response::InChunkedMode_ () const
-{
-    Ensure (fInChunkedModeCache_ ==
-            (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked)));
-    return fInChunkedModeCache_;
+        fState_ = to;
+        if constexpr (qDebug) {
+            if (to >= State::eHeadersSent and hasEntityBody ()) {
+                Assert (chunkedTransferMode () or this->headers ().contentLength ().has_value ()); // I think is is always required, but double check...
+            }
+        }
+    }
 }
 
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
@@ -264,38 +315,26 @@ InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const Interne
     return ct;
 }
 
+Memory::BLOB Response::GetPossiblyEncodedBody_ () const
+{
+    if (auto cc = fCurrentCompression_) {
+        return cc.Transform (fBodyBytes_);
+    }
+    return fBodyBytes_;
+}
+
 void Response::Flush ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Response::Flush", "fState_ = {}"_f, fState_};
+    Debug::TraceContextBumper ctx{"Response::Flush", "fState_ = {}"_f, static_cast<State> (fState_)};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
 
-    // @todo See https://stroika.atlassian.net/browse/STK-758 - zip compression support
-    if (fState_ == State::ePreparingHeaders or fState_ == State::ePreparingBodyBeforeHeadersSent) {
-        {
-            auto   curStatusInfo = this->statusAndOverrideReason ();
-            Status curStatus     = get<0> (curStatusInfo);
-            String statusMsg =
-                Memory::NullCoalesce (get<1> (curStatusInfo), IO::Network::HTTP::Exception::GetStandardTextForStatus (curStatus, true));
-            wstring  version = L"1.1";
-            wstring  tmp     = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
-            u8string utf8    = String{tmp}.AsUTF8 ();
-            fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
-        }
-        {
-            Assert (InChunkedMode_ () or this->headers ().contentLength ().has_value ()); // I think is is always required, but double check...
-            for (const auto& i : this->headers ().As<> ()) {
-                u8string utf8 = Characters::Format ("{}: {}\r\n"_f, i.fKey, i.fValue).AsUTF8 ();
-                fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
-            }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("headers: {}"_f, headers ());
-#endif
-        }
-        fUseOutStream_.WriteRaw (span{kCRLF_, ::strlen (kCRLF_)});
-        StateTransition_ (State::ePreparingBodyAfterHeadersSent);
+    if (fState_ == State::ePreparingHeaders /* or fState_ == State::ePreparingBodyBeforeHeadersSent*/) {
+        StateTransition_ (State::eHeadersSent); // this flushes the headers
     }
+    Assert (fState_ >= State::eHeadersSent);
+
     // write BYTES to fOutStream
     if (not fBodyBytes_.empty ()) {
         Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
@@ -303,8 +342,9 @@ void Response::Flush ()
         DbgTrace ("bytes.size: {}"_f, static_cast<long long> (fBodyBytes_.size ()));
 #endif
         // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html - body must not be sent for not-modified
-        if (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified) {
-            fUseOutStream_.Write (span{fBodyBytes_});
+        //              if (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified) {
+        if (this->hasEntityBody ()) {
+            fUseOutStream_.Write (GetPossiblyEncodedBody_ ());
         }
         fBodyBytes_.clear ();
     }
@@ -319,7 +359,7 @@ bool Response::End ()
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
     if (fState_ != State::eCompleted) {
         try {
-            if (InChunkedMode_ ()) {
+            if (chunkedTransferMode ()) {
                 constexpr string_view kEndChunk_ = "0\r\n\r\n";
                 Assert (as_bytes (span{kEndChunk_}).size () == 5); // not including NUL-byte
                 fUseOutStream_.Write (as_bytes (span{kEndChunk_}));
@@ -369,35 +409,39 @@ void Response::Redirect (const URI& url)
     StateTransition_ (State::eCompleted);
 }
 
-void Response::write (const byte* s, const byte* e)
+void Response::write (const span<const byte>& bytes)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"Response::write()", "bytes=#{}"_f, bytes.size ()};
+#endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
     Require (not this->responseCompleted ());
-    Require (not this->responseStatusSent () or InChunkedMode_ ());
-    Require (s <= e);
-    if (s < e) {
+    Require (not this->responseStatusSent () or chunkedTransferMode ());
+    fRawBytesWritten_ += bytes.size_bytes ();
+    if (not bytes.empty ()) {
         if (fETagDigester_) {
-            fETagDigester_->Write (s, e);
+            fETagDigester_->Write (bytes);
         }
-        if (fState_ == State::ePreparingHeaders and InChunkedMode_ ()) {
+        if (fState_ == State::ePreparingHeaders and chunkedTransferMode ()) {
             Flush ();
         }
-        if (InChunkedMode_ ()) {
+        if (chunkedTransferMode ()) {
             if (not fHeadMode_) {
-                string n = CString::Format ("%x\r\n", static_cast<unsigned int> (e - s));
+                Memory::BLOB data2Write = bytes;
+                if (auto cc = fCurrentCompression_) {
+                    data2Write = cc.Transform (data2Write);
+                }
+                string n = CString::Format ("%x\r\n", static_cast<unsigned int> (data2Write.size ()));
                 fUseOutStream_.WriteRaw (span{n.data (), n.size ()});
-                fUseOutStream_.WriteRaw (span{s, e});
+                fUseOutStream_.Write (data2Write);
                 fUseOutStream_.WriteRaw (span{kCRLF_, strlen (kCRLF_)});
             }
         }
         else {
-            // Because for autocompute - illegal to call flush and then write
-            Containers::Support::ReserveTweaks::Reserve4AddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
-            fBodyBytes_.insert (fBodyBytes_.end (), s, e);
+            // Because for auto-compute - illegal to call flush and then write
+            Containers::Support::ReserveTweaks::Reserve4AddN (fBodyBytes_, bytes.size (), kResponseBufferReallocChunkSizeReserve_);
+            fBodyBytes_.insert (fBodyBytes_.end (), bytes.begin (), bytes.end ());
         }
-    }
-    if (fState_ == State::ePreparingHeaders) {
-        StateTransition_ (State::ePreparingBodyBeforeHeadersSent); // NO MATTER WHAT - even if we haven't sent headers, mark that we are in a new state, so callers are forced to set headers BEFORE doing their first write
     }
 }
 
@@ -408,7 +452,7 @@ void Response::write (const wchar_t* s, const wchar_t* e)
         // https://stroika.atlassian.net/browse/STK-983
         string cpStr = Characters::CodeCvt<wchar_t>{fCodePage_}.String2Bytes<string> (wstring{s, e});
         if (not cpStr.empty ()) {
-            write (reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
+            write (as_bytes (span{cpStr.c_str (), cpStr.length ()}));
         }
     }
 }
@@ -428,12 +472,13 @@ String Response::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{_fThisAssertExternallySynchronized};
     StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
     sb << "Socket: "sv << fSocket_ << ", "sv;
-    sb << "InChunkedMode: "sv << fInChunkedModeCache_ << ", "sv;
+    sb << "chunkedTransferMode: "sv << this->chunkedTransferMode () << ", "sv;
+    sb << "hasEntityBody: "sv << this->hasEntityBody () << ", "sv;
     sb << "State: "sv << fState_ << ", "sv;
     sb << "CodePage: "sv << fCodePage_ << ", "sv;
     sb << "BodyBytes: "sv << fBodyBytes_ << ", "sv;
     sb << "HeadMode: "sv << fHeadMode_ << ", "sv;
-    sb << "ETagDigester: "sv << String{fETagDigester_ ? "true"sv : "false"sv};
+    sb << "ETagDigester: "sv << fETagDigester_.has_value ();
     sb << "}"sv;
     return sb;
 }

@@ -9,10 +9,6 @@ namespace Stroika::Frameworks::WebServer {
      ********************* Framework::WebServer::Response ***************************
      ********************************************************************************
      */
-    inline void Response::write (const BLOB& b)
-    {
-        write (b.begin (), b.end ());
-    }
     inline void Response::write (const wchar_t* e)
     {
         RequireNotNull (e);
@@ -61,8 +57,7 @@ namespace Stroika::Foundation::Configuration {
     template <>
     constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{{{
         {Frameworks::WebServer::Response::State::ePreparingHeaders, L"Preparing-Headers"},
-        {Frameworks::WebServer::Response::State::ePreparingBodyBeforeHeadersSent, L"Preparing-Body-Before-Headers-Sent"},
-        {Frameworks::WebServer::Response::State::ePreparingBodyAfterHeadersSent, L"Preparing-Body-After-Headers-Sent"},
+        {Frameworks::WebServer::Response::State::eHeadersSent, L"Headers-Sent"},
         {Frameworks::WebServer::Response::State::eCompleted, L"Completed"},
     }}};
 }

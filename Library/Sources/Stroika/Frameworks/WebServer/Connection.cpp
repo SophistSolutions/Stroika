@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -41,7 +42,7 @@ using IO::Network::HTTP::Headers;
 using IO::Network::HTTP::KeepAlive;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -207,7 +208,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
 Connection::~Connection ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("Destroying connection for socket {}, message={}"_f, fSocket_, fMessage_);
+    DbgTrace ("Destroying connection for socket {}, message={}"_f, fSocket_, static_cast<const void*> (fMessage_.get ()));
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
@@ -278,6 +279,30 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         // https://tools.ietf.org/html/rfc7231#section-7.1.1.2  : ...An origin server MUST send a Date header field in all other cases
         fMessage_->rwResponse ().rwHeaders ().date = Time::DateTime::Now ();
 
+        if (optional<HTTP::ContentEncodings> acceptEncoding = fMessage_->request ().headers ().acceptEncoding) {
+            optional<HTTP::ContentEncodings> oBodyEncoding = fMessage_->rwResponse ().bodyEncoding ();
+            auto                             addCT         = [this, &oBodyEncoding] (HTTP::ContentEncoding contentEncoding2Add) {
+                fMessage_->rwResponse ().bodyEncoding = [&] () {
+                    if (oBodyEncoding) {
+                        auto bc = *oBodyEncoding;
+                        bc += contentEncoding2Add;
+                        return bc;
+                    }
+                    else {
+                        return HTTP::ContentEncodings{contentEncoding2Add};
+                    }
+                }();
+            };
+            bool needBodyEncoding = not oBodyEncoding.has_value ();
+            if constexpr (DataExchange::Compression::Deflate::kSupported) {
+                if (needBodyEncoding and acceptEncoding->Contains (HTTP::ContentEncoding::kDeflate)) {
+                    addCT (HTTP::ContentEncoding::kDeflate);
+                    needBodyEncoding = false;
+                }
+            }
+            // @todo add gzip, and a few others...zstd best probably...
+        }
+
         /*
          *  Now bookkeeping and handling of keepalive headers
          */
@@ -314,7 +339,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
          *  the response somehow or other (typically through routes).
          */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Handing request {} to interceptor chain"_f, request ());
+        DbgTrace ("Handing request {} to interceptor chain"_f, request ().ToString ());
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         WriteLogConnectionMsg_ (Characters::Format ("Handing request {} to interceptor chain"_f, request ()));
@@ -349,7 +374,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("Assuring all data read; REQ={}"_f, request ());
+                DbgTrace ("Assuring all data read; REQ={}"_f, request ().ToString ());
 #endif
                 // @todo - this can be more efficient in the rare case we ignore the body - but that's rare enough to not matter much
                 (void)fMessage_->rwRequest ().GetBody ();

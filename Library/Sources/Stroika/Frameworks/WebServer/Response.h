@@ -6,8 +6,6 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <map>
-#include <string>
 #include <vector>
 
 #include "Stroika/Foundation/Characters/CodePage.h"
@@ -17,6 +15,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
 #include "Stroika/Foundation/Cryptography/Digest/Digester.h"
+#include "Stroika/Foundation/DataExchange/Compression/Common.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Response.h"
@@ -59,6 +58,29 @@ namespace Stroika::Frameworks::WebServer {
      *  TODO:
      *      @todo Support https://stroika.atlassian.net/browse/STK-727 - HTTP Chunked Transfer Trailers. We do support
      *            chunked transfers, but require all the headers set first.
+     * 
+     *  \note   When todo chunked encoding?
+     *          
+     *          see Response::automaticTransferChunkSize
+     * 
+     *  \note   When todo compressed responses
+     *          
+     *          This can be handled a lot of ways:
+     *              >   let the user specify by setting header flags
+     *              >   automatically (based on accept-encoding headers)
+     *              >   Based on the size of the response (no point compressing a single byte response)
+     * 
+     *  \todo   Add API "write-content-encoded" - so caller can pass in pre-content-encoded content (e.g. an existing .zip file data)
+     * 
+     *  \note   Technically, its possible to want to specify the Content-Length as a parameter/property. But we prohibit
+     *          this for simplicity sake (since 3.0d7) - since its much simpler to just always let it be computed as needed.
+     *
+     *          We want NO Content-Length if using chunked transfer:
+     *              "The Content-Length header field MUST NOT be sent if these two lengths are different (i.e., if a Transfer-Encoding
+     *              header field is present)"
+     *                  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.4
+     * 
+     *          And if no chunked transfer, we are accumulating all the byte before sending anyhow - so we know the length.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -96,12 +118,39 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  If true (defaults true), the content-length will be automatically computed. Assigning to the contentLength
-         *  header will automatically set this to false.
+         *  \brief defaults to automatically chunking responses larger than a modest fixed size.
+         *          
+         *  When todo chunked encoding?
+         *          
+         *          You can always do chunked encoding for a response. But when is it best?
+         *          
+         *          You could do
+         *              >   one chunk per write
+         *              >   one chunk (not chunked encoding) - buffering
+         *              >   Some fixed buffer size, and when that's exceeded, chunk
+         * 
+         *          In Stroika v3.0d7 and later, the caller may specify a target chunk-size, and when writes exceed this size,
+         *          the transfer will be chunked automatically. Set this size to kNoChunkedTransfer to prevent chunking (nullopt just means default).
+         * 
+         *  \note This chunk-size threshold may refer to the compressed size, or uncompressed size as is convenient, and is just
+         *        a guideline, not strictly followed (except for the kNoChunkedTransfer special case where no chunking takes place).
          * 
          *  \req this->state == ePreparingHeaders (before first write to body) to set, but can always be read
+         *  \req value == nullopt or value > 0   (zero chunk size wouldn't make sense)
          */
-        Common::Property<bool> autoComputeContentLength;
+        Common::Property<optional<size_t>> automaticTransferChunkSize;
+
+    public:
+        /**
+         *  \brief sentinel value for automaticTransferChunkSize property - to disable chunked transfers
+         */
+        static constexpr size_t kNoChunkedTransfer = numeric_limits<size_t>::max ();
+
+    public:
+        /**
+         *  \brief default value for automaticTransferChunkSize
+         */
+        static constexpr size_t kAutomaticTransferChunkSize_Default = 16 * 1024;
 
     public:
         /*
@@ -128,34 +177,49 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-        * && todo - for now - only support empty. BUt soon support == deflate, and maybe eventually more
-        * 
-        * equilv to setting rwHeaders.contentEncoding.... -- try to make it so...
-        * 
-        * probably need to cleanup code for chunked transfer - and need to udnerstand diff between deflate as a transfer encoding vs. content encoding...
+         *  \brief this corresponds to either headers().contentEncoding() or the compression part of headers().transferEncoding()
+         * 
+         *  \note - this is typically NOT set directly by users, and is set by the connection/message, based on the request
+         *        'Accept-Encoding' headers.
+         * 
+         *  \req this->headersCanBeSet() to set property
          */
-        Common::Property<optional<HTTP::ContentEncodings>> contentEncoding;
+        Common::Property<optional<HTTP::ContentEncodings>> bodyEncoding;
+
+    public:
+        /**
+         *  \brief returns true iff headers().transferMode().Contains (HTTP::TransferMode::kChunked) - but checks for nulls etc...
+         * 
+         *  Note - can change depending on other settings, like whether write() has been called, or automaticTransferChunkSize()
+         * 
+         *  \note CANNOT change after responseStatusSent()
+         */
+        Common::ReadOnlyProperty<bool> chunkedTransferMode;
 
     public:
         /*
-         * \brief inherited Common::Property <optional<InternetMediaType>> contentType;
+         * \brief Common::Property <optional<InternetMediaType>> contentType is a short-hand for headers().contentType (or rwHeaders().contentType);
          *
          *  \req this->headersCanBeSet() to set property
          * 
          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (contentType), then
          *  the character set will be automatically folded into the used contentType (on WRITES to the property - not reads).
+         *      @todo revisit this - I think I always use character set if you use write API taking strings)--LGP 2024-06-22
          */
+        Common::Property<optional<InternetMediaType>> contentType;
 
     public:
         /**
          *  \note about states - certain properties (declared here and inherited) - like rwHeaders, and writes to properties like (XXX) cannot be done
          *        unless the current state is ePreparingHeaders; and these are generally checked with assertions.
+         * 
+         *  \note state ordering corresponds to a progression - so new states always correspond to larger numbers, and states
+         *        never go backwards
          */
         enum class State : uint8_t {
-            ePreparingHeaders,               // A newly constructed Response starts out ePreparingHeaders state
-            ePreparingBodyBeforeHeadersSent, // headers can no longer be adjusted, but have not been sent over the wire
-            ePreparingBodyAfterHeadersSent,  // headers have now been sent over the wire
-            eCompleted,                      // and finally to Completed
+            ePreparingHeaders, // A newly constructed Response starts out ePreparingHeaders state
+            eHeadersSent,      // headers have now been sent over the wire
+            eCompleted,        // and finally to Completed
 
             Stroika_Define_Enum_Bounds (ePreparingHeaders, eCompleted)
         };
@@ -189,14 +253,28 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Returns true once the response has been completed and fully flushed. No further calls to write() are allowed at that point.
+         *  \note -  responseCompleted() doesn't mean correctly - could be responseAborted too.
          */
         Common::ReadOnlyProperty<bool> responseCompleted;
 
     public:
         /**
          *  Returns true iff the response has been aborted with a call to response.Abort ()
+         *  \note - responseAborted() implies responseCompleted();
          */
         Common::ReadOnlyProperty<bool> responseAborted;
+
+    public:
+        /**
+         * some responses will not have an entity body, like a response to a HEAD, method for example. A Stroika 
+         * response has an entityBody iff the user has called a 'write' method on response?? _ NO WAHT ABOUT HEAD
+         * 
+         * roughly:
+         *   (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified and contentLength() > 0)
+         * 
+         *   \see https://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7
+         */
+        Common::ReadOnlyProperty<bool> hasEntityBody;
 
     public:
         /**
@@ -265,19 +343,12 @@ namespace Stroika::Frameworks::WebServer {
          *  \req not this->responseCompleted ()
          *  \req not this->responseStatusSent () or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked)))
          */
-        nonvirtual void write (const BLOB& b);
-        nonvirtual void write (const byte* start, const byte* end);
+        nonvirtual void write (const span<const byte>& b);
         nonvirtual void write (const wchar_t* e);
         nonvirtual void write (const wchar_t* s, const wchar_t* e);
         nonvirtual void write (const String& e);
         template <typename CHAR_T, typename... ARGS>
         void write (const FormatString<CHAR_T>& f, ARGS&&... args);
-
-    public:
-        /**
-         *  Creates a string, and indirects to write ()
-         */
-        [[deprecated ("Since Stroika v3.0d6 - use write with _f strings")]] void printf (const wchar_t* format, ...);
 
     public:
         /**
@@ -296,34 +367,42 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void StateTransition_ (State to);
 
     private:
-        nonvirtual bool InChunkedMode_ () const;
-
-    private:
         nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;
 
     private:
         using ETagDigester_ = Cryptography::Digest::IncrementalDigester<Cryptography::Digest::Algorithm::MD5, String>;
 
     private:
-        IO::Network::Socket::Ptr fSocket_;
+        nonvirtual Memory::BLOB GetPossiblyEncodedBody_ () const;
+
+    private:
+        IO::Network::Socket::Ptr       fSocket_;
+        DataExchange::Compression::Ptr fCurrentCompression_;
 #if !qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy
-        bool  fInChunkedModeCache_ : 1 {false};
         State fState_ : 3 {State::ePreparingHeaders};
         bool  fHeadMode_ : 1 {false};
         bool  fAborted_ : 1 {false};
-        bool  fAutoComputeContentLength_ : 1 {true};
 #else
-        bool  fInChunkedModeCache_{false};
         State fState_{State::ePreparingHeaders};
         bool  fHeadMode_{false};
         bool  fAborted_{false};
-        bool  fAutoComputeContentLength_{true};
 #endif
-        Streams::OutputStream::Ptr<byte>         fUnderlyingOutStream_;
+        size_t                           fRawBytesWritten_{}; // bytes passed to write() calls - not necessarily passed along downstream
+        optional<size_t>                 fAutoTransferChunkSize_{nullopt};
+        Streams::OutputStream::Ptr<byte> fUnderlyingOutStream_;
         Streams::BufferedOutputStream::Ptr<byte> fUseOutStream_;
         Characters::CodePage                     fCodePage_{Characters::WellKnownCodePages::kUTF8};
-        vector<byte>                             fBodyBytes_{};
+        optional<HTTP::ContentEncodings>         fBodyEncoding_;
+        vector<byte>                             fBodyBytes_{};  // only used if not chunkedTransferMode
         optional<ETagDigester_>                  fETagDigester_; // dual use - if present, then flag for autoComputeETag mode as well
+
+    public:
+        [[deprecated ("Since Stroika v3.0d6 - use write with _f strings")]] void printf (const wchar_t* format, ...);
+        [[deprecated ("Since Stroika v3.0d7 use span overload)")]] void          write (const byte* s, const byte* e)
+        {
+            Require (s <= e);
+            write (span<const byte>{s, e});
+        }
     };
 
 }
