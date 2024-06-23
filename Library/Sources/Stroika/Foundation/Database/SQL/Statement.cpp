@@ -165,7 +165,7 @@ void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parame
 void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("SQL::Statement::Execute", "parameters={}"_f,  parameters};
+    TraceContextBumper ctx{"SQL::Statement::Execute", "parameters={}"_f, parameters};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Reset ();
