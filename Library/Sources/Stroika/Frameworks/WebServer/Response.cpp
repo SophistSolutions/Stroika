@@ -252,7 +252,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
 
 void Response::StateTransition_ (State to)
 {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Response::StateTransition_", "from={}, to={}"_f, static_cast<State> (fState_), static_cast<State> (to)};
 #endif
     Require (fState_ <= to);
