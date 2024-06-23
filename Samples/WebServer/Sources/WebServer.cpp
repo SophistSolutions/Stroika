@@ -100,8 +100,8 @@ namespace {
         // Can declare arguments as Request*,Response*
         static void DefaultPage_ (Request*, Response* response)
         {
-            constexpr bool kUseChunkedTransferCoding_ = true;
-            //constexpr bool kUseChunkedTransferCoding_ = false;
+            //constexpr bool kUseChunkedTransferCoding_ = true;
+            constexpr bool kUseChunkedTransferCoding_ = false;
             // new way --NYI
             if (kUseChunkedTransferCoding_) {
                 response->automaticTransferChunkSize = 10;

@@ -94,21 +94,21 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         }
         Sequence<String> tokens{line.Tokenize ({' '})};
         if (tokens.size () < 3) {
-            DbgTrace (L"tokens={}, line='{}', fMsgHeaderInTextStream={}"_f, tokens, line, fMsgHeaderInTextStream.ToString ());
+            DbgTrace ("tokens={}, line='{}', fMsgHeaderInTextStream={}"_f, tokens, line, fMsgHeaderInTextStream.ToString ());
             Execution::Throw (ClientErrorException{Characters::Format ("Bad METHOD Request HTTP line ({})"_f, line)});
         }
         updatableRequest.httpMethod  = tokens[0];
         updatableRequest.httpVersion = tokens[2];
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
-            DbgTrace (L"tokens={}, line='{}'"_f, tokens, line);
+            DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
             Execution::Throw (ClientErrorException{"Bad HTTP Request line - missing host-relative URL"sv});
         }
         using IO::Network::URL;
         updatableRequest.url = URI{tokens[1]};
         if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
-            DbgTrace (L"tokens={}, line='{}'"_f, tokens, line);
+            DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
             static const auto kException_ = ClientErrorException{"Bad METHOD in Request HTTP line"sv};
             Execution::Throw (kException_);
         }

@@ -259,17 +259,28 @@ void Response::StateTransition_ (State to)
     if (to != fState_) {
         if ((fState_ == State::ePreparingHeaders /* or fState_ == State::ePreparingBodyBeforeHeadersSent*/) and to == State::eHeadersSent) {
             if (fBodyEncoding_) {
-                if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
+                auto applyBodyEncoding = [this] (HTTP::ContentEncoding ce) {
                     if (this->chunkedTransferMode ()) {
                         HTTP::TransferEncodings htc = *headers ().transferEncoding ();
-                        htc.Append (HTTP::TransferEncoding::kDeflate);
+                        htc.Prepend (HTTP::TransferEncoding{ce.As<HTTP::TransferEncoding::AtomType> ()});
                         rwHeaders ().transferEncoding = htc;
                     }
                     else {
-                        rwHeaders ().contentEncoding = HTTP::ContentEncoding::kDeflate;
-                        fCurrentCompression_         = DataExchange::Compression::Deflate::Compress::New ();
+                        rwHeaders ().contentEncoding = ce;
                     }
+                };
+
+                //tmphack due to bug with how I handle content encoding with transfer encoding
+                // --LGP 2024-06-23
+                if (chunkedTransferMode ()) {
+                    goto skip;
                 }
+
+                if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
+                    applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
+                    fCurrentCompression_ = DataExchange::Compression::Deflate::Compress::New ();
+                }
+            skip:;
             }
             {
                 auto   curStatusInfo = this->statusAndOverrideReason ();
