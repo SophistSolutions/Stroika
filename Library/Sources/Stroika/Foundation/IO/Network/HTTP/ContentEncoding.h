@@ -109,6 +109,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         ContentEncodings (const Traversal::Iterable<ContentEncoding>& src);
         ContentEncodings (ContentEncoding tc);
+        ContentEncodings () = default;
 
     public:
         nonvirtual ContentEncodings& operator= (const ContentEncodings& rhs) = default;
