@@ -236,7 +236,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
     }
 
-    DbgTrace ("Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d, and listening on %s"_f,
+    DbgTrace ("Constructing WebServer::ConnectionManager ({}), with threadpoolSize={}, backlog={}, and listening on {}"_f,
               static_cast<const void*> (this), fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options),
               Characters::ToString (bindAddresses));
     fWaitForReadyConnectionThread_.Start (); // start here instead of AutoStart so a guaranteed initialized before thread main starts - see https://stroika.atlassian.net/browse/STK-706
