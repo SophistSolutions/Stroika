@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Common {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename G>
 #else
-    template <invocable<const ReadOnlyProperty<T> * G>
+    template <invocable<const ReadOnlyProperty<T> *> G>
 #endif
     constexpr ReadOnlyProperty<T>::ReadOnlyProperty (G getter)
         requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>)
