@@ -8,6 +8,8 @@
 
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -57,6 +59,7 @@ namespace {
         MyWebServer_ (uint16_t portNumber, optional<HTTP::TransferEncoding> transferEncoding)
             : kRoutes_{Route{""_RegEx, [this] (Request* req, Response* res) { DefaultPage_ (req, res); }},
                        Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, [this] (Message* message) { SetAppState_ (message); }},
+                       Route{HTTP::MethodsRegEx::kPost, "SetAppState2"_RegEx, [this] (Message* message) { SetAppState2_ (message); }},
                        Route{"FRED"_RegEx,
                              [this] (Request*, Response* response) {
                                  response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
@@ -99,6 +102,19 @@ namespace {
             String argsAsString                = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
             message->rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
         }
+        void SetAppState2_ (Message* message)
+        {
+            if (fUseTransferEncoding_) {
+                message->rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
+            }
+            message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+            String argsAsString                = DataExchange::Variant::JSON::Reader{}
+                                      .Read (message->rwRequest ().GetBody ())
+                                      .As<Mapping<String, DataExchange::VariantValue>> ()
+                                      .LookupChecked ("AppState", Execution::RuntimeErrorException{"oops"})
+                                      .As<String> ();
+            message->rwResponse ().write (argsAsString);
+        }
     };
 }
 
@@ -121,13 +137,14 @@ namespace {
         auto                            c = IO::Network::Transfer::Connection::New ();
         IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
         EXPECT_TRUE (r.GetSucceeded ());
-        EXPECT_TRUE (r.GetData ().size () > 1);
+        EXPECT_GT (r.GetData ().size (), 1u);
         String response = r.GetDataTextInputStream ().ReadAll ();
-        DbgTrace (L"response={}"_f, response);
+        //DbgTrace (L"response={}"_f, response);
         EXPECT_TRUE (response.StartsWith ("<html>"));
         EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
     }
 }
+
 namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleCurlTestWithChunkedEncodingResponse)
     {
@@ -136,11 +153,30 @@ namespace {
         auto         c                    = IO::Network::Transfer::Connection::New ();
         IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
         EXPECT_TRUE (r.GetSucceeded ());
-        EXPECT_TRUE (r.GetData ().size () > 1);
+        EXPECT_GT (r.GetData ().size (), 1u);
         String response = r.GetDataTextInputStream ().ReadAll ();
-        DbgTrace (L"response={}"_f, response);
+        //DbgTrace (L"response={}"_f, response);
         EXPECT_TRUE (response.StartsWith ("<html>"));
         EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
+    }
+}
+
+namespace {
+    GTEST_TEST (Frameworks_WebServer, TestPOST)
+    {
+        const IO::Network::PortType portNumber = 8082;
+        MyWebServer_ myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        auto         c                    = IO::Network::Transfer::Connection::New ();
+        using namespace DataExchange;
+        auto                            arg    = VariantValue{Mapping<String, VariantValue>{{"AppState", "Start"}}};
+        auto                            toJson = [] (const VariantValue& v) { return Variant::JSON::Writer{}.WriteAsBLOB (v); };
+        IO::Network::Transfer::Response r = c.POST (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/SetAppState2"sv},
+                                                         toJson (arg), DataExchange::InternetMediaTypes::kJSON);
+        EXPECT_TRUE (r.GetSucceeded ());
+        EXPECT_GT (r.GetData ().size (), 1u);
+        String response = r.GetDataTextInputStream ().ReadAll ();
+        //DbgTrace (L"response={}"_f, response);
+        EXPECT_EQ (response, "Start");
     }
 }
 #endif
