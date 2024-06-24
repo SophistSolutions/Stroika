@@ -280,7 +280,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         fMessage_->rwResponse ().rwHeaders ().date = Time::DateTime::Now ();
 
         // @todo can short-circut the acceptEncoding logic if not bodyHasEntity...(but careful about checking that cuz no content yet
-        // so may need to revisit the bidyHasEntity logic) - just look at METHOD of request and http-status - oh - that cnanot check 
+        // so may need to revisit the bidyHasEntity logic) - just look at METHOD of request and http-status - oh - that cnanot check
         // yet/until done... so maybe need other check like bodyCannotHaveEntity - stuff can check before filled out response?
 
         if (optional<HTTP::ContentEncodings> acceptEncoding = fMessage_->request ().headers ().acceptEncoding) {
