@@ -13,7 +13,11 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <invocable<const ReadOnlyProperty<T>*> G>
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    template <typename G>
+#else
+        template <invocable<const ReadOnlyProperty<T>* G>
+#endif
     constexpr ReadOnlyProperty<T>::ReadOnlyProperty (G getter)
         requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>)
         : fGetter_ (getter) // no uniform initialization because this may involve conversions
@@ -62,7 +66,11 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    template <typename S>
+#else
     template <invocable<WriteOnlyProperty<T>*, T> S>
+#endif
     constexpr WriteOnlyProperty<T>::WriteOnlyProperty (S setter)
         : fSetter_ (setter) // no uniform initialization because this may involve conversions
     {
@@ -157,7 +165,11 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    template <typename G, typename S>
+#else
     template <invocable<const ExtendableProperty<T>*> G, invocable<ExtendableProperty<T>*, remove_cvref_t<T>> S>
+#endif
     ExtendableProperty<T>::ExtendableProperty (G getter, S setter)
         requires (convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>)
         : Property<T>{[getter] ([[maybe_unused]] const auto* property) -> typename Property<T>::base_value_type {
