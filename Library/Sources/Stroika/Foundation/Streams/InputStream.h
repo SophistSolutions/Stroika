@@ -263,12 +263,20 @@ namespace Stroika::Foundation::Streams::InputStream {
     public:
         /**
          *  \brief returns nullopt if nothing known available, zero if known EOF, and any other number of elements (typically 1) if that number know to be available to read
+         *
+         *  \see also (different) RemainingLength ()
          */
         nonvirtual optional<size_t> AvailableToRead () const;
 
     public:
         /**
          *  \brief returns nullopt if not known (typical, and the default) - but sometimes it is known, and quite helpful)
+         * 
+         *  \note - Similar to AvailableToRead, but different. For example, on a socket-stream, you can tell how many bytes
+         *        are available to read (buffered by kernel). But no guess about the remaining length of the stream (how many bytes
+         *        will appear before end).
+         * 
+         *        But for a disk file, you MIGHT (not always - like unix special files) know the length of the file. This is for that case.
          */
         nonvirtual optional<SeekOffsetType> RemainingLength () const;
 

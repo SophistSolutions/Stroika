@@ -38,7 +38,7 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
  *              copy in user data.
  *
  *              I think for BOTH key and iv we must look at expected keylen/iplen and pass in data that matches the
- *              length. Maybe set what hack we did for CipherAlgorithm::eRC4?? set key length based on whats passed in?
+ *              length. Maybe set what hack we did for CipherAlgorithm::eRC4?? set key length based on what is passed in?
  *
  *              We maybe can (mostly/always) set iv to NULL???
  *
@@ -47,10 +47,10 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
  *               BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen(kSrc4_)),
  *          #endif
  *
- *      @todo   this module includes <openssl> stuff in the header. Add additioanl modules inside
- *              Crypto that just are called 'Blowfish', and 'rc2', and these have classes that tkae
+ *      @todo   this module includes <openssl> stuff in the header. Add additional modules inside
+ *              Crypto that just are called 'Blowfish', and 'rc2', and these have classes that take
  *              constructors with just the needed data = maybe not even ctors - maybe functions - that
- *              take a stream, and return a decrpting (or encyrpting) stream - with arg params that make
+ *              take a stream, and return a decrypting (or encrypting) stream - with arg params that make
  *              sense for that algoritjm. They are only defined #if qSSLAvail, but otherwise include
  *
  *              DONE for AES - BUt do the others - just like that - and maybe cleanup Base64/MD5 APIs to
@@ -120,8 +120,8 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *
      *  @see OpenSSLInputStream
      *
-     *  \note   OpenSSLOutputStream aggregates its owned substream, so that a Close () on OpenSSLOutputStream
-     *          will Close that substream.
+     *  \note   OpenSSLOutputStream aggregates its owned sub stream, so that a Close () on OpenSSLOutputStream
+     *          will Close that sub stream.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */

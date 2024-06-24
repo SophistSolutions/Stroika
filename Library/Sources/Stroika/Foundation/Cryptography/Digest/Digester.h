@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          Memory::BLOB value2Hash     = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
      *          auto         h1             = ComputeDigest<Digest::Algorithm::SuperFastHash> (value2Hash);
      *          uint8_t      h2             = ComputeDigest<Digest::Algorithm::SuperFastHash, uint8_t> (value2Hash);
-     *          EXPECT_TRUE (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
+     *          EXPECT_TRUE (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endianness?)
      *          EXPECT_TRUE (h2 == 215);
      *          std::array<byte, 40> h3 = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
      *          EXPECT_TRUE (h3[0] == 215_b and h3[1] == 66_b and h3[39] == 0_b);
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  \brief IncrementalDigester<ALGORITHM> () is the low level way to call Digest algorithms, appropriate for streamed sources of data (because it a stateful object you can call Write on multiple times before extracting the digest)
      * 
      *  A Digest is an algorithm that takes a stream of bytes and computes a series of bits
-     *  (can be thought of as a number, or string, or seqeunce of bits) which hopefully as
+     *  (can be thought of as a number, or string, or sequence of bits) which hopefully as
      *  nearly as possible (given the length of the digest) uniquely identifies the input.
      *
      *  A digest is generally of fixed length - often 4, or 16, or 20 bytes long.

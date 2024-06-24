@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  a sequence of 'bytes' in normalized form, and then allows them to be digested, and then the digest
      *  mapped to a (typically) small number (32-bit integer for example).
      *
-     *  This Adpater takes care of the general part of mapping the inputs and outputs to/from
+     *  This Adapter takes care of the general part of mapping the inputs and outputs to/from
      *  common forms, and then makes generic the actual hash computing algorithm.
      *
      *  \note   Endianness - the digest algorithms logically returns an array of bytes, so in a typical use case
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          Considered reversing the first two template parameters, so
      *              template Hash<typename DIGESTER = DefaultHashDigester, typename T>...
      *          For the case of the constructor this MIGHT work better, allowing you to specify
-     *          one paramter (the digester) and DEDUCE the T parameter.
+     *          one parameter (the digester) and DEDUCE the T parameter.
      *
      *          However, that makes worse the default behavior for the more common (in my current estimation)
      *          usage where there is no SALT (where now you can just provide T, and have DIGESTER defaulted).

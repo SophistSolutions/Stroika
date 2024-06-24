@@ -37,10 +37,15 @@ namespace Stroika::Foundation::DataExchange::Compression {
      * 
      *  Could have done API so that inputStream was passed into New(). Didn't see any strong reason one way or the other.
      *  Could have named 'Transform' operator()() or used std::function - but again - no strong reasons one way or the other.
+     * 
+     *  \note - this API properly respects Stream 'blocking' - so if its upstream 'src' is not at EOF, attempts to read the
+     *        result input stream may block or throw, or return nullopt (depending on which input stream api is called on the
+     *        transformed stream).
      */
     struct IRep {
         /**
-         * req not ongoing transform on this instance (if re-used, last transform must be completed, meaning EOF returned, or exception thrown
+         *  \req not ongoing transform on this instance. 
+         *  If re-used, last transform must be completed, meaning EOF returned, or exception thrown.
          */
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src) = 0;
         /**
