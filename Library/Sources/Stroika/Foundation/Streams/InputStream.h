@@ -270,6 +270,14 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
+         * experimental API (added in 3.0d7)
+         * return nullopt if nothing available
+         * else do Read() of all elements available and return that buffer
+         */
+        nonvirtual optional<Memory::InlineBuffer<ELEMENT_TYPE>> ReadAllAvailable () const;
+
+    public:
+        /**
          *  \brief returns nullopt if not known (typical, and the default) - but sometimes it is known, and quite helpful)
          * 
          *  \note - Similar to AvailableToRead, but different. For example, on a socket-stream, you can tell how many bytes

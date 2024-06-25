@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Streams/EOFException.h"
 #include "Stroika/Foundation/Streams/EWouldBlock.h"
 
@@ -135,6 +136,28 @@ namespace Stroika::Foundation::Streams::InputStream {
     inline auto InputStream::Ptr<ELEMENT_TYPE>::AvailableToRead () const -> optional<size_t>
     {
         return GetRepRWRef ().AvailableToRead ();
+    }
+    template <typename ELEMENT_TYPE>
+    optional<Memory::InlineBuffer<ELEMENT_TYPE>> InputStream::Ptr<ELEMENT_TYPE>::ReadAllAvailable () const
+    {
+        if (auto o = AvailableToRead ()) {
+            if (*o == 0) [[unlikely]] {
+                return Memory::InlineBuffer<ELEMENT_TYPE>{0}; // this means EOF
+            }
+            else {
+                // AvailableToRead  often returns 1 if it doesn't know really how much is available. But always safe todo blocking read for larger number
+                // and will just return smaller span, which we can resize down to...
+                constexpr size_t                   kRoundUpTo_ = max<size_t> (1, 4 * 1024 / sizeof (ELEMENT_TYPE));
+                Memory::InlineBuffer<ELEMENT_TYPE> buf{Memory::eUninitialized, Math::RoundUpTo (*o, kRoundUpTo_)};
+                span<ELEMENT_TYPE> r = this->Read (span<ELEMENT_TYPE>{buf}, NoDataAvailableHandling::eBlockIfNoDataAvailable); // since available to read- this CANNOT BLOCK
+                Assert (r.data () == buf.data ());
+                Assert (r.size () == *o);
+                return buf;
+            }
+        }
+        else {
+            return nullopt;
+        }
     }
     template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::RemainingLength () const -> optional<SeekOffsetType>
