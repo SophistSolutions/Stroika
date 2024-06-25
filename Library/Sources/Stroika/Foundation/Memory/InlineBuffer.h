@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Memory {
      *  \brief Smart 'direct memory array' - which when needed automatically switches to heap based so can grow - BUF_SIZE is number of T elements allocated inline
      *
      *  Typically, InlineBuffer<> combines the performance of using a pre-allocated fixed-sized buffer to store arrays with
-     *  the safety and flexability of using the free store (malloc).
+     *  the safety and flexibility of using the free store (malloc).
      *
      *  Think of it as a hybrid between std::vector<> and std::array - with functionality like
      *  std::vector, but performance more like std::array.
