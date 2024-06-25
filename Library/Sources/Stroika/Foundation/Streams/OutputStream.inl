@@ -72,21 +72,22 @@ namespace Stroika::Foundation::Streams::OutputStream {
         using Characters::Character;
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        Require (not elts.empty ());
-        if constexpr (same_as<ELEMENT_TYPE, byte>) {
-            GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
-        }
-        else if constexpr (same_as<ELEMENT_TYPE, Character>) {
-            if constexpr (sizeof (ELEMENT_TYPE2) == sizeof (Character)) {
+        if (not elts.empty ()) [[likely]] {
+            if constexpr (same_as<ELEMENT_TYPE, byte>) {
                 GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
             }
-            else {
-                Memory::StackBuffer<Character> buf{Memory::eUninitialized, Characters::UTFConvert::ComputeTargetBufferSize<Character> (elts)};
-                GetRepRWRef ().Write (Characters::UTFConvert::kThe.ConvertSpan (elts, span{buf}));
+            else if constexpr (same_as<ELEMENT_TYPE, Character>) {
+                if constexpr (sizeof (ELEMENT_TYPE2) == sizeof (Character)) {
+                    GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
+                }
+                else {
+                    Memory::StackBuffer<Character> buf{Memory::eUninitialized, Characters::UTFConvert::ComputeTargetBufferSize<Character> (elts)};
+                    GetRepRWRef ().Write (Characters::UTFConvert::kThe.ConvertSpan (elts, span{buf}));
+                }
             }
-        }
-        else {
-            GetRepRWRef ().Write (elts);
+            else {
+                GetRepRWRef ().Write (elts);
+            }
         }
     }
     template <typename ELEMENT_TYPE>
