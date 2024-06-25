@@ -179,6 +179,9 @@ namespace {
         EXPECT_EQ (response, "Start");
     }
 }
+
+/// @todo - add tests with different Accept-Encoding headers
+
 #endif
 
 int main (int argc, const char* argv[])

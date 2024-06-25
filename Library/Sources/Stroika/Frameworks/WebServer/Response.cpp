@@ -40,6 +40,7 @@ using IO::Network::HTTP::ClientErrorException;
 using PropertyChangedEventResultType = Common::PropertyCommon::PropertyChangedEventResultType;
 
 using Debug::AssertExternallySynchronizedMutex;
+using Memory::BLOB;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -67,14 +68,14 @@ namespace {
 
 Response::Response (Response&& src)
     // Would be nice to use inherited src move, but PITA, because then would need to duplicate creating the properties below.
-    : Response{src.fSocket_, src.fUnderlyingOutStream_, src.headers ()}
+    : Response{src.fSocket_, src.fProtocolOutputStream_, src.headers ()}
 {
-    fState_        = src.fState_;
-    fUseOutStream_ = move (src.fUseOutStream_);
-    fCodePage_     = src.fCodePage_;
-    fBodyBytes_    = move (src.fBodyBytes_);
-    fHeadMode_     = src.fHeadMode_;
-    fETagDigester_ = move (src.fETagDigester_);
+    fState_         = src.fState_;
+    fUseOutStream_  = move (src.fUseOutStream_);
+    fCodePage_      = src.fCodePage_;
+    fBodyRawStream_ = move (src.fBodyRawStream_);
+    fHeadMode_      = src.fHeadMode_;
+    fETagDigester_  = move (src.fETagDigester_);
 }
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream::Ptr<byte>& outStream, const optional<HTTP::Headers>& initialHeaders)
@@ -88,7 +89,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                           Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
                           AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                           Require (thisObj->state () == State::ePreparingHeaders);
-                          Assert (thisObj->fBodyBytes_.empty ());
+                          Require (thisObj->fBodyRawStreamLength_ == 0);
                           if (newAutoComputeETag) {
                               thisObj->fETagDigester_ = ETagDigester_{};
                           }
@@ -117,7 +118,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                    Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
                    AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                    Require (thisObj->headersCanBeSet ());
-                   Require (thisObj->fBodyBytes_.empty ());
+                   Require (thisObj->fBodyRawStreamLength_ == 0);
                    bool diff           = thisObj->fCodePage_ != newCodePage;
                    thisObj->fCodePage_ = newCodePage;
                    if (diff) {
@@ -186,11 +187,14 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         if (thisObj->status () == HTTP::StatusCodes::kNotModified) {
             return false;
         }
-        return thisObj->fRawBytesWritten_ > 0; //??? - better way to tell???
+        return thisObj->fBodyRawStreamLength_ > 0; //??? - better way to tell???
     }}
     , fSocket_{s}
-    , fUnderlyingOutStream_{outStream}
+    , fProtocolOutputStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream::New<byte> (outStream)}
+    // Soon @todo - replace with new (not yet written) UnseekableMemoryStream - whihc has same 'Close' semantics, and input/output but no mutex and since unseekable can throw away data as it goes
+    // @todo could delay construction til needed
+    , fBodyRawStream_{Streams::SharedMemoryStream::New<byte> ()}
 {
     if constexpr (qDebug) {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\""); // sadly no way to [[maybe_unused]] on captures
@@ -222,10 +226,15 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         if (this->chunkedTransferMode ()) {
             return nullopt;
         }
-        //if (this->responseStatusSent ()) {
-        return GetPossiblyEncodedBody_ ().size ();
-        //}
-        //return nullopt;
+        // in non-chunked mode, we count on all the 'writes' having been completed
+        if (fBodyCompressedStream_ != nullptr) {
+            return fBodyCompressedStream_.GetOffset ();
+        }
+        if (this->fBodyRawStream_ != nullptr) {
+            return fBodyRawStreamLength_;
+        }
+        AssertNotReached ();
+        return nullopt;
     });
     this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
         RequireNotReached (); // since v3.0d7 - disallow
@@ -257,31 +266,8 @@ void Response::StateTransition_ (State to)
 #endif
     Require (fState_ <= to);
     if (to != fState_) {
-        if ((fState_ == State::ePreparingHeaders /* or fState_ == State::ePreparingBodyBeforeHeadersSent*/) and to == State::eHeadersSent) {
-            if (fBodyEncoding_) {
-                auto applyBodyEncoding = [this] (HTTP::ContentEncoding ce) {
-                    if (this->chunkedTransferMode ()) {
-                        HTTP::TransferEncodings htc = *headers ().transferEncoding ();
-                        htc.Prepend (HTTP::TransferEncoding{ce.As<HTTP::TransferEncoding::AtomType> ()});
-                        rwHeaders ().transferEncoding = htc;
-                    }
-                    else {
-                        rwHeaders ().contentEncoding = ce;
-                    }
-                };
-
-                //tmphack due to bug with how I handle content encoding with transfer encoding
-                // --LGP 2024-06-23
-                if (chunkedTransferMode ()) {
-                    goto skip;
-                }
-
-                if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
-                    applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
-                    fCurrentCompression_ = DataExchange::Compression::Deflate::Compress::New ();
-                }
-            skip:;
-            }
+        if (fState_ == State::ePreparingHeaders and to == State::eHeadersSent) {
+            ApplyBodyEncodingIfNeeded_ ();
             {
                 auto   curStatusInfo = this->statusAndOverrideReason ();
                 Status curStatus     = get<0> (curStatusInfo);
@@ -313,6 +299,57 @@ void Response::StateTransition_ (State to)
     }
 }
 
+void Response::ApplyBodyEncodingIfNeeded_ ()
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"Response::ApplyBodyEncodingIfNeeded_"};
+#endif
+    DbgTrace ("bodyEncoding={}"_f, fBodyEncoding_);
+    if (fState_ == State::ePreparingHeaders and fBodyEncoding_ and fBodyCompressedStream_ == nullptr) {
+        auto applyBodyEncoding = [this] (HTTP::ContentEncoding ce) {
+            if (this->chunkedTransferMode ()) {
+                HTTP::TransferEncodings htc = *headers ().transferEncoding ();
+                htc.Prepend (HTTP::TransferEncoding{ce.As<HTTP::TransferEncoding::AtomType> ()});
+                rwHeaders ().transferEncoding = htc;
+            }
+            else {
+                rwHeaders ().contentEncoding = ce;
+            }
+        };
+
+        DataExchange::Compression::Ptr currentCompression = DataExchange::Compression::Deflate::Compress::New ();
+
+        //tmphack due to bug with how I handle content encoding with transfer encoding
+        // --LGP 2024-06-23
+        // CONFUSED - tried compressing each chunk, and original whole file. Either way still fails to be properly read.
+        //  --LGP 2024-06-25
+        if (chunkedTransferMode ()) {
+            goto skip;
+        }
+
+        if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
+            applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
+        }
+        if (currentCompression) {
+            // compressed stream reads from the raw body stream, and
+            fBodyCompressedStream_ = currentCompression.Transform (fBodyRawStream_);
+        }
+    skip:;
+    }
+}
+
+void Response::WriteChunk_ (span<const byte> rawBytes)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"Response::WriteChunk_", "rawBytes={}"_f, rawBytes};
+#endif
+    // note rawBytes maybe empty - in fact the final chunk is always empty
+    string n = CString::Format ("%x\r\n", static_cast<unsigned int> (rawBytes.size ()));
+    fUseOutStream_.WriteRaw (span{n.data (), n.size ()});
+    fUseOutStream_.Write (rawBytes);
+    fUseOutStream_.WriteRaw (span{kCRLF_, strlen (kCRLF_)});
+}
+
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
 {
     if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (ct)) {
@@ -325,14 +362,6 @@ InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const Interne
     return ct;
 }
 
-Memory::BLOB Response::GetPossiblyEncodedBody_ () const
-{
-    if (auto cc = fCurrentCompression_) {
-        return cc.Transform (fBodyBytes_);
-    }
-    return fBodyBytes_;
-}
-
 void Response::Flush ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -340,45 +369,90 @@ void Response::Flush ()
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
 
-    if (fState_ == State::ePreparingHeaders /* or fState_ == State::ePreparingBodyBeforeHeadersSent*/) {
+    if (fState_ == State::ePreparingHeaders) {
         StateTransition_ (State::eHeadersSent); // this flushes the headers
     }
     Assert (fState_ >= State::eHeadersSent);
 
-    // write BYTES to fOutStream
-    if (not fBodyBytes_.empty ()) {
-        Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("bytes.size: {}"_f, static_cast<long long> (fBodyBytes_.size ()));
-#endif
-        // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html - body must not be sent for not-modified
-        //              if (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified) {
-        if (this->hasEntityBody ()) {
-            fUseOutStream_.Write (GetPossiblyEncodedBody_ ());
-        }
-        fBodyBytes_.clear ();
-    }
+    // writes push to the fUseOutStream_, but doesn't necessarily flush that output across the network
     if (fState_ != State::eCompleted) {
         fUseOutStream_.Flush ();
     }
-    Ensure (fBodyBytes_.empty ());
 }
 
 bool Response::End ()
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"Response::End()"};
+    DbgTrace ("*this={}"_f, ToString ());
+#endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
     if (fState_ != State::eCompleted) {
         try {
-            if (chunkedTransferMode ()) {
+            fBodyRawStream_.CloseWrite (); // if any avail to read, must write that chunk...
+
+            ApplyBodyEncodingIfNeeded_ (); // normally done in flush, but that would be too late
+
+            // Accumulate the body we will write before our initial flush, so that we have the right contentLength header
+            optional<BLOB> body2Write;
+            //DbgTrace ("chunkedTransferMode={},fBodyCompressedStream_={}"_f, chunkedTransferMode () ? "true"_k : "false"_k,
+            //          fBodyCompressedStream_ == nullptr ? "nullptr"_k : "real"_k);
+            if (not chunkedTransferMode ()) {
+                if (fBodyCompressedStream_ != nullptr) {
+                    body2Write = fBodyCompressedStream_.ReadAll ();
+                }
+                else {
+                    body2Write = fBodyRawStream_.ReadAll ();
+                }
+            }
+
+            if (fState_ == State::ePreparingHeaders) {
+                StateTransition_ (State::eHeadersSent); // this flushes the headers
+            }
+            Assert (fState_ >= State::eHeadersSent);
+
+            {
+                if (chunkedTransferMode () and not fHeadMode_) {
+                    if (this->fBodyCompressedStream_ != nullptr) {
+                        if (auto o = fBodyCompressedStream_.ReadAllAvailable ()) {
+                            BLOB data2Write{*o};
+                            if (not data2Write.empty ()) {
+                                WriteChunk_ (data2Write);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (chunkedTransferMode () and not fHeadMode_) {
                 constexpr string_view kEndChunk_ = "0\r\n\r\n";
                 Assert (as_bytes (span{kEndChunk_}).size () == 5); // not including NUL-byte
                 fUseOutStream_.Write (as_bytes (span{kEndChunk_}));
             }
+
+            //if (not fBodyBytes_.empty ())
+            if (body2Write) {
+                Assert (not chunkedTransferMode ());
+                Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("bytes.size: {}"_f, static_cast<long long> (body2Write->size ()));
+#endif
+                // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html - body must not be sent for not-modified
+                //              if (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified) {
+                if (this->hasEntityBody ()) {
+                    fUseOutStream_.Write (*body2Write);
+                }
+                //    fBodyBytes_.clear ();
+            }
+            if (fState_ != State::eCompleted) {
+                fUseOutStream_.Flush ();
+            }
+            //     Ensure (fBodyBytes_.empty ());
             Flush ();
             StateTransition_ (State::eCompleted);
         }
         catch (...) {
-            DbgTrace (L"Exception during Response::End () automaticaly triggers Response::Abort()"_f);
+            DbgTrace ("Exception during Response::End () automaticaly triggers Response::Abort()"_f);
             Abort ();
             Ensure (this->responseAborted ());
             Ensure (this->responseCompleted ());
@@ -386,29 +460,35 @@ bool Response::End ()
         }
     }
     Ensure (fState_ == State::eCompleted);
-    Ensure (fBodyBytes_.empty ());
+    //Ensure (fBodyBytes_.empty ());
     return not fAborted_;
 }
 
 void Response::Abort ()
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"Response::Abort()"};
+#endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
     if (fState_ != State::eCompleted) {
         fState_   = State::eCompleted;
         fAborted_ = true;
         fUseOutStream_.Abort ();
         fSocket_.Close ();
-        fBodyBytes_.clear ();
+        if (fBodyRawStream_ != nullptr) {
+            fBodyRawStream_.Close ();
+        }
     }
     Ensure (fState_ == State::eCompleted);
-    Ensure (fBodyBytes_.empty ());
 }
 
 void Response::Redirect (const URI& url)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
     Require (this->headersCanBeSet ());
-    fBodyBytes_.clear ();
+    if (fBodyRawStream_ != nullptr) {
+        fBodyRawStream_.Close ();
+    }
 
     // PERHAPS should clear some header values???
     auto& updatableHeaders      = this->rwHeaders ();
@@ -422,35 +502,38 @@ void Response::Redirect (const URI& url)
 void Response::write (const span<const byte>& bytes)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Response::write()", "bytes=#{}"_f, bytes.size ()};
+    Debug::TraceContextBumper ctx{"Response::write()", "bytes={}"_f, bytes};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
     Require (not this->responseCompleted ());
     Require (not this->responseStatusSent () or chunkedTransferMode ());
-    fRawBytesWritten_ += bytes.size_bytes ();
-    if (not bytes.empty ()) {
-        if (fETagDigester_) {
-            fETagDigester_->Write (bytes);
-        }
-        if (fState_ == State::ePreparingHeaders and chunkedTransferMode ()) {
-            Flush ();
-        }
-        if (chunkedTransferMode ()) {
-            if (not fHeadMode_) {
-                Memory::BLOB data2Write = bytes;
-                if (auto cc = fCurrentCompression_) {
-                    data2Write = cc.Transform (data2Write);
+    if (fETagDigester_) {
+        fETagDigester_->Write (bytes); // @todo - FIX - To send ETAG - we must use a trailer!!! - maybe other things as well!
+    }
+    if (fState_ == State::ePreparingHeaders and chunkedTransferMode ()) {
+        // must send first draft of headers before we can begin chunked transfer emitting
+        // but cannot flush if not chunked transfer mode, cuz then we would be freezing content-length (unless we were handed it
+        // externally, but we don't currently have an API for that -- LGP 2024-06-25 - could add promisedContentLength property(but that would disallow our compression)
+        // maybe if/when we support trailers we wont need to worry about this.
+        Flush ();
+    }
+    fBodyRawStream_.Write (bytes);
+    fBodyRawStreamLength_ += bytes.size ();
+    Assert (fBodyRawStreamLength_ == fBodyRawStream_.GetWriteOffset ());
+    if (chunkedTransferMode ()) {
+        if (not fHeadMode_) {
+            BLOB data2Write = bytes;
+            if (this->fBodyCompressedStream_ != nullptr) {
+                if (auto o = fBodyCompressedStream_.ReadAllAvailable ()) {
+                    data2Write = *o;
                 }
-                string n = CString::Format ("%x\r\n", static_cast<unsigned int> (data2Write.size ()));
-                fUseOutStream_.WriteRaw (span{n.data (), n.size ()});
-                fUseOutStream_.Write (data2Write);
-                fUseOutStream_.WriteRaw (span{kCRLF_, strlen (kCRLF_)});
             }
-        }
-        else {
-            // Because for auto-compute - illegal to call flush and then write
-            Containers::Support::ReserveTweaks::Reserve4AddN (fBodyBytes_, bytes.size (), kResponseBufferReallocChunkSizeReserve_);
-            fBodyBytes_.insert (fBodyBytes_.end (), bytes.begin (), bytes.end ());
+            else {
+                optional<Memory::InlineBuffer<byte>> aa = fBodyRawStream_.ReadAllAvailable ();
+                Assert (aa.has_value ()); // because we pushed bytes in!
+                data2Write = BLOB{*aa};
+            }
+            WriteChunk_ (data2Write);
         }
     }
 }
@@ -486,7 +569,9 @@ String Response::ToString () const
     sb << "hasEntityBody: "sv << this->hasEntityBody () << ", "sv;
     sb << "State: "sv << fState_ << ", "sv;
     sb << "CodePage: "sv << fCodePage_ << ", "sv;
-    sb << "BodyBytes: "sv << fBodyBytes_ << ", "sv;
+    //sb << "fBodyRawStream_: "sv << fBodyRawStream_ << ", "sv;       // @todo write seek pos, non-null etc
+    //sb << "ProtocolOutputStream: "sv << fProtocolOutputStream_ << ", "sv;       // @todo write seek pos, non-null etc
+    //sb << "fBodyCompressedStream_: "sv << fBodyCompressedStream_ << ", "sv;       // @todo write seek pos, non-null etc
     sb << "HeadMode: "sv << fHeadMode_ << ", "sv;
     sb << "ETagDigester: "sv << fETagDigester_.has_value ();
     sb << "}"sv;

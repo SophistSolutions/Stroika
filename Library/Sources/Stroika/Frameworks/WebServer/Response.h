@@ -12,7 +12,6 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
 #include "Stroika/Foundation/Cryptography/Digest/Digester.h"
 #include "Stroika/Foundation/DataExchange/Compression/Common.h"
@@ -25,6 +24,7 @@
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/BufferedOutputStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h" //tmphack use new NonSeekableMemoryStream and flag sayign dont assume EOF
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
@@ -41,7 +41,6 @@ namespace Stroika::Frameworks::WebServer {
 
     using Characters::FormatString;
     using Characters::String;
-    using Containers::Mapping;
     using DataExchange::InternetMediaType;
     using HTTP::Status;
     using Memory::BLOB;
@@ -183,6 +182,7 @@ namespace Stroika::Frameworks::WebServer {
          *        'Accept-Encoding' headers.
          * 
          *  \req this->headersCanBeSet() to set property
+         *  \req all provided encodings, the library is built to support (caller should check)
          */
         Common::Property<optional<HTTP::ContentEncodings>> bodyEncoding;
 
@@ -367,17 +367,23 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void StateTransition_ (State to);
 
     private:
+        nonvirtual void ApplyBodyEncodingIfNeeded_ ();
+
+    private:
+        /*
+         * argument rawBytes already compressed if appropriate - just emits/flushes the chunk
+         */
+        nonvirtual void WriteChunk_ (span<const byte> rawBytes);
+
+    private:
         nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;
 
     private:
         using ETagDigester_ = Cryptography::Digest::IncrementalDigester<Cryptography::Digest::Algorithm::MD5, String>;
 
     private:
-        nonvirtual Memory::BLOB GetPossiblyEncodedBody_ () const;
-
-    private:
-        IO::Network::Socket::Ptr       fSocket_;
-        DataExchange::Compression::Ptr fCurrentCompression_;
+        IO::Network::Socket::Ptr         fSocket_;
+        Streams::OutputStream::Ptr<byte> fProtocolOutputStream_; // socket stream - either regular socket, or SSL socket stream
 #if !qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy
         State fState_ : 3 {State::ePreparingHeaders};
         bool  fHeadMode_ : 1 {false};
@@ -387,13 +393,13 @@ namespace Stroika::Frameworks::WebServer {
         bool  fHeadMode_{false};
         bool  fAborted_{false};
 #endif
-        size_t                           fRawBytesWritten_{}; // bytes passed to write() calls - not necessarily passed along downstream
-        optional<size_t>                 fAutoTransferChunkSize_{nullopt};
-        Streams::OutputStream::Ptr<byte> fUnderlyingOutStream_;
-        Streams::BufferedOutputStream::Ptr<byte> fUseOutStream_;
+        optional<size_t>                      fAutoTransferChunkSize_{nullopt};
+        optional<HTTP::ContentEncodings>      fBodyEncoding_;  // either contentEncoding or transferEncodings for compression
+        Streams::InputOutputStream::Ptr<byte> fBodyRawStream_; // write (span<const byte>) appends to this
+        size_t fBodyRawStreamLength_{}; // same as fBodyRawStream_.GetWriteOffset (), but accessible after fBodyRawStream_.CloseWrite ()
+        Streams::InputStream::Ptr<byte> fBodyCompressedStream_; // if not null, implies a bodyEncoding, and this is a typically smaller compressed version of fBodyRawStream_
+        Streams::BufferedOutputStream::Ptr<byte> fUseOutStream_; // wrapper on fProtocolOutputStream_ to provide buffering
         Characters::CodePage                     fCodePage_{Characters::WellKnownCodePages::kUTF8};
-        optional<HTTP::ContentEncodings>         fBodyEncoding_;
-        vector<byte>                             fBodyBytes_{};  // only used if not chunkedTransferMode
         optional<ETagDigester_>                  fETagDigester_; // dual use - if present, then flag for autoComputeETag mode as well
 
     public:
