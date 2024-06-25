@@ -145,13 +145,14 @@ namespace Stroika::Foundation::Streams::InputStream {
                 return Memory::InlineBuffer<ELEMENT_TYPE>{0}; // this means EOF
             }
             else {
-                // AvailableToRead  often returns 1 if it doesn't know really how much is available. But always safe todo blocking read for larger number
+                // AvailableToRead often returns 1 if it doesn't know really how much is available. But always safe todo blocking read for larger number
                 // and will just return smaller span, which we can resize down to...
                 constexpr size_t                   kRoundUpTo_ = max<size_t> (1, 4 * 1024 / sizeof (ELEMENT_TYPE));
                 Memory::InlineBuffer<ELEMENT_TYPE> buf{Memory::eUninitialized, Math::RoundUpTo (*o, kRoundUpTo_)};
-                span<ELEMENT_TYPE> r = this->Read (span<ELEMENT_TYPE>{buf}, NoDataAvailableHandling::eBlockIfNoDataAvailable); // since available to read- this CANNOT BLOCK
+                span<ELEMENT_TYPE> r = this->Read (span<ELEMENT_TYPE>{buf}, NoDataAvailableHandling::eBlockIfNoDataAvailable); // since available to read- this CANNOT BLOCK (but may return fewer elts)
                 Assert (r.data () == buf.data ());
-                Assert (r.size () == *o);
+                Assert (r.size () <= *o);
+                buf.ShrinkTo (r.size ());
                 return buf;
             }
         }
