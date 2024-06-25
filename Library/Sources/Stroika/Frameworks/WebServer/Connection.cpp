@@ -279,8 +279,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         // https://tools.ietf.org/html/rfc7231#section-7.1.1.2  : ...An origin server MUST send a Date header field in all other cases
         fMessage_->rwResponse ().rwHeaders ().date = Time::DateTime::Now ();
 
-        // @todo can short-circut the acceptEncoding logic if not bodyHasEntity...(but careful about checking that cuz no content yet
-        // so may need to revisit the bidyHasEntity logic) - just look at METHOD of request and http-status - oh - that cnanot check
+        // @todo can short-circuit the acceptEncoding logic if not bodyHasEntity...(but careful about checking that cuz no content yet
+        // so may need to revisit the bodyHasEntity logic) - just look at METHOD of request and http-status - oh - that cannot check
         // yet/until done... so maybe need other check like bodyCannotHaveEntity - stuff can check before filled out response?
 
         if (optional<HTTP::ContentEncodings> acceptEncoding = fMessage_->request ().headers ().acceptEncoding) {
