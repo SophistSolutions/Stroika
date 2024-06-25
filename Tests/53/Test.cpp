@@ -165,12 +165,12 @@ namespace {
     GTEST_TEST (Frameworks_WebServer, TestPOST)
     {
         const IO::Network::PortType portNumber = 8082;
-        MyWebServer_ myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        auto         c                    = IO::Network::Transfer::Connection::New ();
+        MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        auto                        c = IO::Network::Transfer::Connection::New ();
         using namespace DataExchange;
         auto                            arg    = VariantValue{Mapping<String, VariantValue>{{"AppState", "Start"}}};
         auto                            toJson = [] (const VariantValue& v) { return Variant::JSON::Writer{}.WriteAsBLOB (v); };
-        IO::Network::Transfer::Response r = c.POST (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/SetAppState2"sv},
+        IO::Network::Transfer::Response r      = c.POST (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/SetAppState2"sv},
                                                          toJson (arg), DataExchange::InternetMediaTypes::kJSON);
         EXPECT_TRUE (r.GetSucceeded ());
         EXPECT_GT (r.GetData ().size (), 1u);
