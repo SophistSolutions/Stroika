@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
@@ -26,12 +27,23 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 using Common::ConstantProperty;
+using Memory::BLOB;
 using Time::Duration;
+
+namespace {
+    namespace TestDeflateEnc1_ {
+        const BLOB kDecoded = "TEST"_blob;
+        // Produced with echo -n TEST | openssl zlib -e | od -t x1
+        const BLOB kEncoded = "\x78\x9c\x0b\x71\x0d\x0e\x01\x00\x03\x1d\x01\x41"_blob;
+    }
+}
 
 namespace {
     /*
@@ -64,6 +76,11 @@ namespace {
                              [this] (Request*, Response* response) {
                                  response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                                  response->write (L"FRED");
+                             }},
+                       Route{"TEST"_RegEx,
+                             [this] (Request*, Response* response) {
+                                 response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                 response->write (TestDeflateEnc1_::kDecoded);
                              }}}
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
             , fUseTransferEncoding_{transferEncoding}
@@ -177,6 +194,24 @@ namespace {
         String response = r.GetDataTextInputStream ().ReadAll ();
         //DbgTrace (L"response={}"_f, response);
         EXPECT_EQ (response, "Start");
+    }
+}
+
+namespace {
+    GTEST_TEST (Frameworks_WebServer, TestEncContent)
+    {
+        EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
+        const IO::Network::PortType     portNumber = 8082;
+        MyWebServer_                    myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        auto                            c = IO::Network::Transfer::Connection::New ();
+        IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/TEST"sv});
+        EXPECT_TRUE (r.GetSucceeded ());
+        EXPECT_GT (r.GetData ().size (), 1u);
+        String response = r.GetDataTextInputStream ().ReadAll ();
+        //DbgTrace (L"response={}"_f, response);
+        EXPECT_EQ (response, "TEST");
+        // @todo enhance this test so we force accept-encoding none, and force accept-endcing : deflate, and check raw
+        // result???
     }
 }
 

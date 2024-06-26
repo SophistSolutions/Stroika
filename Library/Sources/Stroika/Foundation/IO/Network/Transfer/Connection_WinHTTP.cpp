@@ -170,7 +170,7 @@ namespace {
             {
                 // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
                 // appears to not decode (and neither do I).
-                useHeadersMap.Add (String::FromStringConstant (HeaderName::kAcceptEncoding), String{});
+                useHeadersMap.Add (HeaderName::kAcceptEncoding, String{});
             }
             Cache::EvalContext cacheContext;
             if (fOptions_.fCache != nullptr) {
@@ -180,13 +180,13 @@ namespace {
                 }
             }
             {
-                if (useHeadersMap.Lookup (String::FromStringConstant (HeaderName::kUserAgent), &userAgent)) {
-                    useHeadersMap.Remove (String::FromStringConstant (HeaderName::kUserAgent));
+                if (useHeadersMap.Lookup (HeaderName::kUserAgent, &userAgent)) {
+                    useHeadersMap.Remove (HeaderName::kUserAgent);
                 }
             }
             if (fOptions_.fAuthentication and
                 fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
-                useHeadersMap.Add (String::FromStringConstant (HeaderName::kAuthorization), fOptions_.fAuthentication->GetAuthToken ());
+                useHeadersMap.Add (HeaderName::kAuthorization, fOptions_.fAuthentication->GetAuthToken ());
             }
             String useHeaderStrBuf;
             {
@@ -202,7 +202,7 @@ namespace {
 
             if (fOptions_.fTCPKeepAlives) {
                 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa384066(v=vs.85).aspx - MSFT says must be > 30 seconds, and cannot be disabled, so just set to long timeout before sending keepalive
-                // MSFT docs appear to indicate this wont work wtih a handle so I'm not really sure how to use/or if to use
+                // MSFT docs appear to indicate this wont work with a handle so I'm not really sure how to use/or if to use
                 //DWORD dwOptionsTimeout = fOptions_.fTCPKeepAlives->fEnabled ? 30000 : 1000 * 1000;
                 //Verify (::WinHttpSetOption (*fConnectionHandle_, WINHTTP_OPTION_WEB_SOCKET_KEEPALIVE_INTERVAL, &dwOptionsTimeout, sizeof (dwOptionsTimeout)));
             }
