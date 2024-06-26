@@ -31,6 +31,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
@@ -299,7 +300,6 @@ void Response::StateTransition_ (State to)
             }
             fUseOutStream_.WriteRaw (span{kCRLF_, ::strlen (kCRLF_)});
         }
-
         fState_ = to;
         if constexpr (qDebug) {
             if (to >= State::eHeadersSent and hasEntityBody ()) {
@@ -330,8 +330,10 @@ void Response::ApplyBodyEncodingIfNeeded_ ()
                 rwHeaders ().contentEncoding = ce;
             }
         };
-        DataExchange::Compression::Ptr currentCompression = DataExchange::Compression::Deflate::Compress::New ();
+        Compression::Ptr currentCompression;
         if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
+            constexpr auto compressOpts = Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f}; // @todo config option - passed in - didn't seem to help here
+            currentCompression          = Compression::Deflate::Compress::New (compressOpts);
             applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
         }
         if (currentCompression) {
@@ -355,7 +357,7 @@ void Response::WriteChunk_ (span<const byte> rawBytes)
 
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
 {
-    if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (ct)) {
+    if (InternetMediaTypeRegistry::Get ().IsTextFormat (ct)) {
         using AtomType = InternetMediaType::AtomType;
         // Don't override already specifed characterset
         Containers::Mapping<String, String> params = ct.GetParameters ();
@@ -447,7 +449,6 @@ bool Response::End ()
         }
     }
     Ensure (fState_ == State::eCompleted);
-    //Ensure (fBodyBytes_.empty ());
     return not fAborted_;
 }
 

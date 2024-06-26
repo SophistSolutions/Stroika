@@ -47,9 +47,9 @@ namespace Stroika::Frameworks::WebServer {
 
     /*
      *  \note Set headers (with this->rwHeaders()...) as early as practical (before calling write or Flush).
-     *  \note To use chunked transfer encoding (NOT THE DEFAULT) - call
+     *  \note To use chunked transfer encoding, specify automaticTransferChunkSize
      *      \code
-     *        response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
+     *        response->rwHeaders ().automaticTransferChunkSize = 1024; // will begin chunking when this is exceeded on some write call
      *        ... then do 
      *        response->write (...);
      *      \endcode
@@ -58,16 +58,15 @@ namespace Stroika::Frameworks::WebServer {
      *      @todo Support https://stroika.atlassian.net/browse/STK-727 - HTTP Chunked Transfer Trailers. We do support
      *            chunked transfers, but require all the headers set first.
      * 
-     *  \note   When todo chunked encoding?
-     *          
-     *          see Response::automaticTransferChunkSize
-     * 
      *  \note   When todo compressed responses
      *          
      *          This can be handled a lot of ways:
      *              >   let the user specify by setting header flags
      *              >   automatically (based on accept-encoding headers)
      *              >   Based on the size of the response (no point compressing a single byte response)
+     * 
+     *          Since this decision requires data from the 'request' (accept-encoding headers) - its not made here. The caller (Connection)
+     *          specifies this through the bodyEncoding property.
      * 
      *  \todo   Add API "write-content-encoded" - so caller can pass in pre-content-encoded content (e.g. an existing .zip file data)
      * 

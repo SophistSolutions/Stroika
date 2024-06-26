@@ -38,13 +38,13 @@ namespace Stroika::Foundation::DataExchange::Compression::Deflate {
      *      \endcode
      */
     namespace Compress {
-        struct Options : Compression::Compress::Options {};
+        using Compression::Compress::Options;
 #if qHasFeature_ZLib
         Ptr New (const Options& o = {});
 #endif
     }
     namespace Decompress {
-        struct Options : Compression::Decompress::Options {};
+        using Compression::Decompress::Options;
 #if qHasFeature_ZLib
         Ptr New (const Options& o = {});
 #endif
