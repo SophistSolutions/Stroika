@@ -63,6 +63,16 @@ namespace {
 }
 
 namespace {
+    /**
+     *  Very confused about what is going on here. Only tested with HTTP 1.1, but both chrome and msft edge dont
+     *  handle transfer-encoding the way I would have expected.
+     * 
+     *  This works FINE with curl - decoding the deflate just fine.
+     */
+    constexpr bool kTransferEncodingCompressionDoesntAppearToWorkWithBrowsers_ = true;
+}
+
+namespace {
     constexpr char kCRLF_[] = "\r\n";
 }
 
@@ -302,39 +312,32 @@ void Response::StateTransition_ (State to)
 void Response::ApplyBodyEncodingIfNeeded_ ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Response::ApplyBodyEncodingIfNeeded_"};
+    Debug::TraceContextBumper ctx{"Response::ApplyBodyEncodingIfNeeded_", "this->bodyEncoding={}"_f, fBodyEncoding_};
 #endif
-    DbgTrace ("bodyEncoding={}"_f, fBodyEncoding_);
     if (fState_ == State::ePreparingHeaders and fBodyEncoding_ and fBodyCompressedStream_ == nullptr) {
         auto applyBodyEncoding = [this] (HTTP::ContentEncoding ce) {
             if (this->chunkedTransferMode ()) {
-                HTTP::TransferEncodings htc = *headers ().transferEncoding ();
-                htc.Prepend (HTTP::TransferEncoding{ce.As<HTTP::TransferEncoding::AtomType> ()});
-                rwHeaders ().transferEncoding = htc;
+                if (kTransferEncodingCompressionDoesntAppearToWorkWithBrowsers_) {
+                    rwHeaders ().contentEncoding = ce;
+                }
+                else {
+                    HTTP::TransferEncodings htc = *headers ().transferEncoding ();
+                    htc.Prepend (HTTP::TransferEncoding{ce.As<HTTP::TransferEncoding::AtomType> ()});
+                    rwHeaders ().transferEncoding = htc;
+                }
             }
             else {
                 rwHeaders ().contentEncoding = ce;
             }
         };
-
         DataExchange::Compression::Ptr currentCompression = DataExchange::Compression::Deflate::Compress::New ();
-
-        //tmphack due to bug with how I handle content encoding with transfer encoding
-        // --LGP 2024-06-23
-        // CONFUSED - tried compressing each chunk, and original whole file. Either way still fails to be properly read.
-        //  --LGP 2024-06-25
-        if (chunkedTransferMode ()) {
-            goto skip;
-        }
-
         if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
             applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
         }
         if (currentCompression) {
-            // compressed stream reads from the raw body stream, and
+            // compressed stream reads from the raw body stream
             fBodyCompressedStream_ = currentCompression.Transform (fBodyRawStream_);
         }
-    skip:;
     }
 }
 
@@ -393,10 +396,10 @@ bool Response::End ()
 
             ApplyBodyEncodingIfNeeded_ (); // normally done in flush, but that would be too late
 
-            // Accumulate the body we will write before our initial flush, so that we have the right contentLength header
+            // If NOT in chunked mode, Accumulate the body we will write before our initial flush, so that we have the right contentLength header
+            // Note this is needed even for HEAD Method, since we may need to emit the right Content-Length header even if there is
+            // no body
             optional<BLOB> body2Write;
-            //DbgTrace ("chunkedTransferMode={},fBodyCompressedStream_={}"_f, chunkedTransferMode () ? "true"_k : "false"_k,
-            //          fBodyCompressedStream_ == nullptr ? "nullptr"_k : "real"_k);
             if (not chunkedTransferMode ()) {
                 if (fBodyCompressedStream_ != nullptr) {
                     body2Write = fBodyCompressedStream_.ReadAll ();
@@ -411,43 +414,27 @@ bool Response::End ()
             }
             Assert (fState_ >= State::eHeadersSent);
 
-            {
-                if (chunkedTransferMode () and not fHeadMode_) {
-                    if (this->fBodyCompressedStream_ != nullptr) {
-                        if (auto o = fBodyCompressedStream_.ReadAllAvailable ()) {
-                            BLOB data2Write{*o};
-                            if (not data2Write.empty ()) {
-                                WriteChunk_ (data2Write);
-                            }
-                        }
+            if (chunkedTransferMode () and not fHeadMode_) {
+                if (fBodyCompressedStream_ != nullptr) {
+                    auto b = fBodyCompressedStream_.ReadAll ();
+                    if (not b.empty ()) {
+                        WriteChunk_ (b);
                     }
                 }
+                WriteChunk_ (span<const byte>{}); // an empty chunk marks the end of transfer encoding
             }
 
-            if (chunkedTransferMode () and not fHeadMode_) {
-                constexpr string_view kEndChunk_ = "0\r\n\r\n";
-                Assert (as_bytes (span{kEndChunk_}).size () == 5); // not including NUL-byte
-                fUseOutStream_.Write (as_bytes (span{kEndChunk_}));
-            }
-
-            //if (not fBodyBytes_.empty ())
             if (body2Write) {
                 Assert (not chunkedTransferMode ());
                 Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("bytes.size: {}"_f, static_cast<long long> (body2Write->size ()));
-#endif
-                // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html - body must not be sent for not-modified
-                //              if (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified) {
+                // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html - body must not be sent for not-modified, HEAD, etc
                 if (this->hasEntityBody ()) {
                     fUseOutStream_.Write (*body2Write);
                 }
-                //    fBodyBytes_.clear ();
             }
             if (fState_ != State::eCompleted) {
                 fUseOutStream_.Flush ();
             }
-            //     Ensure (fBodyBytes_.empty ());
             Flush ();
             StateTransition_ (State::eCompleted);
         }
@@ -533,7 +520,10 @@ void Response::write (const span<const byte>& bytes)
                 Assert (aa.has_value ()); // because we pushed bytes in!
                 data2Write = BLOB{*aa};
             }
-            WriteChunk_ (data2Write);
+            // Don't write empty chunks as they would mark the end of the response
+            if (not data2Write.empty ()) {
+                WriteChunk_ (data2Write);
+            }
         }
     }
 }
