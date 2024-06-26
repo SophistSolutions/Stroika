@@ -274,7 +274,7 @@ namespace {
                 fOptions_.fCache->OnAfterFetch (cacheContext, &result);
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"returning status = %d, dataLen = %d", result.GetStatus (), result.GetData ().size ());
+            DbgTrace ("returning status = {}, dataLen = {}"_f, result.GetStatus (), result.GetData ().size ());
 #endif
             return result;
         }
@@ -375,7 +375,7 @@ namespace {
             ::memcpy (buffer, Traversal::Iterator2Pointer (begin (fUploadData_)) + fUploadDataCursor_, bytes2Copy);
             fUploadDataCursor_ += bytes2Copy;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"bufSize = %d, bytes2Copy=%d", bufSize, bytes2Copy);
+            DbgTrace ("bufSize = {}, bytes2Copy={}"_f, bufSize, bytes2Copy);
 #endif
             return bytes2Copy;
         }
