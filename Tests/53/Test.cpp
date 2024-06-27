@@ -171,6 +171,8 @@ namespace {
         IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
         EXPECT_TRUE (r.GetSucceeded ());
         EXPECT_GT (r.GetData ().size (), 1u);
+        //DbgTrace ("headers={}"_f, r.GetHeaders ());
+        //DbgTrace ("data=byte[{}]{}"_f, r.GetData ().size (), r.GetData ());
         String response = r.GetDataTextInputStream ().ReadAll ();
         //DbgTrace (L"response={}"_f, response);
         EXPECT_TRUE (response.StartsWith ("<html>"));
