@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Streams::InputStream {
                 Memory::InlineBuffer<ELEMENT_TYPE> buf{Memory::eUninitialized, Math::RoundUpTo (*o, kRoundUpTo_)};
                 span<ELEMENT_TYPE> r = this->Read (span<ELEMENT_TYPE>{buf}, NoDataAvailableHandling::eBlockIfNoDataAvailable); // since available to read- this CANNOT BLOCK (but may return fewer elts)
                 Assert (r.data () == buf.data ());
-                Assert (r.size () <= *o);
+                Assert (r.size () <= buf.size ());
                 buf.ShrinkTo (r.size ());
                 return buf;
             }

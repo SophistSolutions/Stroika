@@ -68,6 +68,9 @@ namespace Stroika::Foundation::Streams::InputStream {
      *
      *      @see MemoryStream for most common stream applications.
      *
+     *      @see StreamReader for utility to more easily, and more efficiently, consume the contents
+     *      of an input stream.
+     *
      *      @see ExternallyOwnedMemoryInputStream for a more efficient, but slightly less safe
      *          mapping to streams.
      *
