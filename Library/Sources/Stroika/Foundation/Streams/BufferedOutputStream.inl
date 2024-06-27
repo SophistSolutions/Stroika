@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             }
             virtual SeekOffsetType SeekWrite ([[maybe_unused]] Whence whence, [[maybe_unused]] SignedSeekOffsetType offset) override
             {
-                RequireNotReached (); // cuz we ar enot seekable, but could be changed/improved
+                RequireNotReached (); // cuz we are not seekable, but could be changed/improved
                 Require (IsOpenWrite ());
                 return 0;
             }
