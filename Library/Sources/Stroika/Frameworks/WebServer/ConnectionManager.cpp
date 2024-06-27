@@ -245,7 +245,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
 ConnectionManager::~ConnectionManager ()
 {
-    DbgTrace ("Starting destructor for WebServer::ConnectionManager (%p)"_f, static_cast<const void*> (this));
+    DbgTrace ("Starting destructor for WebServer::ConnectionManager ({})"_f, static_cast<const void*> (this));
 }
 #endif
 
