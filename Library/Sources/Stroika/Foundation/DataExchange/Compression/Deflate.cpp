@@ -93,7 +93,7 @@ namespace {
             if (blockFlag == NoDataAvailableHandling::eDontBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
                 // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
                 // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
-                return false;
+                return nullopt;
             }
             if (fZStream_.avail_in == 0) {
                 Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
@@ -155,6 +155,15 @@ namespace {
             if (_fNextOutputByte_) {
                 intoBuffer[0] = *_fNextOutputByte_;
                 _fNextOutputByte_.reset ();
+                // OK to just return now, but see if we can be more efficient, and grab a bit more
+                if (intoBuffer.size () > 1) {
+                    if (auto o = PullEnufForDeflate1Byte_ (NoDataAvailableHandling::eDontBlock, intoBuffer.subspan (1), processInputZLibFunction)) {
+                        size_t pulledOut = *o + 1;
+                        _fSeekOffset += pulledOut;
+                        return intoBuffer.subspan (0, pulledOut);
+                    }
+                }
+                _fSeekOffset++;
                 return intoBuffer.subspan (0, 1);
             }
             if (auto o = PullEnufForDeflate1Byte_ (blockFlag, intoBuffer, processInputZLibFunction)) {
