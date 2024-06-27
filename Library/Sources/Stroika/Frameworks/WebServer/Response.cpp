@@ -426,6 +426,12 @@ bool Response::End ()
                         WriteChunk_ (b);
                     }
                 }
+                else {
+                    auto b = fBodyRawStream_.ReadAll ();
+                    if (not b.empty ()) {
+                        WriteChunk_ (b);
+                    }
+                }
                 WriteChunk_ (span<const byte>{}); // an empty chunk marks the end of transfer encoding
             }
 
