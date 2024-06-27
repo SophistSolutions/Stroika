@@ -133,7 +133,11 @@ namespace Stroika::Frameworks::WebServer {
          *  \note This chunk-size threshold may refer to the compressed size, or uncompressed size as is convenient, and is just
          *        a guideline, not strictly followed (except for the kNoChunkedTransfer special case where no chunking takes place).
          * 
+         *  \note When combined with compression, due to chunking of the compression algorithm, this may not result in very uniformly
+         *        sized chunks. (AND maybe buggy as of 2024-06-27 - works - but not very well).
+         * 
          *  \req this->state == ePreparingHeaders (before first write to body) to set, but can always be read
+         * 
          *  \req value == nullopt or value > 0   (zero chunk size wouldn't make sense)
          */
         Common::Property<optional<size_t>> automaticTransferChunkSize;
@@ -147,6 +151,9 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  \brief default value for automaticTransferChunkSize
+         * 
+         *  \note dont count on this value. Its subject to change. Maybe compute 'total message size' internally and compare with network FRAG size
+         *        to do transfer-coding at a size that is just right to avoid extra packets.
          */
         static constexpr size_t kAutomaticTransferChunkSize_Default = 16 * 1024;
 
@@ -288,11 +295,12 @@ namespace Stroika::Frameworks::WebServer {
          * This begins sending the parts of the message which have already been accumulated to the client.
          * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
          * IFF you first set the respose.transferEncoding mode to TransferEncoding::kChunked.
+         *      (TODO FIX THIS transferEncoing comment - wrong now ---)
          *
          * This does NOT End the response, and it CAN be called arbitrarily many times (even after the response has completed - though
          * its pointless then).
          * 
-         *  This can be called in any state.
+         * This can be called in any state.
          */
         nonvirtual void Flush ();
 
@@ -363,6 +371,9 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     private:
+        nonvirtual void FlushNextChunkIfNeeded_ ();
+
+    private:
         nonvirtual void StateTransition_ (State to);
 
     private:
@@ -396,6 +407,7 @@ namespace Stroika::Frameworks::WebServer {
         optional<HTTP::ContentEncodings>      fBodyEncoding_;  // either contentEncoding or transferEncodings for compression
         Streams::InputOutputStream::Ptr<byte> fBodyRawStream_; // write (span<const byte>) appends to this
         size_t fBodyRawStreamLength_{}; // same as fBodyRawStream_.GetWriteOffset (), but accessible after fBodyRawStream_.CloseWrite ()
+        size_t fBodyRowStreamLengthWhenLastChunkGenerated_{};
         Streams::InputStream::Ptr<byte> fBodyCompressedStream_; // if not null, implies a bodyEncoding, and this is a typically smaller compressed version of fBodyRawStream_
         Streams::BufferedOutputStream::Ptr<byte> fUseOutStream_; // wrapper on fProtocolOutputStream_ to provide buffering
         Characters::CodePage                     fCodePage_{Characters::WellKnownCodePages::kUTF8};

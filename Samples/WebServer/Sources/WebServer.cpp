@@ -102,16 +102,11 @@ namespace {
         {
             constexpr bool kUseChunkedTransferCoding_ = true;
             //constexpr bool kUseChunkedTransferCoding_ = false;
-            // new way --NYI
             if (kUseChunkedTransferCoding_) {
-                response->automaticTransferChunkSize = 10;
+                response->automaticTransferChunkSize = 25;
             }
             else {
                 response->automaticTransferChunkSize = Response::kNoChunkedTransfer;
-            }
-            // old way
-            if (kUseChunkedTransferCoding_) {
-                response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
             }
             response->contentType = DataExchange::InternetMediaTypes::kHTML;
             response->writeln ("<html><body>"sv);

@@ -177,7 +177,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , responseStatusSent{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
-        return thisObj->fState_ != State::ePreparingHeaders /* and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent*/;
+        return thisObj->fState_ != State::ePreparingHeaders;
     }}
     , responseCompleted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
@@ -203,7 +203,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fSocket_{s}
     , fProtocolOutputStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream::New<byte> (outStream)}
-    // Soon @todo - replace with new (not yet written) UnseekableMemoryStream - whihc has same 'Close' semantics, and input/output but no mutex and since unseekable can throw away data as it goes
+    // Soon @todo - replace with new (not yet written) UnseekableMemoryStream - which has same 'Close' semantics, and input/output but no mutex and since unseekable can throw away data as it goes
     // @todo could delay construction til needed
     , fBodyRawStream_{Streams::SharedMemoryStream::New<byte> ()}
 {
@@ -235,6 +235,14 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     // auto-compute the content-length unless chunked transfer
     this->rwHeaders ().contentLength.rwPropertyReadHandlers ().push_front ([this] ([[maybe_unused]] const auto& baseValue) -> optional<uint64_t> {
         if (this->chunkedTransferMode ()) {
+            return nullopt;
+        }
+        if (this->fHeadMode_) {
+            // https://stackoverflow.com/questions/27868314/avoiding-content-length-in-head-response
+            //      // https://www.rfc-editor.org/rfc/rfc7231#section-4.3.2
+            //      The server SHOULD send the same header fields in response to a HEAD request as it would
+            //      have sent if the request had been a GET,
+            //      except that the payload header fields (Section 3.3) MAY be omitted.
             return nullopt;
         }
         // in non-chunked mode, we count on all the 'writes' having been completed
@@ -333,7 +341,7 @@ void Response::ApplyBodyEncodingIfNeeded_ ()
         Compression::Ptr currentCompression;
         if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
             constexpr auto compressOpts = Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f}; // @todo config option - passed in - didn't seem to help here
-            currentCompression          = Compression::Deflate::Compress::New (compressOpts);
+            currentCompression = Compression::Deflate::Compress::New (compressOpts);
             applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
         }
         if (currentCompression) {
@@ -346,7 +354,7 @@ void Response::ApplyBodyEncodingIfNeeded_ ()
 void Response::WriteChunk_ (span<const byte> rawBytes)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Response::WriteChunk_", "rawBytes={}"_f, rawBytes};
+    Debug::TraceContextBumper ctx{"Response::WriteChunk_", "rawBytes=byte[{}]{}"_f, rawBytes.size (), rawBytes};
 #endif
     // note rawBytes maybe empty - in fact the final chunk is always empty
     string n = CString::Format ("%x\r\n", static_cast<unsigned int> (rawBytes.size ()));
@@ -378,11 +386,7 @@ void Response::Flush ()
         StateTransition_ (State::eHeadersSent); // this flushes the headers
     }
     Assert (fState_ >= State::eHeadersSent);
-
-    // writes push to the fUseOutStream_, but doesn't necessarily flush that output across the network
-    if (fState_ != State::eCompleted) {
-        fUseOutStream_.Flush ();
-    }
+    fUseOutStream_.Flush ();
 }
 
 bool Response::End ()
@@ -410,7 +414,6 @@ bool Response::End ()
                     body2Write = fBodyRawStream_.ReadAll ();
                 }
             }
-
             if (fState_ == State::ePreparingHeaders) {
                 StateTransition_ (State::eHeadersSent); // this flushes the headers
             }
@@ -426,6 +429,9 @@ bool Response::End ()
                 WriteChunk_ (span<const byte>{}); // an empty chunk marks the end of transfer encoding
             }
 
+            if (fState_ == State::ePreparingHeaders) {
+                StateTransition_ (State::eHeadersSent); // this flushes the headers
+            }
             if (body2Write) {
                 Assert (not chunkedTransferMode ());
                 Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
@@ -434,11 +440,9 @@ bool Response::End ()
                     fUseOutStream_.Write (*body2Write);
                 }
             }
-            if (fState_ != State::eCompleted) {
-                fUseOutStream_.Flush ();
-            }
-            Flush ();
+            Assert (fState_ >= State::eHeadersSent);
             StateTransition_ (State::eCompleted);
+            fUseOutStream_.Flush ();
         }
         catch (...) {
             DbgTrace ("Exception during Response::End () automaticaly triggers Response::Abort()"_f);
@@ -483,14 +487,17 @@ void Response::Redirect (const URI& url)
     updatableHeaders.connection = IO::Network::HTTP::Headers::eClose;
     updatableHeaders.location   = url;
     this->status                = HTTP::StatusCodes::kMovedPermanently;
-    Flush ();
+    if (fState_ == State::ePreparingHeaders) {
+        StateTransition_ (State::eHeadersSent); // this flushes the headers
+    }
+    Assert (fState_ >= State::eHeadersSent);
     StateTransition_ (State::eCompleted);
 }
 
 void Response::write (const span<const byte>& bytes)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Response::write()", "bytes={}"_f, bytes};
+    Debug::TraceContextBumper ctx{"Response::write()", "bytes=byte[{}]{}"_f, bytes.size (), bytes};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
     Require (not this->responseCompleted ());
@@ -498,35 +505,25 @@ void Response::write (const span<const byte>& bytes)
     if (fETagDigester_) {
         fETagDigester_->Write (bytes); // @todo - FIX - To send ETAG - we must use a trailer!!! - maybe other things as well!
     }
+    fBodyRawStream_.Write (bytes);
+    fBodyRawStreamLength_ += bytes.size ();
+    Assert (fBodyRawStreamLength_ == fBodyRawStream_.GetWriteOffset ());
+
+    size_t thisChunkSize = fBodyRawStreamLength_ - fBodyRowStreamLengthWhenLastChunkGenerated_; // compute when to chunk based on raw write size not compressed size cuz easier - for now --LGP 2024-06-26
+    if (thisChunkSize > fAutoTransferChunkSize_.value_or (kAutomaticTransferChunkSize_Default) and not chunkedTransferMode ()) {
+        rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
+    }
+
     if (fState_ == State::ePreparingHeaders and chunkedTransferMode ()) {
         // must send first draft of headers before we can begin chunked transfer emitting
         // but cannot flush if not chunked transfer mode, cuz then we would be freezing content-length (unless we were handed it
         // externally, but we don't currently have an API for that -- LGP 2024-06-25 - could add promisedContentLength property(but that would disallow our compression)
         // maybe if/when we support trailers we wont need to worry about this.
-        Flush ();
+        StateTransition_ (State::eHeadersSent); // this sends the headers (not necessarily all the way out over wire but through our pipeline)
+        Assert (fState_ >= State::eHeadersSent);
     }
-    fBodyRawStream_.Write (bytes);
-    fBodyRawStreamLength_ += bytes.size ();
-    Assert (fBodyRawStreamLength_ == fBodyRawStream_.GetWriteOffset ());
-    if (chunkedTransferMode ()) {
-        if (not fHeadMode_) {
-            BLOB data2Write = bytes;
-            if (this->fBodyCompressedStream_ != nullptr) {
-                if (auto o = fBodyCompressedStream_.ReadAllAvailable ()) {
-                    data2Write = *o;
-                }
-            }
-            else {
-                optional<Memory::InlineBuffer<byte>> aa = fBodyRawStream_.ReadAllAvailable ();
-                Assert (aa.has_value ()); // because we pushed bytes in!
-                data2Write = BLOB{*aa};
-            }
-            // Don't write empty chunks as they would mark the end of the response
-            if (not data2Write.empty ()) {
-                WriteChunk_ (data2Write);
-            }
-        }
-    }
+
+    FlushNextChunkIfNeeded_ ();
 }
 
 void Response::write (const wchar_t* s, const wchar_t* e)
@@ -549,6 +546,32 @@ void Response::printf (const wchar_t* format, ...)
     String tmp = Characters::FormatV (format, argsList);
     va_end (argsList);
     write (tmp);
+}
+
+void Response::FlushNextChunkIfNeeded_ ()
+{
+    if (not fHeadMode_ and chunkedTransferMode ()) {
+        size_t thisChunkSize = fBodyRawStreamLength_ - fBodyRowStreamLengthWhenLastChunkGenerated_; // compute when to chunk based on raw write size not compressed size cuz easier - for now --LGP 2024-06-26
+        if (thisChunkSize > fAutoTransferChunkSize_.value_or (kAutomaticTransferChunkSize_Default)) {
+            BLOB data2Write;
+            if (this->fBodyCompressedStream_ != nullptr) {
+                if (auto o = fBodyCompressedStream_.ReadAllAvailable ()) {
+                    data2Write = *o;
+                }
+            }
+            else {
+                optional<Memory::InlineBuffer<byte>> aa = fBodyRawStream_.ReadAllAvailable ();
+                if (aa.has_value ()) {
+                    data2Write = BLOB{*aa};
+                }
+            }
+            // Don't write empty chunks as they would mark the end of the response
+            if (not data2Write.empty ()) {
+                WriteChunk_ (data2Write);
+                fBodyRowStreamLengthWhenLastChunkGenerated_ = fBodyRawStreamLength_;
+            }
+        }
+    }
 }
 
 String Response::ToString () const
