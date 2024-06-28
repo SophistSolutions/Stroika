@@ -43,6 +43,7 @@ namespace Stroika::Foundation::DataExchange::Compression {
      *        transformed stream).
      */
     struct IRep {
+        virtual ~IRep () = 0;
         /**
          *  \req not ongoing transform on this instance. 
          *  If re-used, last transform must be completed, meaning EOF returned, or exception thrown.
