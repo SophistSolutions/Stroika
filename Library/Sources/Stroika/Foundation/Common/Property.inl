@@ -19,7 +19,9 @@ namespace Stroika::Foundation::Common {
     template <invocable<const ReadOnlyProperty<T>*> G>
 #endif
     constexpr ReadOnlyProperty<T>::ReadOnlyProperty (G getter)
+    #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>)
+        #endif
         : fGetter_ (getter) // no uniform initialization because this may involve conversions
     {
     }
@@ -171,7 +173,9 @@ namespace Stroika::Foundation::Common {
     template <invocable<const ExtendableProperty<T>*> G, invocable<ExtendableProperty<T>*, remove_cvref_t<T>> S>
 #endif
     ExtendableProperty<T>::ExtendableProperty (G getter, S setter)
+    #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         requires (convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>)
+        #endif
         : Property<T>{[getter] ([[maybe_unused]] const auto* property) -> typename Property<T>::base_value_type {
                           // Subtle - but the 'property' here refers to 'this' (ExtendableProperty). The getter itself will want to extract the parent object, but
                           // unlike other getter/setters, here the auto property is already for this object.
