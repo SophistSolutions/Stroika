@@ -168,6 +168,21 @@ namespace Stroika::Frameworks::WebServer {
              */
             optional<unsigned int> fTCPBacklog;
 
+            /**
+             *  \brief controls whether to use Transfer-Coding: chunked or not
+             * 
+             *  \see WebServer::Connection::Options::fAutomaticTransferChunkSize
+             *  \see WebServer::Response::automaticTransferChunkSize
+             */
+            optional<size_t> fAutomaticTransferChunkSize;
+
+            /**
+             *  \brief override the set of compression encodings the WebServer supports (default is all the Stroika implementation is built to support)
+             * 
+             *  \see WebServer::Connection::Options::fSupportedCompressionEncodings
+             */
+            optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings;
+
             static constexpr unsigned int      kDefault_MaxConnections{25};
             static constexpr Socket::BindFlags kDefault_BindFlags{};
             static inline const Headers kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
@@ -273,14 +288,14 @@ namespace Stroika::Frameworks::WebServer {
          *  But this will return just those which are not 'done'. Of course - due to asynchrony,
          *  by the time one looks at the list, some may already be done.
          */
-        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> pConnections;
+        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> connections;
 
     public:
         /**
          *  Here active refers to being currently processed, reading data, writing data or computing answers. This means
          *  assigned into thread pool for handling.
          */
-        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> pActiveConnections;
+        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> activeConnections;
 
     public:
         /**

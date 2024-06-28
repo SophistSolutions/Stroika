@@ -187,14 +187,14 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               thisObj->fAfterInterceptors_ = afterInterceptors_;
               thisObj->FixupInterceptorChain_ ();
           }}
-    , pConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
-        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pConnections);
+    , connections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::connections);
         scoped_lock critSec{thisObj->fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
         Ensure (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
         return thisObj->GetInactiveConnections_ () + thisObj->fActiveConnections_.load ();
     }}
-    , pActiveConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
-        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pActiveConnections);
+    , activeConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::activeConnections);
         return thisObj->fActiveConnections_.load ();
     }}
     , pStatistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
@@ -252,11 +252,16 @@ ConnectionManager::~ConnectionManager ()
 
 void ConnectionManager::DeriveConnectionDefaultOptionsFromEffectiveOptions_ ()
 {
-    fUseDefaultConnectionOptions_ = Connection::Options{.fInterceptorChain          = fInterceptorChain_,
-                                                        .fDefaultResponseHeaders    = *fEffectiveOptions_.fDefaultResponseHeaders,
-                                                        .fDefaultGETResponseHeaders = fEffectiveOptions_.fDefaultGETResponseHeaders,
-                                                        .fAutoComputeETagResponse   = *fEffectiveOptions_.fAutoComputeETagResponse};
+    fUseDefaultConnectionOptions_ = Connection::Options{
+        .fInterceptorChain              = fInterceptorChain_,
+        .fDefaultResponseHeaders        = *fEffectiveOptions_.fDefaultResponseHeaders,
+        .fDefaultGETResponseHeaders     = fEffectiveOptions_.fDefaultGETResponseHeaders,
+        .fAutoComputeETagResponse       = *fEffectiveOptions_.fAutoComputeETagResponse,
+        .fAutomaticTransferChunkSize    = fEffectiveOptions_.fAutomaticTransferChunkSize,
+        .fSupportedCompressionEncodings = fEffectiveOptions_.fSupportedCompressionEncodings,
+    };
 }
+
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

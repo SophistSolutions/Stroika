@@ -86,12 +86,12 @@ namespace Stroika::Frameworks::WebServer {
             optional<Headers> fDefaultGETResponseHeaders;
 
             /**
-             *  \see WebServer::Request::autoComputeETagResponse
+             *  \see WebServer::Response::autoComputeETagResponse
              */
             optional<bool> fAutoComputeETagResponse;
 
             /**
-             *  \see WebServer::Request::automaticTransferChunkSize (default is usually fine)
+             *  \see WebServer::Response::automaticTransferChunkSize (default is usually fine)
              */
             optional<size_t> fAutomaticTransferChunkSize;
 
