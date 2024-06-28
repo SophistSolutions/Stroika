@@ -69,13 +69,49 @@ namespace Stroika::Frameworks::WebServer {
      */
     class Connection : Debug::AssertExternallySynchronizedMutex {
     public:
+        struct Options {
+            /**
+             *  This is largely required (though can be provided later). Without it, you don't get notified about progress of the HTTP connection.
+             */
+            InterceptorChain fInterceptorChain;
+
+            /**
+             *  These are the default/baseline response headers which will be provided on all responses (except possibly GET)
+             */
+            Headers fDefaultResponseHeaders;
+
+            /**
+             *  These are the default response headers for GET requests (if not provided, defaults to fDefaultResponseHeaders)
+             */
+            optional<Headers> fDefaultGETResponseHeaders;
+
+            /**
+             *  \see WebServer::Request::autoComputeETagResponse
+             */
+            optional<bool> fAutoComputeETagResponse;
+
+            /**
+             *  \see WebServer::Request::automaticTransferChunkSize (default is usually fine)
+             */
+            optional<size_t> fAutomaticTransferChunkSize;
+
+            /**
+             *  \see WebServer::Request::bodyEncoding;
+             *  This set is intersected with REQUEST.acceptEncoding headers to select encoding to use in Response bodyEncoding
+             *  (if nullopt, auto-computed based on what is supported in Stroika)
+             */
+            optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings;
+        };
+
+    public:
         /**
          */
         Connection ()                  = delete;
         Connection (const Connection&) = delete;
-        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{},
-                             const Headers& defaultResponseHeaders = {}, const optional<Headers>& defaultGETResponseHeaders = nullopt,
-                             const optional<bool> autoComputeETagResponse = nullopt);
+        [[deprecated ("Since Stroika v3.0d7 - use the Options object with basically the same values")]] explicit Connection (
+            const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = {}, const Headers& defaultResponseHeaders = {},
+            const optional<Headers>& defaultGETResponseHeaders = nullopt, const optional<bool> autoComputeETagResponse = nullopt);
+        Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Options& options);
 
     public:
         ~Connection ();

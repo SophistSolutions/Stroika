@@ -211,9 +211,9 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Get the list of interceptors early interceptors. These default to:
-         *      earltInterceptors += ServerHeadersInterceptor_{serverHeader, corsSupportMode};
+         *      earlyInterceptors += ServerHeadersInterceptor_{serverHeader, corsSupportMode};
          *      if (defaultFaultHandler) {
-         *          earltInterceptors += *defaultFaultHandler;
+         *          earlyInterceptors += *defaultFaultHandler;
          *      }
          * 
          *  @see beforeInterceptors, afterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
@@ -239,7 +239,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  These 'before' and 'after' values are releative to the router, which towards the end of the chain.
+         *  These 'before' and 'after' values are relative to the router, which towards the end of the chain.
          */
         enum class InterceptorAddRelativeTo {
             ePrependsToEarly,
@@ -305,6 +305,9 @@ namespace Stroika::Frameworks::WebServer {
         Common::ReadOnlyProperty<Statistics> pStatistics;
 
     private:
+        nonvirtual void DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+
+    private:
         nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);
 
     private:
@@ -321,14 +324,21 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue);
 
     private:
-        Options                                                  fEffectiveOptions_;
+        Options fEffectiveOptions_;
+#if qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy
+        // BWA not too bad cuz ConnectionManager(const ConnectionManager&)=delete and op= as well.
+        shared_ptr<Connection::Options> fUseDefaultConnectionOptions_BWA_{make_shared<Connection::Options> ()};
+        Connection::Options&            fUseDefaultConnectionOptions_{*fUseDefaultConnectionOptions_BWA_};
+#else
+        Connection::Options fUseDefaultConnectionOptions_;
+#endif
         Execution::Synchronized<optional<Interceptor>>           fDefaultErrorHandler_;
         Execution::Synchronized<Sequence<Interceptor>>           fEarlyInterceptors_;
         Execution::Synchronized<Sequence<Interceptor>>           fBeforeInterceptors_;
         Execution::Synchronized<Sequence<Interceptor>>           fAfterInterceptors_;
         Execution::Synchronized<optional<Time::DurationSeconds>> fAutomaticTCPDisconnectOnClose_;
         Router                                                   fRouter_;
-        InterceptorChain                                         fInterceptorChain_; // no need to synchonize cuz internally synchronized
+        InterceptorChain fInterceptorChain_; // no need to synchronize cuz it's internally synchronized
 
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
@@ -346,7 +356,7 @@ namespace Stroika::Frameworks::WebServer {
         /*
          *  SUBTLE DATA MEMBER ORDERING NOTE!
          *      We count on the THREADS that run and manipulate all the above data members are all listed AFTER those data
-         *      members in this object. This is just for the covenient ordering that imposes on construction and destruction:
+         *      members in this object. This is just for the convenient ordering that imposes on construction and destruction:
          *      the threads (declared below) are automatically shutdown on destruction before the data they reference (above)
          * 
          *      Same with the listener, as this is basically a thread invoking calls on the above data members.

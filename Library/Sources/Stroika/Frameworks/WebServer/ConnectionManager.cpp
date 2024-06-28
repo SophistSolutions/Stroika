@@ -235,6 +235,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ifNoneMatch () == nullopt); // request only header
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
     }
+    DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
 
     DbgTrace ("Constructing WebServer::ConnectionManager ({}), with threadpoolSize={}, backlog={}, and listening on {}"_f,
               static_cast<const void*> (this), fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options),
@@ -249,6 +250,13 @@ ConnectionManager::~ConnectionManager ()
 }
 #endif
 
+void ConnectionManager::DeriveConnectionDefaultOptionsFromEffectiveOptions_ ()
+{
+    fUseDefaultConnectionOptions_ = Connection::Options{.fInterceptorChain          = fInterceptorChain_,
+                                                        .fDefaultResponseHeaders    = *fEffectiveOptions_.fDefaultResponseHeaders,
+                                                        .fDefaultGETResponseHeaders = fEffectiveOptions_.fDefaultGETResponseHeaders,
+                                                        .fAutoComputeETagResponse   = *fEffectiveOptions_.fAutoComputeETagResponse};
+}
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -257,8 +265,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetTCPNoDelay (*fEffectiveOptions_.fTCPNoDelay);
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
-    shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_, *fEffectiveOptions_.fDefaultResponseHeaders,
-                                                           fEffectiveOptions_.fDefaultGETResponseHeaders, *fEffectiveOptions_.fAutoComputeETagResponse);
+    shared_ptr<Connection> conn = make_shared<Connection> (s, fUseDefaultConnectionOptions_);
     fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {

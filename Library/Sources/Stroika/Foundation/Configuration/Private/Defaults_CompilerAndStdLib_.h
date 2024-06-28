@@ -331,6 +331,23 @@ C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): note: e
 
 #endif
 
+/**
+.
+7>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp(451): fatal error C1202: recursive type or function dependency context too complex
+7>C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\
+*/
+#ifndef qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy
+
+#if defined(_MSC_VER)
+// verified broken in _MSC_VER_2k22_17Pt10_
+#define qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy                                                                \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt10_)
+#else
+#define qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy 0
+#endif
+
+#endif
+
 #if __cpp_lib_chrono < 201611
 #error "Stroika v3 requires c++20 chrono library support"
 #endif

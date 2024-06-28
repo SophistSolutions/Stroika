@@ -145,6 +145,14 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  */
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders,
                         const optional<Headers>& defaultGETResponseHeaders, const optional<bool> autoComputeETagResponse)
+    : Connection{s, Options{.fInterceptorChain          = interceptorChain,
+                            .fDefaultResponseHeaders    = defaultResponseHeaders,
+                            .fDefaultGETResponseHeaders = defaultGETResponseHeaders,
+                            .fAutoComputeETagResponse   = autoComputeETagResponse}}
+{
+}
+
+Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Options& options)
     : socket{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
@@ -176,10 +184,10 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
               AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
               thisObj->fRemaining_ = remainingConnectionLimits;
           }}
-    , fInterceptorChain_{interceptorChain}
-    , fDefaultResponseHeaders_{defaultResponseHeaders}
-    , fDefaultGETResponseHeaders_{defaultGETResponseHeaders}
-    , fAutoComputeETagResponse_{autoComputeETagResponse}
+    , fInterceptorChain_{options.fInterceptorChain}
+    , fDefaultResponseHeaders_{options.fDefaultResponseHeaders}
+    , fDefaultGETResponseHeaders_{options.fDefaultGETResponseHeaders}
+    , fAutoComputeETagResponse_{options.fAutoComputeETagResponse}
     , fSocket_{s}
     , fConnectionStartedAt_{Time::GetTickCount ()}
 {
@@ -190,7 +198,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
     fSocketStream_ = SocketStream::New (fSocket_);
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     {
-        String socketName = Characters::Format (L"%ld-%d", (long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
+        String socketName = Characters::Format ("{}-{}"_f, (long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
         fSocketStream_    = Streams::LoggingInputOutputStream<byte>::New (
             fSocketStream_,
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () +
