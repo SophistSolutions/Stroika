@@ -144,8 +144,8 @@ namespace Stroika::Foundation::Common {
         // this part of BWA only needed for clang++
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>)
-            #endif
-            ;
+#endif
+        ;
 
     public:
         nonvirtual ReadOnlyProperty& operator= (const ReadOnlyProperty&)  = delete;
@@ -644,10 +644,10 @@ namespace Stroika::Foundation::Common {
         template <invocable<const ExtendableProperty<T>*> G, invocable<ExtendableProperty<T>*, remove_cvref_t<T>> S>
 #endif
         ExtendableProperty (G getter, S setter)
-    #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             requires (convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>)
-            #endif
-            ;
+#endif
+        ;
 
     public:
         /**
