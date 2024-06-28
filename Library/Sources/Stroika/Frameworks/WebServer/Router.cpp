@@ -205,8 +205,8 @@ struct Router::Rep_ : Interceptor::_IRep {
         Response&        response = message->rwResponse ();
         Sequence<String> matches;
         if (optional<RequestHandler> handler = Lookup_ (HTTP::Methods::kGet, ExtractHostRelPath_ (request.url ()), request, &matches)) {
-            // do someting to response so 'in HEAD mode' and won't write
-            response.EnterHeadMode ();
+            // do something to response so 'in HEAD mode' and won't write
+            response.headMode = true;
             HandleCORSInNormallyHandledMessage_ (request, response);
             (*handler) (message, matches);
             return true;

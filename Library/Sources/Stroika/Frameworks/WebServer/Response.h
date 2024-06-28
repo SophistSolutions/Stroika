@@ -241,6 +241,14 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Once set to true, this cannot be set false. It defaults to false;
+         * 
+         *  \req not this->responseStatusSent()
+         */
+        Common::Property<bool> headMode;
+
+    public:
+        /**
          *  Check this (readonly) property before updating headers. For now, this is the same as this->state == ePreparingHeaders
          * 
          *  \note - even HTTP 1.1 allows for headers to be sent AFTER we've started sending chunks, so this interpretation MAY
@@ -281,14 +289,6 @@ namespace Stroika::Frameworks::WebServer {
          *   \see https://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7
          */
         Common::ReadOnlyProperty<bool> hasEntityBody;
-
-    public:
-        /**
-         *  This cannot be reversed, but puts the response into a mode where it won't emit the body of the response.
-         * 
-         *  \req not this->responseStatusSent()
-         */
-        nonvirtual void EnterHeadMode ();
 
     public:
         /**

@@ -44,12 +44,6 @@ namespace Stroika::Frameworks::WebServer {
         }
         write (std::begin (kEOL), std::end (kEOL) - 1);
     }
-    inline void Response::EnterHeadMode ()
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
-        Require (fState_ == State::ePreparingHeaders);
-        fHeadMode_ = true;
-    }
 
 }
 

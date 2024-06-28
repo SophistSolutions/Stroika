@@ -169,6 +169,22 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
         return thisObj->fState_;
     }}
+    , headMode{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                   const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headMode);
+                   AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                   return thisObj->fHeadMode_;
+               },
+               [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeadMode) {
+                   Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headMode);
+                   AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                   Require (thisObj->fState_ == State::ePreparingHeaders);
+                   if (newHeadMode) {
+                       thisObj->fHeadMode_ = true;
+                   }
+                   else {
+                       Require (thisObj->fHeadMode_ == newHeadMode);
+                   }
+               }}
     , headersCanBeSet{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headersCanBeSet);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};

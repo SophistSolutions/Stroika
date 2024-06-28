@@ -202,6 +202,8 @@ namespace {
 namespace {
     GTEST_TEST (Frameworks_WebServer, TestEncContent)
     {
+        // @todo add tests with different flags about allowed compression - and add asserts about returned content-encoding headers.
+
         EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
         const IO::Network::PortType     portNumber = 8082;
         MyWebServer_                    myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists

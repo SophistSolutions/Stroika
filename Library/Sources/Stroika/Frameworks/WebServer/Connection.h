@@ -139,7 +139,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Access a (read-only) reference to the underlying (modifyable) connection response (meaning you cannot assign to the response itself, but you can modify the response object)
+         *  Access a (read-only) reference to the underlying (modifiable) connection response (meaning you cannot assign to the response itself, but you can modify the response object)
          */
         Common::ReadOnlyProperty<Response&> rwResponse;
 
@@ -147,7 +147,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          */
         enum ReadAndProcessResult {
-            eTryAgainLater, // Could mean success or sonme kinds of failure (like incomplete header/data), but try again later (so keep-alive results in this)
+            eTryAgainLater, // Could mean success or some kinds of failure (like incomplete header/data), but try again later (so keep-alive results in this)
             eClose,
         };
 
