@@ -45,13 +45,13 @@ namespace Stroika::Frameworks::SystemPerformance {
          *  So, in particular, any averages captured will generally, by default, be relative to this interval
          *  (unless the instrument documents a different pattern, such as load-average).
          */
-        Common::Property<Duration> pRunPeriod;
+        Common::Property<Duration> runPeriod;
 
     public:
         /**
          * @brief This is the set of instruments which will be captured on the regular interval basis
          */
-        Common::Property<Set<Instrument>> pInstruments;
+        Common::Property<Set<Instrument>> instruments;
 
     public:
         /**

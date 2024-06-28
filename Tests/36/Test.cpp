@@ -305,7 +305,7 @@ namespace {
                 Connection::Options o = options;
                 o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
                 auto conn             = Connection::New (o);
-                EXPECT_TRUE (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+                EXPECT_TRUE (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
                 constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
                 SQL::ORM::ProvisionForVersion (
                     conn, kCurrentVersion_,
@@ -618,7 +618,7 @@ namespace {
                 Connection::Options o = options;
                 o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
                 auto conn             = Connection::New (o);
-                EXPECT_TRUE (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+                EXPECT_TRUE (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
                 constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
                 SQL::ORM::ProvisionForVersion (conn, kCurrentVersion_,
                                                Traversal::Iterable<SQL::ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});

@@ -63,7 +63,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *          Capturer capturer;
      *          {
      *              CaptureSet cs;
-     *              cs.pRunPeriod = 15s;
+     *              cs.runPeriod = 15s;
      *              for (Instrument i : SystemPerformance::GetAllInstruments ()) {
      *                  cs.AddInstrument (i);
      *              }
@@ -154,7 +154,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        Common::Property<Collection<NewMeasurementsCallbackType>> pMeasurementsCallbacks;
+        Common::Property<Collection<NewMeasurementsCallbackType>> measurementsCallbacks;
 
     public:
         /**
@@ -169,7 +169,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        Common::Property<Collection<CaptureSet>> pCaptureSets;
+        Common::Property<Collection<CaptureSet>> captureSets;
 
     public:
         /**

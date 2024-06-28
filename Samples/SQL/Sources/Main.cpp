@@ -65,7 +65,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             // default to 1 second fBusyTimeout for these tests
             auto conn = SQLite::Connection::New (SQLite::Connection::Options{
                 .fDBPath = dbPath, .fThreadingMode = SQLite::Connection::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
-            Assert (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+            Assert (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
             return conn;
         };
         ThreadTest (connectionFactory);
@@ -81,7 +81,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             // default to 1 second fBusyTimeout for these tests
             auto conn = SQLite::Connection::New (SQLite::Connection::Options{
                 .fDBPath = dbPath, .fThreadingMode = SQLite::Connection::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
-            Assert (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+            Assert (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
             return conn;
         };
         ORMEmployeesDB (connectionFactory);

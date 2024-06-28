@@ -25,23 +25,23 @@ Capturer::Capturer ()
         const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMostRecentMeasurements);
         return thisObj->fCurrentMeasurementSet_.load ();
     }}
-    , pMeasurementsCallbacks{
+    , measurementsCallbacks{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<NewMeasurementsCallbackType> {
-              const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMeasurementsCallbacks);
+              const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::measurementsCallbacks);
               return thisObj->fCallbacks_.load ();
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& callbacks) {
-              Capturer* thisObj    = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMeasurementsCallbacks);
+              Capturer* thisObj    = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::measurementsCallbacks);
               thisObj->fCallbacks_ = callbacks;
           }}
-    , pCaptureSets{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<CaptureSet> {
-                       const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pCaptureSets);
-                       return thisObj->fCaptureSets_.load ();
-                   },
-                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& captureSets) {
-                       Capturer* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pCaptureSets);
-                       thisObj->fCaptureSets_ = captureSets;
-                   }}
+    , captureSets{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<CaptureSet> {
+                      const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::captureSets);
+                      return thisObj->fCaptureSets_.load ();
+                  },
+                  [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& captureSets) {
+                      Capturer* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::captureSets);
+                      thisObj->fCaptureSets_ = captureSets;
+                  }}
 {
     Require (Debug::AppearsDuringMainLifetime ());
 }
@@ -116,7 +116,7 @@ void Capturer::Runner_ ()
         runQueue.clear ();
         SortedMapping<TimePointSeconds, CaptureSet> tmp;
         for (const auto& i : lock.load ()) {
-            runQueue.Add (now + i.pRunPeriod (), i);
+            runQueue.Add (now + i.runPeriod (), i);
         }
         changeCountForCaptureSet = fCaptureSetChangeCount_;
     };
@@ -137,14 +137,14 @@ void Capturer::Runner_ ()
         Execution::SleepUntil (runNext.fKey);
         RunnerOnce_ (runNext.fValue);
         runQueue.erase (iterator);
-        runQueue.Add (runNext.fKey + runNext.fValue.pRunPeriod (), runNext.fValue); // interpret time offset as wrt leading edge
+        runQueue.Add (runNext.fKey + runNext.fValue.runPeriod (), runNext.fValue); // interpret time offset as wrt leading edge
     }
 }
 
 void Capturer::RunnerOnce_ (const CaptureSet& cs)
 {
     MeasurementSet measurements;
-    for (Instrument i : cs.pInstruments ()) {
+    for (Instrument i : cs.instruments ()) {
         try {
             measurements.MergeAdditions (i.Capture ());
         }

@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             optional<Duration> fBusyTimeout;
 
             /**
-             *  \note - see JournalModeType and Connection::Ptr::pJournalMode
+             *  \note - see JournalModeType and Connection::Ptr::journalMode
              */
             optional<JournalModeType> fJournalMode;
         };
@@ -278,13 +278,13 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
              *  When doing a query that would have failed due to SQL_BUSY timeout, sqlite will wait
              *  and retry up to this long, to avoid the timeout.
              */
-            Common::Property<Duration> pBusyTimeout;
+            Common::Property<Duration> busyTimeout;
 
         public:
             /**
-             *  This can significantly accect database performance, and reliability.
+             *  This can significantly affect database performance, and reliability.
              */
-            Common::Property<JournalModeType> pJournalMode;
+            Common::Property<JournalModeType> journalMode;
 
         private:
             friend class Statement;
@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         /**
          *  Connection provides an API for accessing an SQLite database.
          * 
-         *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
+         *  Typically don't use this directly, but use Connection::Ptr, a smart ptr wrapper on this interface.
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
          *          But though each connection can only be accessed from a single thread at a time, the underlying database may be

@@ -84,7 +84,7 @@ namespace {
         Capturer capturer;
         {
             CaptureSet cs;
-            cs.pRunPeriod = captureInterval;
+            cs.runPeriod = captureInterval;
             for (const Instrument& i : SystemPerformance::GetAllInstruments ()) {
                 if (not run.empty ()) {
                     if (not run.Contains (i.instrumentName)) {

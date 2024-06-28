@@ -16,10 +16,10 @@ using namespace Stroika::Frameworks::SystemPerformance;
  ********************************************************************************
  */
 CaptureSet::CaptureSet (const Duration& period, const Set<Instrument>& instruments)
-    : pRunPeriod{[this] ([[maybe_unused]] const auto* property) { return fPeriod_; },
-                 [this] ([[maybe_unused]] auto* property, const auto& runPeriod) { fPeriod_ = runPeriod; }}
-    , pInstruments{[this] ([[maybe_unused]] const auto* property) { return fInstruments_; },
-                   [this] ([[maybe_unused]] auto* property, const auto& instruments) { fInstruments_ = instruments; }}
+    : runPeriod{[this] ([[maybe_unused]] const auto* property) { return fPeriod_; },
+                [this] ([[maybe_unused]] auto* property, const auto& runPeriod) { fPeriod_ = runPeriod; }}
+    , instruments{[this] ([[maybe_unused]] const auto* property) { return fInstruments_; },
+                  [this] ([[maybe_unused]] auto* property, const auto& instruments) { fInstruments_ = instruments; }}
     , fInstruments_ (instruments)
     , fPeriod_ (period)
 {
