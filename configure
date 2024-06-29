@@ -2528,7 +2528,7 @@ sub PostProcessOptions_ ()
 	}
 
 	if ($autoIncludeTSAN_OPTIONSIfAppropriate) {
-		if (!IsTargettingSanitizer_ ('thread')) {
+		if (IsTargettingSanitizer_ ('thread')) {
 			# prepend, so stuff already there takes precedence
 			if (not ($RUN_PREFIX eq "")) {
 				$RUN_PREFIX = " " . $RUN_PREFIX;
