@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Execution {
      *          Synchronized<String,Synchronized_Traits<recursive_mutex>>   n;          // SAME
      *      \endcode
      *
-     *  or slightly faster, but possibly slower or less safe (depnding on usage)
+     *  or slightly faster, but possibly slower or less safe (depending on usage)
      *      Synchronized<String,Synchronized_Traits<SpinLock>>   n;
      *
      *  \note Use of SUPPORTS_SHARED_LOCKS has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
