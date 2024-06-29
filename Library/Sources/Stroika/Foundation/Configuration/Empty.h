@@ -15,7 +15,7 @@
 namespace Stroika::Foundation::Configuration {
 
     /**
-     *  Believe it or not, this is often useful in template metaprogramming.
+     *  Believe it or not, this is often useful in template metaprogramming. Because you cannot declare a data member as 'void'. This amounts to same thing if used with [[no_unique_address]]
      */
     struct Empty {};
 
