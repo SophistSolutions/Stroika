@@ -465,26 +465,36 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             }
 
         private:
-            // Since the read stream is not seekable, anything before its read offset can be thrown away. Just adjust the reported 'seek offsets' so its not
-            // clear to anyone this has happened.
-            //
-            // Also - given current data structures (could replace with ChunkedArray - maybe better) - costly to throw stuff away. So for now
-            // only do if would save significant space.
+            /*
+             * Since the read stream is not seekable, anything before its read offset can be thrown away. Just adjust the reported 'seek offsets' so its not
+             * clear to anyone this has happened.
+             *
+             * Also - given current data structures (could replace with ChunkedArray - maybe better) - costly to throw stuff away. So for now
+             * only do if would save significant space.
+             */
             nonvirtual void FreeUpSpaceIfNeeded_ ()
             {
-                [[maybe_unused]] lock_guard critSec{fMutex_}; // hold lock for everything EXCEPT wait
+                [[maybe_unused]] lock_guard critSec{fMutex_};
                 Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
+                Assert (fReadCursor_ <= fWriteCursor_); // cuz cannot seek, and cannot read past where we've written so far
                 constexpr size_t kMinData2Reclaim_ = 16 * 1024;
                 size_t           elts2Reclaim      = distance (fData_.cbegin (), fReadCursor_);
-                if (elts2Reclaim * sizeof (ELEMENT_TYPE) >= kMinData2Reclaim_) [[unlikely]] {
-                    // OK - worth the effort
-                    // @todo IMPL
+                if (elts2Reclaim * sizeof (ELEMENT_TYPE) >= kMinData2Reclaim_ and IsOpenRead () and IsOpenWrite ()) [[unlikely]] {
+                    size_t readOffset  = GetReadOffset ();
+                    size_t writeOffset = GetWriteOffset ();
+                    fData_.erase (fData_.begin (), fData_.begin () + elts2Reclaim);
+                    fSpaceClearedFromStreamHead_ += elts2Reclaim;
+                    Assert (writeOffset == fSpaceClearedFromStreamHead_);
+                    fReadCursor_  = fData_.begin () + (readOffset - fSpaceClearedFromStreamHead_);
+                    fWriteCursor_ = fData_.begin () + (writeOffset - fSpaceClearedFromStreamHead_);
+                    Assert (readOffset == GetReadOffset ());
+                    Assert (writeOffset == GetWriteOffset ());
                 }
             }
 
         private:
-            mutable LOCK_IMPL fMutex_;
-            size_t            fSpaceClearedFromStreamHead_{0};
+            [[no_unique_address]] mutable LOCK_IMPL fMutex_;
+            size_t                                  fSpaceClearedFromStreamHead_{0};
             [[no_unique_address]] conditional_t<kLocking_, Execution::WaitableEvent, Configuration::Empty> fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
             vector<ElementType>                          fData_; // Important data comes before cursors cuz of use in CTOR
             typename vector<ElementType>::const_iterator fReadCursor_;

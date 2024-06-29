@@ -17,10 +17,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *  TODO:
- *      @todo https://stroika.atlassian.net/browse/STK-584 - 
- *            provide option for SharedMemoryStream so not seekable - less memory
  */
 
 namespace Stroika::Foundation::Streams::SharedMemoryStream {
@@ -44,11 +40,11 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     };
 
     /**
-     *  \brief  SharedMemoryStream<> is an InputOutputStream<> like MemoryStream<> but supporting concurrency (like an in memory structured pipe)
+     *  \brief  SharedMemoryStream<> is an InputOutputStream<> like MemoryStream<>, but supporting concurrency (like an in memory structured pipe)
      *
      *  SharedMemoryStream is Seekable by default (see Options::fSeekable)
      *
-     *  Since SharedMemoryStream keeps its data all in memory, it has the limitation that
+     *  Since SharedMemoryStream keeps its (reachable) data all in memory, it has the limitation that
      *  attempts to seek or write more than will fit in RAM will fail (with an exception).
      *
      *  \note   SharedMemoryStream is suitable for synchronized reading and writing between two threads (producer / consumer pattern).
@@ -56,8 +52,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
      *
      *          @see MemoryStream
      *
-     *  \note currently all SharedMemoryStreams are seekable, but future versions may allow options to be specified
-     *        so they are not seekable
+     *  \note SharedMemoryStreams is seekable by default, but if options are specified to allow it to not be seekable, it may save some memory on
+     *        larger streams.
      *
      *  @see ExternallyOwnedMemoryInputStream
      *
@@ -120,6 +116,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
 
     public:
+        /**
+         */
         nonvirtual Options GetOptions () const;
 
     public:

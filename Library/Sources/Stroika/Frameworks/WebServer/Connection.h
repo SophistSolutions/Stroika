@@ -52,14 +52,14 @@ namespace Stroika::Frameworks::WebServer {
      *  \par Example Usage
      *      \code
      *          Connection conn{acceptedSocketConnection,
-     *                       Sequence<Interceptor>{
+     *                       Connection::Options{.fInterceptorChain = Sequence<Interceptor>{
      *                          Interceptor{
      *                              [=](Message* m) {
      *                                  Response& response = m->rwResponse ();
      *                                  response.rwHeaders().server = "stroika-ssdp-server-demo";
      *                                  response.write (Stroika::Frameworks::UPnP::Serialize (d, dd));
      *                                  response.contentType = DataExchange::InternetMediaTypes::kXML;
-     *                               }}}};
+     *                               }}}}};
      *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
      *          conn.ReadAndProcessMessage ();
      *      \endcode
