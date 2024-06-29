@@ -44,7 +44,7 @@ using Debug::AssertExternallySynchronizedMutex;
 using Memory::BLOB;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -219,9 +219,8 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fSocket_{s}
     , fProtocolOutputStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream::New<byte> (outStream)}
-    // Soon @todo - replace with new (not yet written) UnseekableMemoryStream - which has same 'Close' semantics, and input/output but no mutex and since unseekable can throw away data as it goes
-    // @todo could delay construction til needed
-    , fBodyRawStream_{Streams::SharedMemoryStream::New<byte> ()}
+    , fBodyRawStream_{Streams::SharedMemoryStream::New<byte> (Streams::SharedMemoryStream::Options{
+          .fInternallySynchronized = Execution::InternallySynchronized::eNotKnownInternallySynchronized, .fSeekable = false})}
 {
     if constexpr (qDebug) {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\""); // sadly no way to [[maybe_unused]] on captures

@@ -24,7 +24,7 @@
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/BufferedOutputStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
-#include "Stroika/Foundation/Streams/SharedMemoryStream.h" //tmphack use new NonSeekableMemoryStream and flag sayign dont assume EOF
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

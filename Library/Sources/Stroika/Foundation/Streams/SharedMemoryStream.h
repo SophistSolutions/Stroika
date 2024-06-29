@@ -29,9 +29,24 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     class Ptr;
 
     /**
-     *  \brief  SharedMemoryStream<> is an InputOutputStream<> like MemoryStream<> but supporting concurrency ; like an in memory structured pipe
+     *  \brief Options to configure a new SharedMemoryStream; defaults should always work fine, but options can allow for better performance (at a loss of some functionality)
+     */
+    struct Options {
+        /**
+         *  \brief controls if the shared stream is automatically synchronized internally so that it can be used by two different threads safely, without any locking (applies to letter, not envelope of shared_ptr)
+         */
+        Execution::InternallySynchronized fInternallySynchronized{Execution::InternallySynchronized::eInternallySynchronized};
+
+        /**
+         *  \brief Controls if the SharedMemoryStream maintains history. Doing so allows the Ptr<>::As<> methods to work. Not doing so, allows potentially significant memory savings on larger streams.
+         */
+        bool fSeekable{true};
+    };
+
+    /**
+     *  \brief  SharedMemoryStream<> is an InputOutputStream<> like MemoryStream<> but supporting concurrency (like an in memory structured pipe)
      *
-     *  SharedMemoryStream is Seekable.
+     *  SharedMemoryStream is Seekable by default (see Options::fSeekable)
      *
      *  Since SharedMemoryStream keeps its data all in memory, it has the limitation that
      *  attempts to seek or write more than will fit in RAM will fail (with an exception).
@@ -69,19 +84,19 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
      *           Assert (sum == (1 + kUpToInclusive_) * (kUpToInclusive_ - 1 + 1) / 2); // not a race
      *      \endcode
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
+     *  \note   \em Thread-Safety   <a href='#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized'>C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a> OR
+     *                              <a href='#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter'>C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
+     *                              depending on Options object provided to New ()
      */
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New ();
-    template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (span<const ELEMENT_TYPE> copyFrom);
-    template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const Memory::BLOB& copyFrom)
-        requires (same_as<ELEMENT_TYPE, byte>);
+    Ptr<ELEMENT_TYPE> New (Options options = {});
+    template <typename ELEMENT_TYPE, typename COPY_FROM>
+    Ptr<ELEMENT_TYPE> New (const COPY_FROM& copyFrom, Options options = {})
+        requires (same_as<ELEMENT_TYPE, byte> and Configuration::IAnyOf<COPY_FROM, Memory::BLOB, span<const ELEMENT_TYPE>>);
 
     namespace Private_ {
         template <typename ELEMENT_TYPE>
-        class Rep_;
+        class IRep_;
     }
 
     /**
@@ -96,13 +111,16 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
 
     public:
         /**
-        */
+         */
         Ptr ()                = default;
         Ptr (const Ptr& from) = default;
-        Ptr (const shared_ptr<Private_::Rep_<ELEMENT_TYPE>>& from);
+        Ptr (const shared_ptr<Private_::IRep_<ELEMENT_TYPE>>& from);
 
     public:
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+
+    public:
+        nonvirtual Options GetOptions () const;
 
     public:
         /**
@@ -117,6 +135,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
          *
          *  And if ElementType is Characters::Character, then T can also be one of:
          *      o   String
+         * 
+         *  \req GetOptions ().fSeekable
          */
         template <typename T>
         nonvirtual T As () const
@@ -127,13 +147,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
         /**
          * \req *this != nullptr
          */
-        nonvirtual const Private_::Rep_<ELEMENT_TYPE>& GetRepConstRef_ () const;
-
-    private:
-        /**
-         * \req *this != nullptr
-         */
-        nonvirtual Private_::Rep_<ELEMENT_TYPE>& GetRepRWRef_ () const;
+        nonvirtual const Private_::IRep_<ELEMENT_TYPE>& GetRepConstRef_ () const;
 
     private:
         friend class SharedMemoryStream;
