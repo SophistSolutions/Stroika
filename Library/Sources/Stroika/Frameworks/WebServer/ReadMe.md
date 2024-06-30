@@ -20,7 +20,7 @@ builtin - as part of your application.
 
 ## Getting Started
   - [Sample Web Server](../../../../../Samples/WebServer/)
-  - Or even simpler - http responses for SSDP
+  - Or even simpler - http responses for SSDP [Sample SSDP Server](../../../../../Samples/SSDPServer/)
     ~~~
     struct WebServerForDeviceDescription_ : WebServer::ConnectionManager {
         static inline const HTTP::Headers kDefaultResponseHeaders_{[] () {
