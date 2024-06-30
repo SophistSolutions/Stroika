@@ -276,9 +276,8 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         AssertNotReached ();
         return nullopt;
     });
-    this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+    this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front ([] ([[maybe_unused]] const auto& propertyChangedEvent) {
         RequireNotReached (); // since v3.0d7 - disallow
-                              //        return PropertyChangedEventResultType::eContinueProcessing;
         return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
     });
     // auto-compute the etag if autoComputeETag (fETagDigester_.has_value()) is true
