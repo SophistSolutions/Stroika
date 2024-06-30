@@ -37,7 +37,7 @@ require "$thisScriptDir/ConfigurationReader.pl";	## @todo for GetConfigurationPa
 sub GetString2InsertIntoBatchFileToInitCompiles_
 {
 	local $ARCH = GetConfigurationParameter($activeConfig, "ARCH");
-	local $VSDIR = GetConfigurationParameter($activeConfig, "BUILD_TOOLS_ROOT");
+	local $VSDIR = GetConfigurationParameter($activeConfig, "BuildToolsRoot");
 	local $arg = undef;
 	if ($ARCH eq "x86") {
 		$arg ="x64_x86";

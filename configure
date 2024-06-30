@@ -72,7 +72,7 @@ my @EXTRA_ARGS = ();
 
 ########### CONFIG_Variables ###############
 my $ARCH='';
-my $BUILD_TOOLS_ROOT=undef;
+my $BuildToolsRoot=undef;
 my $BuildPlatform='';
 my $TargetPlatforms='';
 
@@ -365,7 +365,7 @@ sub	DoHelp_
 		print("	    --build-by-default never|always|{uname}         /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n");
 		print("	    --build-platform {PLATFORM}                     /* Specifies the BuildPlatform (currently supported: Unix, VisualStudio.Net-2022) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n");
 		print("	    --target-platforms {TargetPlatforms}            /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
-		print("	    --build-tools-root {BUILD_TOOLS_ROOT}           /* Specifies the BUILD_TOOLS_ROOT - initially just for visual studio - usually auto-detected */\n");
+		print("	    --build-tools-root {BuildToolsRoot}             /* Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected */\n");
 		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
 		print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
 		print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code */\n");
@@ -1472,7 +1472,7 @@ sub	ParseCommandLine_Remaining_
 		elsif (lc ($var) eq "-build-tools-root" or lc ($var) eq "--build-tools-root") {
 			$i++;
 			$var = $args[$i];
-			$BUILD_TOOLS_ROOT = $var;
+			$BuildToolsRoot = $var;
 		}
 		elsif (lc ($var) eq "-arch" or lc ($var) eq "--arch") {
 			$i++;
@@ -2352,8 +2352,8 @@ sub PostProcessOptions_ ()
 	}
 
 	if ($isVisualStudio) {
-		if (! defined $BUILD_TOOLS_ROOT) {
-			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir($BuildPlatform);
+		if (! defined $BuildToolsRoot) {
+			$BuildToolsRoot = GetDefaultToolsBuildDir($BuildPlatform);
 		}
 	}
 
@@ -2728,7 +2728,7 @@ sub ValidateConfigurationAndEmitNeededWarnings_
 }
 
 
-my %GetMSVCVarName_e_;	### cache map of var 2 values since $ARCH and $BUILD_TOOLS_ROOT shouldn't change once we start calling this
+my %GetMSVCVarName_e_;	### cache map of var 2 values since $ARCH and $BuildToolsRoot shouldn't change once we start calling this
 my $GetMSVCVarName_filled_ = false;
 sub GetMSVCVarName_
 {
@@ -2740,10 +2740,10 @@ sub GetMSVCVarName_
 		die ("reorg code so this set first");
 	}
 	if (!$GetMSVCVarName_filled_) {
-		if (! defined $BUILD_TOOLS_ROOT) {
-			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir($BuildPlatform);
+		if (! defined $BuildToolsRoot) {
+			$BuildToolsRoot = GetDefaultToolsBuildDir($BuildPlatform);
 		}
-		%GetMSVCVarName_e_ = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, $BUILD_TOOLS_ROOT);
+		%GetMSVCVarName_e_ = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, $BuildToolsRoot);
 		$GetMSVCVarName_filled_ = true;
 	}
 	return "$GetMSVCVarName_e_{$envVarName}"
@@ -2802,8 +2802,8 @@ sub	WriteConfigFile_
 	}
 	print (OUT "</ConfigureCommandLine>\n");
 	print (OUT "    <BuildPlatform>$BuildPlatform</BuildPlatform>\n");
-	if (defined $BUILD_TOOLS_ROOT) {
-		print (OUT "    <BUILD_TOOLS_ROOT>$BUILD_TOOLS_ROOT</BUILD_TOOLS_ROOT>\n");
+	if (defined $BuildToolsRoot) {
+		print (OUT "    <BuildToolsRoot>$BuildToolsRoot</BuildToolsRoot>\n");
 	}
 	print (OUT "    <TargetPlatforms>$TargetPlatforms</TargetPlatforms>\n");
 	print (OUT "    <ARCH>$ARCH</ARCH>\n");
