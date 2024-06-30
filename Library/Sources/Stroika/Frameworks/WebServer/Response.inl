@@ -9,16 +9,14 @@ namespace Stroika::Frameworks::WebServer {
      ********************* Framework::WebServer::Response ***************************
      ********************************************************************************
      */
-    inline void Response::write (const wchar_t* e)
+    template <Characters::IConvertibleToString T>
+    inline void Response::write (T&& s)
     {
-        RequireNotNull (e);
-        write (e, e + ::wcslen (e));
-    }
-    inline void Response::write (const String& e)
-    {
-        if (not e.empty ()) {
-            wstring tmp{e.As<wstring> ()};
-            write (Containers::Start (tmp), Containers::End (tmp));
+        if constexpr (Configuration::IAnyOf<T, String&&, String>) {
+            write (static_cast<const String&> (s));
+        }
+        else {
+            write (String{s});
         }
     }
     template <typename CHAR_T, typename... ARGS>
@@ -26,23 +24,12 @@ namespace Stroika::Frameworks::WebServer {
     {
         write (f (args...));
     }
-    inline void Response::writeln (const wchar_t* e)
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
-        RequireNotNull (e);
-        const wchar_t kEOL[] = L"\r\n";
-        write (e, e + ::wcslen (e));
-        write (std::begin (kEOL), std::end (kEOL) - 1);
-    }
     inline void Response::writeln (const String& e)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
         constexpr wchar_t                                      kEOL[] = L"\r\n";
-        if (not e.empty ()) {
-            wstring tmp{e.As<wstring> ()};
-            write (Containers::Start (tmp), Containers::End (tmp));
-        }
-        write (std::begin (kEOL), std::end (kEOL) - 1);
+        write (e);
+        write (span{std::begin (kEOL), std::end (kEOL) - 1});
     }
 
 }

@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/CodePage.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Property.h"
@@ -32,6 +33,7 @@
  * TODO:
  *      @todo   REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
  *              INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
+ *              (partly done - but more todo)
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -124,17 +126,17 @@ namespace Stroika::Frameworks::WebServer {
          *          
          *          You could do
          *              >   one chunk per write
-         *              >   one chunk (not chunked encoding) - buffering
+         *              >   one chunk (not transfer-encoding: chunked) - full-response buffering
          *              >   Some fixed buffer size, and when that's exceeded, chunk
          * 
          *          In Stroika v3.0d7 and later, the caller may specify a target chunk-size, and when writes exceed this size,
          *          the transfer will be chunked automatically. Set this size to kNoChunkedTransfer to prevent chunking (nullopt just means default).
          * 
-         *  \note This chunk-size threshold may refer to the compressed size, or uncompressed size as is convenient, and is just
+         *  \note This chunk-size threshold may refer to the compressed size, or uncompressed size as is convenient to the implementer, and is just
          *        a guideline, not strictly followed (except for the kNoChunkedTransfer special case where no chunking takes place).
          * 
          *  \note When combined with compression, due to chunking of the compression algorithm, this may not result in very uniformly
-         *        sized chunks. (AND maybe buggy as of 2024-06-27 - works - but not very well).
+         *        sized chunks.
          * 
          *  \req this->state == ePreparingHeaders (before first write to body) to set, but can always be read
          * 
@@ -156,29 +158,6 @@ namespace Stroika::Frameworks::WebServer {
          *        to do transfer-coding at a size that is just right to avoid extra packets.
          */
         static constexpr size_t kAutomaticTransferChunkSize_Default = 16 * 1024;
-
-    public:
-        /*
-         * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
-         * For ContentTypes
-         *      o   text / * {avoid comment-character}
-         *      o   application/json
-         *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
-         *          "text/html; charset=UTF-8"
-         *
-         * codePage.Set ()
-         *      \req this->headersCanBeSet()
-         *      \req TotalBytesWritten == 0
-         * 
-         *  \note SEE https://stroika.atlassian.net/browse/STK-983
-         * 
-         * \note - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
-         *         the character set will be automatically folded into the used contentType. To avoid this, 
-         *         Use UpdateHeader() to modify the contenttype field directly.
-         * 
-         *  \req this->headersCanBeSet() to set property
-         */
-        Common::Property<Characters::CodePage> codePage;
 
     public:
         /**
@@ -203,6 +182,38 @@ namespace Stroika::Frameworks::WebServer {
         Common::ReadOnlyProperty<bool> chunkedTransferMode;
 
     public:
+        /**
+         *  Conversion applied to String objects to convert to bytes emitted to stream output.
+         *  This value depends on the codePage property.
+         * 
+         *  \see https://stroika.atlassian.net/browse/STK-983
+         */
+        Common::ReadOnlyProperty<Characters::CodeCvt<>> codeCvt;
+
+    public:
+        /*
+         * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
+         * For ContentTypes
+         *      o   text/* {avoid comment-character}
+         *      o   application/json
+         *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
+         *          "text/html; charset=UTF-8"
+         *
+         * codePage.Set ()
+         *      \req this->headersCanBeSet()
+         *      \req TotalBytesWritten == 0
+         * 
+         *  \note SEE https://stroika.atlassian.net/browse/STK-983
+         * 
+         * \note - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
+         *         the character set will be automatically folded into the used contentType. To avoid this, 
+         *         Use UpdateHeader() to modify the contenttype field directly.
+         * 
+         *  \req this->headersCanBeSet() to set property
+         */
+        Common::Property<Characters::CodePage> codePage;
+
+    public:
         /*
          * \brief Common::Property <optional<InternetMediaType>> contentType is a short-hand for headers().contentType (or rwHeaders().contentType);
          *
@@ -213,6 +224,57 @@ namespace Stroika::Frameworks::WebServer {
          *      @todo revisit this - I think I always use character set if you use write API taking strings)--LGP 2024-06-22
          */
         Common::Property<optional<InternetMediaType>> contentType;
+
+    public:
+        /**
+         * some responses will not have an entity body, like a response to a HEAD, method for example. A Stroika 
+         * response has an entityBody iff the user has called a 'write' method on response?? _ NO WAHT ABOUT HEAD
+         * 
+         * roughly:
+         *   (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified and contentLength() > 0)
+         * 
+         *   \see https://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7
+         */
+        Common::ReadOnlyProperty<bool> hasEntityBody;
+
+    public:
+        /**
+         *  Check this (readonly) property before updating headers. For now, this is the same as this->state == ePreparingHeaders
+         * 
+         *  \note - even HTTP 1.1 allows for headers to be sent AFTER we've started sending chunks, so this interpretation MAY
+         *        change over time, but the current implementation only allows setting headers while in the preparingHeaders state
+         *        (so in other words, before any calls to Flush or write).
+         */
+        Common::ReadOnlyProperty<bool> headersCanBeSet;
+
+    public:
+        /**
+         *  Once set to true, this cannot be set false. It defaults to false;
+         * 
+         *  \req not this->responseStatusSent()
+         */
+        Common::Property<bool> headMode;
+
+    public:
+        /**
+         *  Returns true iff the response has been aborted with a call to response.Abort ()
+         *  \note - responseAborted() implies responseCompleted();
+         */
+        Common::ReadOnlyProperty<bool> responseAborted;
+
+    public:
+        /**
+         *  Returns true once the response has been completed and fully flushed. No further calls to write() are allowed at that point.
+         *  \note -  responseCompleted() doesn't mean correctly - could be responseAborted too.
+         */
+        Common::ReadOnlyProperty<bool> responseCompleted;
+
+    public:
+        /**
+         *  Returns true once the response status code has been sent (so most things cannot be changed after this); note responseStatus and
+         *  the initial bunch of headers (excluding trailers) all set at the same time (so this also checks for all non-trial headers being sent).
+         */
+        Common::ReadOnlyProperty<bool> responseStatusSent;
 
     public:
         /**
@@ -232,7 +294,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  The state may be changed by calls to Flush (), Abort (), Redirect (), and End (), and more...
+         *  The state may be changed by calls to Abort (), End (), Flush (), Redirect (), and more...
          *  
          *  \note as the design of the HTTP server changes, the list of States may change, so better to check properties
          *        like headersCanBeSet, or responseStatusSent, rather than checking the state explicitly.
@@ -241,66 +303,16 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Once set to true, this cannot be set false. It defaults to false;
-         * 
-         *  \req not this->responseStatusSent()
-         */
-        Common::Property<bool> headMode;
-
-    public:
-        /**
-         *  Check this (readonly) property before updating headers. For now, this is the same as this->state == ePreparingHeaders
-         * 
-         *  \note - even HTTP 1.1 allows for headers to be sent AFTER we've started sending chunks, so this interpretation MAY
-         *        change over time, but the current implementation only allows setting headers while in the preparingHeaders state
-         *        (so in other words, before any calls to Flush or write).
-         */
-        Common::ReadOnlyProperty<bool> headersCanBeSet;
-
-    public:
-        /**
-         *  Returns true once the response status code has been sent (so most things cannot be changed after this); note responseStatus and
-         *  the initial bunch of headers (excluding trailers) all set at the same time (so this also checks for all non-trial headers being sent).
-         */
-        Common::ReadOnlyProperty<bool> responseStatusSent;
-
-    public:
-        /**
-         *  Returns true once the response has been completed and fully flushed. No further calls to write() are allowed at that point.
-         *  \note -  responseCompleted() doesn't mean correctly - could be responseAborted too.
-         */
-        Common::ReadOnlyProperty<bool> responseCompleted;
-
-    public:
-        /**
-         *  Returns true iff the response has been aborted with a call to response.Abort ()
-         *  \note - responseAborted() implies responseCompleted();
-         */
-        Common::ReadOnlyProperty<bool> responseAborted;
-
-    public:
-        /**
-         * some responses will not have an entity body, like a response to a HEAD, method for example. A Stroika 
-         * response has an entityBody iff the user has called a 'write' method on response?? _ NO WAHT ABOUT HEAD
-         * 
-         * roughly:
-         *   (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified and contentLength() > 0)
-         * 
-         *   \see https://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7
-         */
-        Common::ReadOnlyProperty<bool> hasEntityBody;
-
-    public:
-        /**
          * This begins sending the parts of the message which have already been accumulated to the client.
          * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
-         * IFF you first set the respose.transferEncoding mode to TransferEncoding::kChunked.
-         *      (TODO FIX THIS transferEncoing comment - wrong now ---)
+         * IFF you first set the respose.transferEncoding mode to TransferEncoding::kChunked, or because of automaticTransferChunkSize
          *
          * This does NOT End the response, and it CAN be called arbitrarily many times (even after the response has completed - though
          * its pointless then).
          * 
          * This can be called in any state.
+         * 
+         *  \note some of this restriction on headers is due to lack of support for trailers - which maybe supported by this class at some point --LGP 2024-06-29
          */
         nonvirtual void Flush ();
 
@@ -351,17 +363,18 @@ namespace Stroika::Frameworks::WebServer {
          *  \req not this->responseStatusSent () or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked)))
          */
         nonvirtual void write (const span<const byte>& b);
-        nonvirtual void write (const wchar_t* e);
-        nonvirtual void write (const wchar_t* s, const wchar_t* e);
+        template <Characters::IConvertibleToString T>
+        nonvirtual void write (T&& s);
+        template <>
         nonvirtual void write (const String& e);
         template <typename CHAR_T, typename... ARGS>
-        void write (const FormatString<CHAR_T>& f, ARGS&&... args);
+        nonvirtual void write (const FormatString<CHAR_T>& f, ARGS&&... args);
 
     public:
         /**
          *  writeln () does a write, followed by writing a CRLF
+         *      @todo add overloads like write()
          */
-        nonvirtual void writeln (const wchar_t* e);
         nonvirtual void writeln (const String& e);
 
     public:
@@ -411,6 +424,7 @@ namespace Stroika::Frameworks::WebServer {
         Streams::InputStream::Ptr<byte> fBodyCompressedStream_; // if not null, implies a bodyEncoding, and this is a typically smaller compressed version of fBodyRawStream_
         Streams::BufferedOutputStream::Ptr<byte> fUseOutStream_; // wrapper on fProtocolOutputStream_ to provide buffering
         Characters::CodePage                     fCodePage_{Characters::WellKnownCodePages::kUTF8};
+        mutable optional<Characters::CodeCvt<>>  fCodeCvt_;
         optional<ETagDigester_>                  fETagDigester_; // dual use - if present, then flag for autoComputeETag mode as well
 
     public:
@@ -419,6 +433,10 @@ namespace Stroika::Frameworks::WebServer {
         {
             Require (s <= e);
             write (span<const byte>{s, e});
+        }
+        [[deprecated ("Since Stroika v3.0d6 - use write with _f strings")]] void write (const wchar_t* s, const wchar_t* e)
+        {
+            write (span<const wchar_t>{s, e});
         }
     };
 
