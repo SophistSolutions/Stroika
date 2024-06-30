@@ -257,7 +257,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     } break;
                 }
                 Ensure ((fData_.begin () <= fWriteCursor_) and (fWriteCursor_ <= fData_.end ()));
-                return distane (fData_.begin (), fWriteCursor_);
+                return distance (fData_.begin (), fWriteCursor_);
             }
             // Private_::IRep_ overrides
             virtual Options GetOptions () const override
