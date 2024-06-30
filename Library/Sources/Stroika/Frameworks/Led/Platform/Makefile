@@ -30,11 +30,12 @@ Objs+= $(ObjDir)Windows${OBJ_SUFFIX}
 Objs+= $(ObjDir)Windows_FileRegistration${OBJ_SUFFIX}
 endif
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += -D_WINDOWS 
-CXXFLAGS += -DWIN32 
+
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+# AVOID "_WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)"
+CXXFLAGS += -D_WIN32_WINNT=0x0501
+# Maybe helps avoid bugs?
 CXXFLAGS += -DSTRICT
-CXXFLAGS += -D_WIN32_WINNT=0x0501 
 endif
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
