@@ -58,15 +58,6 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/gtest/gtest.h	\
 
 
-# For some reason, comes out as share by default for zlib
-# CMAKE_ARGS+=	-D INSTALL_PKGCONFIG_DIR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig)"
-
-# ifeq (Unix,$(ProjectPlatformSubdir))
-# # @todo document - not sure needed - maybe related to shared/.so file stuff
-# CMAKE_ARGS+=	-D CMAKE_SKIP_INSTALL_RPATH="YES"
-# CMAKE_ARGS+=	-D CMAKE_SKIP_RPATH="YES"
-# endif
-
 all:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
