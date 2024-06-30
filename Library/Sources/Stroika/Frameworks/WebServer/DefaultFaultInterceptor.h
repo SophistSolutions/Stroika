@@ -6,7 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Interceptor.h"
+#include "Stroika/Frameworks/WebServer/Interceptor.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

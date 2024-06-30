@@ -9,12 +9,11 @@
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
 
-#include "CORS.h"
-#include "Interceptor.h"
-#include "Request.h"
-#include "RequestHandler.h"
+#include "Stroika/Frameworks/WebServer/CORS.h"
+#include "Stroika/Frameworks/WebServer/Interceptor.h"
+#include "Stroika/Frameworks/WebServer/Request.h"
+#include "Stroika/Frameworks/WebServer/RequestHandler.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>

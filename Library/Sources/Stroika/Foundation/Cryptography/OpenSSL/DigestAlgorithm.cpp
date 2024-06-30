@@ -10,7 +10,6 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Common.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
 #include "DigestAlgorithm.h"

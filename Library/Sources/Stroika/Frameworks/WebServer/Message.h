@@ -10,8 +10,8 @@
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 
-#include "Request.h"
-#include "Response.h"
+#include "Stroika/Frameworks/WebServer/Request.h"
+#include "Stroika/Frameworks/WebServer/Response.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

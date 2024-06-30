@@ -14,7 +14,6 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Time/Duration.h"
 

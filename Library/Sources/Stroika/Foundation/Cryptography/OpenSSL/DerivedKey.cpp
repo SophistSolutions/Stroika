@@ -15,7 +15,6 @@
 #include "Stroika/Foundation/Cryptography/Digest/Hash.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Common.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "Exception.h"

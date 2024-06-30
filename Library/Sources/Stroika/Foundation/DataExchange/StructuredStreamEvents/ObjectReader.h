@@ -23,7 +23,6 @@
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/DataExchange/StructFieldMetaInfo.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/Optional.h"

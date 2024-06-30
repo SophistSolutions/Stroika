@@ -435,6 +435,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             virtual SeekOffsetType SeekRead ([[maybe_unused]] Whence whence, [[maybe_unused]] SignedSeekOffsetType offset) override
             {
                 RequireNotReached ();
+                return 0;
             }
             virtual SeekOffsetType GetWriteOffset () const override
             {
@@ -446,6 +447,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             virtual SeekOffsetType SeekWrite ([[maybe_unused]] Whence whence, [[maybe_unused]] SignedSeekOffsetType offset) override
             {
                 RequireNotReached ();
+                return 0;
             }
             // Private_::IRep_ overrides
             virtual Options GetOptions () const override

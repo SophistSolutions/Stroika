@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 
-#include "Interceptor.h"
+#include "Stroika/Frameworks/WebServer/Interceptor.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

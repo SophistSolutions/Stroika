@@ -8,7 +8,7 @@
 
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
-#include "Message.h"
+#include "Stroika/Frameworks/WebServer/Message.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

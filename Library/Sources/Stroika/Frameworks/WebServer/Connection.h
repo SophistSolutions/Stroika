@@ -16,8 +16,8 @@
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
 #include "Stroika/Foundation/Streams/TextWriter.h"
 
-#include "InterceptorChain.h"
-#include "Message.h"
+#include "Stroika/Frameworks/WebServer/InterceptorChain.h"
+#include "Stroika/Frameworks/WebServer/Message.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
