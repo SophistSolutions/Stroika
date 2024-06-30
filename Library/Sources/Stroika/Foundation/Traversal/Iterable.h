@@ -145,10 +145,10 @@ namespace Stroika::Foundation::Traversal {
      *              MakeIterable() and iterated a bunch of times til the end).
      *
      *          o   Its almost always (and trivial) to perform that computation more efficiently than the
-     *              iterate over each element apporach.
+     *              iterate over each element approach.
      *
      *          The gist of these two consideration means that if you need to find the length of
-     *          an Iterable<T>, if it was defined as a method, you can access the trivial implemeantion,
+     *          an Iterable<T>, if it was defined as a method, you can access the trivial implementation,
      *          and if it was not defined, you would be forced into the costly implementation.
      *
      *      Adding size () adds no conceptual cost – because its already so well and clearly defined
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Traversal {
      *          We DO have methods SetEquals/MultiSetEquals/SequentialEquals (see below), as well as SequentialThreeWayComparer<> etc.
      *
      *  \em Design Note
-     *      Methods like Min/Max/Median/Sum make little senese on empty Iterables. There were several choices
+     *      Methods like Min/Max/Median/Sum make little sense on empty Iterables. There were several choices
      *      available to deal with this:
      *          >   Assertion
      *          >   throw range_error()
