@@ -52,18 +52,6 @@ using Memory::BLOB;
  ********************************************************************************
  */
 namespace {
-    // Based on looking at a handful of typical file sizes...5k to 80k, but ave around
-    // 25 and median a bit above 32k. Small, not very representative sampling. And the more we use
-    // subscripts (script src=x) this number could shrink.
-    //
-    // MAY want to switch to using InlineBuffer<byte> - but before doing so, do some cleanups of its bugs and make sure
-    // its optimized about how much it copies etc. Its really only tuned for POD-types (OK here but not necessarily good about reallocs).
-    //
-    //      -- LGP 2011-07-06
-    constexpr size_t kResponseBufferReallocChunkSizeReserve_ = 16 * 1024;
-}
-
-namespace {
     /**
      *  Very confused about what is going on here. Only tested with HTTP 1.1, but both chrome and msft edge dont
      *  handle transfer-encoding the way I would have expected.
