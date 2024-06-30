@@ -82,10 +82,17 @@ Response::Response (Response&& src)
     : Response{src.fSocket_, src.fProtocolOutputStream_, src.headers ()}
 {
     fState_         = src.fState_;
-    fUseOutStream_  = move (src.fUseOutStream_);
-    fCodePage_      = src.fCodePage_;
-    fBodyRawStream_ = move (src.fBodyRawStream_);
-    fHeadMode_      = src.fHeadMode_;
+    fHeadMode_ = src.fHeadMode_;
+    fAborted_       = src.fAborted_;
+    fAutoTransferChunkSize_ = src.fAutoTransferChunkSize_;
+    fBodyEncoding_          = move (src.fBodyEncoding_);
+    fBodyRawStream_         = move (src.fBodyRawStream_);
+    fBodyRawStreamLength_   = move (src.fBodyRawStreamLength_);
+    fBodyRowStreamLengthWhenLastChunkGenerated_ = move (src.fBodyRowStreamLengthWhenLastChunkGenerated_);
+    fBodyCompressedStream_                      = move (src.fBodyCompressedStream_);
+    fUseOutStream_                              = move (src.fUseOutStream_);
+    fCodePage_                                  = move (src.fCodePage_);
+    fCodeCvt_                                   = move (src.fCodeCvt_);
     fETagDigester_  = move (src.fETagDigester_);
 }
 
