@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Execution {
     private:
         function<void ()> fRunnable_;
         atomic<bool>      fAbortRequested_{false}; // regular interrupt, abort interrupt, or none
-        // Before Stroika v3.0d5 - we hada  mutext to protect fThread_ object, but it caused more trouble than it solved, so remoed
+        // Before Stroika v3.0d5 - we had a  mutex to protect fThread_ object, but it caused more trouble than it solved, so removed
 #if __cpp_lib_jthread >= 201911
         stop_source fStopSource_;
         stop_token  fStopToken_; // initialized in Ptr::Start() before ThreadMain_ called
