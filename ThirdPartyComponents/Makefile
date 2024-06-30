@@ -97,7 +97,7 @@ endif
 
 
 ##WINDOWS ONLY
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ifeq ($(BUILD_openssl), 1)
 openssl:	StrawberryPerl
 endif

@@ -44,7 +44,7 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/libcurl.a				\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/curl/curl.h
@@ -97,7 +97,7 @@ endif
 
 PKG_CONFIG_PATH=
 ifeq ($(qFeatureFlag_OpenSSL), use)
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
 endif
 endif
@@ -133,7 +133,7 @@ endif
 
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 CONFIGURE_ARGS=
 ifeq ($(CrossCompiling),true)
 CONFIGURE_ARGS+= --host $(shell $(CXX) -dumpmachine)
@@ -254,7 +254,7 @@ doBuilds_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 	@$(MAKE) --no-print-directory check_prerequisites_
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS-OUT.txt) ... "`
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);autoreconf -fi > BUILD-CONF-TOOLS-OUT.txt 2>&1
@@ -265,7 +265,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
 endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Build CURRENT into $(BUILDS_DIR) ... "
 	@cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG-OUT.txt
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
@@ -275,7 +275,7 @@ endif
 
 
 check_prerequisites_:
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 	@type automake > /dev/null 2>&1 || ($(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)ScriptsLib/GetMessageForMissingTool automake && exit 1)
 	@type autoconf > /dev/null 2>&1 || ($(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)ScriptsLib/GetMessageForMissingTool autoconf && exit 1)
 	@type autoreconf > /dev/null 2>&1 || ($(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)ScriptsLib/GetMessageForMissingTool autoreconf && exit 1)

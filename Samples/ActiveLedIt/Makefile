@@ -39,7 +39,7 @@ CXXFLAGS += -DSTRICT
 Objs += ${RC_OUTPUT_}
 endif
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 CXXFLAGS += /I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 endif
 

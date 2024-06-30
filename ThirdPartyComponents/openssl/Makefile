@@ -83,19 +83,19 @@ endif
 
 
 BUILDS_OUTPUT_DIR=$(shell realpath `pwd`/../../)/Builds/$(CONFIGURATION)/ThirdPartyComponents/
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH=$(shell cygpath --mixed $(BUILDS_OUTPUT_DIR))
 endif
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 CONFIG_ARGS+=	--prefix=$(BUILDS_OUTPUT_DIR)
 endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 CONFIG_ARGS+=	--prefix=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)
 endif
 
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 #https://stroika.atlassian.net/browse/STK-528
 #CONFIG_ARGS+=	-asm
 CONFIG_ARGS+=	-no-asm
@@ -112,25 +112,25 @@ INSTALL_TARGET=install
 endif
 
 # autoconfigure sometimes (linux) detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 CONFIG_ARGS+=	--libdir=lib
 endif
 
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 WIN_CRYPTO_LIB_BASENAME=libcrypto
 WIN_SSL_LIB_BASENAME=libssl
 endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/openssl/aes.h
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/libcrypto.a							\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/libssl.a								\
 	$(PER_CONFIGURATION_BUILDS_DIR)bin/openssl
 endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(WIN_CRYPTO_LIB_BASENAME).lib		\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(WIN_SSL_LIB_BASENAME).lib			\
@@ -201,7 +201,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-	$(error This makefile requires a recognized ProjectPlatformSubdir)
+	$(error This makefile requires a recognized BuildPlatform)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "openssl ${VERSION} - Checking ... "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
@@ -213,7 +213,7 @@ $(ZIPPEDFILE):
 
 
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ifeq ($(ARCH), x86)
 ifeq (0,$(AssertionsEnabled))
 USE_CONFIGURE_TARGET_NAME_=VC-WIN32
@@ -259,37 +259,12 @@ CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 
 
 # Avoid having warnings leak from here to linking code when openssl is used --LGP 2022-01-18
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ifneq ($(findstring -GL,$(CXXFLAGS)),)
 CFLAGS+= -wd4701 -wd4702 -wd4706
 CXXFLAGS+= -wd4701 -wd4702 -wd4706
 endif
 endif
-
-# #
-# # https://stroika.atlassian.net/browse/STK-948
-### CLOSED AS OF 2024-04-24 since havent seen in a long time adn well past this vs and openssl version
-# #
-# # Crasher bug with Link-Time Code Generation on Visual Studio 2k19, and 2k21 (NOT 2k17)
-# # So far, only happens on OpenSSL 3.0.7
-# #		Finished generating code
-# #		C:\Stroika\IntermediateFiles\Release-x86\ThirdPartyComponents\openssl\crypto\evp\evp_lib.c(539) : fatal error C1001: Internal compiler error.
-# #		(compiler file 'D:\a\_work\1\s\src\vctools\Compiler\Utc\src\p2\main.c', line 224)
-# #		To work around this problem, try simplifying or changing the program near the locations listed above.
-# #		If possible please provide a repro here: https://developercommunity.visualstudio.com 
-# #		Please choose the Technical Support command on the Visual C++ 
-# #		Help menu, or open the Technical Support help file for more information
-# #			-- LGP 2022-11-02
-# ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-# ifeq ($(ARCH),x86)
-# ifeq ($(VERSION),3.0.7)
-# ifneq ($(findstring -GL,$(CXXFLAGS)),)
-# CFLAGS+= -GL-
-# CXXFLAGS+= -GL-
-# endif
-# endif
-# endif
-# endif
 
 #
 # from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
@@ -351,7 +326,7 @@ doBuilds_:
 	@#Run openssl configure scripts
 	@
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIG-OUT.txt) ..."` " "
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt && touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
 	@$(ECHO) "CONFIG_ARGS: $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
 	@$(ECHO) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
@@ -362,7 +337,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@(export CC="$(CC)"; export AR="$(AR)"; export RANLIB=$(RANLIB); export MACHINE=$(ARCH); export MAKEFLAGS=; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./config $(CONFIG_ARGS)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
 	@$(ECHO) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && perl configdata.pm --dump >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@#nb: need PERL_VERSION_PATCH_ INSIDE args to RunArgumentsWithCommonBuildVars since RunArgumentsWithCommonBuildVars re-orders path
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 env --unset=MFLAGS --unset=MAKEFLAGS \
@@ -376,9 +351,9 @@ endif
 	@#Do actual OpenSSL build
 	@
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt)"` " ... ";
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory all > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1;
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@# Note, lines in BUILD-OUT.txt like
 	@#		cl : Command line warning D9025 : overriding '/MT' with '/MTd'
 	@#		cl : Command line warning D9025 : overriding '/Zi' with '/Z7'
@@ -396,9 +371,9 @@ endif
 	@# OpenSSL build to INSTALLDIR (inside Stroika Builds)
 	@
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "openssl ${VERSION} - Installing (see ${OUTPUT_WORKDIR_PRETTYNAME}INSTALL-OUT.txt) ... "
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory $(INSTALL_TARGET) > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL-OUT.txt 2>&1;
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@#pdb hack - hardwired in openssl makefile, but not build if we pass in /Z7 (which we do by default)
 	@touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ossl_static.pdb 
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
@@ -420,7 +395,7 @@ endif
 ifneq ($(QUICK_BUILD), 1)
 ifeq (false,$(CrossCompiling))
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Running tests (see ${OUTPUT_WORKDIR_PRETTYNAME}TEST-OUT.txt)"` "...";
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@### @todo FIX FOR WINDOWS BUILDS - not sure why all tests fail -- which is why we don't bother with diff
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 ((env --unset=MFLAGS --unset=MAKEFLAGS $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) nmake test)\
@@ -447,7 +422,7 @@ else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ifeq ($@, $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "openssl ${VERSION} - Patching ... "
 	@$(ECHO) -n .

@@ -140,14 +140,14 @@ endif
 #
 # Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 #
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 DEFAULT_CC_LINE=\
 	"$(CC)" \
 		$(CPPFLAGS) \
 		$(CFLAGS) \
 		-c $1 \
 		-o $2
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 DEFAULT_CC_LINE=\
 	"$(CC)" \
 		$(CPPFLAGS) \
@@ -167,7 +167,7 @@ endif
 #
 # Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 #
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 DEFAULT_CPP_LINE=\
 	"$(CXX)" \
 		$(CPPFLAGS) \
@@ -180,7 +180,7 @@ DEFAULT_CXX_LINE=\
 		$(CXXFLAGS) \
 		-c $1 \
 		-o $2
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 DEFAULT_CPP_LINE=\
 	"$(CXX)" \
 		$(CPPFLAGS) \
@@ -274,7 +274,7 @@ endif
 #
 # Intentionally use '=' instead of ':=' so argument variables can get re-evaluated (e.g. things added to CPPFLAGS get added to MIDL_FLAGS)
 #
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 MIDL_FLAGS=	${CPPFLAGS}
 MIDL_FLAGS+=	-nologo
 MIDL_FLAGS+=	-W1
@@ -297,7 +297,7 @@ endif
 #
 # Intentionally use '=' instead of ':=' so argument variables can get re-evaluated (e.g. things added to CPPFLAGS get added to RC_FLAGS)
 #
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 RC_FLAGS=	${CPPFLAGS}
 RC_FLAGS+=	-nologo
 RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))"

@@ -157,7 +157,7 @@ C_OBJS = \
   XzIn$(OBJ_SUFFIX)
 
 
-ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifneq (,$(findstring VisualStudio,$(BuildPlatform)))
 C_OBJS+=\
   Bcj2Enc$(OBJ_SUFFIX)\
   MtCoder$(OBJ_SUFFIX)\
@@ -203,7 +203,7 @@ LibObjs=	\
 		Lzma86Dec$(OBJ_SUFFIX) \
 		Lzma86Enc$(OBJ_SUFFIX)
 
-ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifneq (,$(findstring VisualStudio,$(BuildPlatform)))
 LibObjs+=		\
   FileIO$(OBJ_SUFFIX)\
   System$(OBJ_SUFFIX)

@@ -161,8 +161,8 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tests {$(CONFIGURATION)}:"
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@(cd Projects/$(ProjectPlatformSubdir) && ./BuildProjectsFiles)
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+	@(cd Projects/$(BuildPlatform) && ./BuildProjectsFiles)
 endif
 	@$(MAKE) --no-print-directory $(TESTS) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif

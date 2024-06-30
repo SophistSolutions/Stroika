@@ -25,7 +25,7 @@ SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
 endif
 SUBPROJECTS+=	Serialization
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 SUBPROJECTS+=	SimpleLedTest
 endif
 SUBPROJECTS+=	Service

@@ -61,7 +61,7 @@ CMAKE_PER_TARGET_BUILD_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,
 
 CMAKE_ARGS=
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 #for reasons I didn't investigate, CMAKE appears to require this to be a full path (CMAKE_C_COMPILER etc...) -- LGP 2019-01-04
 CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(shell which $(CC))"
 CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(shell which $(CXX))"
@@ -71,8 +71,8 @@ else
 CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(CC)"
 CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(CXX)"
 endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+ifeq ($(BuildPlatform),VisualStudio.Net-2022)
 ifeq (x86_64,$(ARCH))
 CMAKE_ARGS+= -A x64
 else

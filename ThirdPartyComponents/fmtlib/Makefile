@@ -47,7 +47,7 @@ CMAKE_BUILD_TYPE_=Release
 MAYBED_=
 endif
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 OUTPUT_LIB_=gtest${LIB_SUFFIX}
 else
 OUTPUT_LIB_=libgtest${LIB_SUFFIX}
@@ -56,9 +56,9 @@ endif
 
 .PHONY:	all clean clobber check
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 FMTLIB=libfmt.a
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 FMTLIB=libfmt.lib
 endif
 
@@ -108,7 +108,7 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)): CURRENT
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "fmtlib ${VERSION} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --config=${CMAKE_BUILD_TYPE_} ${CMAKE_XTRA_BLD_FLAGS_} > BUILD-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . > BUILD-OUT.txt 2>&1

@@ -75,9 +75,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ConfigureCommandLine'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<ProjectPlatformSubdir>");
+		my $pps = ReadValue_($line, "<BuildPlatform>");
 		if (defined $pps) {
-			$configuration {'ProjectPlatformSubdir'} = $pps;
+			$configuration {'BuildPlatform'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<TARGET_PLATFORMS>");
 		if (defined $pps) {
@@ -307,14 +307,14 @@ sub	ReadConfigFile_ {
 
 
 ### PUBLIC APIS
-sub	GetProjectPlatformSubdir {
+sub	GetBuildPlatform {
     my $configName =  $_[0];
-	return GetConfigurationParameter($configName, 'ProjectPlatformSubdir');
+	return GetConfigurationParameter($configName, 'BuildPlatform');
 }
 
-sub	GetProjectPlatformSubdirIfAny {
+sub	GetBuildPlatformIfAny {
     my $configName =  $_[0];
-	return GetConfigurationParameter($configName, 'ProjectPlatformSubdir');
+	return GetConfigurationParameter($configName, 'BuildPlatform');
 }
 
 my $lastReadConfig	=	null;
@@ -364,29 +364,29 @@ sub	GetConfigurationParameter {
 	#default values
 	if ($result eq "") {
 		if ($paramName eq "LIB_SUFFIX") {
-			my $PROJECTPLATFORMSUBDIR = GetConfigurationParameter($configName, "ProjectPlatformSubdir");
-			if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+			my $BuildPlatform = GetConfigurationParameter($configName, "BuildPlatform");
+			if ($BuildPlatform eq "Unix") {
 				return ".a";
 			}
-			elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			elsif ($BuildPlatform =~ /^VisualStudio.Net/) {
 				return ".lib";
 			}
 		}
 		if ($paramName eq "OBJ_SUFFIX") {
-			my $PROJECTPLATFORMSUBDIR = GetConfigurationParameter($configName, "ProjectPlatformSubdir");
-			if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+			my $BuildPlatform = GetConfigurationParameter($configName, "BuildPlatform");
+			if ($BuildPlatform eq "Unix") {
 				return ".o";
 			}
-			elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			elsif ($BuildPlatform =~ /^VisualStudio.Net/) {
 				return ".obj";
 			}
 		}
 		if ($paramName eq "EXE_SUFFIX") {
-			my $PROJECTPLATFORMSUBDIR = GetConfigurationParameter($configName, "ProjectPlatformSubdir");
-			if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+			my $BuildPlatform = GetConfigurationParameter($configName, "BuildPlatform");
+			if ($BuildPlatform eq "Unix") {
 				return "";
 			}
-			elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			elsif ($BuildPlatform =~ /^VisualStudio.Net/) {
 				return ".exe";
 			}
 		}

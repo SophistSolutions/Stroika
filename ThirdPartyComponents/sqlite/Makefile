@@ -63,9 +63,9 @@ OUTPUT_WORKDIR_PRETTYNAME:="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVaria
 
 .PHONY:	all clean clobber check
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 SQLITE3LIB=libsqlite.a
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 SQLITE3LIB=sqlite.lib
 endif
 TARGETDIR			:=	$(PER_CONFIGURATION_BUILDS_DIR)bin/
@@ -84,7 +84,7 @@ Objs:=\
 # for sqlite executable
 LinkerArgs_LibDependencies:=
 StroikaLibs:=
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 LinkerArgs_LibDependencies:=-lpthread
 endif
 

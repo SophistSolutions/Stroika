@@ -50,7 +50,7 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 LIBS	=	-lstdc++ -lc
 endif
 
@@ -61,9 +61,9 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/lzma/7zCrc.h		\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/lzma/7zTypes.h
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS+=		$(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 PRODUCED_OUTPUT_ARTIFACTS+=		$(PER_CONFIGURATION_BUILDS_DIR)lib/lzma.lib
 endif
 
@@ -148,7 +148,7 @@ endif
 
 
 doBuildInternal_:
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		AR='$(AR)' \
 		CC='$(CC)' \
@@ -157,7 +157,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 		CXXFLAGS='$(CXXFLAGS)' \
 		LD='$(LINKER)' \
 		LDFLAGS='$(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)' \
-		ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
+		BuildPlatform='$(BuildPlatform)' \
 		LIBS='$(LIBS)' \
 		all
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.a  $(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
@@ -171,7 +171,7 @@ else
 			CXX='$(CXX)' \
 			LD='$(LINKER)' \
 			AR='$(LIBTOOL)' \
-			ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
+			BuildPlatform='$(BuildPlatform)' \
 			INCLUDE='$(INCLUDES_PATH)' \
 			LIBS='oleaut32.lib ole32.lib user32.lib' \
 			ARCRATEFLAGS='-nologo' \

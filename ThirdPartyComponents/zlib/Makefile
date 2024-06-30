@@ -45,7 +45,7 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
 MAYBED_=d
@@ -63,7 +63,7 @@ CMAKE_BUILD_TYPE_EXTRA_ARG_= --config=${CMAKE_BUILD_TYPE_}
 endif
 
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 OUTPUT_LIB_=zlibstatic${MAYBED_}${LIB_SUFFIX}
 else
 OUTPUT_LIB_=libz${LIB_SUFFIX}
@@ -83,7 +83,7 @@ CMAKE_ARGS+=	-D INSTALL_PKGCONFIG_DIR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER
 #CMAKE_ARGS+= --trace
 #CMAKE_BUILD_AND_INSTALL_ARGS+= --trace
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 # @todo document - not sure needed - maybe related to shared/.so file stuff
 CMAKE_ARGS+=	-D CMAKE_SKIP_INSTALL_RPATH="YES"
 CMAKE_ARGS+=	-D CMAKE_SKIP_RPATH="YES"
@@ -120,7 +120,7 @@ endif
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@# Since version 1.3, these vcxproj have the wrong value set, so we must correct --LGP 2024-02-06
 	@sed -i 's/MultiThreadedDLL/MultiThreaded/g' ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/zlibstatic.vcxproj
 	@sed -i 's/MultiThreadedDebugDLL/MultiThreadedDebug/g' ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/zlibstatic.vcxproj
@@ -130,7 +130,7 @@ endif
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib ${CMAKE_BUILD_AND_INSTALL_ARGS} ${CMAKE_BUILD_TYPE_EXTRA_ARG_}  > BUILD-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 	@# Don't leave around dynamic link libraries, because if we link against those (stored in Builds/CFG/ThirdPartyComponents/libs) - they wont
 	@# be found at runtime (for example breaking curl build but thats the tip of the iceburg) --LGP 2024-05-05
 	@rm -f ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz.so* ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz*.dylib

@@ -44,7 +44,7 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
 MAYBED_=d
@@ -58,7 +58,7 @@ endif
 endif
 
 OUTPUT_LIB_=libxml2${LIB_SUFFIX}
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 OUTPUT_LIB_=libxml2s${MAYBED_}${LIB_SUFFIX}
 endif
 
@@ -67,18 +67,13 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libxml-2.0.pc		\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/libxml2/libxml/SAX.h
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 PRODUCED_OUTPUT_ARTIFACTS_ += ${PER_CONFIGURATION_BUILDS_DIR_}lib/xml2${LIB_SUFFIX}
 endif
 
 # For some reason, comes out as share by default for zlib
 # CMAKE_ARGS+=	-D INSTALL_PKGCONFIG_DIR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig)"
 
-# ifeq (Unix,$(ProjectPlatformSubdir))
-# # @todo document - not sure needed - maybe related to shared/.so file stuff
-# CMAKE_ARGS+=	-D CMAKE_SKIP_INSTALL_RPATH="YES"
-# CMAKE_ARGS+=	-D CMAKE_SKIP_RPATH="YES"
-# endif
 CMAKE_ARGS+=	-D LIBXML2_WITH_ICONV="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_HTTP="OFF"
 
@@ -93,7 +88,7 @@ CMAKE_ARGS+=	-D LIBXML2_WITH_PYTHON="OFF"
 # No apparent options to silence this stuff from the linker, but adding it to the compilation step here
 # appears to be preserved with the obj file, and used in link time codegen in the linker (visual studio 17.8.3)
 # -- LGP 2024-01-02
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
 CFLAGS	+= -wd4701
 CFLAGS	+= -wd4702
@@ -147,13 +142,13 @@ endif
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${libxml2_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"   --build . --config=${CMAKE_BUILD_TYPE_} ${CMAKE_XTRA_BLD_FLAGS_}  > BUILD-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"  --build .  > BUILD-OUT.txt 2>&1
 endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${libxml2_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
 	@# Match what .pc file generates with --msvc pkg-config option with symbolic link to avoid having to patch .pc file
 ifeq ($(DETECTED_HOST_OS),Cygwin)

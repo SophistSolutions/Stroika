@@ -33,7 +33,7 @@ VERSION=3.2.5
 #VERSION=3.2.4
 #VERSION=3.2.3
 #VERSION=3.2.2
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 ifeq ($(VERSION), 3.2.5)
 # This version of xerces requires more recent copy of cmake
 ifeq ($(shell $(StroikaRoot)ScriptsLib/VersionCompare `cmake --version | awk '{print $$3}' | awk 'FNR == 1'` 3.12; echo $$?), 2)
@@ -81,11 +81,11 @@ FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/xercesc/dom/DOM.hpp
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/libxerces-c.a
 endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ifeq (Debug,$(CMAKE_CONFIGURATION))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/xerces-c_3D.lib
@@ -107,7 +107,7 @@ CMAKE_CURRENT_SOURCE_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_CURREN
 CMAKE_CURRENT_SOURCE_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_CURRENT_SOURCE_DIR))
 endif
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
 # -- without this hack - we get link error building Xerces
@@ -116,7 +116,7 @@ CXXFLAGS+= -pthread
 endif
 
 # Avoid having warnings leak from here to linking code when Xerces is used --LGP 2022-01-18
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
 CXXFLAGS+= -wd4702 
 CXXFLAGS+= -wd4706
@@ -135,7 +135,7 @@ else
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-	$(error This makefile requires a recognized ProjectPlatformSubdir)
+	$(error This makefile requires a recognized BuildPlatform)
 endif
 	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CURRENT
 	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PRODUCED_OUTPUT_ARTIFACTS)
@@ -177,7 +177,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-	$(error This makefile requires a recognized ProjectPlatformSubdir)
+	$(error This makefile requires a recognized BuildPlatform)
 endif
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/Xerces -  [Succeeded]";
@@ -211,7 +211,7 @@ endif
 ###NOTE - because we set network:BOOL:OFF - Xerces doesn't depend on CURL (but we could make it so if we wanted, but then update dependencies
 ### in ThirdPartyLibs/Makefile
 CMAKE_ARGS+= -Dnetwork:BOOL=OFF
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 CMAKE_ARGS+= -Dtranscoder=windows
 else ifeq ($(DETECTED_HOST_OS),Darwin)
 #AVOID Undefined symbols for architecture x86_64:  "_CFRelease", etc.... Avoid library dependency
@@ -227,7 +227,7 @@ CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 ### not sure why this is needed?
 ###  -- LGP 2019-09-26
 ##
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 CFLAGS += -DWIN32
 CXXFLAGS += -DWIN32
 endif
@@ -253,7 +253,7 @@ doBuilds_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Copying builds (See $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL.OUT)"` "... "
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(ECHO) "cmake --build . --config $(CMAKE_CONFIGURATION) --target install" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL.OUT
 	@+cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && cmake --build . --config $(CMAKE_CONFIGURATION) --target install >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL.OUT 2>&1
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@#We get warnings about a missing pdb file when linking otherwise...(not sure why since symbol info sb in the .lib)
 	@$(ECHO) "cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb ${PER_CONFIGURATION_BUILDS_DIR}lib/ 2>/dev/null || :" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL.OUT
 	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb ${PER_CONFIGURATION_BUILDS_DIR}lib/ 2>/dev/null || :

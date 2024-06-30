@@ -39,7 +39,7 @@ if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 }
 
 
-my $PROJECTPLATFORMSUBDIR='';
+my $BuildPlatform='';
 my $TARGET_PLATFORMS='';
 my $BUILD_TOOLS_ROOT=undef;
 
@@ -152,7 +152,7 @@ sub	ConfigParam2BoolInt
 
 sub	ReadConfiguration_
 {
-	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter($activeConfiguration, "ProjectPlatformSubdir");
+	$BuildPlatform = GetConfigurationParameter($activeConfiguration, "BuildPlatform");
 	$TARGET_PLATFORMS = GetConfigurationParameter($activeConfiguration, "TARGET_PLATFORMS");
 	$BUILD_TOOLS_ROOT = GetConfigurationParameter($activeConfiguration, "BUILD_TOOLS_ROOT");
 	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C");
@@ -194,7 +194,7 @@ sub	ReadConfiguration_
 
 	$PkgConfigNames = GetConfigurationParameter($activeConfiguration, "PkgConfigNames");
 
-	#print "PROJECTPLATFORMSUBDIR = $PROJECTPLATFORMSUBDIR\n";
+	#print "BuildPlatform = $BuildPlatform\n";
 }
 
 
@@ -264,7 +264,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT 'endif' . "\n");
 	print (OUT "\n");
 
-	WriteStroikaConfigMakeHeader_CachedLineItem_("ProjectPlatformSubdir", $PROJECTPLATFORMSUBDIR);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("BuildPlatform", $BuildPlatform);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("TARGET_PLATFORMS", $TARGET_PLATFORMS);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("BUILD_TOOLS_ROOT", $BUILD_TOOLS_ROOT);
 	print (OUT "\n");
@@ -335,7 +335,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n\n");
 	print (OUT "#Script to map filenames to native format (for windows)\n");
 	print (OUT "##	EG USE AS:   CPPFLAGS += -I\"\$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,\${StroikaRoot})/Builds...\"\n");
-	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
 		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
 		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
 	}
@@ -389,7 +389,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "EXTRA_COMPILER_ARGS :=	$EXTRA_COMPILER_ARGS\n");
 
 
-	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
 		print (OUT "\n");
 		print (OUT "##\n");
 		print (OUT "##\n");
@@ -454,7 +454,7 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "\n");
 	}
 
-	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
 		print (OUT "OUT_ARG_PREFIX_NATIVE := -OUT:\n");
 	}
 	else {
@@ -758,7 +758,7 @@ sub WriteVSCodeCPPExtensionConfigFile
 		if (index ($PkgConfigNames, "libxml-2.0") != -1) {
 			$newCfgObj .= " , ";
 			my $element = trim (`realpath --canonicalize-missing Builds/$activeConfiguration/ThirdPartyComponents/include/libxml2`) . "/";
-			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			if ($BuildPlatform =~ /^VisualStudio.Net/) {
 				$element = trim ("`cygpath --mixed --path \"$element\"`");
 			}
 			$newCfgObj .= "\\\"$element\\\"";
@@ -844,7 +844,7 @@ if ($GEN_CONFIG_MAKE) {
 }
 
 if ($GEN_VISUAL_STUDIO_INTELLISENSE) {
-	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
 		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vs2kIntellisenseCng\" ... ");
 		WriteVS2kIntellisenseConfigFile ();
 		print("done\n");

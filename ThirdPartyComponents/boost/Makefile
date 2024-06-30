@@ -137,7 +137,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-	$(error This makefile requires a recognized ProjectPlatformSubdir)
+	$(error This makefile requires a recognized BuildPlatform)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "boost ${VERSION} - Checking ... "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
@@ -162,7 +162,7 @@ endif
 
 
 B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 #unsure why windows and unix builds go to such different places, but they do. Probably not too hard to unify them, but not a priority
 B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)/b2.exe
 endif
@@ -189,7 +189,7 @@ BOOTSTRAP_TOOLSET?=
 
 bootstrap_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Bootstrapping - see ${OUTPUT_WORKDIR_PRETTYNAME}BOOTSTRAP-OUT.txt"` "... "
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@### From http://www.boost.org/doc/libs/1_66_0/more/getting_started/windows.html - section 5.2
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && bootstrap.bat ${BOOTSTRAP_TOOLSET}" > BOOTSTRAP-OUT.txt)
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP-OUT.txt 2>&1)
@@ -209,7 +209,7 @@ endif
 
 # this selects a bunch of parameters, but the compiler itself can still be overriden by other parameters - just the
 # darwin.jam file (basically) - and other defaults sort of related to that.
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 TOOLSET_NAME=msvc
 else ifeq ($(DETECTED_HOST_OS),Darwin)
 #using the name darwin caused errors with XCode 11.4, but otherwise appears to make sense (and we used til 11.4) -- LGP 2020-04-12
@@ -266,7 +266,7 @@ endif
 
 ### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE (JAM) file
 ### MAYBE can do soemthing like toolset=${TOOLSET_NAME}-$(ARCH) change; but didn't appear to work
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq ($(ARCH),x86)
 B2_CONFIGURATION_ARGS +=	address-model=32
 else ifeq ($(ARCH),x86_64)
@@ -274,7 +274,7 @@ B2_CONFIGURATION_ARGS +=	address-model=64
 endif
 endif
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (Unix,$(BuildPlatform))
 B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG=${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/user-config.jam
 endif
 
@@ -309,7 +309,7 @@ endif
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
 	@#(above comment maybe obsolete as of 2020-01-03)
 	@
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	    ($(ECHO) "${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild-OUT.txt) &&\
 	    (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install >> ConfigureAndBuild-OUT.txt)
