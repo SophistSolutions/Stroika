@@ -41,6 +41,25 @@ XPath::XPathExpressionNotSupported::XPathExpressionNotSupported ()
 
 /*
  ********************************************************************************
+ ********************** XPath::Expression::Options ******************************
+ ********************************************************************************
+ */
+String XPath::Expression::Options::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "fNamespaces: "sv << fNamespaces << ", "sv;
+    if (fResultTypeIndex) {
+        sb << "fResultTypeIndex: "sv << fResultTypeIndex << ", "sv;
+    }
+    sb << "fOrdered: "sv << fOrdered << ", "sv;
+    sb << "fSnapshot: "sv << fSnapshot;
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
  ************************** XPath::Expression ***********************************
  ********************************************************************************
  */
@@ -73,8 +92,8 @@ String XPath::Expression::ToString () const
     AssertNotNull (fRep_);
     StringBuilder sb;
     sb << "{"sv;
-    sb << "expression: "sv << fRep_->GetExpression ();
-    // @todo add options
+    sb << "expression: "sv << fRep_->GetExpression () << ", "sv;
+    sb << "options: "sv << fRep_->GetOptions ();
     sb << "}"sv;
     return sb;
 }

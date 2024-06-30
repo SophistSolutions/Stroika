@@ -125,6 +125,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                  *  Snapshot less efficient, but safer in light of modifications to the node tree (but still not clearly defined what modifications allowed and what not?).
                  */
                 bool fSnapshot{false};
+
+                /**
+                 */
+                nonvirtual String ToString () const;
             };
             static inline const Options kDefaultOptions{
                 .fNamespaces = {}, .fResultTypeIndex = ResultTypeIndex_v<Node::Ptr>, .fOrdered = false, .fSnapshot = false};

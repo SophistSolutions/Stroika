@@ -1626,7 +1626,6 @@ namespace {
             EXPECT_EQ (origD.GetRootElement ().GetName (), testName);
             Streams::MemoryStream::Ptr<byte> ms = Streams::MemoryStream::New<byte> ();
             origD.Write (ms);
-            //DbgTrace (L"x=%s", Characters::ToString (ms).c_str ());
             DOM::Document::Ptr newD = domFactory (ms, nullptr);
             EXPECT_EQ (newD.GetRootElement ().GetName (), testName);
         });
