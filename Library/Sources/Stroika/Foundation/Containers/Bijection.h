@@ -90,8 +90,8 @@ namespace Stroika::Foundation::Containers {
      *
      *          Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
      *          with the same value. There is no need for the items to appear in the same order for the two Bijections to
-     *          be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-     *          vers linkedlist).
+     *          be equal. There is no need for the backends to be of the same underlying representation either (STL map
+     *          vers linked-list).
      *
      *          Since a Bijection is not necessarily sorted, or in any particular order, < and > are not well defined.
      */

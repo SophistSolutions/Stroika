@@ -163,13 +163,15 @@ namespace Stroika::Foundation::Containers {
         /**
          * simply indirect to @Stack<>::EqualsComparer
          */
-        nonvirtual bool operator== (const Stack& rhs) const;
+        nonvirtual bool operator== (const Stack& rhs) const
+            requires (equality_comparable<T>);
 
     public:
         /**
          * simply indirect to @Stack<>::operator (only defined if ???comparethreeway?<T> is defined)
          */
-        nonvirtual auto operator<=> (const Stack& rhs) const;
+        nonvirtual auto operator<=> (const Stack& rhs) const
+            requires (three_way_comparable<T>);
 
     public:
         /**

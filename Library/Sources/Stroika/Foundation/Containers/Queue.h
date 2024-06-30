@@ -227,15 +227,17 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * simply indirect to @Queue<>::EqualsComparer (only defined if equal_to<T> is defined)
+         * simply indirect to @Queue<>::EqualsComparer
          */
-        nonvirtual bool operator== (const Queue& rhs) const;
+        nonvirtual bool operator== (const Queue& rhs) const
+            requires (equality_comparable<T>);
 
     public:
         /**
          * simply indirect to @Queue<>::ThreeWayComparer (only defined if T::operator<=> is defined)
          */
-        nonvirtual auto operator<=> (const Queue& rhs) const;
+        nonvirtual auto operator<=> (const Queue& rhs) const
+            requires (three_way_comparable<T>);
 
     protected:
         /**

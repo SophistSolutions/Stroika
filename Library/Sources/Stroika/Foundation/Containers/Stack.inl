@@ -92,11 +92,13 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline bool Stack<T>::operator== (const Stack& rhs) const
+        requires (equality_comparable<T>)
     {
         return EqualsComparer<>{}(*this, rhs);
     }
     template <typename T>
     inline auto Stack<T>::operator<=> (const Stack& rhs) const
+        requires (three_way_comparable<T>)
     {
         return ThreeWayComparer<>{}(*this, rhs);
     }
