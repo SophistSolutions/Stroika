@@ -52,16 +52,6 @@ CMAKE_PER_TARGET_BUILD_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
 CMAKE_PER_TARGET_BUILD_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_TARGET_BUILD_DIR) )
 CMAKE_PER_TARGET_BUILD_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_PER_TARGET_BUILD_DIR))
 
-#### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
-#### ALSO - NOT CLEAR HELPFUL/NEEDED to specify the generator, when using the visual studio version of cmake --LGP 2023-05-08
-ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
-CMAKE_USE_GENERATOR=Visual Studio 17 2022
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-$(error "unsupported version of visual studio.net")
-else
-CMAKE_USE_GENERATOR=Unix Makefiles
-endif
-
 
 #
 # TO DEBUG CMAKE BUILDS:
