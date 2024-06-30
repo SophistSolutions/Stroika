@@ -11,13 +11,7 @@
 #include "Message.h"
 
 /*
- */
-
-/*
- * TODO:
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -44,7 +38,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  \nb: avoid noexcept in funciton<> declaration due to https://stackoverflow.com/questions/41293025/stdfunction-with-noexcept-in-c17
+         *  \nb: avoid noexcept in function<> declaration due to https://stackoverflow.com/questions/41293025/stdfunction-with-noexcept-in-c17
          */
         Interceptor ()                   = delete;
         Interceptor (const Interceptor&) = default;
