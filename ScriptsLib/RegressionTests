@@ -382,12 +382,12 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 				continue;
 			fi
 
-			RUN_PREFIX=`ScriptsLib/GetConfigurationParameter $cfg RUN_PREFIX`
+			RunPrefix=`ScriptsLib/GetConfigurationParameter $cfg RunPrefix`
 			for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
-				if [ "${RUN_PREFIX}" = "" ] ; then
+				if [ "${RunPrefix}" = "" ] ; then
 					EXE_RUN_="Builds/${cfg}/${app}"
 				else
-					EXE_RUN_="${RUN_PREFIX} Builds/${cfg}/${app}"
+					EXE_RUN_="${RunPrefix} Builds/${cfg}/${app}"
 				fi
 				#echo -n "  $EXE_RUN_ ..."
 				echo -n "  $PREFIX_OUT_LABEL" "$EXE_RUN_..." >>$TEST_OUT_FILE 2>&1

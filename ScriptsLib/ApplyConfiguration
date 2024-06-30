@@ -294,7 +294,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("RANLIB");
 	print (OUT "\n");
 
-	WriteStroikaConfigMakeHeader_CachedLineItem_("RUN_PREFIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RunPrefix");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CrossCompiling");
 	print (OUT "\n");
 

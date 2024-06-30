@@ -87,9 +87,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'BuildByDefault'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<BUILD_TOOLS_ROOT>");
+		my $pps = ReadValue_($line, "<BuildToolsRoot>");
 		if (defined $pps) {
-			$configuration {'BUILD_TOOLS_ROOT'} = $pps;
+			$configuration {'BuildToolsRoot'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<TOOLS_PATH_ADDITIONS>");
 		if (defined $pps) {
@@ -279,9 +279,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'LinkerArgs_ExtraSuffix'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<RUN_PREFIX>");
+		my $pps = ReadValue_($line, "<RunPrefix>");
 		if (defined $pps) {
-			$configuration {'RUN_PREFIX'} = $pps;
+			$configuration {'RunPrefix'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qCompiler_ValgrindLTO_Buggy>");
 		if (defined $pps) {

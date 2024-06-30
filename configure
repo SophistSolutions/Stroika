@@ -201,7 +201,7 @@ my $RC = undef;
 my $STRIP = undef;
 my $LinkerArgs_ExtraPrefix = "";
 my $LinkerArgs_ExtraSuffix = "";
-my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
+my $RunPrefix = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;		## Looks for BOTH compiler and assocaited stdlib if std=libc++
 my @INCLUDES_PATH = qw();
@@ -418,10 +418,10 @@ sub	DoHelp_
 		print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LinkerArgs_LibDependencies */\n");
 		print("	    --linktime-copy-files-2-EXEDir {ARG}            /* Sets LinkTime_CopyFilesToEXEDir variable (' ' separated) */\n");
 		print("	    --append-linktime-copy-files-2-EXEDir {ARG}     /* Appends ARG to 'LinkTime_CopyFilesToEXEDir */\n");
-		print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,\n");
+		print("	    --run-prefix {ARG}                              /* Sets variable RunPrefix with stuff injected before run for built executables,\n");
 		print("	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
-		print("	    --append-run-prefix {ARG}                       /* Appends ARG RUN_PREFIX: with stuff injected before run for built executables */\n");
-		print("	    --include-default-TSAN_OPTIONS {true/false}     /* if true, and tsan enabled, add TSAN_OPTIONS= guess to RUN_PREFIX */\n");
+		print("	    --append-run-prefix {ARG}                       /* Appends ARG RunPrefix: with stuff injected before run for built executables */\n");
+		print("	    --include-default-TSAN_OPTIONS {true/false}     /* if true, and tsan enabled, add TSAN_OPTIONS= guess to RunPrefix */\n");
 		print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
 		print("	    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
 		print("	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
@@ -1880,15 +1880,15 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-run-prefix") or (lc ($var) eq "--run-prefix")) {
 			$i++;
 			$var = $args[$i];
-			$RUN_PREFIX = $var;
+			$RunPrefix = $var;
 		}
 		elsif ((lc ($var) eq "-append-run-prefix") or (lc ($var) eq "--append-run-prefix")) {
 			$i++;
 			$var = $args[$i];
-			if (not ($RUN_PREFIX eq "")) {
-				$RUN_PREFIX .= " ";
+			if (not ($RunPrefix eq "")) {
+				$RunPrefix .= " ";
 			}
-			$RUN_PREFIX .= $var;
+			$RunPrefix .= $var;
 		}
 		elsif ((lc ($var) eq "-include-default-TSAN_OPTIONS") or (lc ($var) eq "--include-default-TSAN_OPTIONS")) {
 			$i++;
@@ -2530,10 +2530,10 @@ sub PostProcessOptions_ ()
 	if ($autoIncludeTSAN_OPTIONSIfAppropriate) {
 		if (IsTargettingSanitizer_ ('thread')) {
 			# prepend, so stuff already there takes precedence
-			if (not ($RUN_PREFIX eq "")) {
-				$RUN_PREFIX = " " . $RUN_PREFIX;
+			if (not ($RunPrefix eq "")) {
+				$RunPrefix = " " . $RunPrefix;
 			}
-			$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" . $RUN_PREFIX;
+			$RunPrefix = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" . $RunPrefix;
 		}
 	}
 
@@ -2996,7 +2996,7 @@ sub	WriteConfigFile_
 	print (OUT "</LinkTime_CopyFilesToEXEDir>\n");
 
 	print (OUT "\n    <!--Runtime/Testing-->\n");
-	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
+	print (OUT "    <RunPrefix>$RunPrefix</RunPrefix>\n");
 
 	print (OUT "\n    <!--Compiler/Tool Bug Workarounds/Defines-->\n");
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy)) {
