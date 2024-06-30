@@ -73,12 +73,12 @@ namespace {
                        Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, [this] (Message* message) { SetAppState_ (message); }},
                        Route{HTTP::MethodsRegEx::kPost, "SetAppState2"_RegEx, [this] (Message* message) { SetAppState2_ (message); }},
                        Route{"FRED"_RegEx,
-                             [this] (Request*, Response* response) {
+                             [] (Request*, Response* response) {
                                  response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                                  response->write (L"FRED");
                              }},
                        Route{"TEST"_RegEx,
-                             [this] (Request*, Response* response) {
+                             [] (Request*, Response* response) {
                                  response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                                  response->write (TestDeflateEnc1_::kDecoded);
                              }}}
