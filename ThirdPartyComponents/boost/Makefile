@@ -184,10 +184,8 @@ bootstrapIfNeeded_:	$(B2FullPath)
 $(B2FullPath):
 	$(MAKE) --no-print-directory bootstrap_
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 # BOOTSTRAP_TOOLSET?=msvc
 BOOTSTRAP_TOOLSET?=
-endif
 
 bootstrap_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Bootstrapping - see ${OUTPUT_WORKDIR_PRETTYNAME}BOOTSTRAP-OUT.txt"` "... "
