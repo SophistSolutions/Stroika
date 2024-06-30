@@ -13,7 +13,7 @@
 #include "Interceptor.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -28,7 +28,7 @@ namespace Stroika::Frameworks::WebServer {
      *  Typically early interceptors quickly check and process results and then throw/abort if there is a problem (so auth 
      *  would be handled early in the interceptor chain)
      *
-     *  And typically - your message router, or final handlers that return data - would be at the end of the interfceptor chain.
+     *  And typically - your message router, or final handlers that return data - would be at the end of the interceptor chain.
      *
      *  Note - exceptions are handled in the reverse order - passed backwards through the chain.
      *
@@ -48,7 +48,7 @@ namespace Stroika::Frameworks::WebServer {
      *
      * \note A draft of the implementation to clarify
      *      \code
-     *          void IntercetorChain::HandleMessage (Message* m)
+     *          void InterceptorChain::HandleMessage (Message* m)
      *          {
      *              size_t i = 0;
      *              for (; i < fInterceptors_.size (); ++i) {
@@ -111,7 +111,7 @@ namespace Stroika::Frameworks::WebServer {
          *  HandleMessage() sends a HandleMessage() call to each interceptor in turn.
          *  For each interceptor in the chain, if it succeeds (doesn't throw) - it will THEN get a CompleteNormally () message.
          *  If it faulted (or a fault occurred later in the chain) - then it will INSTEAD get a HandleFault () message.
-         *  BUT - no matter what - each intercetor called with HandleMessage () with EITHER:
+         *  BUT - no matter what - each interceptor called with HandleMessage () with EITHER:
          *      o   Get its HandleFault() called
          *      o OR get its HandleComplete() called
          *     but not both and not neither.
