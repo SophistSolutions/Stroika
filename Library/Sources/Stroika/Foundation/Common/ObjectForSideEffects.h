@@ -13,6 +13,8 @@
 namespace Stroika::Foundation::Common {
 
     /**
+     *  \todo - see if we can get template guides working and merge this into ObjectForSideEffects
+     *        - with templated value for function object.
      */
     class EmptyObjectForSideEffects {
     public:
@@ -35,9 +37,6 @@ namespace Stroika::Foundation::Common {
          */
         template <typename CONSTRUCTOR_CALL>
         EmptyObjectForSideEffects (CONSTRUCTOR_CALL&& ctorCall);
-
-    private:
-        function<void ()> fDestructor_;
     };
 
     /**

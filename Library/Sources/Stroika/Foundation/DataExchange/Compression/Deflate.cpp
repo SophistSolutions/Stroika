@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "Deflate.h"
 
@@ -17,6 +18,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Compression;
+using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Streams;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -58,6 +60,7 @@ namespace {
         byte           fInBuf_[CHUNK_]; // uninitialized cuz written before read
         SeekOffsetType _fSeekOffset{};
         optional<byte> _fNextOutputByte_; // 'cached' next output byte - if not nullopt - magic needed to make AvailableToRead
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
         BaseRep_ (const Streams::InputStream::Ptr<byte>& in)
             : fInStream_{in}
@@ -71,17 +74,20 @@ namespace {
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fInStream_.Close ();
             Assert (fInStream_ == nullptr);
             Ensure (not IsOpenRead ());
         }
         virtual bool IsOpenRead () const override
         {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fInStream_ != nullptr;
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
             Require (IsOpenRead ());
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return _fSeekOffset;
         }
         // return number of bytes definitely copied into intoBuffer, else nullopt on EWOULDBLOCK
@@ -89,6 +95,7 @@ namespace {
         optional<size_t> PullEnufForDeflate1Byte_ (NoDataAvailableHandling blockFlag, span<byte> intoBuffer, PROCESS processInputZLibFunction)
         {
             Assert (_fNextOutputByte_ == nullopt); // already handled
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Again:
             if (blockFlag == NoDataAvailableHandling::eDontBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
                 // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
@@ -128,6 +135,7 @@ namespace {
         optional<size_t> _Available2Read (PROCESS processInputZLibFunction)
         {
             Require (IsOpenRead ());
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             if (_fNextOutputByte_) {
                 return 1;
             }
@@ -152,6 +160,7 @@ namespace {
         {
             Require (not intoBuffer.empty ()); // API rule for streams
             Require (IsOpenRead ());
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             if (_fNextOutputByte_) {
                 intoBuffer[0] = *_fNextOutputByte_;
                 _fNextOutputByte_.reset ();
@@ -194,6 +203,7 @@ namespace {
         }
         virtual optional<size_t> AvailableToRead () override
         {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             return _Available2Read ([this] (bool isEOF) { return DoProcess_ (isEOF); });
         }
         virtual optional<SeekOffsetType> RemainingLength () override
@@ -202,10 +212,12 @@ namespace {
         }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             return _Read (intoBuffer, blockFlag, [this] (bool isEOF) { return DoProcess_ (isEOF); });
         }
         int DoProcess_ (bool isEOF)
         {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             return ::deflate (&fZStream_, isEOF ? Z_FINISH : Z_NO_FLUSH);
         }
     };
@@ -220,10 +232,12 @@ namespace {
         }
         virtual ~InflateRep_ ()
         {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Verify (::inflateEnd (&fZStream_) == Z_OK);
         }
         virtual optional<size_t> AvailableToRead () override
         {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             return _Available2Read ([this] (bool isEOF) { return DoProcess_ (isEOF); });
         }
         virtual optional<SeekOffsetType> RemainingLength () override
@@ -232,6 +246,7 @@ namespace {
         }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             return _Read (intoBuffer, blockFlag, [this] (bool isEOF) { return DoProcess_ (isEOF); });
         }
         int DoProcess_ ([[maybe_unused]] bool isEOF)
