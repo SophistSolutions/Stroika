@@ -236,9 +236,9 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     }}
     , fSocket_{s}
     , fProtocolOutputStream_{outStream}
-    , fUseOutStream_{Streams::BufferedOutputStream::New<byte> (outStream)}
     , fBodyRawStream_{Streams::SharedMemoryStream::New<byte> (Streams::SharedMemoryStream::Options{
           .fInternallySynchronized = Execution::InternallySynchronized::eNotKnownInternallySynchronized, .fSeekable = false})}
+    , fUseOutStream_{Streams::BufferedOutputStream::New<byte> (outStream)}
 {
     if constexpr (qDebug) {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\""); // sadly no way to [[maybe_unused]] on captures

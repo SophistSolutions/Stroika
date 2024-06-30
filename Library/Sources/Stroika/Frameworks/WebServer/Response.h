@@ -194,7 +194,7 @@ namespace Stroika::Frameworks::WebServer {
         /*
          * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
          * For ContentTypes
-         *      o   text/* {avoid comment-character}
+         *      o   text / * {avoid comment-character}
          *      o   application/json
          *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
          *          "text/html; charset=UTF-8"
@@ -365,8 +365,6 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void write (const span<const byte>& b);
         template <Characters::IConvertibleToString T>
         nonvirtual void write (T&& s);
-        template <>
-        nonvirtual void write (const String& e);
         template <typename CHAR_T, typename... ARGS>
         nonvirtual void write (const FormatString<CHAR_T>& f, ARGS&&... args);
 
@@ -439,6 +437,8 @@ namespace Stroika::Frameworks::WebServer {
             write (span<const wchar_t>{s, e});
         }
     };
+    template <>
+    void Response::write (const String& e);
 
 }
 
