@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 Require (not elts.empty ());
                 Require (IsOpenWrite ());
                 [[maybe_unused]] lock_guard critSec{fMutex_};
-                size_t                      roomLeft     = fData_.end () - fWriteCursor_;
+                size_t                      roomLeft     = distance (fWriteCursor_, fData_.end () );
                 size_t                      roomRequired = elts.size ();
                 if constexpr (kLocking_) {
                     fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                         fReadCursor_ = fData_.begin () + static_cast<size_t> (uOffset);
                     } break;
                     case Whence::eFromCurrent: {
-                        Streams::SeekOffsetType       curOffset = fReadCursor_ - fData_.begin ();
+                        Streams::SeekOffsetType       curOffset = distance (fData_.cbegin (), fReadCursor_);
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);
@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     } break;
                 }
                 Ensure ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
-                return fReadCursor_ - fData_.begin ();
+                return distance (fData_.cbegin (), fReadCursor_);
             }
             virtual SeekOffsetType GetWriteOffset () const override
             {
@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                         fWriteCursor_ = fData_.begin () + static_cast<size_t> (offset);
                     } break;
                     case Whence::eFromCurrent: {
-                        Streams::SeekOffsetType       curOffset = fWriteCursor_ - fData_.begin ();
+                        Streams::SeekOffsetType       curOffset = distance (fData_.begin (), fWriteCursor_);
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);
@@ -257,7 +257,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     } break;
                 }
                 Ensure ((fData_.begin () <= fWriteCursor_) and (fWriteCursor_ <= fData_.end ()));
-                return fWriteCursor_ - fData_.begin ();
+                return distane (fData_.begin (), fWriteCursor_);
             }
             // Private_::IRep_ overrides
             virtual Options GetOptions () const override
