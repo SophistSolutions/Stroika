@@ -77,9 +77,3 @@ What this means - is that unless you need HTTPS - this will do everything you ne
 - [RequestHandler.h](RequestHandler.h)
 - [Response.h](Response.h)
 - [Router.h](Router.h)
-
-## TODO
-  - Add in notion of Rails-like Router. Something with good defaults but less opaque about
-how mapping done. Maybe use std::function and RegExp to match urls and direct requests
-to handlers? Or maybe abstract classes bette r than std::function here?
-
