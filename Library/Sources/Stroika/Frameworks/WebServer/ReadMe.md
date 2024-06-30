@@ -22,33 +22,29 @@ builtin - as part of your application.
   - [Sample Web Server](../../../../../Samples/WebServer/)
   - Or even simpler - http responses for SSDP
     ~~~
-        struct WebServerForDeviceDescription_ {
-                WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const DeviceDescription& dd)
-                {
-                    auto onConnect = [dd] (const ConnectionOrientedStreamSocket::Ptr& acceptedSocketConnection) {
-                        Execution::Thread::Ptr runConnectionOnAnotherThread = Execution::Thread::New ([acceptedSocketConnection, dd] () {
-                            // If the URLs are served locally, you may want to update the URL based on
-                            // IO::Network::GetPrimaryInternetAddress ()
-                            Connection conn{acceptedSocketConnection,
-                                            Connection::Options{.fInterceptorChain = Sequence<Interceptor>{Interceptor{[=] (Message* m) {
-                                                                    RequireNotNull (m);
-                                                                    Response& response           = m->rwResponse ();
-                                                                    response.rwHeaders ().server = "stroika-ssdp-server-demo"sv;
-                                                                    response.contentType         = DataExchange::InternetMediaTypes::kXML;
-                                                                    response.write (Stroika::Frameworks::UPnP::Serialize (dd));
-                                                                }}}}};
-                            conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0s}; // disable keep-alives
-                            conn.ReadAndProcessMessage ();
-                        });
-                        runConnectionOnAnotherThread.SetThreadName ("SSDP Service Connection Thread"sv);
-                        runConnectionOnAnotherThread.Start ();
-                    };
-                    fListener = Listener{SocketAddresses (InternetAddresses_Any (), webServerPortNumber), onConnect};
-                }
-
-                optional<Listener> fListener;
-            };
+    struct WebServerForDeviceDescription_ : WebServer::ConnectionManager {
+        static inline const HTTP::Headers kDefaultResponseHeaders_{[] () {
+            HTTP::Headers h;
+            h.server = "stroika-ssdp-server-demo"sv;
+            return h;
+        }()};
+        WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const DeviceDescription& dd)
+            : ConnectionManager{SocketAddresses (InternetAddresses_Any (), webServerPortNumber),
+                                Sequence<Route>{
+                                    Route{""_RegEx,
+                                          [dd] (Message* m) {
+                                              RequireNotNull (m);
+                                              Response& response   = m->rwResponse ();
+                                              response.contentType = DataExchange::InternetMediaTypes::kXML;
+                                              response.write (Stroika::Frameworks::UPnP::Serialize (dd));
+                                          }},
+                                },
+                                Options{.fMaxConnections = 3, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
+        {
+        }
+    };
     ~~~
+
 
 ## Miscelaneous Features status
 
