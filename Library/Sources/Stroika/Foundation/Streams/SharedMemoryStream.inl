@@ -490,7 +490,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     size_t writeOffset = GetWriteOffset ();
                     fData_.erase (fData_.begin (), fData_.begin () + elts2Reclaim);
                     fSpaceClearedFromStreamHead_ += elts2Reclaim;
-                    Assert (readOffset == fSpaceClearedFromStreamHead_);    // cuz always wrote more than read, and clear all that read
+                    Assert (readOffset == fSpaceClearedFromStreamHead_); // cuz always wrote more than read, and clear all that read
                     fReadCursor_  = fData_.begin () + (readOffset - fSpaceClearedFromStreamHead_);
                     fWriteCursor_ = fData_.begin () + (writeOffset - fSpaceClearedFromStreamHead_);
                     Assert (readOffset == GetReadOffset ());

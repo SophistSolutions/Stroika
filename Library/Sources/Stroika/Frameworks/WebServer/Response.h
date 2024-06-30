@@ -422,7 +422,7 @@ namespace Stroika::Frameworks::WebServer {
         Streams::InputStream::Ptr<byte> fBodyCompressedStream_; // if not null, implies a bodyEncoding, and this is a typically smaller compressed version of fBodyRawStream_
         Streams::BufferedOutputStream::Ptr<byte> fUseOutStream_; // wrapper on fProtocolOutputStream_ to provide buffering
         Characters::CodePage                     fCodePage_{Characters::WellKnownCodePages::kUTF8};
-        mutable optional<Characters::CodeCvt<>>  fCodeCvt_; // for now, cache derived from fCodePage_ --LGP 2024-06-30
+        mutable optional<Characters::CodeCvt<>>  fCodeCvt_;      // for now, cache derived from fCodePage_ --LGP 2024-06-30
         optional<ETagDigester_>                  fETagDigester_; // dual use - if present, then flag for autoComputeETag mode as well
 
     public:
