@@ -22,17 +22,8 @@ VPATH	=			$(SrcDir)Sources/
 RC_OUTPUT_=$(ObjDir)Test.res
 
 
-
 ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
 Objs+= $(ObjDir)Test${OBJ_SUFFIX}
-endif
-
-
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += -D_WINDOWS 
-CXXFLAGS += -DWIN32 
-CXXFLAGS += -DSTRICT
-CXXFLAGS += -D_WIN32_WINNT=0x0501
 Objs += ${RC_OUTPUT_}
 endif
 
@@ -65,7 +56,7 @@ $(ObjDir)Test.res:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
 LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 endif
 

@@ -36,8 +36,8 @@ check:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-LinkerArgs_ExtraSuffix+= /SUBSYSTEM:CONSOLE
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+LinkerArgs_ExtraSuffix+= -SUBSYSTEM:CONSOLE
 endif
 
 

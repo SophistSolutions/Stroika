@@ -93,11 +93,7 @@ endif
 #
 # NOTE - if you mount the drivefs filesystem with the option "metadata" permissions work, but until msft makes this the default
 # just comment out...
-# disable compute of workdir (mktemp) on windows / cygwin since not needed and fails and no need to debug now.
-ifneq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-#DEB_WORKDIR=$(ObjDir)DEB_TMP/
 DEB_WORKDIR:=$(shell mktemp -d)/
-endif
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build.Out
 $(TARGET_OUT_INSTALLER_DEB): $(BUILT_SERVICE_EXE) Makefile

@@ -41,11 +41,11 @@ endif
 
 
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += -D_WINDOWS 
-CXXFLAGS += -DWIN32 
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+# AVOID "_WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)"
+CXXFLAGS += -D_WIN32_WINNT=0x0501
+# Maybe helps avoid bugs?
 CXXFLAGS += -DSTRICT
-CXXFLAGS += -D_WIN32_WINNT=0x0501 
 endif
 
 
@@ -90,16 +90,8 @@ $(ObjDir)LedLineIt.res:
 	@$(call DEFAULT_RC_LINE,$(SrcDir)Sources/LedLineIt.rc,$(ObjDir)LedLineIt.res) > $(ObjDir)RC-Build.out 2>&1
 
 
-
-# WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
-# https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
-ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
-LinkerArgs_ExtraSuffix+= -FORCE:MULTIPLE
-endif
-
-
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
 LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 LinkerArgs_ExtraSuffix+= -ENTRY:wWinMainCRTStartup
 endif

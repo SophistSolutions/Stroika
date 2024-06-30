@@ -63,13 +63,10 @@ check:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
 LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 # OCX is a DLL, doesnt seem needed but examples pass this arg
 LinkerArgs_ExtraSuffix+= -DLL
-#flags from sample MSBUILD ActiveLedIt build link line I dont think are needed
-#LinkerArgs_ExtraSuffix+= -DYNAMICBASE
-#LinkerArgs_ExtraSuffix+= -MACHINE:X86 /SAFESEH:NO 
 endif
 
 MIDL_OUTPUT_=$(ObjDir)ActiveLedIt.tlb $(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
@@ -102,12 +99,6 @@ $(ObjDir)ActiveLedIt.res:
 	fi
 	@$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res) > $(ObjDir)RC-Build.out 2>&1
 
-
-# WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
-# https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
-ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
-LinkerArgs_ExtraSuffix+= -FORCE:MULTIPLE
-endif
 
 # without this the regsvr32 will fail; tried adding explict dllexport() in c++ code but couldnt find the right syntax to make it work
 LinkerArgs_ExtraSuffix += -DEF:Sources/ActiveLedIt.def

@@ -36,19 +36,17 @@ Objs+= $(ObjDir)RulerToolbar${OBJ_SUFFIX}
 Objs+= $(ObjDir)Units${OBJ_SUFFIX}
 endif
 
-ifeq (MacOS.Net,$(findstring MacOS,$(TARGET_PLATFORMS)))
-Objs+= $(ObjDir)FilteredFilePicker${OBJ_SUFFIX}
-endif
 
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += /D_WINDOWS 
-CXXFLAGS += /DWIN32 
-CXXFLAGS += /DSTRICT
-CXXFLAGS += /D_WIN32_WINNT=0x0501
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+# AVOID "_WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)"
+CXXFLAGS += -D_WIN32_WINNT=0x0501
+# Maybe helps avoid bugs?
+CXXFLAGS += -DSTRICT
+# AVOID C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\transact.h(147): error C2872: 'byte': ambiguous symbol
+CXXFLAGS += /DWIN32
 Objs += $(ObjDir)LedIt.res
 endif
-
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
@@ -96,15 +94,9 @@ $(ObjDir)LedIt.res:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
 LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 LinkerArgs_ExtraSuffix+= -ENTRY:wWinMainCRTStartup
-endif
-
-# WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
-# https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
-ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
-LinkerArgs_ExtraSuffix+= -FORCE:MULTIPLE
 endif
 
 
