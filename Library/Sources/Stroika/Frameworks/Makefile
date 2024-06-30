@@ -129,14 +129,11 @@ endif
 
 
 clobber::
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@for i in $(SubDirs);\
 	do\
 	    $(MAKE) --directory $$i --no-print-directory --silent clobber;\
 	done
 	@rm -f $(StroikaFrameworksLib)
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-endif
 
 
 Build:	all
