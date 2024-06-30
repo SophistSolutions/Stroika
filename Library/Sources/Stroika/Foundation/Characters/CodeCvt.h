@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Characters {
      *      o   All the existing codecvt objects (which map to/from UNICODE) can easily be wrapped in a CodeCvt
      *
      *  CodeCvt as smart Ptr class, and an 'abstract class' (IRep) in that only for some CHAR_T types
-     *  can it be instantiated direcly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
+     *  can it be instantiated directly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T = Character>
     class CodeCvt {
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Characters {
          *          // codeCvt Between UTF16 Characters using codecvt_byname
          *          CodeCvt<char16_t> codeCvt3 = CodeCvt<char16_t,std::codecvt_byname>>{locale{"en_US.UTF8"}};
          * 
-         *          // or equivilently
+         *          // or equivalently
          *          CodeCvt<char16_t> codeCvt4{"en_US.UTF8"};
          *      \endcode
          * 
