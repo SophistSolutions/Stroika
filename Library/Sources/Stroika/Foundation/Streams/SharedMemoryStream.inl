@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 // at this point, data is available
                 [[maybe_unused]] lock_guard critSec{fMutex_}; // hold lock for everything EXCEPT wait
                 Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
-                size_t nAvail = distance (fReadCursor_, fData_.end ());
+                size_t nAvail = distance (fReadCursor_, fData_.cend ());
                 if (nAvail == 0 and not fClosedForWrites_) {
                     if constexpr (kLocking_) {
                         fMoreDataWaiter_.Reset (); // ?? @todo consider - is this a race? If we reset at same time(apx) as someone else sets
