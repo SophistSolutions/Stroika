@@ -9,6 +9,7 @@
 #include <filesystem>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/FileSystem/Common.h"
 #include "Stroika/Foundation/IO/FileSystem/FileStream.h"
 #include "Stroika/Foundation/Streams/InputStream.h"

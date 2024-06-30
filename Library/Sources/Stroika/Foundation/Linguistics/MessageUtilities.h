@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 /**
  *
@@ -16,7 +17,7 @@
  *
  * TODO:
  *      @todo   Very VERY primitive linguistic support, but this could easily evolve over time. Led has a bunch of
- *              lingusitic code I could move here, and I'm sure I could dig up more...
+ *              linguistic code I could move here, and I'm sure I could dig up more...
  */
 
 namespace Stroika::Foundation::Linguistics {

@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
 /**

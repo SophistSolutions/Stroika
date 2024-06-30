@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
 /**

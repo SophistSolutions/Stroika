@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
 

@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 
 /**
@@ -33,8 +34,8 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
      *              the data may be suppressed.
      *              Best to call @Close ()
      *
-     *      \note   BufferedOutputStream aggregates its owned substream, so that a Close () on BufferedOutputStream
-     *              will Close that substream.
+     *      \note   BufferedOutputStream aggregates its owned sub-stream, so that a Close () on BufferedOutputStream
+     *              will Close that sub-stream.
      *
      *      \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      *

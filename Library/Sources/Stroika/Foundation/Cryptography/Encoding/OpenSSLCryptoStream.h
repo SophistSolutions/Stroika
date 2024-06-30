@@ -17,6 +17,7 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #include "Stroika/Foundation/Cryptography/OpenSSL/Exception.h"
 #include "Stroika/Foundation/Cryptography/SSL/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/InputStream.h"

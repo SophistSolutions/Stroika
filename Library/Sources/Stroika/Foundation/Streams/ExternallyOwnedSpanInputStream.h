@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "InputStream.h"

@@ -3,7 +3,8 @@
  */
 #include <atomic>
 
-#include "WaitableEvent.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 
 namespace Stroika::Foundation::Execution {
 

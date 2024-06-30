@@ -14,27 +14,28 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Foundation/Execution/Signals.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 /**
  * Description:
  *
  *      This module defines support for POSIX (and std c++ defined) Signals (not to be confused
  *  with the 'Signals and slots' design pattern which is largely unrelated). (POSIX) Signals have all sorts of tricky
- *  rules for their manipulation/control. This doesn't eleminate those, but it makes most common cases much easier
+ *  rules for their manipulation/control. This doesn't eliminate those, but it makes most common cases much easier
  *  to handle safely. In particular, many cases of signals can be 'handled' not as signals (safe signal handlers).
  *
  *
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-467 Lose shared_ptr<> with SignalHandlerRegistry::SafeSignalsManager::Rep_
- *              and change semantics - assert or autodelete - safe handlers on destory of safe signal mgr.
+ *              and change semantics - assert or autodelete - safe handlers on destroy of safe signal mgr.
  *
  *      @todo   Small issue - AddSignalHandler versus SetSignalHandler (). This can be confusing. I had a bug
  *              which was we setup DEFAULT signal handlers, and then in the BasicUNIX Serviced code - did
- *              AddSignalHandler (SIGINT). Issue is that we process BOTH hanlders - one to set an event
- *              object to cleanly shutodown and the other to HARD ABORT!
+ *              AddSignalHandler (SIGINT). Issue is that we process BOTH handlers - one to set an event
+ *              object to cleanly shutdown and the other to HARD ABORT!
  *
  *              This API encourages that mistake. I changed the Service code to use SetSignalHandler - but
- *              That has the default of being hard to debug/non-modular. Maybe have a "SetDefaultHanlder"
+ *              That has the default of being hard to debug/non-modular. Maybe have a "SetDefaultHandler"
  *              or "SetFallbackHandler" - and that is invoked ONLY if no others? Or maybe a property of all
  *              handlers?
  *
@@ -63,7 +64,7 @@ namespace Stroika::Foundation::Execution {
      *  Also, signal handlers come with a flag indicating that they are intended to be run in a 'safe' manner
      *  or a direct signal handling manner.
      *
-     *  \note   BEWARE - these may be copied during invocation, which for 'direct' signal handerls is a
+     *  \note   BEWARE - these may be copied during invocation, which for 'direct' signal handers is a
      *          dangerous, finicky place. Copy must not do operations (like allocate memory) which would be
      *          unsafe during signal (direct) handling.
      */

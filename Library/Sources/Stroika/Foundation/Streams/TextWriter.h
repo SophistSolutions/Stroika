@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/TextConvert.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 
 /**
@@ -32,8 +33,8 @@ namespace Stroika::Foundation::Streams::TextWriter {
      *
      *  \note   This API was called TextOutputStreamAdapter
      *
-     *  \note   TextWriter aggregates its owned substream, so that a Close () on TextWriter
-     *          will Close that substream.
+     *  \note   TextWriter aggregates its owned sub-stream, so that a Close () on TextWriter
+     *          will Close that sub-stream.
      *
      *  Ptr is a copyable smart pointer to a TextWriter stream.
      *

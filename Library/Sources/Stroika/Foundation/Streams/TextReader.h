@@ -10,6 +10,7 @@
 
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
@@ -38,7 +39,7 @@ namespace Stroika::Foundation::Streams {
 namespace Stroika::Foundation::Streams::TextReader {
 
     /**
-     *  \brief TextReader is an InputStream of Character, usually constructted wrapping some binary object or binary stream
+     *  \brief TextReader is an InputStream of Character, usually constructed wrapping some binary object or binary stream
      *
      *  \note   This was called TextInputStreamBinaryAdapter
      *
