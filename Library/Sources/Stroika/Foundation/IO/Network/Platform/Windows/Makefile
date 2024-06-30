@@ -23,7 +23,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=	\
 
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)WinSock${OBJ_SUFFIX}
 endif
 

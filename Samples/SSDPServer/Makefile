@@ -39,7 +39,7 @@ check:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
-ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 LinkerArgs_ExtraSuffix+= -SUBSYSTEM:CONSOLE
 endif
 

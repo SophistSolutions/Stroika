@@ -20,10 +20,10 @@ vpath %cpp $(SrcDir)
 
 Objs	:=
 
-ifneq ($(findstring POSIX,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring POSIX,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)ElfResourceManager${OBJ_SUFFIX}
 endif
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)WindowsResourceManager${OBJ_SUFFIX}
 endif
 

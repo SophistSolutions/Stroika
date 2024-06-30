@@ -20,7 +20,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=
 
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)Exception${OBJ_SUFFIX}
 Objs+=	$(ObjDir)HRESULTErrorException${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StructuredException${OBJ_SUFFIX}

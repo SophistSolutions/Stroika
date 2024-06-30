@@ -25,13 +25,13 @@ ifeq ($(qFeatureFlag_ATLMFC), use-system)
 Objs+= $(ObjDir)MFC_WordProcessor${OBJ_SUFFIX}
 Objs+= $(ObjDir)MFC${OBJ_SUFFIX}
 endif
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+= $(ObjDir)Windows${OBJ_SUFFIX}
 Objs+= $(ObjDir)Windows_FileRegistration${OBJ_SUFFIX}
 endif
 
 
-ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 # AVOID "_WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)"
 CXXFLAGS += -D_WIN32_WINNT=0x0501
 # Maybe helps avoid bugs?

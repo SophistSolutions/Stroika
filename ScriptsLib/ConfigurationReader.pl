@@ -79,9 +79,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'BuildPlatform'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<TARGET_PLATFORMS>");
+		my $pps = ReadValue_($line, "<TargetPlatforms>");
 		if (defined $pps) {
-			$configuration {'TARGET_PLATFORMS'} = $pps;
+			$configuration {'TargetPlatforms'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<BuildByDefault>");
 		if (defined $pps) {

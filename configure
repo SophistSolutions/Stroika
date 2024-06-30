@@ -74,7 +74,7 @@ my @EXTRA_ARGS = ();
 my $ARCH='';
 my $BUILD_TOOLS_ROOT=undef;
 my $BuildPlatform='';
-my $TARGET_PLATFORMS='';
+my $TargetPlatforms='';
 
 # Various Visaul Studio defines sometimes (maybe) helpful - somewhat speculative
 my $VSVARS_VSINSTALLDIR=undef;
@@ -364,7 +364,7 @@ sub	DoHelp_
 		print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
 		print("	    --build-by-default never|always|{uname}         /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n");
 		print("	    --build-platform {PLATFORM}                     /* Specifies the BuildPlatform (currently supported: Unix, VisualStudio.Net-2022) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n");
-		print("	    --target-platforms {TARGET_PLATFORMS}           /* Specifies the target-platforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
+		print("	    --target-platforms {TargetPlatforms}            /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
 		print("	    --build-tools-root {BUILD_TOOLS_ROOT}           /* Specifies the BUILD_TOOLS_ROOT - initially just for visual studio - usually auto-detected */\n");
 		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
 		print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
@@ -439,7 +439,7 @@ sub	DoHelp_
 		print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all; option maybe used to remove a sub-category of tests (like vptr) from larger category like address */\n");
 		print("\n");
 		print("Configure's behavior is also influenced by the following environment variables:\n");
-		print("	    CC, CXX, PLATFORM, TARGET_PLATFORMS, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
+		print("	    CC, CXX, BuildPlatform, TargetPlatforms, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
 		print("	    EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command\n");
 		
 	exit ($x);
@@ -766,7 +766,7 @@ sub     FillDefaultLibDependencies_
 	}
 
 	if ($mustAppendDefaults == true) {
-		if (index ($TARGET_PLATFORMS, "Windows") != -1) {
+		if (index ($TargetPlatforms, "Windows") != -1) {
 			$LinkerArgs_LibDependencies .= "urlmon.lib ";
 			$LinkerArgs_LibDependencies .= "rpcrt4.lib ";
 			$LinkerArgs_LibDependencies .= "kernel32.lib ";
@@ -782,7 +782,7 @@ sub     FillDefaultLibDependencies_
 			$LinkerArgs_LibDependencies .= "odbc32.lib ";
 			$LinkerArgs_LibDependencies .= "odbccp32.lib ";
 		}
-		if (index ($TARGET_PLATFORMS, "POSIX") != -1) {
+		if (index ($TargetPlatforms, "POSIX") != -1) {
 			$LinkerArgs_LibDependencies .= "-lpthread ";
 			$LinkerArgs_LibDependencies .= "-lm ";
 			if ($FEATUREFLAG_librt eq $LIBFEATUREFLAG_UseSystem) {
@@ -818,15 +818,15 @@ sub     FillInToolsPathAdditionsIfNeeded_
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
 {
-	if ($TARGET_PLATFORMS eq "") {
+	if ($TargetPlatforms eq "") {
 		if ("$^O" eq "linux") {
-			$TARGET_PLATFORMS = 'Linux POSIX';
+			$TargetPlatforms = 'Linux POSIX';
 		}
 		elsif ("$^O" eq "darwin") {
-			$TARGET_PLATFORMS = 'MacOS POSIX';
+			$TargetPlatforms = 'MacOS POSIX';
 		}
 		elsif ("$^O" eq "cygwin" or "$^O" eq "msys") {
-			$TARGET_PLATFORMS = 'Windows';
+			$TargetPlatforms = 'Windows';
 		}
 	}
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
@@ -1467,7 +1467,7 @@ sub	ParseCommandLine_Remaining_
 		elsif (lc ($var) eq "-target-platforms" or lc ($var) eq "--target-platforms") {
 			$i++;
 			$var = $args[$i];
-			$TARGET_PLATFORMS = $var;
+			$TargetPlatforms = $var;
 		}
 		elsif (lc ($var) eq "-build-tools-root" or lc ($var) eq "--build-tools-root") {
 			$i++;
@@ -2090,8 +2090,8 @@ sub	CHECK_OPTIONS_
 	if (not exists ($params{$BuildPlatform})) {
 		die ("Unrecognized --build-platform argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
 	}
-	if ($TARGET_PLATFORMS eq "") {
-		die ("Cannot identify TARGET_PLATFORMS");
+	if ($TargetPlatforms eq "") {
+		die ("Cannot identify TargetPlatforms");
 	}
 	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
@@ -2805,7 +2805,7 @@ sub	WriteConfigFile_
 	if (defined $BUILD_TOOLS_ROOT) {
 		print (OUT "    <BUILD_TOOLS_ROOT>$BUILD_TOOLS_ROOT</BUILD_TOOLS_ROOT>\n");
 	}
-	print (OUT "    <TARGET_PLATFORMS>$TARGET_PLATFORMS</TARGET_PLATFORMS>\n");
+	print (OUT "    <TargetPlatforms>$TargetPlatforms</TargetPlatforms>\n");
 	print (OUT "    <ARCH>$ARCH</ARCH>\n");
 	if (defined $Config_Tag) {
 		print (OUT "    <ConfigTags>$Config_Tag</ConfigTags>\n");

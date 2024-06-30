@@ -219,7 +219,7 @@ LIBTOOLFLAGS += -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}
 ifeq (-GL,$(findstring -GL,$(CXXFLAGS)))
 LIBTOOLFLAGS += -LTCG
 endif
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
 # Windows now tends to run out of command-line space (depending on root dir name) - and this helps (see https://www.gnu.org/software/make/manual/html_node/File-Function.html)
 DEFAULT_LIBRARY_GEN_LINE+=\
 	$(shell mkdir -p `dirname $1`)\

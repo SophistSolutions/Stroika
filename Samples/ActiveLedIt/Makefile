@@ -31,7 +31,7 @@ Objs	:=	\
 RC_OUTPUT_=$(ObjDir)ActiveLedIt.res
 
 
-ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 # AVOID "_WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)"
 CXXFLAGS += -D_WIN32_WINNT=0x0501
 # Maybe helps avoid bugs?
@@ -63,7 +63,7 @@ check:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
-ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 # OCX is a DLL, doesnt seem needed but examples pass this arg
 LinkerArgs_ExtraSuffix+= -DLL

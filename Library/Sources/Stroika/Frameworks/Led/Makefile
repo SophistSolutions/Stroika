@@ -35,7 +35,7 @@ Objs+=	$(ObjDir)LineBasedPartition${OBJ_SUFFIX}
 Objs+=	$(ObjDir)Marker${OBJ_SUFFIX}
 Objs+=	$(ObjDir)MultiRowTextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)PartitioningTextImager${OBJ_SUFFIX}
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)SimpleLed${OBJ_SUFFIX}
 endif
 Objs+=	$(ObjDir)SimpleTextImager${OBJ_SUFFIX}

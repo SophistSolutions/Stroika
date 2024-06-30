@@ -19,7 +19,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=
 
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)CodePage${OBJ_SUFFIX}
 endif
 

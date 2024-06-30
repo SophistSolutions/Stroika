@@ -21,7 +21,7 @@ vpath %cpp $(SrcDir)
 Objs	:=	\
 
 
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)WMICollector${OBJ_SUFFIX}
 endif
 

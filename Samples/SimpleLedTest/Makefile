@@ -22,7 +22,7 @@ VPATH	=			$(SrcDir)Sources/
 RC_OUTPUT_=$(ObjDir)Test.res
 
 
-ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 Objs+= $(ObjDir)Test${OBJ_SUFFIX}
 Objs += ${RC_OUTPUT_}
 endif
@@ -56,7 +56,7 @@ $(ObjDir)Test.res:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
-ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 endif
 

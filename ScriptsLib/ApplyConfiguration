@@ -40,7 +40,7 @@ if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 
 
 my $BuildPlatform='';
-my $TARGET_PLATFORMS='';
+my $TargetPlatforms='';
 my $BUILD_TOOLS_ROOT=undef;
 
 
@@ -153,7 +153,7 @@ sub	ConfigParam2BoolInt
 sub	ReadConfiguration_
 {
 	$BuildPlatform = GetConfigurationParameter($activeConfiguration, "BuildPlatform");
-	$TARGET_PLATFORMS = GetConfigurationParameter($activeConfiguration, "TARGET_PLATFORMS");
+	$TargetPlatforms = GetConfigurationParameter($activeConfiguration, "TargetPlatforms");
 	$BUILD_TOOLS_ROOT = GetConfigurationParameter($activeConfiguration, "BUILD_TOOLS_ROOT");
 	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C");
 	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++");
@@ -265,7 +265,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("BuildPlatform", $BuildPlatform);
-	WriteStroikaConfigMakeHeader_CachedLineItem_("TARGET_PLATFORMS", $TARGET_PLATFORMS);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("TargetPlatforms", $TargetPlatforms);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("BUILD_TOOLS_ROOT", $BUILD_TOOLS_ROOT);
 	print (OUT "\n");
 
