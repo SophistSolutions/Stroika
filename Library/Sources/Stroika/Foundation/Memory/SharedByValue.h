@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Memory {
         using shared_ptr_type     = typename TRAITS::shared_ptr_type;
 
     public:
-        static_assert (is_same_v<T, typename TRAITS::element_type>);
+        static_assert (same_as<T, typename TRAITS::element_type>);
 
     public:
         /**

@@ -33,10 +33,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using IDType = ID_TYPE;
         static VariantValue ID2VariantValue (const IDType& id)
         {
-            if constexpr (is_convertible_v<IDType, Memory::BLOB> or is_same_v<IDType, Common::GUID>) {
+            if constexpr (is_convertible_v<IDType, Memory::BLOB> or same_as<IDType, Common::GUID>) {
                 return VariantValue{static_cast<Memory::BLOB> (id)};
             }
-            else if constexpr (is_same_v<IDType, IO::Network::URI>) {
+            else if constexpr (same_as<IDType, IO::Network::URI>) {
                 return VariantValue{id.template As<Characters::String> ()};
             }
             else if constexpr (is_convertible_v<IDType, Characters::String>) {

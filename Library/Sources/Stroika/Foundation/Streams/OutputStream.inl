@@ -126,20 +126,20 @@ namespace Stroika::Foundation::Streams::OutputStream {
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     inline void Ptr<ELEMENT_TYPE>::WriteRaw (const POD_TYPE& p) const
-        requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE> and not Memory::ISpan<POD_TYPE>)
+        requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE> and not Memory::ISpan<POD_TYPE>)
     {
         this->WriteRaw (span{&p, 1});
     }
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE, size_t SPAN_LENGTH>
     inline void Ptr<ELEMENT_TYPE>::WriteRaw (span<POD_TYPE, SPAN_LENGTH> elts) const
-        requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
+        requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
         this->Write (as_bytes (elts));
     }
     template <typename ELEMENT_TYPE>
     void Ptr<ELEMENT_TYPE>::PrintF (const wchar_t* format, ...)
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         RequireNotNull (format);
         va_list argsList;
@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
     template <typename ELEMENT_TYPE>
     template <typename T>
     inline const typename OutputStream::Ptr<ELEMENT_TYPE>& Ptr<ELEMENT_TYPE>::operator<< (const T& write2TextStream) const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Write (write2TextStream);

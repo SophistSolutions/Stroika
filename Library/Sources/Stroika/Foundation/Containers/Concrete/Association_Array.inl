@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             optional<size_t>                                       savedUnderlyingIndex;
-            static_assert (is_same_v<size_t, typename DataStructureImplType_::UnderlyingIteratorRep>); // else must do slightly differently
+            static_assert (same_as<size_t, typename DataStructureImplType_::UnderlyingIteratorRep>); // else must do slightly differently
             if (nextI != nullptr) {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
             }

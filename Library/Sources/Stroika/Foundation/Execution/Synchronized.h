@@ -92,13 +92,13 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
          */
-        static constexpr bool kIsRecursiveReadMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or
-                                                      is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>;
+        static constexpr bool kIsRecursiveReadMutex = same_as<MUTEX, recursive_mutex> or same_as<MUTEX, recursive_timed_mutex> or
+                                                      same_as<MUTEX, shared_timed_mutex> or same_as<MUTEX, shared_mutex>;
 
         /**
          *  Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
          */
-        static constexpr bool kIsRecursiveLockMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>;
+        static constexpr bool kIsRecursiveLockMutex = same_as<MUTEX, recursive_mutex> or same_as<MUTEX, recursive_timed_mutex>;
 
         /**
          *  If enabled, fTraceLocksName field available, and if its set, DbgTrace calls on lock/unlock.
@@ -108,11 +108,11 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         static constexpr bool kSupportsTimedLocks =
-            is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, timed_mutex>;
+            same_as<MUTEX, shared_timed_mutex> or same_as<MUTEX, recursive_timed_mutex> or same_as<MUTEX, timed_mutex>;
 
         /**
          */
-        static constexpr bool kSupportSharedLocks = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>;
+        static constexpr bool kSupportSharedLocks = same_as<MUTEX, shared_timed_mutex> or same_as<MUTEX, shared_mutex>;
 
         /**
          */

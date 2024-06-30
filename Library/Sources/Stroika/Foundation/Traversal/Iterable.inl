@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Traversal {
         using DECAYED_CONTAINER = remove_cvref_t<CONTAINER_OF_T>;
         // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
         using USE_CONTAINER_TYPE =
-            conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not is_same_v<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
+            conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not same_as<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
         auto sharedCopyOfContainer = make_shared<USE_CONTAINER_TYPE> (forward<CONTAINER_OF_T> (from));
         // shared copy so if/when getNext copied, the container itself isn't (so not invalidating any iterators)
         function<optional<T> ()> getNext = [sharedCopyOfContainer, i = sharedCopyOfContainer->begin ()] () mutable -> optional<T> {
@@ -502,7 +502,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::Distinct (EQUALS_COMPARER&& equalsComparer) const
     {
         vector<T> tmp; // Simplistic/stupid/weak implementation
-        if constexpr (is_same_v<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
+        if constexpr (same_as<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
             set<T> t1{begin (), end ()};
             tmp = vector<T>{t1.begin (), t1.end ()};
         }
@@ -529,7 +529,7 @@ namespace Stroika::Foundation::Traversal {
     {
         RequireNotNull (extractElt);
         vector<RESULT> tmp; // Simplistic/stupid/weak implementation
-        if constexpr (is_same_v<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
+        if constexpr (same_as<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
             set<RESULT> t1;
             for (const T& i : *this) {
                 t1.add (extractElt (i));
@@ -1108,7 +1108,7 @@ namespace Stroika::Foundation::Traversal {
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
     {
-        if constexpr (is_same_v<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::IEqualToOptimizable<T>) {
+        if constexpr (same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::IEqualToOptimizable<T>) {
             // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
             _SafeReadRepAccessor<> accessor{this};
             return accessor._ConstGetRep ().Find_equal_to (v, seq);

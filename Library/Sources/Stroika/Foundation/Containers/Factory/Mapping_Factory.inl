@@ -49,12 +49,12 @@ namespace Stroika::Foundation::Containers::Factory {
     inline auto Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer) const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-            if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
+            if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
                           is_default_constructible_v<Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>>) {
                 static const auto kDefault_ = Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }
-            else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and totally_ordered<KEY_TYPE>) {
+            else if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and totally_ordered<KEY_TYPE>) {
                 static const auto kDefault_ = Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }

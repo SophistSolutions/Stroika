@@ -90,12 +90,12 @@ namespace Stroika::Foundation::Characters {
     inline T String2Int (STRINGISH_ARG&& s)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
-        if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or
-                      is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or
-                      is_same_v<DecayedStringishArg, const wchar_t*>) {
+        if constexpr (same_as<DecayedStringishArg, const char*> or same_as<DecayedStringishArg, const char8_t*> or
+                      same_as<DecayedStringishArg, const char16_t*> or same_as<DecayedStringishArg, const char32_t*> or
+                      same_as<DecayedStringishArg, const wchar_t*>) {
             return String2Int<T> (span{s, CString::Length (s)});
         }
-        else if constexpr (is_same_v<DecayedStringishArg, String>) {
+        else if constexpr (same_as<DecayedStringishArg, String>) {
             // @todo PERFORMANCE TWEEK - peek or just use ascii
             Memory::StackBuffer<wchar_t> ignored;
             auto                         sp = s.template GetData<wchar_t> (&ignored);

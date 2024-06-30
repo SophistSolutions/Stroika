@@ -244,7 +244,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <IStdCodeCVT STD_CODECVT, typename... ARGS>
         static CodeCvt mkFromStdCodeCvt (const Options& options = {}, ARGS... args)
-            requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>);
+            requires (same_as<CHAR_T, typename STD_CODECVT::intern_type>);
 
     public:
         nonvirtual CodeCvt& operator= (const CodeCvt& rhs) = default;

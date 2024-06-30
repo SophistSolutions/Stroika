@@ -42,25 +42,25 @@ namespace Stroika::Foundation::Common {
     }
     template <typename T>
     inline T Common::GUID::As () const
-        requires (is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or
-                  is_same_v<T, array<byte, 16>> or is_same_v<T, array<uint8_t, 16>>)
+        requires (same_as<T, Characters::String> or same_as<T, std::string> or same_as<T, Memory::BLOB> or same_as<T, array<byte, 16>> or
+                  same_as<T, array<uint8_t, 16>>)
     {
-        if constexpr (is_same_v<T, Characters::String>) {
+        if constexpr (same_as<T, Characters::String>) {
             char buf[1024];
             Verify (::snprintf (buf, Memory::NEltsOf (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", Data1, Data2, Data3,
                                 Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
             return Characters::String{buf};
         }
-        else if constexpr (is_same_v<T, std::string>) {
+        else if constexpr (same_as<T, std::string>) {
             char buf[1024];
             Verify (::snprintf (buf, Memory::NEltsOf (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", Data1, Data2, Data3,
                                 Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
             return buf;
         }
-        else if constexpr (is_same_v<T, array<byte, 16>> or is_same_v<T, array<uint8_t, 16>>) {
+        else if constexpr (same_as<T, array<byte, 16>> or same_as<T, array<uint8_t, 16>>) {
             return *reinterpret_cast<const T*> (this);
         }
-        else if constexpr (is_same_v<T, Memory::BLOB>) {
+        else if constexpr (same_as<T, Memory::BLOB>) {
             return T{begin (), end ()}; // tricky case cuz BLOB forward declared, not defined when this procedure definition first seen
         }
     }

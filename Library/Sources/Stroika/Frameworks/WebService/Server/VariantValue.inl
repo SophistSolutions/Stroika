@@ -48,7 +48,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
         auto&& args = ClientErrorException::TreatExceptionsAsClientError (
             [&] () { return STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f); });
-        if constexpr (is_same_v<RETURN_TYPE, void>) {
+        if constexpr (same_as<RETURN_TYPE, void>) {
             apply (f, args);
             return VariantValue{};
         }
@@ -125,7 +125,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         return [=] (WebServer::Message* m) {
             ExpectedMethod (m->request (), webServiceDescription);
-            if constexpr (is_same_v<RETURN_TYPE, void>) {
+            if constexpr (same_as<RETURN_TYPE, void>) {
                 f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (&m->rwRequest ())));
                 WriteResponse (&m->rwResponse (), webServiceDescription);
             }
@@ -145,7 +145,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
             ExpectedMethod (m->request (), webServiceDescription);
             Sequence<VariantValue> args = OrderParamValues (paramNames, &m->rwRequest ());
             Assert (args.size () == paramNames.size ());
-            if constexpr (is_same_v<RETURN_TYPE, void>) {
+            if constexpr (same_as<RETURN_TYPE, void>) {
                 (void)ApplyArgs (args, objVarMapper, f);
                 WriteResponse (&m->rwResponse (), webServiceDescription);
             }
@@ -160,7 +160,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         return [=] (WebServer::Message* m) {
             ExpectedMethod (m->request (), webServiceDescription);
-            if constexpr (is_same_v<RETURN_TYPE, void>) {
+            if constexpr (same_as<RETURN_TYPE, void>) {
                 f ();
                 WriteResponse (&m->rwResponse (), webServiceDescription);
             }
@@ -178,14 +178,14 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         template <typename RETURN_TYPE>
         inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription,
                                                      const DataExchange::ObjectVariantMapper& objVarMapper,
-                                                     const function<RETURN_TYPE ()>& f, enable_if_t<!is_same_v<RETURN_TYPE, void>>* = 0)
+                                                     const function<RETURN_TYPE ()>& f, enable_if_t<!same_as<RETURN_TYPE, void>>* = 0)
         {
             WriteResponse (response, webServiceDescription, objVarMapper.FromObject (forward<RETURN_TYPE> (f ())));
         }
         template <typename RETURN_TYPE>
         inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription,
                                                      const DataExchange::ObjectVariantMapper& objVarMapper,
-                                                     const function<RETURN_TYPE ()>& f, enable_if_t<is_same_v<RETURN_TYPE, void>>* = 0)
+                                                     const function<RETURN_TYPE ()>& f, enable_if_t<same_as<RETURN_TYPE, void>>* = 0)
         {
             f ();
             WriteResponse (response, webServiceDescription);

@@ -155,14 +155,14 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T>
     inline BLOB BLOB::FromRaw (const T* s)
-        requires (is_same_v<typename char_traits<T>::char_type, T>)
+        requires (same_as<typename char_traits<T>::char_type, T>)
     {
         RequireNotNull (s);
         return FromRaw (s, s + char_traits<T>::length (s));
     }
     template <typename T>
     inline BLOB BLOB::FromRaw (const basic_string<T>& s)
-        requires (is_same_v<typename char_traits<T>::char_type, T>)
+        requires (same_as<typename char_traits<T>::char_type, T>)
     {
         return FromRaw (s.c_str (), s.c_str () + s.length ());
     }

@@ -172,10 +172,10 @@ namespace Stroika::Foundation::Memory {
             requires (is_trivially_copyable_v<T>);
         template <typename T>
         static BLOB FromRaw (const T* s)
-            requires (is_same_v<typename char_traits<T>::char_type, T>);
+            requires (same_as<typename char_traits<T>::char_type, T>);
         template <typename T>
         static BLOB FromRaw (const basic_string<T>& s)
-            requires (is_same_v<typename char_traits<T>::char_type, T>);
+            requires (same_as<typename char_traits<T>::char_type, T>);
         template <typename T>
         static BLOB FromRaw (const T& s)
             requires (is_trivially_copyable_v<T>);

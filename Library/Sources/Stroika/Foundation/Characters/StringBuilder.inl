@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Characters {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t                                                 spanSize = s.size ();
         if (spanSize != 0) {
-            if constexpr (is_same_v<CHAR_T, ASCII>) {
+            if constexpr (same_as<CHAR_T, ASCII>) {
                 Character::CheckASCII (s);
             }
             if constexpr (same_as<CHAR_T, BufferElementType> or (same_as<BufferElementType, char8_t> and same_as<CHAR_T, ASCII>) or
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Characters {
                 // easy case - just resize buffer, and copy data in
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
-                if constexpr (is_same_v<CHAR_T, BufferElementType>) {
+                if constexpr (same_as<CHAR_T, BufferElementType>) {
                     Memory::CopySpanData_StaticCast (s, span<CHAR_T>{fData_}.subspan (i));
                 }
                 else {
@@ -149,8 +149,8 @@ namespace Stroika::Foundation::Characters {
         StringBuilder<OPTIONS>::Append (CHAR_T c)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        if constexpr (is_same_v<BufferElementType, char32_t>) {
-            if constexpr (is_same_v<CHAR_T, Character>) {
+        if constexpr (same_as<BufferElementType, char32_t>) {
+            if constexpr (same_as<CHAR_T, Character>) {
                 fData_.push_back (c.GetCharacterCode ());
             }
             else {
@@ -158,8 +158,8 @@ namespace Stroika::Foundation::Characters {
             }
             return; // handled
         }
-        else if constexpr (is_same_v<BufferElementType, char8_t>) {
-            if constexpr (is_same_v<CHAR_T, Character>) {
+        else if constexpr (same_as<BufferElementType, char8_t>) {
+            if constexpr (same_as<CHAR_T, Character>) {
                 if (c.IsASCII ()) [[likely]] {
                     fData_.push_back (c.GetAsciiCode ());
                     return; // handled
@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder<OPTIONS>::SetAt (Character item, size_t index) noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        if constexpr (is_same_v<BufferElementType, char32_t>) {
+        if constexpr (same_as<BufferElementType, char32_t>) {
             Require (index < fData_.size ());
             fData_[index] = item.GetCharacterCode ();
         }

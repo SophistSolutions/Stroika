@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        if constexpr (is_same_v<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection>) {
+        if constexpr (same_as<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection>) {
             // avoid trouble with a.AddAll(a);
             if (this != &items) {
                 return AddAll (std::begin (items), std::end (items));

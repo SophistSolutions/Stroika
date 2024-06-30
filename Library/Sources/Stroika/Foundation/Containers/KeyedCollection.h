@@ -84,11 +84,11 @@ namespace Stroika::Foundation::Containers {
      *  since the default for this std::function is not callable.
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    concept IKeyedCollection_ExtractorCanBeDefaulted = is_invocable_v<typename TRAITS::KeyExtractorType, T> and
-                                                       std::is_convertible_v<std::invoke_result_t<typename TRAITS::KeyExtractorType, T>, KEY_TYPE> and
-                                                       is_default_constructible_v<typename TRAITS::KeyExtractorType> and
-                                                       not is_same_v<typename TRAITS::KeyExtractorType, function<KEY_TYPE (T)>> and
-                                                       not is_same_v<typename TRAITS::KeyExtractorType, function<KEY_TYPE (const T&)>>;
+    concept IKeyedCollection_ExtractorCanBeDefaulted =
+        is_invocable_v<typename TRAITS::KeyExtractorType, T> and
+        std::is_convertible_v<std::invoke_result_t<typename TRAITS::KeyExtractorType, T>, KEY_TYPE> and
+        is_default_constructible_v<typename TRAITS::KeyExtractorType> and not same_as<typename TRAITS::KeyExtractorType, function<KEY_TYPE (T)>> and
+        not same_as<typename TRAITS::KeyExtractorType, function<KEY_TYPE (const T&)>>;
 
     /**
      *  \brief a cross between Mapping<KEY, T> and Collection<T> and Set<T>

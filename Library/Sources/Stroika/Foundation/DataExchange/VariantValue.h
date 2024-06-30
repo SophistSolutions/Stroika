@@ -274,7 +274,7 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (const DateTime& val);
         template <Characters::IConvertibleToString STRINGISH_T>
         VariantValue (STRINGISH_T&& val)
-            requires (not is_same_v<remove_cvref_t<STRINGISH_T>, String>);
+            requires (not same_as<remove_cvref_t<STRINGISH_T>, String>);
         VariantValue (const String& val);
         explicit VariantValue (const map<wstring, VariantValue>& val);
         explicit VariantValue (Mapping<String, VariantValue>&& val);

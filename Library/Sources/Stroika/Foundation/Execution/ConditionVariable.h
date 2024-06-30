@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Execution {
      *  \note use of condition_variable (not condition_variable_any) with stop_token
      *        See https://stackoverflow.com/questions/66309276/why-does-c20-stdcondition-variable-not-support-stdstop-token
      *              Before Stroika v3, we used 
-     *                  typename CONDITION_VARIABLE = conditional_t<is_same_v<mutex, MUTEX>, condition_variable, condition_variable_any>
+     *                  typename CONDITION_VARIABLE = conditional_t<same_as<mutex, MUTEX>, condition_variable, condition_variable_any>
      *              For better stop_token interop, we've changed the default to
      *                  typename CONDITION_VARIABLE = condition_variable_any
      */

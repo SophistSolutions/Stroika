@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Streams {
 
     private:
         // Hack to allow use of inline buffer and uninitialized array even though Character class not 'trivial', it probably should be (or I'm not checking the right trait)
-        using InlineBufferElementType_ = conditional_t<is_same_v<Characters::Character, ElementType>, char32_t, ElementType>;
+        using InlineBufferElementType_ = conditional_t<same_as<Characters::Character, ElementType>, char32_t, ElementType>;
         static_assert (sizeof (ElementType) == sizeof (InlineBufferElementType_));
 
     private:

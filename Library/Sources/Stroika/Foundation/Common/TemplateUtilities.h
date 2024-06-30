@@ -64,8 +64,8 @@ namespace Stroika::Foundation::Common {
      * 
      *  \par Example Usage
      *      \code
-     *          static_assert (is_same_v<DifferenceType<int>, int>);
-     *          static_assert (is_same_v<DifferenceType<double>, double>);
+     *          static_assert (same_as<DifferenceType<int>, int>);
+     *          static_assert (same_as<DifferenceType<double>, double>);
      *      \endcode
      */
     template <typename T>
@@ -76,8 +76,8 @@ namespace Stroika::Foundation::Common {
      * 
      *  \par Example Usage
      *      \code
-     *          static_assert (is_same_v<UnsignedOfIf<int>, unsigned int>);
-     *          static_assert (is_same_v<UnsignedOfIf<string>, string>);
+     *          static_assert (same_as<UnsignedOfIf<int>, unsigned int>);
+     *          static_assert (same_as<UnsignedOfIf<string>, string>);
      *      \endcode
      * 
      *  \note conditional<true, T, T> is a trick similar to LazyType

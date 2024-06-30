@@ -246,7 +246,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
     }
     template <typename ELEMENT_TYPE>
     inline auto New (const Memory::BLOB& copyFrom) -> Ptr<ELEMENT_TYPE>
-        requires (is_same_v<ELEMENT_TYPE, byte>)
+        requires (same_as<ELEMENT_TYPE, byte>)
     {
         using MemoryStream::Private_::Rep_;
         Ptr r = make_shared<Rep_<ELEMENT_TYPE>> ();

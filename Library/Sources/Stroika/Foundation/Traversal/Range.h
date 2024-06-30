@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Traversal {
                 return size_t (s);
             }
             static size_t DifferenceToSizeT (SignedDifferenceType s)
-                requires (not is_same_v<UnsignedDifferenceType, SignedDifferenceType>)
+                requires (not same_as<UnsignedDifferenceType, SignedDifferenceType>)
             {
                 return size_t (s);
             }

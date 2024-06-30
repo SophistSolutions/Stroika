@@ -110,8 +110,8 @@ namespace Stroika::Foundation::Common {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or
-                      is_same_v<T, array<byte, 16>> or is_same_v<T, array<uint8_t, 16>>);
+            requires (same_as<T, Characters::String> or same_as<T, std::string> or same_as<T, Memory::BLOB> or
+                      same_as<T, array<byte, 16>> or same_as<T, array<uint8_t, 16>>);
 
     public:
         /**

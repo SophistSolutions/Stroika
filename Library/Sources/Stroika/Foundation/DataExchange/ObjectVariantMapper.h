@@ -303,10 +303,10 @@ namespace Stroika::Foundation::DataExchange {
                                          const ToGenericObjectMapperType& toObjectMapper);
             template <typename T>
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
-                requires (not is_same_v<T, void>);
+                requires (not same_as<T, void>);
             template <typename T>
             TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
-                requires (not is_same_v<T, void>);
+                requires (not same_as<T, void>);
 
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
             nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs)     = default;

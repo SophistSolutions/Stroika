@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Common {
             if constexpr (index == std::variant_size_v<VariantType>) {
                 return index;
             }
-            else if constexpr (std::is_same_v<std::variant_alternative_t<index, VariantType>, T>) {
+            else if constexpr (std::same_as<std::variant_alternative_t<index, VariantType>, T>) {
                 return index;
             }
             else {

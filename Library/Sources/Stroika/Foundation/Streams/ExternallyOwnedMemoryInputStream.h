@@ -30,8 +30,8 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
     }
     template <typename ELEMENT_TYPE, random_access_iterator ELEMENT_ITERATOR>
     [[deprecated ("Since Stroika v3.0d5 use ExternallyOwnedSpanInputStream")]] Ptr<ELEMENT_TYPE> New (ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
-        requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
-                 (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>)
+        requires same_as<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
+                 (same_as<ELEMENT_TYPE, byte> and same_as<typename ELEMENT_ITERATOR::value_type, char>)
     {
         return ExternallyOwnedSpanInputStream::New<ELEMENT_TYPE> (span{start, end});
     }
@@ -44,14 +44,14 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
     template <typename ELEMENT_TYPE, random_access_iterator ELEMENT_ITERATOR>
     [[deprecated ("Since Stroika v3.0d5 use ExternallyOwnedSpanInputStream")]] Ptr<ELEMENT_TYPE>
     New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
-        requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
-                 (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>)
+        requires same_as<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
+                 (same_as<ELEMENT_TYPE, byte> and same_as<typename ELEMENT_ITERATOR::value_type, char>)
     {
         return ExternallyOwnedSpanInputStream::New<ELEMENT_TYPE> (span{start, end - start});
     }
     template <typename ELEMENT_TYPE>
     [[deprecated ("Since Stroika v3.0d5 use ExternallyOwnedSpanInputStream")]] Ptr<ELEMENT_TYPE> New (const uint8_t* start, const uint8_t* end)
-        requires is_same_v<ELEMENT_TYPE, byte>
+        requires same_as<ELEMENT_TYPE, byte>
     {
         return ExternallyOwnedSpanInputStream::New<ELEMENT_TYPE> (span{start, end});
     }

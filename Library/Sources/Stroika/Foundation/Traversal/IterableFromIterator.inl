@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
     Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator () const
     {
-        if constexpr (is_same_v<NEW_ITERATOR_REP_TYPE, void>) {
+        if constexpr (same_as<NEW_ITERATOR_REP_TYPE, void>) {
             AssertNotReached ();
             return nullptr;
         }

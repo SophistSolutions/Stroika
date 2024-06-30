@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Cache {
     {
         // Avoid issue with Lookup updating the stats object - if there is one - with whichKindOfLocker
         using whichKindOfLocker =
-            conditional_t<is_same_v<Statistics::Stats_Null, STATS_TYPE>, shared_lock<decltype (fMutex_)>, lock_guard<decltype (fMutex_)>>;
+            conditional_t<same_as<Statistics::Stats_Null, STATS_TYPE>, shared_lock<decltype (fMutex_)>, lock_guard<decltype (fMutex_)>>;
         [[maybe_unused]] auto&& lock = whichKindOfLocker{fMutex_};
         return const_cast<SynchronizedLRUCache*> (this)->inherited::Lookup (key); // really mutates this, but this method treated as const since we hold a lock during this so threadsafe
     }
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Cache {
          */
         // Avoid issue with Lookup updating the stats object - if there is one - with whichKindOfLocker
         using whichKindOfLocker =
-            conditional_t<is_same_v<Statistics::Stats_Null, STATS_TYPE>, shared_lock<decltype (fMutex_)>, unique_lock<decltype (fMutex_)>>;
+            conditional_t<same_as<Statistics::Stats_Null, STATS_TYPE>, shared_lock<decltype (fMutex_)>, unique_lock<decltype (fMutex_)>>;
         auto&& lock = whichKindOfLocker{fMutex_};
         if (optional<VALUE> o = inherited::Lookup (key)) {
             return *o;

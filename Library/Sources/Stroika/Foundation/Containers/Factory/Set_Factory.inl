@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Containers::Factory {
     inline auto Set_Factory<T, EQUALS_COMPARER>::operator() (const EQUALS_COMPARER& equalsComparer) const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and totally_ordered<T>) {
+            if constexpr (same_as<EQUALS_COMPARER, equal_to<T>> and totally_ordered<T>) {
                 static const auto kDefault_ = Concrete::Set_stdset<T>{};
                 return kDefault_;
             }

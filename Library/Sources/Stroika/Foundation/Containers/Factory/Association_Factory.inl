@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const Hints& hints)
         : Association_Factory{[hints] () -> FactoryFunctionType {
-            if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and totally_ordered<KEY_TYPE>) {
+            if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and totally_ordered<KEY_TYPE>) {
                 // OK to ignore hints, cuz this is the best choice regardless of hints
                 return [] (const KEY_EQUALS_COMPARER&) {
                     return Concrete::Association_stdmultimap<KEY_TYPE, VALUE_TYPE>{}; // OK to omit comparer, because we have less-than defined and using default equal_to<>

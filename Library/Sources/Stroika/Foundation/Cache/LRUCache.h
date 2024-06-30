@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key)
-            requires (is_same_v<KEY, VALUE>);
+            requires (same_as<KEY, VALUE>);
 
     public:
         /**

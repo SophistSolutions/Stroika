@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::ClearOlderThan (TimeStampType t)
     {
-        if constexpr (is_same_v<void, KEY>) {
+        if constexpr (same_as<void, KEY>) {
             if (fData_.has_value () and fData_.fDataCapturedAt < t) {
                 fData_ = nullopt;
             }
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear ()
     {
-        if constexpr (is_same_v<void, KEY>) {
+        if constexpr (same_as<void, KEY>) {
             fData_ = nullopt;
         }
         else {

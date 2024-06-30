@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
             Require (not this->fCompleted_);
             this->fCompleted_ = true;
         }
-        if constexpr (is_same_v<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
+        if constexpr (same_as<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
             return fDigesterAlgorithm_.Complete ();
         }
         else {
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         Require ((from == nullptr and to == nullptr) or (from != nullptr and from <= to));
         IncrementalDigester<ALGORITHM> ctx;
         ctx.Write (from, to);
-        if constexpr (is_same_v<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
+        if constexpr (same_as<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
             return ctx.Complete ();
         }
         else {
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     {
         IncrementalDigester<ALGORITHM> ctx;
         ctx.Write (from);
-        if constexpr (is_same_v<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
+        if constexpr (same_as<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
             return ctx.Complete ();
         }
         else {

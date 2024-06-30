@@ -441,7 +441,7 @@ namespace Stroika::Foundation::Configuration {
         Private_::is_callable<T>::value;
     template <typename ITERABLE>
     [[deprecated ("Since Stroika v3.0d1, use ranges::range")]] constexpr bool IsIterable_v =
-        has_beginend_v<ITERABLE> and not is_same_v<ExtractValueType_t<ITERABLE>, void>;
+        has_beginend_v<ITERABLE> and not same_as<ExtractValueType_t<ITERABLE>, void>;
 
     namespace Private_ {
 
@@ -469,7 +469,7 @@ namespace Stroika::Foundation::Configuration {
             static constexpr bool value = false;
         };
         template <typename T>
-        struct is_iterator<T, enable_if_t<!is_same_v<typename iterator_traits<T>::value_type, void>>> {
+        struct is_iterator<T, enable_if_t<!same_as<typename iterator_traits<T>::value_type, void>>> {
             static constexpr bool value = true;
         };
     }

@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Time {
     {
         Assert (fRepType_ == eEmpty_);
         string asciiRep;
-        if constexpr (is_same_v<STRINGISH_T, string>) {
+        if constexpr (same_as<STRINGISH_T, string>) {
             asciiRep = durationStr;
         }
         else {

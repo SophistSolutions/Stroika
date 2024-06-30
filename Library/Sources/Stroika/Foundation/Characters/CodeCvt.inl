@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Characters {
             Require (to.size () >= this->ComputeTargetCharacterBufferSize (*from));
             auto r = inherited::Bytes2Characters (from, to);
             for (CHAR_T& i : to) {
-                if constexpr (is_same_v<CHAR_T, Character>) {
+                if constexpr (same_as<CHAR_T, Character>) {
                     i = Character{Memory::byteswap (i.template As<char32_t> ())};
                 }
                 else {
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::Characters {
             Require (to.size () >= this->ComputeTargetByteBufferSize (from));
             Memory::StackBuffer<CHAR_T> buf{from};
             for (CHAR_T& i : buf) {
-                if constexpr (is_same_v<CHAR_T, Character>) {
+                if constexpr (same_as<CHAR_T, Character>) {
                     i = Character{Memory::byteswap (i.template As<char32_t> ())};
                 }
                 else {
@@ -403,7 +403,7 @@ namespace Stroika::Foundation::Characters {
         optional<span<byte>>       fInvalidCharacterReplacementBytes_;
         using extern_type = typename STD_CODE_CVT_T::extern_type;
         extern_type fInvalidCharacterReplacementBytesBuf[8]; // WAG at sufficient size, but sb enuf
-        static_assert (is_same_v<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
+        static_assert (same_as<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
 #if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
         Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
@@ -598,13 +598,13 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l, const Options& options)
     {
-        if constexpr (is_same_v<CHAR_T, wchar_t>) {
+        if constexpr (same_as<CHAR_T, wchar_t>) {
             *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (options, l.name ());
         }
-        else if constexpr (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>) {
+        else if constexpr (same_as<CHAR_T, char16_t> or same_as<CHAR_T, char32_t>) {
             *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (options, l.name ());
         }
-        else if constexpr (is_same_v<CHAR_T, Character>) {
+        else if constexpr (same_as<CHAR_T, Character>) {
             fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
                 CodeCvt<char32_t>::Options::New<CHAR_T> (options), l.name ()));
         }
@@ -622,7 +622,7 @@ namespace Stroika::Foundation::Characters {
         else if (charset == WellKnownCharsets::kUTF8) {
             *this = CodeCvt<CHAR_T>{UnicodeExternalEncodings::eUTF8};
         }
-        else if (is_same_v<CHAR_T, Character>) {
+        else if (same_as<CHAR_T, Character>) {
             // best hope is to treat it as a locale name, and hope its found
             fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
                 CodeCvt<char32_t>::Options::New<CHAR_T> (options), charset.AsNarrowSDKString ()));
@@ -730,7 +730,7 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <IStdCodeCVT STD_CODECVT, typename... ARGS>
     inline CodeCvt<CHAR_T> CodeCvt<CHAR_T>::mkFromStdCodeCvt (const Options& options, ARGS... args)
-        requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>)
+        requires (same_as<CHAR_T, typename STD_CODECVT::intern_type>)
     {
         auto u = make_unique<Private_::deletable_facet_<STD_CODECVT>> (forward<ARGS> (args)...);
         return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (options, move (u))};

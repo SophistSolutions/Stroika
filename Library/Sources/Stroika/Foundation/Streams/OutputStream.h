@@ -195,17 +195,17 @@ namespace Stroika::Foundation::Streams::OutputStream {
          */
         template <typename POD_TYPE>
         nonvirtual void WriteRaw (const POD_TYPE& p) const
-            requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE> and not Memory::ISpan<POD_TYPE>);
+            requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE> and not Memory::ISpan<POD_TYPE>);
         template <typename POD_TYPE, size_t SPAN_LENGTH>
         nonvirtual void WriteRaw (span<POD_TYPE, SPAN_LENGTH> elts) const
-            requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
+            requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
 
     public:
         /**
          *  \req IsOpen ()
          */
         nonvirtual void PrintF (const wchar_t* format, ...)
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          */
         template <typename T>
         const typename OutputStream::Ptr<ELEMENT_TYPE>& operator<< (const T& write2TextStream) const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -316,18 +316,18 @@ namespace Stroika::Foundation::Streams::OutputStream {
             Write (span{start, end});
         }
         [[deprecated ("Since Stroika v3.0d5 use span overload")]] void Write (const uint8_t* start, const uint8_t* end) const
-            requires (is_same_v<ELEMENT_TYPE, byte>)
+            requires (same_as<ELEMENT_TYPE, byte>)
         {
             this->Write (span{start, end});
         }
         template <typename POD_TYPE>
         [[deprecated ("Since Stroika v3.0d5 use span overload of WriteRaw")]] void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
-            requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
+            requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
         {
             WriteRaw (span{start, end});
         }
         [[deprecated ("Since Stroika v3.0d5 use span overload of Write")]] void Write (const wchar_t* start, const wchar_t* end) const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+            requires (same_as<ELEMENT_TYPE, Characters::Character>)
         {
             this->Write (span{start, end});
         }

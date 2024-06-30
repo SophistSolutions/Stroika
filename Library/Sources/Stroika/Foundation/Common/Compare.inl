@@ -330,7 +330,7 @@ namespace Stroika::Foundation::Common {
     {
         if constexpr (Configuration::FunctionTraits<FUNCTOR>::kArity == 2) {
             using TRAITS = typename Configuration::FunctionTraits<FUNCTOR>;
-            return is_same_v<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
+            return same_as<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
                    IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::FunctionTraits<FUNCTOR>::template arg<0>::type> ();
         }
         else {

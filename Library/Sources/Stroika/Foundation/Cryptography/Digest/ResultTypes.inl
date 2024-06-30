@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
                 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"")
                 return result;
             }
-            else if constexpr (is_same_v<OUT_RESULT, string> or is_same_v<OUT_RESULT, Characters::String> or is_same_v<OUT_RESULT, Common::GUID>) {
+            else if constexpr (same_as<OUT_RESULT, string> or same_as<OUT_RESULT, Characters::String> or same_as<OUT_RESULT, Common::GUID>) {
                 return Format<OUT_RESULT> (hashVal);
             }
             // else error

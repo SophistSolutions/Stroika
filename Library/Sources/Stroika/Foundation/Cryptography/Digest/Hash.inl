@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     inline HASH_RETURN_TYPE Hash<T, DIGESTER, HASH_RETURN_TYPE, SERIALIZER>::operator() (const T& t) const
     {
         HASH_RETURN_TYPE result;
-        if constexpr (is_same_v<DIGESTER, SystemHashDigester<T>> or is_same_v<DIGESTER, hash<T>>) {
+        if constexpr (same_as<DIGESTER, SystemHashDigester<T>> or same_as<DIGESTER, hash<T>>) {
             result = hash<T>{}(t);
         }
         else {
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         template <typename RESULT_TYPE>
         inline RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
         {
-            if constexpr (is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, byte>) {
+            if constexpr (is_arithmetic_v<RESULT_TYPE> or same_as<RESULT_TYPE, byte>) {
                 // inspired by https://en.cppreference.com/w/cpp/utility/hash - return h1 ^ (h2 << 1); // or use boost::hash_combine
                 return lhs ^ (rhs << 1); // don't simply XOR, I think, because this would be symetric and produce zero if lhs==rhs
             }
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
                 }
                 // e.g. if lhs empty, result sb rhs, so we always look at all chars of both sides
                 // @todo if constexpr check if has append!!!
-                if constexpr (is_same_v<RESULT_TYPE, string>) {
+                if constexpr (same_as<RESULT_TYPE, string>) {
                     while (ri != rhs.end ()) {
                         result += *ri;
                         ++ri;
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
     {
-        if constexpr (is_same_v<RESULT_TYPE, Common::GUID>) {
+        if constexpr (same_as<RESULT_TYPE, Common::GUID>) {
             auto l = lhs.template As<array<uint8_t, 16>> ();
             auto r = lhs.template As<array<uint8_t, 16>> ();
             return RESULT_TYPE{Private_::HashValueCombine (l, r)};

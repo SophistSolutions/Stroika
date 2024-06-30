@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Add (typename Configuration::ArgByValueType<KEY> key)
-        requires (is_same_v<KEY, VALUE>)
+        requires (same_as<KEY, VALUE>)
     {
         Add (key, key);
     }
@@ -291,7 +291,7 @@ namespace Stroika::Foundation::Cache {
     LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::H_ ([[maybe_unused]] typename Configuration::ArgByValueType<KEY> k) const
     {
         Assert (fHashtableSize_ >= 1);
-        if constexpr (is_same_v<KEY_HASH_FUNCTION, nullptr_t>) {
+        if constexpr (same_as<KEY_HASH_FUNCTION, nullptr_t>) {
             return 0; // avoid referencing hash function
         }
         else {

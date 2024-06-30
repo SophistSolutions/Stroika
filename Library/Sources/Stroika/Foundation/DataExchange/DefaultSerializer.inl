@@ -18,7 +18,7 @@ namespace Stroika::Foundation::DataExchange {
         }
         template <typename TYPE_TO_COMPUTE_HASH_OF>
         inline Memory::BLOB SerializeForHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash)
-            requires (is_same_v<remove_cv_t<TYPE_TO_COMPUTE_HASH_OF>, Memory::BLOB>)
+            requires (same_as<remove_cv_t<TYPE_TO_COMPUTE_HASH_OF>, Memory::BLOB>)
         {
             return data2Hash;
         }

@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Traversal {
             using inherited = typename Iterable<T>::_IRep;
 
         protected:
-            using _ContextObjectType = conditional_t<is_same_v<CONTEXT_FOR_EACH_ITERATOR, void>, Configuration::Empty, CONTEXT_FOR_EACH_ITERATOR>;
+            using _ContextObjectType = conditional_t<same_as<CONTEXT_FOR_EACH_ITERATOR, void>, Configuration::Empty, CONTEXT_FOR_EACH_ITERATOR>;
 
         protected:
             [[no_unique_address]] _ContextObjectType _fContextForEachIterator;
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Traversal {
 
         public:
             _Rep ()
-                requires (is_same_v<CONTEXT_FOR_EACH_ITERATOR, void>)
+                requires (same_as<CONTEXT_FOR_EACH_ITERATOR, void>)
             = default;
 
         protected:

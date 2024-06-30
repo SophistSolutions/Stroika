@@ -325,13 +325,13 @@ namespace Stroika::Foundation::Characters {
         }
         template <typename RESULT_T>
         [[deprecated ("Since Stroika v3.0d2 - use As/0")]] void As (RESULT_T* into) const
-            requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>)
+            requires (same_as<RESULT_T, String> or same_as<RESULT_T, wstring>)
         {
             RequireNotNull (into);
-            if constexpr (is_same_v<RESULT_T, String>) {
+            if constexpr (same_as<RESULT_T, String>) {
                 *into = str ();
             }
-            if constexpr (is_same_v<RESULT_T, wstring>) {
+            if constexpr (same_as<RESULT_T, wstring>) {
                 *into = str ().template As<wstring> ();
             }
         }

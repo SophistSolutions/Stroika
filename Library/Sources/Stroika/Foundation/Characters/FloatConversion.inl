@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
                 resultStrLen =
                     ::snprintf (buf.data (), buf.size (),
-                                mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'),
+                                mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
                                 (int)precision, f);
             }
             else {
@@ -440,15 +440,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
             }
             T d; // intentionally uninitialized - set below
-            static_assert (is_same_v<T, float> or is_same_v<T, double> or is_same_v<T, long double>);
+            static_assert (same_as<T, float> or same_as<T, double> or same_as<T, long double>);
             if constexpr (sizeof (CHAR_T) == 1) {
-                if constexpr (is_same_v<T, float>) {
+                if constexpr (same_as<T, float>) {
                     d = ::strtof (reinterpret_cast<const char*> (si), const_cast<char**> (reinterpret_cast<const char**> (&ri)));
                 }
-                else if constexpr (is_same_v<T, double>) {
+                else if constexpr (same_as<T, double>) {
                     d = ::strtod (reinterpret_cast<const char*> (si), const_cast<char**> (reinterpret_cast<const char**> (&ri)));
                 }
-                else if constexpr (is_same_v<T, long double>) {
+                else if constexpr (same_as<T, long double>) {
                     d = ::strtold (reinterpret_cast<const char*> (si), const_cast<char**> (reinterpret_cast<const char**> (&ri)));
                 }
                 else {
@@ -456,13 +456,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
             }
             else if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
-                if constexpr (is_same_v<T, float>) {
+                if constexpr (same_as<T, float>) {
                     d = ::wcstof (reinterpret_cast<const wchar_t*> (si), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&ri)));
                 }
-                else if constexpr (is_same_v<T, double>) {
+                else if constexpr (same_as<T, double>) {
                     d = ::wcstod (reinterpret_cast<const wchar_t*> (si), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&ri)));
                 }
-                else if constexpr (is_same_v<T, long double>) {
+                else if constexpr (same_as<T, long double>) {
                     d = ::wcstold (reinterpret_cast<const wchar_t*> (si), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&ri)));
                 }
                 else {
@@ -591,7 +591,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     T ToFloat (span<const CHAR_T> s)
     {
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
+        if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
             Require (Character::IsASCII (s));
         }
         /*
@@ -635,7 +635,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
     {
         RequireNotNull (remainder); // use other overload if 'null'
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
+        if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
             Require (Character::IsASCII (s));
         }
         /*
@@ -680,12 +680,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         requires (IConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
-        if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or
-                      is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or
-                      is_same_v<DecayedStringishArg, const wchar_t*>) {
+        if constexpr (same_as<DecayedStringishArg, const char*> or same_as<DecayedStringishArg, const char8_t*> or
+                      same_as<DecayedStringishArg, const char16_t*> or same_as<DecayedStringishArg, const char32_t*> or
+                      same_as<DecayedStringishArg, const wchar_t*>) {
             return ToFloat<T> (span{s, CString::Length (s)});
         }
-        else if constexpr (is_same_v<DecayedStringishArg, String>) {
+        else if constexpr (same_as<DecayedStringishArg, String>) {
             Memory::StackBuffer<wchar_t> ignored; // todo optimize for keep ascii case
             auto                         sp = s.template GetData<wchar_t> (&ignored);
             return ToFloat<T> (sp);

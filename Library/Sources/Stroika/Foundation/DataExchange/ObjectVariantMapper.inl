@@ -73,7 +73,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper,
                                                                         const ToObjectMapperType<T>& toObjectMapper)
-        requires (not is_same_v<T, void>)
+        requires (not same_as<T, void>)
         : TypeMappingDetails{forTypeInfo, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
     {
         Require (type_index{typeid (T)} == forTypeInfo);
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper,
                                                                         const ToObjectMapperType<T>&   toObjectMapper)
-        requires (not is_same_v<T, void>)
+        requires (not same_as<T, void>)
         : TypeMappingDetails{type_index{typeid (T)}, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
     {
     }
