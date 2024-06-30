@@ -31,14 +31,13 @@ Objs	:=	\
 RC_OUTPUT_=$(ObjDir)ActiveLedIt.res
 
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += -D_WINDOWS
-CXXFLAGS += -DWIN32
-CXXFLAGS += -DSTRICT
+ifeq (Windows,$(findstring Windows,$(TARGET_PLATFORMS)))
+# AVOID "_WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)"
 CXXFLAGS += -D_WIN32_WINNT=0x0501
+# Maybe helps avoid bugs?
+CXXFLAGS += -DSTRICT
 Objs += ${RC_OUTPUT_}
 endif
-
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CXXFLAGS += /I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
