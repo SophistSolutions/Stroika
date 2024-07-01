@@ -2564,6 +2564,9 @@ sub PostProcessOptions_ ()
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
+	if (!($FEATUREFLAG_libxml2 eq "no") && $isVisualStudio) {
+		push @LinkerArgs_LibDependencies_ADD, "Bcrypt.lib";		# Needed since 1.3.1
+	}
 
 	if ($isVisualStudio) {
 		# Default to true for visual studio, because debug symbols go in separate file, and don't balloon the exe size (.pdb)
@@ -2639,7 +2642,7 @@ sub PostProcessOptions_ ()
 		}
 
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			if (!$STATIC_LINK_GCCRUNTIME ) {
+			if (!$STATIC_LINK_GCCRUNTIME) {
 				push @LinkerArgs_LibDependencies_ADD, "-lstdc++";
 			}
 			if ($STATIC_LINK_GCCRUNTIME == 1) {
