@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <bit>
 #include <cstdarg>
 #include <ranges>
 
