@@ -37,12 +37,16 @@ FETCHURLS=
 FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
 FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
-#lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl/)
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl)/
+OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
-OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
-
+# Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01
+ifeq (Darwin, $(shell ${StroikaRoot}ScriptsLib/DetectedHostOS))
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_:=$(shell realpath --canonicalize-missing ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_})
+else
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
+endif
 
 ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -82,11 +86,11 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)
 	@$(MAKE) --no-print-directory doBuilds_
 
 
-ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine  $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p ORIGS && rm -rf $@ && mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
@@ -257,13 +261,13 @@ endif
 ifeq (Unix,$(BuildPlatform))
 	@$(MAKE) --no-print-directory check_prerequisites_
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS-OUT.txt) ... "`
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);autoreconf -fi > BUILD-CONF-TOOLS-OUT.txt 2>&1
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_);autoreconf -fi > BUILD-CONF-TOOLS-OUT.txt 2>&1
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIGURE-OUT.txt) ... "`
-	@$(ECHO) "$(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
+	@$(ECHO) "$(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt) ... "`
-	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt
-	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
+	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt
+	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Build CURRENT into $(BUILDS_DIR) ... "
@@ -305,7 +309,7 @@ clean:
 ifeq ($(CONFIGURATION),)
 	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/curl/
 else
-	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
 
 
