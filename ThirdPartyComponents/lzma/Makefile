@@ -48,7 +48,11 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)/
 
 # Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01
+ifeq (3.81,$(firstword $(sort $(MAKE_VERSION) 3.81)))
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_:=$(shell realpath --canonicalize-missing ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_})
+else
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
+endif
 
 
 ifeq (Unix,$(BuildPlatform))
