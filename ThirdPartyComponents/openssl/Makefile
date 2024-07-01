@@ -26,19 +26,13 @@ QUICK_BUILD ?= 1
 VERSION:=3.3.1
 #VERSION:=3.3.0
 #VERSION:=3.2.1
-#VERSION=3.2.0
-#VERSION=3.1.4
-#VERSION=3.1.3
-#VERSION=3.1.2
-#VERSION=3.1.1
-#VERSION=3.1.0
 
 BASENAME:=openssl-$(VERSION)
 EXTRACTED_DIRNAME:=$(BASENAME)
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/openssl)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/openssl)/
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
 # Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01
