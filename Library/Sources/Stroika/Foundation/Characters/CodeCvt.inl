@@ -3,11 +3,11 @@
  */
 #include <bit>
 
+#include "Stroika/Foundation/Characters/TextConvert.h"
+#include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "Stroika/Foundation/Configuration/StdCompat.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-
-#include "TextConvert.h"
-#include "UTFConvert.h"
 
 namespace Stroika::Foundation::Characters {
 
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Characters {
             RequireNotNull (from);
             Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
             span<const SERIALIZED_CHAR_T> serializedFrom = ReinterpretBytes_ (*from);
-            Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
+            Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in byte-span
             ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (serializedFrom, to);
             if (r.fStatus == ConversionStatusFlag::sourceIllegal) {
                 UTFConvert::Throw (r.fStatus, r.fSourceConsumed);
@@ -216,10 +216,10 @@ namespace Stroika::Foundation::Characters {
             auto r = inherited::Bytes2Characters (from, to);
             for (CHAR_T& i : to) {
                 if constexpr (same_as<CHAR_T, Character>) {
-                    i = Character{Memory::byteswap (i.template As<char32_t> ())};
+                    i = Character{Configuration::StdCompat::byteswap (i.template As<char32_t> ())};
                 }
                 else {
-                    i = Memory::byteswap (i);
+                    i = Configuration::StdCompat::byteswap (i);
                 }
             }
             return r;
@@ -230,10 +230,10 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<CHAR_T> buf{from};
             for (CHAR_T& i : buf) {
                 if constexpr (same_as<CHAR_T, Character>) {
-                    i = Character{Memory::byteswap (i.template As<char32_t> ())};
+                    i = Character{Configuration::StdCompat::byteswap (i.template As<char32_t> ())};
                 }
                 else {
-                    i = Memory::byteswap (i);
+                    i = Configuration::StdCompat::byteswap (i);
                 }
             }
             return inherited::Characters2Bytes (span<const CHAR_T>{buf.begin (), buf.size ()}, to);

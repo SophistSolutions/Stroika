@@ -60,6 +60,44 @@ namespace Stroika::Foundation::Configuration::StdCompat {
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args;
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
 
+    /**
+     *  Workaround absence of bit_cast in MacOS XCode 14 (which we support with Stroika v3)
+     */
+#if __cpp_lib_bit_cast >= 201806L
+    using std::bit_cast;
+#else
+    template <class To, class From>
+    inline To bit_cast (const From& src) noexcept
+        requires (sizeof (To) == sizeof (From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>)
+    {
+        static_assert (std::is_trivially_constructible_v<To>, "This implementation additionally requires "
+                                                              "destination type to be trivially constructible");
+        To dst;
+        std::memcpy (&dst, &src, sizeof (To));
+        return dst;
+    }
+#endif
+
+    /**
+     *  Workaround absence of byteswap gcc up to version 12, and clang (up to 14).
+     */
+#if __cpp_lib_byteswap >= 202110L
+    using std::byteswap;
+#else
+    template <class T>
+    inline T byteswap (T n) noexcept
+    {
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Warray-bounds\"");
+        static_assert (std::has_unique_object_representations_v<T>, "T may not have padding bits");
+        auto value_representation = bit_cast<array<byte, sizeof (T)>> (n);
+        for (size_t i = 0; i < value_representation.size () / 2; ++i) {
+            swap (value_representation[i], value_representation[value_representation.size () - i]);
+        }
+        return bit_cast<T> (value_representation);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Warray-bounds\"");
+    }
+#endif
+
 }
 
 /*

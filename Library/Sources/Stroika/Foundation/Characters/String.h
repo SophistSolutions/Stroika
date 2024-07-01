@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Characters {
      *      it as just another character, but its probably not what you meant.
      * 
      *  \note Narrow String handling
-     *      Becuase the character set of strings of type 'char' is ambiguous, if you construct a String
+     *      Because the character set of strings of type 'char' is ambiguous, if you construct a String
      *      with char (char* etc) - it is somehow 'required' that the characters be ASCII. If using the FromConstantString () API
      *      , or operator"" _k, it is checked with Require () - so assertion failure. If you construct
      *      with String::CTOR, it will generate a runtime exception (so more costly runtime checking).
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Characters {
      *          String objects are MUTABLE
      *          String reps are IMMUTABLE.
      *          Changes to string like +=, create new string reps (and so WORK but are quite costly). Consider
-     *          Use StringBuilder for that purpose in performance sensative code.
+     *          Use StringBuilder for that purpose in performance sensitive code.
      *
      *          TODO WRITEUP AND MAYBE MAKE IMMUTABLE
      * 
@@ -350,8 +350,8 @@ namespace Stroika::Foundation::Characters {
          *          String  tmp1    =   "FRED";
          *          String  tmp2    =   String{"FRED"};
          *          String  tmp3    =   String::FromStringConstant ("FRED");    // same as 2 above, but faster
-         *          String  tmp4    =   "FRED"sv;                               // equivilent to FromStringConstant
-         *          String  tmp5    =   "FRED"_k;                               // equivilent to FromStringConstant
+         *          String  tmp4    =   "FRED"sv;                               // equivalent to FromStringConstant
+         *          String  tmp5    =   "FRED"_k;                               // equivalent to FromStringConstant
          *      \endcode
          *
          *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
