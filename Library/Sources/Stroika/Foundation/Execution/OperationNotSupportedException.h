@@ -14,16 +14,19 @@ namespace Stroika::Foundation::Execution {
 
     using Characters::String;
 
+    /**
+     *  \see also FeatureNotSupportedException
+     */
     class OperationNotSupportedException : public Execution::RuntimeErrorException<> {
     public:
         OperationNotSupportedException ();
         OperationNotSupportedException (const String& operationName);
 
     public:
-        nonvirtual Characters::String GetOperationName () const;
+        nonvirtual optional<String> GetOperationName () const;
 
     private:
-        String fOperationName_;
+        optional<String> fOperationName_;
     };
 
 }

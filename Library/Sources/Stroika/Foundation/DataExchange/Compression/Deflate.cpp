@@ -111,8 +111,6 @@ namespace {
 
             ptrdiff_t outBufSize = intoBuffer.size ();
 
-            // int flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
-
             fZStream_.avail_out = static_cast<uInt> (outBufSize);
             fZStream_.next_out  = reinterpret_cast<Bytef*> (intoBuffer.data ());
             int ret;
@@ -257,9 +255,15 @@ namespace {
 }
 #endif
 
-#if qHasFeature_ZLib
+#if !qHasFeature_ZLib
+namespace {
+    const auto kNotSuppExcept_ = Execution::FeatureNotSupportedException{"Deflate (ZLIB)"sv};
+}
+#endif
+
 Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
 {
+#if qHasFeature_ZLib
     struct MyRep_ : IRep {
         Deflate::Compress::Options fOptions_;
         shared_ptr<DeflateRep_>    fDelegate2;
@@ -278,9 +282,13 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
         }
     };
     return Compression::Ptr{make_shared<MyRep_> (o)};
+#else
+    Execution::Throw (kNotSuppExcept_);
+#endif
 }
 Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decompress::Options& o)
 {
+#if qHasFeature_ZLib
     struct MyRep_ : IRep {
         shared_ptr<InflateRep_>        fDelegate2;
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
@@ -294,5 +302,7 @@ Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decom
         }
     };
     return Compression::Ptr{make_shared<MyRep_> ()};
-}
+#else
+    Execution::Throw (kNotSuppExcept_);
 #endif
+}

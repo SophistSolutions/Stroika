@@ -25,7 +25,7 @@ OperationNotSupportedException::OperationNotSupportedException (const String& op
 {
 }
 
-Characters::String OperationNotSupportedException::GetOperationName () const
+optional<String> OperationNotSupportedException::GetOperationName () const
 {
     return fOperationName_;
 }

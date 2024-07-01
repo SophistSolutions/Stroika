@@ -15,8 +15,8 @@ Execution pattern classes (external process runner, exception handling support, 
 - [Common.h](Common.h)
 - [ConditionVariable.h](ConditionVariable.h) - support use of std::condition_variable
 - [DLLSupport.h](DLLSupport.h)
-- [Exceptons.h](Exceptons.h)
-- [FeatureNotSupportedInThisVersionException.h](FeatureNotSupportedInThisVersionException.h)
+- [Exceptions.h](Exceptions.h)
+- [FeatureNotSupportedException.h](FeatureNotSupportedException.h)
 - [Finally.h](Finally.h) - very handy - try/finally like support
 - [Function.h](Function.h) - std::function<> but allow for \<, more usable equality etc (key to add/remove callbacks)
 - [Logger.h](Logger.h)

@@ -362,11 +362,8 @@ void Response::ApplyBodyEncodingIfNeeded_ ()
         if constexpr (Compression::Deflate::kSupported) {
             if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
                 constexpr auto compressOpts = Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f}; // @todo config option - passed in - didn't seem to help here
-                // @todo find way to make this work with constexpr... not #ifdef...
-#if qFeatureFlag_ZLib
                 currentCompression = Compression::Deflate::Compress::New (compressOpts);
                 applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
-#endif
             }
         }
         if (currentCompression) {

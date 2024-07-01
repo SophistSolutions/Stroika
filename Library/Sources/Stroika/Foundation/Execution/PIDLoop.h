@@ -18,9 +18,6 @@
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- * TODO:
- *
  */
 
 namespace Stroika::Foundation::Execution {
@@ -41,11 +38,11 @@ namespace Stroika::Foundation::Execution {
      *          Sleep (10*60);  // then run PID loop 10 minutes, and when PIDLoop goes out of scope, auto-terminates
      *      \endcode
      *
-     *  \note   To have code which preflights or cleanps up after the PIDLoop, create your own subclass of PIDLoop<>, and do your
+     *  \note   To have code which preflights or cleanups up after the PIDLoop, create your own subclass of PIDLoop<>, and do your
      *          initialization in the CTOR, and cleanup in the DTOR, so leverage and respects the RAII.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
-     *                              except that the caller must handle any synchonizaiton required by the measureFunction and the outputFunction
+     *                              except that the caller must handle any synchronization required by the measureFunction and the outputFunction
      *
      */
     template <typename CONTROL_VAR_TYPE = double>
