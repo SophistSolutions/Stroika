@@ -28,6 +28,7 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
 
 #lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
+# reproduced - still an issue at least in this makefile - cuz same version of make (3.81 - prob with dir dependencies??? - maybe not too hard to solve) --LGP 2024-07-01
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
 
 #OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}Inter.../Thir.../boost/"
