@@ -5,12 +5,14 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/FeatureNotSupportedException.h"
 
 #include "Deflate.h"
 
 #if qHasFeature_ZLib
 // SEE http://www.zlib.net/zlib_how.html
 #include <zlib.h>
+#endif
 
 using std::byte;
 
@@ -24,6 +26,7 @@ using namespace Stroika::Foundation::Streams;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+#if qHasFeature_ZLib
 namespace {
     void ThrowIfZLibErr_ (int err)
     {

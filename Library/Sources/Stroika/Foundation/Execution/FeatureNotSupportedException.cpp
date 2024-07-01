@@ -27,7 +27,7 @@ FeatureNotSupportedException::FeatureNotSupportedException (const String& featur
 {
 }
 
-optional<String> FeatureNotSupportedException::GetOperationName () const
+optional<String> FeatureNotSupportedException::GetFeature () const
 {
     return fFeature_;
 }
