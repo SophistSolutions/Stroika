@@ -359,10 +359,15 @@ void Response::ApplyBodyEncodingIfNeeded_ ()
             }
         };
         Compression::Ptr currentCompression;
-        if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
-            constexpr auto compressOpts = Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f}; // @todo config option - passed in - didn't seem to help here
-            currentCompression = Compression::Deflate::Compress::New (compressOpts);
-            applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
+        if constexpr (Compression::Deflate::kSupported) {
+            if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
+                // @todo find way to make this work with constexpr... not #ifdef...
+#if qFeatureFlag_ZLib
+                constexpr auto compressOpts = Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f}; // @todo config option - passed in - didn't seem to help here
+                currentCompression = Compression::Deflate::Compress::New (compressOpts);
+                applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
+#endif
+            }
         }
         if (currentCompression) {
             // compressed stream reads from the raw body stream
