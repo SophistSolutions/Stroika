@@ -999,8 +999,8 @@ namespace Stroika::Foundation::DataExchange {
 
             Stroika_Define_Enum_Bounds (eOmit, eInclude)
         };
-        static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;
-        static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude;
+        static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;       // instead of using NullFieldHandling::eOmit
+        static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude;    // instead of using NullFieldHandling::eInclude
 
         /**
          *  Required. This is the field generated/read by this StructFieldInfo
