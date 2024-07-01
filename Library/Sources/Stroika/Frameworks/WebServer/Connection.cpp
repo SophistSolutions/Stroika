@@ -364,7 +364,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             DbgTrace ("Interceptor-Chain caught exception handling message: {}"_f, current_exception ());
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-            WriteLogConnectionMsg_ (Characters::Format ("Interceptor-Chain caught exception handling message: {}"_f, urrent_exception ()));
+            WriteLogConnectionMsg_ (Characters::Format ("Interceptor-Chain caught exception handling message: {}"_f, current_exception ()));
 #endif
         }
 
