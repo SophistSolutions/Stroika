@@ -162,7 +162,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IntervalTimer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
@@ -539,7 +539,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\IntervalTimer.h" />

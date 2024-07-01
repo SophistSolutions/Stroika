@@ -346,6 +346,13 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
         this->rwResponse ().rwHeaders ().connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
 
+        if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
+            if (this->response ().autoComputeETag ()) {
+                this->rwResponse ().automaticTransferChunkSize =
+                    Response::kNoChunkedTransfer; // cannot start response xfer til we've computed etag (meaning seen all the body bytes)
+            }
+        }
+
         /**
          *  Delegate to interceptor chain. This is the principle EXTENSION point for the Stroika Framework webserver. This is where you modify
          *  the response somehow or other (typically through routes).
@@ -395,12 +402,16 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
         /*
          *  By this point, the response has been fully built, and so we can potentially redo the response as a 304-not-modified, by
-         *  comparing the etag with the ifNoneMatch header.
+         *  comparing the ETag with the ifNoneMatch header.
          */
         if (not this->response ().responseStatusSent () and this->response ().status == HTTP::StatusCodes::kOK) {
             if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
                 if (auto actualETag = this->response ().headers ().ETag ()) {
-                    if (requestedINoneMatch->fETags.Contains (*actualETag)) {
+                    bool ctm = this->response ().chunkedTransferMode ();
+                    if (ctm) {
+                        DbgTrace ("Warning - disregarding ifNoneMatch request (though it matched) - cuz in chunked transfer mode"_f);
+                    }
+                    if (requestedINoneMatch->fETags.Contains (*actualETag) and not ctm) {
                         DbgTrace ("Updating OK response to NotModified (due to ETag match)"_f);
                         this->rwResponse ().status = HTTP::StatusCodes::kNotModified; // this assignment automatically prevents sending data
                     }

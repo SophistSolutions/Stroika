@@ -615,7 +615,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp">
@@ -1803,7 +1803,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h">

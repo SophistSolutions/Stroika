@@ -36,6 +36,8 @@ namespace Stroika::Foundation::DataExchange::Compression::Deflate {
      *          Memory::BLOB  compressed  =     Compression::Deflate::Compress::New ().Transform (kSample1_);
      *          Assert (kSample1_ == Compression::Compression::Deflate::Decompress::New ().Transform (compressed));
      *      \endcode
+     * 
+     *  \note if not kSupported, these 'New ()' functions just throw FeatureNotSupportedException{}
      */
     namespace Compress {
         using Compression::Compress::Options;
