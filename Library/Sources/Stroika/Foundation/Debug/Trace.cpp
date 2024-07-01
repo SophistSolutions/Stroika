@@ -532,7 +532,7 @@ void Debug::Private_::Emitter::DoEmit_ (const char* p) noexcept
         buf[Memory::NEltsOf (buf) - 1] = 0;
         ::OutputDebugStringA (buf);
         ::OutputDebugStringA ("...");
-        ::OutputDebugStringA (GetEOL<char> ());
+        ::OutputDebugStringA (kEOL<char>);
     }
 #endif
 #if qStroika_Foundation_Debug_Trace_TraceToFile
@@ -553,7 +553,7 @@ void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p) noexcept
         buf[Memory::NEltsOf (buf) - 1] = 0;
         ::OutputDebugStringW (buf);
         ::OutputDebugStringW (L"...");
-        ::OutputDebugStringW (GetEOL<wchar_t> ());
+        ::OutputDebugStringW (kEOL<wchar_t>);
     }
 #endif
 #if qStroika_Foundation_Debug_Trace_TraceToFile
@@ -644,13 +644,13 @@ TraceContextBumper::TraceContextBumper (CHAR_ARRAY_T mainName, CHAR_ARRAY_T extr
     Require (char_traits<wchar_t>::length (mainName.data ()) <= kMaxContextNameLen_); // assert NUL-terminated
     if (extraTextAtTop.empty () or extraTextAtTop[0] == '\0') {
         auto mainNameData = mainName.data ();
-        fLastWriteToken_  = Private_::Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{}> {{"sv,
+        fLastWriteToken_  = Private_::Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (kEOL<wchar_t>), L"<{}> {{"sv,
                                                                          Configuration::StdCompat::make_wformat_args (mainNameData));
     }
     else {
         auto mainNameData       = mainName.data ();
         auto extraTextAtTopData = extraTextAtTop.data ();
-        fLastWriteToken_        = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{} ({})> {{"sv,
+        fLastWriteToken_        = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (kEOL<wchar_t>), L"<{} ({})> {{"sv,
                                                                      Configuration::StdCompat::make_wformat_args (mainNameData, extraTextAtTopData));
     }
     size_t len = char_traits<wchar_t>::length (mainName.data ());
@@ -671,7 +671,7 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
         va_list argsList;
         va_start (argsList, extraFmt);
         wstring tmpFmtV  = Characters::CString::FormatV (extraFmt, argsList);
-        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (GetEOL<wchar_t> ()), L"<{} ({})> {{"sv,
+        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (kEOL<wchar_t>), L"<{} ({})> {{"sv,
                                                               Configuration::StdCompat::make_wformat_args (contextName, tmpFmtV));
         va_end (argsList);
         size_t len = min (kMaxContextNameLen_ - 1, char_traits<wchar_t>::length (contextName));
@@ -711,7 +711,7 @@ TraceContextBumper::~TraceContextBumper () noexcept
             [[maybe_unused]] lock_guard critSec{sModuleData_->fModuleMutex};
             if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
                 Emitter::Get ().EmitUnadornedText ("/>");
-                Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
+                Emitter::Get ().EmitUnadornedText (kEOL<char>);
             }
             else {
                 Emitter::Get ().EmitTraceMessage ("}} </{}>"_f, fSavedContextName_.data ());

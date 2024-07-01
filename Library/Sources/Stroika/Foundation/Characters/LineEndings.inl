@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IPossibleCharacterRepresentation T>
-    inline
+    [[deprecated ("Since Stroika v3.0d7 - use kEOL")]] inline
 #if __cpp_constexpr >= 202211L
         constexpr
 #endif
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Characters {
     void AssureHasLineTermination (basic_string<CHAR>* text)
     {
         RequireNotNull (text);
-        const CHAR* eol     = GetEOL<CHAR> ();
+        const CHAR* eol     = kEOL<CHAR>;
         size_t      eolLen  = CString::Length (eol);
         size_t      len     = text->length ();
         bool        already = false;

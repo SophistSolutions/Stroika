@@ -73,7 +73,7 @@ public:
                 }
             }
         }
-        out.WriteLn (sb.str ());
+        out.WriteLn (sb);
     }
 
 private:

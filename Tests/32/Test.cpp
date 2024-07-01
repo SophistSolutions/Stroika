@@ -417,15 +417,15 @@ namespace {
                                     }(),
                                     [] () {
                                         stringstream tmp;
-                                        tmp << "NAME=\"Ubuntu\"" << Characters::GetEOL<char> ();
-                                        tmp << "VERSION=\"13.10, Saucy Salamander\"" << Characters::GetEOL<char> ();
-                                        tmp << "ID=ubuntu" << Characters::GetEOL<char> ();
-                                        tmp << "ID_LIKE=debian" << Characters::GetEOL<char> ();
-                                        tmp << "PRETTY_NAME=\"Ubuntu 13.10\"" << Characters::GetEOL<char> ();
-                                        tmp << "VERSION_ID=\"13.10\"" << Characters::GetEOL<char> ();
-                                        tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << Characters::GetEOL<char> ();
-                                        tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << Characters::GetEOL<char> ();
-                                        tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << Characters::GetEOL<char> ();
+                                        tmp << "NAME=\"Ubuntu\"" << Characters::kEOL<char>;
+                                        tmp << "VERSION=\"13.10, Saucy Salamander\"" << Characters::kEOL<char>;
+                                        tmp << "ID=ubuntu" << Characters::kEOL<char>;
+                                        tmp << "ID_LIKE=debian" << Characters::kEOL<char>;
+                                        tmp << "PRETTY_NAME=\"Ubuntu 13.10\"" << Characters::kEOL<char>;
+                                        tmp << "VERSION_ID=\"13.10\"" << Characters::kEOL<char>;
+                                        tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << Characters::kEOL<char>;
+                                        tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << Characters::kEOL<char>;
+                                        tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << Characters::kEOL<char>;
                                         return tmp.str ();
                                     }()};
 
@@ -469,8 +469,8 @@ namespace {
                                      }(),
                                      [] () {
                                          stringstream tmp;
-                                         tmp << "3, 4" << Characters::GetEOL<char> ();
-                                         tmp << "4, 5" << Characters::GetEOL<char> ();
+                                         tmp << "3, 4" << Characters::kEOL<char>;
+                                         tmp << "4, 5" << Characters::kEOL<char>;
                                          return tmp.str ();
                                      }()};
         const Case_ kCase2_noSpace_{[] () {
@@ -482,9 +482,9 @@ namespace {
                                     }(),
                                     [] () {
                                         stringstream tmp;
-                                        tmp << "a,b" << Characters::GetEOL<char> ();
-                                        tmp << "1,2,3" << Characters::GetEOL<char> ();
-                                        tmp << "x,7" << Characters::GetEOL<char> ();
+                                        tmp << "a,b" << Characters::kEOL<char>;
+                                        tmp << "1,2,3" << Characters::kEOL<char>;
+                                        tmp << "x,7" << Characters::kEOL<char>;
                                         return tmp.str ();
                                     }()};
 

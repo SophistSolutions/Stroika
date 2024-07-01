@@ -14,13 +14,16 @@
 namespace Stroika::Foundation::Characters {
 
     /**
+     *  \brief null-terminated String constant for current compiled platform - Windows (CRLF) or POSIX (NL) - macos I dont think any longer uses \r??
      */
     template <IPossibleCharacterRepresentation T>
-#if __cpp_constexpr >= 202211L
-    constexpr
+    static constexpr T kEOL[] = {
+#if qPlatform_Windows
+        '\r', '\n', '\0' // "\r\n"
+#elif qPlatform_POSIX
+        '\n', '\0' // "\n"
 #endif
-        const T*
-        GetEOL ();
+    };
 
     /**
      */

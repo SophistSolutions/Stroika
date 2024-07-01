@@ -464,12 +464,12 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             virtual vector<ElementType> AsVector () const override
             {
                 RequireNotReached ();
-                return{};
+                return {};
             }
             virtual string AsString () const override
             {
                 RequireNotReached ();
-                return{};
+                return {};
             }
 
         private:

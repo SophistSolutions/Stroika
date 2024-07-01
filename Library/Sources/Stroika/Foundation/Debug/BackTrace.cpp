@@ -91,7 +91,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     useSkipFrames += 2; // boost (as checking on windows as of 2020-03-01) appears to leave in two layers of its own
 
     if (useSkipFrames != 0 and frames != 0) {
-        result << L"..." << Characters::GetEOL<wchar_t> ();
+        result << L"..." << Characters::kEOL<wchar_t>;
     }
 
     bool includeSrcLines = options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines);
@@ -109,7 +109,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         else {
             result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
         }
-        result << L";" << Characters::GetEOL<wchar_t> ();
+        result << L";" << Characters::kEOL<wchar_t>;
         if (i - useSkipFrames >= usingMaxFrames) {
             break;
         }
@@ -141,7 +141,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     });
     wstring                 out;
     if (useSkipFrames != 0 and nptrs != 0) {
-        out += wstring{L"..."} + Characters::GetEOL<wchar_t> ();
+        out += wstring{L"..."} + Characters::kEOL<wchar_t>;
     }
     for (int j = 0; j < nptrs; j++) {
         if (j < useSkipFrames) {
@@ -175,7 +175,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
             }
         }
 #endif
-        out += symStr + L";" + Characters::GetEOL<wchar_t> ();
+        out += symStr + L";" + Characters::kEOL<wchar_t>;
         if (j - useSkipFrames >= usingMaxFrames) {
             break;
         }

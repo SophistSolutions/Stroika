@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
         requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         this->Write (forward<ELT_2_WRITE> (arg));
-        this->Write (Characters::GetEOL<Characters::Character> ());
+        this->Write (Characters::kEOL<Characters::Character>);
     }
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
