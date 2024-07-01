@@ -679,7 +679,7 @@ namespace {
                 fLibRep_->standalone = true;
             }
             else {
-                xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
+                xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (nullptr, nullptr, nullptr, 0, "in-stream.xml" /*filename*/);
                 Execution::ThrowIfNull (ctxt);
                 [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
                 byte                    buf[1024]; // intentionally uninitialized
@@ -900,9 +900,6 @@ Providers::LibXML2::Provider::~Provider ()
     Require (DocRep_::sLiveCnt == 0);    // ""
 #endif
     xmlCleanupParser ();
-#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
-    xmlMemoryDump ();
-#endif
 }
 
 shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const

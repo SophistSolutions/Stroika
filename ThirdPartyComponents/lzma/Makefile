@@ -55,7 +55,6 @@ LIBS	=	-lstdc++ -lc
 endif
 
 
-
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/lzma/7z.h		\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/lzma/7zCrc.h		\
