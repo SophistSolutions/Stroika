@@ -1022,6 +1022,8 @@ namespace Stroika::Foundation::DataExchange {
 
         /**
          *  defaults to NullFieldHandling::eInclude
+         * 
+         *  \note only applies to 'FromObject' handler - whether to add the null entry to the 'VariantValue'.
          */
         NullFieldHandling fNullFields{NullFieldHandling::eInclude};
 
@@ -1032,13 +1034,7 @@ namespace Stroika::Foundation::DataExchange {
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
                          const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
-        template <int SZ>
-        StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
-        template <int SZ>
-        StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo,
-                         const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
-        StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper,
-                         NullFieldHandling nullFields = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper, NullFieldHandling nullFields = NullFieldHandling::eInclude);
     };
 
     template <>

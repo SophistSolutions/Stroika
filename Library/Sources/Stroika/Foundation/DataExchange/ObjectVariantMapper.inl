@@ -45,18 +45,6 @@ namespace Stroika::Foundation::DataExchange {
         : StructFieldInfo{serializedFieldName, fieldMetaInfo, {}, nullFields}
     {
     }
-    template <int SZ>
-    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t              (&serializedFieldName)[SZ],
-                                                                  const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
-        : StructFieldInfo{Characters::String::FromStringConstant (serializedFieldName), fieldMetaInfo, {}, nullFields}
-    {
-    }
-    template <int SZ>
-    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo,
-                                                                  const optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
-        : StructFieldInfo{Characters::String::FromStringConstant (serializedFieldName), fieldMetaInfo, overrideTypeMapper, nullFields}
-    {
-    }
 
     /*
      ********************************************************************************
