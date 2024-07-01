@@ -1351,7 +1351,7 @@ String String::Repeat (unsigned int count) const
             for (unsigned int i = 0; i < count; ++i) {
                 result << *this;
             }
-            return result.str ();
+            return result;
         }
     }
 }
