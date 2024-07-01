@@ -33,7 +33,7 @@
  *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
  *              Maybe Float2StringOptions is optional param to As<String> ()???
  *
- *      @todo   PT3,4S and PT3.4S both must  be interpretted as 3.4 seconds. I think we can generate
+ *      @todo   PT3,4S and PT3.4S both must  be interpreted as 3.4 seconds. I think we can generate
  *              either, but parser must accept either. Right now we use atof(), and I'm not sure that
  *              handles either form of decimal separator! Add to regression tests, and make sure
  *              it works.
@@ -48,7 +48,7 @@
  *      @todo   Add PRECISION support to PrettyPrintInfo argument to PrettyPrint () function.
  *          o   Number of seconds. Anything less than that number is truncated.
  *          o   So .001 'precision' means show 3.44444 as 3.444 and 60 means show 67 seconds as 'one minute'
- *          o   Maybe add option so can show > or < as in < one minute or > one minute for being passed sentainl values?
+ *          o   Maybe add option so can show > or < as in < one minute or > one minute for being passed sentinel values?
  *
  */
 

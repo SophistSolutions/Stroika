@@ -518,8 +518,8 @@ namespace {
         Debug::TraceContextBumper ctx{"JSON_ONLY_::DoAll_"};
         auto                      CheckMatchesExpected_WRITER_ = [] (const VariantValue& v, const string& expected) {
             Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
-            using Writer = DataExchange::Variant::JSON::Writer;
-            Writer {Writer::Options{.fLineTermination = "\n"sv}}.Write (v, out);
+            using Writer                         = DataExchange::Variant::JSON::Writer;
+            Writer{Writer::Options{.fLineTermination = "\n"sv}}.Write (v, out);
             string x = out.As<string> ();
             // not quite true, but almost: EXPECT_TRUE (out.As<string> () == expected);
             if (x != expected) {
