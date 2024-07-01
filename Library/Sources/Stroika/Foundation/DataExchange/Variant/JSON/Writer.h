@@ -96,13 +96,18 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
              *              permitted.
              *
              *  And yet, there is a natural way to represent the numbers.
-             *  We DEFAULT to allowing this. If not allowed, then preseence of NANs and INF in input, is treated as an assertion error.
+             *  We DEFAULT to allowing this. If not allowed, then presence of NANs and INF in input, is treated as an assertion error.
              *
              *  \note - because these would be ILLEGAL JSON, - they are written as strings. So when written, they REMAIN LEGAL JSON. And when you
-             *          re-read the JSON, it will be read as a string. But when you coerce that string to a floating point type, the 'INF' or whever,
-             *          will be coereced to the proper IEEE floating point type.
+             *          re-read the JSON, it will be read as a string. But when you coerce that string to a floating point type, the 'INF' or whatever,
+             *          will be coerced to the proper IEEE floating point type.
              */
             optional<bool> fAllowNANInf;
+
+            /**
+             *  defaults to Characters::kEOL if not specified
+             */
+            optional<String> fLineTermination;
         };
 
     public:

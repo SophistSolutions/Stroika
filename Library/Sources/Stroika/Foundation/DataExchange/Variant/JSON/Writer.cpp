@@ -31,6 +31,7 @@ namespace {
             , fJSONPrettyPrint{o.fJSONPrettyPrint.value_or (true)}
             , fSpacesPerIndent{o.fSpacesPerIndent.value_or (4)}
             , fAllowNANInf{o.fAllowNANInf.value_or (true)}
+            , fLineTermination{o.fLineTermination.value_or (Characters::kEOL<char>)}
         {
             if (not fJSONPrettyPrint) {
                 fSpacesPerIndent = 0;
@@ -44,6 +45,7 @@ namespace {
         unsigned int                                 fSpacesPerIndent;
         String                                       fIndentSpace;
         bool                                         fAllowNANInf;
+        String                                       fLineTermination;
     };
 }
 
@@ -113,7 +115,7 @@ namespace {
     {
         // A backslash can be followed by "\/bfnrtu (@ see http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)
         Characters::StringBuilder sb;
-        sb.Append ("\""sv);
+        sb.Append ('\"');
         for (auto i = start; i != end; ++i) {
             switch (*i) {
                 case '\"':
@@ -140,12 +142,12 @@ namespace {
                 default:
                     // JSON rule is Any code point except " or \ or control character. So OK to emit most large unicode chars - just not control chars
                     Character c = *i;
-                    if (c.IsSurrogatePair ()) {
+                    if (c.IsSurrogatePair ()) [[unlikely]] {
                         wchar_t buf[20];
                         (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x\\u%04x", c.GetSurrogatePair ().first, c.GetSurrogatePair ().second);
                         sb.Append (buf);
                     }
-                    else if (c.IsControl ()) {
+                    else if (c.IsControl ()) [[unlikely]] {
                         wchar_t buf[10];
                         (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c.GetCharacterCode ()));
                         sb.Append (buf);
@@ -156,7 +158,7 @@ namespace {
                     break;
             }
         }
-        sb.Append ("\""sv);
+        sb.Append ('\"');
         Memory::StackBuffer<wchar_t> probablyIgnoredBuf;
         out.Write (sb.GetData (&probablyIgnoredBuf));
     }
@@ -172,23 +174,29 @@ namespace {
     }
     void PrettyPrint_ (const OptionValues_& options, const vector<VariantValue>& v, const OutputStream::Ptr<Character>& out, int indentLevel)
     {
-        out.Write (options.fJSONPrettyPrint ? "[\n"sv : "["sv);
+        out.Write ('[');
+        if (options.fJSONPrettyPrint) {
+            out.Write (options.fLineTermination);
+        }
         for (auto i = v.begin (); i != v.end (); ++i) {
             Indent_ (options, out, indentLevel + 1);
             PrettyPrint_ (options, *i, out, indentLevel + 1);
             if (i + 1 != v.end ()) {
-                out.Write (","sv);
+                out.Write (',');
             }
             if (options.fJSONPrettyPrint) {
-                out.Write ("\n"sv);
+                out.Write (options.fLineTermination);
             }
         }
         Indent_ (options, out, indentLevel);
-        out.Write ("]"sv);
+        out.Write (']');
     }
     void PrettyPrint_ (const OptionValues_& options, const Mapping<String, VariantValue>& v, const OutputStream::Ptr<Character>& out, int indentLevel)
     {
-        out.Write (options.fJSONPrettyPrint ? "{\n"sv : "{"sv);
+        out.Write ('{');
+        if (options.fJSONPrettyPrint) {
+            out.Write (options.fLineTermination);
+        }
         for (auto i = v.begin (); i != v.end ();) {
             Indent_ (options, out, indentLevel + 1);
             PrettyPrint_ (options, i->fKey, out, indentLevel + 1);
@@ -196,14 +204,14 @@ namespace {
             PrettyPrint_ (options, i->fValue, out, indentLevel + 1);
             ++i;
             if (i != v.end ()) {
-                out.Write (","sv);
+                out.Write (',');
             }
             if (options.fJSONPrettyPrint) {
-                out.Write ("\n"sv);
+                out.Write (options.fLineTermination);
             }
         }
         Indent_ (options, out, indentLevel);
-        out.Write ("}"sv);
+        out.Write ('}');
     }
     void PrettyPrint_ (const OptionValues_& options, const VariantValue& v, const OutputStream::Ptr<Character>& out, int indentLevel)
     {
@@ -264,7 +272,7 @@ public:
         TextWriter::Ptr textOut = TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
         PrettyPrint_ (fOptions_, v, textOut, 0);
         if (fOptions_.fJSONPrettyPrint) {
-            textOut.Write ("\n"sv); // a single elt not LF terminated, but the entire doc should be.
+            textOut.Write (fOptions_.fLineTermination); // a single elt not LF terminated, but the entire doc should be.
         }
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Character>& out) const override
