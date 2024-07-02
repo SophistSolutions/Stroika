@@ -49,26 +49,18 @@ namespace Stroika::Foundation::DataExchange {
      *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
      ********************************************************************************
      */
-    inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper,
-                                                                        const ToGenericObjectMapperType& toObjectMapper)
+    inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const FromGenericObjectMapperType& fromObjectMapper,
+                                                                        const ToGenericObjectMapperType& toObjectMapper, const type_index& forTypeInfo)
         : fForType{forTypeInfo}
         , fFromObjectMapper{fromObjectMapper}
         , fToObjectMapper{toObjectMapper}
     {
     }
     template <typename T>
-    inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper,
-                                                                        const ToObjectMapperType<T>& toObjectMapper)
-        requires (not same_as<T, void>)
-        : TypeMappingDetails{forTypeInfo, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
-    {
-        Require (type_index{typeid (T)} == forTypeInfo);
-    }
-    template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper,
-                                                                        const ToObjectMapperType<T>&   toObjectMapper)
+                                                                        const ToObjectMapperType<T>& toObjectMapper, const type_index& forTypeInfo)
         requires (not same_as<T, void>)
-        : TypeMappingDetails{type_index{typeid (T)}, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
+        : TypeMappingDetails{mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper), forTypeInfo}
     {
     }
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
@@ -123,7 +115,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     template <typename T>
     inline ObjectVariantMapper::FromGenericObjectMapperType
-    ObjectVariantMapper::TypeMappingDetails::mkGenericFromMapper_ (const ObjectVariantMapper::FromObjectMapperType<T>& fromObjectMapper)
+    ObjectVariantMapper::TypeMappingDetails::mkGenericFromMapper_ (const FromObjectMapperType<T>& fromObjectMapper)
     {
         // See https://stroika.atlassian.net/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
@@ -136,8 +128,7 @@ namespace Stroika::Foundation::DataExchange {
         }
     }
     template <typename T>
-    inline ObjectVariantMapper::ToGenericObjectMapperType
-    ObjectVariantMapper::TypeMappingDetails::mkGenericToMapper_ (const ObjectVariantMapper::ToObjectMapperType<T>& toObjectMapper)
+    inline ObjectVariantMapper::ToGenericObjectMapperType ObjectVariantMapper::TypeMappingDetails::mkGenericToMapper_ (const ToObjectMapperType<T>& toObjectMapper)
     {
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             return [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, void* into) -> void {
@@ -199,7 +190,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline void ObjectVariantMapper::Add (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
     {
-        Add (TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper});
+        Add (TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)});
     }
     inline void ObjectVariantMapper::operator+= (const TypeMappingDetails& rhs)
     {
@@ -482,7 +473,7 @@ namespace Stroika::Foundation::DataExchange {
                 }
             }
         };
-        return TypeMappingDetails{typeid (ACTUAL_CONTAINER_TYPE), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ACTUAL_CONTAINER_TYPE)};
     }
     template <typename T, typename... ARGS>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer (ARGS&&... args)
@@ -490,7 +481,7 @@ namespace Stroika::Foundation::DataExchange {
         const T*           n = nullptr; // arg unused, just for overloading
         TypeMappingDetails tmp{MakeCommonSerializer_ (n, forward<ARGS> (args)...)};
         // NB: because of how we match on MakeCommonSerializer_, the type it sees maybe a base class of T, and we want to actually register the type the user specified.
-        return TypeMappingDetails{typeid (T), tmp.fFromObjectMapper, tmp.fToObjectMapper};
+        return TypeMappingDetails{tmp.fFromObjectMapper, tmp.fToObjectMapper, typeid (T)};
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
@@ -498,7 +489,7 @@ namespace Stroika::Foundation::DataExchange {
                                                                                              const optional<TypeMappingDetails>& furtherDerivedClass)
         requires (is_class_v<T>)
     {
-        return MakeClassSerializer_<T> (fieldDescriptions, baseClass, furtherDerivedClass, this);
+        return MakeClassSerializer_<T> (fieldDescriptions, baseClass, furtherDerivedClass, nullptr);
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeClassSerializer_ (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
@@ -549,7 +540,7 @@ namespace Stroika::Foundation::DataExchange {
                 intoObjOfTypeT->Add (mapper.ToObject<DOMAIN_TYPE> (domainMapper, p[0]), mapper.ToObject<RANGE_TYPE> (rangeMapper, p[1]));
             }
         };
-        return TypeMappingDetails{typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)};
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Collection<T>*)
@@ -597,7 +588,7 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObjOfTypeT = mapper.ToObject<T> (d);
             }
         };
-        return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (optional<T>)};
     }
     template <typename T>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<T>*, const OptionalSerializerOptions& options)
@@ -628,7 +619,7 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObjOfTypeT = tmp;
             }
         };
-        return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (optional<T>)};
     }
     //  https://stroika.atlassian.net/browse/STK-910
     template <>
@@ -662,7 +653,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         // render as array of two elements
         return TypeMappingDetails{
-            typeid (pair<T1, T2>), FromObjectMapperType<pair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const pair<T1, T2>* fromObj) -> VariantValue {
+            FromObjectMapperType<pair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const pair<T1, T2>* fromObj) -> VariantValue {
                 return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (fromObj->first), mapper.FromObject<T2> (fromObj->second)}};
             }},
             ToObjectMapperType<pair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, pair<T1, T2>* intoObj) -> void {
@@ -672,7 +663,8 @@ namespace Stroika::Foundation::DataExchange {
                     Execution::Throw (kException_);
                 };
                 *intoObj = make_pair (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
-            }}};
+            }},
+            typeid (pair<T1, T2>)};
     }
     template <typename T>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::CountedValue<T>*)
@@ -681,7 +673,7 @@ namespace Stroika::Foundation::DataExchange {
         using CountedValue = typename Common::CountedValue<T>;
         using CounterType  = typename CountedValue::CounterType;
         return TypeMappingDetails{
-            typeid (CountedValue), FromObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const CountedValue* fromObj) -> VariantValue {
+            FromObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const CountedValue* fromObj) -> VariantValue {
                 return VariantValue{Sequence<VariantValue>{mapper.FromObject<T> (fromObj->fValue), mapper.FromObject<CounterType> (fromObj->fCount)}};
             }},
             ToObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, CountedValue* intoObj) -> void {
@@ -691,14 +683,14 @@ namespace Stroika::Foundation::DataExchange {
                     Execution::Throw (kException_);
                 };
                 *intoObj = CountedValue{mapper.ToObject<T> (s[0]), mapper.ToObject<CounterType> (s[1])};
-            }}};
+            }},
+            typeid (CountedValue)};
     }
     template <typename T1, typename T2>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::KeyValuePair<T1, T2>*)
     {
         // render as array of two elements
         return TypeMappingDetails{
-            typeid (Common::KeyValuePair<T1, T2>),
             FromObjectMapperType<Common::KeyValuePair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const Common::KeyValuePair<T1, T2>* fromObj) -> VariantValue {
                 return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (fromObj->fKey), mapper.FromObject<T2> (fromObj->fValue)}};
             }},
@@ -710,31 +702,32 @@ namespace Stroika::Foundation::DataExchange {
                         Execution::Throw (kException_);
                     };
                     *intoObj = Common::KeyValuePair<T1, T2>{mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1])};
-                }}};
+                }},
+            typeid (Common::KeyValuePair<T1, T2>)};
     }
     template <typename T1>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1>*)
     {
         // render as array of one element
-        return TypeMappingDetails{
-            typeid (tuple<T1>), FromObjectMapperType<tuple<T1>>{[] (const ObjectVariantMapper& mapper, const tuple<T1>* fromObj) -> VariantValue {
-                return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj))}};
-            }},
-            ToObjectMapperType<tuple<T1>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1>* intoObj) -> void {
-                Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
-                if (s.size () < 1) {
-                    static const auto kException_ = BadFormatException{"Array size out of range for tuple/1"sv};
-                    Execution::Throw (kException_);
-                };
-                *intoObj = make_tuple (mapper.ToObject<T1> (s[0]));
-            }}};
+        return TypeMappingDetails{FromObjectMapperType<tuple<T1>>{[] (const ObjectVariantMapper& mapper, const tuple<T1>* fromObj) -> VariantValue {
+                                      return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj))}};
+                                  }},
+                                  ToObjectMapperType<tuple<T1>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1>* intoObj) -> void {
+                                      Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                                      if (s.size () < 1) {
+                                          static const auto kException_ = BadFormatException{"Array size out of range for tuple/1"sv};
+                                          Execution::Throw (kException_);
+                                      };
+                                      *intoObj = make_tuple (mapper.ToObject<T1> (s[0]));
+                                  }},
+                                  typeid (tuple<T1>)};
     }
     template <typename T1, typename T2>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1, T2>*)
     {
         // render as array of two elements
         return TypeMappingDetails{
-            typeid (tuple<T1, T2>), FromObjectMapperType<tuple<T1, T2>>{[] (const ObjectVariantMapper& mapper, const tuple<T1, T2>* fromObj) -> VariantValue {
+            FromObjectMapperType<tuple<T1, T2>>{[] (const ObjectVariantMapper& mapper, const tuple<T1, T2>* fromObj) -> VariantValue {
                 return VariantValue{
                     Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj)), mapper.FromObject<T2> (std::get<1> (*fromObj))}};
             }},
@@ -745,14 +738,14 @@ namespace Stroika::Foundation::DataExchange {
                     Execution::Throw (kException_);
                 };
                 *intoObj = make_tuple (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
-            }}};
+            }},
+            typeid (tuple<T1, T2>)};
     }
     template <typename T1, typename T2, typename T3>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1, T2, T3>*)
     {
         // render as array of three elements
         return TypeMappingDetails{
-            typeid (tuple<T1, T2, T3>),
             FromObjectMapperType<tuple<T1, T2, T3>>{[] (const ObjectVariantMapper& mapper, const tuple<T1, T2, T3>* fromObj) -> VariantValue {
                 return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj)), mapper.FromObject<T2> (std::get<1> (*fromObj)),
                                                            mapper.FromObject<T3> (std::get<2> (*fromObj))}};
@@ -764,7 +757,8 @@ namespace Stroika::Foundation::DataExchange {
                     Execution::Throw (kException_);
                 };
                 *intoObj = make_tuple (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]), mapper.ToObject<T3> (s[2]));
-            }}};
+            }},
+            typeid (tuple<T1, T2, T3>)};
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Set<T>*)
@@ -848,7 +842,7 @@ namespace Stroika::Foundation::DataExchange {
                 actualMember[idx++] = T{};
             }
         };
-        return TypeMappingDetails{typeid (T[SZ]), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T[SZ])};
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_WithKeyValuePairAdd_ ()
@@ -891,7 +885,7 @@ namespace Stroika::Foundation::DataExchange {
                 intoObjOfTypeT->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p[0]), mapper.ToObject<VALUE_TYPE> (valueMapper, p[1]));
             }
         };
-        return TypeMappingDetails{typeid (ACTUAL_CONTAINER_TYPE), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ACTUAL_CONTAINER_TYPE)};
     }
     template <typename ENUM_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
@@ -918,7 +912,7 @@ namespace Stroika::Foundation::DataExchange {
             }
             *intoObjOfTypeT = *optVal;
         };
-        return TypeMappingDetails{typeid (ENUM_TYPE), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ENUM_TYPE)};
     }
     template <typename ENUM_TYPE>
     inline ObjectVariantMapper::TypeMappingDetails
@@ -956,7 +950,7 @@ namespace Stroika::Foundation::DataExchange {
                 Execution::Throw (kException_);
             }
         };
-        return TypeMappingDetails{typeid (ENUM_TYPE), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ENUM_TYPE)};
     }
     template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE, typename VALUE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
@@ -984,7 +978,7 @@ namespace Stroika::Foundation::DataExchange {
                 intoObjOfTypeT->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p.fKey), mapper.ToObject<VALUE_TYPE> (valueMapper, p.fValue));
             }
         };
-        return TypeMappingDetails{typeid (ACTUAL_CONTAINTER_TYPE), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ACTUAL_CONTAINTER_TYPE)};
     }
     template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE, typename VALUE_TYPE>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingAsArrayOfKeyValuePairs ()
@@ -1042,7 +1036,7 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObjOfTypeT = CheckedConverter_Range<RANGE_TYPE> (from, to);
             }
         };
-        return TypeMappingDetails{typeid (RANGE_TYPE), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (RANGE_TYPE)};
     }
     template <typename CLASS>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (
@@ -1154,7 +1148,7 @@ namespace Stroika::Foundation::DataExchange {
                 afterTo (mapper, d, intoObjOfTypeT);
             }
         };
-        return TypeMappingDetails{forTypeInfo, fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, forTypeInfo};
     }
     template <typename CLASS>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_and_check_ (

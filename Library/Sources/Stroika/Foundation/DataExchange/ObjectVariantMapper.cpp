@@ -89,7 +89,7 @@ namespace {
             RequireNotNull (intoObjOfTypeT);
             *intoObjOfTypeT = static_cast<T> (d.As<UseVariantType> ());
         };
-        return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+        return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
     }
 }
 
@@ -188,7 +188,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<filesystem::path> (
         RequireNotNull (intoObjOfTypeT);
         *intoObjOfTypeT = IO::FileSystem::ToPath (d.As<String> ());
     };
-    return TypeMappingDetails{typeid (filesystem::path), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (filesystem::path)};
 }
 
 template <>
@@ -217,7 +217,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<VariantValue> ()
     ToObjectMapperType<VariantValue> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, VariantValue* intoObjOfTypeT) -> void {
         *reinterpret_cast<VariantValue*> (intoObjOfTypeT) = d;
     };
-    return TypeMappingDetails{typeid (VariantValue), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (VariantValue)};
 }
 
 template <>
@@ -229,7 +229,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
     ToObjectMapperType<Time::Duration> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, Time::Duration* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = Duration{d.As<String> ()};
     };
-    return TypeMappingDetails{typeid (Duration), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (Duration)};
 }
 
 template <>
@@ -242,7 +242,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::DurationSecon
                                                                    Time::DurationSeconds* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = Duration{d.As<String> ()};
     };
-    return TypeMappingDetails{typeid (DurationSeconds), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (DurationSeconds)};
 }
 
 template <>
@@ -256,7 +256,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ()
                                                              Time::TimeOfDay* intoObjOfTypeT) -> void {
         *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay{d.As<uint32_t> ()};
     };
-    return TypeMappingDetails{typeid (TimeOfDay), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (TimeOfDay)};
 }
 
 template <>
@@ -282,7 +282,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
             intoObjOfTypeT->Add (i.fKey, i.fValue.As<String> ());
         }
     };
-    return TypeMappingDetails{typeid (ACTUAL_ELEMENT_TYPE), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ACTUAL_ELEMENT_TYPE)};
 }
 
 template <>
@@ -295,7 +295,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
                                                                  ACTUAL_ELEMENT_TYPE* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = d.As<Mapping<String, VariantValue>> ();
     };
-    return TypeMappingDetails{typeid (ACTUAL_ELEMENT_TYPE), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ACTUAL_ELEMENT_TYPE)};
 }
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::BLOB*)
@@ -310,7 +310,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::BLO
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = Cryptography::Encoding::Algorithm::Base64::Decode (d.As<String> ());
     };
-    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
 }
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMediaType*)
@@ -322,7 +322,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMed
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T{d.As<String> ()};
     };
-    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
 }
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::CIDR*)
@@ -334,7 +334,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T{d.As<String> ()};
     };
-    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
 }
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::InternetAddress*)
@@ -346,7 +346,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T{d.As<String> ()};
     };
-    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
 }
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::URI*)
@@ -358,7 +358,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T::Parse (d.As<String> ());
     };
-    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
 }
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::GUID*, VariantValue::Type representAs)
@@ -373,7 +373,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::GUI
             ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
                 *intoObjOfTypeT = Common::GUID{d.As<Memory::BLOB> ()};
             };
-            return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+            return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
         }
         case VariantValue::eString: {
             FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
@@ -382,11 +382,11 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::GUI
             ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
                 *intoObjOfTypeT = Common::GUID{d.As<String> ()};
             };
-            return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+            return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
         }
         default:
             RequireNotReached ();
-            return TypeMappingDetails{typeid (T), nullptr, nullptr};
+            return TypeMappingDetails{nullptr, nullptr, typeid (T)};
     }
 }
 
@@ -568,5 +568,5 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
             *intoObjOfTypeT = tmp;
         }
     };
-    return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (optional<T>)};
 }

@@ -284,7 +284,7 @@ namespace Stroika::Foundation::DataExchange {
             /**
              *  \par Example Usage
              *      \code
-             *          return TypeMappingDetails{typeid (ACTUAL_CONTAINER_TYPE), fromObjectMapper, toObjectMapper};
+             *          return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ACTUAL_CONTAINER_TYPE)};
              *      \endcode
              *
              *  \par Example Usage
@@ -299,13 +299,11 @@ namespace Stroika::Foundation::DataExchange {
             TypeMappingDetails ()                              = delete;
             TypeMappingDetails (const TypeMappingDetails&)     = default;
             TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
-            explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper,
-                                         const ToGenericObjectMapperType& toObjectMapper);
+            explicit TypeMappingDetails (const FromGenericObjectMapperType& fromObjectMapper,
+                                         const ToGenericObjectMapperType& toObjectMapper, const type_index& forTypeInfo);
             template <typename T>
-            TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
-                requires (not same_as<T, void>);
-            template <typename T>
-            TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
+            TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper,
+                                const type_index& forTypeInfo = type_index{typeid (T)})
                 requires (not same_as<T, void>);
 
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
@@ -340,11 +338,26 @@ namespace Stroika::Foundation::DataExchange {
              */
             nonvirtual String ToString () const;
 
+        public:
+            [[deprecated ("Since Stroika v3.0d7 - use overload with typeInfo third")]] explicit TypeMappingDetails (
+                const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper)
+                : TypeMappingDetails{fromObjectMapper, toObjectMapper, forTypeInfo}
+            {
+            }
+            template <typename T>
+            [[deprecated ("Since Stroika v3.0d7 - use overload with typeInfo third")]] TypeMappingDetails (const type_index& forTypeInfo,
+                                                                                                           const FromObjectMapperType<T>& fromObjectMapper,
+                                                                                                           const ToObjectMapperType<T>& toObjectMapper)
+                requires (not same_as<T, void>)
+                : TypeMappingDetails{fromObjectMapper, toObjectMapper, forTypeInfo}
+            {
+            }
+
         private:
             template <typename T>
-            static FromGenericObjectMapperType mkGenericFromMapper_ (const ObjectVariantMapper::FromObjectMapperType<T>& fromObjectMapper);
+            static FromGenericObjectMapperType mkGenericFromMapper_ (const FromObjectMapperType<T>& fromObjectMapper);
             template <typename T>
-            static ToGenericObjectMapperType mkGenericToMapper_ (const ObjectVariantMapper::ToObjectMapperType<T>& toObjectMapper);
+            static ToGenericObjectMapperType mkGenericToMapper_ (const ToObjectMapperType<T>& toObjectMapper);
         };
 
     public:
