@@ -72,7 +72,7 @@
  *              When serializing / deserializing - (e.g to/from JSON or XML) - we construct DOM tree which is
  *              intrinsically not very cost effective. We DO have the XML sax parser (but that wont work with this).
  *
- *      @todo   Current serializer/deserializer API needlessly requires that objects have default CTOR.
+ *      @todo   Current serializer/de-serializer API needlessly requires that objects have default CTOR.
  *
  *              template    <typename CLASS>
  *                  inline  CLASS    ObjectVariantMapper::ToObject (const VariantValue& v) const
@@ -550,13 +550,12 @@ namespace Stroika::Foundation::DataExchange {
          *          tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader{tmpStream});
          *      \endcode
          * 
-         *  \note As of Stroika 2.1.10 - no longer support preflightBeforeToObject, use extra instead
-         * 
-         *  \note extends operations to type performed BEFORE the argument ones here, so that they can change values
+         *  \note furtherDerivedClass operations to type performed AFTER the argument ones here, so that they can change values
          *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS>
-        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const optional<TypeMappingDetails>& extends = nullopt);
+        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                  const optional<TypeMappingDetails>&         furtherDerivedClass = nullopt);
 
     public:
         /**
@@ -579,13 +578,15 @@ namespace Stroika::Foundation::DataExchange {
          *          });
          *      \endcode
          * 
-         *  \note As of Stroika 2.1.10 - no longer support preflightBeforeToObject (see AddClass and extends parameter instead)
-         * 
          *  \note AddSubClass captures the existing mapping for BASE_CLASS at the time of this call, so this
          *        can be used to subclass in place, adding a few extra properties.
+         * 
+         *  \note furtherDerivedClass operations to type performed AFTER the argument ones here, so that they can change values
+         *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                     const optional<TypeMappingDetails>&         furtherDerivedClass = nullopt);
 
     public:
         /**
@@ -699,7 +700,7 @@ namespace Stroika::Foundation::DataExchange {
          *  @see ResetToDefaultTypeRegistry () (int, short, String, etc).
          *
          *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesn't
-         *  fit what the deserializer expects.
+         *  fit what the de-serializer expects.
          *
          *  \note   For type Mapping<KEY,VALUE>, this could use either the mapping function
          *          MakeCommonSerializer_MappingWithStringishKey or MakeCommonSerializer_MappingAsArrayOfKeyValuePairs.
@@ -717,11 +718,24 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  Create a serializer for a CLASS 'T'
          *  @todo migrate this to be part of MakeCommonSerializer probably, but for now like AddClass, but less checking and doesn't add - just creates/returns
+         * 
+         *  Create a class serializer/de-serializer for the given field descriptions. Start with those from 'baseClass' - as if that was done first.
+         *  and then if furtherDerivedClass provided, apply that type mapper as well last (so it gets final say on what's produced).
          */
         template <typename T>
         static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                                       const optional<TypeMappingDetails>&         extends = nullopt);
+                                                       const optional<TypeMappingDetails>&         baseClass           = nullopt,
+                                                       const optional<TypeMappingDetails>&         furtherDerivedClass = nullopt)
+            requires (is_class_v<T>);
+
+    private:
+        template <typename T>
+        static TypeMappingDetails MakeClassSerializer_ (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                                        const optional<TypeMappingDetails>& baseClass, const optional<TypeMappingDetails>& furtherDerivedClass,
+                                                        const ObjectVariantMapper* mapperToCheckAgainst)
+            requires (is_class_v<T>);
 
     public:
         /**
@@ -903,13 +917,18 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename CLASS>
-        static TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t sizeofObj,
-                                                                        const Traversal::Iterable<StructFieldInfo>& fields,
-                                                                        const optional<TypeMappingDetails>&         extends);
+        static TypeMappingDetails
+        MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t sizeofObj, const Traversal::Iterable<StructFieldInfo>& fields,
+                                              const FromObjectMapperType<CLASS>& beforeFrom, const FromObjectMapperType<CLASS>& afterFrom,
+                                              const ToObjectMapperType<CLASS>& beforeTo, const ToObjectMapperType<CLASS>& afterTo);
         template <typename CLASS>
-        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t sizeofObj,
-                                                                                      const Traversal::Iterable<StructFieldInfo>& fields,
-                                                                                      const optional<TypeMappingDetails>& extends) const;
+        static TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t sizeofObj,
+                                                                                  const Traversal::Iterable<StructFieldInfo>& fields,
+                                                                                  const FromObjectMapperType<CLASS>&          beforeFrom,
+                                                                                  const FromObjectMapperType<CLASS>&          afterFrom,
+                                                                                  const ToObjectMapperType<CLASS>&            beforeTo,
+                                                                                  const ToObjectMapperType<CLASS>&            afterTo,
+                                                                                  const ObjectVariantMapper* use2Validate = nullptr);
 
     private:
         nonvirtual TypeMappingDetails Lookup_ (const type_index& forTypeInfo) const;
@@ -999,11 +1018,11 @@ namespace Stroika::Foundation::DataExchange {
 
             Stroika_Define_Enum_Bounds (eOmit, eInclude)
         };
-        static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;       // instead of using NullFieldHandling::eOmit
-        static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude;    // instead of using NullFieldHandling::eInclude
+        static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;    // instead of using NullFieldHandling::eOmit
+        static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
 
         /**
-         *  Required. This is the field generated/read by this StructFieldInfo
+         *  Required for a an actual field mapper, but if empty, implies a reader/writer for the entire object.
          */
         String fSerializedFieldName;
 
@@ -1034,7 +1053,7 @@ namespace Stroika::Foundation::DataExchange {
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
                          const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
-        StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper);
     };
 
     template <>
