@@ -30,6 +30,6 @@ RUN apt-get -qq install -y g++-11-arm-linux-gnueabihf g++-12-arm-linux-gnueabihf
 ## GCC 13 or later is required to support std::format, and no obvious way to get this on Ubuntu 22.04 using apt-get etc
 ## (EVEN WITH ppa:ubuntu-toolchain-r/ppa) --LGP 2024-03-07
 ADD ./Ubuntu2204-RegressionTests/BuildGCC .
-RUN CLEANUP=1 GCC_VERSION=13.2.0 ./BuildGCC; \
+RUN CLEANUP=1 GCC_VERSION=13.3.0 ./BuildGCC; \
     (cd /usr/local/bin ; ln -s g++ g++-13; ln -s gcc gcc-13; ln -s `which gcc-ranlib-12` gcc-ranlib-13; ln -s `which gcc-ar-12` gcc-ar-13; ); \
     rm BuildGCC
