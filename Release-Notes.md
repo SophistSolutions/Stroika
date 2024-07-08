@@ -7,12 +7,47 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+---
 
-### START 3.0d7 relnotes
+### 3.0d7XXX {2024-07-10} {[diff](../../compare/v3.0d6...v3.0d7)}
 
+#### TLDR
+- Frameworks::WebServer - support deflate inline transfer coding/content-encoding
+- new property automaticTransferChunkSize, replaces setting transferCoding manually
+- cleanups to cleanups to ObjectVariantMapper::StructFieldInfo/TypeMappingDetails to faciliate custom mappers
 
+#### Upgrade Notes (3.0d6 to 3.0d7)
+- Renamed a few properties to no longer use 'p' prefix ; prettty clear error message from compiler
+- MAKEFILE/CONFIGURE name changes
+  - BUILD_TOOLS_ROOT to BuildToolsRoot
+  - RUN_PREFIX renamed to RunPrefix
+  - renamed makefile/configure TARGET_PLATFORMS to TargetPlatforms
+  - renamed arg to configure from --platform to --build-platform
+- use TargetPlatforms instead of ProjectPlatformSubdir
+
+#### Change Details
 - ReadMe's / Docs / Comments / Misc
-
+- Build System
+  - Supported Platforms Changes
+  - Supported Compilers
+  - Compiler Bug Defines
+    -   workaround qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    -  more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for clang++15
+    - qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy BWA and  new bug define
+  - Configure/Makefile
+    - hopefully fixed when we emit TSAN_OPTIONS in configure
+    - better docs on --platform configure command
+    - use TargetPlatforms instead of ProjectPlatformSubdir **not backward compatible**
+    - lose unneeded makefile ref to ProjectPlatformSubdir; lose commented out makefile stuff; CMAKE_USE_GENERATOR flag appears no longer needed so removed
+    - Lots of makefile cleanups: generally replace much use of ProjectPlatformSubdir with TARGET_PLATFORMS (for windows); use fewer CPPFLAGS += -D ... blah - and comment the ones remaining; and lose a bunch more compiler bug workarounds, no longer needed, like https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
+    - **not backward compatible**: renamed arg to configure from --platform to --build-platform; and changed makefile variable from ProjectPlatformSubdir to BuildPlatform
+    - renamed makefile/configure TARGET_PLATFORMS to TargetPlatforms
+    - Minor/rarely used: configure - renaemd variable BUILD_TOOLS_ROOT to BuildToolsRoot
+    - configure: rarely used RUN_PREFIX renamed to RunPrefix
+    - renamed -PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to -PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_ 
+      ; for zlib makefie; added PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_ hack occasionally (depends on make version)
+    - configure:  if (!( eq no) && ) push @LinkerArgs_LibDependencies_ADD, Bcrypt.lib;             # Needed since 1.3.1
+    - configure: when setting no-third-party-components - dont override explicit set names
 - Library
   - Foundation
     - Characters
@@ -25,6 +60,8 @@ especially those they need to be aware of when upgrading.
       - mostly cosmetic - use same_as instead of is_same_v: shorter, more modern, more clear/consistent
       - StdStdCompat
         - moved Memory::byteswap etc to StdStdCompat
+    - Containers
+      - better use of requires () on a few (operator==/<=>) functions to delegate so define iff is for 'T' type template of
     - DataExchange
       - Compression
         - https://stroika.atlassian.net/browse/STK-609  support for new factory style api and better names for compression/decompression code
@@ -39,6 +76,13 @@ especially those they need to be aware of when upgrading.
           code changed slightly but unlikely a noticble difference, and now more clearly documented/organized;
           and related code better vectored together (incluing AddSubClass and validation/cehcks)
         - ObjectVariantMapper::TypeMappingDetails CTOR args largely reversed (old still supported just deprecated)
+      - Variant
+        - JSON
+          - JSON::Writer::Options - add optional fLineTermination and default to Characters::kEOL (so change and had to update regtests)
+      - XML
+        - XPath::Expression cleanups/ToString support improvements
+    - Execution
+      - renamed FeatureNotSupportedInThisVersionException => FeatureNotSupportedException and used in Deflate code if not available to address if constexpr issue in HTTP webserver Request code
     - IO
       - Network
         - HTTP
@@ -71,80 +115,41 @@ especially those they need to be aware of when upgrading.
         Minor cleanups to HTTP WebServer Response object - alphabetize properties, and cleanup write () overloads and added codeCvt property
       - (SAMPLE): simplified ssdp server sample webserver usage, and used that then in ReadMe.md about webserver
       - dont do chunked/transfer in http werbserver in autocompute etag
-
-
-- Compiler Bug Defines
-  -   workaround qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-  -  more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for clang++15
-  - qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy BWA and  new bug define
-
-- Configure/Makefile
-  - hopefully fixed when we emit TSAN_OPTIONS in configure
-
-  - makefile: CMAKE_USE_GENERATOR flag appears no longer needed so removed
-  - better docs on --platform configure command
-  - lose uneeded ProjectPlatformSubdir usage from boost makefile
-  - lose commented out makefile stuff
-  - use TARGET_PLATFORMS instead of ProjectPlatformSubdir and fewer defines in one makefile
-  - lose unneeded makefile ref to ProjectPlatformSubdir
-  - use TARGET_PLATFORMS instead of ProjectPlatformSubdir in a makefile
-
-  - Lots of makefile cleanups: generally replace much use of ProjectPlatformSubdir with TARGET_PLATFORMS (for windows); use fewer CPPFLAGS += -D ... blah - and comment the ones remaining; and lose a bunch more compiler bug workarounds, no longer needed, like https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
-
-  - NOT BACKWARD COMPATIBLE: renamed arg to configure from --platform to --build-platform; and changed makefile variable from ProjectPlatformSubdir to BuildPlatform
-  - renamed makefile/configure TARGET_PLATFORMS to TargetPlatforms
-  - Minor/rarely used: configure - renaemd variable BUILD_TOOLS_ROOT to BuildToolsRoot
-  - configure: rarely used RUN_PREFIX renamed to RunPrefix
-
-  - renamed -PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to -PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_ 
-    ; for zlib makefie; added PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_ hack occasionally (depends on make version)
-
-  - configure:  if (!( eq no) && ) push @LinkerArgs_LibDependencies_ADD, Bcrypt.lib;             # Needed since 1.3.1
-
-  - configure: when setting no-third-party-components - dont override explicit set names
-
 - ThirdPartyComponents
   - libxml
-    -  VERSION 2.13.1 and react to deprecated function
+    - VERSION 2.13.1 and react to deprecated function
     - NOTE - sadly - changes default (not easy to undo) - for XML_SAVE_NO_EMPTY (or diff in different enums) - but cannot see how to set
       with APIs I'm using
 
-
-
-#if 0
-commit dc0e6bafec051be75fb0a6874dc995680c7e89b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 30 09:40:10 2024 -0400
-
-    more use of - style args even for windows since now seems to work
-
-commit 5f14e44e21e876d1a75da848783a8b249838f4b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 30 16:32:20 2024 -0400
-
-    better use of requires () on a few (operator==/<=>) functions to delegate so define iff is for 'T' type template of
-
-commit 6ce40287100049d075f2feae4c947410257ea2a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 30 16:33:00 2024 -0400
-
-    XPath::Expression cleanups
-
-commit 422102146bdeb788412e30766b0e88ba54df979c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 1 08:33:36 2024 -0400
-
-    renamed FeatureNotSupportedInThisVersionException => FeatureNotSupportedException and used in Deflate code if not available to address if constexpr issue in HTTP webserver Request code
-
-commit ae2c7d25db5aa6c16131fe1181654b6717971d67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 1 11:12:45 2024 -0400
-
-    JSON::WRiter::Options - add optional fLineTermination and default to Characters::kEOL (so change and had to update regtests)
-
-#endif
-
-
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 14, 15, 16, 17, 18; XCode: 15.2, 15.3}
+  - MSVC: { 17.10.3 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 14.4 - arm64/m1 chip
+    - 14.3, 14.4 on github actions
+  - Linux: { Ubuntu: [22.04, 23.10, 24.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, DEBIABVERSION###), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+  - Ubuntu 24.04
+    - TSAN somewhat broken - https://stroika.atlassian.net/browse/STK-1010
 
 ---
 
