@@ -12,27 +12,24 @@ especially those they need to be aware of when upgrading.
 ### 3.0d7XXX {2024-07-10} {[diff](../../compare/v3.0d6...v3.0d7)}
 
 #### TLDR
-- Frameworks::WebServer - support deflate inline transfer coding/content-encoding
-- new property automaticTransferChunkSize, replaces setting transferCoding manually
+- Frameworks::WebServer - support deflate inline transfer coding/content-encoding; new property automaticTransferChunkSize, replaces setting transferCoding manually, and other prep for https support
 - cleanups to cleanups to ObjectVariantMapper::StructFieldInfo/TypeMappingDetails to faciliate custom mappers
 
 #### Upgrade Notes (3.0d6 to 3.0d7)
 - Renamed a few properties to no longer use 'p' prefix ; prettty clear error message from compiler
-- MAKEFILE/CONFIGURE name changes
+- Makefile/configure name changes
   - BUILD_TOOLS_ROOT to BuildToolsRoot
   - RUN_PREFIX renamed to RunPrefix
   - renamed makefile/configure TARGET_PLATFORMS to TargetPlatforms
   - renamed arg to configure from --platform to --build-platform
-- use TargetPlatforms instead of ProjectPlatformSubdir
+  - use TargetPlatforms instead of ProjectPlatformSubdir
 
 #### Change Details
 - ReadMe's / Docs / Comments / Misc
 - Build System
-  - Supported Platforms Changes
-  - Supported Compilers
   - Compiler Bug Defines
-    -   workaround qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    -  more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for clang++15
+    - workaround qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    - more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for clang++15
     - qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy BWA and  new bug define
   - Configure/Makefile
     - hopefully fixed when we emit TSAN_OPTIONS in configure
