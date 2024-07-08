@@ -7,6 +7,445 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+### START 3.0d7 relnotes
+
+
+- ReadMe's / Docs / Comments / Misc
+
+- Foundation
+  - Common
+    - Property
+      - Added concepts usage to Properties code - to facilitate better error messages from the compiler (and better docs)
+
+  - DataExchange
+    - Compression
+      - https://stroika.atlassian.net/browse/STK-609  support for new factory style api and better names for compression/decompression code
+      - redid regtests using new compression code; deprecated old api; added support for alternate compression level
+      - Compression::Deflate::kSupported
+
+  - IO
+    - Network
+      - HTTP
+        - TransferCodings is a Sequence, not Set; and draft IO::Network::HTTP::ContentCoding
+        - draft ContentCoding using atoms
+        - incompatible change - IO::Network::TransferCoding eChunked now kChunked
+        - support for acceptEncoding/ContentEncoding http headers
+
+- Frameworks
+  - WebServer
+    - minor tweaks to webserver code and regtests of chunked encoding
+    - More progress on Content-Encoding support - and webserver response has StateTransition_ private method now
+
+
+#if 0
+
+commit b7327f5e2d3108b2cc030086ed0b4647c13fd6b3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 23 09:02:52 2024 -0400
+
+    MANY changes to WebServer - not fully backward compatible: https://stroika.atlassian.net/browse/STK-758 - preliminary accept-encoding and content-codiing/transfer-coding compression support; new option on request (NYI)  automaticTransferChunkSize; replaces setting rwHeaders().transferEncoding directly; fewer 'states' in HTTP WebServer Repsonse; a few new readonly poperties and cleanups
+
+commit 746011fed7bc4bc1aa2f4e2911fc94bcdf0fb01b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 23 10:13:10 2024 -0400
+
+    tmphack workaround bug with http webserver transferencoding chunked iwth compression - til I can fix it
+
+commit 89178fcdbbb4f7d511d43a869ca67f5d394fd82b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 24 08:48:33 2024 -0400
+
+    workaround qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
+commit d25655b29f6fbfe55762c2426366dfded227a768
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 25 08:15:29 2024 -0400
+
+    OutputStream::Ptr::Write (span<>) allows empty span argument - just do nothing - dont assert out
+
+commit a37ad3f43b297a3ef65de80f6e8f9fd9ddfa1f9a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 25 08:16:01 2024 -0400
+
+    New experimental API  InputStream::Ptr<ELEMENT_TYPE>::ReadAllAvailable ()
+
+commit 497e3d4b4c04d4042f03f34905173efbbe2cc117
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 25 13:24:59 2024 -0400
+
+    Big cleanups to HTTP webserver response code designed to make chunked transfer compressed encodings work. Much cleanup - but still not actually working. Now not sure why... will need to dig more
+
+commit 83895adddf5072d5470ae28e72c9912ee1510d4f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 26 09:52:17 2024 -0400
+
+    minor progress on Frameworks_WebServer, TestEncContent tests; minor cleanup for Transfer/Connection_WinHTTP
+
+commit f1174c08239d3c693c1c1b2cc05b0a673d7ba062
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 26 13:41:54 2024 -0400
+
+    got compression and chunked transfer working together finally - enuf at least - with kTransferEncodingCompressionDoesntAppearToWorkWithBrowsers_ flag - and dont think it really matters
+
+commit f739c33d04aa4f258f19164b907e4da3e8f3514d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 26 14:08:34 2024 -0400
+
+    Minor cleanups - and Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f}; added for deflate config in webserver (hardwired for now)
+
+commit 7b56aa37513b0b54a4e31991ff5284cdde03f9f0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 27 10:57:23 2024 -0400
+
+    fixed small bug in deflate PullEnufForDeflate1Byte_ and add slight optimization (pull more if available)
+
+commit 4402873398d2b4e7739ba626878ae96d89590fdd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 27 11:03:56 2024 -0400
+
+    Various cleanups to HTTP WebServer response - but mostly support for automaticTransferChunkSize now works (somewhat - not super well)
+
+commit 8976ad80fce1a883716d41d881b57012c7468ac9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 27 13:53:24 2024 -0400
+
+    fixed minor regression in new writechunked http transfer code
+
+commit b408fad023a76d8b85e22b01dfcf650241e63080
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 27 20:25:57 2024 -0400
+
+    qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy BWA and  new bug define; and deprecated multi-arg WebServer::Connection CTOR - in favor of new Connection::OPtions object
+
+commit d2cda4edce04efc9e1a2859c4cf82032959bbdf8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 28 09:25:18 2024 -0400
+
+    Frameworks::WebServer: renamed pConnections/pActiveConnections to lose the 'p'; and added options for fAutomaticTransferChunkSize fSupportedCompressionEncodings
+
+commit 5ac16096b774c30744077281636808f4d0070a1a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 28 09:26:16 2024 -0400
+
+    Renamed a few properties to no longer use 'p' prefix - not backward compatible - but too painful todo backward compat...; prettty clear error message from compiler
+
+commit 0ea926345e32a671d5a8a0770482da1501e6682a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 28 11:37:58 2024 -0400
+
+    replaced EnterHeadMode() in HTTP Webserver Response with headMode() property
+
+commit 09a78bbd3c149d2f0fd947c7284be5b43ab8f23d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Jun 28 13:19:55 2024 -0400
+
+    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for clang++15
+
+commit de1766ed7e52081e08465f135f1d9f1b639f0703
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Jun 28 13:20:19 2024 -0400
+
+    fixed missing virtual DTOR in new Compression IRep
+
+commit 4820352e93e7980e251da9ad64a8f5f05564a735
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 29 12:25:58 2024 -0400
+
+    https://stroika.atlassian.net/browse/STK-584: now supports Optiopns (and used in WebServer::Response) - for non-syncrhonized and non-seekable - for performance - incomplete but mostly working
+
+commit bac64195c9f58e72ad2b81f87aac891d10503f67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 29 12:58:41 2024 -0400
+
+    finished https://stroika.atlassian.net/browse/STK-584 (sharedmemorystream not seekable optimization+) - added the throwaway data feature
+
+commit d42661b0ddf9b191e6e0ce550fb527cc38973207
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 29 13:01:34 2024 -0400
+
+    hopefully fixed when we emit TSAN_OPTIONS in configure
+
+commit f8835a95f9fe3a2e5dbd508573970a5538d5d0a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 29 21:48:00 2024 -0400
+
+    Minor cleanups to HTTP WebServer Response object - alphabetize properties, and cleanup write () overloads and added codeCvt property
+
+commit cfb1e413651d24e08cef96ff4f79ef8bab62ad5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 29 22:11:16 2024 -0400
+
+    https://stroika.atlassian.net/browse/STK-520 use AssertExternallySynchronizedMutex in DataExchange/Compression/Deflate
+
+commit 216b2146c9558a633001dbb1bcd4c4a85298ab3f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 29 22:29:26 2024 -0400
+
+    mostly cosmetic - use same_as instead of is_same_v: shorter, more modern, more clear/consistent
+
+commit e3c1333fe6b007cc84aec219069a34fda1d942ca
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Jun 30 09:10:00 2024 -0400
+
+    one more use std::distance () instead of ptr diff for better clarity
+
+commit 6c7de06039af0424cbfb15c08c360f499d131194
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Jun 30 09:15:02 2024 -0400
+
+    one more use std::distance () instead of ptr diff for better clarity
+
+commit b6bd88bb8571d7780fdba87909a8926483fc818e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 09:23:30 2024 -0400
+
+    makefile: CMAKE_USE_GENERATOR flag appears no longer needed so removed
+
+commit 6d1f9ede1ccd47981dca35b10fd9600aca3d1730
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 09:38:20 2024 -0400
+
+    better docs on --platform configure command
+
+commit b272dd95f8cd21eb6e2d5d2a7b01122a7fc22388
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 09:38:59 2024 -0400
+
+    lose uneeded ProjectPlatformSubdir usage from boost makefile
+
+commit 5ec9629428695e70c1191d8f9164f73ae9bd5073
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 09:39:30 2024 -0400
+
+    lose commented out makefile stuff
+
+commit dc0e6bafec051be75fb0a6874dc995680c7e89b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 09:40:10 2024 -0400
+
+    more use of - style args even for windows since now seems to work
+
+commit 465aded49ee8aff0fa63e35a2d4dee0c6bd478aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 09:45:01 2024 -0400
+
+    use TARGET_PLATFORMS instead of ProjectPlatformSubdir and fewer defines in one makefile
+
+commit c7f50927a9ae9754146bc777ebf16812f0231cb1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 09:48:04 2024 -0400
+
+    use TARGET_PLATFORMS instead of ProjectPlatformSubdir and fewer defines in one makefile
+
+commit e70681326b54f9229dd59bbea236d8735f54fb82
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 09:49:03 2024 -0400
+
+    lose unneeded makefile ref to ProjectPlatformSubdir
+
+commit ff208928b4d6823d0d942578c144503490828c32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 10:07:58 2024 -0400
+
+    use TARGET_PLATFORMS instead of ProjectPlatformSubdir in a makefile
+
+commit 3e8c2ae2c8116988e11285557a617e855c110343
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 10:17:43 2024 -0400
+
+    Lots of makefile cleanups: generally replace much use of ProjectPlatformSubdir with TARGET_PLATFORMS (for windows); use fewer CPPFLAGS += -D ... blah - and comment the ones remaining; and lose a bunch more compiler bug workarounds, no longer needed, like https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
+
+commit de1a1b2898247dcb04edfc92779c01a0572b7afd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 10:32:47 2024 -0400
+
+    NOT BACKWARD COMPATIBLE: renamed arg to configure from --platform to --build-platform; and changed makefile variable from ProjectPlatformSubdir to BuildPlatform
+
+commit 1d054a6b4c0bcc71c907dd64b738ef063448ec29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 10:56:59 2024 -0400
+
+    renamed makefile/configure TARGET_PLATFORMS to TargetPlatforms
+
+commit b42724b732df774496b92d73455d10cd47739db2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 11:00:03 2024 -0400
+
+    Minor/rarely used: configure - renaemd variable BUILD_TOOLS_ROOT to BuildToolsRoot
+
+commit d9ffe7d2dc435dbf7bde37f0683d5aab6bac9ff2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 11:02:21 2024 -0400
+
+    configure: rarely used RUN_PREFIX renamed to RunPrefix
+
+commit 05c11a6b6a30866b02aa75619b657d6552c24394
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 15:32:07 2024 -0400
+
+    simplified ssdp server sample webserver usage, and used that then in ReadMe.md about webserver
+
+commit 5f14e44e21e876d1a75da848783a8b249838f4b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 16:32:20 2024 -0400
+
+    better use of requires () on a few (operator==/<=>) functions to delegate so define iff is for 'T' type template of
+
+commit 6ce40287100049d075f2feae4c947410257ea2a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 16:33:00 2024 -0400
+
+    XPath::Expression cleanups
+
+commit 4ea7595efec69c230cd932925eb90aced3c730e9
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Jun 30 21:14:54 2024 -0400
+
+    workaround issue with if constexpr (Compression::Deflate::kSupported) not working fully
+
+commit b756cea06197010a15891f4a2dac4e7f2f0830b8
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Jun 30 21:15:52 2024 -0400
+
+    workaround issue with if constexpr (Compression::Deflate::kSupported) not working fully
+
+commit 2474965313983d9eaa4f03328b7198a174dc22c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 30 21:17:29 2024 -0400
+
+    moved Memory::byteswap etc to StdStdCompat
+
+commit cef7d5b935d6e21b2882a771cc204cb278512c7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 07:40:33 2024 -0400
+
+    deprecate Characters::GetEOL, and replace with Characters::kEOL
+
+commit 3a54f15da38fce1a09eaf7cd10edc634663af5f8
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jul 1 07:54:49 2024 -0400
+
+    configure: when setting no-third-party-components - dont override explicit set names
+
+commit 422102146bdeb788412e30766b0e88ba54df979c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 08:33:36 2024 -0400
+
+    renamed FeatureNotSupportedInThisVersionException => FeatureNotSupportedException and used in Deflate code if not available to address if constexpr issue in HTTP webserver Request code
+
+commit ac036b2a02407c2b941052a89505798f61a48162
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 09:23:30 2024 -0400
+
+    dont do chunked/transfer in http werbserver in autocompute etag
+
+commit 09b57e74fb8d68b759d4b8b816b492c35a4afd0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 10:48:32 2024 -0400
+
+    renamed -PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to -PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_ (not needed on mac appears) - for zlib makefile
+
+commit ae2c7d25db5aa6c16131fe1181654b6717971d67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 11:12:45 2024 -0400
+
+    JSON::WRiter::Options - add optional fLineTermination and default to Characters::kEOL (so change and had to update regtests)
+
+commit f79e9a1372a33ad7b4d1485e65f5b02859af811e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 11:39:47 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_
+
+commit b0201bf63ac9874fb6e6b5fc9be0784c82971c19
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 11:42:20 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_
+
+commit 2ab807ff25160e1e8074cded67fa964705b6ebde
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 11:49:42 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_
+
+commit be6c11bd9c4dc7719c193dc02d93086ed6dbbfc0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 13:16:32 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_
+
+commit b85bc51ead3dbdd71234d7419a3e514f768becb0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 13:28:26 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_
+
+commit 7102c5fece3a04f1b56b6804329739161a7f86e1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 13:48:04 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_
+
+commit 5e105545c939d278e78aecf36a73bded9f0cbf5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 13:49:04 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_
+
+commit 67674bf63a7ada68db5176d4c5a6d639924b6709
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 13:49:34 2024 -0400
+
+    libxml 2.13.1 and react to deprecated function
+
+commit a56a555c8c4cfd7ef1fa94876c9c6e1915f3ebf1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 14:04:12 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_; and experiemnt only doing PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_ check on MacOS
+
+commit 177085cdc3d4bc60a9371406fb9b90666b947a76
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 14:34:57 2024 -0400
+
+    more cleanup - switch from PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_; and experiemnt only doing PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_ check on MacOS
+
+commit aa005573e118c7b4da7ff15ebe81dab62a6f2577
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 15:17:37 2024 -0400
+
+    tweak PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_ hack to depend on MAKE_VERSION
+
+commit 409fa1100fff3acf9417e330fd7dd718f413826d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 16:49:03 2024 -0400
+
+    configure:  if (!( eq no) && ) push @LinkerArgs_LibDependencies_ADD, Bcrypt.lib;             # Needed since 1.3.1
+
+commit b8fd13ed9f431b5cbb2721dd2ca5bbbf695ab117
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 16:52:57 2024 -0400
+
+    Minor cleanups to ObjectVariantMapper::StructFieldInfo::StructFieldInfo CTOR
+
+commit 32820ca4402578889287a4d35d8affe11b1b9b45
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 1 22:36:51 2024 -0400
+
+    https://stroika.atlassian.net/browse/STK-955 : incompatible changes to MakeClassSerializer () - OK cuz probably not used; AddClass SLIGHTLY incompatible change - when applied before/after to/from object code changed slightly but unlikely a noticble difference, and now more clearly documented/organized; and related code better vectored together (incluing AddSubClass and validation/cehcks
+
+commit b9ffb897ba69d67cdf19a39213ddcf6beb547ff0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 2 16:01:49 2024 -0400
+
+    ObjectVariantMapper::TypeMappingDetails CTOR args largely reversed (old still supported just deprecated)
+
+#endif
+
+
+
 ---
 
 ### 3.0d6 {2024-06-13} {[diff](../../compare/v3.0d5...v3.0d6)}
