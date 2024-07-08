@@ -23,6 +23,10 @@ especially those they need to be aware of when upgrading.
   - renamed makefile/configure TARGET_PLATFORMS to TargetPlatforms
   - renamed arg to configure from --platform to --build-platform
   - use TargetPlatforms instead of ProjectPlatformSubdir
+    - $(findstring VisualStudio.Net,$(ProjectPlatformSubdir)) => $(findstring VisualStudio.Net,$(BuildPlatform)) OR
+      $(findstring VisualStudio.Net,$(ProjectPlatformSubdir)) => $(findstring Windows,$(TargetPlatform)) OR
+    - (Unix,$(ProjectPlatformSubdir)) => (Unix,$(BuildPlatform)); **BuildPlatform CAN BE Unix, VisualStudio.Net-2022**
+  - makefile variable CMAKE_USE_GENERATOR no longer supported/generated
 
 #### Change Details
 - ReadMe's / Docs / Comments / Misc
