@@ -387,7 +387,7 @@ sub	DoHelp_
 		print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
 		print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
 		print("	    --build-by-default never|always|{uname}         /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n");
-		print("	    --build-platform {PLATFORM}                     /* Specifies the BuildPlatform (currently supported: Unix, VisualStudio.Net-2022) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n");
+		print("	    --build-platform {PLATFORM}                     /* Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n");
 		print("	    --target-platforms {TargetPlatforms}            /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
 		print("	    --build-tools-root {BuildToolsRoot}             /* Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected */\n");
 		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
