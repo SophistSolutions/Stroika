@@ -15,15 +15,30 @@ especially those they need to be aware of when upgrading.
 
 - Library
   - Foundation
+    - Characters
+      - deprecate Characters::GetEOL, and replace with Characters::kEOL
     - Common
       - Property
         - Added concepts usage to Properties code - to facilitate better error messages from the compiler (and better docs)
+        - Renamed a few properties to no longer use 'p' prefix - **not backward compatible** - but too painful todo backward compat...; prettty clear error message from compiler
+    - Configuration
+      - mostly cosmetic - use same_as instead of is_same_v: shorter, more modern, more clear/consistent
+      - StdStdCompat
+        - moved Memory::byteswap etc to StdStdCompat
     - DataExchange
       - Compression
         - https://stroika.atlassian.net/browse/STK-609  support for new factory style api and better names for compression/decompression code
         - redid regtests using new compression code; deprecated old api; added support for alternate compression level
         - Compression::Deflate::kSupported
         - fixed small bug in deflate PullEnufForDeflate1Byte_ and add slight optimization (pull more if available)
+        - https://stroika.atlassian.net/browse/STK-520 use AssertExternallySynchronizedMutex in DataExchange/Compression/Deflate
+      - ObjectVariantMapper
+        - Minor cleanups to ObjectVariantMapper::StructFieldInfo::StructFieldInfo CTOR
+        - https://stroika.atlassian.net/browse/STK-955 : incompatible changes to MakeClassSerializer () -
+          OK cuz probably not used; AddClass SLIGHTLY incompatible change - when applied before/after to/from object
+          code changed slightly but unlikely a noticble difference, and now more clearly documented/organized;
+          and related code better vectored together (incluing AddSubClass and validation/cehcks)
+        - ObjectVariantMapper::TypeMappingDetails CTOR args largely reversed (old still supported just deprecated)
     - IO
       - Network
         - HTTP
@@ -35,11 +50,27 @@ especially those they need to be aware of when upgrading.
       - OutputStream::Ptr::Write (span<>) allows empty span argument - just do nothing - dont assert out
       - New experimental API  InputStream::Ptr<ELEMENT_TYPE>::ReadAllAvailable ()
       - finished https://stroika.atlassian.net/browse/STK-584 (sharedmemorystream not seekable optimization+) - added the throwaway data feature
+      - SharedMemoryStream: one more use std::distance () instead of ptr diff for better clarity
   - Frameworks
     - WebServer
       - minor tweaks to webserver code and regtests of chunked encoding
       - More progress on Content-Encoding support - and webserver response has StateTransition_ private method now
-
+      - MANY changes to WebServer - not fully backward compatible: https://stroika.atlassian.net/browse/STK-758 - preliminary accept-encoding and content-codiing/transfer-coding compression support; new option on request (NYI)  automaticTransferChunkSize; replaces setting rwHeaders().transferEncoding directly; fewer 'states' in HTTP WebServer Repsonse; a few new readonly poperties and cleanups
+      - Big cleanups to HTTP webserver response code designed to make chunked transfer compressed encodings work. Much cleanup - but still not actually working. Now not sure why... will need to dig more
+      - minor progress on Frameworks_WebServer, TestEncContent tests; minor cleanup for Transfer/Connection_WinHTTP
+      - got compression and chunked transfer working together finally - enuf at least - with kTransferEncodingCompressionDoesntAppearToWorkWithBrowsers_ flag - and dont think it really matters
+      - Minor cleanups - and Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f};
+        added for deflate config in webserver (hardwired for now)
+        Various cleanups to HTTP WebServer response - but mostly support for automaticTransferChunkSize now works (somewhat - not super well)
+        ; and deprecated multi-arg WebServer::Connection CTOR - in favor of new Connection::OPtions object
+      - Frameworks::WebServer: renamed pConnections/pActiveConnections to lose the 'p';
+        and added options for fAutomaticTransferChunkSize fSupportedCompressionEncodings
+        replaced EnterHeadMode() in HTTP Webserver Response with headMode() property
+        https://stroika.atlassian.net/browse/STK-584: now supports Optiopns (and used in WebServer::Response) -
+        for non-syncrhonized and non-seekable - for performance - incomplete but mostly working
+        Minor cleanups to HTTP WebServer Response object - alphabetize properties, and cleanup write () overloads and added codeCvt property
+      - (SAMPLE): simplified ssdp server sample webserver usage, and used that then in ReadMe.md about webserver
+      - dont do chunked/transfer in http werbserver in autocompute etag
 
 
 - Compiler Bug Defines
@@ -70,124 +101,22 @@ especially those they need to be aware of when upgrading.
 
   - configure:  if (!( eq no) && ) push @LinkerArgs_LibDependencies_ADD, Bcrypt.lib;             # Needed since 1.3.1
 
+  - configure: when setting no-third-party-components - dont override explicit set names
+
+- ThirdPartyComponents
+  - libxml
+    -  VERSION 2.13.1 and react to deprecated function
+    - NOTE - sadly - changes default (not easy to undo) - for XML_SAVE_NO_EMPTY (or diff in different enums) - but cannot see how to set
+      with APIs I'm using
 
 
 
 #if 0
-
-commit b7327f5e2d3108b2cc030086ed0b4647c13fd6b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 23 09:02:52 2024 -0400
-
-    MANY changes to WebServer - not fully backward compatible: https://stroika.atlassian.net/browse/STK-758 - preliminary accept-encoding and content-codiing/transfer-coding compression support; new option on request (NYI)  automaticTransferChunkSize; replaces setting rwHeaders().transferEncoding directly; fewer 'states' in HTTP WebServer Repsonse; a few new readonly poperties and cleanups
-
-commit 497e3d4b4c04d4042f03f34905173efbbe2cc117
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 25 13:24:59 2024 -0400
-
-    Big cleanups to HTTP webserver response code designed to make chunked transfer compressed encodings work. Much cleanup - but still not actually working. Now not sure why... will need to dig more
-
-commit 83895adddf5072d5470ae28e72c9912ee1510d4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 09:52:17 2024 -0400
-
-    minor progress on Frameworks_WebServer, TestEncContent tests; minor cleanup for Transfer/Connection_WinHTTP
-
-commit f1174c08239d3c693c1c1b2cc05b0a673d7ba062
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 13:41:54 2024 -0400
-
-    got compression and chunked transfer working together finally - enuf at least - with kTransferEncodingCompressionDoesntAppearToWorkWithBrowsers_ flag - and dont think it really matters
-
-commit f739c33d04aa4f258f19164b907e4da3e8f3514d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 14:08:34 2024 -0400
-
-    Minor cleanups - and Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f}; added for deflate config in webserver (hardwired for now)
-
-commit 4402873398d2b4e7739ba626878ae96d89590fdd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 11:03:56 2024 -0400
-
-    Various cleanups to HTTP WebServer response - but mostly support for automaticTransferChunkSize now works (somewhat - not super well)
-
-commit 8976ad80fce1a883716d41d881b57012c7468ac9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 13:53:24 2024 -0400
-
-    fixed minor regression in new writechunked http transfer code
-
-commit b408fad023a76d8b85e22b01dfcf650241e63080
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:25:57 2024 -0400
-
-    ; and deprecated multi-arg WebServer::Connection CTOR - in favor of new Connection::OPtions object
-
-commit d2cda4edce04efc9e1a2859c4cf82032959bbdf8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 28 09:25:18 2024 -0400
-
-    Frameworks::WebServer: renamed pConnections/pActiveConnections to lose the 'p'; and added options for fAutomaticTransferChunkSize fSupportedCompressionEncodings
-
-commit 5ac16096b774c30744077281636808f4d0070a1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 28 09:26:16 2024 -0400
-
-    Renamed a few properties to no longer use 'p' prefix - not backward compatible - but too painful todo backward compat...; prettty clear error message from compiler
-
-commit 0ea926345e32a671d5a8a0770482da1501e6682a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 28 11:37:58 2024 -0400
-
-    replaced EnterHeadMode() in HTTP Webserver Response with headMode() property
-
-commit 4820352e93e7980e251da9ad64a8f5f05564a735
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 29 12:25:58 2024 -0400
-
-    https://stroika.atlassian.net/browse/STK-584: now supports Optiopns (and used in WebServer::Response) - for non-syncrhonized and non-seekable - for performance - incomplete but mostly working
-
-commit f8835a95f9fe3a2e5dbd508573970a5538d5d0a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 29 21:48:00 2024 -0400
-
-    Minor cleanups to HTTP WebServer Response object - alphabetize properties, and cleanup write () overloads and added codeCvt property
-
-commit cfb1e413651d24e08cef96ff4f79ef8bab62ad5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 29 22:11:16 2024 -0400
-
-    https://stroika.atlassian.net/browse/STK-520 use AssertExternallySynchronizedMutex in DataExchange/Compression/Deflate
-
-commit 216b2146c9558a633001dbb1bcd4c4a85298ab3f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 29 22:29:26 2024 -0400
-
-    mostly cosmetic - use same_as instead of is_same_v: shorter, more modern, more clear/consistent
-
-commit e3c1333fe6b007cc84aec219069a34fda1d942ca
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Jun 30 09:10:00 2024 -0400
-
-    one more use std::distance () instead of ptr diff for better clarity
-
-commit 6c7de06039af0424cbfb15c08c360f499d131194
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Jun 30 09:15:02 2024 -0400
-
-    one more use std::distance () instead of ptr diff for better clarity
-
 commit dc0e6bafec051be75fb0a6874dc995680c7e89b0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jun 30 09:40:10 2024 -0400
 
     more use of - style args even for windows since now seems to work
-
-commit 05c11a6b6a30866b02aa75619b657d6552c24394
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 30 15:32:07 2024 -0400
-
-    simplified ssdp server sample webserver usage, and used that then in ReadMe.md about webserver
 
 commit 5f14e44e21e876d1a75da848783a8b249838f4b8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -201,77 +130,17 @@ Date:   Sun Jun 30 16:33:00 2024 -0400
 
     XPath::Expression cleanups
 
-commit 4ea7595efec69c230cd932925eb90aced3c730e9
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Jun 30 21:14:54 2024 -0400
-
-    workaround issue with if constexpr (Compression::Deflate::kSupported) not working fully
-
-commit b756cea06197010a15891f4a2dac4e7f2f0830b8
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Jun 30 21:15:52 2024 -0400
-
-    workaround issue with if constexpr (Compression::Deflate::kSupported) not working fully
-
-commit 2474965313983d9eaa4f03328b7198a174dc22c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 30 21:17:29 2024 -0400
-
-    moved Memory::byteswap etc to StdStdCompat
-
-commit cef7d5b935d6e21b2882a771cc204cb278512c7e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 1 07:40:33 2024 -0400
-
-    deprecate Characters::GetEOL, and replace with Characters::kEOL
-
-commit 3a54f15da38fce1a09eaf7cd10edc634663af5f8
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Jul 1 07:54:49 2024 -0400
-
-    configure: when setting no-third-party-components - dont override explicit set names
-
 commit 422102146bdeb788412e30766b0e88ba54df979c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jul 1 08:33:36 2024 -0400
 
     renamed FeatureNotSupportedInThisVersionException => FeatureNotSupportedException and used in Deflate code if not available to address if constexpr issue in HTTP webserver Request code
 
-commit ac036b2a02407c2b941052a89505798f61a48162
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 1 09:23:30 2024 -0400
-
-    dont do chunked/transfer in http werbserver in autocompute etag
-
 commit ae2c7d25db5aa6c16131fe1181654b6717971d67
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jul 1 11:12:45 2024 -0400
 
     JSON::WRiter::Options - add optional fLineTermination and default to Characters::kEOL (so change and had to update regtests)
-
-commit 67674bf63a7ada68db5176d4c5a6d639924b6709
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 1 13:49:34 2024 -0400
-
-    libxml 2.13.1 and react to deprecated function
-
-commit b8fd13ed9f431b5cbb2721dd2ca5bbbf695ab117
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 1 16:52:57 2024 -0400
-
-    Minor cleanups to ObjectVariantMapper::StructFieldInfo::StructFieldInfo CTOR
-
-commit 32820ca4402578889287a4d35d8affe11b1b9b45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 1 22:36:51 2024 -0400
-
-    https://stroika.atlassian.net/browse/STK-955 : incompatible changes to MakeClassSerializer () - OK cuz probably not used; AddClass SLIGHTLY incompatible change - when applied before/after to/from object code changed slightly but unlikely a noticble difference, and now more clearly documented/organized; and related code better vectored together (incluing AddSubClass and validation/cehcks
-
-commit b9ffb897ba69d67cdf19a39213ddcf6beb547ff0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 2 16:01:49 2024 -0400
-
-    ObjectVariantMapper::TypeMappingDetails CTOR args largely reversed (old still supported just deprecated)
 
 #endif
 
