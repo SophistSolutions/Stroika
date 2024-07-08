@@ -12,8 +12,8 @@ especially those they need to be aware of when upgrading.
 ### 3.0d7XXX {2024-07-10} {[diff](../../compare/v3.0d6...v3.0d7)}
 
 #### TLDR
-- Frameworks::WebServer - support deflate inline transfer coding/content-encoding; new property automaticTransferChunkSize, replaces setting transferCoding manually, and other prep for https support
-- cleanups to cleanups to ObjectVariantMapper::StructFieldInfo/TypeMappingDetails to faciliate custom mappers
+- Frameworks::WebServer: support deflate inline transfer coding/content-encoding; new property automaticTransferChunkSize, replaces setting transferCoding manually, and other prep for https support
+- ObjectVariantMapper: cleanups to StructFieldInfo/TypeMappingDetails to faciliate custom mappers
 
 #### Upgrade Notes (3.0d6 to 3.0d7)
 - Renamed a few properties to no longer use 'p' prefix ; prettty clear error message from compiler
