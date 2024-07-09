@@ -45,7 +45,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *        
  *      @todo   https://stroika.atlassian.net/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
  *              use KeyedCollection<> instead of Mapping for fSerializers - was using Set<> which is closer API wise, but Set<> has misfeature
  *              that adding when already there does nothing, and new KeyedCollection will have property - lilke Mapping - of replacing value.
@@ -214,6 +213,8 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  @see FromGenericObjectMapperType
          *  @see ToObjectMapperType
+         * 
+         * \see https://stroika.atlassian.net/browse/STK-955
          */
         template <typename T>
         using FromObjectMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const T* objOfType)>;
@@ -224,6 +225,8 @@ namespace Stroika::Foundation::DataExchange {
          * 
          *  @see ToGenericObjectMapperType
          *  @see FromObjectMapperType
+         * 
+         * \see https://stroika.atlassian.net/browse/STK-955
          */
         template <typename T>
         using ToObjectMapperType = function<void (const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
@@ -258,6 +261,20 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+        * @todo add formattable concept apply to T
+         */
+        template <typename T>
+        static const FromObjectMapperType<T> kTraceFromObjectMapper;
+
+    public:
+        /**
+        * @todo add formattable concept apply to T
+         */
+        template <typename T>
+        static const ToObjectMapperType<T> kTraceToObjectMapper;
+
+    public:
+        /**
          *  Defaults to installing basic type mappers (@see ResetToDefaultTypeRegistry).
          */
         ObjectVariantMapper ();
@@ -268,19 +285,19 @@ namespace Stroika::Foundation::DataExchange {
          *  This CAN be directly constructed, and passed into the ObjectVariantMapper (via the Add method), but more commonly
          *  helpers like MakeCommonSerializer () or AddClass will be used.
          *
-         *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-         *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
-         *
-         *        o C++20 only (for c++17 only supported == and operator<)
-         * 
+         *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>         * 
          *  \note fFromObjectMapper is nullptr, then this field is added as nullptr.
          *  \note toObjectMapper is nullptr, then it is simply not called (as if did nothing or empty function)
          */
         struct TypeMappingDetails {
+        public:
+            // @todo probably hide these in v3.x
+
             type_index                  fForType;
             FromGenericObjectMapperType fFromObjectMapper;
             ToGenericObjectMapperType   fToObjectMapper;
 
+        public:
             /**
              *  \par Example Usage
              *      \code
@@ -306,17 +323,21 @@ namespace Stroika::Foundation::DataExchange {
                                 const type_index& forTypeInfo = type_index{typeid (T)})
                 requires (not same_as<T, void>);
 
+        public:
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
             nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs)     = default;
 
+        public:
             /**
              */
             nonvirtual strong_ordering operator<=> (const TypeMappingDetails& rhs) const;
 
+        public:
             /**
              */
             nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
 
+        public:
             /**
              *  See FromGenericObjectMapperType
              */
@@ -325,6 +346,7 @@ namespace Stroika::Foundation::DataExchange {
             template <typename T>
             nonvirtual FromObjectMapperType<T> FromObjectMapper () const;
 
+        public:
             /**
              *  See ToGenericObjectMapperType
              */
@@ -333,6 +355,22 @@ namespace Stroika::Foundation::DataExchange {
             template <typename T>
             nonvirtual ToObjectMapperType<T> ToObjectMapper () const;
 
+        public:
+            /**
+             */
+            nonvirtual type_index GetForType () const;
+
+        public:
+            /**
+             */
+            nonvirtual FromGenericObjectMapperType GetGenericFromObjectMapper () const;
+
+        public:
+            /**
+             */
+            nonvirtual ToGenericObjectMapperType GetGenericToObjectMapper () const;
+
+        public:
             /**
              *  @see Characters::ToString ();
              */
@@ -567,8 +605,12 @@ namespace Stroika::Foundation::DataExchange {
          *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS>
+        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+        template <typename CLASS>
+        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass);
+        template <typename CLASS>
         nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                  const optional<TypeMappingDetails>&         furtherDerivedClass = nullopt);
+                                  const FromObjectMapperType<CLASS>& furtherDerivedFromMapper, const ToObjectMapperType<CLASS>& furtherDerivedToMapper);
 
     public:
         /**
@@ -598,8 +640,12 @@ namespace Stroika::Foundation::DataExchange {
          *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                     const optional<TypeMappingDetails>&         furtherDerivedClass = nullopt);
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+        template <typename CLASS, typename BASE_CLASS>
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass);
+        template <typename CLASS, typename BASE_CLASS>
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const FromObjectMapperType<CLASS>& furtherDerivedFromMapper,
+                                     const ToObjectMapperType<CLASS>& furtherDerivedToMapper);
 
     public:
         /**
@@ -1098,23 +1144,24 @@ namespace Stroika::Foundation::DataExchange {
         }
 
     public:
-        // @todo cleanup - new accessors in v3.0d7
-        String GetSerializedFieldName () const
-        {
-            return fSerializedFieldName;
-        }
-        StructFieldMetaInfo GetStructFieldMetaInfo () const
-        {
-            return *fFieldMetaInfo;
-        }
-        optional<TypeMappingDetails> GetOverrideTypeMapper () const
-        {
-            return fOverrideTypeMapper;
-        }
-        NullFieldHandling GetFromObjectNullHandling () const
-        {
-            return fNullFields;
-        }
+        /**
+         */
+        nonvirtual String GetSerializedFieldName () const;
+
+    public:
+        /**
+         */
+        nonvirtual StructFieldMetaInfo GetStructFieldMetaInfo () const;
+
+    public:
+        /**
+         */
+        nonvirtual optional<TypeMappingDetails> GetOverrideTypeMapper () const;
+
+    public:
+        /**
+         */
+        nonvirtual NullFieldHandling GetFromObjectNullHandling () const;
 
     public:
         friend class ObjectVariantMapper;

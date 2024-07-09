@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -186,7 +187,8 @@ namespace {
             // And dump the results into a temporary memory-based stream
             Streams::MemoryStream::Ptr<Character> tmpStream = Streams::MemoryStream::New<Character> ();
             Variant::JSON::Writer{}.Write (vv, tmpStream);
-            DbgTrace ("rendered as JSON: = {}"_f, tmpStream.As<String> ().ReplaceAll ("\n"sv, ""sv));
+            using namespace Characters;
+            DbgTrace ("rendered as JSON: = {}"_f, tmpStream.As<String> ().ReplaceAll ("[\n\r]"_RegEx, ""sv));
         };
 
         // Create a test object to serialize
@@ -194,18 +196,16 @@ namespace {
         tmp.fEnabled = true;
         trySerializing (mapper, tmp);
 
-        // @todo should simplify this - see https://stroika.atlassian.net/browse/STK-955
-        auto myReadOnlyPropertyTypeMapper = ObjectVariantMapper::TypeMappingDetails{
-            ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
-                return VariantValue{objOfType->fEnabled ? 2 : 99};
-            }),
-            ObjectVariantMapper::ToObjectMapperType<MyType2Serialize1_> (nullptr)};
-
         // Now a fancier mapper
-        mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
-            {"RandomValue"sv, myReadOnlyPropertyTypeMapper},
-        });
+        mapper.AddClass<MyType2Serialize1_> (
+            initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+            },
+            ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
+                // value will be merged with base mapper value
+                return VariantValue{Mapping<String, VariantValue>{{"RandomValue"sv, VariantValue{objOfType->fEnabled ? 2 : 99}}}};
+            }),
+            ObjectVariantMapper::ToObjectMapperType<MyType2Serialize1_> (nullptr));
         trySerializing (mapper, tmp);
     }
 }

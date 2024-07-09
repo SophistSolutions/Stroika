@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
 #include "Stroika/Foundation/Execution/Activity.h"
 #endif
@@ -41,6 +42,22 @@ namespace Stroika::Foundation::DataExchange {
         Require (not serializedFieldName.empty ()); // Since Stroika v3.0d7
     }
 
+    inline String ObjectVariantMapper::StructFieldInfo::GetSerializedFieldName () const
+    {
+        return fSerializedFieldName;
+    }
+    inline StructFieldMetaInfo ObjectVariantMapper::StructFieldInfo::GetStructFieldMetaInfo () const
+    {
+        return *fFieldMetaInfo;
+    }
+    inline auto ObjectVariantMapper::StructFieldInfo::GetOverrideTypeMapper () const -> optional<TypeMappingDetails>
+    {
+        return fOverrideTypeMapper;
+    }
+    inline auto ObjectVariantMapper::StructFieldInfo::GetFromObjectNullHandling () const -> NullFieldHandling
+    {
+        return fNullFields;
+    }
     /*
      ********************************************************************************
      *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
@@ -71,6 +88,18 @@ namespace Stroika::Foundation::DataExchange {
     inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
     {
         return fForType == rhs.fForType; // just compare types, not functions
+    }
+    inline type_index ObjectVariantMapper::TypeMappingDetails::GetForType () const
+    {
+        return fForType;
+    }
+    inline auto ObjectVariantMapper::TypeMappingDetails::GetGenericFromObjectMapper () const -> FromGenericObjectMapperType
+    {
+        return fFromObjectMapper;
+    }
+    inline auto ObjectVariantMapper::TypeMappingDetails::GetGenericToObjectMapper () const -> ToGenericObjectMapperType
+    {
+        return fToObjectMapper;
     }
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper)
@@ -176,6 +205,26 @@ namespace Stroika::Foundation::DataExchange {
      ******************************** ObjectVariantMapper ***************************
      ********************************************************************************
      */
+
+    /**
+        * @todo add formattable concept apply to T
+         */
+    template <typename T>
+    inline const ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::kTraceFromObjectMapper =
+        [] (const ObjectVariantMapper& mapper, const T* objOfType) -> VariantValue {
+        DbgTrace ("FromObject<{}>(mapper, {}) called", typeid (T), objOfType);
+        return {};
+    };
+
+    /**
+        * @todo add formattable concept apply to T
+         */
+    template <typename T>
+    inline const ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::kTraceToObjectMapper =
+        [] (const ObjectVariantMapper& mapper, const VariantValue& d, T* into) -> void {
+        DbgTrace ("ToObject<{}>(mapper, {}, {}) called", typeid (T), d, into);
+    };
+
     inline ObjectVariantMapper::TypesRegistry ObjectVariantMapper::GetTypeMappingRegistry () const
     {
         return fTypeMappingRegistry_;
@@ -215,16 +264,38 @@ namespace Stroika::Foundation::DataExchange {
         Add (serializer);
     }
     template <typename CLASS>
-    inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                               const optional<TypeMappingDetails>&         furtherDerivedClass)
+    inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
+    {
+        Add (MakeClassSerializer_<CLASS> (fieldDescriptions, nullopt, nullopt, this));
+    }
+    template <typename CLASS>
+    inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass)
     {
         Add (MakeClassSerializer_<CLASS> (fieldDescriptions, nullopt, furtherDerivedClass, this));
     }
+    template <typename CLASS>
+    inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                               const FromObjectMapperType<CLASS>&          furtherDerivedFromMapper,
+                                               const ToObjectMapperType<CLASS>&            furtherDerivedToMapper)
+    {
+        AddClass<CLASS> (fieldDescriptions, TypeMappingDetails{furtherDerivedFromMapper, furtherDerivedToMapper});
+    }
     template <typename CLASS, typename BASE_CLASS>
-    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                                  const optional<TypeMappingDetails>&         furtherDerivedClass)
+    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
+    {
+        Add (MakeClassSerializer_<CLASS> (fieldDescriptions, Lookup_ (typeid (BASE_CLASS)), nullopt, this));
+    }
+    template <typename CLASS, typename BASE_CLASS>
+    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass)
     {
         Add (MakeClassSerializer_<CLASS> (fieldDescriptions, Lookup_ (typeid (BASE_CLASS)), furtherDerivedClass, this));
+    }
+    template <typename CLASS, typename BASE_CLASS>
+    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                                  const FromObjectMapperType<CLASS>&          furtherDerivedFromMapper,
+                                                  const ToObjectMapperType<CLASS>&            furtherDerivedToMapper)
+    {
+        AddSubClass<CLASS, BASE_CLASS> (fieldDescriptions, TypeMappingDetails{furtherDerivedFromMapper, furtherDerivedToMapper});
     }
     template <typename T>
     inline auto ObjectVariantMapper::ToObjectMapper () const -> ToObjectMapperType<T>
