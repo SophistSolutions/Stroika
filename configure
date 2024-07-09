@@ -1074,7 +1074,8 @@ sub	SetDefaultForCompilerDriver_
 				}
 			}
 			if (getUbuntuVersion() == 23.10) {
-				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13) {
+				# LibCurl fails to build and not important enuf platform to debug...
+				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 					$skipSanCuzBroken = true;
 				}
 				# with asan and ununtu 23.10, about 1/2 the tests fail (somewhat randomly, not always). --LGP 2024-05-07
