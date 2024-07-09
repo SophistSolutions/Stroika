@@ -1008,22 +1008,24 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *       \code
-     *          ObjectVariantMapper::StructFieldInfo{"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+     *          ObjectVariantMapper::StructFieldInfo{"Int-1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ObjectVariantMapper::StructFieldInfo{"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+     *          ObjectVariantMapper::StructFieldInfo{"Int2"sv, StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ObjectVariantMapper::StructFieldInfo{"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+     *          ObjectVariantMapper::StructFieldInfo{"BasicArray1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
      *      \endcode
      *
      */
     struct ObjectVariantMapper::StructFieldInfo {
+    public:
         /**
+         *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - decides if missing data mapped to null entry in map/object, or just missing
          */
         enum class NullFieldHandling {
             eOmit,
@@ -1031,24 +1033,34 @@ namespace Stroika::Foundation::DataExchange {
 
             Stroika_Define_Enum_Bounds (eOmit, eInclude)
         };
-        static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;    // instead of using NullFieldHandling::eOmit
-        static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
+        /**
+         *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - parent object created with missing values if missing from object
+         */
+        static constexpr NullFieldHandling eOmitNullFields = NullFieldHandling::eOmit; // instead of using NullFieldHandling::eOmit
 
         /**
+         *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - parent object created with explicitly null values if missing from object
+         */
+        static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
+
+    private:
+        /**
          *  Required for a an actual field mapper, but if empty, implies a reader/writer for the entire object.
+         * 
+         *  \note Since v3.0d7 - this is required to be non-empty (or empty use deprecated rather)
          */
         String fSerializedFieldName;
 
         /*
          * if missing - then pass in parent object, then fOverrideTypeMapper required
+         * 
+         *  \note Since v3.0d7 - this is required to be null-null (or null use deprecated rather)
          */
         optional<StructFieldMetaInfo> fFieldMetaInfo;
 
         /*
          *  if fFieldMetaInfo == nullopt, fOverrideTypeMapper is required, and is the mapper used for the entire
-         *  object.
-         * 
-         *  NOTE - fOverrideTypeMapper and fFieldMetaInfo can be combined, or used separately.
+         *  object. (NOTE SINCE 3.0d7 - fFieldMetaInfo==nullopt deprecated)
          */
         optional<TypeMappingDetails> fOverrideTypeMapper;
 
@@ -1056,17 +1068,54 @@ namespace Stroika::Foundation::DataExchange {
          *  defaults to NullFieldHandling::eInclude
          * 
          *  \note only applies to 'FromObject' handler - whether to add the null entry to the 'VariantValue'.
+         * 
+         *  @todo consider if some way to fold this elsewhere - into FromObject type mapper itself -or rename so more clear it only refers to FromObject
          */
         NullFieldHandling fNullFields{NullFieldHandling::eInclude};
 
+    public:
         /**
-         *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array
-         *          with application lifetime (that is static C++ constant). This is to make the common case slightly more efficient.
+         * 
+         * note overloads with no StructFieldMetaInfo must provide a TypeMappingDetails (since otherwise no typemapper to lookup cuz no type) and
+         *  that mapper must take owning object not individiaul type as argument - so maybe bad idea - maybe deprecate)
+         * 
          */
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
-                         const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
-        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
-        StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper);
+                         NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper,
+                         NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude);
+
+    public:
+        [[deprecated ("Since Stroika v3.0d7 - dont use StructFieldInfo with missing filedMetaInfo - instead use type override of owning "
+                      "object)")]] StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper,
+                                                    NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude)
+            : fSerializedFieldName{serializedFieldName}
+            , fOverrideTypeMapper{overrideTypeMapper}
+            , fNullFields{fromObjectNullHandling}
+        {
+        }
+
+    public:
+        // @todo cleanup - new accessors in v3.0d7
+        String GetSerializedFieldName () const
+        {
+            return fSerializedFieldName;
+        }
+        StructFieldMetaInfo GetStructFieldMetaInfo () const
+        {
+            return *fFieldMetaInfo;
+        }
+        optional<TypeMappingDetails> GetOverrideTypeMapper () const
+        {
+            return fOverrideTypeMapper;
+        }
+        NullFieldHandling GetFromObjectNullHandling () const
+        {
+            return fNullFields;
+        }
+
+    public:
+        friend class ObjectVariantMapper;
     };
 
     template <>

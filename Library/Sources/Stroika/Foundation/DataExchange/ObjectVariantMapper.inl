@@ -26,22 +26,19 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
-                                                                  const optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
+                                                                  NullFieldHandling fromObjectNullHandling)
+        : StructFieldInfo{serializedFieldName, fieldMetaInfo, nullopt, fromObjectNullHandling}
+    {
+    }
+    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
+                                                                  const optional<TypeMappingDetails>& overrideTypeMapper,
+                                                                  NullFieldHandling                   fromObjectNullHandling)
         : fSerializedFieldName{serializedFieldName}
         , fFieldMetaInfo{fieldMetaInfo}
         , fOverrideTypeMapper{overrideTypeMapper}
-        , fNullFields{nullFields}
+        , fNullFields{fromObjectNullHandling}
     {
-    }
-    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper)
-        : fSerializedFieldName{serializedFieldName}
-        , fOverrideTypeMapper{overrideTypeMapper}
-    {
-    }
-    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String&              serializedFieldName,
-                                                                  const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
-        : StructFieldInfo{serializedFieldName, fieldMetaInfo, {}, nullFields}
-    {
+        Require (not serializedFieldName.empty ()); // Since Stroika v3.0d7
     }
 
     /*
