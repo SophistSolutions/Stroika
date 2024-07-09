@@ -72,11 +72,16 @@ especially those they need to be aware of when upgrading.
         - https://stroika.atlassian.net/browse/STK-520 use AssertExternallySynchronizedMutex in DataExchange/Compression/Deflate
       - ObjectVariantMapper
         - Minor cleanups to ObjectVariantMapper::StructFieldInfo::StructFieldInfo CTOR
-        - https://stroika.atlassian.net/browse/STK-955 : incompatible changes to MakeClassSerializer () -
+        - incompatible changes to MakeClassSerializer () -
           OK cuz probably not used; AddClass SLIGHTLY incompatible change - when applied before/after to/from object
           code changed slightly but unlikely a noticble difference, and now more clearly documented/organized;
           and related code better vectored together (incluing AddSubClass and validation/cehcks)
         - ObjectVariantMapper::TypeMappingDetails CTOR args largely reversed (old still supported just deprecated)
+        - Better data hiding in ObjectVariantMapper::StructFieldInfo, and deprecated CTOR where StructFieldMetaInfo is missing
+        - ObjectVariantMapper cleanups; AddClass and AddSubClass overloads (taking from/to T mappers directly);
+          enhanced sample to avoid new deprecated api and print better;
+          ObjectVariantMapper::kTraceFromObjectMapper and ObjectVariantMapper::kTraceToObjectMapper helpers
+        - https://stroika.atlassian.net/browse/STK-955 fixed
       - Variant
         - JSON
           - JSON::Writer::Options - add optional fLineTermination and default to Characters::kEOL (so change and had to update regtests)
