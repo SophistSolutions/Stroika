@@ -287,7 +287,7 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (VariantValue&& src) noexcept = default;
         template <typename T>
         VariantValue (const optional<T>& val)
-            requires (is_convertible_v<T, VariantValue>);
+            requires (is_convertible_v<T, VariantValue>); // @todo redo with constraint/typename syntax (I think converitble_to<VariantValue>)
 #if qHasFeature_boost
         VariantValue (const boost::json::value& val);
 #endif
@@ -300,7 +300,7 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual VariantValue& operator= (const VariantValue& rhs)     = default;
         template <typename T>
         nonvirtual VariantValue& operator= (T&& val)
-            requires (requires (T x) { VariantValue{x}; });
+            requires (requires (T x) { VariantValue{x}; }); // @todo redo with constraint/typename syntax (I think converitble_to<VariantValue>)
 
     public:
         /**
