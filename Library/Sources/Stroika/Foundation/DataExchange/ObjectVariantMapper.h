@@ -166,16 +166,16 @@ namespace Stroika::Foundation::DataExchange {
      *
      *          // register each of your mappable (even private) types
      *          mapper.AddClass<SharedContactsConfig_> ({
-     *              ObjectVariantMapper::StructFieldInfo{ "Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
-     *              ObjectVariantMapper::StructFieldInfo{ "Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
-     *              ObjectVariantMapper::StructFieldInfo{ "This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
+     *              ObjectVariantMapper::StructFieldInfo{ "Enabled"sv, StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
+     *              ObjectVariantMapper::StructFieldInfo{ "Last-Synchronized-At"sv, StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
+     *              ObjectVariantMapper::StructFieldInfo{ "This-HR-ContactID-To-SharedContactID-Map"sv, StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
      *          });
      *
      *          // OR Equivalently
      *          mapper.AddClass<SharedContactsConfig_> ({
-     *              { "Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
-     *              { "Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
-     *              { "This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
+     *              { "Enabled"sv, StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
+     *              { "Last-Synchronized-At"sv, StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
+     *              { "This-HR-ContactID-To-SharedContactID-Map"sv, StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
      *          });
      *
      *          SharedContactsConfig_   tmp;

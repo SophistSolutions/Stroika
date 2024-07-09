@@ -50,16 +50,16 @@ namespace {
                                                              Led_tString* intoObj) -> void { *intoObj = d.As<String> ().As<Led_tString> (); });
                                 mapper.AddCommonType<vector<Led_tString>> ();
 
-                                mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                                    {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
-                                    {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
-                                    {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
-                                    {L"CaseSensativeSearch", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
-                                    {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
+                                mapper.AddClass<SearchParameters> ({
+                                    {"MatchString"sv, StructFieldMetaInfo{&SearchParameters::fMatchString}},
+                                    {"WrapSearch"sv, StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
+                                    {"WholeWordSearch"sv, StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
+                                    {"CaseSensativeSearch"sv, StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
+                                    {"RecentMatchStrings"sv, StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
                                 });
 
-                                mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                                    {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
+                                mapper.AddClass<Options_> ({
+                                    {"Search-Parameters"sv, StructFieldMetaInfo{&Options_::fSearchParameters}},
                                 });
                                 return mapper;
                             }(),

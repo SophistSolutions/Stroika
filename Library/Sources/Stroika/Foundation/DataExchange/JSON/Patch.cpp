@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::DataExchange::JSON::Patch;
  */
 String JSON::Patch::OperationItemType::ToString () const
 {
-    Characters::StringBuilder sb;
+    StringBuilder sb;
     sb << "{"sv;
     sb << "op: "sv << op << ", "sv;
     sb << "path: "sv << path << ", "sv;
@@ -88,7 +88,7 @@ const DataExchange::ObjectVariantMapper JSON::Patch::OperationItemType::kMapper 
     mapper += JSON::PointerType::kMapper;
     mapper.AddCommonType<OperationType> ();
     mapper.AddCommonType<optional<VariantValue>> ();
-    mapper.AddClass<OperationItemType> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+    mapper.AddClass<OperationItemType> ({
         {"op"sv, StructFieldMetaInfo{&OperationItemType::op}},
         {"path"sv, StructFieldMetaInfo{&OperationItemType::path}},
         {"value"sv, StructFieldMetaInfo{&OperationItemType::value}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},

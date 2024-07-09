@@ -64,10 +64,10 @@ namespace {
         mapper.AddCommonType<Set<int>> ();
         mapper.AddCommonType<Set<String>> ();
 
-        // ONLY DO THIS FOR WHEN WRITING TO DB -- store GUIDs as BLOBs - at least for database interactions (cuz more efficient)
+        // ONLY DO THIS -- store GUIDs as BLOBs - WHEN WRITING TO DB (cuz more efficient)
         mapper.AddCommonType<Common::GUID> (VariantValue::eBLOB);
 
-        mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<Device> ({
             {"id"sv, StructFieldMetaInfo{&Device::id}},
             {"name"sv, StructFieldMetaInfo{&Device::name}},
             {"openPorts"sv, StructFieldMetaInfo{&Device::openPorts}},

@@ -60,7 +60,7 @@ namespace {
                                 mapper.AddCommonType<vector<Led_tString>> ();
                                 mapper.AddCommonType<Memory::BLOB> ();
 
-                                mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                mapper.AddClass<SearchParameters> ({
                                     {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
                                     {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
                                     {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
@@ -68,7 +68,7 @@ namespace {
                                     {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
                                 });
 
-                                mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                                mapper.AddClass<Options_> ({
                                     {L"DockBarState", StructFieldMetaInfo{&Options_::fDockBarState}},
                                         {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
                                         {L"SmartCutAndPaste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},

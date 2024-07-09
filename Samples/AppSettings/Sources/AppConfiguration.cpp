@@ -32,7 +32,7 @@ using StroikaSample::AppSettings::Private_::AppConfiguration_Storage_IMPL_;
 const ObjectVariantMapper AppConfigurationType::kMapper = [] () {
     ObjectVariantMapper mapper;
     mapper.AddCommonType<optional<IO::Network::PortType>> ();
-    mapper.AddClass<AppConfigurationType> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+    mapper.AddClass<AppConfigurationType> ({
         {"WebServerPort"sv, StructFieldMetaInfo{&AppConfigurationType::WebServerPort}},
     });
     return mapper;

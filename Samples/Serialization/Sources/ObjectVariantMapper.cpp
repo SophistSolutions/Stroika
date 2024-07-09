@@ -45,7 +45,7 @@ namespace {
         ObjectVariantMapper mapper;
 
         // Add the types to the mapper, which it will need
-        mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<MyType2Serialize1_> ({
             {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
         });
 
@@ -106,7 +106,7 @@ namespace {
         // Some types pre-loaded (see @ObjectVariantMapper::ResetToDefaultTypeRegistry)
         // The rest must be explicitly added to the registry before use.
 
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<SharedContactsConfig_> ({
             {"Enabled"sv, StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
             {"Last-Synchronized-At"sv, StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
             {"This-HR-ContactID-To-SharedContactID-Map"sv, StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
@@ -172,7 +172,7 @@ namespace {
         ObjectVariantMapper mapper;
 
         // Add the types to the mapper, which it will need
-        mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<MyType2Serialize1_> ({
             {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
         });
 
@@ -198,7 +198,7 @@ namespace {
 
         // Now a fancier mapper
         mapper.AddClass<MyType2Serialize1_> (
-            initializer_list<ObjectVariantMapper::StructFieldInfo>{
+            {
                 {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
             },
             ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {

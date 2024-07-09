@@ -61,7 +61,7 @@ namespace {
                                 mapper.AddCommonType<SyntaxColoringOption> ();
 #endif
 
-                                mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                mapper.AddClass<SearchParameters> ({
                                     {L"Match-String", StructFieldMetaInfo{&SearchParameters::fMatchString}},
                                     {L"Wrap-Search", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
                                     {L"Whole-Word-Search", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
@@ -69,7 +69,7 @@ namespace {
                                     {L"Recent-Match-Strings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
                                 });
 
-                                mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                                mapper.AddClass<Options_> ({
                                     {L"Dock-Bar-State", StructFieldMetaInfo{&Options_::fDockBarState}},
                                         {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
                                         {L"Smart-Cut-And-Paste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},

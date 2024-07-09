@@ -49,7 +49,7 @@ namespace {
     const ConstantProperty<ObjectVariantMapper> Employee::kMapper{[] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
-        mapper.AddClass<Employee> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<Employee> ({
             {"id"sv, StructFieldMetaInfo{&Employee::ID}},
             {"Name"sv, StructFieldMetaInfo{&Employee::fName}},
             {"Age"sv, StructFieldMetaInfo{&Employee::fAge}},
@@ -74,7 +74,7 @@ namespace {
     const ConstantProperty<ObjectVariantMapper> Paycheck::kMapper{[] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
-        mapper.AddClass<Paycheck> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<Paycheck> ({
             {"id"sv, StructFieldMetaInfo{&Paycheck::ID}},
             {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
             {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
