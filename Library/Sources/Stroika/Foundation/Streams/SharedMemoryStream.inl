@@ -488,8 +488,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 constexpr size_t kMinData2Reclaim_ = 16 * 1024;
                 size_t           elts2Reclaim      = distance (fData_.cbegin (), fReadCursor_);
                 if (elts2Reclaim * sizeof (ELEMENT_TYPE) >= kMinData2Reclaim_ and IsOpenRead () and IsOpenWrite ()) [[unlikely]] {
-                    size_t readOffset  = GetReadOffset ();
-                    size_t writeOffset = GetWriteOffset ();
+                    SeekOffsetType readOffset  = GetReadOffset ();
+                    SeekOffsetType writeOffset = GetWriteOffset ();
                     fData_.erase (fData_.begin (), fData_.begin () + elts2Reclaim);
                     fSpaceClearedFromStreamHead_ += elts2Reclaim;
                     Assert (readOffset == fSpaceClearedFromStreamHead_); // cuz always wrote more than read, and clear all that read
