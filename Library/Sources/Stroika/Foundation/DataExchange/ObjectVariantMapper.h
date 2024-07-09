@@ -1005,22 +1005,6 @@ namespace Stroika::Foundation::DataExchange {
     /**
      *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a
      *  user-defined type (CLASS).
-     *
-     *  \par Example Usage
-     *       \code
-     *          ObjectVariantMapper::StructFieldInfo{"Int-1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      \code
-     *          ObjectVariantMapper::StructFieldInfo{"Int2"sv, StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      \code
-     *          ObjectVariantMapper::StructFieldInfo{"BasicArray1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
-     *      \endcode
-     *
      */
     struct ObjectVariantMapper::StructFieldInfo {
     public:
@@ -1070,8 +1054,32 @@ namespace Stroika::Foundation::DataExchange {
          *  \note only applies to 'FromObject' handler - whether to add the null entry to the 'VariantValue'.
          * 
          *  @todo consider if some way to fold this elsewhere - into FromObject type mapper itself -or rename so more clear it only refers to FromObject
+         *  or consider if belongs as parameter to CLASS object, not individiaul structs (probably better)
+         *  then less redundantly specified all over the place. I THINK THAT IS BETTER!
          */
         NullFieldHandling fNullFields{NullFieldHandling::eInclude};
+
+    public:
+        /**
+         *  \par Example Usage
+         *       \code
+         *          ObjectVariantMapper::StructFieldInfo{"Int-1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          ObjectVariantMapper::StructFieldInfo{"Int2"sv, StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          ObjectVariantMapper::StructFieldInfo{"BasicArray1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+         *      \endcode
+         */
+        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
+                         NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper,
+                         NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude);
 
     public:
         /**
@@ -1080,12 +1088,6 @@ namespace Stroika::Foundation::DataExchange {
          *  that mapper must take owning object not individiaul type as argument - so maybe bad idea - maybe deprecate)
          * 
          */
-        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
-                         NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude);
-        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper,
-                         NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude);
-
-    public:
         [[deprecated ("Since Stroika v3.0d7 - dont use StructFieldInfo with missing filedMetaInfo - instead use type override of owning "
                       "object)")]] StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper,
                                                     NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude)
