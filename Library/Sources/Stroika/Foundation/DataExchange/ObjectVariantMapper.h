@@ -213,8 +213,6 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  @see FromGenericObjectMapperType
          *  @see ToObjectMapperType
-         * 
-         * \see https://stroika.atlassian.net/browse/STK-955
          */
         template <typename T>
         using FromObjectMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const T* objOfType)>;
@@ -225,8 +223,6 @@ namespace Stroika::Foundation::DataExchange {
          * 
          *  @see ToGenericObjectMapperType
          *  @see FromObjectMapperType
-         * 
-         * \see https://stroika.atlassian.net/browse/STK-955
          */
         template <typename T>
         using ToObjectMapperType = function<void (const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
