@@ -554,7 +554,7 @@ basic-unix-test-configurations_sanitizer_configs_:
 	./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak ${TEST_CONFIGURATIONS_ADD2ALL}
 	./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL}
 	#https://stroika.atlassian.net/browse/STK-761
-	if [[ `lsb_release -rs 2>/dev/null` == '20.04' || `lsb_release -rs 2>/dev/null` == '21.10' || `lsb_release -rs 2>/dev/null` == '22.04' ]] ; then ./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak --lto disable ${TEST_CONFIGURATIONS_ADD2ALL}; fi;
+	if [[ `lsb_release -rs 2>/dev/null` == '20.04' || `lsb_release -rs 2>/dev/null` == '21.10' || `lsb_release -rs 2>/dev/null` == '22.04' || `lsb_release -rs 2>/dev/null` == '23.10' ]] ; then ./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak --lto disable ${TEST_CONFIGURATIONS_ADD2ALL}; fi;
 	./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL}
 
 basic-unix-test-configurations_valgrind_configs_:
