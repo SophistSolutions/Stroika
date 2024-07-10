@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 3.0d7XXX {2024-07-10} {[diff](../../compare/v3.0d6...v3.0d7)}
+### 3.0d7 {2024-07-10} {[diff](../../compare/v3.0d6...v3.0d7)}
 
 #### TLDR
 - Frameworks::WebServer: support deflate inline transfer coding/content-encoding; new property automaticTransferChunkSize, replaces setting transferCoding manually, and other prep for https support
@@ -33,7 +33,6 @@ especially those they need to be aware of when upgrading.
 - Build System
   - Compiler Bug Defines
     - workaround qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    - more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for clang++15
     - qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy BWA and  new bug define
   - Configure/Makefile
     - hopefully fixed when we emit TSAN_OPTIONS in configure
@@ -99,7 +98,7 @@ especially those they need to be aware of when upgrading.
     - Streams
       - OutputStream::Ptr::Write (span<>) allows empty span argument - just do nothing - dont assert out
       - New experimental API  InputStream::Ptr<ELEMENT_TYPE>::ReadAllAvailable ()
-      - finished https://stroika.atlassian.net/browse/STK-584 (sharedmemorystream not seekable optimization+) - added the throwaway data feature
+      - https://stroika.atlassian.net/browse/STK-584 (SharedMemoryStream not seekable optimization) - added the throwaway data feature
       - SharedMemoryStream: one more use std::distance () instead of ptr diff for better clarity
   - Frameworks
     - WebServer
@@ -116,9 +115,9 @@ especially those they need to be aware of when upgrading.
       - Frameworks::WebServer: renamed pConnections/pActiveConnections to lose the 'p';
         and added options for fAutomaticTransferChunkSize fSupportedCompressionEncodings
         replaced EnterHeadMode() in HTTP Webserver Response with headMode() property
-        https://stroika.atlassian.net/browse/STK-584: now supports Optiopns (and used in WebServer::Response) -
-        for non-syncrhonized and non-seekable - for performance - incomplete but mostly working
-        Minor cleanups to HTTP WebServer Response object - alphabetize properties, and cleanup write () overloads and added codeCvt property
+      - now supports Optiopns (and used in WebServer::Response) 
+      - https://stroika.atlassian.net/browse/STK-584: WebServer::Response uses non-seekable/non-syncronized SharedMemoryStream optimization
+      - Minor cleanups to HTTP WebServer Response object - alphabetize properties, and cleanup write () overloads and added codeCvt property
       - (SAMPLE): simplified ssdp server sample webserver usage, and used that then in ReadMe.md about webserver
       - dont do chunked/transfer in http werbserver in autocompute etag
 - ThirdPartyComponents
