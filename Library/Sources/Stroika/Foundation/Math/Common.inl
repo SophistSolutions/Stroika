@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Configuration/StdCompat.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Math {
@@ -13,10 +15,21 @@ namespace Stroika::Foundation::Math {
      ************************************ Math::nan *********************************
      ********************************************************************************
      */
-    template <typename T>
+    template <floating_point T>
     constexpr T nan ()
     {
         return numeric_limits<T>::quiet_NaN ();
+    }
+
+    /*
+     ********************************************************************************
+     ************************************ Math::nan *********************************
+     ********************************************************************************
+     */
+    template <floating_point T>
+    constexpr T infinity ()
+    {
+        return numeric_limits<T>::infinity ();
     }
 
     /*
@@ -25,22 +38,19 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     namespace Private {
-        template <typename T>
+        template <unsigned_integral T>
         constexpr T RoundUpTo_UnSignedHelper_ (T x, T toNearest)
         {
-            static_assert (is_unsigned_v<T>);
             return (((x + toNearest - 1u) / toNearest) * toNearest);
         }
-        template <typename T>
+        template <unsigned_integral T>
         constexpr T RoundDownTo_UnSignedHelper_ (T x, T toNearest)
         {
-            static_assert (is_unsigned_v<T>);
             return ((x / toNearest) * toNearest);
         }
-        template <typename T>
+        template <signed_integral T>
         constexpr T RoundUpTo_SignedHelper_ (T x, T toNearest)
         {
-            static_assert (is_signed_v<T>);
             using UNSIGNED_T = make_unsigned_t<T>;
             Require (toNearest > 0);
             if (x < 0) {
@@ -50,10 +60,9 @@ namespace Stroika::Foundation::Math {
                 return static_cast<T> (RoundUpTo_UnSignedHelper_<UNSIGNED_T> (x, toNearest));
             }
         }
-        template <typename T>
+        template <signed_integral T>
         constexpr T RoundDownTo_SignedHelper_ (T x, T toNearest)
         {
-            static_assert (is_signed_v<T>);
             using UNSIGNED_T = make_unsigned_t<T>;
             Require (toNearest > 0);
             if (x < 0) {
@@ -63,7 +72,6 @@ namespace Stroika::Foundation::Math {
                 return (RoundDownTo_UnSignedHelper_ (static_cast<UNSIGNED_T> (x), static_cast<UNSIGNED_T> (toNearest)));
             }
         }
-
         template <signed_integral T>
         constexpr T RoundUpTo_ (T x, T toNearest)
         {
@@ -135,77 +143,40 @@ namespace Stroika::Foundation::Math {
      **************************** Math::NearlyEquals ********************************
      ********************************************************************************
      */
-    namespace Private_ {
-        template <typename TC>
-        // @todo see if we can make this constexpr somehow?
-        const inline TC mkCompareEpsilon_ (TC l, [[maybe_unused]] TC r)
-        {
-            static_assert (is_floating_point_v<TC>, "can only be used for float values");
-            if (l < -10 or l > 10) {
-                // no constexpr pow() - https://stackoverflow.com/questions/17347935/constexpr-math-functions
-                static const TC kScale_ = pow (static_cast<TC> (10), -(numeric_limits<TC>::digits10 - static_cast<TC> (1)));
-                // UNCLEAR - MAYBE due to bug on vs2k, fabs<double> (1.797693134862316e+308) produces INF so avoid -- LGP 2021-11-05
-                //return fabs (l) * kScale_;
-                return l >= 0 ? (l * kScale_) : (-l * kScale_);
-            }
-            return 10000 * numeric_limits<TC>::epsilon ();
-        }
-    }
     template <typename T1, typename T2, typename EPSILON_TYPE>
-    inline bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon)
-        requires (is_floating_point_v<common_type_t<T1, T2>>)
+    constexpr bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon)
+        requires (is_arithmetic_v<T1> and is_arithmetic_v<T2>)
     {
-        Require (epsilon >= 0);
+        using Configuration::StdCompat::isinf;
+        using Configuration::StdCompat::isnan;
+        if (isnan (l) or isnan (r)) [[unlikely]] {
+            return isnan (l) and isnan (r);
+        }
+        else if (isinf (l) or isinf (r)) [[unlikely]] {
+            // only 'equal' if inf and of same sign
+            // https://stackoverflow.com/questions/41834621/c-ieee-floats-inf-equal-inf
+            return l == r;
+        }
         auto diff = l - r;
-        if (isnan (diff)) [[unlikely]] {
-            // nan-nan, or inf-inf
-            // maybe other cases shouldnt be considered nearly equals?
-            return std::fpclassify (l) == std::fpclassify (r);
-        }
-        if (isinf (diff)) [[unlikely]] {
-            using TC                  = common_type_t<T1, T2>;
-            static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
-            /* 
-             *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....
-             */
-            TC useL = l;
-            if (not isinf (useL) and fabs (useL - numeric_limits<TC>::max ()) <= kEpsilon_) {
-                useL = numeric_limits<TC>::infinity ();
-            }
-            if (not isinf (useL) and fabs (useL - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
-                useL = -numeric_limits<TC>::infinity ();
-            }
-            TC useR = r;
-            if (not isinf (useR) and fabs (useR - numeric_limits<TC>::max ()) <= kEpsilon_) {
-                useR = numeric_limits<TC>::infinity ();
-            }
-            if (not isinf (useR) and fabs (useR - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
-                useR = -numeric_limits<TC>::infinity ();
-            }
-            if (isinf (useL) and isinf (useR)) {
-                return (useL > 0) == (useR > 0);
-            }
-        }
-        return fabs (diff) <= epsilon;
+        Require (epsilon >= 0); // other cases we ignore epsilon
+        Assert (not isnan (l) and not isnan (r) and not isinf (l) and not isinf (r));
+        return Abs (diff) <= epsilon;
     }
     template <typename T1, typename T2>
-    inline bool NearlyEquals (T1 l, T2 r)
-        requires (is_integral_v<common_type_t<T1, T2>>)
-    {
-        return l == r;
-    }
-    template <typename T1, typename T2>
-    inline bool NearlyEquals (T1 l, T2 r)
-        requires (is_floating_point_v<common_type_t<T1, T2>>)
+    constexpr bool NearlyEquals (T1 l, T2 r)
+        requires (is_arithmetic_v<T1> and is_arithmetic_v<T2>)
     {
         using TC = common_type_t<T1, T2>;
-        return NearlyEquals (l, r, Private_::mkCompareEpsilon_<TC> (l, r));
-    }
-    template <typename T1, typename T2>
-    inline bool NearlyEquals (T1 l, T2 r)
-        requires (not is_integral_v<common_type_t<T1, T2>> and not is_floating_point_v<common_type_t<T1, T2>>)
-    {
-        return l == r;
+        if constexpr (floating_point<TC>) {
+            constexpr TC kEpsilon_ = 10000 * numeric_limits<TC>::epsilon (); // pick more than epsilon cuz some math functions have more error than a single bit... - even 1000x not enuf sometimes
+            // \see https://realtimecollisiondetection.net/blog/?p=89
+            // using relTol = absTol
+            TC useEpsilon = kEpsilon_ * std::max<TC> ({static_cast<TC> (1.0), static_cast<TC> (Abs (l)), static_cast<TC> (Abs (r))});
+            return NearlyEquals (l, r, useEpsilon);
+        }
+        else {
+            return l == r;
+        }
     }
 
     /*
@@ -213,12 +184,15 @@ namespace Stroika::Foundation::Math {
      ************************* Math::PinToSpecialPoint ******************************
      ********************************************************************************
      */
-    template <typename T>
+    template <floating_point T>
     T PinToSpecialPoint (T p, T special)
     {
-        return PinToSpecialPoint (p, special, Private_::mkCompareEpsilon_ (special, p));
+        if (Math::NearlyEquals (p, special)) {
+            return special;
+        }
+        return p;
     }
-    template <typename T>
+    template <floating_point T>
     T PinToSpecialPoint (T p, T special, T epsilon)
     {
         if (Math::NearlyEquals (p, special, epsilon)) {
@@ -252,7 +226,7 @@ namespace Stroika::Foundation::Math {
 
     /*
      ********************************************************************************
-     ******************************** Math::AtMost *********************************
+     ******************************** Math::AtMost **********************************
      ********************************************************************************
      */
     template <typename T>
@@ -279,75 +253,21 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename T, typename RESULT_TYPE>
-    inline RESULT_TYPE Abs (T v)
+    constexpr RESULT_TYPE Abs (T v)
         requires (is_arithmetic_v<T>)
     {
+#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23
+        if constexpr (Configuration::IAnyOf<T, int, intmax_t>) {
+            return std::abs (v);
+        }
+        else if constexpr (Configuration::IAnyOf<T, long>) {
+            return std::labs (v);
+        }
+        else if constexpr (Configuration::IAnyOf<T, long long>) {
+            return std::llabs (v);
+        }
+#endif
         return v < 0 ? -v : v;
-    }
-    template <>
-    inline unsigned int Abs (char v)
-    {
-        return abs (v);
-    }
-    template <>
-    inline unsigned int Abs (short v)
-    {
-        return abs (v);
-    }
-    template <>
-    inline unsigned int Abs (int v)
-    {
-        return abs (v);
-    }
-    template <>
-    inline unsigned long Abs (long v)
-    {
-        return labs (v);
-    }
-    template <>
-    inline unsigned long long Abs (long long v)
-    {
-        return llabs (v);
-    }
-    template <>
-    inline unsigned int Abs (unsigned char v)
-    {
-        return v;
-    }
-    template <>
-    inline unsigned int Abs (unsigned short v)
-    {
-        return v;
-    }
-    template <>
-    inline unsigned int Abs (unsigned int v)
-    {
-        return v;
-    }
-    template <>
-    inline unsigned long Abs (unsigned long v)
-    {
-        return v;
-    }
-    template <>
-    inline unsigned long long Abs (unsigned long long v)
-    {
-        return v;
-    }
-    template <>
-    inline float Abs (float v)
-    {
-        return fabs (v);
-    }
-    template <>
-    inline double Abs (double v)
-    {
-        return fabs (v);
-    }
-    template <>
-    inline long double Abs (long double v)
-    {
-        return fabs (v);
     }
 
     /*
@@ -369,7 +289,7 @@ namespace Stroika::Foundation::Math {
     template <integral T>
     constexpr bool IsEven (T v)
     {
-        static_assert (is_integral_v<T>);
+        static_assert (integral<T>);
         return v % 2 == 0;
     }
 

@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <bit>
+#include <cmath>
 #include <cstdarg>
 #include <ranges>
 
@@ -98,6 +99,48 @@ namespace Stroika::Foundation::Configuration::StdCompat {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Warray-bounds\"");
     }
 #endif
+
+    /**
+     *  workaround qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
+     */
+    template <typename T>
+#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23
+    constexpr
+#else
+    inline
+#endif
+        bool
+        isinf (T v) noexcept
+    {
+#if qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
+        if constexpr (integral<T>) {
+            return false; // needed for vis stud
+        }
+        else
+#endif
+            return std::isinf (v);
+    }
+
+    /**
+     *  workaround qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
+     */
+    template <typename T>
+#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23
+    constexpr
+#else
+    inline
+#endif
+        bool
+        isnan (T v) noexcept
+    {
+#if qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
+        if constexpr (integral<T>) {
+            return false; // needed for vis stud
+        }
+        else
+#endif
+            return std::isnan (v);
+    }
 
 }
 

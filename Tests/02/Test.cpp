@@ -963,8 +963,13 @@ namespace {
                                                         l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
             }
             else {
+                // From https://en.cppreference.com/w/cpp/types/numeric_limits/digits10
+                //  The value of std::numeric_limits<T>::digits10 is the number of base-10 digits that can be represented by the type T without change,
+                //  that is, any number with this many significant decimal digits can be converted to a value of type T and back to decimal form,
+                //  without change due to rounding or overflow. For base-radix types, it is the value of digits() (digits - 1 for floating-point types)
+                //  multiplied by log 10 r a d i x and rounded down.
                 EXPECT_TRUE (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
-                                                        l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
+                                                        l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 - 1}))));
             }
         }
     }

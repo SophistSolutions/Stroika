@@ -1364,6 +1364,18 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 #endif
 #endif
 
+/**
+ *  https://en.cppreference.com/w/cpp/numeric/math/fpclassify says fpclassify() and isnan etc - OK to call on ints
+ */
+#ifndef qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
+#if defined(_MSC_VER)
+// still broken in _MSC_VER_2k22_17Pt10_
+#define qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt10_)
+#else
+#define qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy 0
+#endif
+#endif
+
 /*
 *  on Windows DEBUG x86 builds only...
 ==2736==ERROR: AddressSanitizer: container-overflow on address 0x0110ed9d at pc 0x0020f13a bp 0x0110df2c sp 0x0110db0c

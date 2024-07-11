@@ -128,8 +128,18 @@ namespace {
 }
 
 namespace {
-    void Test7_NearlyEquals_ ()
+    GTEST_TEST (Foundation_Math, Test7_NearlyEquals_)
     {
+        // From Function docs
+        EXPECT_TRUE (NearlyEquals (Math::nan (), Math::nan ()));
+        EXPECT_TRUE (not NearlyEquals (Math::nan (), 3));
+        EXPECT_TRUE (NearlyEquals (Math::infinity (), Math::infinity ()));
+        EXPECT_TRUE (not NearlyEquals (Math::infinity (), -Math::infinity ()));
+        EXPECT_TRUE (not NearlyEquals (Math::infinity (), 3));
+        EXPECT_TRUE (not NearlyEquals (5, 3));
+        EXPECT_TRUE (NearlyEquals (5, 3, 2));
+        EXPECT_TRUE (NearlyEquals (0.0, -0.0));
+
         EXPECT_TRUE (Math::NearlyEquals (1.0, 1.0 + numeric_limits<double>::epsilon ()));
         EXPECT_TRUE (Math::NearlyEquals (Math::nan<double> (), Math::nan<double> ()));
         EXPECT_TRUE (not Math::NearlyEquals (1.0, 1.1));
@@ -264,14 +274,13 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Math, all)
     {
         Test2_Round_ ();
         Test3_Angle_ ();
         Test4_OddEvenPrime_ ();
         Test5_ReBin_ ();
         Test6_Statistics_ ();
-        Test7_NearlyEquals_ ();
         Test8_LinearAlgebra_Matrix_ ();
         Test9_Optimization_DownhillSimplexMinimization_ ();
     }

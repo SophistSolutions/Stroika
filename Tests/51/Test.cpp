@@ -873,17 +873,19 @@ namespace {
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            EXPECT_TRUE (c.Min () == 1);
+            EXPECT_EQ (c.Min (), 1);
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            EXPECT_TRUE (c.Max () == 6);
+            EXPECT_EQ (c.Max (), 6);
         }
         {
             using Math::NearlyEquals;
             Iterable<int> c{1, 2, 9, 4, 5, 3};
-            EXPECT_TRUE (c.Median () == 3);
-            EXPECT_TRUE (NearlyEquals (c.Median<double> (), 3.5));
+            EXPECT_EQ (c.Median (), 3); // cuz truncated - real answer is 3.5
+            EXPECT_TRUE (NearlyEquals (*c.Median<double> (), 3.5));
+            EXPECT_TRUE (NearlyEquals (*c.Median<double> (), 4, 1));
+            EXPECT_TRUE (not NearlyEquals (*c.Median<double> (), 4));
         }
         {
             Iterable<int> c{1, 2, 9, 4, 5, 3};
