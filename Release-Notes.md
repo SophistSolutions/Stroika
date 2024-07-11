@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 3.0d7 {2024-07-10} {[diff](../../compare/v3.0d6...v3.0d7)}
+### 3.0d7 {2024-07-11} {[diff](../../compare/v3.0d6...v3.0d7)}
 
 #### TLDR
 - Frameworks::WebServer: support deflate inline transfer coding/content-encoding; new property automaticTransferChunkSize, replaces setting transferCoding manually, and other prep for https support
