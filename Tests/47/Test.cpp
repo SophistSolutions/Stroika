@@ -28,7 +28,7 @@ using namespace Stroika::Frameworks;
 
 #if qHasFeature_GoogleTest
 namespace {
-    void Test2_Round_ ()
+    GTEST_TEST (Foundation_Math, Test2_Round_)
     {
         // really could use more cases!!!
         EXPECT_EQ (RoundUpTo (2, 10), 10);
@@ -39,7 +39,10 @@ namespace {
         EXPECT_TRUE (Round<int> (numeric_limits<double>::max () * 1000) == numeric_limits<int>::max ());
         EXPECT_TRUE (Round<unsigned int> (numeric_limits<double>::max () * 1000) == numeric_limits<unsigned int>::max ());
     }
-    void Test3_Angle_ ()
+}
+
+namespace {
+    GTEST_TEST (Foundation_Math, Test3_Angle_)
     {
         // really could use more cases!!!
         EXPECT_TRUE (1.1_rad + 1.1_rad < 2.3_rad);
@@ -47,7 +50,10 @@ namespace {
         EXPECT_TRUE (1.1_rad + 1.1_rad < 180_deg);
         EXPECT_TRUE (1.1_rad + 1.1_rad > 120_deg);
     }
-    void Test4_OddEvenPrime_ ()
+}
+
+namespace {
+    GTEST_TEST (Foundation_Math, Test4_OddEvenPrime_)
     {
         EXPECT_TRUE (IsPrime (2));
         EXPECT_TRUE (IsOdd (3));
@@ -66,7 +72,7 @@ namespace {
 }
 
 namespace {
-    void Test5_ReBin_ ()
+    GTEST_TEST (Foundation_Math, Test5_ReBin_)
     {
         using ReBin::ReBin;
         {
@@ -115,7 +121,7 @@ namespace {
 }
 
 namespace {
-    void Test6_Statistics_ ()
+    GTEST_TEST (Foundation_Math, Test6_Statistics_)
     {
         EXPECT_TRUE (Math::Mean (vector<int> ({1, 3, 5})) == 3);
         EXPECT_TRUE (Math::Mean (vector<int> ({5, 3, 1})) == 3);
@@ -151,7 +157,7 @@ namespace {
 }
 
 namespace {
-    void Test8_LinearAlgebra_Matrix_ ()
+    GTEST_TEST (Foundation_Math, Test8_LinearAlgebra_Matrix_)
     {
         using namespace LinearAlgebra;
         {
@@ -166,7 +172,7 @@ namespace {
 }
 
 namespace {
-    void Test9_Optimization_DownhillSimplexMinimization_ ()
+    GTEST_TEST (Foundation_Math, Test9_Optimization_DownhillSimplexMinimization_)
     {
         using namespace Math::Optimization;
         using Characters::String;
@@ -270,19 +276,6 @@ namespace {
             EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -0.52946138144, 1e-5));
             EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), 0.54376305163, 1e-5));
         }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Math, all)
-    {
-        Test2_Round_ ();
-        Test3_Angle_ ();
-        Test4_OddEvenPrime_ ();
-        Test5_ReBin_ ();
-        Test6_Statistics_ ();
-        Test8_LinearAlgebra_Matrix_ ();
-        Test9_Optimization_DownhillSimplexMinimization_ ();
     }
 }
 #endif
