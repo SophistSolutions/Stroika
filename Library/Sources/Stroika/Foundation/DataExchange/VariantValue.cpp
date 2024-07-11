@@ -752,7 +752,14 @@ String VariantValue::AsString_ () const
             //
             //
             //????              static  const   Float2StringOptions kFmtOptions_ { FloatConversion::Precision{numeric_limits<FloatType_>::digits10 + 1} };
-            static const FloatConversion::ToStringOptions kFmtOptions_{FloatConversion::Precision{numeric_limits<FloatType_>::digits10 + 2}};
+
+            // From https://en.cppreference.com/w/cpp/types/numeric_limits/digits10
+            //  The value of std::numeric_limits<T>::digits10 is the number of base-10 digits that can be represented by the type T without change,
+            //  that is, any number with this many significant decimal digits can be converted to a value of type T and back to decimal form,
+            //  without change due to rounding or overflow. For base-radix types, it is the value of digits() (digits - 1 for floating-point types)
+            //  multiplied by log 10 radix and rounded down.
+
+            static const FloatConversion::ToStringOptions kFmtOptions_{FloatConversion::Precision{numeric_limits<FloatType_>::digits10 - 1}};
             return FloatConversion::ToString (v->fVal, kFmtOptions_);
         }
         case Type::eDate: {
