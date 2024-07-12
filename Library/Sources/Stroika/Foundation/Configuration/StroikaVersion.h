@@ -26,7 +26,9 @@ namespace Stroika::Foundation::Configuration {
 
     /**
      */
+#if defined(__cplusplus)
     constexpr Version kStroikaVersion{kStroika_Version_FullVersion};
+#endif
 
 #if defined(__cplusplus)
 }
