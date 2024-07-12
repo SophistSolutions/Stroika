@@ -145,6 +145,10 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::options);
         return thisObj->fEffectiveOptions_;
     }}
+    , bindings{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Traversal::Iterable<SocketAddress> {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::bindings);
+        return thisObj->fBindings_;
+    }}
     , defaultErrorHandler{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Interceptor> {
               const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::defaultErrorHandler);
@@ -197,13 +201,14 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::activeConnections);
         return thisObj->fActiveConnections_.load ();
     }}
-    , pStatistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
-        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pStatistics);
+    , statistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::statistics);
         Require (thisObj->fEffectiveOptions_.fCollectStatistics);
         return Statistics{.fThreadPoolSize       = thisObj->fActiveConnectionThreads_.GetPoolSize (),
                           .fThreadPoolStatistics = thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()};
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
+    , fBindings_{bindAddresses}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_)}
     , fBeforeInterceptors_{}

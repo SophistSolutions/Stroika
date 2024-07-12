@@ -217,6 +217,12 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  \brief Return the socket addresses the webserver (connection manager) is listening on (to serve web content).
+         */
+        Common::ReadOnlyProperty<Traversal::Iterable<SocketAddress>> bindings;
+
+    public:
+        /**
          *  This defaults to @DefaultFaultInterceptor, but can be set to 'missing' or any other fault handler. Not also - that
          *  all interceptors can engage in fault handling. This is just meant to provide a simple one-stop-shop for how to
          *  handle faults in one place.
@@ -232,6 +238,8 @@ namespace Stroika::Frameworks::WebServer {
          *      }
          * 
          *  @see beforeInterceptors, afterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
+         * 
+         *  \note ordering is  earlyInterceptors => beforeInterceptors => router => afterInterceptors;
          */
         Common::Property<Sequence<Interceptor>> earlyInterceptors;
 
@@ -240,6 +248,8 @@ namespace Stroika::Frameworks::WebServer {
          *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
          * 
          *  @see earlyInterceptors, afterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
+         * 
+         *  \note ordering is  earlyInterceptors => beforeInterceptors => router => afterInterceptors;
          */
         Common::Property<Sequence<Interceptor>> beforeInterceptors;
 
@@ -249,12 +259,16 @@ namespace Stroika::Frameworks::WebServer {
          * @see beforeInterceptors
          * 
          *  @see earlyInterceptors, beforeInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
+         * 
+         *  \note ordering is  earlyInterceptors => beforeInterceptors => router => afterInterceptors;
          */
         Common::Property<Sequence<Interceptor>> afterInterceptors;
 
     public:
         /**
          *  These 'before' and 'after' values are relative to the router, which towards the end of the chain.
+         * 
+         *  \note ordering is  earlyInterceptors => beforeInterceptors => router => afterInterceptors;
          */
         enum class InterceptorAddRelativeTo {
             ePrependsToEarly,
@@ -317,7 +331,7 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  Then this can be used to fetch the current thread pool statistics.
          */
-        Common::ReadOnlyProperty<Statistics> pStatistics;
+        Common::ReadOnlyProperty<Statistics> statistics;
 
     private:
         nonvirtual void DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
@@ -339,7 +353,8 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue);
 
     private:
-        Options fEffectiveOptions_;
+        Options                            fEffectiveOptions_;
+        Traversal::Iterable<SocketAddress> fBindings_; // just to return bindings API
 #if qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy
         // BWA not too bad cuz ConnectionManager(const ConnectionManager&)=delete and op= as well.
         shared_ptr<Connection::Options> fUseDefaultConnectionOptions_BWA_{make_shared<Connection::Options> ()};
