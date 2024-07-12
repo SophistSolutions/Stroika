@@ -22,6 +22,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : fPrecision{p}
     {
     }
+    constexpr Precision::Precision (FullFlag)
+        : fPrecision{}
+    {
+    }
+    template <floating_point T>
+    unsigned int Precision::GetEffectivePrecision () const
+    {
+        // not clearly documented - but based on https://en.cppreference.com/w/cpp/io/manip/setprecision example...
+        return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
+    }
 
     /*
      ********************************************************************************
@@ -42,7 +52,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
     }
     constexpr ToStringOptions::ToStringOptions (Precision precision)
-        : fPrecision_{precision.fPrecision}
+        : fPrecision_{precision}
     {
     }
     constexpr ToStringOptions::ToStringOptions (FloatFormatType scientificNotation)
@@ -68,7 +78,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : ToStringOptions{ToStringOptions{b1, b2}, forward<ARGS> (args)...}
     {
     }
-    inline optional<unsigned int> ToStringOptions::GetPrecision () const
+    inline optional<Precision> ToStringOptions::GetPrecision () const
     {
         return fPrecision_;
     }
@@ -275,10 +285,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     namespace Private_ {
         template <typename FLOAT_TYPE>
-        inline String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, int precision)
+        inline String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Precision precision)
         {
             using namespace Memory;
-            size_t            sz = precision + 100; // I think precision is enough
+            size_t sz = numeric_limits<FLOAT_TYPE>::max_digits10 + numeric_limits<FLOAT_TYPE>::max_exponent10 + 5; // source? "-1.##e+##\0"
             StackBuffer<char> buf{Memory::eUninitialized, sz};
             ptrdiff_t         resultStrLen;
             if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy) {
@@ -300,13 +310,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 resultStrLen =
                     ::snprintf (buf.data (), buf.size (),
                                 mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
-                                (int)precision, f);
+                                (int)precision.fPrecision.value_or (*ToStringOptions::kDefaultPrecision.fPrecision), f);
             }
             else {
                 // THIS #if test should NOT be needed but g++ 9 didn't properly respect if constexpr (link errors)
 #if !qCompilerAndStdLib_to_chars_FP_Buggy
                 // empirically, on MSVC, this is much faster (appears 3x apx faster) -- LGP 2021-11-04
-                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision).ptr - buf.begin ();
+                if (precision == Precision::kFull) {
+                    resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
+                }
+                else {
+                    resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, *precision.fPrecision).ptr - buf.begin ();
+                }
 #endif
             }
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
@@ -332,7 +347,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
             // todo must set default precision because of the thread_local thing
-            unsigned int usePrecision = options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision.fPrecision);
+            unsigned int usePrecision = options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision).GetEffectivePrecision<FLOAT_TYPE> ();
             s.precision (usePrecision);
 
             {
@@ -376,13 +391,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
             auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
-                              ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (
-                                    f, options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision.fPrecision))
+                              ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision))
                               : Private_::ToString_GeneralCase_ (f, options);
             if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
                 TrimTrailingZeros_ (&result);
             }
-            Ensure (String::EqualsComparer{eCaseInsensitive}(result, Legacy_Float2String_ (f, options)));
+            if (options.GetPrecision () != Precision::kFull) {
+                Ensure (String::EqualsComparer{eCaseInsensitive}(result, Legacy_Float2String_ (f, options)));
+            }
             return result;
         }
     }
@@ -391,8 +407,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         //
         // New span/c++20 version of 'ToFloat_Legacy_'
         // This RESPECTS THE CURRENT LOCALE
-        // this private function allows nullptr remainder, and behaves somewhat differntly if null or not (unlike PUBLIC API)
-        // Roughly (ignoring precision and characterset)
+        // this private function allows nullptr remainder, and behaves somewhat differently if null or not (unlike PUBLIC API)
+        // Roughly (ignoring precision and character set)
         //      Calls strtod
         //      Strtod Skips leading whitespace, but this routine does NOT allow that
         //      if remainder==null, rejects if not all characters eaten (else returns how many eaten in remainder)

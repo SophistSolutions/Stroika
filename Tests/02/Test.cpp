@@ -959,8 +959,8 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                EXPECT_TRUE (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
-                                                        l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
+                EXPECT_TRUE (Math::NearlyEquals (
+                    l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
             }
             else {
                 // From https://en.cppreference.com/w/cpp/types/numeric_limits/digits10
@@ -968,8 +968,8 @@ namespace {
                 //  that is, any number with this many significant decimal digits can be converted to a value of type T and back to decimal form,
                 //  without change due to rounding or overflow. For base-radix types, it is the value of digits() (digits - 1 for floating-point types)
                 //  multiplied by log 10 radix and rounded down.
-                EXPECT_TRUE (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
-                                                        l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 - 1}))));
+                EXPECT_TRUE (Math::NearlyEquals (
+                    l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
             }
         }
     }

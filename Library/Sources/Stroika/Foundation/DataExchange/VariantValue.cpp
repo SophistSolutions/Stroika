@@ -730,37 +730,7 @@ String VariantValue::AsString_ () const
             auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             using namespace Characters;
-            /*
-             *  numeric_limits<FloatType_>::digits gives the number of digits of the mantissa in radix units, but since we
-             *  write the numbers as decimal, this doesn't come to an integral number of decimal digits.
-             *
-             *  So we either write too many digits of precision, or too few.
-             *
-             *  VERY VERY unsure what is best. From 2013-11-17 until 2015-08-27 I wrote digits10 + 2.
-             *
-             *  As of 2015-08-27 - I'm switching to digits10 + 1 - so effectively just rounding up instead of down.
-             *  This means we will always write all the precision we have and then some ;-).
-             *
-             *  For a bit, I'll leave behind the older comment, which I think is not 100% right, but we can lose it soon.
-             // given a number of digits of precision, its fractional (and rounded down). digits10 + 1 gives you the number
-             // of actual digits after the decimal point. But there is one before the decimal point to give the precision we
-             // use in iostream.
-             //
-             // Actually - I'm really not sure of any of this. But this seems to work for now...
-             //      -- LGP 2013-11-17
-             */
-            //
-            //
-            //????              static  const   Float2StringOptions kFmtOptions_ { FloatConversion::Precision{numeric_limits<FloatType_>::digits10 + 1} };
-
-            // From https://en.cppreference.com/w/cpp/types/numeric_limits/digits10
-            //  The value of std::numeric_limits<T>::digits10 is the number of base-10 digits that can be represented by the type T without change,
-            //  that is, any number with this many significant decimal digits can be converted to a value of type T and back to decimal form,
-            //  without change due to rounding or overflow. For base-radix types, it is the value of digits() (digits - 1 for floating-point types)
-            //  multiplied by log 10 radix and rounded down.
-
-            static const FloatConversion::ToStringOptions kFmtOptions_{FloatConversion::Precision{numeric_limits<FloatType_>::digits10 - 1}};
-            return FloatConversion::ToString (v->fVal, kFmtOptions_);
+            return FloatConversion::ToString (v->fVal, FloatConversion::Precision::kFull);
         }
         case Type::eDate: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Date>*> (fVal_.get ());

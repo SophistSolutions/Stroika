@@ -26,6 +26,25 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
+ ************************ FloatConversion::Precision ****************************
+ ********************************************************************************
+ */
+String FloatConversion::Precision::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    if (fPrecision) {
+        sb << "Precision:"sv << *fPrecision;
+    }
+    else {
+        sb << "FULL";
+    }
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
  ******************** FloatConversion::ToStringOptions **************************
  ********************************************************************************
  */
@@ -89,7 +108,8 @@ namespace {
         s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
         // todo must set default precision because of the thread_local thing
-        unsigned int usePrecision = options.GetPrecision ().value_or (FloatConversion::ToStringOptions::kDefaultPrecision.fPrecision);
+        unsigned int usePrecision =
+            options.GetPrecision ().value_or (FloatConversion::ToStringOptions::kDefaultPrecision).GetEffectivePrecision<FLOAT_TYPE> ();
         s.precision (usePrecision);
 
         {

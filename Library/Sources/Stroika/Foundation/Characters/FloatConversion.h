@@ -59,11 +59,51 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     /**
      *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
+     * 
+     *  This is used for specifying how to format floating point numbers.
+     * 
+     *  The special value Precision::kFull refers to when you wish the full precision that allows the exact value to be read back
+     *  after being written:
+     *
+     *      https://en.cppreference.com/w/cpp/utility/to_chars
+     * 
+     *      3) ...string representation consists of ... and parsing the representation using the corresponding std::from_chars function recovers value exactly ...
+     * 
+     *  Somehow, using digits10, or digits10-1, doesn't appear to really work. Sometimes on some systems for some values. But doesn't appear clearly
+     *  documented to work as above on the to_chars function description --LGP 2024-07-12
+            // From https://en.cppreference.com/w/cpp/types/numeric_limits/digits10
+            //  The value of std::numeric_limits<T>::digits10 is the number of base-10 digits that can be represented by the type T without change,
+            //  that is, any number with this many significant decimal digits can be converted to a value of type T and back to decimal form,
+            //  without change due to rounding or overflow. For base-radix types, it is the value of digits() (digits - 1 for floating-point types)
+            //  multiplied by log 10 radix and rounded down.
      */
     struct Precision {
+        enum FullFlag {
+            eFull
+        };
         constexpr Precision (unsigned int p);
-        unsigned int fPrecision;
+        constexpr Precision (FullFlag);
+
+        // if missing, implies == kFull
+        optional<unsigned int> fPrecision;
+
+        bool operator== (const Precision&) const = default;
+
+        template <floating_point T>
+        nonvirtual unsigned int GetEffectivePrecision () const;
+
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+
+        static const Precision kFull;
     };
+    /**
+     *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
+     *         you get the exact same answer.
+     */
+    constexpr inline Precision Precision::kFull{Precision::FullFlag::eFull};
 
     /**
      * Automatic picks based on the precision and the number used, so for example, 0.0000001
@@ -128,7 +168,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
 
     public:
-        nonvirtual optional<unsigned int> GetPrecision () const;
+        nonvirtual optional<Precision> GetPrecision () const;
 
     public:
         nonvirtual optional<bool> GetTrimTrailingZeros () const;
@@ -163,7 +203,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         nonvirtual String ToString () const;
 
     private:
-        optional<unsigned int>       fPrecision_;
+        optional<Precision>          fPrecision_;
         optional<ios_base::fmtflags> fFmtFlags_;
         bool                         fUseCurrentLocale_{false}; // dynamically calculated current locale
         optional<locale>             fUseLocale_;               // if missing, use locale::classic (unless fUseCurrentLocale_)
