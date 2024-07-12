@@ -32,6 +32,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         // not clearly documented - but based on https://en.cppreference.com/w/cpp/io/manip/setprecision example...
         return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
     }
+    /**
+     *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
+     *         you get the exact same answer.
+     */
+    constexpr inline Precision Precision::kFull{Precision::FullFlag::eFull};
 
     /*
      ********************************************************************************
@@ -310,17 +315,17 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 resultStrLen =
                     ::snprintf (buf.data (), buf.size (),
                                 mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
-                                (int)precision.fPrecision.value_or (*ToStringOptions::kDefaultPrecision.fPrecision), f);
+                                (int)precision.GetEffectivePrecision<FLOAT_TYPE> (), f);
             }
             else {
                 // THIS #if test should NOT be needed but g++ 9 didn't properly respect if constexpr (link errors)
 #if !qCompilerAndStdLib_to_chars_FP_Buggy
-                // empirically, on MSVC, this is much faster (appears 3x apx faster) -- LGP 2021-11-04
+                // empirically, on MSVC, to_chars() is much faster (appears 3x apx faster) -- LGP 2021-11-04
                 if (precision == Precision::kFull) {
                     resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
                 }
                 else {
-                    resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, *precision.fPrecision).ptr - buf.begin ();
+                    resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> ()).ptr - buf.begin ();
                 }
 #endif
             }

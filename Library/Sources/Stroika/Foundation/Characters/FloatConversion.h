@@ -84,8 +84,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr Precision (unsigned int p);
         constexpr Precision (FullFlag);
 
+private:
         // if missing, implies == kFull
         optional<unsigned int> fPrecision;
+public:
 
         bool operator== (const Precision&) const = default;
 
@@ -99,11 +101,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
         static const Precision kFull;
     };
-    /**
-     *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
-     *         you get the exact same answer.
-     */
-    constexpr inline Precision Precision::kFull{Precision::FullFlag::eFull};
 
     /**
      * Automatic picks based on the precision and the number used, so for example, 0.0000001
