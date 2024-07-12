@@ -30,6 +30,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     unsigned int Precision::GetEffectivePrecision () const
     {
         // not clearly documented - but based on https://en.cppreference.com/w/cpp/io/manip/setprecision example...
+        return fPrecision.value_or (numeric_limits<T>::max_digits10);   //needed on xcode?
         return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
     }
     /**
