@@ -8,6 +8,7 @@
 
 #if defined(__cplusplus)
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Version.h"
 #endif
 #include "Stroika/Foundation/Configuration/VersionDefs.h"
 
@@ -22,6 +23,10 @@ namespace Stroika::Foundation::Configuration {
 #endif
 
 #include "Stroika-Current-Version.h"
+
+    /**
+     */
+    constexpr Version kStroikaVersion{kStroika_Version_FullVersion};
 
 #if defined(__cplusplus)
 }
