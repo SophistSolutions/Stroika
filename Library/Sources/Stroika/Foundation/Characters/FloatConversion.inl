@@ -27,10 +27,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
     }
     template <floating_point T>
-    unsigned int Precision::GetEffectivePrecision () const
+    constexpr unsigned int Precision::GetEffectivePrecision () const
     {
-        // not clearly documented - but based on https://en.cppreference.com/w/cpp/io/manip/setprecision example...
-        return fPrecision.value_or (numeric_limits<T>::max_digits10);   //needed on xcode?
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 190000
+        return fPrecision.value_or (numeric_limits<T>::max_digits10); //needed on xcode? - only tested needed there
+#endif
         return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
     }
     /**
@@ -326,7 +327,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
                 }
                 else {
-                    resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> ()).ptr - buf.begin ();
+                    resultStrLen =
+                        to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> ()).ptr -
+                        buf.begin ();
                 }
 #endif
             }

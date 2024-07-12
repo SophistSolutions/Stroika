@@ -78,27 +78,55 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             //  multiplied by log 10 radix and rounded down.
      */
     struct Precision {
+    public:
+        /**
+         *  Flag indicating full precision (see class docs for explanation)
+         */
         enum FullFlag {
             eFull
         };
+
+    public:
+        /**
+         */
         constexpr Precision (unsigned int p);
         constexpr Precision (FullFlag);
 
-private:
+    private:
         // if missing, implies == kFull
         optional<unsigned int> fPrecision;
-public:
 
+    public:
         bool operator== (const Precision&) const = default;
 
+    public:
+        /**
+         *  Return the used precision. This will be the value specified in the Precision constructor, or
+         *  if 'Full' precision given in the constructor, the desired floating point type will be used to compute
+         *  the appropriate precision.
+         * 
+         *  NOTE - its NOT super clear what this should be. But our definition of it is sufficient precision so that when
+         *  you read the value back in, (serialize then deserialize) - you get the original value.
+         * 
+         *  Docs like https://en.cppreference.com/w/cpp/types/numeric_limits/digits10 - seem to suggest this might be 
+         *          std::numeric_limits<T>::digits10 or std::numeric_limits<T>::digits10-1 for floating point types.
+         * 
+         *  Docs like https://en.cppreference.com/w/cpp/io/manip/setprecision - suggest it might be:
+         *          std::numeric_limits<T>::digits10 + 1;
+         *
+         *  Docs like https://en.cppreference.com/w/cpp/utility/to_chars - (3) - suggest none of the above - you must call
+         *      to_chars() without specifying a precision.
+         */
         template <floating_point T>
-        nonvirtual unsigned int GetEffectivePrecision () const;
+        constexpr unsigned int GetEffectivePrecision () const;
 
+    public:
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
 
+    public:
         static const Precision kFull;
     };
 
