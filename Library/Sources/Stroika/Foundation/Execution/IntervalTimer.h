@@ -257,8 +257,8 @@ namespace Stroika::Foundation::Execution {
         };
 
     public:
-        static constexpr RunImmediatelyFlag eDontRunImmediately = RunImmediatelyFlag::eDontRunImmediately;
-        static constexpr RunImmediatelyFlag eRunImmediately     = RunImmediatelyFlag::eRunImmediately;
+        using RunImmediatelyFlag::eDontRunImmediately;
+        using RunImmediatelyFlag::eRunImmediately;
 
     public:
         /**
