@@ -458,24 +458,24 @@ const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper 
     using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
     mapper.AddClass<Info::PhysicalRAMDetailsType> ({
-        {"Available"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fAvailable}, StructFieldInfo::eOmitNullFields},
-        {"Active"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fActive}, StructFieldInfo::eOmitNullFields},
-        {"Inactive"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fInactive}, StructFieldInfo::eOmitNullFields},
-        {"Free"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fFree}, StructFieldInfo::eOmitNullFields},
-        {"OS-Reserved"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fOSReserved}, StructFieldInfo::eOmitNullFields},
+        {"Available"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fAvailable}},
+        {"Active"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fActive}},
+        {"Inactive"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fInactive}},
+        {"Free"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fFree}},
+        {"OS-Reserved"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fOSReserved}},
     });
     mapper.AddClass<Info::VirtualMemoryDetailsType> ({
-        {"Commit-Limit"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommitLimit}, StructFieldInfo::eOmitNullFields},
-        {"Committed-Bytes"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommittedBytes}, StructFieldInfo::eOmitNullFields},
-        {"Pagefile-Total-Size"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fPagefileTotalSize}, StructFieldInfo::eOmitNullFields},
+        {"Commit-Limit"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommitLimit}},
+        {"Committed-Bytes"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommittedBytes}},
+        {"Pagefile-Total-Size"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fPagefileTotalSize}},
     });
     mapper.AddClass<Info::PagingDetailsType> ({
-        {"Major-Faults-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
-        {"Minor-Faults-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
-        {"Page-Outs-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsSinceBoot}, StructFieldInfo::eOmitNullFields},
-        {"Major-Faults-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
-        {"Minor-Faults-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
-        {"Page-Outs-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsPerSecond}, StructFieldInfo::eOmitNullFields},
+        {"Major-Faults-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsSinceBoot}},
+        {"Minor-Faults-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsSinceBoot}},
+        {"Page-Outs-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsSinceBoot}},
+        {"Major-Faults-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsPerSecond}},
+        {"Minor-Faults-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsPerSecond}},
+        {"Page-Outs-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsPerSecond}},
     });
     mapper.AddClass<Info> ({
         {"Physical-Memory"sv, StructFieldMetaInfo{&Info::fPhysicalMemory}},

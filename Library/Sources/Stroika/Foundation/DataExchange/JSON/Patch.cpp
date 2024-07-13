@@ -91,7 +91,7 @@ const DataExchange::ObjectVariantMapper JSON::Patch::OperationItemType::kMapper 
     mapper.AddClass<OperationItemType> ({
         {"op"sv, StructFieldMetaInfo{&OperationItemType::op}},
         {"path"sv, StructFieldMetaInfo{&OperationItemType::path}},
-        {"value"sv, StructFieldMetaInfo{&OperationItemType::value}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+        {"value"sv, StructFieldMetaInfo{&OperationItemType::value}},
     });
     return mapper;
 }();

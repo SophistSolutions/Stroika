@@ -46,7 +46,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         bool operator== (const Advertisement&) const = default;
 
         /**
-         *  Mapper to facilitiate serialization
+         *  Mapper to facilitate serialization
          */
         static const Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> kMapper;
 

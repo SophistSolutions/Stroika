@@ -574,30 +574,30 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
     mapper.AddClass<InterfaceInfo::Interface> ({
         {"Interface-Internal-ID"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fInternalInterfaceID}},
         {"Friendly-Name"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fFriendlyName}},
-        {"Description"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fDescription}, StructFieldInfo::eOmitNullFields},
-        {"Interface-Type"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fType}, StructFieldInfo::eOmitNullFields},
-        {"Hardware-Address"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fHardwareAddress}, StructFieldInfo::eOmitNullFields},
-        {"Interface-Status"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fStatus}, StructFieldInfo::eOmitNullFields},
-        {"Transmit-Speed-Baud"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fTransmitSpeedBaud}, StructFieldInfo::eOmitNullFields},
-        {"Receive-Link-Speed-Baud"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fReceiveLinkSpeedBaud}, StructFieldInfo::eOmitNullFields},
+        {"Description"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fDescription}},
+        {"Interface-Type"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fType}},
+        {"Hardware-Address"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fHardwareAddress}},
+        {"Interface-Status"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fStatus}},
+        {"Transmit-Speed-Baud"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fTransmitSpeedBaud}},
+        {"Receive-Link-Speed-Baud"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fReceiveLinkSpeedBaud}},
         // TODO ADD:
         //Containers::Set<InternetAddress>            fBindings;
     });
     mapper.AddClass<IOStatistics> ({
-        {"Total-Bytes-Sent"sv, StructFieldMetaInfo{&IOStatistics::fTotalBytesSent}, StructFieldInfo::eOmitNullFields},
-        {"Total-Bytes-Received"sv, StructFieldMetaInfo{&IOStatistics::fTotalBytesReceived}, StructFieldInfo::eOmitNullFields},
-        {"Bytes-Per-Second-Sent"sv, StructFieldMetaInfo{&IOStatistics::fBytesPerSecondSent}, StructFieldInfo::eOmitNullFields},
-        {"Bytes-Per-Second-Received"sv, StructFieldMetaInfo{&IOStatistics::fBytesPerSecondReceived}, StructFieldInfo::eOmitNullFields},
-        {"Total-TCP-Segments"sv, StructFieldMetaInfo{&IOStatistics::fTotalTCPSegments}, StructFieldInfo::eOmitNullFields},
-        {"TCP-Segments-Per-Second"sv, StructFieldMetaInfo{&IOStatistics::fTCPSegmentsPerSecond}, StructFieldInfo::eOmitNullFields},
-        {"Total-TCP-Retransmitted-Segments"sv, StructFieldMetaInfo{&IOStatistics::fTotalTCPRetransmittedSegments}, StructFieldInfo::eOmitNullFields},
-        {"TCP-Retransmitted-Segments-Per-Second"sv, StructFieldMetaInfo{&IOStatistics::fTCPRetransmittedSegmentsPerSecond}, StructFieldInfo::eOmitNullFields},
-        {"Total-Packets-Sent"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsSent}, StructFieldInfo::eOmitNullFields},
-        {"Total-Packets-Received"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsReceived}, StructFieldInfo::eOmitNullFields},
-        {"Packets-Per-Second-Sent"sv, StructFieldMetaInfo{&IOStatistics::fPacketsPerSecondSent}, StructFieldInfo::eOmitNullFields},
-        {"Packets-Per-Second-Received"sv, StructFieldMetaInfo{&IOStatistics::fPacketsPerSecondReceived}, StructFieldInfo::eOmitNullFields},
-        {"Total-Errors"sv, StructFieldMetaInfo{&IOStatistics::fTotalErrors}, StructFieldInfo::eOmitNullFields},
-        {"Total-Packets-Dropped"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsDropped}, StructFieldInfo::eOmitNullFields},
+        {"Total-Bytes-Sent"sv, StructFieldMetaInfo{&IOStatistics::fTotalBytesSent}},
+        {"Total-Bytes-Received"sv, StructFieldMetaInfo{&IOStatistics::fTotalBytesReceived}},
+        {"Bytes-Per-Second-Sent"sv, StructFieldMetaInfo{&IOStatistics::fBytesPerSecondSent}},
+        {"Bytes-Per-Second-Received"sv, StructFieldMetaInfo{&IOStatistics::fBytesPerSecondReceived}},
+        {"Total-TCP-Segments"sv, StructFieldMetaInfo{&IOStatistics::fTotalTCPSegments}},
+        {"TCP-Segments-Per-Second"sv, StructFieldMetaInfo{&IOStatistics::fTCPSegmentsPerSecond}},
+        {"Total-TCP-Retransmitted-Segments"sv, StructFieldMetaInfo{&IOStatistics::fTotalTCPRetransmittedSegments}},
+        {"TCP-Retransmitted-Segments-Per-Second"sv, StructFieldMetaInfo{&IOStatistics::fTCPRetransmittedSegmentsPerSecond}},
+        {"Total-Packets-Sent"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsSent}},
+        {"Total-Packets-Received"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsReceived}},
+        {"Packets-Per-Second-Sent"sv, StructFieldMetaInfo{&IOStatistics::fPacketsPerSecondSent}},
+        {"Packets-Per-Second-Received"sv, StructFieldMetaInfo{&IOStatistics::fPacketsPerSecondReceived}},
+        {"Total-Errors"sv, StructFieldMetaInfo{&IOStatistics::fTotalErrors}},
+        {"Total-Packets-Dropped"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsDropped}},
     });
     mapper.AddClass<InterfaceInfo> ({
         {"Interface"sv, StructFieldMetaInfo{&InterfaceInfo::fInterface}},
@@ -607,8 +607,8 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
     mapper.AddCommonType<optional<Collection<InterfaceInfo>>> ();
     mapper.AddCommonType<optional<IOStatistics>> ();
     mapper.AddClass<Info> ({
-        {"Interfaces"sv, StructFieldMetaInfo{&Info::fInterfaces}, StructFieldInfo::eOmitNullFields},
-        {"Summary-IO-Statistics"sv, StructFieldMetaInfo{&Info::fSummaryIOStatistics}, StructFieldInfo::eOmitNullFields},
+        {"Interfaces"sv, StructFieldMetaInfo{&Info::fInterfaces}},
+        {"Summary-IO-Statistics"sv, StructFieldMetaInfo{&Info::fSummaryIOStatistics}},
     });
     return mapper;
 }();

@@ -201,11 +201,10 @@ namespace {
             {
                 {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
             },
-            [] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
+            {.fAfterFrom = [] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
                 // value will be merged with base mapper value
                 return VariantValue{Mapping<String, VariantValue>{{"RandomValue"sv, VariantValue{objOfType->fEnabled ? 2 : 99}}}};
-            },
-            nullptr);
+            }});
         trySerializing (mapper, tmp);
     }
 }

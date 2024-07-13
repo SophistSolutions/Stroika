@@ -41,8 +41,8 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
         m.AddCommonType<optional<SEQ_OR_MAP_>> ();
         m.AddClass<Request> ({
             {"jsonrpc"sv, StructFieldMetaInfo{&Request::jsonrpc}},
-            {"params"sv, StructFieldMetaInfo{&Request::params}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-            {"id"sv, StructFieldMetaInfo{&Request::id}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+            {"params"sv, StructFieldMetaInfo{&Request::params}},
+            {"id"sv, StructFieldMetaInfo{&Request::id}},
         });
         return m;
     }();
@@ -58,7 +58,7 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
         m.AddClass<Request> ({
             {"code"sv, StructFieldMetaInfo{&Error::code}},
             {"message"sv, StructFieldMetaInfo{&Error::message}},
-            {"data"sv, StructFieldMetaInfo{&Error::data}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+            {"data"sv, StructFieldMetaInfo{&Error::data}},
         });
         return m;
     }();
@@ -77,8 +77,8 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
         // variant object so can be one thing or other?
         m.AddClass<Response> ({
             {"jsonrpc"sv, StructFieldMetaInfo{&Response::jsonrpc}},
-            {"result"sv, StructFieldMetaInfo{&Response::result}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-            {"error"sv, StructFieldMetaInfo{&Response::error}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+            {"result"sv, StructFieldMetaInfo{&Response::result}},
+            {"error"sv, StructFieldMetaInfo{&Response::error}},
             {"id"sv, StructFieldMetaInfo{&Response::id}},
         });
         return m;

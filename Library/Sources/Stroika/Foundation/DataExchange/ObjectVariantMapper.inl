@@ -26,18 +26,15 @@ namespace Stroika::Foundation::DataExchange {
      ******************** ObjectVariantMapper::StructFieldInfo **********************
      ********************************************************************************
      */
-    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
-                                                                  NullFieldHandling fromObjectNullHandling)
-        : StructFieldInfo{serializedFieldName, fieldMetaInfo, nullopt, fromObjectNullHandling}
+    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo)
+        : StructFieldInfo{serializedFieldName, fieldMetaInfo, optional<TypeMappingDetails>{}}
     {
     }
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
-                                                                  const optional<TypeMappingDetails>& overrideTypeMapper,
-                                                                  NullFieldHandling                   fromObjectNullHandling)
+                                                                  const optional<TypeMappingDetails>& overrideTypeMapper)
         : fSerializedFieldName{serializedFieldName}
         , fFieldMetaInfo{fieldMetaInfo}
         , fOverrideTypeMapper{overrideTypeMapper}
-        , fNullFields{fromObjectNullHandling}
     {
         Require (not serializedFieldName.empty ()); // Since Stroika v3.0d7
     }
@@ -53,10 +50,6 @@ namespace Stroika::Foundation::DataExchange {
     inline auto ObjectVariantMapper::StructFieldInfo::GetOverrideTypeMapper () const -> optional<TypeMappingDetails>
     {
         return fOverrideTypeMapper;
-    }
-    inline auto ObjectVariantMapper::StructFieldInfo::GetFromObjectNullHandling () const -> NullFieldHandling
-    {
-        return fNullFields;
     }
     /*
      ********************************************************************************
@@ -264,10 +257,11 @@ namespace Stroika::Foundation::DataExchange {
         Add (serializer);
     }
     template <typename CLASS>
-    inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
+    inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const ClassMapperOptions<CLASS>& mapperOptions)
     {
-        Add (MakeClassSerializer_<CLASS> (fieldDescriptions, nullopt, nullopt, this));
+        Add (MakeClassSerializer_<CLASS> (fieldDescriptions, mapperOptions, this));
     }
+#if 0
     template <typename CLASS>
     inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass)
     {
@@ -280,15 +274,30 @@ namespace Stroika::Foundation::DataExchange {
     {
         AddClass<CLASS> (fieldDescriptions, TypeMappingDetails{furtherDerivedFromMapper, furtherDerivedToMapper});
     }
+#endif
     template <typename CLASS, typename BASE_CLASS>
-    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
+    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const ClassMapperOptions<CLASS>& mapperOptions)
     {
-        Add (MakeClassSerializer_<CLASS> (fieldDescriptions, Lookup_ (typeid (BASE_CLASS)), nullopt, this));
+        auto                      baseClassTypeMapper = Lookup_ (typeid (BASE_CLASS));
+        ClassMapperOptions<CLASS> useOptions          = mapperOptions;
+        Require (useOptions.fBeforeFrom == nullptr);
+        Require (useOptions.fBeforeTo == nullptr);
+        useOptions.fBeforeFrom = baseClassTypeMapper.FromObjectMapper<CLASS> ();
+        useOptions.fBeforeTo   = ToObjectMapper.FromObjectMapper<CLASS> ();
+        Add (MakeClassSerializer_<CLASS> (fieldDescriptions, useOptions, this));
     }
+#if 0
     template <typename CLASS, typename BASE_CLASS>
     inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass)
     {
-        Add (MakeClassSerializer_<CLASS> (fieldDescriptions, Lookup_ (typeid (BASE_CLASS)), furtherDerivedClass, this));
+        auto baseClassTypeMapper = Lookup_ (typeid (BASE_CLASS));
+        Add (MakeClassSerializer_<CLASS> (
+            fieldDescriptions,
+            ClassMapperOptions<CLASS>{.fBeforeFrom = baseClassTypeMapper.FromObjectMapper<CLASS> (),
+                                      .fBeforeTo   = baseClassTypeMapper.ToObjectMapper<CLASS> (),
+                                      .fAfterFrom = furtherDerivedClass.fFromObjectMapper ? furtherDerivedClass.FromObjectMapper<CLASS> () : nullptr,
+                                      .fAfterTo = furtherDerivedClass.fToObjectMapper ? furtherDerivedClass.ToObjectMapper<CLASS> () : nullptr},
+            this));
     }
     template <typename CLASS, typename BASE_CLASS>
     inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
@@ -297,6 +306,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         AddSubClass<CLASS, BASE_CLASS> (fieldDescriptions, TypeMappingDetails{furtherDerivedFromMapper, furtherDerivedToMapper});
     }
+#endif
     template <typename T>
     inline auto ObjectVariantMapper::ToObjectMapper () const -> ToObjectMapperType<T>
     {
@@ -553,23 +563,18 @@ namespace Stroika::Foundation::DataExchange {
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                                                                             const optional<TypeMappingDetails>& baseClass,
-                                                                                             const optional<TypeMappingDetails>& furtherDerivedClass)
+                                                                                             const ClassMapperOptions<T>& options)
         requires (is_class_v<T>)
     {
-        return MakeClassSerializer_<T> (fieldDescriptions, baseClass, furtherDerivedClass, nullptr);
+        return MakeClassSerializer_<T> (fieldDescriptions, options, nullptr);
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeClassSerializer_ (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                                                                              const optional<TypeMappingDetails>& baseClass,
-                                                                                              const optional<TypeMappingDetails>& furtherDerivedClass,
+                                                                                              const ClassMapperOptions<T>& options,
                                                                                               const ObjectVariantMapper* mapperToCheckAgainst)
         requires (is_class_v<T>)
     {
-        return MakeCommonSerializer_ForClassObject_and_check_<T> (
-            typeid (T), sizeof (T), fieldDescriptions, baseClass ? baseClass->fFromObjectMapper : nullptr,
-            furtherDerivedClass ? furtherDerivedClass->fFromObjectMapper : nullptr, baseClass ? baseClass->fToObjectMapper : nullptr,
-            furtherDerivedClass ? furtherDerivedClass->fToObjectMapper : nullptr, mapperToCheckAgainst);
+        return MakeCommonSerializer_ForClassObject_and_check_<T> (typeid (T), sizeof (T), fieldDescriptions, options, mapperToCheckAgainst);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*)
@@ -1107,10 +1112,10 @@ namespace Stroika::Foundation::DataExchange {
         return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (RANGE_TYPE)};
     }
     template <typename CLASS>
-    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (
-        const type_index& forTypeInfo, [[maybe_unused]] size_t sizeofObj, const Traversal::Iterable<StructFieldInfo>& fields,
-        const FromObjectMapperType<CLASS>& beforeFrom, const FromObjectMapperType<CLASS>& afterFrom,
-        const ToObjectMapperType<CLASS>& beforeTo, const ToObjectMapperType<CLASS>& afterTo)
+    ObjectVariantMapper::TypeMappingDetails
+    ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t sizeofObj,
+                                                               const Traversal::Iterable<StructFieldInfo>& fields,
+                                                               const ClassMapperOptions<CLASS>&            options)
     {
         using namespace Characters::Literals;
         if constexpr (qDebug) {
@@ -1137,8 +1142,7 @@ namespace Stroika::Foundation::DataExchange {
                 }
             }
         }
-        FromObjectMapperType<CLASS> fromObjectMapper = [fields, beforeFrom, afterFrom] (const ObjectVariantMapper& mapper,
-                                                                                        const CLASS* fromObjOfTypeT) -> VariantValue {
+        FromObjectMapperType<CLASS> fromObjectMapper = [fields, options] (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
 #endif
@@ -1149,8 +1153,8 @@ namespace Stroika::Foundation::DataExchange {
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             Mapping<String, VariantValue> m;
-            if (beforeFrom) [[unlikely]] {
-                m = beforeFrom (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> (); // so we can extend
+            if (options.fBeforeFrom) [[unlikely]] {
+                m = options.fBeforeFrom (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> (); // so we can extend
             }
             for (const auto& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -1167,17 +1171,18 @@ namespace Stroika::Foundation::DataExchange {
                         return mapper.Lookup_ (i.fFieldMetaInfo->GetTypeInfo ()).fFromObjectMapper (mapper, b);
                     }
                 }();
-                if (i.fNullFields == StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) [[likely]] {
+                if (/*i.fNullFields == StructFieldInfo::eIncludeNullFields*/ not options.fOmitNullEntriesInFromObject or
+                    vv.GetType () != VariantValue::eNull) [[likely]] {
                     m.Add (i.fSerializedFieldName, vv);
                 }
             }
-            if (afterFrom) [[unlikely]] {
-                m.AddAll (afterFrom (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> ()); // so we can extend
+            if (options.fAfterFrom) [[unlikely]] {
+                m.AddAll (options.fAfterFrom (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> ()); // so we can extend
             }
             return VariantValue{m};
         };
-        ToObjectMapperType<CLASS> toObjectMapper = [fields, beforeTo, afterTo] (const ObjectVariantMapper& mapper, const VariantValue& d,
-                                                                                CLASS* intoObjOfTypeT) -> void {
+        ToObjectMapperType<CLASS> toObjectMapper = [fields, options] (const ObjectVariantMapper& mapper, const VariantValue& d,
+                                                                      CLASS* intoObjOfTypeT) -> void {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper"};
 #endif
@@ -1187,8 +1192,8 @@ namespace Stroika::Foundation::DataExchange {
                 [&] () -> String { return Characters::Format ("Decoding {:.100} into class {}"_f, d, type_index{typeid (CLASS)}); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
-            if (beforeTo) {
-                beforeTo (mapper, d, intoObjOfTypeT);
+            if (options.fBeforeTo) {
+                options.fBeforeTo (mapper, d, intoObjOfTypeT);
             }
             Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
             for (const auto& i : fields) {
@@ -1212,17 +1217,17 @@ namespace Stroika::Foundation::DataExchange {
                     }
                 }
             }
-            if (afterTo) {
-                afterTo (mapper, d, intoObjOfTypeT);
+            if (options.fAfterTo) {
+                options.fAfterTo (mapper, d, intoObjOfTypeT);
             }
         };
         return TypeMappingDetails{fromObjectMapper, toObjectMapper, forTypeInfo};
     }
     template <typename CLASS>
-    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_and_check_ (
-        const type_index& forTypeInfo, [[maybe_unused]] size_t sizeofObj, const Traversal::Iterable<StructFieldInfo>& fields,
-        const FromObjectMapperType<CLASS>& beforeFrom, const FromObjectMapperType<CLASS>& afterFrom,
-        const ToObjectMapperType<CLASS>& beforeTo, const ToObjectMapperType<CLASS>& afterTo, const ObjectVariantMapper* use2Validate)
+    inline ObjectVariantMapper::TypeMappingDetails
+    ObjectVariantMapper::MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, [[maybe_unused]] size_t sizeofObj,
+                                                                         const Traversal::Iterable<StructFieldInfo>& fields,
+                                                                         const ClassMapperOptions<CLASS>& options, const ObjectVariantMapper* use2Validate)
     {
         if constexpr (qDebug) {
             // Assure for each field type is registered. This is helpful 99% of the time the assert is triggered.
@@ -1238,6 +1243,6 @@ namespace Stroika::Foundation::DataExchange {
                 }
             }
         }
-        return MakeCommonSerializer_ForClassObject_<CLASS> (forTypeInfo, sizeofObj, fields, beforeFrom, afterFrom, beforeTo, afterTo);
+        return MakeCommonSerializer_ForClassObject_<CLASS> (forTypeInfo, sizeofObj, fields, options);
     }
 }

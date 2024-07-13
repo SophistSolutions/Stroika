@@ -176,7 +176,8 @@ namespace Stroika::Foundation::DataExchange {
      *              { "Enabled"sv, StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
      *              { "Last-Synchronized-At"sv, StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
      *              { "This-HR-ContactID-To-SharedContactID-Map"sv, StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
-     *          });
+     *          },
+     *          {.fOmitNullEntriesInFromObject = false});
      *
      *          SharedContactsConfig_   tmp;
      *          tmp.fEnabled = enabled;
@@ -233,7 +234,7 @@ namespace Stroika::Foundation::DataExchange {
          *  for internal storage of mappers.
          *
          *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
-         *        see https://stroika.atlassian.net/browse/STK-601 for details but, with ubsan, we need todo an extra
+         *        see https://stroika.atlassian.net/browse/STK-601 for details but, with UBSan, we need todo an extra
          *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see ToGenericObjectMapperType
@@ -562,6 +563,44 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         */
+        template <typename CLASS>
+        struct ClassMapperOptions {
+            /**
+             *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - decides if missing data mapped to null entry in map/object, or just missing
+             */
+            bool fOmitNullEntriesInFromObject{true};
+
+            /**
+            // do first before provided structfieldmappers (base class)
+             *  Typically null
+             */
+            FromObjectMapperType<CLASS> fBeforeFrom;
+
+            /**
+            // do first before provided structfieldmappers (base class)
+             *  Typically null
+             */
+            ToObjectMapperType<CLASS> fBeforeTo;
+
+            // do after provided structfieldmappers
+            // @todo rename fAfterMappers
+
+            /**
+            // do first after provided structfieldmappers (derived class)
+             *  Typically null
+             */
+            FromObjectMapperType<CLASS> fAfterFrom;
+
+            /**
+            // do first after provided structfieldmappers (derived class)
+             *  Typically null
+             */
+            ToObjectMapperType<CLASS> fAfterTo;
+        };
+
+    public:
+        /**
          *  Adds the given class (defined in explicit template argument) with the given list of field.
          *  Also, optionally provide a 'readPreflight' function to be applied to the read-in VariantValue object before
          *  decomposing (into C++ structs), as a helpful backward compatible file format hook.
@@ -601,12 +640,7 @@ namespace Stroika::Foundation::DataExchange {
          *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS>
-        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
-        template <typename CLASS>
-        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass);
-        template <typename CLASS>
-        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                  const FromObjectMapperType<CLASS>& furtherDerivedFromMapper, const ToObjectMapperType<CLASS>& furtherDerivedToMapper);
+        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const ClassMapperOptions<CLASS>& mapperOptions = {});
 
     public:
         /**
@@ -636,12 +670,7 @@ namespace Stroika::Foundation::DataExchange {
          *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
-        template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass);
-        template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const FromObjectMapperType<CLASS>& furtherDerivedFromMapper,
-                                     const ToObjectMapperType<CLASS>& furtherDerivedToMapper);
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const ClassMapperOptions<CLASS>& mapperOptions = {});
 
     public:
         /**
@@ -781,15 +810,30 @@ namespace Stroika::Foundation::DataExchange {
          */
         template <typename T>
         static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                                       const optional<TypeMappingDetails>&         baseClass           = nullopt,
-                                                       const optional<TypeMappingDetails>&         furtherDerivedClass = nullopt)
+                                                       const ClassMapperOptions<T>&                options = {})
             requires (is_class_v<T>);
+
+    public:
+        template <typename T>
+        [[deprecated]] static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                                                      const optional<TypeMappingDetails>&         baseClass,
+                                                                      const optional<TypeMappingDetails>& furtherDerivedClass = nullopt)
+            requires (is_class_v<T>)
+        {
+            return MakeClassSerializer<T> (
+                fieldDescriptions,
+                ClassMapperOptions<T>{
+                    .fBeforeFrom = baseClass and baseClass->fFromObjectMapper ? baseClass->FromObjectMapper<T> () : nullptr,
+                    .fBeforeTo   = baseClass and baseClass->fToObjectMapper ? baseClass->ToObjectMapper<T> () : nullptr,
+                    .fAfterFrom = furtherDerivedClass and furtherDerivedClass->fFromObjectMapper ? furtherDerivedClass->FromObjectMapper<T> () : nullptr,
+                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->fToObjectMapper ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
+                nullptr);
+        }
 
     private:
         template <typename T>
         static TypeMappingDetails MakeClassSerializer_ (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                                        const optional<TypeMappingDetails>& baseClass, const optional<TypeMappingDetails>& furtherDerivedClass,
-                                                        const ObjectVariantMapper* mapperToCheckAgainst)
+                                                        const ClassMapperOptions<T>& options, const ObjectVariantMapper* mapperToCheckAgainst)
             requires (is_class_v<T>);
 
     public:
@@ -972,17 +1016,13 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename CLASS>
-        static TypeMappingDetails
-        MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t sizeofObj, const Traversal::Iterable<StructFieldInfo>& fields,
-                                              const FromObjectMapperType<CLASS>& beforeFrom, const FromObjectMapperType<CLASS>& afterFrom,
-                                              const ToObjectMapperType<CLASS>& beforeTo, const ToObjectMapperType<CLASS>& afterTo);
+        static TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t sizeofObj,
+                                                                        const Traversal::Iterable<StructFieldInfo>& fields,
+                                                                        const ClassMapperOptions<CLASS>&            options);
         template <typename CLASS>
         static TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t sizeofObj,
                                                                                   const Traversal::Iterable<StructFieldInfo>& fields,
-                                                                                  const FromObjectMapperType<CLASS>&          beforeFrom,
-                                                                                  const FromObjectMapperType<CLASS>&          afterFrom,
-                                                                                  const ToObjectMapperType<CLASS>&            beforeTo,
-                                                                                  const ToObjectMapperType<CLASS>&            afterTo,
+                                                                                  const ClassMapperOptions<CLASS>&            options,
                                                                                   const ObjectVariantMapper* use2Validate = nullptr);
 
     private:
@@ -1051,6 +1091,9 @@ namespace Stroika::Foundation::DataExchange {
     struct ObjectVariantMapper::StructFieldInfo {
     public:
         /**
+        * 
+        * ***DEPRECATED SINCE STROIKA v3.0d8...
+        * 
          *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - decides if missing data mapped to null entry in map/object, or just missing
          */
         enum class NullFieldHandling {
@@ -1060,11 +1103,13 @@ namespace Stroika::Foundation::DataExchange {
             Stroika_Define_Enum_Bounds (eOmit, eInclude)
         };
         /**
+        * ***DEPRECATED SINCE STROIKA v3.0d8...
          *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - parent object created with missing values if missing from object
          */
         static constexpr NullFieldHandling eOmitNullFields = NullFieldHandling::eOmit; // instead of using NullFieldHandling::eOmit
 
         /**
+        * ***DEPRECATED SINCE STROIKA v3.0d8...
          *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - parent object created with explicitly null values if missing from object
          */
         static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
@@ -1078,18 +1123,18 @@ namespace Stroika::Foundation::DataExchange {
         String fSerializedFieldName;
 
         /*
-         * if missing - then pass in parent object, then fOverrideTypeMapper required
-         * 
+         * if missing - then pass in parent object, then fOverrideTypeMapper required ****THIS USE DEPRECATED*****
          *  \note Since v3.0d7 - this is required to be null-null (or null use deprecated rather)
          */
         optional<StructFieldMetaInfo> fFieldMetaInfo;
 
         /*
          *  if fFieldMetaInfo == nullopt, fOverrideTypeMapper is required, and is the mapper used for the entire
-         *  object. (NOTE SINCE 3.0d7 - fFieldMetaInfo==nullopt deprecated)
+         *  object. (NOTE SINCE 3.0d7 - fFieldMetaInfo==nullopt deprecated); but this is still optional.
          */
         optional<TypeMappingDetails> fOverrideTypeMapper;
 
+#if 0
         /**
          *  defaults to NullFieldHandling::eInclude
          * 
@@ -1099,7 +1144,8 @@ namespace Stroika::Foundation::DataExchange {
          *  or consider if belongs as parameter to CLASS object, not individiaul structs (probably better)
          *  then less redundantly specified all over the place. I THINK THAT IS BETTER!
          */
-        NullFieldHandling fNullFields{NullFieldHandling::eInclude};
+        //NullFieldHandling fNullFields{NullFieldHandling::eInclude};
+#endif
 
     public:
         /**
@@ -1110,32 +1156,35 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \par Example Usage
          *      \code
-         *          ObjectVariantMapper::StructFieldInfo{"Int2"sv, StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-         *      \endcode
-         *
-         *  \par Example Usage
-         *      \code
          *          ObjectVariantMapper::StructFieldInfo{"BasicArray1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
          *      \endcode
          */
-        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
-                         NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude);
-        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper,
-                         NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo);
+        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper);
 
     public:
-        /**
-         * 
-         * note overloads with no StructFieldMetaInfo must provide a TypeMappingDetails (since otherwise no typemapper to lookup cuz no type) and
-         *  that mapper must take owning object not individiaul type as argument - so maybe bad idea - maybe deprecate)
-         * 
-         */
+        [[deprecated ("Since Stroika v3.0d8 - NullFieldHandling::eOmit is new default, use AddClass options arg "
+                      "ClassMapperOptions<T>{.fOmitNullEntriesInFromObject = false} for eInclude behevior")]] StructFieldInfo (const String& serializedFieldName,
+                                                                                                                               const StructFieldMetaInfo& fieldMetaInfo,
+                                                                                                                               [[maybe_unused]] NullFieldHandling fromObjectNullHandling)
+            : StructFieldInfo{serializedFieldName, fieldMetaInfo}
+        {
+            WeakAssert (fromObjectNullHandling == NullFieldHandling::eInclude); // the default changed for this case
+        }
+        [[deprecated ("Since Stroika v3.0d8 - NullFieldHandling::eOmit is new default, use AddClass options arg "
+                      "ClassMapperOptions<T>{.fOmitNullEntriesInFromObject = false} for eInclude behevior")]] StructFieldInfo (const String& serializedFieldName,
+                                                                                                                               const StructFieldMetaInfo& fieldMetaInfo,
+                                                                                                                               const optional<TypeMappingDetails>& overrideTypeMapper,
+                                                                                                                               [[maybe_unused]] NullFieldHandling fromObjectNullHandling)
+            : StructFieldInfo{serializedFieldName, fieldMetaInfo, overrideTypeMapper}
+        {
+            WeakAssert (fromObjectNullHandling == NullFieldHandling::eInclude); // the default changed for this case
+        }
         [[deprecated ("Since Stroika v3.0d7 - dont use StructFieldInfo with missing filedMetaInfo - instead use type override of owning "
                       "object)")]] StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper,
-                                                    NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude)
+                                                    [[maybe_unused]] NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude)
             : fSerializedFieldName{serializedFieldName}
             , fOverrideTypeMapper{overrideTypeMapper}
-            , fNullFields{fromObjectNullHandling}
         {
         }
 
@@ -1153,11 +1202,6 @@ namespace Stroika::Foundation::DataExchange {
         /**
          */
         nonvirtual optional<TypeMappingDetails> GetOverrideTypeMapper () const;
-
-    public:
-        /**
-         */
-        nonvirtual NullFieldHandling GetFromObjectNullHandling () const;
 
     public:
         friend class ObjectVariantMapper;

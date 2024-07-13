@@ -457,12 +457,11 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
 #endif
     mapper.AddClass<Info> ({
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-        {"Load-Average"_k, StructFieldMetaInfo{&Info::fLoadAverage}, StructFieldInfo::eOmitNullFields},
+        {"Load-Average"_k, StructFieldMetaInfo{&Info::fLoadAverage}},
 #endif
-            {"Total-Logical-Cores"_k, StructFieldMetaInfo{&Info::fTotalLogicalCores}, StructFieldInfo::eOmitNullFields},
-            {"Total-Process-CPU-Usage"_k, StructFieldMetaInfo{&Info::fTotalProcessCPUUsage}, StructFieldInfo::eOmitNullFields},
-            {"Total-CPU-Usage"_k, StructFieldMetaInfo{&Info::fTotalCPUUsage}, StructFieldInfo::eOmitNullFields},
-            {"Run-Q-Length"_k, StructFieldMetaInfo{&Info::fRunQLength}, StructFieldInfo::eOmitNullFields},
+            {"Total-Logical-Cores"_k, StructFieldMetaInfo{&Info::fTotalLogicalCores}},
+            {"Total-Process-CPU-Usage"_k, StructFieldMetaInfo{&Info::fTotalProcessCPUUsage}},
+            {"Total-CPU-Usage"_k, StructFieldMetaInfo{&Info::fTotalCPUUsage}}, {"Run-Q-Length"_k, StructFieldMetaInfo{&Info::fRunQLength}},
     });
     return mapper;
 }();

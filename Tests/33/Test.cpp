@@ -603,7 +603,7 @@ namespace {
 
         mapper.AddClass<SharedContactsConfig_> ({
             {"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+            {"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
             {"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
             {"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
             {"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
