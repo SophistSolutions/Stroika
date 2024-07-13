@@ -118,7 +118,7 @@ namespace {
             Thread::Start ({iterateThread, overwriteThread});
             Thread::WaitForDone ({iterateThread, overwriteThread});
         }
-        void DoIt ()
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, AssignAndIterateAtSameTimeTest_1_)
         {
             Debug::TraceContextBumper traceCtx{"AssignAndIterateAtSameTimeTest_1_::DoIt ()"};
             static const unsigned int kRepeatCount_ = kVerySlow_ ? 100u : 500u;
@@ -169,7 +169,7 @@ namespace {
             Thread::Start ({iterateThread, mutateThread});
             Thread::WaitForDone ({iterateThread, mutateThread});
         }
-        void DoIt ()
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, IterateWhileMutatingContainer_Test_2_)
         {
             // This test (used to) demonstrate the need for qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
             // but been fixed
@@ -227,61 +227,58 @@ namespace {
 }
 
 namespace {
-    namespace Test3_SynchronizedOptional_ {
-        void DoIt_ ()
-        {
-            Debug::TraceContextBumper traceCtx{"{}::Test3_SynchronizedOptional_::DoIt ()"};
-            using namespace Memory;
-            try {
-                Synchronized<optional<int>> sharedValue{0};
-                static const bool           kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-                static const int            kMaxVal_          = kVerySlow_ ? 5 : 100000;
-                Thread::Ptr                 reader            = Thread::New ([&sharedValue] () {
-                    optional<int> prevValue;
-                    unsigned int  repeatCount{};
-                    while ((prevValue = sharedValue.load ()) < kMaxVal_) {
-                        EXPECT_TRUE (sharedValue.load () <= kMaxVal_);
-                        if (kRunningValgrind_) {
-                            if (prevValue == sharedValue.load ()) {
-                                repeatCount++;
-                                if (repeatCount > 100) {
-                                    Execution::Sleep (1ms); // avoid starvation under helgrind (seems to help) -- LGP 2017-12-20.
-                                    repeatCount = 0;
-                                }
-                            }
-                            else {
-                                prevValue = nullopt;
+    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test3_SynchronizedOptional_)
+    {
+        Debug::TraceContextBumper traceCtx{"{}::Test3_SynchronizedOptional_::DoIt ()"};
+        using namespace Memory;
+        try {
+            Synchronized<optional<int>> sharedValue{0};
+            static const bool           kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            static const int            kMaxVal_          = kVerySlow_ ? 5 : 100000;
+            Thread::Ptr                 reader            = Thread::New ([&sharedValue] () {
+                optional<int> prevValue;
+                unsigned int  repeatCount{};
+                while ((prevValue = sharedValue.load ()) < kMaxVal_) {
+                    EXPECT_TRUE (sharedValue.load () <= kMaxVal_);
+                    if (kRunningValgrind_) {
+                        if (prevValue == sharedValue.load ()) {
+                            repeatCount++;
+                            if (repeatCount > 100) {
+                                Execution::Sleep (1ms); // avoid starvation under helgrind (seems to help) -- LGP 2017-12-20.
+                                repeatCount = 0;
                             }
                         }
+                        else {
+                            prevValue = nullopt;
+                        }
                     }
-                    EXPECT_TRUE (sharedValue.load () == kMaxVal_);
-                });
-                Thread::Ptr                 adder             = Thread::New ([&sharedValue] () {
-                    while (sharedValue.load () < kMaxVal_) {
-                        sharedValue.store (*sharedValue.load () + 1);
-                    }
-                    EXPECT_TRUE (sharedValue.load () == kMaxVal_);
-                });
-                Thread::Start ({reader, adder});
-                [[maybe_unused]] auto&& cleanup = Execution::Finally ([&reader, &adder] () noexcept {
-                    Thread::AbortAndWaitForDone ({reader, adder});
-                });
-                // wait long time cuz of debuggers (esp valgrind) etc
-                Thread::WaitForDone ({reader, adder}, 15 * 60s);
+                }
                 EXPECT_TRUE (sharedValue.load () == kMaxVal_);
-            }
-            catch (...) {
-                EXPECT_TRUE (false);
-            }
+            });
+            Thread::Ptr                 adder             = Thread::New ([&sharedValue] () {
+                while (sharedValue.load () < kMaxVal_) {
+                    sharedValue.store (*sharedValue.load () + 1);
+                }
+                EXPECT_TRUE (sharedValue.load () == kMaxVal_);
+            });
+            Thread::Start ({reader, adder});
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&reader, &adder] () noexcept {
+                Thread::AbortAndWaitForDone ({reader, adder});
+            });
+            // wait long time cuz of debuggers (esp valgrind) etc
+            Thread::WaitForDone ({reader, adder}, 15 * 60s);
+            EXPECT_TRUE (sharedValue.load () == kMaxVal_);
+        }
+        catch (...) {
+            EXPECT_TRUE (false);
         }
     }
 }
 
 namespace {
-    namespace Test4_CvtOp_BehaviorNeededforSyncronize_ {
-        void DoIt ()
-        {
-            Debug::TraceContextBumper traceCtx{"{}::Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ()"};
+    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test4_CvtOp_BehaviorNeededforSyncronize_)
+    {
+        Debug::TraceContextBumper traceCtx{"{}::Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ()"};
 #if 0
             struct  Base {
                 mutable bool    fCalledOp_ = false;
@@ -298,39 +295,34 @@ namespace {
             // --LGP 2014-09-27
             EXPECT_TRUE (bb.fCalledOp_);
 #endif
-        }
     }
 }
 
 namespace {
-    namespace Test5_SetSpecificSyncMethods {
-        void DoIt ()
-        {
-            Debug::TraceContextBumper           traceCtx{"{}::Test5_SetSpecificSyncMethods::DoIt ()"};
-            Set<int>                            sensorsToActuallyRead{2, 3};
-            static const Synchronized<Set<int>> kACUSensors_{Set<int>{1, 2}};
-            Set<int>                            acufpgaSensors1 = kACUSensors_ ^ sensorsToActuallyRead;
-            Set<int>                            acufpgaSensors2 = sensorsToActuallyRead ^ kACUSensors_;
-            EXPECT_TRUE ((acufpgaSensors1 == Set<int>{2}));
-            EXPECT_TRUE ((acufpgaSensors2 == Set<int>{2}));
-        }
+    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test5_SetSpecificSyncMethods)
+    {
+        Debug::TraceContextBumper           traceCtx{"{}::Test5_SetSpecificSyncMethods::DoIt ()"};
+        Set<int>                            sensorsToActuallyRead{2, 3};
+        static const Synchronized<Set<int>> kACUSensors_{Set<int>{1, 2}};
+        Set<int>                            acufpgaSensors1 = kACUSensors_ ^ sensorsToActuallyRead;
+        Set<int>                            acufpgaSensors2 = sensorsToActuallyRead ^ kACUSensors_;
+        EXPECT_TRUE ((acufpgaSensors1 == Set<int>{2}));
+        EXPECT_TRUE ((acufpgaSensors2 == Set<int>{2}));
     }
 }
 
 namespace {
-    namespace Test6_OverloadsWithSyncMethods_ {
-        void DoIt ()
-        {
-            Debug::TraceContextBumper traceCtx{"{}::Test6_OverloadsWithSyncMethods_::DoIt ()"};
-            String                    xx;
-            Synchronized<String>      yy;
-            if (xx != yy) {
-            }
-            optional<String> xxo;
-            if (xxo != yy) {
-            }
-            if (xxo == yy) {
-            }
+    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test6_OverloadsWithSyncMethods_)
+    {
+        Debug::TraceContextBumper traceCtx{"{}::Test6_OverloadsWithSyncMethods_::DoIt ()"};
+        String                    xx;
+        Synchronized<String>      yy;
+        if (xx != yy) {
+        }
+        optional<String> xxo;
+        if (xxo != yy) {
+        }
+        if (xxo == yy) {
         }
     }
 }
@@ -442,7 +434,7 @@ namespace {
                 }
             }
         }
-        void DoIt ()
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test7_Synchronized_)
         {
             Debug::TraceContextBumper traceCtx{"{}::Test7_Synchronized_::DoIt ()"};
             Private_::TestBasics_ ();
@@ -468,7 +460,7 @@ namespace {
 #endif
             }
         }
-        void DoIt ()
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test8_AssertExternallySynchronized_)
         {
             Debug::TraceContextBumper traceCtx{"{}::Test8_AssertExternallySynchronized_::DoIt ()"};
             Private_::TestBasics_ ();
@@ -510,7 +502,7 @@ namespace {
                 Thread::WaitForDone ({t1, t2, t3});
             }
         }
-        void DoIt ()
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test9_MutlipleThreadsReadingUnsynchronizedContainer_)
         {
             Debug::TraceContextBumper traceCtx{"{}::Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ()"};
             Private_::TestBasics_ ();
@@ -598,7 +590,7 @@ namespace {
                 Thread::WaitForDone ({adderThread, removerThread, examineThread, walkerThread});
             }
         }
-        void DoIt ()
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_)
         {
             //
             //  If you see hang here/TSAN issue - see
@@ -729,7 +721,7 @@ namespace {
                 Thread::WaitForDone ({writerThread, copierThread});
             }
         }
-        void DoIt ()
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test11_SynchronizedCaches_)
         {
             Debug::TraceContextBumper traceCtx{"{}Test11_SynchronizedCaches_..."};
             Private_::SyncLRUCacheT1_ ();
@@ -737,38 +729,24 @@ namespace {
         }
     }
 }
-
-namespace {
-    GTEST_TEST (Foundation_Caching, all)
-    {
-#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
-        [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
-            auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
-            DbgTrace (L"Total Running threads at end: {}"_f, runningThreads.size ());
-            for (Execution::Thread::IDType threadID : runningThreads) {
-                DbgTrace (L"Exiting main with thread {} running"_f, Characters::ToString (threadID));
-            }
-            EXPECT_TRUE (runningThreads.size () == 0);
-        });
-#endif
-        AssignAndIterateAtSameTimeTest_1_::DoIt ();
-        IterateWhileMutatingContainer_Test_2_::DoIt ();
-        Test3_SynchronizedOptional_::DoIt_ ();
-        Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ();
-        Test5_SetSpecificSyncMethods::DoIt ();
-        Test6_OverloadsWithSyncMethods_::DoIt ();
-        Test7_Synchronized_::DoIt ();
-        Test8_AssertExternallySynchronized_::DoIt ();
-        Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ();
-        Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ();
-        Test11_SynchronizedCaches_::DoIt ();
-    }
-}
 #endif
 
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+    [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
+        auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
+        DbgTrace ("Total Running threads at end: {}"_f, runningThreads.size ());
+        for (Execution::Thread::IDType threadID : runningThreads) {
+            DbgTrace ("Exiting main with thread {} running"_f, threadID);
+        }
+        if (not runningThreads.empty ()) {
+            cerr << "runningThreads still" << endl;
+            exit (1);
+        }
+    });
+#endif
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
