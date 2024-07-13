@@ -122,13 +122,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
-        // In CPP file
-        String Legacy_Float2String_ (float f, const ToStringOptions& options);
-        String Legacy_Float2String_ (double f, const ToStringOptions& options);
-        String Legacy_Float2String_ (long double f, const ToStringOptions& options);
-    }
-
-    namespace Private_ {
         inline void TrimTrailingZeros_ (String* strResult)
         {
             // @todo THIS could be more efficient. We should KNOW case of the 'e' and maybe able to tell/avoid looking based on args to String2Float
@@ -406,16 +399,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
                 TrimTrailingZeros_ (&result);
             }
-            if (options.GetPrecision () != Precision::kFull) {
-                Ensure (String::EqualsComparer{eCaseInsensitive}(result, Legacy_Float2String_ (f, options)));
-            }
             return result;
         }
     }
 
     namespace Private_ {
         //
-        // New span/c++20 version of 'ToFloat_Legacy_'
         // This RESPECTS THE CURRENT LOCALE
         // this private function allows nullptr remainder, and behaves somewhat differently if null or not (unlike PUBLIC API)
         // Roughly (ignoring precision and character set)
@@ -521,29 +510,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             return d;
         }
 
-        // @todo LOSE THIS CODE SOON -LGP 2022-12-28- after testing a bit more to see asserts not triggering. Better to add regtests or move
-        // this logic into REgtest file.
-
-        // Version of code from pre-Stroika 2.1b14 (so b13 or earlier roughly)
-        template <typename T = double>
-        T ToFloat_Legacy_ (const String& s);
-        template <typename T = double>
-        T ToFloat_Legacy_ (const String& s, String* remainder);
-
-        // Once I test a bit - I think we can lose these (CPP file) implementations --LGP 2022-12-27
-        template <>
-        float ToFloat_Legacy_ (const String& s);
-        template <>
-        double ToFloat_Legacy_ (const String& s);
-        template <>
-        long double ToFloat_Legacy_ (const String& s);
-        template <>
-        float ToFloat_Legacy_ (const String& s, String* remainder);
-        template <>
-        double ToFloat_Legacy_ (const String& s, String* remainder);
-        template <>
-        long double ToFloat_Legacy_ (const String& s, String* remainder);
-
     }
 
     /*
@@ -646,14 +612,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
                 }
             }
-            if constexpr (IConvertibleToString<decltype (s)>) {
-                Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
-                Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), result));
-            }
             return result;
-        }
-        if constexpr (IConvertibleToString<decltype (s)>) {
-            Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
         }
         return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
     }
@@ -688,14 +647,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     result = Private_::ToFloat_RespectingLocale_<T> (s, &tmpI);
                     ptr    = tmpI - s.begin () + b;
                 }
-#if qDebug
-                String legacyRemainer;
-                Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}, &legacyRemainer), result));
-#endif
                 *remainder = s.begin () + UTFConvert::kThe.ConvertOffset<CHAR_T> (
                                               span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
                 Assert (*remainder <= s.end ());
-                // todo fix so can do this - Assert ((legacyRemainer == String{*remainder, s.end ()}));
                 return result;
             }
         }
@@ -788,18 +742,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
             else {
                 result = Private_::ToFloat_ViaStrToD_<T> (start, end, remainder);
-            }
-        }
-        if constexpr (qDebug) {
-            // test backward compat with old algorithm --LGP 2021-11-15
-            String tmpRem;
-            if (isnan (result)) {
-                Ensure (isnan (Private_::ToFloat_Legacy_<T> (String{start, end}, &tmpRem)));
-                Ensure (tmpRem == *remainder);
-            }
-            else {
-                Ensure (result == Private_::ToFloat_Legacy_<T> (String{start, end}, &tmpRem));
-                Ensure (tmpRem == *remainder);
             }
         }
         return result;
