@@ -597,8 +597,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
             }
             else {
+#if qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
+                asciiS.push_back(0);
+#endif
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
+#if qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
+                e--;
+#endif
                 if (b != e and *b == '+') [[unlikely]] {
                     ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }

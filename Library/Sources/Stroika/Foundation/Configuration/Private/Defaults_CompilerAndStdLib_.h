@@ -2504,6 +2504,47 @@ int main ()
 #endif
 #endif
 
+
+
+/**
+ *  Only triggers warning with valgrind - no other indication of problem (produces right results). But just in case,
+ *  do workaround regardless.
+ * 
+ * 
+    [02] Foundation::Characters - valgrind -q --track-origins=yes --tool=memcheck --gen-suppressions=all --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp --suppressions=Valgrind-MemCheck-Common-x86_64.supp  ../Builds/valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test02 --gtest_brief --gtest_brief
+==3302332== Conditional jump or move depends on uninitialised value(s)
+==3302332==    at 0x484F238: strlen (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3302332==    by 0x2F00D3: std::(anonymous namespace)::pattern(char const*, char const*, std::chars_format&, std::__cxx11::basic_string<char, std::char_traits<char>, std::pmr::polymorphic_allocator<char> >&) [clone .constprop.0] (in /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Builds/valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test02)
+==3302332==    by 0x2F07D2: std::from_chars_result std::(anonymous namespace)::from_chars_strtod<long double>(char const*, char const*, long double&, std::chars_format) (in /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Builds/valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test02)
+==3302332==    by 0x1A2A18: UnknownInlinedFun (FloatConversion.inl:638)
+==3302332==    by 0x1A2A18: long double Stroika::Foundation::Characters::FloatConversion::ToFloat<long double, Stroika::Foundation::Characters::String>(Stroika::Foundation::Characters::String&&) (FloatConversion.inl:716)
+==3302332==    by 0x1A186D: void (anonymous namespace)::Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_<long double>(long double) [clone .lto_priv.0] (Test.cpp:971)
+==3302332==    by 0x180E94: (anonymous namespace)::Foundation_Characters_StringNumericConversions__Test::TestBody() [clone .lto_priv.0] (Test.cpp:1125)
+==3302332==    by 0x225C09: UnknownInlinedFun (gtest.cc:2612)
+
+
+OR 
+lewis@Stroika-Dev:/Sandbox/Stroika-Dev/Tests$ valgrind -q --track-origins=yes --tool=memcheck --gen-suppressions=all --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp --suppressions=Valgrind-MemCheck-Common-x86_64.supp --suppressions=Valgrind-MemCheck-BlockAllocation.supp  ../Builds/valgrind-debug-SSLPurify/Tests/Test02 --gtest_brief --gtest_brief
+==578200== Conditional jump or move depends on uninitialised value(s)
+==578200==    at 0x484F238: strlen (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==578200==    by 0xECD7C3: std::(anonymous namespace)::pattern(char const*, char const*, std::chars_format&, std::__cxx11::basic_string<char, std::char_traits<char>, std::pmr::polymorphic_allocator<char> >&) [clone .constprop.0] (in /Sandbox/Stroika-Dev/Builds/valgrind-debug-SSLPurify/Tests/Test02)
+==578200==    by 0xECDEC2: std::from_chars_result std::(anonymous namespace)::from_chars_strtod<long double>(char const*, char const*, long double&, std::chars_format) (in /Sandbox/Stroika-Dev/Builds/valgrind-debug-SSLPurify/Tests/Test02)
+==578200==    by 0xAC519A: long double Stroika::Foundation::Characters::FloatConversion::ToFloat<long double, wchar_t>(std::span<wchar_t const, 18446744073709551615ul>) (FloatConversion.inl:611)
+==578200==    by 0xAAEDE4: long double Stroika::Foundation::Characters::FloatConv
+
+ */
+#ifndef qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
+#if defined(_GLIBCXX_RELEASE)
+// tested g++ on ubuntu 24.04 - but not tested other versions(yet)
+#define qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 13)
+#else
+#define qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy 0
+#endif
+#endif
+
+
+
+
 /*
 
  ...  Stroika/ThirdPartyComponents/libxml2 -    [Succeeded]
