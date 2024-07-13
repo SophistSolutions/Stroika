@@ -32,7 +32,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 #if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 190000
         return fPrecision.value_or (numeric_limits<T>::max_digits10); //needed on xcode? - only tested needed there
 #endif
-        return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
+        //return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
+        return fPrecision.value_or (numeric_limits<T>::digits10); // docs kind of lean towards this or digits10-1.
     }
     /**
      *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
