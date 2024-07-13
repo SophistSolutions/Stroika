@@ -2425,6 +2425,10 @@ FloatConversion.cpp:117:73: error: ‘chars_format’ has not been declared
   117 |         ptrdiff_t resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision).ptr - buf.begin ();
       |                                                                         ^~~~~~~~~~~~
 make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default.mk:22: /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug-unix/Library/Foundation/Characters/FloatConversion.o] Error 1
+
+
+@todo LOSE DEPRECATED DEFINE qCompilerAndStdLib_to_chars_FP_Buggy - no longer used as of 2024-07-14
+
 */
 #ifndef qCompilerAndStdLib_to_chars_FP_Buggy
 
@@ -2504,8 +2508,6 @@ int main ()
 #endif
 #endif
 
-
-
 /**
  *  Only triggers warning with valgrind - no other indication of problem (produces right results). But just in case,
  *  do workaround regardless.
@@ -2541,9 +2543,6 @@ lewis@Stroika-Dev:/Sandbox/Stroika-Dev/Tests$ valgrind -q --track-origins=yes --
 #define qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy 0
 #endif
 #endif
-
-
-
 
 /*
 

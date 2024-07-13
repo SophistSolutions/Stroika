@@ -292,41 +292,38 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             size_t sz = numeric_limits<FLOAT_TYPE>::max_digits10 + numeric_limits<FLOAT_TYPE>::max_exponent10 + 5; // source? "-1.##e+##\0"
             StackBuffer<char> buf{Memory::eUninitialized, sz};
             ptrdiff_t         resultStrLen;
-            if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy) {
-                auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec) -> char* {
-                    char* fmtPtr = formatBufferStart;
-                    *fmtPtr++    = '%';
-                    // include precision arg
-                    *fmtPtr++ = '.';
-                    *fmtPtr++ = '*';
-                    if (_Spec != '\0') {
-                        *fmtPtr++ = _Spec; // e.g. 'L' qualifier
-                    }
-                    *fmtPtr++ = 'g'; // format specifier
-                    *fmtPtr   = '\0';
-                    Require (fmtPtr < formatBufferEnd);
-                    return formatBufferStart;
-                };
-                char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
-                resultStrLen =
-                    ::snprintf (buf.data (), buf.size (),
-                                mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
-                                (int)precision.GetEffectivePrecision<FLOAT_TYPE> (), f);
+
+            // XCode 15 still doesn't define __cpp_lib_to_chars, as well as _LIBCPP_VERSION < 190000, I believe --LGP 2024-07-13
+#if __cpp_lib_to_chars >= 201611
+            // empirically, on MSVC, to_chars() is much faster (appears 3x apx faster) -- LGP 2021-11-04
+            if (precision == Precision::kFull) {
+                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
             }
             else {
-                // THIS #if test should NOT be needed but g++ 9 didn't properly respect if constexpr (link errors)
-#if !qCompilerAndStdLib_to_chars_FP_Buggy
-                // empirically, on MSVC, to_chars() is much faster (appears 3x apx faster) -- LGP 2021-11-04
-                if (precision == Precision::kFull) {
-                    resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
-                }
-                else {
-                    resultStrLen =
-                        to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> ()).ptr -
-                        buf.begin ();
-                }
-#endif
+                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> ()).ptr -
+                               buf.begin ();
             }
+#else
+            auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec) -> char* {
+                char* fmtPtr = formatBufferStart;
+                *fmtPtr++    = '%';
+                // include precision arg
+                *fmtPtr++ = '.';
+                *fmtPtr++ = '*';
+                if (_Spec != '\0') {
+                    *fmtPtr++ = _Spec; // e.g. 'L' qualifier
+                }
+                *fmtPtr++ = 'g'; // format specifier
+                *fmtPtr   = '\0';
+                Require (fmtPtr < formatBufferEnd);
+                return formatBufferStart;
+            };
+            char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
+            resultStrLen = ::snprintf (buf.data (), buf.size (),
+                                       mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
+                                       (int)precision.GetEffectivePrecision<FLOAT_TYPE> (), f);
+#endif
+
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
             return String{Memory::ConstSpan (span{buf.data (), static_cast<size_t> (resultStrLen)})};
         }
@@ -593,31 +590,30 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         Memory::StackBuffer<char> asciiS;
         if (Character::AsASCIIQuietly (s, &asciiS)) {
             T result; // intentionally uninitialized
-            if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
-            }
-            else {
+#if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
 #if qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
-                asciiS.push_back(0);
+            asciiS.push_back (0);
 #endif
-                auto b = asciiS.begin ();
-                auto e = asciiS.end ();
+            auto b = asciiS.begin ();
+            auto e = asciiS.end ();
 #if qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
-                e--;
+            e--;
 #endif
-                if (b != e and *b == '+') [[unlikely]] {
-                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
-                }
-                auto [ptr, ec] = from_chars (b, e, result);
-                if (ec == errc::result_out_of_range) [[unlikely]] {
-                    result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
-                }
-                else if (ec != std::errc{} or ptr != e) [[unlikely]] {
-                    //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
-                    // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
-                    result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
-                }
+            if (b != e and *b == '+') [[unlikely]] {
+                ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
             }
+            auto [ptr, ec] = from_chars (b, e, result);
+            if (ec == errc::result_out_of_range) [[unlikely]] {
+                result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+            }
+            else if (ec != std::errc{} or ptr != e) [[unlikely]] {
+                //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
+                // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
+                result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
+            }
+#else
+            result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
+#endif
             return result;
         }
         return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
@@ -633,32 +629,32 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
          *  Else, fallback on algorithm that understands full unicode character set.
          */
-        if constexpr (not qCompilerAndStdLib_to_chars_FP_Buggy and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-            Memory::StackBuffer<char> asciiS;
-            if (Character::AsASCIIQuietly (s, &asciiS)) {
-                T     result; // intentionally uninitialized
-                char* b = asciiS.begin ();
-                char* e = asciiS.end ();
-                if (b != e and *b == '+') [[unlikely]] {
-                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
-                }
-                auto [ptr, ec] = from_chars (b, e, result);
-                if (ec == errc::result_out_of_range) [[unlikely]] {
-                    result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
-                }
-                else if (ec != std::errc{} or ptr != e) [[unlikely]] {
-                    //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
-                    // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
-                    typename span<const CHAR_T>::iterator tmpI;
-                    result = Private_::ToFloat_RespectingLocale_<T> (s, &tmpI);
-                    ptr    = tmpI - s.begin () + b;
-                }
-                *remainder = s.begin () + UTFConvert::kThe.ConvertOffset<CHAR_T> (
-                                              span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
-                Assert (*remainder <= s.end ());
-                return result;
+#if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+        Memory::StackBuffer<char> asciiS;
+        if (Character::AsASCIIQuietly (s, &asciiS)) {
+            T     result; // intentionally uninitialized
+            char* b = asciiS.begin ();
+            char* e = asciiS.end ();
+            if (b != e and *b == '+') [[unlikely]] {
+                ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
             }
+            auto [ptr, ec] = from_chars (b, e, result);
+            if (ec == errc::result_out_of_range) [[unlikely]] {
+                result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+            }
+            else if (ec != std::errc{} or ptr != e) [[unlikely]] {
+                //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
+                // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
+                typename span<const CHAR_T>::iterator tmpI;
+                result = Private_::ToFloat_RespectingLocale_<T> (s, &tmpI);
+                ptr    = tmpI - s.begin () + b;
+            }
+            *remainder = s.begin () + UTFConvert::kThe.ConvertOffset<CHAR_T> (
+                                          span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
+            Assert (*remainder <= s.end ());
+            return result;
         }
+#endif
         return Private_::ToFloat_RespectingLocale_<T> (s, remainder); // fallback for non-ascii strings to strtod etc code
     }
     template <floating_point T, typename STRINGISH_ARG>
@@ -704,52 +700,51 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         Require (start <= end);
         RequireNotNull (remainder);
         T result; // intentionally uninitialized
-        if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-            result = Private_::ToFloat_ViaStrToD_<T> (start, end, remainder);
-        }
-        else {
-            /*
-             *  Most of the time we can do this very efficiently, because there are just ascii characters.
-             *  Else, fallback on older algorithm that understands full unicode character set.
-             */
-            Memory::StackBuffer<char> asciiS;
-            if (Character::AsASCIIQuietly (span{start, end}, &asciiS)) {
-                auto b         = asciiS.begin ();
-                auto originalB = b; // needed to properly compute remainder
-                auto e         = asciiS.end ();
-                if (remainder != nullptr) [[unlikely]] {
-                    // in remainder mode we skip leading whitespace
-                    while (b != e and iswspace (*b)) [[unlikely]] {
-                        ++b;
-                    }
+#if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+        /*
+         *  Most of the time we can do this very efficiently, because there are just ascii characters.
+         *  Else, fallback on older algorithm that understands full unicode character set.
+         */
+        Memory::StackBuffer<char> asciiS;
+        if (Character::AsASCIIQuietly (span{start, end}, &asciiS)) {
+            auto b         = asciiS.begin ();
+            auto originalB = b; // needed to properly compute remainder
+            auto e         = asciiS.end ();
+            if (remainder != nullptr) [[unlikely]] {
+                // in remainder mode we skip leading whitespace
+                while (b != e and iswspace (*b)) [[unlikely]] {
+                    ++b;
                 }
-                if (b != e and *b == '+') [[unlikely]] {
-                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
-                }
+            }
+            if (b != e and *b == '+') [[unlikely]] {
+                ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+            }
 
-                auto [ptr, ec] = from_chars (b, e, result);
-                if (ec == errc::result_out_of_range) [[unlikely]] {
-                    return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
-                }
-                // if error - return nan
-                if (ec != std::errc{}) [[unlikely]] {
+            auto [ptr, ec] = from_chars (b, e, result);
+            if (ec == errc::result_out_of_range) [[unlikely]] {
+                return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+            }
+            // if error - return nan
+            if (ec != std::errc{}) [[unlikely]] {
+                result = Math::nan<T> ();
+            }
+            // If asked to return remainder do so.
+            // If NOT asked to return remainder, treat not using the entire string as forcing result to be a Nan (invalid parse of number of not the whole thing is a number)
+            if (remainder == nullptr) [[likely]] {
+                if (ptr != e) [[unlikely]] {
                     result = Math::nan<T> ();
-                }
-                // If asked to return remainder do so.
-                // If NOT asked to return remainder, treat not using the entire string as forcing result to be a Nan (invalid parse of number of not the whole thing is a number)
-                if (remainder == nullptr) [[likely]] {
-                    if (ptr != e) [[unlikely]] {
-                        result = Math::nan<T> ();
-                    }
-                }
-                else {
-                    *remainder = ptr - originalB + start; // adjust in case we remapped data
                 }
             }
             else {
-                result = Private_::ToFloat_ViaStrToD_<T> (start, end, remainder);
+                *remainder = ptr - originalB + start; // adjust in case we remapped data
             }
         }
+        else {
+            result = Private_::ToFloat_ViaStrToD_<T> (start, end, remainder);
+        }
+#else
+        result = Private_::ToFloat_ViaStrToD_<T> (start, end, remainder);
+#endif
         return result;
     }
     template <typename T = double>

@@ -84,6 +84,9 @@ namespace Stroika::Foundation::Math {
      *  \note NearlyEquals (Nan,Nan) is TRUE, unlike with operator==, but nan != anything else
      *        https://medium.com/engineering-housing/nan-is-not-equal-to-nan-771321379694
      * 
+     *        This choice was made because its often handy to use NAN as a sentinel value, and then
+     *        this is generally the right choice (not representing a failed computation, but often missing data).
+     * 
      *  \note - this function handles nans and inf values appropriately:
      *      o   NearlyEquals (Math::nan(), Math::nan());
      *      o   not NearlyEquals (Math::nan(), 3);
