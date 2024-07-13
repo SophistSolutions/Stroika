@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <random>
 #include <tuple>
+#include <iostream>
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -144,7 +145,7 @@ namespace {
                     case 0:
                     case 1: {
                         String name = kNames_[namesDistr (generator)];
-                        DbgTrace ("Adding employee {}"_f, name);
+                        cout << "Adding employee {}"_f (name) << endl;
                         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
                             {":NAME"sv, name},
                             {":AGE"sv, ageDistr (generator)},
@@ -159,7 +160,7 @@ namespace {
                         if (not activeEmps.empty ()) {
                             uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
-                            DbgTrace ("Firing employee: {}, {}"_f, get<0> (killMe).As<int> (), get<1> (killMe).As<String> ());
+                            cout << "Firing employee: {}, {}"_f ( get<0> (killMe).As<int> (), get<1> (killMe).As<String> ()) << endl;
                             fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{L":ID", get<0> (killMe).As<int> ()}});
                         }
                     } break;
@@ -167,7 +168,7 @@ namespace {
             }
             catch (...) {
                 // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, current_exception ());
+                cout << "Exception processing SQL - this should generally not happen: {}"_f ( current_exception ()) << endl;
             }
 
             Sleep (1s); // **cancelation point**
@@ -185,7 +186,7 @@ namespace {
                     int    id     = get<0> (employee).As<int> ();
                     String name   = get<1> (employee).As<String> ();
                     double salary = get<2> (employee).As<double> ();
-                    DbgTrace ("Writing paycheck for employee #{} ({}) amount {}"_f, id, name, salary);
+                    cout << "Writing paycheck for employee #{} ({}) amount {}"_f ( id, name, salary) << endl;
                     addPaycheckStatement.Execute (initializer_list<Statement::ParameterDescription>{
                         {":EMPLOYEEREF"sv, id},
                         {":AMOUNT"sv, salary / 12},
@@ -195,7 +196,7 @@ namespace {
             }
             catch (...) {
                 // no need to check for ThreadAbort exception, since Sleep is a cancelation point
-                DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
+                cout << "Exception processing SQL - this should generally not happen: {}"_f ( current_exception ()) << endl;
             }
             Sleep (2s); // **cancelation point**
         }
