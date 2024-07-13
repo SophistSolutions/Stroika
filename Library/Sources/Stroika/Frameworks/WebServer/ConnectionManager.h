@@ -261,7 +261,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Get the list of interceptors early interceptors. These default to:
+         *  Get/Set the list of interceptors early interceptors. These default to:
          *      earlyInterceptors += ServerHeadersInterceptor_{serverHeader, corsSupportMode};
          *      if (defaultFaultHandler) {
          *          earlyInterceptors += *defaultFaultHandler;
