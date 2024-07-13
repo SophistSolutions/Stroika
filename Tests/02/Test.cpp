@@ -958,6 +958,7 @@ namespace {
         template <typename FLOAT_TYPE>
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
+#if 0
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
                 EXPECT_TRUE (Math::NearlyEquals (
                     l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
@@ -968,9 +969,10 @@ namespace {
                 //  that is, any number with this many significant decimal digits can be converted to a value of type T and back to decimal form,
                 //  without change due to rounding or overflow. For base-radix types, it is the value of digits() (digits - 1 for floating-point types)
                 //  multiplied by log 10 radix and rounded down.
-                EXPECT_TRUE (Math::NearlyEquals (
-                    l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
-            }
+#endif
+            EXPECT_TRUE (Math::NearlyEquals (
+                l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
+            //}
         }
     }
     GTEST_TEST (Foundation_Characters, StringNumericConversions_)
