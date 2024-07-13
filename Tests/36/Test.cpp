@@ -537,7 +537,8 @@ namespace {
                     {"Address"sv, StructFieldMetaInfo{&Employee::fAddress}},
                     {"Salary"sv, StructFieldMetaInfo{&Employee::fSalary}},
                     {"Still-Employed"sv, StructFieldMetaInfo{&Employee::fStillEmployed}},
-                });
+                    },
+                    {.fOmitNullEntriesInFromObject = false});
                 return mapper;
             }};
 
@@ -557,13 +558,14 @@ namespace {
                     {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
                     {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
                     {"Date"sv, StructFieldMetaInfo{&Paycheck::fDate}},
-                });
+                    },
+                    {.fOmitNullEntriesInFromObject = false});
                 return mapper;
             }};
 
             /**
              *  Combine all the ObjectVariantMappers for the objects we use in this database into one, and
-             *  AMEND any mappers as needed to accomodate possible changes in the mappings (like represeting
+             *  AMEND any mappers as needed to accommodate possible changes in the mappings (like representing
              *  some things as strings vs. BLOBs etc).
              */
             const ConstantProperty<ObjectVariantMapper> kDBObjectMapper_{[] () {
