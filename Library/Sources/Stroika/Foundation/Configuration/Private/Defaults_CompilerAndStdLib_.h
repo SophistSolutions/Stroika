@@ -2419,41 +2419,17 @@ In file included from ../Execution/../Characters/../Containers/Sequence.h:16,
 #endif
 
 /*
-      Compiling Library/Sources/Stroika/Foundation/Characters/FloatConversion.cpp ...
-FloatConversion.cpp: In function ‘Stroika::Foundation::Characters::String {anonymous}::Float2String_OptimizedForCLocaleAndNoStreamFlags_(FLOAT_TYPE, int, bool)’:
-FloatConversion.cpp:117:73: error: ‘chars_format’ has not been declared
-  117 |         ptrdiff_t resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision).ptr - buf.begin ();
-      |                                                                         ^~~~~~~~~~~~
-make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default.mk:22: /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug-unix/Library/Foundation/Characters/FloatConversion.o] Error 1
-
-
 @todo LOSE DEPRECATED DEFINE qCompilerAndStdLib_to_chars_FP_Buggy - no longer used as of 2024-07-14
-
 */
 #ifndef qCompilerAndStdLib_to_chars_FP_Buggy
-
 #if defined(__clang__) && defined(__APPLE__)
-// according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
-// still broken in XCode 14
-// still broken in XCode 15
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
-// according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
-// appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
-// appears fixed in clang++14 (or maybe SB depending on libversion)
-// _LIBCPP_VERSION <= 14000
-// _LIBCPP_VERSION <= 15007
-// _LIBCPP_VERSION ==160000 (so say < 170000)
-// 170002 also seems broken, (at least with clang++-14)
-// 180100 also seems broken with clang++-15 on ununtu 24.04
 #define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 190000))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
-
 #endif
-
-// if these same - lose bug define - and use __cpp_lib_to_chars
 #if (!!__cpp_lib_to_chars) != (!qCompilerAndStdLib_to_chars_FP_Buggy)
 #warning "BUGGY BUT __cpp_lib_to_chars vs qCompilerAndStdLib_to_chars_FP_Buggy defs differ "
 #endif
@@ -2495,11 +2471,13 @@ int main ()
 }*/
 #ifndef qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
 
+/*
 #if defined(_LIBCPP_VERSION)
 // Appears still buggy in 14.0 clang libc++ on ubuntu 22.04 (doesnt compile)
 // Broken with 150007 on clang15 ubunto 22.04
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 15007))
-#elif defined(_GLIBCXX_RELEASE)
+*/
+#if defined(_GLIBCXX_RELEASE)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
 // AT LEAST with clang++14, this is broken in _GLIBCXX_RELEASE==12 (Ubuntu 22.04)
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 12)

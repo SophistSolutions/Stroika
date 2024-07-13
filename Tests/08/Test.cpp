@@ -144,7 +144,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList all)
     {
         Test1 ();
         Test2 ();
