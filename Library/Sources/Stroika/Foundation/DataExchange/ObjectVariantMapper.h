@@ -579,29 +579,22 @@ namespace Stroika::Foundation::DataExchange {
             bool fOmitNullEntriesInFromObject{true};
 
             /**
-            // do first before provided structfieldmappers (base class)
-             *  Typically null
+             *  FromObjectMapperType (to variant value) called before the StructFieldInfo mappers in an AddClass () method. Typically null, but set in subclassing) 
              */
             FromObjectMapperType<CLASS> fBeforeFrom;
 
             /**
-            // do first before provided structfieldmappers (base class)
-             *  Typically null
+             *  ToObjectMapperType (to CLASS) called before the StructFieldInfo mappers in an AddClass () method. Typically null, but set in subclassing) 
              */
             ToObjectMapperType<CLASS> fBeforeTo;
 
-            // do after provided structfieldmappers
-            // @todo rename fAfterMappers
-
             /**
-            // do first after provided structfieldmappers (derived class)
-             *  Typically null
+             *  FromObjectMapperType (to variant value) after before the StructFieldInfo mappers in an AddClass () method. Typically null, but useful as a hook to refine mapping done by default algorithm 
              */
             FromObjectMapperType<CLASS> fAfterFrom;
 
             /**
-            // do first after provided structfieldmappers (derived class)
-             *  Typically null
+             *  ToObjectMapperType (to CLASS) after before the StructFieldInfo mappers in an AddClass () method. Typically null, but useful as a hook to refine mapping done by default algorithm 
              */
             ToObjectMapperType<CLASS> fAfterTo;
         };
