@@ -3,6 +3,10 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#if __cpp_lib_debugging >= 202403L
+#include <debugging>
+#endif
+
 #if qPlatform_POSIX
 #include <fcntl.h>
 #include <string.h>
@@ -84,11 +88,14 @@ namespace {
 
 /*
  ********************************************************************************
- ************************ Debug::IsThisProcessBeingDebugged **********************
+ ************************ Debug::IsThisProcessBeingDebugged *********************
  ********************************************************************************
  */
 optional<bool> Debug::IsThisProcessBeingDebugged ()
 {
+#if __cpp_lib_debugging >= 202403L
+    return std::is_debugger_present ();
+#endif
 #if qPlatform_Linux
     return DebuggerIsAttached_ ();
 #endif
