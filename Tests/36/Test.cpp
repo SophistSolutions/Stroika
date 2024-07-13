@@ -247,7 +247,8 @@ namespace {
                 Database::SQL::SQLite::Connection::Ptr fDB_;
             };
         }
-        void DoIt ()
+
+        GTEST_TEST (Foundation_Database, RegressionTest1_sqlite_ScansDBTest_)
         {
             //static const     DateTime   kScanStartTime4Reference_   = DateTime::Now ();
             static const DateTime kScanStartTime4Reference_ = DateTime{Date{Year{2020}, April, day{1}}, TimeOfDay{4, 0, 0}}; // hardwired data to be able to ccompare DBs
@@ -500,8 +501,12 @@ namespace {
 
         }
 
-        void DoIt ()
+        GTEST_TEST (Foundation_Database, RegressionTest2_sqlite_EmployeesDB_with_threads_)
         {
+            if (Debug::IsRunningUnderValgrind () and qDebug) {
+                DbgTrace ("Skipping remaining tests cuz too slow"_f);
+                return;
+            }
             TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt"};
             using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
@@ -530,13 +535,14 @@ namespace {
             const ConstantProperty<ObjectVariantMapper> Employee::kMapper{[] () {
                 ObjectVariantMapper mapper;
                 mapper.AddCommonType<optional<int>> ();
-                mapper.AddClass<Employee> ({
-                    {"id"sv, StructFieldMetaInfo{&Employee::ID}},
-                    {"Name"sv, StructFieldMetaInfo{&Employee::fName}},
-                    {"Age"sv, StructFieldMetaInfo{&Employee::fAge}},
-                    {"Address"sv, StructFieldMetaInfo{&Employee::fAddress}},
-                    {"Salary"sv, StructFieldMetaInfo{&Employee::fSalary}},
-                    {"Still-Employed"sv, StructFieldMetaInfo{&Employee::fStillEmployed}},
+                mapper.AddClass<Employee> (
+                    {
+                        {"id"sv, StructFieldMetaInfo{&Employee::ID}},
+                        {"Name"sv, StructFieldMetaInfo{&Employee::fName}},
+                        {"Age"sv, StructFieldMetaInfo{&Employee::fAge}},
+                        {"Address"sv, StructFieldMetaInfo{&Employee::fAddress}},
+                        {"Salary"sv, StructFieldMetaInfo{&Employee::fSalary}},
+                        {"Still-Employed"sv, StructFieldMetaInfo{&Employee::fStillEmployed}},
                     },
                     {.fOmitNullEntriesInFromObject = false});
                 return mapper;
@@ -553,11 +559,12 @@ namespace {
             const ConstantProperty<ObjectVariantMapper> Paycheck::kMapper{[] () {
                 ObjectVariantMapper mapper;
                 mapper.AddCommonType<optional<int>> ();
-                mapper.AddClass<Paycheck> ({
-                    {"id"sv, StructFieldMetaInfo{&Paycheck::ID}},
-                    {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
-                    {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
-                    {"Date"sv, StructFieldMetaInfo{&Paycheck::fDate}},
+                mapper.AddClass<Paycheck> (
+                    {
+                        {"id"sv, StructFieldMetaInfo{&Paycheck::ID}},
+                        {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
+                        {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
+                        {"Date"sv, StructFieldMetaInfo{&Paycheck::fDate}},
                     },
                     {.fOmitNullEntriesInFromObject = false});
                 return mapper;
@@ -736,9 +743,13 @@ namespace {
             }
         }
 
-        void DoIt ()
+        GTEST_TEST (Foundation_Database, RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_)
         {
             TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::DoIt"};
+            if (Debug::IsRunningUnderValgrind () and qDebug) {
+                DbgTrace ("Skipping remaining tests cuz too slow"_f);
+                return;
+            }
             using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-and-orm-test.db";
             (void)std::filesystem::remove (dbPath);
@@ -748,21 +759,6 @@ namespace {
 }
 #endif
 
-namespace {
-    GTEST_TEST (Foundation_Database, all)
-    {
-#if qHasFeature_sqlite
-        static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        RegressionTest1_sqlite_ScansDBTest_::DoIt ();
-        if (kRunningValgrind_ and qDebug) {
-            DbgTrace ("Skipping remaining tests cuz too slow"_f);
-            return;
-        }
-        RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt ();
-        RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::DoIt ();
-#endif
-    }
-}
 #endif
 
 int main (int argc, const char* argv[])
