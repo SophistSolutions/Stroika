@@ -958,21 +958,23 @@ namespace {
         template <typename FLOAT_TYPE>
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
-#if 0
-            if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                EXPECT_TRUE (Math::NearlyEquals (
-                    l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
+            if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy || qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy) {
+                auto f = Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull));
+                if (not Math::NearlyEquals (l, f)) {
+                    if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy) {
+                             Stroika::Frameworks::Test::WarnTestIssue (
+                            "ToFloat(ToString({})) not properly roundtripping under valgrind: {}; note isinf({})={}, and isinf(f)={}"_f(l, f, l, isinf (l) , isinf (f)).template As<wstring> ().c_str ());
+                            return;
+                    }
+                    if (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
+                        Stroika::Frameworks::Test::WarnTestIssue (
+                            "ToFloat(ToString({})) not properly roundtripping: {}"_f(l, f).template As<wstring> ().c_str ());
+                        return;
+                    }
+                }
             }
-            else {
-                // From https://en.cppreference.com/w/cpp/types/numeric_limits/digits10
-                //  The value of std::numeric_limits<T>::digits10 is the number of base-10 digits that can be represented by the type T without change,
-                //  that is, any number with this many significant decimal digits can be converted to a value of type T and back to decimal form,
-                //  without change due to rounding or overflow. For base-radix types, it is the value of digits() (digits - 1 for floating-point types)
-                //  multiplied by log 10 radix and rounded down.
-#endif
             EXPECT_TRUE (Math::NearlyEquals (
                 l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
-            //}
         }
     }
     GTEST_TEST (Foundation_Characters, StringNumericConversions_)
