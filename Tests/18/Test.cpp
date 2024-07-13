@@ -85,7 +85,6 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Containers_MultiSet, all)
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_

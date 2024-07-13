@@ -25,7 +25,7 @@ using Test::ArchtypeClasses::SimpleClass;
 
 #if qHasFeature_GoogleTest
 namespace {
-    static void Test1 ()
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, Test1)
     {
         DataStructures::DoublyLinkedList<size_t> someLL;
         constexpr size_t                         kBigSize = 1001;
@@ -79,7 +79,7 @@ namespace {
         EXPECT_TRUE (someLL.GetAt (100) == 6);
     }
 
-    static void Test2 ()
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, Test2)
     {
         DataStructures::DoublyLinkedList<SimpleClass> someLL;
         const size_t                                  kBigSize = 1000;
@@ -140,14 +140,6 @@ namespace {
             //cerr << "i, getat(i-1) = " << i << ", " << someLL.GetAt (i-1).GetValue () << endl;
             EXPECT_TRUE (someLL.GetAt (i - 1) == i);
         }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList all)
-    {
-        Test1 ();
-        Test2 ();
     }
 }
 #endif
