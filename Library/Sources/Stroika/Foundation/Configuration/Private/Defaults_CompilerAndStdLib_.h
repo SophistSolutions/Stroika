@@ -2489,8 +2489,8 @@ int main ()
 /**
  *      Only tested on Ubuntu 24.04 - with default g++ - so g++ version 13 --LGP 2024-07-13
  */
-#ifndef qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy
-#define qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy 1
+#ifndef qCompilerAndStdLib_isinf_Valgrind_Buggy
+#define qCompilerAndStdLib_isinf_Valgrind_Buggy 1
 #endif
 
 /**

@@ -958,15 +958,13 @@ namespace {
         template <typename FLOAT_TYPE>
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
-            if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy || qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy) {
+            if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy || qCompilerAndStdLib_isinf_Valgrind_Buggy) {
                 auto f = Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull));
                 if (not Math::NearlyEquals (l, f)) {
-                    if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy) {
-                        Stroika::Frameworks::Test::WarnTestIssue ("ToFloat(ToString({})) not properly roundtripping under valgrind: {}; note isinf({})={}, and isinf(f)={}"_f(
-                                                                      l, f, l, isinf (l), isinf (f))
-                                                                      .template As<wstring> ()
-                                                                      .c_str ());
-                        return;
+                    if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy) {
+                             Stroika::Frameworks::Test::WarnTestIssue (
+                            "ToFloat(ToString({})) not properly roundtripping under valgrind: {}; note isinf({})={}, and isinf(f)={}"_f(l, f, l, isinf (l) , isinf (f)).template As<wstring> ().c_str ());
+                            return;
                     }
                     if (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
                         Stroika::Frameworks::Test::WarnTestIssue (
