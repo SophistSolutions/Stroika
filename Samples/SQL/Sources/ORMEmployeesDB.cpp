@@ -3,8 +3,8 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <random>
 #include <iostream>
+#include <random>
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Property.h"
@@ -50,14 +50,16 @@ namespace {
     const ConstantProperty<ObjectVariantMapper> Employee::kMapper{[] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
-        mapper.AddClass<Employee> ({
-            {"id"sv, StructFieldMetaInfo{&Employee::ID}},
-            {"Name"sv, StructFieldMetaInfo{&Employee::fName}},
-            {"Age"sv, StructFieldMetaInfo{&Employee::fAge}},
-            {"Address"sv, StructFieldMetaInfo{&Employee::fAddress}},
-            {"Salary"sv, StructFieldMetaInfo{&Employee::fSalary}},
-            {"Still-Employed"sv, StructFieldMetaInfo{&Employee::fStillEmployed}},
-        }, {.fOmitNullEntriesInFromObject = false});
+        mapper.AddClass<Employee> (
+            {
+                {"id"sv, StructFieldMetaInfo{&Employee::ID}},
+                {"Name"sv, StructFieldMetaInfo{&Employee::fName}},
+                {"Age"sv, StructFieldMetaInfo{&Employee::fAge}},
+                {"Address"sv, StructFieldMetaInfo{&Employee::fAddress}},
+                {"Salary"sv, StructFieldMetaInfo{&Employee::fSalary}},
+                {"Still-Employed"sv, StructFieldMetaInfo{&Employee::fStillEmployed}},
+            },
+            {.fOmitNullEntriesInFromObject = false});
         return mapper;
         return mapper;
     }};
@@ -76,12 +78,14 @@ namespace {
     const ConstantProperty<ObjectVariantMapper> Paycheck::kMapper{[] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
-        mapper.AddClass<Paycheck> ({
-            {"id"sv, StructFieldMetaInfo{&Paycheck::ID}},
-            {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
-            {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
-            {"Date"sv, StructFieldMetaInfo{&Paycheck::fDate}},
-        }, {.fOmitNullEntriesInFromObject = false});
+        mapper.AddClass<Paycheck> (
+            {
+                {"id"sv, StructFieldMetaInfo{&Paycheck::ID}},
+                {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
+                {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
+                {"Date"sv, StructFieldMetaInfo{&Paycheck::fDate}},
+            },
+            {.fOmitNullEntriesInFromObject = false});
         return mapper;
     }};
 
@@ -167,7 +171,7 @@ namespace {
                     case 0:
                     case 1: {
                         String name = kNames_[namesDistr (generator)];
-                        cout << "Adding employee {}"_f ( name) << endl;
+                        cout << "Adding employee {}"_f(name) << endl;
                         employeeTableConnection->AddNew (Employee{nullopt, name, ageDistr (generator),
                                                                   kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
                     } break;
@@ -178,7 +182,7 @@ namespace {
                             uniform_int_distribution<int> empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             Employee                      killMe = activeEmps[empDistr (generator)];
                             Assert (killMe.ID.has_value ());
-                            cout << "Firing employee: {}, {}"_f ( *killMe.ID, killMe.fName) << endl;
+                            cout << "Firing employee: {}, {}"_f(*killMe.ID, killMe.fName) << endl;
                             killMe.fStillEmployed = false;
                             employeeTableConnection->Update (killMe);
                         }
@@ -187,7 +191,7 @@ namespace {
             }
             catch (...) {
                 // no need to check for ThreadAbort exception, since Sleep is a cancelation point
-                cout << "Exception processing SQL - this should generally not happen: {}"_f ( current_exception ()) << endl;
+                cout << "Exception processing SQL - this should generally not happen: {}"_f(current_exception ()) << endl;
             }
 
             Sleep (1s); // **cancelation point**
@@ -212,7 +216,7 @@ namespace {
             }
             catch (...) {
                 // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                cout << "Exception processing SQL - this should generally not happen: {}"_f ( current_exception ()) << endl;
+                cout << "Exception processing SQL - this should generally not happen: {}"_f(current_exception ()) << endl;
             }
             Sleep (2s); // **cancelation point**
         }

@@ -3,8 +3,8 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -158,7 +158,7 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
         AssertNotReached (); // RE-USED ID!!! - only detectable at runtime - so exception thrown
     }
     catch (...) {
-        cout << "Note good error message: {}"_f ( current_exception ()) << endl; // silently ignore this here...
+        cout << "Note good error message: {}"_f(current_exception ()) << endl; // silently ignore this here...
     }
 
     /*
