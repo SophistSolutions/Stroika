@@ -134,7 +134,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Containers_Collection, all)
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             using value_type = SimpleClassWithoutComparisonOperators;

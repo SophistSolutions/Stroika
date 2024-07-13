@@ -85,7 +85,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Execution_Signals, all)
     {
         Test1_Direct_ ();
         Test2_Safe_ ();

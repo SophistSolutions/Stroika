@@ -22,15 +22,8 @@ using namespace Stroika::Frameworks;
 
 #if qHasFeature_GoogleTest
 namespace {
-    static void Test1 ()
+    GTEST_TEST (Foundation_DataStructures_STLContainerWrapper, Test1)
     {
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Caching, all)
-    {
-        Test1 ();
     }
 }
 #endif

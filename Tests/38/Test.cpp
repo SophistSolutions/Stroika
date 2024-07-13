@@ -163,7 +163,7 @@ void RegressionTes7_FaledRun_ ()
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, all)
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
 #if qPlatform_POSIX

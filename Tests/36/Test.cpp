@@ -747,7 +747,7 @@ namespace {
 #endif
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Database, all)
     {
 #if qHasFeature_sqlite
         static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();

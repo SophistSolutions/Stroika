@@ -849,7 +849,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Cryptography, all)
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Base64Test::DoRegressionTests_ ();

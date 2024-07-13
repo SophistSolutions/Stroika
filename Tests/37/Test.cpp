@@ -316,7 +316,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Execution_Exceptions, all)
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Test2_ThrowCatchStringException_ ();

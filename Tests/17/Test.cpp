@@ -219,7 +219,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Containers_Mapping, all)
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {

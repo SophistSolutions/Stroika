@@ -28,7 +28,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 #if qHasFeature_GoogleTest
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Containers_SortedKeyedCollection, all)
     {
         using T1               = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
         using T1_Traits        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;

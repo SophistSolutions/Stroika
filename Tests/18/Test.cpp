@@ -86,10 +86,7 @@ namespace {
 
 namespace {
 #if qHasFeature_GoogleTest
-    GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
+    GTEST_TEST (Foundation_Containers_MultiSet, all)
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {

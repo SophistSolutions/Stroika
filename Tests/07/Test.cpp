@@ -415,7 +415,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_DataStructures_LockFree, all)
     {
         forward_list_tests_::test_all ();
     }

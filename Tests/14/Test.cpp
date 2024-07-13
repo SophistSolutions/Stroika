@@ -114,7 +114,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_DataHyperRectangle, all)
     {
         Test1_BasicSparseHyperCubeTest_::RunTests ();
         Test2_BasicDenseHyperCubeTest_::RunTests ();
