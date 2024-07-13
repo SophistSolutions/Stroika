@@ -2449,6 +2449,11 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 
 #endif
 
+// if these same - lose bug define - and use __cpp_lib_to_chars
+#if (!!__cpp_lib_to_chars) != (!qCompilerAndStdLib_to_chars_FP_Buggy)
+#warning "BUGGY BUT __cpp_lib_to_chars vs qCompilerAndStdLib_to_chars_FP_Buggy defs differ "
+#endif
+
 /*
 #include <cassert>
 #include <charconv>
