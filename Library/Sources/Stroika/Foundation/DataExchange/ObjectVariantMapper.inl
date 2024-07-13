@@ -261,52 +261,17 @@ namespace Stroika::Foundation::DataExchange {
     {
         Add (MakeClassSerializer_<CLASS> (fieldDescriptions, mapperOptions, this));
     }
-#if 0
-    template <typename CLASS>
-    inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass)
-    {
-        Add (MakeClassSerializer_<CLASS> (fieldDescriptions, nullopt, furtherDerivedClass, this));
-    }
-    template <typename CLASS>
-    inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                               const FromObjectMapperType<CLASS>&          furtherDerivedFromMapper,
-                                               const ToObjectMapperType<CLASS>&            furtherDerivedToMapper)
-    {
-        AddClass<CLASS> (fieldDescriptions, TypeMappingDetails{furtherDerivedFromMapper, furtherDerivedToMapper});
-    }
-#endif
     template <typename CLASS, typename BASE_CLASS>
-    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const ClassMapperOptions<CLASS>& mapperOptions)
+    void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const ClassMapperOptions<CLASS>& mapperOptions)
     {
-        auto                      baseClassTypeMapper = Lookup_ (typeid (BASE_CLASS));
+        TypeMappingDetails        baseClassTypeMapper = Lookup_ (typeid (BASE_CLASS));
         ClassMapperOptions<CLASS> useOptions          = mapperOptions;
         Require (useOptions.fBeforeFrom == nullptr);
         Require (useOptions.fBeforeTo == nullptr);
         useOptions.fBeforeFrom = baseClassTypeMapper.FromObjectMapper<CLASS> ();
-        useOptions.fBeforeTo   = ToObjectMapper.FromObjectMapper<CLASS> ();
+        useOptions.fBeforeTo   = baseClassTypeMapper.ToObjectMapper<CLASS> ();
         Add (MakeClassSerializer_<CLASS> (fieldDescriptions, useOptions, this));
     }
-#if 0
-    template <typename CLASS, typename BASE_CLASS>
-    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const TypeMappingDetails& furtherDerivedClass)
-    {
-        auto baseClassTypeMapper = Lookup_ (typeid (BASE_CLASS));
-        Add (MakeClassSerializer_<CLASS> (
-            fieldDescriptions,
-            ClassMapperOptions<CLASS>{.fBeforeFrom = baseClassTypeMapper.FromObjectMapper<CLASS> (),
-                                      .fBeforeTo   = baseClassTypeMapper.ToObjectMapper<CLASS> (),
-                                      .fAfterFrom = furtherDerivedClass.fFromObjectMapper ? furtherDerivedClass.FromObjectMapper<CLASS> () : nullptr,
-                                      .fAfterTo = furtherDerivedClass.fToObjectMapper ? furtherDerivedClass.ToObjectMapper<CLASS> () : nullptr},
-            this));
-    }
-    template <typename CLASS, typename BASE_CLASS>
-    inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                                  const FromObjectMapperType<CLASS>&          furtherDerivedFromMapper,
-                                                  const ToObjectMapperType<CLASS>&            furtherDerivedToMapper)
-    {
-        AddSubClass<CLASS, BASE_CLASS> (fieldDescriptions, TypeMappingDetails{furtherDerivedFromMapper, furtherDerivedToMapper});
-    }
-#endif
     template <typename T>
     inline auto ObjectVariantMapper::ToObjectMapper () const -> ToObjectMapperType<T>
     {

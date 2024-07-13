@@ -224,6 +224,13 @@ namespace Stroika::Foundation::DataExchange {
          * 
          *  @see ToGenericObjectMapperType
          *  @see FromObjectMapperType
+         * 
+         *  \note - Design Note:
+         *          the choice of having an T* into parameter instead of returning T. The returning approach is
+         *          in many ways more natural. Doing T *into has the DEFECT, that it requires T to be default constructible (or greatly encourages ;-)).
+         *          But using T* into works with subclassing, whereas its less clear how to make the return T approach work with subclassing.
+         * 
+         *          @todo - perhaps have it RETURN a unique_ptr<T>?
          */
         template <typename T>
         using ToObjectMapperType = function<void (const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
