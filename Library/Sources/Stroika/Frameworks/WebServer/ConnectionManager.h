@@ -211,15 +211,45 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Returns the 'effective' options after applying defaults, not (generally) the original options.
+         *  Here active refers to being currently processed, reading data, writing data or computing answers. This means
+         *  assigned into thread pool for handling.
          */
-        Common::ReadOnlyProperty<const Options&> options;
+        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> activeConnections;
+
+    public:
+        /**
+         *  Get the list of interceptors after the private ConnectionManager interceptors (e.g. router).
+         * @see beforeInterceptors
+         * 
+         *  @see earlyInterceptors, beforeInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
+         * 
+         *  \note ordering is  earlyInterceptors => beforeInterceptors => router => afterInterceptors;
+         */
+        Common::Property<Sequence<Interceptor>> afterInterceptors;
+
+    public:
+        /**
+         *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
+         * 
+         *  @see earlyInterceptors, afterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
+         * 
+         *  \note ordering is  earlyInterceptors => beforeInterceptors => router => afterInterceptors;
+         */
+        Common::Property<Sequence<Interceptor>> beforeInterceptors;
 
     public:
         /**
          *  \brief Return the socket addresses the webserver (connection manager) is listening on (to serve web content).
          */
         Common::ReadOnlyProperty<Traversal::Iterable<SocketAddress>> bindings;
+
+    public:
+        /**
+         *  We need some sort of status flag on connections - saying of they are OPEN or not - or done.
+         *  But this will return just those which are not 'done'. Of course - due to asynchrony,
+         *  by the time one looks at the list, some may already be done.
+         */
+        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> connections;
 
     public:
         /**
@@ -245,24 +275,31 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
-         * 
-         *  @see earlyInterceptors, afterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
-         * 
-         *  \note ordering is  earlyInterceptors => beforeInterceptors => router => afterInterceptors;
+         *  Returns the 'effective' options after applying defaults, not (generally) the original options.
          */
-        Common::Property<Sequence<Interceptor>> beforeInterceptors;
+        Common::ReadOnlyProperty<const Options&> options;
 
     public:
         /**
-         *  Get the list of interceptors after the private ConnectionManager interceptors (e.g. router).
-         * @see beforeInterceptors
-         * 
-         *  @see earlyInterceptors, beforeInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
-         * 
-         *  \note ordering is  earlyInterceptors => beforeInterceptors => router => afterInterceptors;
+         *  For now minimal, but perhaps expand....
          */
-        Common::Property<Sequence<Interceptor>> afterInterceptors;
+        struct Statistics {
+            size_t                            fThreadPoolSize{};
+            Execution::ThreadPool::Statistics fThreadPoolStatistics;
+
+            /**
+             *  See Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
+        };
+
+    public:
+        /**
+         *  \req options.fCollectStatistics set on construction.
+         * 
+         *  Then this can be used to fetch the current thread pool statistics.
+         */
+        Common::ReadOnlyProperty<Statistics> statistics;
 
     public:
         /**
@@ -295,43 +332,6 @@ namespace Stroika::Frameworks::WebServer {
         /**
          */
         nonvirtual void AbortConnection (const shared_ptr<Connection>& conn);
-
-    public:
-        /**
-         *  We need some sort of status flag on connections - saying of they are OPEN or not - or done.
-         *  But this will return just those which are not 'done'. Of course - due to asynchrony,
-         *  by the time one looks at the list, some may already be done.
-         */
-        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> connections;
-
-    public:
-        /**
-         *  Here active refers to being currently processed, reading data, writing data or computing answers. This means
-         *  assigned into thread pool for handling.
-         */
-        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> activeConnections;
-
-    public:
-        /**
-         *  For now minimal, but perhaps expand....
-         */
-        struct Statistics {
-            size_t                            fThreadPoolSize{};
-            Execution::ThreadPool::Statistics fThreadPoolStatistics;
-
-            /**
-             *  See Characters::ToString ()
-             */
-            nonvirtual Characters::String ToString () const;
-        };
-
-    public:
-        /**
-         *  \req options.fCollectStatistics set on construction.
-         * 
-         *  Then this can be used to fetch the current thread pool statistics.
-         */
-        Common::ReadOnlyProperty<Statistics> statistics;
 
     private:
         nonvirtual void DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
