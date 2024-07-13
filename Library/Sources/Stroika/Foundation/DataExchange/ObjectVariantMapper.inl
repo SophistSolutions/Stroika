@@ -268,8 +268,9 @@ namespace Stroika::Foundation::DataExchange {
         ClassMapperOptions<CLASS> useOptions          = mapperOptions;
         Require (useOptions.fBeforeFrom == nullptr);
         Require (useOptions.fBeforeTo == nullptr);
-        useOptions.fBeforeFrom = baseClassTypeMapper.FromObjectMapper<CLASS> ();
-        useOptions.fBeforeTo   = baseClassTypeMapper.ToObjectMapper<CLASS> ();
+        // subtle, but OK - function taking ptr to BASE_CLASS can be used as a function ptr taking SUBCLASS (since ptr always satisfies rule is base_class)
+        useOptions.fBeforeFrom = baseClassTypeMapper.FromObjectMapper<BASE_CLASS> ();
+        useOptions.fBeforeTo   = baseClassTypeMapper.ToObjectMapper<BASE_CLASS> ();
         Add (MakeClassSerializer_<CLASS> (fieldDescriptions, useOptions, this));
     }
     template <typename T>

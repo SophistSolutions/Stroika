@@ -677,7 +677,8 @@ namespace Stroika::Foundation::DataExchange {
          *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const ClassMapperOptions<CLASS>& mapperOptions = {});
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                     const ClassMapperOptions<CLASS>&            mapperOptions = {});
 
     public:
         /**
