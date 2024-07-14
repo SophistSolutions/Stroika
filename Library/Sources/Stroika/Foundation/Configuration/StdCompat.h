@@ -75,7 +75,8 @@ namespace Stroika::Foundation::Configuration::StdCompat {
             _Phony_fmt_iter_for& operator++ ();
             _Phony_fmt_iter_for  operator++ (int);
         };
-        template <class _Ty, class _Context, class _Formatter = _Context::template formatter_type<remove_const_t<_Ty>>>
+        // _Formatter = typename _Context needed for clang++-15 (compiler bug but no BWA declaration for now...BWA in middle of BWA ;-))
+        template <class _Ty, class _Context, class _Formatter = typename _Context::template formatter_type<remove_const_t<_Ty>>>
         concept _Formattable_with = semiregular<_Formatter> && requires (_Formatter& __f, const _Formatter& __cf, _Ty&& __t, _Context __fc,
                                                                          basic_format_parse_context<typename _Context::char_type> __pc) {
             {
