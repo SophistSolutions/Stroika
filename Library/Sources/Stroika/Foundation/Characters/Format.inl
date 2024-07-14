@@ -28,17 +28,13 @@ namespace Stroika::Foundation::Characters {
     template <typename... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (ARGS&&... args) const
     {
-        using Configuration::StdCompat::make_wformat_args;
-        using Configuration::StdCompat::vformat;
-        return vformat (getx_ (), make_wformat_args (args...));
+        return Configuration::StdCompat::vformat (getx_ (), Configuration::StdCompat::make_wformat_args (args...));
     }
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     template <typename... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (const locale& loc, ARGS&&... args) const
     {
-        using Configuration::StdCompat::make_wformat_args;
-        using Configuration::StdCompat::vformat;
-        return vformat (loc, getx_ (), make_wformat_args (args...));
+        return Configuration::StdCompat::vformat (loc, getx_ (), Configuration::StdCompat::make_wformat_args (args...));
     }
 #if qCompilerAndStdLib_vector_constexpr_warning_Buggy
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-constexpr\"");
