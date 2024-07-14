@@ -33,11 +33,13 @@
 
 /**
  *  https://github.com/cplusplus/draft/releases/download/n4868/n4868.pdf (search for __cplusplus)
+ *  c++20
  */
 #define kStrokia_Foundation_Configuration_cplusplus_20 202002L
 
 /**
  *  https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2023/n4950.pdf (search for __cplusplus)
+ *  c++23
  */
 #define kStrokia_Foundation_Configuration_cplusplus_23 202302L
 

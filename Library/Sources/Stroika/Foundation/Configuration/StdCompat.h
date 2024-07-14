@@ -9,6 +9,7 @@
 #include <bit>
 #include <cmath>
 #include <cstdarg>
+#include <format>
 #include <ranges>
 
 // Various kooky constraints
@@ -61,6 +62,34 @@ namespace Stroika::Foundation::Configuration::StdCompat {
     using qStroika_Foundation_Characters_FMT_PREFIX_::vformat;
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args;
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
+
+#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23 || _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23
+    template <class T, class CharT>
+    concept formattable = std::formattable<T, CharT>;
+#else
+    namespace Private_ {
+        template <class _CharT>
+        struct _Phony_fmt_iter_for {
+            using difference_type = ptrdiff_t;
+            _CharT&              operator* () const;
+            _Phony_fmt_iter_for& operator++ ();
+            _Phony_fmt_iter_for  operator++ (int);
+        };
+        template <class _Ty, class _Context, class _Formatter = _Context::template formatter_type<remove_const_t<_Ty>>>
+        concept _Formattable_with = semiregular<_Formatter> && requires (_Formatter& __f, const _Formatter& __cf, _Ty&& __t, _Context __fc,
+                                                                         basic_format_parse_context<typename _Context::char_type> __pc) {
+            {
+                __f.parse (__pc)
+            } -> same_as<typename decltype (__pc)::iterator>;
+            {
+                __cf.format (__t, __fc)
+            } -> same_as<typename _Context::iterator>;
+        };
+    }
+    template <class T, class CharT>
+    concept formattable =
+        Private_::_Formattable_with<remove_reference_t<T>, qStroika_Foundation_Characters_FMT_PREFIX_::basic_format_context<Private_::_Phony_fmt_iter_for<CharT>, CharT>>;
+#endif
 
     /**
      *  Workaround absence of bit_cast in MacOS XCode 14 (which we support with Stroika v3)
