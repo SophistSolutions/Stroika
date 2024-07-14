@@ -138,7 +138,7 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     // This call will generate a REQUIRE assertion error - terminating your program. Don't violate assertions!
     if (false) {
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {":BAD-ARGUMENT", 7}, // almost as good as static type checking to make sure paramter names match call
+            {":BAD-ARGUMENT", 7}, // almost as good as static type checking to make sure parameter names match call
             {":NAME", "James"sv},
             {":AGE", 24},
             {":ADDRESS", "Houston"sv},
@@ -169,10 +169,10 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     Assert ((allNames == Set<String>{"Paul", "Allen", "Kim", "David", "Mark", "James", "Teddy"}));
 
     // Either rollup using SQL, or using C++ functional (Iterable) wrappers.
-    Statement               sumAllSalarys     = conn.mkStatement ("select SUM(SALARY) from EMPLOYEES;"sv);
-    [[maybe_unused]] double sumSalaryUsingSQL = sumAllSalarys.GetAllRows (0)[0].As<double> ();
-    Statement               getAllSalarys     = conn.mkStatement ("select SALARY from EMPLOYEES;"sv);
+    Statement               sumAllSalaries    = conn.mkStatement ("select SUM(SALARY) from EMPLOYEES;"sv);
+    [[maybe_unused]] double sumSalaryUsingSQL = sumAllSalaries.GetAllRows (0)[0].As<double> ();
+    Statement               getAllSalaries    = conn.mkStatement ("select SALARY from EMPLOYEES;"sv);
     [[maybe_unused]] double sumSalaryUsingIterableApply =
-        getAllSalarys.GetAllRows (0).Map<Iterable<double>> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
+        getAllSalaries.GetAllRows (0).Map<Iterable<double>> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
     Assert (Math::NearlyEquals (sumSalaryUsingSQL, sumSalaryUsingIterableApply));
 }
