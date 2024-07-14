@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Configuration/StdCompat.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
@@ -267,14 +268,14 @@ namespace Stroika::Foundation::DataExchange {
         /**
         * @todo add formattable concept apply to T
          */
-        template <typename T>
+        template <Configuration::StdCompat::formattable<wchar_t> T>
         static const FromObjectMapperType<T> kTraceFromObjectMapper;
 
     public:
         /**
         * @todo add formattable concept apply to T
          */
-        template <typename T>
+        template <Configuration::StdCompat::formattable<wchar_t> T>
         static const ToObjectMapperType<T> kTraceToObjectMapper;
 
     public:

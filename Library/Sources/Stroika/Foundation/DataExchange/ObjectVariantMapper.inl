@@ -198,26 +198,17 @@ namespace Stroika::Foundation::DataExchange {
      ******************************** ObjectVariantMapper ***************************
      ********************************************************************************
      */
-
-    /**
-        * @todo add formattable concept apply to T
-         */
-    template <typename T>
+    template <Configuration::StdCompat::formattable<wchar_t> T>
     inline const ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::kTraceFromObjectMapper =
         [] (const ObjectVariantMapper& mapper, const T* objOfType) -> VariantValue {
         DbgTrace ("FromObject<{}>(mapper, {}) called", typeid (T), objOfType);
         return {};
     };
-
-    /**
-        * @todo add formattable concept apply to T
-         */
-    template <typename T>
+    template <Configuration::StdCompat::formattable<wchar_t> T>
     inline const ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::kTraceToObjectMapper =
         [] (const ObjectVariantMapper& mapper, const VariantValue& d, T* into) -> void {
         DbgTrace ("ToObject<{}>(mapper, {}, {}) called", typeid (T), d, into);
     };
-
     inline ObjectVariantMapper::TypesRegistry ObjectVariantMapper::GetTypeMappingRegistry () const
     {
         return fTypeMappingRegistry_;
