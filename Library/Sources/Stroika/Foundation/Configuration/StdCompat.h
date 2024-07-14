@@ -61,6 +61,7 @@ namespace Stroika::Foundation::Configuration::StdCompat {
     using qStroika_Foundation_Characters_FMT_PREFIX_::vformat;
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args;
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
+    using qStroika_Foundation_Characters_FMT_PREFIX_::basic_format_parse_context;
 
 #if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23 || _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23
     template <class T, class CharT>

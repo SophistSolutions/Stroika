@@ -455,7 +455,6 @@ namespace {
  ********************************************************************************
  */
 const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
-    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
     mapper.AddClass<Info::PhysicalRAMDetailsType> ({
         {"Available"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fAvailable}},

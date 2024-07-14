@@ -1734,7 +1734,6 @@ namespace {
  ********************************************************************************
  */
 const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
-    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> ());
     mapper.AddCommonType<optional<ProcessType::RunStatus>> ();

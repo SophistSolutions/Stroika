@@ -564,7 +564,6 @@ namespace {
  ********************************************************************************
  */
 const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
-    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Type> ());
     mapper.AddCommonType<optional<Interface::Type>> ();

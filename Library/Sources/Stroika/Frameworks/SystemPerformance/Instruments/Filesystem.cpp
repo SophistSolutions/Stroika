@@ -996,7 +996,6 @@ namespace {
  ********************************************************************************
  */
 const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
-    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
     mapper.AddCommonType<optional<BlockDeviceKind>> ();

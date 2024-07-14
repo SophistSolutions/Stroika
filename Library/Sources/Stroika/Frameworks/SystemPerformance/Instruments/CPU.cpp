@@ -445,7 +445,6 @@ namespace {
  ********************************************************************************
  */
 const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
-    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
     mapper.AddClass<Info::LoadAverage> ({
