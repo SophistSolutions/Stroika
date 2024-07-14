@@ -30,7 +30,7 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  Grab the meta info associated with a pointer to member - its type info, and its pointer to member address.
          * 
-         *  \note - unlike eariler versions of Stroika which used std::offsetof() (or similar) - and therefore only
+         *  \note - unlike earlier versions of Stroika which used std::offsetof() (or similar) - and therefore only
          *          worked (guaranteed) on std-layout objects, this should always work portably.
          */
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  Given an object of the same type as the StructFieldMetaInfo was constructed with (or a subclass), return a pointer
          *  to the field value corresponding to the field this StructFieldMetaInfo was constructed with. Note this is not checked
-         *  since no way to check subclassof from type_index.
+         *  since no way to check subclass-of from type_index.
          * 
          *  Respect const of the OWNING_OBJECT, propagating that to this functions result.
          * 
