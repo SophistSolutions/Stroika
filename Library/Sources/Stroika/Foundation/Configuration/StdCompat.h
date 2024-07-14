@@ -9,7 +9,6 @@
 #include <bit>
 #include <cmath>
 #include <cstdarg>
-#include <format>
 #include <ranges>
 
 // Various kooky constraints
@@ -133,7 +132,7 @@ namespace Stroika::Foundation::Configuration::StdCompat {
      *  workaround qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
      */
     template <typename T>
-#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23
+#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23 || _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23
     constexpr
 #else
     inline
