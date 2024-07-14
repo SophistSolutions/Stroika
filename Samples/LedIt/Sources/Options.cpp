@@ -48,7 +48,7 @@ namespace {
 
     struct Options_Storage_IMPL_ {
         Options_Storage_IMPL_ ()
-            : fOptionsFile_{L"AppSettings"sv,
+            : fOptionsFile_{"AppSettings"sv,
                             [] () -> ObjectVariantMapper {
                                 ObjectVariantMapper mapper;
 
@@ -61,25 +61,25 @@ namespace {
                                 mapper.AddCommonType<Memory::BLOB> ();
 
                                 mapper.AddClass<SearchParameters> ({
-                                    {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
-                                    {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
-                                    {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
-                                    {L"CaseSensativeSearch", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
-                                    {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
+                                    {"MatchString"sv, StructFieldMetaInfo{&SearchParameters::fMatchString}},
+                                    {"WrapSearch"sv, StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
+                                    {"WholeWordSearch"sv, StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
+                                    {"CaseSensativeSearch"sv, StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
+                                    {"RecentMatchStrings"sv, StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
                                 });
 
                                 mapper.AddClass<Options_> ({
-                                    {L"DockBarState", StructFieldMetaInfo{&Options_::fDockBarState}},
-                                        {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
-                                        {L"SmartCutAndPaste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
-                                        {L"WrapToWindow", StructFieldMetaInfo{&Options_::fWrapToWindow}},
-                                        {L"ShowHiddenText", StructFieldMetaInfo{&Options_::fShowHiddenText}},
-                                        {L"ShowParagraphGlyphs", StructFieldMetaInfo{&Options_::fShowParagraphGlyphs}},
-                                        {L"ShowTabGlyphs", StructFieldMetaInfo{&Options_::fShowTabGlyphs}},
-                                        {L"ShowSpaceGlyphs", StructFieldMetaInfo{&Options_::fShowSpaceGlyphs}},
+                                    {"DockBarState"sv, StructFieldMetaInfo{&Options_::fDockBarState}},
+                                        {"Search-Parameters"sv, StructFieldMetaInfo{&Options_::fSearchParameters}},
+                                        {"SmartCutAndPaste"sv, StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
+                                        {"WrapToWindow"sv, StructFieldMetaInfo{&Options_::fWrapToWindow}},
+                                        {"ShowHiddenText"sv, StructFieldMetaInfo{&Options_::fShowHiddenText}},
+                                        {"ShowParagraphGlyphs"sv, StructFieldMetaInfo{&Options_::fShowParagraphGlyphs}},
+                                        {"ShowTabGlyphs"sv, StructFieldMetaInfo{&Options_::fShowTabGlyphs}},
+                                        {"ShowSpaceGlyphs"sv, StructFieldMetaInfo{&Options_::fShowSpaceGlyphs}},
 #if qPlatform_Windows
-                                        {L"CheckFileAssocAtStartup", StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
-                                        {L"DefaultNewDocFont", StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
+                                        {"CheckFileAssocAtStartup"sv, StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
+                                        {"DefaultNewDocFont"sv, StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
 #endif
                                 });
                                 return mapper;
@@ -87,7 +87,7 @@ namespace {
 
                             OptionsFile::kDefaultUpgrader,
 
-                            OptionsFile::mkFilenameMapper (L"LedIt"sv)}
+                            OptionsFile::mkFilenameMapper ("LedIt"sv)}
             , fActualCurrentConfigData_{fOptionsFile_.Read<Options_> (Options_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
