@@ -170,15 +170,15 @@ namespace Stroika::Foundation::DataExchange {
      *              ObjectVariantMapper::StructFieldInfo{ "Enabled"sv, StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
      *              ObjectVariantMapper::StructFieldInfo{ "Last-Synchronized-At"sv, StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
      *              ObjectVariantMapper::StructFieldInfo{ "This-HR-ContactID-To-SharedContactID-Map"sv, StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
-     *          });
+     *          }
+     *          , {.fOmitNullEntriesInFromObject = true});
      *
-     *          // OR Equivalently
+     *          // OR Equivalently (but more commonly/briefly)
      *          mapper.AddClass<SharedContactsConfig_> ({
-     *              { "Enabled"sv, StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
-     *              { "Last-Synchronized-At"sv, StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
-     *              { "This-HR-ContactID-To-SharedContactID-Map"sv, StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
-     *          },
-     *          {.fOmitNullEntriesInFromObject = false});
+     *              { "Enabled"sv, &SharedContactsConfig_::fEnabled },
+     *              { "Last-Synchronized-At"sv, &SharedContactsConfig_::fLastSynchronizedAt },
+     *              { "This-HR-ContactID-To-SharedContactID-Map"sv, &SharedContactsConfig_::fThisPHRsIDToSharedContactID },
+     *          });
      *
      *          SharedContactsConfig_   tmp;
      *          tmp.fEnabled = enabled;
@@ -621,9 +621,9 @@ namespace Stroika::Foundation::DataExchange {
          *
          *          // register each of your mappable (even private) types
          *          mapper.AddClass<MyConfig_> ({
-         *              { "fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_} },        // use default parser
+         *              { "fURL1_", &SharedContactsConfig_::fURL1_ },        // use default parser
          *              // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
-         *              { "fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
+         *              { "fURL2_", &SharedContactsConfig_::fURL2_, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
          *          });
          *
          *          MyConfig_   tmp;
@@ -657,10 +657,10 @@ namespace Stroika::Foundation::DataExchange {
          *          };
          *          ObjectVariantMapper mapper;
          *          mapper.AddClass<BaseObj_> ({
-         *              {"fVV1", StructFieldMetaInfo{&BaseObj_, fVV1}},
+         *              {"fVV1", &BaseObj_, fVV1},
          *          });
          *          mapper.AddSubClass<Derived_, BaseObj_> ({
-         *              {"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
+         *              {"fVV2", &Derived_::fVV2},
          *          });
          *      \endcode
          * 
@@ -1152,13 +1152,18 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          *  \par Example Usage
-         *       \code
+         *      \code
+         *          {"Int-1"sv, &SharedContactsConfig_::fInt1},
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
          *          ObjectVariantMapper::StructFieldInfo{"Int-1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          ObjectVariantMapper::StructFieldInfo{"BasicArray1"sv, StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+         *          {"BasicArray1"sv, &SharedContactsConfig_::fBasicArray1, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
          *      \endcode
          */
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo);

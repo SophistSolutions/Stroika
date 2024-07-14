@@ -68,10 +68,10 @@ namespace {
         mapper.AddCommonType<Common::GUID> (VariantValue::eBLOB);
 
         mapper.AddClass<Device> ({
-            {"id"sv, StructFieldMetaInfo{&Device::id}},
-            {"name"sv, StructFieldMetaInfo{&Device::name}},
-            {"openPorts"sv, StructFieldMetaInfo{&Device::openPorts}},
-            {"hardwareAddresses"sv, StructFieldMetaInfo{&Device::hardwareAddresses}},
+            {"id"sv, &Device::id},
+            {"name"sv, &Device::name},
+            {"openPorts"sv, &Device::openPorts},
+            {"hardwareAddresses"sv, &Device::hardwareAddresses},
         });
 
         return mapper;

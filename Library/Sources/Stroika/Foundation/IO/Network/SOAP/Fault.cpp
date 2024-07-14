@@ -30,8 +30,8 @@ optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream::Ptr<byte>& 
         Registry mapper;
         mapper.AddCommonType<String> ();
         mapper.AddCommonReader_Class<Fault> ({
-            {Name{"faultcode"sv}, StructFieldMetaInfo{&Fault::faultcode}},
-            {Name{"faultstring"sv}, StructFieldMetaInfo{&Fault::faultstring}},
+            {Name{"faultcode"sv}, &Fault::faultcode},
+            {Name{"faultstring"sv}, &Fault::faultstring},
         });
         return mapper;
     }();

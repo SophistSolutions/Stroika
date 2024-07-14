@@ -89,9 +89,9 @@ const DataExchange::ObjectVariantMapper JSON::Patch::OperationItemType::kMapper 
     mapper.AddCommonType<OperationType> ();
     mapper.AddCommonType<optional<VariantValue>> ();
     mapper.AddClass<OperationItemType> ({
-        {"op"sv, StructFieldMetaInfo{&OperationItemType::op}},
-        {"path"sv, StructFieldMetaInfo{&OperationItemType::path}},
-        {"value"sv, StructFieldMetaInfo{&OperationItemType::value}},
+        {"op"sv, &OperationItemType::op},
+        {"path"sv, &OperationItemType::path},
+        {"value"sv, &OperationItemType::value},
     });
     return mapper;
 }();

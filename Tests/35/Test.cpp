@@ -70,8 +70,8 @@ namespace {
                        [] () -> ObjectVariantMapper {
                            ObjectVariantMapper mapper;
                            mapper.AddClass<MyData_> ({
-                               {"Enabled"sv, StructFieldMetaInfo{&MyData_::fEnabled}},
-                               {"Last-Synchronized-At"sv, StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
+                               {"Enabled"sv, &MyData_::fEnabled},
+                               {"Last-Synchronized-At"sv, &MyData_::fLastSynchronizedAt},
                            });
                            return mapper;
                        }(),
@@ -95,8 +95,8 @@ namespace {
                             [] () -> ObjectVariantMapper {
                                 ObjectVariantMapper mapper;
                                 mapper.AddClass<MyData_> ({
-                                    {"Enabled"sv, StructFieldMetaInfo{&MyData_::fEnabled}},
-                                    {"Last-Synchronized-At"sv, StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
+                                    {"Enabled"sv, &MyData_::fEnabled},
+                                    {"Last-Synchronized-At"sv, &MyData_::fLastSynchronizedAt},
                                 });
                                 return mapper;
                             }(),

@@ -571,43 +571,43 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
     mapper.AddCommonType<Set<Interface::Status>> ();
     mapper.AddCommonType<optional<Set<Interface::Status>>> ();
     mapper.AddClass<InterfaceInfo::Interface> ({
-        {"Interface-Internal-ID"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fInternalInterfaceID}},
-        {"Friendly-Name"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fFriendlyName}},
-        {"Description"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fDescription}},
-        {"Interface-Type"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fType}},
-        {"Hardware-Address"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fHardwareAddress}},
-        {"Interface-Status"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fStatus}},
-        {"Transmit-Speed-Baud"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fTransmitSpeedBaud}},
-        {"Receive-Link-Speed-Baud"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fReceiveLinkSpeedBaud}},
+        {"Interface-Internal-ID"sv, &InterfaceInfo::Interface::fInternalInterfaceID},
+        {"Friendly-Name"sv, &InterfaceInfo::Interface::fFriendlyName},
+        {"Description"sv, &InterfaceInfo::Interface::fDescription},
+        {"Interface-Type"sv, &InterfaceInfo::Interface::fType},
+        {"Hardware-Address"sv, &InterfaceInfo::Interface::fHardwareAddress},
+        {"Interface-Status"sv, &InterfaceInfo::Interface::fStatus},
+        {"Transmit-Speed-Baud"sv, &InterfaceInfo::Interface::fTransmitSpeedBaud},
+        {"Receive-Link-Speed-Baud"sv, &InterfaceInfo::Interface::fReceiveLinkSpeedBaud},
         // TODO ADD:
         //Containers::Set<InternetAddress>            fBindings;
     });
     mapper.AddClass<IOStatistics> ({
-        {"Total-Bytes-Sent"sv, StructFieldMetaInfo{&IOStatistics::fTotalBytesSent}},
-        {"Total-Bytes-Received"sv, StructFieldMetaInfo{&IOStatistics::fTotalBytesReceived}},
-        {"Bytes-Per-Second-Sent"sv, StructFieldMetaInfo{&IOStatistics::fBytesPerSecondSent}},
-        {"Bytes-Per-Second-Received"sv, StructFieldMetaInfo{&IOStatistics::fBytesPerSecondReceived}},
-        {"Total-TCP-Segments"sv, StructFieldMetaInfo{&IOStatistics::fTotalTCPSegments}},
-        {"TCP-Segments-Per-Second"sv, StructFieldMetaInfo{&IOStatistics::fTCPSegmentsPerSecond}},
-        {"Total-TCP-Retransmitted-Segments"sv, StructFieldMetaInfo{&IOStatistics::fTotalTCPRetransmittedSegments}},
-        {"TCP-Retransmitted-Segments-Per-Second"sv, StructFieldMetaInfo{&IOStatistics::fTCPRetransmittedSegmentsPerSecond}},
-        {"Total-Packets-Sent"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsSent}},
-        {"Total-Packets-Received"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsReceived}},
-        {"Packets-Per-Second-Sent"sv, StructFieldMetaInfo{&IOStatistics::fPacketsPerSecondSent}},
-        {"Packets-Per-Second-Received"sv, StructFieldMetaInfo{&IOStatistics::fPacketsPerSecondReceived}},
-        {"Total-Errors"sv, StructFieldMetaInfo{&IOStatistics::fTotalErrors}},
-        {"Total-Packets-Dropped"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsDropped}},
+        {"Total-Bytes-Sent"sv, &IOStatistics::fTotalBytesSent},
+        {"Total-Bytes-Received"sv, &IOStatistics::fTotalBytesReceived},
+        {"Bytes-Per-Second-Sent"sv, &IOStatistics::fBytesPerSecondSent},
+        {"Bytes-Per-Second-Received"sv, &IOStatistics::fBytesPerSecondReceived},
+        {"Total-TCP-Segments"sv, &IOStatistics::fTotalTCPSegments},
+        {"TCP-Segments-Per-Second"sv, &IOStatistics::fTCPSegmentsPerSecond},
+        {"Total-TCP-Retransmitted-Segments"sv, &IOStatistics::fTotalTCPRetransmittedSegments},
+        {"TCP-Retransmitted-Segments-Per-Second"sv, &IOStatistics::fTCPRetransmittedSegmentsPerSecond},
+        {"Total-Packets-Sent"sv, &IOStatistics::fTotalPacketsSent},
+        {"Total-Packets-Received"sv, &IOStatistics::fTotalPacketsReceived},
+        {"Packets-Per-Second-Sent"sv, &IOStatistics::fPacketsPerSecondSent},
+        {"Packets-Per-Second-Received"sv, &IOStatistics::fPacketsPerSecondReceived},
+        {"Total-Errors"sv, &IOStatistics::fTotalErrors},
+        {"Total-Packets-Dropped"sv, &IOStatistics::fTotalPacketsDropped},
     });
     mapper.AddClass<InterfaceInfo> ({
-        {"Interface"sv, StructFieldMetaInfo{&InterfaceInfo::fInterface}},
-        {"IO-Statistics"sv, StructFieldMetaInfo{&InterfaceInfo::fIOStatistics}},
+        {"Interface"sv, &InterfaceInfo::fInterface},
+        {"IO-Statistics"sv, &InterfaceInfo::fIOStatistics},
     });
     mapper.AddCommonType<Collection<InterfaceInfo>> ();
     mapper.AddCommonType<optional<Collection<InterfaceInfo>>> ();
     mapper.AddCommonType<optional<IOStatistics>> ();
     mapper.AddClass<Info> ({
-        {"Interfaces"sv, StructFieldMetaInfo{&Info::fInterfaces}},
-        {"Summary-IO-Statistics"sv, StructFieldMetaInfo{&Info::fSummaryIOStatistics}},
+        {"Interfaces"sv, &Info::fInterfaces},
+        {"Summary-IO-Statistics"sv, &Info::fSummaryIOStatistics},
     });
     return mapper;
 }();

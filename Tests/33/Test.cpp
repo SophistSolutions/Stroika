@@ -109,10 +109,10 @@ namespace {
 
         // register each of your mappable (even private) types
         mapper.AddClass<SharedContactsConfig_> ({
-            {"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
-            {"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
-            {"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
-            {"This-HR-ContactID-To-SharedContactID-Bijection", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID2}},
+            {"Enabled", &SharedContactsConfig_::fEnabled},
+            {"Last-Synchronized-At", &SharedContactsConfig_::fLastSynchronizedAt},
+            {"This-HR-ContactID-To-SharedContactID-Map", &SharedContactsConfig_::fThisPHRsIDToSharedContactID},
+            {"This-HR-ContactID-To-SharedContactID-Bijection", &SharedContactsConfig_::fThisPHRsIDToSharedContactID2},
         });
 
         bool                  newEnabled = true;
@@ -169,10 +169,10 @@ namespace {
 
         // register each of your mappable (even private) types
         mapper.AddClass<SharedContactsConfig_> ({
-            {"Int1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {"Int2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
-            {"Int3", StructFieldMetaInfo{&SharedContactsConfig_::fInt3}},
-            {"Int4", StructFieldMetaInfo{&SharedContactsConfig_::fInt4}},
+            {"Int1", &SharedContactsConfig_::fInt1},
+            {"Int2", &SharedContactsConfig_::fInt2},
+            {"Int3", &SharedContactsConfig_::fInt3},
+            {"Int4", &SharedContactsConfig_::fInt4},
         });
 
         SharedContactsConfig_ tmp;
@@ -225,8 +225,8 @@ namespace {
         mapper.AddCommonType<DiscreteRange<int>> ();
 
         mapper.AddClass<SharedContactsConfig_> ({
-            {"fIntRange", StructFieldMetaInfo{&SharedContactsConfig_::fIntRange}},
-            {"fDiscIntRange2", StructFieldMetaInfo{&SharedContactsConfig_::fDiscIntRange2}},
+            {"fIntRange", &SharedContactsConfig_::fIntRange},
+            {"fDiscIntRange2", &SharedContactsConfig_::fDiscIntRange2},
         });
 
         SharedContactsConfig_ tmp;
@@ -287,7 +287,7 @@ namespace {
 
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations<Fred> (Fred_NAMES));
             mapper.AddClass<SharedContactsConfig_> ({
-                {"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+                {"fEnum1", &SharedContactsConfig_::fEnum1},
             });
 
             SharedContactsConfig_ tmp;
@@ -317,7 +317,7 @@ namespace {
 
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Fred_NAMES)));
             mapper.AddClass<SharedContactsConfig_> ({
-                {"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+                {"fEnum1", &SharedContactsConfig_::fEnum1},
             });
 
             SharedContactsConfig_ tmp;
@@ -362,10 +362,10 @@ namespace {
 
         ObjectVariantMapper mapper;
         mapper.AddClass<SharedContactsConfig_> ({
-            {"fDuration1", StructFieldMetaInfo{&SharedContactsConfig_::fDuration1}},
-            {"fDateTime1", StructFieldMetaInfo{&SharedContactsConfig_::fDateTime1}},
-            {"fDate1", StructFieldMetaInfo{&SharedContactsConfig_::fDate1}},
-            {"fTimeOfDay1", StructFieldMetaInfo{&SharedContactsConfig_::fTimeOfDay1}},
+            {"fDuration1", &SharedContactsConfig_::fDuration1},
+            {"fDateTime1", &SharedContactsConfig_::fDateTime1},
+            {"fDate1", &SharedContactsConfig_::fDate1},
+            {"fTimeOfDay1", &SharedContactsConfig_::fTimeOfDay1},
         });
 
         SharedContactsConfig_ tmp;
@@ -410,7 +410,7 @@ namespace {
 
         ObjectVariantMapper mapper;
         mapper.AddClass<SharedContactsConfig_> ({
-            {L"fVV1", StructFieldMetaInfo{&SharedContactsConfig_::fVV1}},
+            {L"fVV1", &SharedContactsConfig_::fVV1},
         });
 
         SharedContactsConfig_ tmp;
@@ -482,15 +482,15 @@ namespace {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<tuple<int, String>> ());
 
         mapper.AddClass<SharedContactsConfig_> ({
-            {"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
-            {"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
-            {"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
-            {"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}},
-            {"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}},
-            {"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
-            {"fPair1_", StructFieldMetaInfo{&SharedContactsConfig_::fPair1_}},
-            {"fTuple2", StructFieldMetaInfo{&SharedContactsConfig_::fTuple2_}},
+            {"fInt1", &SharedContactsConfig_::fInt1},
+            {"fInt2", &SharedContactsConfig_::fInt2},
+            {"fMapping1", &SharedContactsConfig_::fMapping1},
+            {"fSequence1", &SharedContactsConfig_::fSequence1},
+            {"fBasicArray1", &SharedContactsConfig_::fBasicArray1},
+            {"fSet1_", &SharedContactsConfig_::fSet1_},
+            {"fVector1_", &SharedContactsConfig_::fVector1_},
+            {"fPair1_", &SharedContactsConfig_::fPair1_},
+            {"fTuple2", &SharedContactsConfig_::fTuple2_},
         });
 
         SharedContactsConfig_ tmp;
@@ -540,10 +540,10 @@ namespace {
 
         ObjectVariantMapper mapper;
         mapper.AddClass<BaseObj_> ({
-            {"fVV1", StructFieldMetaInfo{&BaseObj_::fVV1}},
+            {"fVV1", &BaseObj_::fVV1},
         });
         mapper.AddSubClass<Derived_, BaseObj_> ({
-            {"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
+            {"fVV2", &Derived_::fVV2},
         });
 
         Derived_ tmp;
@@ -602,15 +602,15 @@ namespace {
         mapper.AddCommonType<vector<int>> ();
 
         mapper.AddClass<SharedContactsConfig_> ({
-            {"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
-            {"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
-            {"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
-            {"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
-            {"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}, ObjectVariantMapper::MakeCommonSerializer<Set<int>> ()},
-            {"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
-            {"fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
-            {"fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
+            {"fInt1", &SharedContactsConfig_::fInt1},
+            {"fInt2", &SharedContactsConfig_::fInt2},
+            {"fMapping1", &SharedContactsConfig_::fMapping1},
+            {"fSequence1", &SharedContactsConfig_::fSequence1},
+            {"fBasicArray1", &SharedContactsConfig_::fBasicArray1, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+            {"fSet1_", &SharedContactsConfig_::fSet1_, ObjectVariantMapper::MakeCommonSerializer<Set<int>> ()},
+            {"fVector1_", &SharedContactsConfig_::fVector1_},
+            {"fURL1_", &SharedContactsConfig_::fURL1_, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
+            {"fURL2_", &SharedContactsConfig_::fURL2_, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
         });
 
         SharedContactsConfig_ tmp;
@@ -732,7 +732,7 @@ namespace {
 
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_EnumAsInt<Fred> ());
             mapper.AddClass<SharedContactsConfig_> ({
-                {"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+                {"fEnum1", &SharedContactsConfig_::fEnum1},
             });
 
             SharedContactsConfig_ tmp;
@@ -785,9 +785,9 @@ namespace {
             mapper.AddCommonType<IO::Network::CIDR> ();
             mapper.AddCommonType<optional<IO::Network::CIDR>> ();
             mapper.AddClass<T> ({
-                {"ia", StructFieldMetaInfo{&T::ia}},
-                {"cidr", StructFieldMetaInfo{&T::cidr}},
-                {"mediaType", StructFieldMetaInfo{&T::mediaType}},
+                {"ia", &T::ia},
+                {"cidr", &T::cidr},
+                {"mediaType", &T::mediaType},
             });
             T g1{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::V6::kAddrAny, 64}, DataExchange::InternetMediaTypes::kJPEG};
             EXPECT_TRUE (mapper.ToObject<T> (mapper.FromObject (g1)) == g1);

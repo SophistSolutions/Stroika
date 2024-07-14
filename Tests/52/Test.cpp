@@ -1072,15 +1072,15 @@ namespace {
             mapper.AddCommonType<SpectrumType> ();
             mapper.AddCommonType<PersistenceScanAuxDataType> ();
             mapper.AddClass<ScanDetails_> ({
-                {"Scan-ID"sv, StructFieldMetaInfo{&ScanDetails_::fScanID}},
-                {"Scan-Start"sv, StructFieldMetaInfo{&ScanDetails_::fScanStart}},
-                {"Scan-End"sv, StructFieldMetaInfo{&ScanDetails_::fScanEnd}},
-                {"Scan-Kind"sv, StructFieldMetaInfo{&ScanDetails_::fScanKind}},
-                {"Scan-Label"sv, StructFieldMetaInfo{&ScanDetails_::fScanLabel}},
-                {"Raw-Spectrum"sv, StructFieldMetaInfo{&ScanDetails_::fRawSpectrum}},
-                {"Aux-Data"sv, StructFieldMetaInfo{&ScanDetails_::fAuxData}},
-                {"Background-ID"sv, StructFieldMetaInfo{&ScanDetails_::fUseBackground}},
-                {"Reference-ID"sv, StructFieldMetaInfo{&ScanDetails_::fUseReference}},
+                {"Scan-ID"sv, &ScanDetails_::fScanID},
+                {"Scan-Start"sv, &ScanDetails_::fScanStart},
+                {"Scan-End"sv, &ScanDetails_::fScanEnd},
+                {"Scan-Kind"sv, &ScanDetails_::fScanKind},
+                {"Scan-Label"sv, &ScanDetails_::fScanLabel},
+                {"Raw-Spectrum"sv, &ScanDetails_::fRawSpectrum},
+                {"Aux-Data"sv, &ScanDetails_::fAuxData},
+                {"Background-ID"sv, &ScanDetails_::fUseBackground},
+                {"Reference-ID"sv, &ScanDetails_::fUseReference},
             });
             return mapper;
         }

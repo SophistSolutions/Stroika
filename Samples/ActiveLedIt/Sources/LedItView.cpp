@@ -51,15 +51,15 @@ namespace {
                                 mapper.AddCommonType<vector<Led_tString>> ();
 
                                 mapper.AddClass<SearchParameters> ({
-                                    {"MatchString"sv, StructFieldMetaInfo{&SearchParameters::fMatchString}},
-                                    {"WrapSearch"sv, StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
-                                    {"WholeWordSearch"sv, StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
-                                    {"CaseSensativeSearch"sv, StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
-                                    {"RecentMatchStrings"sv, StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
+                                    {"MatchString"sv, &SearchParameters::fMatchString},
+                                    {"WrapSearch"sv, &SearchParameters::fWrapSearch},
+                                    {"WholeWordSearch"sv, &SearchParameters::fWholeWordSearch},
+                                    {"CaseSensativeSearch"sv, &SearchParameters::fCaseSensativeSearch},
+                                    {"RecentMatchStrings"sv, &SearchParameters::fRecentFindStrings},
                                 });
 
                                 mapper.AddClass<Options_> ({
-                                    {"Search-Parameters"sv, StructFieldMetaInfo{&Options_::fSearchParameters}},
+                                    {"Search-Parameters"sv, &Options_::fSearchParameters},
                                 });
                                 return mapper;
                             }(),

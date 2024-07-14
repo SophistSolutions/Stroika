@@ -61,25 +61,22 @@ namespace {
                                 mapper.AddCommonType<Memory::BLOB> ();
 
                                 mapper.AddClass<SearchParameters> ({
-                                    {"MatchString"sv, StructFieldMetaInfo{&SearchParameters::fMatchString}},
-                                    {"WrapSearch"sv, StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
-                                    {"WholeWordSearch"sv, StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
-                                    {"CaseSensativeSearch"sv, StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
-                                    {"RecentMatchStrings"sv, StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
+                                    {"MatchString"sv, &SearchParameters::fMatchString},
+                                    {"WrapSearch"sv, &SearchParameters::fWrapSearch},
+                                    {"WholeWordSearch"sv, &SearchParameters::fWholeWordSearch},
+                                    {"CaseSensativeSearch"sv, &SearchParameters::fCaseSensativeSearch},
+                                    {"RecentMatchStrings"sv, &SearchParameters::fRecentFindStrings},
                                 });
 
                                 mapper.AddClass<Options_> ({
-                                    {"DockBarState"sv, StructFieldMetaInfo{&Options_::fDockBarState}},
-                                        {"Search-Parameters"sv, StructFieldMetaInfo{&Options_::fSearchParameters}},
-                                        {"SmartCutAndPaste"sv, StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
-                                        {"WrapToWindow"sv, StructFieldMetaInfo{&Options_::fWrapToWindow}},
-                                        {"ShowHiddenText"sv, StructFieldMetaInfo{&Options_::fShowHiddenText}},
-                                        {"ShowParagraphGlyphs"sv, StructFieldMetaInfo{&Options_::fShowParagraphGlyphs}},
-                                        {"ShowTabGlyphs"sv, StructFieldMetaInfo{&Options_::fShowTabGlyphs}},
-                                        {"ShowSpaceGlyphs"sv, StructFieldMetaInfo{&Options_::fShowSpaceGlyphs}},
+                                    {"DockBarState"sv, &Options_::fDockBarState}, {"Search-Parameters"sv, &Options_::fSearchParameters},
+                                        {"SmartCutAndPaste"sv, &Options_::fSmartCutAndPaste}, {"WrapToWindow"sv, &Options_::fWrapToWindow},
+                                        {"ShowHiddenText"sv, &Options_::fShowHiddenText},
+                                        {"ShowParagraphGlyphs"sv, &Options_::fShowParagraphGlyphs},
+                                        {"ShowTabGlyphs"sv, &Options_::fShowTabGlyphs}, {"ShowSpaceGlyphs"sv, &Options_::fShowSpaceGlyphs},
 #if qPlatform_Windows
-                                        {"CheckFileAssocAtStartup"sv, StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
-                                        {"DefaultNewDocFont"sv, StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
+                                        {"CheckFileAssocAtStartup"sv, &Options_::fCheckFileAssocAtStartup},
+                                        {"DefaultNewDocFont"sv, &Options_::fDefaultNewDocFont},
 #endif
                                 });
                                 return mapper;

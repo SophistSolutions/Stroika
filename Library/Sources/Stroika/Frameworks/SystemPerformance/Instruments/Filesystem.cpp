@@ -1000,42 +1000,42 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
     mapper.AddCommonType<optional<BlockDeviceKind>> ();
     mapper.AddClass<IOStatsType> ({
-        {"Bytes"sv, StructFieldMetaInfo{&IOStatsType::fBytesTransfered}},
-        {"Q-Length"sv, StructFieldMetaInfo{&IOStatsType::fQLength}},
-        {"In-Use-%"sv, StructFieldMetaInfo{&IOStatsType::fInUsePercent}},
-        {"Total-Transfers"sv, StructFieldMetaInfo{&IOStatsType::fTotalTransfers}},
+        {"Bytes"sv, &IOStatsType::fBytesTransfered},
+        {"Q-Length"sv, &IOStatsType::fQLength},
+        {"In-Use-%"sv, &IOStatsType::fInUsePercent},
+        {"Total-Transfers"sv, &IOStatsType::fTotalTransfers},
     });
     mapper.AddCommonType<optional<IOStatsType>> ();
     mapper.AddClass<DiskInfoType> ({
-        {"Persistence-Volume-ID"sv, StructFieldMetaInfo{&DiskInfoType::fPersistenceVolumeID}},
-        {"Device-Kind"sv, StructFieldMetaInfo{&DiskInfoType::fDeviceKind}},
-        {"Size"sv, StructFieldMetaInfo{&DiskInfoType::fSizeInBytes}},
-        {"Read-IO-Stats"sv, StructFieldMetaInfo{&DiskInfoType::fReadIOStats}},
-        {"Write-IO-Stats"sv, StructFieldMetaInfo{&DiskInfoType::fWriteIOStats}},
-        {"Combined-IO-Stats"sv, StructFieldMetaInfo{&DiskInfoType::fCombinedIOStats}},
+        {"Persistence-Volume-ID"sv, &DiskInfoType::fPersistenceVolumeID},
+        {"Device-Kind"sv, &DiskInfoType::fDeviceKind},
+        {"Size"sv, &DiskInfoType::fSizeInBytes},
+        {"Read-IO-Stats"sv, &DiskInfoType::fReadIOStats},
+        {"Write-IO-Stats"sv, &DiskInfoType::fWriteIOStats},
+        {"Combined-IO-Stats"sv, &DiskInfoType::fCombinedIOStats},
     });
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();
     mapper.AddCommonType<Set<filesystem::path>> ();
     mapper.AddCommonType<optional<Set<filesystem::path>>> ();
     mapper.AddClass<MountedFilesystemInfoType> ({
-        {"Device-Kind"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceKind}},
-        {"Filesystem-Type"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fFileSystemType}},
-        {"Device-Name"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceOrVolumeName}},
-        {"On-Physical-Drives"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fOnPhysicalDrive}},
-        {"Volume-ID"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fVolumeID}},
-        {"Total-Size"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fSizeInBytes}},
-        {"Available-Size"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fAvailableSizeInBytes}},
-        {"Used-Size"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fUsedSizeInBytes}},
-        {"Read-IO-Stats"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fReadIOStats}},
-        {"Write-IO-Stats"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fWriteIOStats}},
-        {"Combined-IO-Stats"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fCombinedIOStats}},
+        {"Device-Kind"_k, &MountedFilesystemInfoType::fDeviceKind},
+        {"Filesystem-Type"_k, &MountedFilesystemInfoType::fFileSystemType},
+        {"Device-Name"_k, &MountedFilesystemInfoType::fDeviceOrVolumeName},
+        {"On-Physical-Drives"_k, &MountedFilesystemInfoType::fOnPhysicalDrive},
+        {"Volume-ID"_k, &MountedFilesystemInfoType::fVolumeID},
+        {"Total-Size"_k, &MountedFilesystemInfoType::fSizeInBytes},
+        {"Available-Size"_k, &MountedFilesystemInfoType::fAvailableSizeInBytes},
+        {"Used-Size"_k, &MountedFilesystemInfoType::fUsedSizeInBytes},
+        {"Read-IO-Stats"_k, &MountedFilesystemInfoType::fReadIOStats},
+        {"Write-IO-Stats"_k, &MountedFilesystemInfoType::fWriteIOStats},
+        {"Combined-IO-Stats"_k, &MountedFilesystemInfoType::fCombinedIOStats},
     });
     mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
     mapper.AddCommonType<Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>> ();
     mapper.AddClass<Info> ({
-        {"Disks"_k, StructFieldMetaInfo{&Info::fDisks}},
-        {"Mounted-Filesystems"_k, StructFieldMetaInfo{&Info::fMountedFilesystems}},
+        {"Disks"_k, &Info::fDisks},
+        {"Mounted-Filesystems"_k, &Info::fMountedFilesystems},
     });
     return mapper;
 }();

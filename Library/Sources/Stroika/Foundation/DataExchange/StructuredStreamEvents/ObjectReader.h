@@ -203,8 +203,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *          Registry mapper;
      *          mapper.AddCommonType<String> ();
      *          mapper.AddClass<Person_> ({
-     *              { Name { "FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
-     *              { Name { "LastName" }, StructFieldMetaInfo{&Person_::lastName} },
+     *              { Name { "FirstName" }, &Person_::firstName },
+     *              { Name { "LastName" }, &Person_::lastName },
      *          });
      *          Person_ p;
      *          IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ReadDownToReader> (mapper.MakeContextReader (&p)));
@@ -933,19 +933,19 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *      Registry registry;
      *      registry.AddCommonType<String> ();
      *      registry.AddClass<Person_> ({
-     *          { Name { "FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
-     *          { Name { "LastName" }, StructFieldMetaInfo{&Person_::lastName} },
+     *          { Name { "FirstName" }, &Person_::firstName },
+     *          { Name { "LastName" }, &Person_::lastName },
      *      });
      *      registry.AddCommonType<vector<Person_>> ();
      *      registry.Add<vector<Person_>> (Registry::ConvertReaderToFactory <vector<Person_>, RepeatedElementReader<vector<Person_>>> ());
      *      registry.AddClass<Address_> ({
-     *          { Name { "city" }, StructFieldMetaInfo{&Address_::city} },
-     *          { Name { "state" }, StructFieldMetaInfo{&Address_::state} },
+     *          { Name { "city" }, &Address_::city },
+     *          { Name { "state" }, &Address_::state },
      *      });
      *      registry.Add<vector<Address_>> (Registry::ConvertReaderToFactory <vector<Address_>, RepeatedElementReader<vector<Address_>>> ());
      *      registry.AddClass<Data_> ({
-     *          { Name { "person" }, StructFieldMetaInfo{&Data_::people} },
-     *          { Name { "address" }, StructFieldMetaInfo{&Data_::addresses} },
+     *          { Name { "person" }, &Data_::people },
+     *          { Name { "address" }, &Data_::addresses },
      *      });
      *      Data_   data;
      *      Registry::IConsumerDelegateToContext ctx { registry, make_shared<ReadDownToReader> (registry.MakeContextReader (&data)) };

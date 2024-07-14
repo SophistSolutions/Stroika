@@ -40,9 +40,9 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
             });
         m.AddCommonType<optional<SEQ_OR_MAP_>> ();
         m.AddClass<Request> ({
-            {"jsonrpc"sv, StructFieldMetaInfo{&Request::jsonrpc}},
-            {"params"sv, StructFieldMetaInfo{&Request::params}},
-            {"id"sv, StructFieldMetaInfo{&Request::id}},
+            {"jsonrpc"sv, &Request::jsonrpc},
+            {"params"sv, &Request::params},
+            {"id"sv, &Request::id},
         });
         return m;
     }();
@@ -56,9 +56,9 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
         using namespace Foundation::DataExchange;
         ObjectVariantMapper m;
         m.AddClass<Request> ({
-            {"code"sv, StructFieldMetaInfo{&Error::code}},
-            {"message"sv, StructFieldMetaInfo{&Error::message}},
-            {"data"sv, StructFieldMetaInfo{&Error::data}},
+            {"code"sv, &Error::code},
+            {"message"sv, &Error::message},
+            {"data"sv, &Error::data},
         });
         return m;
     }();
@@ -76,10 +76,10 @@ namespace Stroika::Frameworks::WebService::JSONRPC {
         // todo - could 'subclass' this to assure exactly one of result or error but not both, or maybe redo as
         // variant object so can be one thing or other?
         m.AddClass<Response> ({
-            {"jsonrpc"sv, StructFieldMetaInfo{&Response::jsonrpc}},
-            {"result"sv, StructFieldMetaInfo{&Response::result}},
-            {"error"sv, StructFieldMetaInfo{&Response::error}},
-            {"id"sv, StructFieldMetaInfo{&Response::id}},
+            {"jsonrpc"sv, &Response::jsonrpc},
+            {"result"sv, &Response::result},
+            {"error"sv, &Response::error},
+            {"id"sv, &Response::id},
         });
         return m;
     }();

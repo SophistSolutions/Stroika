@@ -53,8 +53,8 @@ AppSettings::Private_::MoreOptionsData_Storage_IMPL_::MoreOptionsData_Storage_IM
                   [] () -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
                       mapper.AddClass<MoreOptionsData_> ({
-                          {"Enabled"sv, StructFieldMetaInfo{&MoreOptionsData_::fEnabled}},
-                          {"Last-Synchronized-At"sv, StructFieldMetaInfo{&MoreOptionsData_::fLastSynchronizedAt}},
+                          {"Enabled"sv, &MoreOptionsData_::fEnabled},
+                          {"Last-Synchronized-At"sv, &MoreOptionsData_::fLastSynchronizedAt},
                       });
                       return mapper;
                   }(),

@@ -52,12 +52,12 @@ namespace {
         mapper.AddCommonType<optional<int>> ();
         mapper.AddClass<Employee> (
             {
-                {"id"sv, StructFieldMetaInfo{&Employee::ID}},
-                {"Name"sv, StructFieldMetaInfo{&Employee::fName}},
-                {"Age"sv, StructFieldMetaInfo{&Employee::fAge}},
-                {"Address"sv, StructFieldMetaInfo{&Employee::fAddress}},
-                {"Salary"sv, StructFieldMetaInfo{&Employee::fSalary}},
-                {"Still-Employed"sv, StructFieldMetaInfo{&Employee::fStillEmployed}},
+                {"id"sv, &Employee::ID},
+                {"Name"sv, &Employee::fName},
+                {"Age"sv, &Employee::fAge},
+                {"Address"sv, &Employee::fAddress},
+                {"Salary"sv, &Employee::fSalary},
+                {"Still-Employed"sv, &Employee::fStillEmployed},
             },
             {.fOmitNullEntriesInFromObject = false});
         return mapper;
@@ -80,10 +80,10 @@ namespace {
         mapper.AddCommonType<optional<int>> ();
         mapper.AddClass<Paycheck> (
             {
-                {"id"sv, StructFieldMetaInfo{&Paycheck::ID}},
-                {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
-                {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
-                {"Date"sv, StructFieldMetaInfo{&Paycheck::fDate}},
+                {"id"sv, &Paycheck::ID},
+                {"Employee-Ref"sv, &Paycheck::fEmployeeRef},
+                {"Amount"sv, &Paycheck::fAmount},
+                {"Date"sv, &Paycheck::fDate},
             },
             {.fOmitNullEntriesInFromObject = false});
         return mapper;

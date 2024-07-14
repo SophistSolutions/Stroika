@@ -448,19 +448,18 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
     ObjectVariantMapper mapper;
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
     mapper.AddClass<Info::LoadAverage> ({
-        {"1-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f1MinuteAve}},
-        {"5-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f5MinuteAve}},
-        {"15-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f15MinuteAve}},
+        {"1-minute"_k, &Info::LoadAverage::f1MinuteAve},
+        {"5-minute"_k, &Info::LoadAverage::f5MinuteAve},
+        {"15-minute"_k, &Info::LoadAverage::f15MinuteAve},
     });
     mapper.AddCommonType<optional<Info::LoadAverage>> ();
 #endif
     mapper.AddClass<Info> ({
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-        {"Load-Average"_k, StructFieldMetaInfo{&Info::fLoadAverage}},
+        {"Load-Average"_k, &Info::fLoadAverage},
 #endif
-            {"Total-Logical-Cores"_k, StructFieldMetaInfo{&Info::fTotalLogicalCores}},
-            {"Total-Process-CPU-Usage"_k, StructFieldMetaInfo{&Info::fTotalProcessCPUUsage}},
-            {"Total-CPU-Usage"_k, StructFieldMetaInfo{&Info::fTotalCPUUsage}}, {"Run-Q-Length"_k, StructFieldMetaInfo{&Info::fRunQLength}},
+            {"Total-Logical-Cores"_k, &Info::fTotalLogicalCores}, {"Total-Process-CPU-Usage"_k, &Info::fTotalProcessCPUUsage},
+            {"Total-CPU-Usage"_k, &Info::fTotalCPUUsage}, {"Run-Q-Length"_k, &Info::fRunQLength},
     });
     return mapper;
 }();

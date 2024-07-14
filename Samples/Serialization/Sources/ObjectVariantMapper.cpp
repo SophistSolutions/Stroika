@@ -46,7 +46,7 @@ namespace {
 
         // Add the types to the mapper, which it will need
         mapper.AddClass<MyType2Serialize1_> ({
-            {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+            {"Enabled"sv, &MyType2Serialize1_::fEnabled},
         });
 
         // Create a test object to serialize
@@ -107,9 +107,9 @@ namespace {
         // The rest must be explicitly added to the registry before use.
 
         mapper.AddClass<SharedContactsConfig_> ({
-            {"Enabled"sv, StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
-            {"Last-Synchronized-At"sv, StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
-            {"This-HR-ContactID-To-SharedContactID-Map"sv, StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
+            {"Enabled"sv, &SharedContactsConfig_::fEnabled},
+            {"Last-Synchronized-At"sv, &SharedContactsConfig_::fLastSynchronizedAt},
+            {"This-HR-ContactID-To-SharedContactID-Map"sv, &SharedContactsConfig_::fThisPHRsIDToSharedContactID},
         });
 
         // fill in a sample object to write
@@ -173,7 +173,7 @@ namespace {
 
         // Add the types to the mapper, which it will need
         mapper.AddClass<MyType2Serialize1_> ({
-            {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+            {"Enabled"sv, &MyType2Serialize1_::fEnabled},
         });
 
         auto trySerializing = [] (const ObjectVariantMapper& mapper, auto obj) {
@@ -199,7 +199,7 @@ namespace {
         // Now a fancier mapper
         mapper.AddClass<MyType2Serialize1_> (
             {
-                {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+                {"Enabled"sv, &MyType2Serialize1_::fEnabled},
             },
             {.fAfterFrom = [] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
                 // value will be merged with base mapper value

@@ -312,13 +312,13 @@ namespace {
         registry.AddCommonType<optional<String>> ();
 
         registry.AddCommonReader_Class<Person_> ({
-            {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-            {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
-            {Name{"MiddleName"}, StructFieldMetaInfo{&Person_::middleName}},
+            {Name{"FirstName"}, &Person_::firstName},
+            {Name{"LastName"}, &Person_::lastName},
+            {Name{"MiddleName"}, &Person_::middleName},
         });
         registry.AddCommonReader_Class<Appointment_> ({
-            {Name{"When"}, StructFieldMetaInfo{&Appointment_::when}},
-            {Name{"WithWhom"}, StructFieldMetaInfo{&Appointment_::withWhom}},
+            {Name{"When"}, &Appointment_::when},
+            {Name{"WithWhom"}, &Appointment_::withWhom},
         });
         registry.AddCommonType<vector<Appointment_>> (Name{"Appointment"});
 
@@ -388,8 +388,8 @@ namespace {
         registry.AddCommonType<String> ();
 
         registry.AddCommonReader_Class<Person_> ({
-            {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-            {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+            {Name{"FirstName"}, &Person_::firstName},
+            {Name{"LastName"}, &Person_::lastName},
         });
 
         vector<Person_> people;
@@ -481,10 +481,10 @@ namespace {
 
         mapper.AddCommonType<String> ();
 
-        mapper.AddCommonReader_Class<ManagedObjectReference> ({{Name{"type", Name::eAttribute}, StructFieldMetaInfo{&ManagedObjectReference::type}},
-                                                               {Name{Name::eValue}, StructFieldMetaInfo{&ManagedObjectReference::value}}});
+        mapper.AddCommonReader_Class<ManagedObjectReference> (
+            {{Name{"type", Name::eAttribute}, &ManagedObjectReference::type}, {Name{Name::eValue}, &ManagedObjectReference::value}});
         mapper.AddCommonReader_Class<ObjectContent> ({
-            {Name{"obj"}, StructFieldMetaInfo{&ObjectContent::obj}}
+            {Name{"obj"}, &ObjectContent::obj}
             /// wrong - must be mapping of this --metaInfo.Add ("propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
         });
 
@@ -523,8 +523,8 @@ namespace {
         ObjectReader::Registry mapper;
         mapper.AddCommonType<String> ();
         mapper.AddCommonReader_Class<Person_> ({
-            {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-            {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+            {Name{"FirstName"}, &Person_::firstName},
+            {Name{"LastName"}, &Person_::lastName},
         });
         Person_                                  p;
         ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
@@ -592,20 +592,20 @@ namespace {
         });
         registry.AddCommonType<optional<GenderType_>> ();
         registry.AddCommonReader_Class<Person_> ({
-            {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-            {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
-            {Name{"Gender"}, StructFieldMetaInfo{&Person_::gender}},
+            {Name{"FirstName"}, &Person_::firstName},
+            {Name{"LastName"}, &Person_::lastName},
+            {Name{"Gender"}, &Person_::gender},
         });
         registry.AddCommonType<vector<Person_>> ();
         registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
         registry.AddCommonReader_Class<Address_> ({
-            {Name{"city"}, StructFieldMetaInfo{&Address_::city}},
-            {Name{"state"}, StructFieldMetaInfo{&Address_::state}},
+            {Name{"city"}, &Address_::city},
+            {Name{"state"}, &Address_::state},
         });
         registry.Add<vector<Address_>> (ObjectReader::RepeatedElementReader<vector<Address_>>::AsFactory ());
         registry.AddCommonReader_Class<Data_> ({
-            {Name{"person"}, StructFieldMetaInfo{&Data_::people}},
-            {Name{"address"}, StructFieldMetaInfo{&Data_::addresses}},
+            {Name{"person"}, &Data_::people},
+            {Name{"address"}, &Data_::addresses},
         });
 
         Data_ data;
@@ -659,8 +659,8 @@ namespace {
                 static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
                     using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
                     return Registry::MakeClassReader<KVPType_> ({
-                        {Name{"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
-                        {Name{Name::eValue}, StructFieldMetaInfo{&KVPType_::fValue}},
+                        {Name{"Tuner", Name::eAttribute}, &KVPType_::fKey},
+                        {Name{Name::eValue}, &KVPType_::fValue},
                     });
                 }();
                 return make_shared<RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>>> (fValuePtr_, sEltReader_);
@@ -771,14 +771,14 @@ namespace {
         registry.Add<TECPowerConsumptionStatsType_> (TunerMappingReader_<CurrentType_>::AsFactory ());
         registry.AddCommonType<optional<TECPowerConsumptionStatsType_>> ();
         registry.AddCommonReader_Class<SensorDataType_> ({
-            {Name{"ActiveLaser"}, StructFieldMetaInfo{&SensorDataType_::ActiveLaser}},
-            {Name{"DetectorTemperature"}, StructFieldMetaInfo{&SensorDataType_::DetectorTemperature}},
-            {Name{"OpticsTemperature"}, StructFieldMetaInfo{&SensorDataType_::OpticsTemperature}},
-            {Name{"ExternalTemperature1"}, StructFieldMetaInfo{&SensorDataType_::ExternalTemperature1}},
-            {Name{"LaserTemperature"}, StructFieldMetaInfo{&SensorDataType_::LaserTemperatures}},
-            {Name{"LaserCurrent"}, StructFieldMetaInfo{&SensorDataType_::LaserCurrents}},
-            {Name{"MirrorTemperature"}, StructFieldMetaInfo{&SensorDataType_::MirrorTemperatures}},
-            {Name{"TECPowerConsumptionStats"}, StructFieldMetaInfo{&SensorDataType_::TECPowerConsumptionStats}},
+            {Name{"ActiveLaser"}, &SensorDataType_::ActiveLaser},
+            {Name{"DetectorTemperature"}, &SensorDataType_::DetectorTemperature},
+            {Name{"OpticsTemperature"}, &SensorDataType_::OpticsTemperature},
+            {Name{"ExternalTemperature1"}, &SensorDataType_::ExternalTemperature1},
+            {Name{"LaserTemperature"}, &SensorDataType_::LaserTemperatures},
+            {Name{"LaserCurrent"}, &SensorDataType_::LaserCurrents},
+            {Name{"MirrorTemperature"}, &SensorDataType_::MirrorTemperatures},
+            {Name{"TECPowerConsumptionStats"}, &SensorDataType_::TECPowerConsumptionStats},
         });
 
         SensorDataType_ data;
@@ -956,8 +956,8 @@ namespace {
                 static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
                     using KVPType_ = SpectrumType_::value_type;
                     return Registry::MakeClassReader<KVPType_> ({
-                        {Name{"waveNumber", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
-                        {Name{"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
+                        {Name{"waveNumber", Name::eAttribute}, &KVPType_::fKey},
+                        {Name{"intensity", Name::eAttribute}, &KVPType_::fValue},
                     });
                 }();
                 return make_shared<RepeatedElementReader<SpectrumType_>> (fValuePtr_, sEltReader_);
@@ -979,8 +979,8 @@ namespace {
                 static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
                     using KVPType_ = KeyValuePair<String, String>;
                     return Registry::MakeClassReader<KVPType_> ({
-                        {Name{"Key", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
-                        {Name{"Value", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
+                        {Name{"Key", Name::eAttribute}, &KVPType_::fKey},
+                        {Name{"Value", Name::eAttribute}, &KVPType_::fValue},
                     });
                 }();
                 return make_shared<RepeatedElementReader<Mapping<String, String>>> (fValuePtr_, sEltReader_);
@@ -1002,12 +1002,12 @@ namespace {
         registry.AddCommonType<optional<SpectrumType_>> ();
         registry.Add<PersistenceScanAuxDataType_> (StringKVStringReader::AsFactory ());
         registry.AddCommonReader_Class<PersistentScanDetailsType_> ({
-            {Name{"ScanID"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanID}},
-            {Name{"ScanStart"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanStart}},
-            {Name{"ScanEnd"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanEnd}},
-            {Name{"ScanLabel"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanLabel}},
-            {Name{"RawSpectrum"}, StructFieldMetaInfo{&PersistentScanDetailsType_::RawSpectrum}},
-            {Name{"AuxData"}, StructFieldMetaInfo{&PersistentScanDetailsType_::AuxData}},
+            {Name{"ScanID"}, &PersistentScanDetailsType_::ScanID},
+            {Name{"ScanStart"}, &PersistentScanDetailsType_::ScanStart},
+            {Name{"ScanEnd"}, &PersistentScanDetailsType_::ScanEnd},
+            {Name{"ScanLabel"}, &PersistentScanDetailsType_::ScanLabel},
+            {Name{"RawSpectrum"}, &PersistentScanDetailsType_::RawSpectrum},
+            {Name{"AuxData"}, &PersistentScanDetailsType_::AuxData},
         });
         PersistentScanDetailsType_ data;
         {
@@ -1063,10 +1063,10 @@ namespace {
         ObjectReader::Registry registry;
         registry.AddCommonType<double> ();
         registry.AddCommonReader_Class<Values_> ({
-            {Name{"valueMissing"}, StructFieldMetaInfo{&Values_::valueMissing}},
-            {Name{"valueExplicitGood"}, StructFieldMetaInfo{&Values_::valueExplicitGood}},
-            {Name{"valueExplicitNAN1"}, StructFieldMetaInfo{&Values_::valueExplicitNAN1}},
-            {Name{"valueExplicitNAN2"}, StructFieldMetaInfo{&Values_::valueExplicitNAN2}},
+            {Name{"valueMissing"}, &Values_::valueMissing},
+            {Name{"valueExplicitGood"}, &Values_::valueExplicitGood},
+            {Name{"valueExplicitNAN1"}, &Values_::valueExplicitNAN1},
+            {Name{"valueExplicitNAN2"}, &Values_::valueExplicitNAN2},
         });
         {
             Values_ values{};
@@ -1171,8 +1171,8 @@ namespace {
 
         static const ObjectReader::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
             ObjectReader::Registry::MakeClassReader<PerTunerFactorySettingsType_> ({
-                {Name{L"MirrorOperationFrequency"}, StructFieldMetaInfo{&PerTunerFactorySettingsType_::MirrorOperationFrequency}},
-                {Name{L"MirrorResonantFrequency"}, StructFieldMetaInfo{&PerTunerFactorySettingsType_::MirrorResonantFrequency}},
+                {Name{"MirrorOperationFrequency"}, &PerTunerFactorySettingsType_::MirrorOperationFrequency},
+                {Name{"MirrorResonantFrequency"}, &PerTunerFactorySettingsType_::MirrorResonantFrequency},
             });
 
         /*
@@ -1199,7 +1199,7 @@ namespace {
                     {
                         using KVPType_                                       = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
                         static const ReaderFromVoidStarFactory kTunerReader_ = Registry::MakeClassReader<KVPType_> ({
-                            {Name{"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                            {Name{"Tuner", Name::eAttribute}, &KVPType_::fKey},
                         });
                         Sequence<MixinEltTraits>               tmp;
                         tmp += MixinEltTraits{kTunerReader_,
@@ -1244,7 +1244,7 @@ namespace {
         registry.Add<PerTunerFactorySettingsType_> (k_PerTunerFactorySettingsType_ReaderFactory_);
         registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>> (TunerMappingReader_::AsFactory ());
         registry.AddCommonReader_Class<FactorySettingsType_> ({
-            {Name{"Tuners"}, StructFieldMetaInfo{&FactorySettingsType_::Tuners}},
+            {Name{"Tuners"}, &FactorySettingsType_::Tuners},
         });
         FactorySettingsType_ data;
         {
@@ -1284,7 +1284,7 @@ namespace {
         registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
         registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());
         registry.AddCommonReader_Class<Values_> ({
-            {Name{"r"}, StructFieldMetaInfo{&Values_::r}},
+            {Name{"r"}, &Values_::r},
         });
         {
             Values_                                  values{};
@@ -1338,14 +1338,14 @@ namespace {
                 pair<GenderType_, String>{GenderType_::Female, "Female"},
             });
         registry.AddCommonReader_Class<Person_> ({
-            {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-            {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
-            {Name{"Gender"}, StructFieldMetaInfo{&Person_::gender}, kGenderType_Reader_},
+            {Name{"FirstName"}, &Person_::firstName},
+            {Name{"LastName"}, &Person_::lastName},
+            {Name{"Gender"}, &Person_::gender, kGenderType_Reader_},
         });
         registry.AddCommonType<vector<Person_>> ();
         registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
         registry.AddCommonReader_Class<Data_> ({
-            {Name{"person"}, StructFieldMetaInfo{&Data_::people}},
+            {Name{"person"}, &Data_::people},
         });
 
         Data_ data;
@@ -1405,14 +1405,14 @@ namespace {
             return result;
         });
         registry.AddCommonReader_Class<Person_> ({
-            {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-            {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
-            {Name{"Gender"}, StructFieldMetaInfo{&Person_::gender}},
+            {Name{"FirstName"}, &Person_::firstName},
+            {Name{"LastName"}, &Person_::lastName},
+            {Name{"Gender"}, &Person_::gender},
         });
         registry.AddCommonType<vector<Person_>> ();
         registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
         registry.AddCommonReader_Class<Data_> ({
-            {Name{"person"}, StructFieldMetaInfo{&Data_::people}},
+            {Name{"person"}, &Data_::people},
         });
 
         Data_ data;

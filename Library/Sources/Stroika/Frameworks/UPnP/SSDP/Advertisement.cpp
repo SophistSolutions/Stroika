@@ -53,11 +53,11 @@ ObjectVariantMapper Advertisement::kMapperGetter_ ()
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();
     mapper.AddClass<Advertisement> ({
-        {"Alive"sv, StructFieldMetaInfo{&Advertisement::fAlive}},
-        {"USN"sv, StructFieldMetaInfo{&Advertisement::fUSN}},
-        {"Server"sv, StructFieldMetaInfo{&Advertisement::fServer}},
-        {"Target"sv, StructFieldMetaInfo{&Advertisement::fTarget}},
-        {"RawHeaders"sv, StructFieldMetaInfo{&Advertisement::fRawHeaders}},
+        {"Alive"sv, &Advertisement::fAlive},
+        {"USN"sv, &Advertisement::fUSN},
+        {"Server"sv, &Advertisement::fServer},
+        {"Target"sv, &Advertisement::fTarget},
+        {"RawHeaders"sv, &Advertisement::fRawHeaders},
     });
     return mapper;
 };

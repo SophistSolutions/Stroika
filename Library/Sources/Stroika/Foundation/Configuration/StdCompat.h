@@ -51,6 +51,7 @@ namespace Stroika::Foundation::Configuration::StdCompat {
      *  To allow interop between std::format and fmt(fmtlib)::format, publish the names into the namespace 'Stroika::Foundation::Configuration::StdCompat' and use those.
      *  Lose this once I can fully depend upon std::format... --LGP 2024-03-12
      */
+    using qStroika_Foundation_Characters_FMT_PREFIX_::basic_format_parse_context;
     using qStroika_Foundation_Characters_FMT_PREFIX_::format;
     using qStroika_Foundation_Characters_FMT_PREFIX_::format_args;
     using qStroika_Foundation_Characters_FMT_PREFIX_::format_error;
@@ -61,7 +62,6 @@ namespace Stroika::Foundation::Configuration::StdCompat {
     using qStroika_Foundation_Characters_FMT_PREFIX_::vformat;
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args;
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
-    using qStroika_Foundation_Characters_FMT_PREFIX_::basic_format_parse_context;
 
 #if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23 || _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23
     template <class T, class CharT>
