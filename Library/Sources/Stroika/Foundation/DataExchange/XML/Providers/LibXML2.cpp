@@ -667,6 +667,56 @@ namespace {
 }
 
 namespace {
+    struct MyLibXML2StructuredErrGrabber_ {
+        xmlParserCtxtPtr                               fCtx;
+        shared_ptr<Execution::RuntimeErrorException<>> fCapturedException;
+
+        MyLibXML2StructuredErrGrabber_ (xmlParserCtxtPtr ctx)
+            : fCtx{ctx}
+        {
+            xmlCtxtSetErrorHandler (ctx, xmlStructuredErrorFunc_, this);
+        }
+        ~MyLibXML2StructuredErrGrabber_ ()
+        {
+            xmlCtxtSetErrorHandler (fCtx, nullptr, nullptr);
+        }
+        MyLibXML2StructuredErrGrabber_& operator= (const MyLibXML2StructuredErrGrabber_&) = delete;
+
+        void ThrowIf ()
+        {
+            if (fCapturedException != nullptr) {
+                Execution::Throw (*fCapturedException);
+            }
+        }
+
+    private:
+        static void xmlStructuredErrorFunc_ (void* userData, const xmlError* error)
+        {
+            // nice to throw but this is 'C' land, so probably not safe
+            MyLibXML2StructuredErrGrabber_* useThis = reinterpret_cast<MyLibXML2StructuredErrGrabber_*> (userData);
+            // save first error
+            if (useThis->fCapturedException == nullptr) {
+                switch (error->level) {
+                    case XML_ERR_NONE:
+                        AssertNotReached ();
+                        break;
+                    case XML_ERR_WARNING:
+                        DbgTrace ("Ignore warnings for now: {}"_f, String::FromUTF8 (error->message));
+                        break;
+                    case XML_ERR_ERROR:
+                    case XML_ERR_FATAL:
+                        DbgTrace ("Capturing Error {}"_f, String::FromUTF8 (error->message));
+                        useThis->fCapturedException = make_shared<DataExchange::BadFormatException> (
+                            "Failure Parsing XML: {}, line {}"_f(String::FromUTF8 (error->message), error->line),
+                            static_cast<unsigned int> (error->line), nullopt, nullopt);
+                        break;
+                }
+            }
+        };
+    };
+}
+
+namespace {
     struct DocRep_ : ILibXML2DocRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
@@ -681,15 +731,18 @@ namespace {
             else {
                 xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (nullptr, nullptr, nullptr, 0, "in-stream.xml" /*filename*/);
                 Execution::ThrowIfNull (ctxt);
-                [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-                byte                    buf[1024]; // intentionally uninitialized
+                [[maybe_unused]] auto&&        cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+                MyLibXML2StructuredErrGrabber_ errCatcher{ctxt};
+                byte                           buf[1024]; // intentionally uninitialized
                 while (auto n = in.Read (span{buf}).size ()) {
                     if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                         xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
                                                                 // return 1;
                     }
+                    errCatcher.ThrowIf ();
                 }
                 xmlParseChunk (ctxt, nullptr, 0, 1); // indicate the parsing is finished
+                errCatcher.ThrowIf ();
                 if (not ctxt->wellFormed) {
                     Execution::Throw (BadFormatException{"not well formed"sv}); // get good error message and throw that BadFormatException
                 }
@@ -935,8 +988,9 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         SAXReader_       handler{*callback};
         xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
         Execution::ThrowIfNull (ctxt);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-        byte                    buf[1024];
+        [[maybe_unused]] auto&&        cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+        MyLibXML2StructuredErrGrabber_ errCatcher{ctxt};
+        byte                           buf[1024];
         if (seek2) {
             useInput.Seek (*seek2);
         }
@@ -944,7 +998,9 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                 xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
             }
+            errCatcher.ThrowIf ();
         }
         xmlParseChunk (ctxt, nullptr, 0, 1);
+        errCatcher.ThrowIf ();
     }
 }

@@ -10,6 +10,7 @@ static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libx
 
 #include <libxml/parser.h>
 #include <libxml/schemasInternals.h>
+#include <libxml/xmlerror.h>
 #include <libxml/xmlschemas.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
