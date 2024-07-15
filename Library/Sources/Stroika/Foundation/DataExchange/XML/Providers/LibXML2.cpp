@@ -831,7 +831,7 @@ namespace {
             TraceContextBumper ctx{"LibXML2::Doc::Write"};
             AssertNotNull (fLibRep_);
             xmlBufferPtr            xmlBuf          = xmlBufferCreate ();
-            [[maybe_unused]] auto&& cleanup1         = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
+            [[maybe_unused]] auto&& cleanup1        = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
             constexpr char          kTxtEncoding_[] = "UTF-8";
             int                     useOptions      = XML_SAVE_AS_XML;
             if (options.fPrettyPrint) {
