@@ -144,7 +144,8 @@
 			"resumable": "cpp",
 			"stacktrace": "cpp",
 			"__verbose_abort": "cpp",
-			"xmlexports.h": "c"
+			"xmlexports.h": "c",
+			"expected": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {

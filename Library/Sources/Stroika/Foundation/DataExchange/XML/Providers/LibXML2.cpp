@@ -5,6 +5,9 @@
 
 #include <list>
 
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -826,12 +829,25 @@ namespace {
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
             TraceContextBumper ctx{"LibXML2::Doc::Write"};
-            xmlChar*           xmlBuffer{nullptr};
-            int                bufferSize{};
-            xmlDocDumpFormatMemoryEnc (fLibRep_, &xmlBuffer, &bufferSize, "UTF-8", options.fPrettyPrint);
-            Assert (strlen ((char*)xmlBuffer) == static_cast<size_t> (bufferSize)); // misnomer cuz really number of valid not nul-term characters (so actual allocated size must be one more)
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (xmlBuffer); });
-            to.Write (span{reinterpret_cast<const byte*> (xmlBuffer), static_cast<size_t> (bufferSize)});
+            AssertNotNull (fLibRep_);
+            xmlBufferPtr            xmlBuf          = xmlBufferCreate ();
+            [[maybe_unused]] auto&& cleanup1         = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
+            constexpr char          kTxtEncoding_[] = "UTF-8";
+            int                     useOptions      = XML_SAVE_AS_XML;
+            if (options.fPrettyPrint) {
+                useOptions |= XML_SAVE_FORMAT | XML_SAVE_WSNONSIG;
+            }
+            // use xmlSaveToBuffer instead of xmlDocDumpFormatMemoryEnc () since that has options to control XML_SAVE_NO_EMPTY which changed in libxml2 2.13.1
+            xmlSaveCtxtPtr          saveCtx  = xmlSaveToBuffer (xmlBuf, kTxtEncoding_, useOptions);
+            [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { xmlSaveClose (saveCtx); });
+            // could check for > 0 but bug in incomplete iml in current impl as libxml2 2.13.2
+            if (xmlSaveDoc (saveCtx, fLibRep_) >= 0 and xmlSaveFlush (saveCtx) >= 0) {
+                to.Write (span{reinterpret_cast<const byte*> (xmlBufferContent (xmlBuf)), static_cast<size_t> (xmlBufferLength (xmlBuf))});
+            }
+            else {
+                Execution::Throw (Execution::RuntimeErrorException{"failed dumping documented to text"});
+                return;
+            }
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
