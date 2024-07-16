@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -963,7 +964,16 @@ namespace {
                 stringstream tmp;
                 tmp << encodedRep;
                 VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
-                EXPECT_TRUE (vOut == v);
+                if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and vOut != v) {
+                    Stroika::Frameworks::Test::WarnTestIssue (
+                        "JSONONLY_Test_09_ReadWriteNANShouldNotFail_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, encodedRep={}, vOut={}"_f(
+                            v, String::FromUTF8 (encodedRep), vOut)
+                            .ReplaceAll ("[\\r\\n]"_RegEx, "")
+                            .template As<wstring> ()
+                            .c_str ());
+                    return;
+                }
+                EXPECT_EQ (vOut, v);
             }
         };
         CheckRoundtrip_encode_decode_unchanged (VariantValue{Math::nan<double> ()});
@@ -1006,7 +1016,16 @@ namespace {
             VariantValue v   = numeric_limits<T>::lowest ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            EXPECT_EQ (v, vrt);
+            if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and v != vrt) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "Test3_VariantValue_Helper_MinMax_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt)
+                        .ReplaceAll ("[\r\n]"_RegEx, "")
+                        .template As<wstring> ()
+                        .c_str ());
+            }
+            else {
+                EXPECT_EQ (v, vrt);
+            }
         }
         {
             VariantValue v   = numeric_limits<T>::min ();
@@ -1018,8 +1037,16 @@ namespace {
             VariantValue v   = numeric_limits<T>::max ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            DbgTrace (Characters::FormatString<char>{"v={}, vs={}, vrt={}"}, v, vs, vrt);
-            EXPECT_EQ (v, vrt);
+            if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and v != vrt) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "Test3_VariantValue_Helper_MinMax_ (qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt)
+                        .ReplaceAll ("[\r\n]"_RegEx, "")
+                        .template As<wstring> ()
+                        .c_str ());
+            }
+            else {
+                EXPECT_EQ (v, vrt);
+            }
         }
     }
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, Test3_VariantValue)
