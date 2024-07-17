@@ -38,7 +38,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *          if (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaType {somestring}) {
+     *          if (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaType {some-string}) {
      *              handle_textfiles()
      *          }
      *      \endcode
