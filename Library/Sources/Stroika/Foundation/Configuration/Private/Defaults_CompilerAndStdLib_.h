@@ -2496,6 +2496,23 @@ int main ()
 #endif
 
 /**
+ #if qCompilerAndStdLib_formattable_of_tuple_Buggy
+static_assert (Stroika::Foundation::Configuration::ITuple<std::remove_cvref_t<std::tuple<int>>>);
+#else
+// this fails on XCode 15 - not sure why... -- no other obvious problem with formatted use of tuple... --LGP 2024-07-17
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
+#endif
+ */
+#ifndef qCompilerAndStdLib_formattable_of_tuple_Buggy
+#if defined(__clang__) && defined(__APPLE__)
+// Appears broken on XCode 15
+#define qCompilerAndStdLib_formattable_of_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#else
+#define qCompilerAndStdLib_formattable_of_tuple_Buggy 0
+#endif
+#endif
+
+/**
  *  Only triggers warning with valgrind - no other indication of problem (produces right results). But just in case,
  *  do workaround regardless.
  * 

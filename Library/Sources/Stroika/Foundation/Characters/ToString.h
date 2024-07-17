@@ -265,7 +265,13 @@ static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::f
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::optional<int>, wchar_t>);
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+
+#if qCompilerAndStdLib_formattable_of_tuple_Buggy
+static_assert (Stroika::Foundation::Configuration::ITuple<std::remove_cvref_t<std::tuple<int>>>);
+#else
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
+#endif
+
 //static_assert (Stroika::Foundation::Configuration<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but don't #include just for this
 
 /*
