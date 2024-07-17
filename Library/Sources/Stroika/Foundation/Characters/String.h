@@ -1587,11 +1587,11 @@ namespace Stroika::Foundation::Characters {
             return Character::AsASCIIQuietly (span<const wchar_t>{fromStart, fromEnd}, into);
         }
         [[deprecated ("Since Stroika v3.0d1 due to https://stroika.atlassian.net/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
-        [[deprecated ("Since Stroika v3.0d7 - use RemoveFirstIf")]] String Remove (Character c) const
+        [[deprecated ("Since Stroika v3.0d8 - use RemoveFirstIf")]] String Remove (Character c) const
         {
             return RemoveFirstIf (c);
         }
-        [[deprecated ("Since Stroika v3.0d7 - use RemoveFirstIf")]] String Remove (const String& subString) const
+        [[deprecated ("Since Stroika v3.0d8 - use RemoveFirstIf")]] String Remove (const String& subString) const
         {
             return RemoveFirstIf (subString);
         }
