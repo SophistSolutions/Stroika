@@ -62,11 +62,6 @@
  *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
  *              it is all correct for each (especially SetStorage () sutff looks quesitonable)
  *
- *      @todo   String::Remove()
- *              CRAPPY API - probably delete or redo. See if ever used!!! RemoveAll or RemoveFirst() would be
- *              better names (thogh all woudl be a change in functionality) - and maybe return a bool so
- *              you can tell if it did anyhting? Also - make case match an optional param.
- *
  *      @todo   Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
  *
  *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operator+) API. See/maybe use new
@@ -526,13 +521,23 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Remove the first occurence of Character 'c'/'/subString/ from the string. Not an error if none
+         *  Remove the first occurrence of Character 'c'/'/subString/ from the string. Not an error if none
          *  found. Doesn't modify this (const method) - returns resulting string.
          *
-         *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
+         *  \em Note that this is quite inefficient: consider using StringBuffer
          */
-        nonvirtual String Remove (Character c) const;
-        nonvirtual String Remove (const String& subString) const;
+        nonvirtual String RemoveFirstIf (Character c) const;
+        nonvirtual String RemoveFirstIf (const String& subString) const;
+
+    public:
+        /**
+         *  Remove the all occurrences of Character 'c'/'/subString/ from the string (walking front to back - if removeal creates one, it too is removed). Not an error if none
+         *  found. Doesn't modify this (const method) - returns resulting string.
+         *
+         *  \em Note that this is quite inefficient: consider using StringBuffer
+         */
+        nonvirtual String RemoveAll (Character c) const;
+        nonvirtual String RemoveAll (const String& subString) const;
 
     public:
         /**
@@ -1582,6 +1587,14 @@ namespace Stroika::Foundation::Characters {
             return Character::AsASCIIQuietly (span<const wchar_t>{fromStart, fromEnd}, into);
         }
         [[deprecated ("Since Stroika v3.0d1 due to https://stroika.atlassian.net/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
+        [[deprecated ("Since Stroika v3.0d7 - use RemoveFirstIf")]] String Remove (Character c) const
+        {
+            return RemoveFirstIf (c);
+        }
+        [[deprecated ("Since Stroika v3.0d7 - use RemoveFirstIf")]] String Remove (const String& subString) const
+        {
+            return RemoveFirstIf (subString);
+        }
 
     private:
         static shared_ptr<_IRep> mkEmpty_ ();

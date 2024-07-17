@@ -842,7 +842,7 @@ String String::RemoveAt (size_t from, size_t to) const
     }
 }
 
-String String::Remove (Character c) const
+String String::RemoveFirstIf (Character c) const
 {
     String tmp = {*this};
     if (auto o = tmp.Find (c, CompareOptions::eWithCase)) {
@@ -850,13 +850,31 @@ String String::Remove (Character c) const
     }
     return tmp;
 }
-
-String String::Remove (const String& subString) const
+String String::RemoveFirstIf (const String& subString) const
 {
     if (auto o = this->Find (subString, CompareOptions::eWithCase)) {
         return this->SubString (0, *o) + this->SubString (*o + subString.length ());
     }
     return *this;
+}
+
+String String::RemoveAll (Character c) const
+{
+    // quick and dirty inefiecient implementation
+    String tmp = {*this};
+    while (auto o = tmp.Find (c, CompareOptions::eWithCase)) {
+        tmp = tmp.RemoveAt (*o);
+    }
+    return tmp;
+}
+String String::RemoveAll (const String& subString) const
+{
+    // quick and dirty inefiecient implementation
+    String tmp = {*this};
+    while (auto o = tmp.Find (subString, CompareOptions::eWithCase)) {
+        tmp = tmp.SubString (0, *o) + tmp.SubString (*o + subString.length ());
+    }
+    return tmp;
 }
 
 optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
