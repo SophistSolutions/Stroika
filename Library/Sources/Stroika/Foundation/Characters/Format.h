@@ -75,9 +75,9 @@ namespace Stroika::Foundation::Characters {
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
 
     public:
-        template <typename... ARGS>
+        template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
-        template <typename... ARGS>
+        template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
     };
     template <>
@@ -99,9 +99,9 @@ namespace Stroika::Foundation::Characters {
 
         constexpr wstring_view                                             get () const;
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
-        template <typename... ARGS>
+        template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
-        template <typename... ARGS>
+        template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
     };
 
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Characters {
     /*
     * 
     *   &&& SOON TO BE OSBOLETE &&&& - NOT SURE IF/HOW MUCH WE WANT TO MAINTAIN THIS FUNCTIONALITY???
-    *   MAYBE OK - since probably not intrindically confusing?
+    *   MAYBE OK - since probably not intrinsically confusing?
     * 
      * Format is the Stroika wrapper on sprintf().
      * The main differences between sprintf () and Format are:

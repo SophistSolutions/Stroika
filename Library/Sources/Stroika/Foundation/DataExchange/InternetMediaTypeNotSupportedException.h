@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
 namespace Stroika::Foundation::DataExchange {

@@ -15,7 +15,8 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     inline InternetMediaTypeNotSupportedException::InternetMediaTypeNotSupportedException (const InternetMediaType& mediaType)
-        : Execution::RuntimeErrorException<>{Characters::FormatString<char>{"Internet Media Type {} not supported"sv}(mediaType)}
+        // @todo understand why .ToString() needed on visual studio??? --LGP 2024-07-16
+        : Execution::RuntimeErrorException<>{Characters::FormatString<char>{"Internet Media Type {} not supported"sv}(mediaType.ToString ())}
     {
     }
 

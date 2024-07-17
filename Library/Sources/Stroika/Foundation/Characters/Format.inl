@@ -25,13 +25,13 @@ namespace Stroika::Foundation::Characters {
         return qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fSV_.data (), fSV_.size ()};
     }
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    template <typename... ARGS>
+    template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (ARGS&&... args) const
     {
         return Configuration::StdCompat::vformat (getx_ (), Configuration::StdCompat::make_wformat_args (args...));
     }
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    template <typename... ARGS>
+    template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (const locale& loc, ARGS&&... args) const
     {
         return Configuration::StdCompat::vformat (loc, getx_ (), Configuration::StdCompat::make_wformat_args (args...));
@@ -68,12 +68,12 @@ namespace Stroika::Foundation::Characters {
     {
         return fFmtStr_.getx_ ();
     }
-    template <typename... ARGS>
+    template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (ARGS&&... args) const
     {
         return fFmtStr_ (args...);
     }
-    template <typename... ARGS>
+    template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (const locale& loc, ARGS&&... args) const
     {
         return fFmtStr_ (loc, args...);
