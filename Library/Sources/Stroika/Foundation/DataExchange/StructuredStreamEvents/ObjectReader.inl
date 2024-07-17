@@ -820,7 +820,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
                 }
                 else {
-                    DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, typeid (ENUM_TYPE), fBuf_);
+                    DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, type_index{typeid (ENUM_TYPE)}, fBuf_);
                     static const auto kException_ = BadFormatException{"Enumeration value out of range"sv};
                     Execution::Throw (kException_);
                 }
