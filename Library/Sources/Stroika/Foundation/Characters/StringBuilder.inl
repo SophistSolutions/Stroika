@@ -7,8 +7,8 @@
 #include "Stroika/Foundation/Characters/UTFConvert.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Common.h"
-#include "Stroika/Foundation/Memory/Span.h"
 #include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Memory/Span.h"
 
 namespace Stroika::Foundation::Characters {
 
