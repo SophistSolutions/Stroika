@@ -20,6 +20,7 @@
 #include "Stroika/Foundation/Common/CountedValue.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Configuration/StdCompat.h"
 
 /**
  *  TODO:
@@ -29,7 +30,7 @@
 namespace Stroika::Foundation::Characters {
 
     /**
-     *  \brief  Return a debug-friendly, display version of the argument: not guaranteed parseable or usable except for debugging
+     *  \brief  Return a debug-friendly, display version of the argument: not guaranteed parsable or usable except for debugging
      *
      *  Convert an instance of the given object to a printable string representation. This representation
      *  is not guaranteed, pretty, or parsable. This feature is generally for debugging purposes, but can be used
@@ -253,32 +254,19 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroi
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
-#if __cplusplus > 202200L || _HAS_CXX23 || (_LIBCPP_STD_VER >= 23)
 // various examples of things Stroika provides / assure support for regardless of C++ version
-static_assert (std::formattable<std::type_index, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>);
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
-static_assert (std::formattable<std::thread::id, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif
-static_assert (std::formattable<std::exception_ptr, wchar_t>);
-static_assert (std::formattable<std::type_index, wchar_t>);
-static_assert (std::formattable<std::filesystem::path, wchar_t>);
-static_assert (std::formattable<std::thread::id, wchar_t>);
-static_assert (std::formattable<std::optional<int>, wchar_t>);
-static_assert (std::formattable<std::pair<int, char>, wchar_t>);
-static_assert (std::formattable<std::tuple<int>, wchar_t>);
-//static_assert (std::formattable<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but don't #include just for this
-#else
-static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::type_index, wchar_t>>);
-static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::exception_ptr, wchar_t>>);
-#if !qCompilerAndStdLib_FormatThreadId_Buggy
-static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::thread::id, wchar_t>>);
-#endif
-static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::type_index, wchar_t>>);
-static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::thread::id, wchar_t>>);
-static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, wchar_t>>);
-static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::optional<int>, wchar_t>>);
-//static_assert (std::is_default_constructible_v<qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::tuple<int>, wchar_t>>);
-#endif
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::optional<int>, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
+//static_assert (Stroika::Foundation::Configuration<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but don't #include just for this
 
 /*
  ********************************************************************************
