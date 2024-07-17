@@ -32,24 +32,24 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
                                                                   const optional<TypeMappingDetails>& overrideTypeMapper)
-        : fSerializedFieldName{serializedFieldName}
-        , fFieldMetaInfo{fieldMetaInfo}
-        , fOverrideTypeMapper{overrideTypeMapper}
+        : fSerializedFieldName_{serializedFieldName}
+        , fFieldMetaInfo_{fieldMetaInfo}
+        , fOverrideTypeMapper_{overrideTypeMapper}
     {
         Require (not serializedFieldName.empty ()); // Since Stroika v3.0d7
     }
 
     inline String ObjectVariantMapper::StructFieldInfo::GetSerializedFieldName () const
     {
-        return fSerializedFieldName;
+        return fSerializedFieldName_;
     }
     inline StructFieldMetaInfo ObjectVariantMapper::StructFieldInfo::GetStructFieldMetaInfo () const
     {
-        return *fFieldMetaInfo;
+        return *fFieldMetaInfo_;
     }
     inline auto ObjectVariantMapper::StructFieldInfo::GetOverrideTypeMapper () const -> optional<TypeMappingDetails>
     {
-        return fOverrideTypeMapper;
+        return fOverrideTypeMapper_;
     }
     /*
      ********************************************************************************
@@ -1080,8 +1080,8 @@ namespace Stroika::Foundation::DataExchange {
                 // assure each field unique
                 Containers::MultiSet<StructFieldMetaInfo> t;
                 for (const auto& i : fields) {
-                    if (i.fFieldMetaInfo) {
-                        t.Add (*i.fFieldMetaInfo);
+                    if (i.fFieldMetaInfo_) {
+                        t.Add (*i.fFieldMetaInfo_);
                     }
                 }
             }
@@ -1089,8 +1089,8 @@ namespace Stroika::Foundation::DataExchange {
                 // assure each field unique
                 Containers::MultiSet<StructFieldMetaInfo> t;
                 for (const auto& i : fields) {
-                    if (i.fFieldMetaInfo) {
-                        t.Add (*i.fFieldMetaInfo);
+                    if (i.fFieldMetaInfo_) {
+                        t.Add (*i.fFieldMetaInfo_);
                     }
                 }
                 for (const auto& i : t) {
@@ -1115,22 +1115,22 @@ namespace Stroika::Foundation::DataExchange {
             }
             for (const auto& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("fieldname = {}, offset={}"_f, i.fSerializedFieldName, i.fFieldMetaInfo);
+                DbgTrace ("fieldname = {}, offset={}"_f, i.fSerializedFieldName_, i.fFieldMetaInfo_);
 #endif
                 VariantValue vv = [&] () {
-                    const byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (fromObjOfTypeT)
-                                                     : reinterpret_cast<const byte*> (fromObjOfTypeT);
-                    if (i.fOverrideTypeMapper) [[unlikely]] {
-                        return i.fOverrideTypeMapper->fFromObjectMapper (mapper, b);
+                    const byte* b = i.fFieldMetaInfo_ ? i.fFieldMetaInfo_->GetAddressOfMember (fromObjOfTypeT)
+                                                      : reinterpret_cast<const byte*> (fromObjOfTypeT);
+                    if (i.fOverrideTypeMapper_) [[unlikely]] {
+                        return i.fOverrideTypeMapper_->fFromObjectMapper (mapper, b);
                     }
                     else {
-                        Require (i.fFieldMetaInfo);
-                        return mapper.Lookup_ (i.fFieldMetaInfo->GetTypeInfo ()).fFromObjectMapper (mapper, b);
+                        Require (i.fFieldMetaInfo_);
+                        return mapper.Lookup_ (i.fFieldMetaInfo_->GetTypeInfo ()).fFromObjectMapper (mapper, b);
                     }
                 }();
                 if (/*i.fNullFields == StructFieldInfo::eIncludeNullFields*/ not options.fOmitNullEntriesInFromObject or
                     vv.GetType () != VariantValue::eNull) [[likely]] {
-                    m.Add (i.fSerializedFieldName, vv);
+                    m.Add (i.fSerializedFieldName_, vv);
                 }
             }
             if (options.fAfterFrom) [[unlikely]] {
@@ -1156,21 +1156,21 @@ namespace Stroika::Foundation::DataExchange {
             for (const auto& i : fields) {
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
                 auto decodingFieldActivity = Execution::LazyEvalActivity{
-                    [&] () -> String { return Characters::Format ("Decoding field {}"_f, i.fSerializedFieldName); }};
+                    [&] () -> String { return Characters::Format ("Decoding field {}"_f, i.fSerializedFieldName_); }};
                 [[maybe_unused]] Execution::DeclareActivity daf{&decodingFieldActivity};
 #endif
-                optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
+                optional<VariantValue> o = m.Lookup (i.fSerializedFieldName_);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("fieldname = {}, offset={}, present={}"_f, i.fSerializedFieldName, i.fFieldMetaInfo, o.has_value ());
+                DbgTrace ("fieldname = {}, offset={}, present={}"_f, i.fSerializedFieldName_, i.fFieldMetaInfo_, o.has_value ());
 #endif
                 if (o) {
-                    byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (intoObjOfTypeT) : reinterpret_cast<byte*> (intoObjOfTypeT);
-                    if (i.fOverrideTypeMapper) {
-                        i.fOverrideTypeMapper->fToObjectMapper (mapper, *o, b);
+                    byte* b = i.fFieldMetaInfo_ ? i.fFieldMetaInfo_->GetAddressOfMember (intoObjOfTypeT) : reinterpret_cast<byte*> (intoObjOfTypeT);
+                    if (i.fOverrideTypeMapper_) {
+                        i.fOverrideTypeMapper_->fToObjectMapper (mapper, *o, b);
                     }
                     else {
-                        Require (i.fFieldMetaInfo);
-                        mapper.Lookup_ (i.fFieldMetaInfo->GetTypeInfo ()).fToObjectMapper (mapper, *o, b);
+                        Require (i.fFieldMetaInfo_);
+                        mapper.Lookup_ (i.fFieldMetaInfo_->GetTypeInfo ()).fToObjectMapper (mapper, *o, b);
                     }
                 }
             }
@@ -1191,11 +1191,11 @@ namespace Stroika::Foundation::DataExchange {
             // If you ever need to avoid it (I don't see how because this mapper doesn't work with circular data structures)
             // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
             for (const auto& i : fields) {
-                Require (i.fOverrideTypeMapper or i.fFieldMetaInfo); // don't need to register the type mapper if its specified as a field
-                if (not i.fOverrideTypeMapper) {
-                    Assert (i.fFieldMetaInfo); // cuz need type mapper if fFieldMetaInfo not present
+                Require (i.fOverrideTypeMapper_ or i.fFieldMetaInfo_); // don't need to register the type mapper if its specified as a field
+                if (not i.fOverrideTypeMapper_) {
+                    Assert (i.fFieldMetaInfo_); // cuz need type mapper if fFieldMetaInfo_ not present
                     if (use2Validate != nullptr) {
-                        (void)use2Validate->Lookup_ (i.fFieldMetaInfo->GetTypeInfo ());
+                        (void)use2Validate->Lookup_ (i.fFieldMetaInfo_->GetTypeInfo ());
                     }
                 }
             }

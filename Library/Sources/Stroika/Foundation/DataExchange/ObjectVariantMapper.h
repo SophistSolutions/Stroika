@@ -73,31 +73,7 @@
  *              intrinsically not very cost effective. We DO have the XML sax parser (but that wont work with this).
  *
  *      @todo   Current serializer/de-serializer API needlessly requires that objects have default CTOR.
- *
- *              template    <typename CLASS>
- *                  inline  CLASS    ObjectVariantMapper::ToObject (const VariantValue& v) const
- *                  {
- *                      CLASS tmp;
- *                      ToObject (v, &tmp);
- *                      return tmp;
- *                  }
- *
- *                  I THINK - if we redefined the to-mapper - to return a "T" instead of taking a byte* array
- *                  to fill in, we could avoid this issue. However, doing so is NOT possible for the
- *                  automated 'struct' mapper (key). This is its core strategy - to construct an object and
- *                  then fill in (possibly a subset) of its fields. We would need to somehow automate
- *                  calling a particular CTOR instead and that seems tricky given C++'s meager meta-programming
- *                  features.
- *
- *                  But I THINK it would be possible to define the TypeMappingDetails object to take EITHER
- *                  something in the current form, or something using "T" - and map between them. And then
- *                  users of a particular type (e.g. Range()) - could avoid calling the default ctor, and just
- *                  explicitly call the right CTOR.
- *
- *                  Probably relatively LOW priority to fix, however.
- *
- *                  Also - this could cause some issues with the interoperability of To/FromGenericVariantMapper
- *                  and From/ToObjectMapper<T>.
+ *              https://stroika.atlassian.net/browse/STK-1015
  *
  *      @todo   NOTE and TODO
  *              The cast to byte* loses some type safety (we may want to store the class size through template magic)
@@ -266,14 +242,12 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-        * @todo add formattable concept apply to T
          */
         template <Configuration::StdCompat::formattable<wchar_t> T>
         static const FromObjectMapperType<T> kTraceFromObjectMapper;
 
     public:
         /**
-        * @todo add formattable concept apply to T
          */
         template <Configuration::StdCompat::formattable<wchar_t> T>
         static const ToObjectMapperType<T> kTraceToObjectMapper;
@@ -1117,37 +1091,24 @@ namespace Stroika::Foundation::DataExchange {
         static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
 
     private:
-        /**
+        /*
          *  Required for a an actual field mapper, but if empty, implies a reader/writer for the entire object.
          * 
          *  \note Since v3.0d7 - this is required to be non-empty (or empty use deprecated rather)
          */
-        String fSerializedFieldName;
+        String fSerializedFieldName_;
 
         /*
-         * if missing - then pass in parent object, then fOverrideTypeMapper required ****THIS USE DEPRECATED*****
+         * if missing - then pass in parent object, then fOverrideTypeMapper_ required ****THIS USE DEPRECATED*****
          *  \note Since v3.0d7 - this is required to be null-null (or null use deprecated rather)
          */
-        optional<StructFieldMetaInfo> fFieldMetaInfo;
+        optional<StructFieldMetaInfo> fFieldMetaInfo_;
 
         /*
-         *  if fFieldMetaInfo == nullopt, fOverrideTypeMapper is required, and is the mapper used for the entire
-         *  object. (NOTE SINCE 3.0d7 - fFieldMetaInfo==nullopt deprecated); but this is still optional.
+         *  if fFieldMetaInfo_ == nullopt, fOverrideTypeMapper_ is required, and is the mapper used for the entire
+         *  object. (NOTE SINCE 3.0d7 - fFieldMetaInfo_==nullopt deprecated); but this is still optional.
          */
-        optional<TypeMappingDetails> fOverrideTypeMapper;
-
-#if 0
-        /**
-         *  defaults to NullFieldHandling::eInclude
-         * 
-         *  \note only applies to 'FromObject' handler - whether to add the null entry to the 'VariantValue'.
-         * 
-         *  @todo consider if some way to fold this elsewhere - into FromObject type mapper itself -or rename so more clear it only refers to FromObject
-         *  or consider if belongs as parameter to CLASS object, not individiaul structs (probably better)
-         *  then less redundantly specified all over the place. I THINK THAT IS BETTER!
-         */
-        //NullFieldHandling fNullFields{NullFieldHandling::eInclude};
-#endif
+        optional<TypeMappingDetails> fOverrideTypeMapper_;
 
     public:
         /**
@@ -1190,8 +1151,8 @@ namespace Stroika::Foundation::DataExchange {
         [[deprecated ("Since Stroika v3.0d7 - dont use StructFieldInfo with missing filedMetaInfo - instead use type override of owning "
                       "object)")]] StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper,
                                                     [[maybe_unused]] NullFieldHandling fromObjectNullHandling = NullFieldHandling::eInclude)
-            : fSerializedFieldName{serializedFieldName}
-            , fOverrideTypeMapper{overrideTypeMapper}
+            : fSerializedFieldName_{serializedFieldName}
+            , fOverrideTypeMapper_{overrideTypeMapper}
         {
         }
 
