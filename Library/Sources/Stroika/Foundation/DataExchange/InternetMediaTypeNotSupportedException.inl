@@ -3,11 +3,13 @@
  */
 #include "Stroika/Foundation/Characters/Format.h"
 
+#include "Stroika/Foundation/Characters/ToString.h"     // for now #include required since format-string use below invokes ToString
+
 namespace Stroika::Foundation::DataExchange {
 
     /*
      ********************************************************************************
-     *********************** InternetMediaTypeNotSupportedException *****************
+     ********************* InternetMediaTypeNotSupportedException *******************
      ********************************************************************************
      */
     inline InternetMediaTypeNotSupportedException::InternetMediaTypeNotSupportedException ()
@@ -15,8 +17,7 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     inline InternetMediaTypeNotSupportedException::InternetMediaTypeNotSupportedException (const InternetMediaType& mediaType)
-        // @todo understand why .ToString() needed on visual studio??? --LGP 2024-07-16
-        : Execution::RuntimeErrorException<>{Characters::FormatString<char>{"Internet Media Type {} not supported"sv}(mediaType.ToString ())}
+        : Execution::RuntimeErrorException<>{Characters::FormatString<char>{"Internet Media Type '{}' not supported"sv}(mediaType)}
     {
     }
 
