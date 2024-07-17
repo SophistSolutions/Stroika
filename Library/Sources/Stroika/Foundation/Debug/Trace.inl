@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Debug {
         [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] void EmitTraceMessage (const char* format, ...) noexcept;
         [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] void EmitTraceMessage (const wchar_t* format, ...) noexcept;
 
-        template <typename CHAR_T, typename... Args>
+        template <typename CHAR_T, Configuration::StdCompat::formattable<wchar_t>... Args>
         nonvirtual void EmitTraceMessage (Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
         {
             try {
