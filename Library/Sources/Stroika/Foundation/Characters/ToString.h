@@ -255,7 +255,7 @@ template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFor
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
 // various examples of things Stroika provides / assure support for regardless of C++ version
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid)
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif

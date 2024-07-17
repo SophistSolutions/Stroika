@@ -10,7 +10,6 @@
 #include <ios>
 #include <locale>
 #include <ranges>
-//#include <sstream> //tmphack for my current formatter
 
 #include "Stroika/Foundation/Characters/Character.h"
 #include "Stroika/Foundation/Characters/String.h"
@@ -27,33 +26,49 @@
 namespace Stroika::Foundation::Characters {
 
     /**
-     *  \brief Roughly equivalent to std::wformat_string, except that it can be constructed from 'char' string
+     *  \brief Roughly equivalent to std::wformat_string, except that it can be constructed from 'char' string, and if 'char' require ASCII characters for format string
      * 
      *  \note - the lifetime of the string argument to FormatString is application-lifetime - because the string
      *        is typically saved by reference. This is meant to be used with "foo={}"_f syntax - with constant c strings.
      * 
      *        Sadly, I know of no way to check the lifetime of the argument, so this goes un-enforced.
      * 
-     * /olddocs
-     * Simple wrapper on basic_string_view, but specifically for the purpose of treating a string_view as a format string.
-     * Many of the (c++-20) format APIs just take a ?string_view as argument. But for purposes of overloading and differentiating
-     * behavior, using a more specific type in some contexts is helpful.
+     *  \note   Types that work with FormatString (are formattable with it):
+     *              Anything that is std::formattable<T,wchar_t>        (see https://en.cppreference.com/w/cpp/utility/format/formatter)
+     *          in particular:
+     *              o   any class with .ToString() method
+     *              o   type_index, type_traits, or anything with a .name () which returns a const SDKChar* string.
+     *              o   container (T) where T is a ToStringable type, such as
+     *                  o   is_array<T>
+     *                  o   anything with .begin (), .end () - so any container/iterable
+     *                  o   std::pair
+     *                  o   std::tuple
+     *                  o   std::optional
+     *                  o   KeyValuePair
+     *                  o   CountedValue
+     *                  o   atomic<T> where T is a ToStringable type
+     *                  o   std::variant
+     *              o   is_enum<T>
+     *              o   std::exception
+     *              o   std::wstring
+     *              o   std::filesystem::path
+     *              o   exception_ptr
+     *              o   POD types (int, bool, double, etc)
+     *              o   String, or any T IConvertibleToString<T>
      * 
-     *  For example, when you use the operator"" _f (), it allows its result to unambiguously be treated as a (new format)
+     *  \par Example Usage
+     *      \code
+     *          String a = FormatString<char>{"Internet Media Type {} not supported"sv}(mediaType);
+     *          String sameAsA = "Internet Media Type {} not supported"_f (mediaType);
+     *          DbgTrace ("prettyVersionString={}"_f, ppv);
+     *          DbgTrace ("currentException={}"_f, current_exception ());
+     *      \endcode
      * 
-     * 
-     *  format string.
-     * 
-     *  Somewhat like wformat_string, except that templated, and can take input ASCII 'char' string as well, and just maps it to wstring.
-    */
+     */
     template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     //requires (Configuration::IAnyOf<CHAR_T,char,wchar_t>)
     struct FormatString {
         static_assert (Configuration::IAnyOf<CHAR_T, char, wchar_t>); // not sure why this works but requires/concept applied in template not working...
-
-    private:
-        wstring_view fSV_; // maybe SB wformat_string here??
-        /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
 
     public:
         /**
@@ -75,10 +90,16 @@ namespace Stroika::Foundation::Characters {
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
 
     public:
+        /**
+         */
         template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
         template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
+
+    private:
+        wstring_view fSV_; // maybe SB wformat_string here??
+        /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
     };
     template <>
     struct FormatString<char> {
