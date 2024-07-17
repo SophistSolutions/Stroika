@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Characters {
     class String;
 
     /**
-     *  This is NOT a widely used concept anylonger. Its largely been replaced by UNICODE.
+     *  This is NOT a widely used concept any longer. Its largely been replaced by UNICODE.
      *  But - it IS used in HTTP, and MIME, so its pretty important to continue supporting.
      *      https://www.w3.org/International/articles/http-charset/index#charset
      * 
