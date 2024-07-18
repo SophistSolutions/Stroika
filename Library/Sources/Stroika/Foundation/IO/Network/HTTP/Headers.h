@@ -423,7 +423,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *      o   Collection<KeyValuePair<String,String>>
          *      o   Iterable<KeyValuePair<String,String>>
          */
-        template <typename T = Iterable<KeyValuePair<String, String>>>
+        template <Configuration::IAnyOf<Association<String, String>, Mapping<String, String>, Collection<KeyValuePair<String, String>>, Iterable<KeyValuePair<String, String>>> T =
+                      Iterable<KeyValuePair<String, String>>>
         nonvirtual T As () const;
 
     public:
@@ -473,6 +474,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     Mapping<String, String> Headers::As () const;
     template <>
     Collection<KeyValuePair<String, String>> Headers::As () const;
+    template <>
+    Iterable<KeyValuePair<String, String>> Headers::As () const;
 
 }
 

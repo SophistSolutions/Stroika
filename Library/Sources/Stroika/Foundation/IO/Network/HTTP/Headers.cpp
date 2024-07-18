@@ -45,7 +45,7 @@ Headers::Headers ()
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
               const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
               AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-              return thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAccessControlAllowOrigin);
+              return thisObj->LookupOne (HeaderName::kAccessControlAllowOrigin);
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& accessControlAllowOrigin) {
               Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
@@ -55,7 +55,7 @@ Headers::Headers ()
     , allow{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
                 const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::allow);
                 AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-                if (auto hdr = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAllow)) {
+                if (auto hdr = thisObj->LookupOne (HeaderName::kAllow)) {
                     return Containers::Set<String>{hdr->Tokenize ({','})};
                 }
                 return nullopt;
@@ -78,7 +78,7 @@ Headers::Headers ()
     , connection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ConnectionValue> {
                      const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::connection);
                      AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-                     if (auto connectionHdr = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
+                     if (auto connectionHdr = thisObj->LookupOne (HeaderName::kConnection)) {
                          if (kHeaderNameEqualsComparer (*connectionHdr, kKeepAlive_)) {
                              return eKeepAlive;
                          }
@@ -187,7 +187,7 @@ Headers::Headers ()
     , keepAlive{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
                     const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::keepAlive);
                     AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-                    if (auto hdrValue = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kKeepAlive)) {
+                    if (auto hdrValue = thisObj->LookupOne (HeaderName::kKeepAlive)) {
                         return HTTP::KeepAlive::Parse (*hdrValue);
                     }
                     return nullopt;
@@ -203,7 +203,7 @@ Headers::Headers ()
     , location{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<URI> {
                    const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);
                    AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-                   if (auto hdr = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kLocation)) {
+                   if (auto hdr = thisObj->LookupOne (HeaderName::kLocation)) {
                        return URI::Parse (*hdr);
                    }
                    return nullopt;
@@ -215,7 +215,7 @@ Headers::Headers ()
     , origin{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<URI> {
                  const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::origin);
                  AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-                 if (auto hdr = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kOrigin)) {
+                 if (auto hdr = thisObj->LookupOne (HeaderName::kOrigin)) {
                      return URI::Parse (*hdr);
                  }
                  return nullopt;
@@ -227,7 +227,7 @@ Headers::Headers ()
     , server{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
                  const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
                  AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-                 return thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kServer);
+                 return thisObj->LookupOne (HeaderName::kServer);
              },
              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const optional<String>& server) {
                  Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
@@ -717,14 +717,14 @@ void Headers::Set (const String& headerName, const optional<String>& value)
 template <>
 Association<String, String> Headers::As () const
 {
-    return As<Collection<KeyValuePair<String, String>>> ().As<Association<String, String>> ();
+    return As<Collection<KeyValuePair<String, String>>> ().As<Association<String, String>> (kHeaderNameEqualsComparer);
 }
 
 template <>
 Mapping<String, String> Headers::As () const
 {
     // NOTE - CAN be lossy conversion to Mapping, losing Set-Cookie's
-    return As<Collection<KeyValuePair<String, String>>> ().As<Mapping<String, String>> ();
+    return As<Collection<KeyValuePair<String, String>>> ().As<Mapping<String, String>> (kHeaderNameEqualsComparer);
 }
 
 template <>
