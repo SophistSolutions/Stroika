@@ -101,7 +101,9 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IToString = requires (T t) {
-        { ToString (t) } -> convertible_to<Characters::String>;
+        {
+            ToString (t)
+        } -> convertible_to<Characters::String>;
     };
 
     /**
@@ -204,7 +206,9 @@ namespace Stroika::Foundation::Characters::Private_ {
     concept IUseToStringFormatterForFormatter_ =
         // most user-defined types captured by this rule - just add a ToString() method!
         requires (T t) {
-            { t.ToString () } -> convertible_to<Characters::String>;
+            {
+                t.ToString ()
+            } -> convertible_to<Characters::String>;
         }
 
         // Stroika types not captured by std-c++ rules
