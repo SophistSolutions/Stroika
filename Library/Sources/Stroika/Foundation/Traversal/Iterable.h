@@ -614,8 +614,8 @@ namespace Stroika::Foundation::Traversal {
          *      We chose NOT to include an overload taking iterators because there was no connection between
          *      'this' and the used iterators, so you may as well just directly call CONTAINER_OF_T{it1, it2}.
          */
-        template <typename CONTAINER_OF_T>
-        nonvirtual CONTAINER_OF_T As () const;
+        template <typename CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRTOR_ARGS>
+        nonvirtual CONTAINER_OF_T As (CONTAINER_OF_T_CONSTRTOR_ARGS... args) const;
 
     public:
         /**
