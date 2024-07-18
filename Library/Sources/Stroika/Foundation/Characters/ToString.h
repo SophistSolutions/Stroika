@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
     // this stuff needed for clang++-18-debug-libstdc++-c++23
 #if !__cpp_lib_format_ranges
-#if qHasFeature_fmtlib && (FMT_VERSION < 110000)
+#if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
         or (ranges::range<decay_t<T>> and
             not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
                                       qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 // 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
 #if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||    \
     (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240412) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
-#if qHasFeature_fmtlib && (FMT_VERSION < 110000)
+#if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
         // available in C++23
         or Configuration::IPair<remove_cvref_t<T>> or
         Configuration::ITuple<remove_cvref_t<T>>
