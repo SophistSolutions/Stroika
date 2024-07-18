@@ -5,6 +5,9 @@ StroikaRoot:=$(abspath ../..)/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
+### https://wixtoolset.org/docs/releasenotes/
+### We are way behind here - but some work to update -  up to WIX v5 --LGP 2024-07-18
+
 VERSION=311
 FOLDERNAMEVER=wix$(VERSION)2rtm
 #FOLDERNAMEVER=wix$(VERSION)1rtm
