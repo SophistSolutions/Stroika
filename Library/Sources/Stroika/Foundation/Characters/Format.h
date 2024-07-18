@@ -6,13 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <cstdarg>
-#include <ios>
-#include <locale>
-#include <ranges>
-
-#include "Stroika/Foundation/Characters/Character.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Configuration/StdCompat.h"
@@ -33,28 +28,27 @@ namespace Stroika::Foundation::Characters {
      * 
      *        Sadly, I know of no way to check the lifetime of the argument, so this goes un-enforced.
      * 
-     *  \note   Types that work with FormatString (are formattable with it):
+     *  \note   Types that can be formatted with FormatString (are formattable with it) are:
      *              Anything that is std::formattable<T,wchar_t>        (see https://en.cppreference.com/w/cpp/utility/format/formatter)
      *          in particular:
      *              o   any class with .ToString() method
-     *              o   type_index, type_traits, or anything with a .name () which returns a const SDKChar* string.
-     *              o   container (T) where T is a ToStringable type, such as
-     *                  o   is_array<T>
-     *                  o   anything with .begin (), .end () - so any container/iterable
-     *                  o   std::pair
-     *                  o   std::tuple
-     *                  o   std::optional
-     *                  o   KeyValuePair
-     *                  o   CountedValue
-     *                  o   atomic<T> where T is a ToStringable type
-     *                  o   std::variant
-     *              o   is_enum<T>
+     *              o   std::type_index
+     *              o   std::is_enum<>
      *              o   std::exception
-     *              o   std::wstring
      *              o   std::filesystem::path
      *              o   exception_ptr
      *              o   POD types (int, bool, double, etc)
-     *              o   String, or any T IConvertibleToString<T>
+     *              o   String, or any T IConvertibleToString<T> (such as std::wstring)
+     *              o   container (T) where T is a IToString (something you can call Characters::ToStirng() on), such as
+     *                  o   is_array<T>
+     *                  o   anything with .begin (), .end () - so any container/iterable
+     *                  o   std::pair<T1,T2>
+     *                  o   std::tuple<TN...>
+     *                  o   std::optional<T>
+     *                  o   KeyValuePair<T1,T2>
+     *                  o   CountedValue<T>
+     *                  o   atomic<T>
+     *                  o   std::variant<TN....>
      * 
      *  \par Example Usage
      *      \code
@@ -62,6 +56,7 @@ namespace Stroika::Foundation::Characters {
      *          String sameAsA = "Internet Media Type {} not supported"_f (mediaType);
      *          DbgTrace ("prettyVersionString={}"_f, ppv);
      *          DbgTrace ("currentException={}"_f, current_exception ());
+     *          DbgTrace ("seq={}"_f, Sequence<IO::Networking::URI>{...});
      *      \endcode
      * 
      */
@@ -199,68 +194,6 @@ namespace Stroika::Foundation::Characters {
     String Format (const locale& l, const FormatString<CHAR_T>& f, ARGS&&... args);
 
 }
-
-// SUPER PRIMITIVE ROUGH FIRST DRAFT
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, wchar_t> {
-    qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::wstring, wchar_t> fDelegate2_;
-
-    template <typename ParseContext>
-    constexpr typename ParseContext::iterator parse (ParseContext& ctx)
-    {
-        return fDelegate2_.parse (ctx);
-    }
-
-    template <typename FmtContext>
-    typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
-    {
-        return fDelegate2_.format (s.As<std::wstring> (), ctx);
-    }
-};
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, char> {
-    bool ignoreerrors{true}; // maybe set from thread-local variable, or parse() settings, or both
-
-    template <typename ParseContext>
-    constexpr typename ParseContext::iterator parse (ParseContext& ctx)
-    {
-        auto it = ctx.begin ();
-        while (it != ctx.end ()) {
-            ++it;
-#if 0
-                if (it == ctx.end()) {
-                    throw Configuration::StdCompat::format_error{"Invalid format args (missing }) for formatter<String,char>."};
-                }
-#endif
-            if (*it == '}') {
-                return it;
-            }
-        }
-        return it;
-    }
-
-    template <typename FmtContext>
-    typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
-    {
-        using namespace Stroika::Foundation::Characters;
-        //  wformat_context delegateCTX;
-        String dr{s}; // really want to delegate to wchar_t version (with vformat) but no documented easy way to extract format_args from ctx (though its in there)
-        if (ignoreerrors) {
-#if __cpp_lib_ranges >= 202207L
-            return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
-#else
-            return format_to (ctx.out (), "{}", dr.AsNarrowSDKString (eIgnoreErrors));
-#endif
-        }
-        else {
-#if __cpp_lib_ranges >= 202207L
-            return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
-#else
-            return format_to (ctx.out (), "{}", dr.AsNarrowSDKString ());
-#endif
-        }
-    }
-};
 
 /*
  ********************************************************************************

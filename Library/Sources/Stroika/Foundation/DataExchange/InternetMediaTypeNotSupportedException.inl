@@ -3,8 +3,6 @@
  */
 #include "Stroika/Foundation/Characters/Format.h"
 
-#include "Stroika/Foundation/Characters/ToString.h" // for now #include required since format-string use below invokes ToString
-
 namespace Stroika::Foundation::DataExchange {
 
     /*

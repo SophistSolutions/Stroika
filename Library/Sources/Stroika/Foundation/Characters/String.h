@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Characters/Character.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/StdCompat.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
@@ -739,7 +740,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Find returns the index of the first occurance of the given Character/substring argument in
+         *  Find returns the index of the first occurrence of the given Character/substring argument in
          *  this string. Find () always returns a valid string index, which is followed by the
          *  given substring, or nullopt otherwise.
          *
@@ -1896,6 +1897,72 @@ namespace Stroika::Foundation::DataExchange {
         Memory::BLOB operator() (const Stroika::Foundation::Characters::String& arg) const;
     };
 }
+
+/**
+ *  Allow std::format to work with String class
+ *
+ *  \note SUPER PRIMITIVE ROUGH FIRST DRAFT
+ */
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, wchar_t> {
+    qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::wstring, wchar_t> fDelegate2_;
+
+    template <typename ParseContext>
+    constexpr typename ParseContext::iterator parse (ParseContext& ctx)
+    {
+        return fDelegate2_.parse (ctx);
+    }
+
+    template <typename FmtContext>
+    typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
+    {
+        return fDelegate2_.format (s.As<std::wstring> (), ctx);
+    }
+};
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, char> {
+    bool ignoreerrors{true}; // maybe set from thread-local variable, or parse() settings, or both
+
+    template <typename ParseContext>
+    constexpr typename ParseContext::iterator parse (ParseContext& ctx)
+    {
+        auto it = ctx.begin ();
+        while (it != ctx.end ()) {
+            ++it;
+#if 0
+                if (it == ctx.end()) {
+                    throw Configuration::StdCompat::format_error{"Invalid format args (missing }) for formatter<String,char>."};
+                }
+#endif
+            if (*it == '}') {
+                return it;
+            }
+        }
+        return it;
+    }
+
+    template <typename FmtContext>
+    typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
+    {
+        using namespace Stroika::Foundation::Characters;
+        //  wformat_context delegateCTX;
+        String dr{s}; // really want to delegate to wchar_t version (with vformat) but no documented easy way to extract format_args from ctx (though its in there)
+        if (ignoreerrors) {
+#if __cpp_lib_ranges >= 202207L
+            return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
+#else
+            return format_to (ctx.out (), "{}", dr.AsNarrowSDKString (eIgnoreErrors));
+#endif
+        }
+        else {
+#if __cpp_lib_ranges >= 202207L
+            return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
+#else
+            return format_to (ctx.out (), "{}", dr.AsNarrowSDKString ());
+#endif
+        }
+    }
+};
 
 /*
  ********************************************************************************

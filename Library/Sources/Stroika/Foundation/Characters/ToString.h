@@ -15,7 +15,6 @@
 #include <typeinfo>
 #include <utility>
 
-#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/CountedValue.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
@@ -94,7 +93,7 @@ namespace Stroika::Foundation::Characters {
     String ToString (T t, ios_base::fmtflags flags);
 
     /**
-     *  Check if legal to call Characters::ToString(T)...
+     *  \brief Check if legal to call Characters::ToString(T)...
      */
     template <typename T>
     concept IToString = requires (T t) {
@@ -104,13 +103,18 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     *  \brief same as ToString()/1 - but without the potentially confusing multi-arg overloads (confused some template expansions).
      */
     template <typename T>
     String UnoverloadedToString (const T& t);
 
     //// @todo read https://stackoverflow.com/questions/59909102/stdformat-of-user-defined-types
     // I THINK I want to SUBCLASS from std::formatter<std::string> - or something close to that...
-    template <Stroika::Foundation::Characters::IToString T>
+    /**
+     *  define a 'std::formatter' for Stroika (and other types) for which formatter not already predefined - which use
+     *  Characters::ToString (T)
+     */
+    template <IToString T>
     struct ToStringFormatter /* : std::formatter<std::wstring>*/ {
         qStroika_Foundation_Characters_FMT_PREFIX_::formatter<String, wchar_t> fDelegate2_;
 
@@ -136,7 +140,7 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
     };
-    template <Stroika::Foundation::Characters::IToString T>
+    template <IToString T>
     struct ToStringFormatterASCII {
 
         ToStringFormatter<T> fDelegate2_;
@@ -175,86 +179,91 @@ namespace Stroika::Foundation::Characters {
         }
     };
 
-    namespace Private_ {
+}
 
-        /*
-         *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formattable so far'
-         * 
-         *  \see https://en.cppreference.com/w/cpp/utility/format/formatter
-         *
-         *  Idea is to TRY to capture all the cases we support to Characters::ToString() - except those already done
-         *  by std c++ lib (and String which we special case). If I overlap at all, we get very confusing messages from compiler
-         *  about duplicate / overlapping formatter definitions.
-         * 
-         *  \todo Would be nice to support type_info/typeid, but for tricky fact that type_info(const type_info&)=deleted, makes it largely not
-         *        work. Probably missing some perfect forwarding someplace? And with that fixed maybe can work??? --LGP 2024-04-10
-         * 
-         *  \note this does NOT include atomic<T>, because atomic<T> is not copyable, and formattable requires that its argument
-         *        be copyable.
-         */
-        template <typename T>
-        concept IUseToStringFormatterForFormatter_ =
-            // most user-defined types captured by this rule - just add a ToString() method!
-            requires (T t) {
-                {
-                    t.ToString ()
-                } -> convertible_to<Characters::String>;
-            }
+namespace Stroika::Foundation::Characters::Private_ {
 
-            // Stroika types not captured by std-c++ rules
-            or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
+    /*
+     *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formattable so far'
+     * 
+     *  \see https://en.cppreference.com/w/cpp/utility/format/formatter
+     *
+     *  Idea is to TRY to capture all the cases we support to Characters::ToString() - except those already done
+     *  by std c++ lib (and String which we special case). If I overlap at all, we get very confusing messages from compiler
+     *  about duplicate / overlapping formatter definitions.
+     * 
+     *  \todo Would be nice to support type_info/typeid, but for tricky fact that type_info(const type_info&)=deleted, makes it largely not
+     *        work. Probably missing some perfect forwarding someplace? And with that fixed maybe can work??? --LGP 2024-04-10
+     * 
+     *  \note this does NOT include atomic<T>, because atomic<T> is not copyable, and formattable requires that its argument
+     *        be copyable.
+     */
+    template <typename T>
+    concept IUseToStringFormatterForFormatter_ =
+        // most user-defined types captured by this rule - just add a ToString() method!
+        requires (T t) {
+            {
+                t.ToString ()
+            } -> convertible_to<Characters::String>;
+        }
 
-        // c++ 23 features which may not be present with current compilers
-        // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
-        // this stuff needed for clang++-18-debug-libstdc++-c++23
+        // Stroika types not captured by std-c++ rules
+        or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
+
+    // c++ 23 features which may not be present with current compilers
+    // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
+    // this stuff needed for clang++-18-debug-libstdc++-c++23
 #if !__cpp_lib_format_ranges
-            or (ranges::range<decay_t<T>> and
-                not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
-                                          qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
+        or (ranges::range<decay_t<T>> and
+            not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
+                                      qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
 
 // sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
 // 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
 #if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||    \
     (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240412) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
-            // available in C++23
-            or Configuration::IPair<remove_cvref_t<T>> or
-            Configuration::ITuple<remove_cvref_t<T>>
+        // available in C++23
+        or Configuration::IPair<remove_cvref_t<T>> or
+        Configuration::ITuple<remove_cvref_t<T>>
 #endif
 
 // need to check _LIBCPP_STD_VER for LIBC++ and clang++16 on ubuntu 23.10
 #if (!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
-            // available in C++23
-            or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+        // available in C++23
+        or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
 
-        // features added in C++26
-        // unsure what to check - __cpp_lib_format - test c++26  __cpp_lib_formatters < 202601L  -- 202302L  is c++23
+    // features added in C++26
+    // unsure what to check - __cpp_lib_format - test c++26  __cpp_lib_formatters < 202601L  -- 202302L  is c++23
 #if __cplusplus < 202400L
-            or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
+        or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
 
-            // Features from std-c++ that probably should have been added
-            // NOTE - we WANT to support type_info (so typeid works directly) - but run into trouble because type_info(const type_info)=delete, so not
-            // sure how to make that work with formatters (besides wrapping in type_index).
-            or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>>
+        // Features from std-c++ that probably should have been added
+        // NOTE - we WANT to support type_info (so typeid works directly) - but run into trouble because type_info(const type_info)=delete, so not
+        // sure how to make that work with formatters (besides wrapping in type_index).
+        or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>>
 
 #if qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-            or same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
+        or same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
 #else
             or Configuration::ITimePoint<T>
 #endif
-            or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>;
-    }
+        or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>;
 
 }
 
+/**
+ *  add ToStringFormatter to the std::formatter object - so all std::format (and Stroika Format, and _f etc) format calls will
+ *  apply ToString() as appropriate.
+ * 
+ *  And a few static_asserts to verify this is working as expected.
+ */
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
-
-// various examples of things Stroika provides / assure support for regardless of C++ version
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid)
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
@@ -265,13 +274,11 @@ static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::f
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::optional<int>, wchar_t>);
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
-
 #if qCompilerAndStdLib_formattable_of_tuple_Buggy
 static_assert (Stroika::Foundation::Configuration::ITuple<std::remove_cvref_t<std::tuple<int>>>);
 #else
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
 #endif
-
 //static_assert (Stroika::Foundation::Configuration<Stroika::Foundation::IO::Network::URI, wchar_t>); // true, but don't #include just for this
 
 /*

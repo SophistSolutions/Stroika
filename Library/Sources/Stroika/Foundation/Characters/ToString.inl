@@ -333,12 +333,12 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString (const shared_ptr<T>& pt)
         {
-            return (pt == nullptr) ? L"nullptr"sv : Format ("{}"_f, static_cast<const void*> (pt.get ()));
+            return (pt == nullptr) ? String{"nullptr"sv} : String{Configuration::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
         }
         template <typename T>
         inline String ToString (const unique_ptr<T>& pt)
         {
-            return (pt == nullptr) ? L"nullptr"sv : Format ("{}"_f, static_cast<const void*> (pt.get ()));
+            return (pt == nullptr) ? String{"nullptr"sv} : String{Configuration::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
         }
         template <typename T>
         inline String ToString (const optional<T>& o)
@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Characters {
         template <typename FUNCTION_SIGNATURE>
         inline String ToString (const function<FUNCTION_SIGNATURE>& f)
         {
-            return Format ("{}"_f, static_cast<const void*> (f.template target<remove_cvref_t<FUNCTION_SIGNATURE>> ()));
+            return Configuration::StdCompat::format (L"{}", static_cast<const void*> (f.template target<remove_cvref_t<FUNCTION_SIGNATURE>> ()));
         }
         inline String ToString (const chrono::duration<double>& t)
         {
