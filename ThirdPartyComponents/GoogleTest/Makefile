@@ -20,7 +20,8 @@ endif
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/google/googletest/tags
 #
-GOOGLETEST_VERSION_=1.14.0
+GOOGLETEST_VERSION_=1.15.0
+#GOOGLETEST_VERSION_=1.14.0
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/googletest-${GOOGLETEST_VERSION_}.tar.gz
 
