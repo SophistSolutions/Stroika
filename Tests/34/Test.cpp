@@ -1512,7 +1512,7 @@ namespace {
                 DOM::Element::Ptr bigBoss         = personelElt.GetChildByID ("Big.Boss");
                 String            itsSubordinates = Memory::ValueOf (bigBoss.GetChild ("link").GetAttribute ("subordinates"));
                 EXPECT_TRUE (itsSubordinates.Contains ("three.worker")); // guy we deleted
-                bigBoss.GetChild ("link").SetAttribute ("subordinates", itsSubordinates.Remove ("three.worker"));
+                bigBoss.GetChild ("link").SetAttribute ("subordinates", itsSubordinates.RemoveFirstIf ("three.worker"));
                 EXPECT_NO_THROW (d.Validate (schema));
                 DbgTrace ("bigBoss={}"_f, Characters::ToString (bigBoss));
             }
