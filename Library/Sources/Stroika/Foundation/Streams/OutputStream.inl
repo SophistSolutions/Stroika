@@ -126,14 +126,14 @@ namespace Stroika::Foundation::Streams::OutputStream {
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     inline void Ptr<ELEMENT_TYPE>::WriteRaw (const POD_TYPE& p) const
-        requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE> and not Memory::ISpan<POD_TYPE>)
+        requires (same_as<ELEMENT_TYPE, byte> and is_trivial_v<POD_TYPE> and not Memory::ISpan<POD_TYPE>)
     {
         this->WriteRaw (span{&p, 1});
     }
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE, size_t SPAN_LENGTH>
     inline void Ptr<ELEMENT_TYPE>::WriteRaw (span<POD_TYPE, SPAN_LENGTH> elts) const
-        requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
+        requires (same_as<ELEMENT_TYPE, byte> and is_trivial_v<POD_TYPE>)
     {
         this->Write (as_bytes (elts));
     }
