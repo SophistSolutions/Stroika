@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Memory {
     inline span<const byte> AsBytes (const T& elt)
         requires (is_trivial_v<T>)
     {
-        return as_bytes (span{&elt, 1});  //return span<const byte>{reinterpret_cast<const byte*> (&elt), sizeof (elt)};
+        return as_bytes (span{&elt, 1}); //return span<const byte>{reinterpret_cast<const byte*> (&elt), sizeof (elt)};
     }
     namespace Private_ {
         namespace OffsetOfImpl_ {
