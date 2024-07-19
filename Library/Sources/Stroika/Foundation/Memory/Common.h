@@ -71,6 +71,9 @@ namespace Stroika::Foundation::Memory {
 
     /**
      *  \brief 'cast' the given POD data type argument to a span<const byte> - a bit like std::as_bytes, but taking different arguments
+     * 
+     *  \note only works on POD (trivially_v<T>) data
+     *  \note returns address of argument, so use results before argument goes out of scope
      */
     template <typename T>
     span<const byte> AsBytes (const T& elt)
