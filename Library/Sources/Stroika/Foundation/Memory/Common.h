@@ -75,6 +75,7 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \note only works on POD (trivially_v<T>) data
      *  \note returns address of argument, so use results before argument goes out of scope
+     *  \note Similar to std::bit_cast<>, but always converts to span of bytes, and doesn't COPY anything - just 'casts' the elt to a span of bytes
      */
     template <typename T>
     span<const byte> AsBytes (const T& elt)

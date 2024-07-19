@@ -51,7 +51,7 @@ especially those they need to be aware of when upgrading.
     - Configuration
       - StdCompat formattable impl, and used in many places throughout Stroika (e.g. FormatString, DbgTrace)
       - defined kStrokia_Foundation_Configuration_cplusplus_23
-      - Configuraiton::kStroikaVersion constexpr variable
+      - Configuration::kStroikaVersion constexpr variable
     - DataExchange
       - ObjectVariantMapper
         - Major cleanup to ObjectVariantMapper code - **not fully backward compatible** ; 
