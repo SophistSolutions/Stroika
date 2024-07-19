@@ -7,6 +7,328 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+
+
+
+
+#### START 3.0d8 notes
+
+- defined kStrokia_Foundation_Configuration_cplusplus_23
+- Configuraiton::kStroikaVersion constexpr variable
+- Various docs/comments cleanups
+
+#if 0
+
+commit 657117011fb69d9669d17e13cca7991c239d2e3f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 11 19:15:44 2024 -0400
+
+    Math cleanups: major cleanups/improvements to NearlyEquals(); fix regtest to use numeric_limits<...>::digits10 - 1 and documented why; more concepts usages, and simplfications of Math::Abs(); new Math::infinity () and Configuration::StdCompat::isinf/isnan; qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy new define and workaround
+
+commit 7b2319b9b7a3fa0107d3a65d34ee38bc5655348b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 11 19:47:47 2024 -0400
+
+    changed static const FloatConversion::ToStringOptions kFmtOptions for variantValue to use :digits10 - 1 and documented why
+
+commit caf4f9645aa293f4dbe0b22227f6bbf9facaac04
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 11 21:22:48 2024 -0400
+
+    renamed ConnectionMnaager::pStatistics to 'statistics'; amnd in ConnectionMnager: added property bindings
+
+commit 4110823d6cc87213aa4b7f0783768eb3381b4e05
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 12 09:44:18 2024 -0400
+
+    experimental FloatConversion::Precision::kFull support
+
+commit fd5b5300fb03c5163cc297e1188f084e655bd0c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 12 12:40:43 2024 -0400
+
+    more cleanups for recent floatingpoint precsion code
+
+commit 438f0a1e220b6fa58fdf555a1f4ac07ceed358e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 07:46:12 2024 -0400
+
+    try revertin gto digits10 as fallback for Precision::GetEffectivePrecision
+
+commit f1c93fdc8d2544300dd3a11a7b5c8cd1d905255c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 07:49:34 2024 -0400
+
+    cleanup regests for Verify_FloatStringRoundtripNearlyEquals_
+
+commit b08707eab19807e7e567b9f7d0a196cb8563b5da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 07:50:02 2024 -0400
+
+    cleanup header for Frameworks/WebServer/ConnectionManager
+
+commit 582e50aeaf1429735c9aa0adef48c441dd850c0f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 09:03:31 2024 -0400
+
+    lose private  ToFloat_Legacy_ String2Float_LegacyStr2D_ and Legacy_Float2String_
+
+commit ee72f49002e7fb7092801e9ab19b25dc9eb26c4b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 09:48:24 2024 -0400
+
+    __cpp_lib_to_chars) != (not qCompilerAndStdLib_to_chars_FP_Buggy test
+
+commit 8e3d045b7b347012da7a9a4f30f8af1381870362
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Jul 13 10:24:09 2024 -0400
+
+    qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy bug define and BWA
+
+commit fcf49655aa49f1a93567c2d824e3793b6208354b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 10:59:37 2024 -0400
+
+    DEPRECATED DEFINE qCompilerAndStdLib_to_chars_FP_Buggy - no longer used as of 2024-07-14
+
+commit 5f43816467c0c9f7ac07bef5e16f7390e5b4ba7a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Jul 13 11:27:03 2024 -0400
+
+    qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy BWA and cleanups
+
+commit ccec7adb78476743b761238de70f8f99dd7fbfaf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 11:51:10 2024 -0400
+
+    Debug::IsThisProcessBeingDebugged () uses std::is_debugger_present if available
+
+commit 88b59e885d8d1f1b8f69d4c3b94039b1c3cef3a5
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Jul 13 11:47:00 2024 -0400
+
+    new imporved qCompilerAndStdLib_isinf_Valgrind_Buggy BWA
+
+commit 945a0a62f33b1263c0cd84cb792a983f967bbb4a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 14:10:53 2024 -0400
+
+    Major cleanup to ObjectVariantMapper code - **not fully backward compatible** ; deprecate StructFieldInfo::eOmitNullFields and NullFieldHandling in general,  in favor of new ClassMapperOptions<> argument to AddClass, AddSubClass, and MakeClassSerializer - and better handled the before/after mapping guys using that same options object. NOT BACK COMPAT part - MOSYL - is cannot specify omit/include on per field basis, but on a per AddClass basis, and default changed from include-nulls, to omit-nulls
+
+commit cfe23537b0b343610b46005f3b23830be4d66b60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 14:29:29 2024 -0400
+
+    fixed typos and added docs to ObjectVariantMapper
+
+commit 9876412b9efb38c8a57e0d7cc5ab5960698ca79c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 14:48:00 2024 -0400
+
+    fixed subtle regression with ObjectVariantMapper::AddSubclass (fbeforefrom etc unsign wrong class arg to Fron/ToObejctMapper
+
+commit 485faa659d126d5f7c08d9be5c60f6ebed399fd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 14:55:44 2024 -0400
+
+    improved assert messages and fixed regtest to work with rehjmect objectvariantmapper changes
+
+commit 59d87326d1fbda363ef564c5018664b17934de3d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 15:20:28 2024 -0400
+
+    in sql sample - write to stdout instead of dbgtrace since probbaly makes better sample that way
+
+commit 9ba20f69c6bb5f313185ba464a498107c6b6165c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 15:55:32 2024 -0400
+
+    regtest 41 cleanups
+
+commit 48d66fa2f7dc2035c9453f987aa88ae2f2739e87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 20:29:31 2024 -0400
+
+    resolve ambiguity that shows up with clang++15 on FormatString<CHAR_T>::operator()
+
+commit 11f46d10c72fc08fe074114cce36933971afcc65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 20:50:26 2024 -0400
+
+    Added draft Configuration/StdCompat formattable
+
+commit 7bc4eb85726eada11ac431cea749ead904eac63c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 23:02:22 2024 -0400
+
+    minro fixes to #if __cplusplus check and include
+
+commit 72143369dd66f99ec4f218e65dd89f6107e0dc52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 13 23:02:43 2024 -0400
+
+    experiment using Configuration::StdCompat::formattable
+
+commit 9128035b3f88891d67cdee2b30135c737f6e9075
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jul 14 10:08:56 2024 -0400
+
+    fix recent StdCompat formatablle code for g++12
+
+commit 9eff93559737867430632d884cbde92a8d6b4290
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jul 14 10:09:56 2024 -0400
+
+    simplify new AddClass usage
+
+commit d7d0609ca21e0cb0948b367b1657b310ca9a3282
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jul 14 11:04:43 2024 -0400
+
+    lose explicit calls to StructFieldMetaInfo{} - in hundreds of contexts - leverage implicit conversion - much cleaner looking AddClass() usage
+
+commit fb796e360955af1772ad495e6800bbcba5fc5996
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jul 14 11:56:14 2024 -0400
+
+    BWA (undefined) inside StdCompat code
+
+commit 898ffd75d51e6190c3b309571aa55f0b54b30a86
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jul 14 22:24:21 2024 -0400
+
+    libxml2 2.13.2
+
+commit 5be764d4372f8b7c610fbbd3ecda557481ef3fea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jul 14 22:25:17 2024 -0400
+
+    Draft libxml2 support for error handlers (hope address issue i saw on WTF with errors speewing to stdout)
+
+commit c4fae7831f0db16805f46251135126a828120f77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 15 14:40:34 2024 -0400
+
+    libxml2: use xmlSaveToBuffer instead of xmlDocDumpFormatMemoryEnc () since that has options to control XML_SAVE_NO_EMPTY which changed in libxml2 2.13.1
+
+commit 3b7e11c7dc3987c3d2deabb46e92230543087b95
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jul 16 12:08:23 2024 -0400
+
+    improved qCompilerAndStdLib_isinf_Valgrind_Buggy BWA
+
+commit 24ab1e6c9780188487a999973327aa048b3b12b5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 16 21:37:20 2024 -0400
+
+    use Configuration::StdCompat::formattable for DbgTrace
+
+commit ad2433deaad9b15b38dcbaae9f69b014a290adba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 16 21:39:22 2024 -0400
+
+    onfiguration::StdCompat::formattable use on FormatString <>... operator() args
+
+commit 71a4c783a6545dd64d4c5b75107019bf8454109e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 17 08:48:33 2024 -0400
+
+    More use of :StdCompat::formattable
+
+commit 14b8d8f4fc40abc498f6092d989f4a00e21c6105
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Jul 17 09:01:51 2024 -0400
+
+    fix dbgtrace call using typeid to wrap in type_index since type_info doesn't work with format strings  - not copyable
+
+commit 35efbda979c1d6b1e898fe077154c9ecd58e3739
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 17 13:10:37 2024 -0400
+
+    qCompilerAndStdLib_formattable_of_tuple_Buggy BWA
+
+commit 9daea04854c4fbeb6241942420bb880857a54757
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Jul 17 13:19:44 2024 -0400
+
+    qCompilerAndStdLib_formattable_of_tuple_Buggy progress
+
+commit 8ea7a027e508831f18fb1c9a8f4133c110afc3a2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 17 14:18:40 2024 -0400
+
+    deprecated String::Remove() in favor of RemoveFirstIf, and RemoveAll methods
+
+commit 08856963f96f2f5ca6d41e02cad2b9cb94a7314b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 17 14:22:55 2024 -0400
+
+    cleanup issue with InternetMediaTypeNotSupportedException
+
+commit e0a833a595ba27dda4d063319dd14f6e2b3cf77e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 10:52:02 2024 -0400
+
+    slight refactoring so more separation between Format module, and ToString module (so can now just include Format.h to get format function and dont need to include both)
+
+commit 5fcfebec7470c30c46880994b417cb7e1300f20b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 11:17:41 2024 -0400
+
+    googletest version 1.15.0
+
+commit 7ea3da17b5cb753d171589d14077ac6113cb802d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 11:18:40 2024 -0400
+
+    fmtlib 11.0.1
+
+commit 0f061c802a1c0221d61d72d8d2ac56e990195c61
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jul 18 13:09:07 2024 -0400
+
+    workarounds for use of qHasFeature_fmtlib FMT_VERSION >= 110000
+
+commit 69ee621a6f72271ef8eb2b0ae8cb751b65105e90
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 13:17:40 2024 -0400
+
+    fix typo in recent fmtlib BWA
+
+commit d0426edd04eb1ec5a31de8b9e6e86b16da67ff60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 16:38:33 2024 -0400
+
+    Iterable<>::As () now takes ... forwarded argument passed to ctor of target container being created (before iterators)
+
+commit 9dba214089c423aa022bd696021f02310e1aff1e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 16:40:44 2024 -0400
+
+    IO::HTTP::Headers: use concepts in As() method; and fixed returned assocation/mapping to use kHeaderNameEqualsComparer; and sidestpeed issue (for performance) and directly call LookupOne() or property accessors like origin, server etc (either change would have fixed bug where headers were being often, but not always, compared case sensitively not case insensitively)
+
+commit 647c6746908bcd89403ac73d6c3d90bee18bc0c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 18:19:35 2024 -0400
+
+    WriteRaw now uses is_trivail inadste of is_standard_layout_v so BLOB doesn't inadvertantly match
+
+commit 62370c9f9e18f227f3c5e5121177fe029cf488f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 21:17:45 2024 -0400
+
+    deprecated OutputStream::WriteRaw
+
+commit d250b1ee08b5296ca832fe9d738fa0a02660acef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 18 21:39:01 2024 -0400
+
+    Added Memory::AsBytes () utility and used to workaround deprecated WriteRaw
+
+#endif
+
+
 ---
 
 ### 3.0d7 {2024-07-11} {[diff](../../compare/v3.0d6...v3.0d7)}
