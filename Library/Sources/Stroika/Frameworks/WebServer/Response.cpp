@@ -315,18 +315,18 @@ void Response::StateTransition_ (State to)
                 wstring  version = L"1.1";
                 wstring  tmp     = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
                 u8string utf8    = String{tmp}.AsUTF8 ();
-                fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
+                fUseOutStream_.Write (as_bytes (span{utf8.data (), utf8.length ()}));
             }
             {
                 for (const auto& i : this->headers ().As<> ()) {
                     u8string utf8 = Characters::Format ("{}: {}\r\n"_f, i.fKey, i.fValue).AsUTF8 ();
-                    fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
+                    fUseOutStream_.Write (as_bytes (span{utf8.data (), utf8.length ()}));
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("headers: {}"_f, headers ());
 #endif
             }
-            fUseOutStream_.WriteRaw (span{kCRLF_, ::strlen (kCRLF_)});
+            fUseOutStream_.Write (as_bytes (span{kCRLF_, ::strlen (kCRLF_)}));
         }
         fState_ = to;
         if constexpr (qDebug) {
@@ -380,9 +380,9 @@ void Response::WriteChunk_ (span<const byte> rawBytes)
 #endif
     // note rawBytes maybe empty - in fact the final chunk is always empty
     string n = CString::Format ("%x\r\n", static_cast<unsigned int> (rawBytes.size ()));
-    fUseOutStream_.WriteRaw (span{n.data (), n.size ()});
+    fUseOutStream_.Write (as_bytes (span{n.data (), n.size ()}));
     fUseOutStream_.Write (rawBytes);
-    fUseOutStream_.WriteRaw (span{kCRLF_, strlen (kCRLF_)});
+    fUseOutStream_.Write (as_bytes (span{kCRLF_, strlen (kCRLF_)}));
 }
 
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
