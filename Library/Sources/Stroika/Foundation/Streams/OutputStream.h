@@ -165,40 +165,11 @@ namespace Stroika::Foundation::Streams::OutputStream {
 
     public:
         /**
-         *  For Character output streams only - do a Write () with the given argument, followed by a newline.
+         *  For Character output streams only - do a Write () with the given argument, followed by a Characters::kEOL.
          */
         template <typename ELT_2_WRITE>
         nonvirtual void WriteLn (ELT_2_WRITE&& arg) const
             requires (same_as<ELEMENT_TYPE, Characters::Character>);
-
-    public:
-        /**
-         *      WriteRaw () only applies to binary (ELEMENT_TYPE=byte) streams. It allows easily writing POD (plain old data) types
-         *      to the stream.
-         *
-         *      WriteRaw (X) is an alias for WriteRaw (span{&x, 1})
-         *      WriteRaw (span) writes all the POD records from start to end to the binary stream.
-         * 
-         *  @todo consider LOSING this in favor or Write (as_bytes (X)) - since the same as that too!!
-         * ``        see what as_bytes () does on a string...
-         *
-         *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
-         *            non-POD data, not hard, but we don't want to encourage it.
-         *
-         *  \req is_trivially_copyable_v<POD_TYPE> and is_standard_layout_v<POD_TYPE>
-         *  \req ELEMENT_TYPE==byte
-         *  \req IsOpen ()
-         *
-         *  shorthand for declaring
-         *      POD_TYPE    tmp;
-         *      Write ((byte*)&tmp, (byte*)(&tmp+1));
-         */
-        template <typename POD_TYPE>
-        nonvirtual void WriteRaw (const POD_TYPE& p) const
-            requires (same_as<ELEMENT_TYPE, byte> and is_trivial_v<POD_TYPE> and not Memory::ISpan<POD_TYPE>);
-        template <typename POD_TYPE, size_t SPAN_LENGTH>
-        nonvirtual void WriteRaw (span<POD_TYPE, SPAN_LENGTH> elts) const
-            requires (same_as<ELEMENT_TYPE, byte> and is_trivial_v<POD_TYPE>);
 
     public:
         /**
@@ -330,6 +301,18 @@ namespace Stroika::Foundation::Streams::OutputStream {
             requires (same_as<ELEMENT_TYPE, Characters::Character>)
         {
             this->Write (span{start, end});
+        }
+        template <typename POD_TYPE>
+        [[deprecated ("Since Stroika v3.0d8 - use Write (as_bytes (span{&p, 1}));")]] void WriteRaw (const POD_TYPE& p) const
+            requires (same_as<ELEMENT_TYPE, byte> and is_trivial_v<POD_TYPE> and not Memory::ISpan<POD_TYPE>)
+        {
+            this->Write (as_bytes (span{&p, 1}));
+        }
+        template <typename POD_TYPE, size_t SPAN_LENGTH>
+        [[deprecated ("Since Stroika v3.0d8 - use Write(as_bytes(p))")]] void WriteRaw (span<POD_TYPE, SPAN_LENGTH> elts) const
+            requires (same_as<ELEMENT_TYPE, byte> and is_trivial_v<POD_TYPE>)
+        {
+            this->Write (as_bytes (elts));
         }
     };
 
