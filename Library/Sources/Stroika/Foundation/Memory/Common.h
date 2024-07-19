@@ -70,6 +70,13 @@ namespace Stroika::Foundation::Memory {
     constexpr strong_ordering MemCmp (span<T> lhs, span<T> rhs);
 
     /**
+     *  \brief 'cast' the given POD data type argument to a span<const byte> - a bit like std::as_bytes, but taking different arguments
+     */
+    template <typename T>
+    span<const byte> AsBytes (const T& elt)
+        requires (is_trivial_v<T>);
+
+    /**
      *  \brief use Memory::OffsetOf(&CLASS::MEMBER) in place of offsetof(CLASS,MEMBER) to avoid compiler warnings, and cuz easier to 
      *         map from other constructors (e.g. StructFieldMetaInfo) cuz ptr to member legit C++ object, whereas CLASS and MEMBER are not.
      * 

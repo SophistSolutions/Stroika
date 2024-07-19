@@ -252,8 +252,8 @@ namespace {
                                                static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
                                                                       sizeof (responseLen) + responseLen),
                                                requestHeader.fUnitID, requestHeader.fFunctionCode};
-                            out.WriteRaw (ToNetwork_ (responseHeader));
-                            out.WriteRaw (responseLen);
+                            out.Write (Memory::AsBytes (ToNetwork_ (responseHeader)));
+                            out.Write (Memory::AsBytes (responseLen));
                             out.Write (span{results.begin (), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace ("Sent response: header={}, responseLen={}, responsePayload={}"_f, responseHeader, responseLen,
@@ -294,8 +294,8 @@ namespace {
                                                static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
                                                                       sizeof (responseLen) + responseLen),
                                                requestHeader.fUnitID, requestHeader.fFunctionCode};
-                            out.WriteRaw (ToNetwork_ (responseHeader));
-                            out.WriteRaw (responseLen);
+                            out.Write (Memory::AsBytes (ToNetwork_ (responseHeader)));
+                            out.Write (Memory::AsBytes (responseLen));
                             out.Write (span{results.begin (), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace ("Sent response: header={}, responseLen={}"_f, responseHeader, responseLen);
@@ -331,8 +331,8 @@ namespace {
                                                static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
                                                                       sizeof (responseLen) + responseLen),
                                                requestHeader.fUnitID, requestHeader.fFunctionCode};
-                            out.WriteRaw (ToNetwork_ (responseHeader));
-                            out.WriteRaw (responseLen);
+                            out.Write (Memory::AsBytes (ToNetwork_ (responseHeader)));
+                            out.Write (Memory::AsBytes (responseLen));
                             out.Write (span{reinterpret_cast<const byte*> (results.begin ()), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace ("Sent response: header={}, responseLen={}"_f, responseHeader, responseLen);
@@ -368,8 +368,8 @@ namespace {
                                                static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
                                                                       sizeof (responseLen) + responseLen),
                                                requestHeader.fUnitID, requestHeader.fFunctionCode};
-                            out.WriteRaw (ToNetwork_ (responseHeader));
-                            out.WriteRaw (responseLen);
+                            out.Write (Memory::AsBytes (ToNetwork_ (responseHeader)));
+                            out.Write (Memory::AsBytes (responseLen));
                             out.Write (span{reinterpret_cast<const byte*> (results.begin ()), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace ("Sent response: header={}, responseLen={}"_f, responseHeader, responseLen);
@@ -389,9 +389,9 @@ namespace {
                         serviceHandler->WriteCoils ({{zeroToOneBased (outputAddress), value == 0 ? false : true}});
                         {
                             // Response ready - format, toNetwork, and write
-                            out.WriteRaw (requestHeader);
-                            out.WriteRaw (ToNetwork_ (outputAddress));
-                            out.WriteRaw (ToNetwork_ (value));
+                            out.Write (Memory::AsBytes (requestHeader));
+                            out.Write (Memory::AsBytes (ToNetwork_ (outputAddress)));
+                            out.Write (Memory::AsBytes (ToNetwork_ (value)));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace ("Sent response: header={}"_f, requestHeader);
 #endif
@@ -405,8 +405,8 @@ namespace {
                         }
                         MBAPHeaderIsh_ responseHeader = requestHeader;
                         responseHeader.fFunctionCode = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
-                        out.WriteRaw (ToNetwork_ (responseHeader));
-                        out.WriteRaw (static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION));
+                        out.Write (Memory::AsBytes (ToNetwork_ (responseHeader)));
+                        out.Write (Memory::AsBytes (static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION)));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace ("Sent UNREGONIZED_FUNCTION response: header={}, and exceptionCode={}"_f, responseHeader, exceptionCode);
 #endif

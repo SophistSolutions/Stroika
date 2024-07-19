@@ -71,7 +71,12 @@ namespace Stroika::Foundation::Memory {
     {
         return MemCmp (ConstSpan (lhs), ConstSpan (rhs));
     }
-
+    template <typename T>
+    inline span<const byte> AsBytes (const T& elt)
+        requires (is_trivial_v<T>)
+    {
+        return as_bytes (span{&elt, 1});  //return span<const byte>{reinterpret_cast<const byte*> (&elt), sizeof (elt)};
+    }
     namespace Private_ {
         namespace OffsetOfImpl_ {
             namespace UsingRecursiveSideStruct_ {
