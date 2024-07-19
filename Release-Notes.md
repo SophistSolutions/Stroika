@@ -9,71 +9,22 @@ especially those they need to be aware of when upgrading.
 
 
 
+### 3.0d8 {2024-07-20} {[diff](../../compare/v3.0d7...v3.0d8)}   --DRAFT
 
-#### START 3.0d8 notes
+#### TLDR
+- Fixed WebServer issue processing lower-case headers (some comparisons were case sensitive in IO::Network::HTTP::Headers)
+- ObjectVariantMapper significant cleanups/simplifications
+- more/better concepts usage
+- Math/isnan/precision improvements (formatting)
 
-- defined kStrokia_Foundation_Configuration_cplusplus_23
-- Configuraiton::kStroikaVersion constexpr variable
+#### Upgrade Notes (3.0d7 to 3.0d8)
+- ObjectVariantMapper
+  - no longer need StructFieldInfo{} explicitly - see examples - much simpler now (bit still works)
+  - StructFieldInfo::eOmitNullFields no longer needed, and now the default (to get non-ndefalt behavior, AddClass takes ClassMapperOptions - {.fOmitNullEntriesInFromObject=false} )
+
+#### Change Details
+
 - Various docs/comments cleanups
-- Characters
-  - FloatConversion
-    - changed static const FloatConversion::ToStringOptions kFmtOptions for variantValue to use :digits10 - 1 and documented why
-    - experimental FloatConversion::Precision::kFull support
-    - Precision::GetEffectivePrecision
-    - lose private ToFloat_Legacy_ String2Float_LegacyStr2D_ and Legacy_Float2String_
-  - Format
-    - resolve ambiguity that shows up with clang++15 on FormatString<CHAR_T>::operator()
-    - Cleanned up dependencies between Format and ToString, to address an issue compiling InternetMediaTypeNotSupportedException
-      - slight refactoring so more separation between Format module, and ToString module 
-        (so can now just include Format.h to get format function and dont need to include both)
-
-  - String
-    - deprecated String::Remove() in favor of RemoveFirstIf, and RemoveAll methods
-
-- Configuration
-  - StdCompat formattable impl, and used in many places throughout Stroika (e.g. FormatString, DbgTrace)
-
-- DataExchange
-  - ObjectVariantMapper
-    - Major cleanup to ObjectVariantMapper code - **not fully backward compatible** ; 
-      deprecate StructFieldInfo::eOmitNullFields and NullFieldHandling in general,  
-      in favor of new ClassMapperOptions<> argument to AddClass, AddSubClass, and MakeClassSerializer - 
-      and better handled the before/after mapping guys using that same options object. NOT BACK COMPAT part -
-      MOSTLY - is cannot specify omit/include on per field basis, but on a per AddClass basis,
-      and default changed from include-nulls, to omit-nulls
-    - simplify new AddClass usage
-    - lose explicit calls to StructFieldMetaInfo{} - in hundreds of contexts - leverage implicit conversion - much cleaner looking AddClass() usage
-
-- Debug
-  - Debug::IsThisProcessBeingDebugged () uses std::is_debugger_present if available
-
-- IO
-  - Network
-    - HTTP
-      - IO::HTTP::Headers: use concepts in As() method; and fixed returned assocation/mapping to use kHeaderNameEqualsComparer; 
-        and sidestpeed issue (for performance) and directly call LookupOne() or property accessors like origin, 
-        server etc (either change would have fixed bug where headers were being often, but not always, compared case sensitively not case insensitively)
-
-- Math
-  - major cleanups/improvements to NearlyEquals(); 
-    - fix regtest to use numeric_limits<...>::digits10 - 1 and documented why; 
-  - more concepts usages
-  - simplfications of Math::Abs();
-  - Math::infinity () 
-  - Configuration::StdCompat::isinf/isnan; 
-  - cleanup regests for Verify_FloatStringRoundtripNearlyEquals_ and bug workarounds
-- Memory
-  -     Added Memory::AsBytes () utility and used to workaround deprecated OutputStream<>::WriteRaw
-
-- Streams
-  - OutputStream
-    - WriteRaw now uses is_trivail inadste of is_standard_layout_v so BLOB doesn't inadvertantly match
-    - deprecated OutputStream::WriteRaw
-- Traversal
-  - Iterable
-    -  Iterable<>::As () now takes ... forwarded argument passed to ctor of target container being created (before iterators)
-
-
 - Compilers Bug Workarounds
   - qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy new define and workaround
   - DEPRECATED DEFINE qCompilerAndStdLib_to_chars_FP_Buggy - no longer used as - check __cpp_lib_to_chars of 2024-07-14
@@ -82,10 +33,70 @@ especially those they need to be aware of when upgrading.
   - improved qCompilerAndStdLib_isinf_Valgrind_Buggy BWA
   - qCompilerAndStdLib_formattable_of_tuple_Buggy BWA
 
-- Frameworks
-  - WebServer
-    - cleanup header for Frameworks/WebServer/ConnectionManager
-    - renamed ConnectionMnaager::pStatistics to 'statistics'; amnd in ConnectionMnager: added property bindings
+- Library
+  - Foundation
+    - Characters
+      - FloatConversion
+        - changed static const FloatConversion::ToStringOptions kFmtOptions for variantValue to use :digits10 - 1 and documented why
+        - experimental FloatConversion::Precision::kFull support
+        - Precision::GetEffectivePrecision
+        - lose private ToFloat_Legacy_ String2Float_LegacyStr2D_ and Legacy_Float2String_
+      - Format
+        - resolve ambiguity that shows up with clang++15 on FormatString<CHAR_T>::operator()
+        - Cleanned up dependencies between Format and ToString, to address an issue compiling InternetMediaTypeNotSupportedException
+          - slight refactoring so more separation between Format module, and ToString module 
+            (so can now just include Format.h to get format function and dont need to include both)
+      - String
+        - deprecated String::Remove() in favor of RemoveFirstIf, and RemoveAll methods
+    - Configuration
+      - StdCompat formattable impl, and used in many places throughout Stroika (e.g. FormatString, DbgTrace)
+      - defined kStrokia_Foundation_Configuration_cplusplus_23
+      - Configuraiton::kStroikaVersion constexpr variable
+    - DataExchange
+      - ObjectVariantMapper
+        - Major cleanup to ObjectVariantMapper code - **not fully backward compatible** ; 
+          deprecate StructFieldInfo::eOmitNullFields and NullFieldHandling in general,  
+          in favor of new ClassMapperOptions<> argument to AddClass, AddSubClass, and MakeClassSerializer - 
+          and better handled the before/after mapping guys using that same options object. NOT BACK COMPAT part -
+          MOSTLY - is cannot specify omit/include on per field basis, but on a per AddClass basis,
+          and default changed from include-nulls, to omit-nulls
+        - simplify new AddClass usage
+        - lose explicit calls to StructFieldMetaInfo{} - in hundreds of contexts - leverage implicit conversion - much cleaner looking AddClass() usage
+      - StructuredStreamEvents
+          fix dbgtrace call using typeid to wrap in type_index since type_info doesn't work with format strings  - not copyable
+      - XML
+        - libxml2
+          - support for error handlers (address issue i saw on WTF with errors speewing to stdout)
+          - use xmlSaveToBuffer instead of xmlDocDumpFormatMemoryEnc () since that has options to control XML_SAVE_NO_EMPTY which changed in libxml2 2.13.1
+    - Debug
+      - Debug::IsThisProcessBeingDebugged () uses std::is_debugger_present if available
+    - IO
+      - Network
+        - HTTP
+          - IO::HTTP::Headers: use concepts in As() method; and fixed returned assocation/mapping to use kHeaderNameEqualsComparer; 
+            and sidestpeed issue (for performance) and directly call LookupOne() or property accessors like origin, 
+            server etc (either change would have fixed bug where headers were being often, but not always, compared case sensitively not case insensitively)
+    - Math
+      - major cleanups/improvements to NearlyEquals(); 
+        - fix regtest to use numeric_limits<...>::digits10 - 1 and documented why; 
+      - more concepts usages
+      - simplfications of Math::Abs();
+      - Math::infinity () 
+      - Configuration::StdCompat::isinf/isnan; 
+      - cleanup regests for Verify_FloatStringRoundtripNearlyEquals_ and bug workarounds
+    - Memory
+      - Added Memory::AsBytes () utility and used to workaround deprecated OutputStream<>::WriteRaw
+    - Streams
+      - OutputStream
+        - WriteRaw now uses is_trivail inadste of is_standard_layout_v so BLOB doesn't inadvertantly match
+        - deprecated OutputStream::WriteRaw
+    - Traversal
+      - Iterable
+        -  Iterable<>::As () now takes ... forwarded argument passed to ctor of target container being created (before iterators)
+  - Frameworks
+    - WebServer
+      - cleanup header for Frameworks/WebServer/ConnectionManager
+      - renamed ConnectionMnaager::pStatistics to 'statistics'; amnd in ConnectionMnager: added property bindings
 
 - Samples
   - SQL
@@ -103,12 +114,38 @@ especially those they need to be aware of when upgrading.
      - VERSION 11.0.1
        - prompted lots of BWA check for use of qHasFeature_fmtlib FMT_VERSION >= 110000
 
+#### Release-Validation
 
-- Draft libxml2 support for error handlers (hope address issue i saw on WTF with errors speewing to stdout)
-    libxml2: use xmlSaveToBuffer instead of xmlDocDumpFormatMemoryEnc () since that has options to control XML_SAVE_NO_EMPTY which changed in libxml2 2.13.1
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 14, 15, 16, 17, 18; XCode: 15.2, 15.3}
+  - MSVC: { 17.10.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 14.4 - arm64/m1 chip
+    - 14.3, 14.4 on github actions
+  - Linux: { Ubuntu: [22.04, 23.10, 24.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, DEBIABVERSION###), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+  - Ubuntu 24.04
+    - TSAN somewhat broken - https://stroika.atlassian.net/browse/STK-1010
 
-- DataExchange/StructuredStreamEvents
-    fix dbgtrace call using typeid to wrap in type_index since type_info doesn't work with format strings  - not copyable
+
 
 
 
