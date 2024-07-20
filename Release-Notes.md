@@ -7,9 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
-
-### 3.0d8 {2024-07-20} {[diff](../../compare/v3.0d7...v3.0d8)}   --DRAFT
+### 3.0d8 {2024-07-20} {[diff](../../compare/v3.0d7...v3.0d8)}
 
 #### TLDR
 - Fixed WebServer issue processing lower-case headers (some comparisons were case sensitive in IO::Network::HTTP::Headers)
@@ -23,16 +21,15 @@ especially those they need to be aware of when upgrading.
   - StructFieldInfo::eOmitNullFields no longer needed, and now the default (to get non-ndefalt behavior, AddClass takes ClassMapperOptions - {.fOmitNullEntriesInFromObject=false} )
 
 #### Change Details
-
 - Various docs/comments cleanups
-- Compilers Bug Workarounds
-  - qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy new define and workaround
-  - DEPRECATED DEFINE qCompilerAndStdLib_to_chars_FP_Buggy - no longer used as - check __cpp_lib_to_chars of 2024-07-14
-  - qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy bug define and BWA
-  - qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy BWA and cleanups
-  - improved qCompilerAndStdLib_isinf_Valgrind_Buggy BWA
-  - qCompilerAndStdLib_formattable_of_tuple_Buggy BWA
-
+- Build System
+  - Compilers Bug Workarounds
+    - qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy new define and workaround
+    - DEPRECATED DEFINE qCompilerAndStdLib_to_chars_FP_Buggy - no longer used as - check __cpp_lib_to_chars of 2024-07-14
+    - qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy bug define and BWA
+    - qCompilerAndStdLib_NearlyEqualsInfinityCompareValgrind_Buggy BWA and cleanups
+    - improved qCompilerAndStdLib_isinf_Valgrind_Buggy BWA
+    - qCompilerAndStdLib_formattable_of_tuple_Buggy BWA
 - Library
   - Foundation
     - Characters
@@ -97,14 +94,11 @@ especially those they need to be aware of when upgrading.
     - WebServer
       - cleanup header for Frameworks/WebServer/ConnectionManager
       - renamed ConnectionMnaager::pStatistics to 'statistics'; amnd in ConnectionMnager: added property bindings
-
 - Samples
   - SQL
     - write to stdout instead of dbgtrace since probbaly makes better sample that way
-
 - RegressionTests
   - cleaned up regtest 41 (convert to GTEST_TEST style)
-
 - ThirdPartyComponents
   - libxml2
     - VERSION 2.13.2
@@ -115,7 +109,6 @@ especially those they need to be aware of when upgrading.
        - prompted lots of BWA check for use of qHasFeature_fmtlib FMT_VERSION >= 110000
 
 #### Release-Validation
-
 - Compilers Tested/Supported
   - g++ { 11, 12, 13, 14 }
   - Clang++ { unix: 14, 15, 16, 17, 18; XCode: 15.2, 15.3}
@@ -144,10 +137,6 @@ especially those they need to be aware of when upgrading.
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
   - Ubuntu 24.04
     - TSAN somewhat broken - https://stroika.atlassian.net/browse/STK-1010
-
-
-
-
 
 ---
 
@@ -936,15 +925,12 @@ especially those they need to be aware of when upgrading.
       - Streams::TextToByteReader uses new IterableToInputStream::New to add Iterable<Character> overload to New; and switched to new namespace style for this streams class
     - SharedMemoryStream
       - SharedMemoryStream no longer accepts overloads with InternallySynchronized parameter - since always internallyschrhonized
-    
     - InternallySyncrhonizedXXXStream: 
       - big cleanups to (and mostly convert to namesapce from quasinamespace code) InternallySynchronizedInputStream, InternallySynchronizedOutputStream, and InternallySynchronizedInputOutputStream
-
     - OpenSSLInputStream/OpenSSLOutputStream
     - FileInputStream/FileOutputStream
     - SplitterOutputStream
     - new ExternallyOwnedSpanInputStream : replacing deprecated ExternallyOwnedMemoryInputStream
-
     - progress on zlib reader compression/decompress new ReadNonBlocking support
     - more cleanups of Compression/Zip/Reader code and other stream code
     - Added InputStreamDelegationHelper helper
@@ -979,19 +965,14 @@ especially those they need to be aware of when upgrading.
   - Traversal
     - Iterable
       - declare Iterable<>::iterator / const_iterator for easier STL interoperability
-
       - Map **major not backward compat change**
         - new impl - now supports lazy eval for Iterable<T>
         - now has container arg first, and no longer has element arg - but defaults much better so often can be omitted
       - Where cleanup - using perfect forwarding and concepts and better subclass tuning in Containers like Set etc.
       - Improved Iterable::First/FirstValue/Last/LastValue with concepts and cleaned use
       - Iterable<>::Join significant implementation changes, api about the same
-
-
     - Iterator
       - Minor clenaups to Iterator<> code - mostly using const in a few more places
-
-
     - Range
       - Migrate Foundation::Traversal::Openness type to Traversal Common.h file, so can be used elsewhere (without #include Range.h which pulls alot in); no namespace changes
       - new operator<=> just returing partial_ordering (was briefly called DefinitelyLessThan)
@@ -1109,7 +1090,6 @@ especially those they need to be aware of when upgrading.
 - Known (minor) issues with regression test output
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
-
 
 ---
 
@@ -1461,7 +1441,6 @@ especially those they need to be aware of when upgrading.
 - merged (in a sense) StackBuffer/InlineBuffer (at least impls), and tweaked InlineBuffer more
 
 #### Change Details
-
 - Documentation
   - design overview docs tweaks
 - Library
@@ -1661,7 +1640,6 @@ especially those they need to be aware of when upgrading.
 - DateTime rewritten on top of C++20 date time library improvements
 
 #### Change Details
-
 - Documentation
   - [v3 Roadmap](https://github.com/SophistSolutions/Stroika/discussions/120)
   - [Design Overview.md](Documentation/Design%20Overview.md)
