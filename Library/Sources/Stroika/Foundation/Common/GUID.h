@@ -133,6 +133,18 @@ namespace Stroika::Foundation::DataExchange {
     };
 }
 
+
+#if qHasFeature_fmtlib && (FMT_VERSION >= 110000)
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, wchar_t>
+    : Stroika::Foundation::Characters::ToStringFormatter<Stroika::Foundation::Common::GUID> {};
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, char>
+    : Stroika::Foundation::Characters::ToStringFormatterASCII<Stroika::Foundation::Common::GUID> {};
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<Stroika::Foundation::Common::GUID, wchar_t>);
+ #endif
+ 
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
