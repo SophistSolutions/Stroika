@@ -22,8 +22,8 @@ endif
 .NOTPARALLEL:
 
 # https://github.com/fmtlib/fmt/releases
-VERSION:=11.0.1
-#VERSION:=10.2.1
+#VERSION:=11.0.1
+VERSION:=10.2.1
 
 ZIPPEDFILE:=../Origs-Cache/fmtlib-$(VERSION).zip
 

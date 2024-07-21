@@ -147,3 +147,11 @@ namespace Stroika::Foundation::Configuration {
         {DataExchange::VariantValue::eMap, L"Map"},
     }}};
 }
+
+
+#if qHasFeature_fmtlib && (FMT_VERSION >= 110000)
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String,Stroika::Foundation::DataExchange::VariantValue>, wchar_t>;
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String,Stroika::Foundation::DataExchange::VariantValue>, char>;
+ #endif
