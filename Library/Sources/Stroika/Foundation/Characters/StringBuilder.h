@@ -345,18 +345,6 @@ namespace Stroika::Foundation::Characters {
 
 }
 
-// workaround issue with fmtlib > 11.0.0 - too aggressively matching (design flaw with std::formatter registration scheme IMHO)
-#if (qHasFeature_fmtlib && (FMT_VERSION >= 110000)) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 180000)
-#include "Stroika/Foundation/Characters/ToString.h"
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::StringBuilder<>, wchar_t>
-    : Stroika::Foundation::Characters::ToStringFormatter<Stroika::Foundation::Characters::StringBuilder<>> {};
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::StringBuilder<>, char>
-    : Stroika::Foundation::Characters::ToStringFormatterASCII<Stroika::Foundation::Characters::StringBuilder<>> {};
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<Stroika::Foundation::Characters::StringBuilder<>, wchar_t>);
-#endif
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

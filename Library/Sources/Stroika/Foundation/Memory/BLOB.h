@@ -456,18 +456,6 @@ namespace Stroika::Foundation::Memory {
 
 }
 
-// workaround issue with fmtlib > 11.0.0 - too aggressively matching (design flaw with std::formatter registration scheme IMHO)
-#if qHasFeature_fmtlib && (FMT_VERSION >= 110000)
-#include "Stroika/Foundation/Characters/ToString.h"
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Memory::BLOB, wchar_t>
-    : Stroika::Foundation::Characters::ToStringFormatter<Stroika::Foundation::Memory::BLOB> {};
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Memory::BLOB, char>
-    : Stroika::Foundation::Characters::ToStringFormatterASCII<Stroika::Foundation::Memory::BLOB> {};
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<Stroika::Foundation::Memory::BLOB, wchar_t>);
-#endif
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

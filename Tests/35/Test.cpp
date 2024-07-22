@@ -174,9 +174,7 @@ namespace {
             EXPECT_EQ (roundTrip (optional<String>{}), nullopt);
             EXPECT_EQ (roundTrip (optional<String>{String{}}), nullopt); // oops - but really how could it tell?
         }
-        Mapping<String,VariantValue> aa = Mapping<String,VariantValue>{{"a", 3}};
-        //DbgTrace ("mapping_vv={}"_f, aa);
-
+        DbgTrace ("mapping_vv={}"_f, Mapping<String, VariantValue>{{"a", 3}});
     }
 }
 

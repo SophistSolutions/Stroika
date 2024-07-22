@@ -8,7 +8,10 @@
 
 #include <ios>
 #include <optional>
+#include <queue>
 #include <sstream>
+#include <stack>
+#include <stacktrace>
 #include <thread>
 #include <tuple>
 #include <typeindex>
@@ -29,6 +32,24 @@
  *  TODO:
  *      @todo   ToString(tuple) should use variadic templates and support multiple (past 3) args
  */
+
+#if qHasFeature_fmtlib && (FMT_VERSION >= 110000)
+namespace Stroika::Foundation::Characters {
+    template <typename BUF_CHAR_T, size_t INLINE_BUF_SIZE>
+    struct StringBuilder_Options;
+    template <typename OPTIONS>
+    struct StringBuilder;
+}
+namespace Stroika::Foundation::Common {
+    struct GUID;
+}
+namespace Stroika::Foundation::DataExchange {
+    class VariantValue;
+}
+namespace Stroika::Foundation::Memory {
+    class BLOB;
+}
+#endif
 
 namespace Stroika::Foundation::Characters {
 
@@ -197,72 +218,85 @@ namespace Stroika::Foundation::Characters::Private_ {
     /**
      * \see       \see https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
      * 
-     * \see https://en.cppreference.com/w/cpp/utility/format/formatter
-     *      std::formatter predefined for
-     * 
-     *  \note ADEQUATE DRAFT - But missing alot of C++23/26 stuff in this list - and chrono stuff incomplete...
+     * \see https://en.cppreference.com/w/cpp/utility/format/formatter    std::formatter predefined for
      */
     template <typename T>
     concept IStdFormatterPredefinedFor_ =
         // clang-format off
 
         // C++-20
-        Configuration::IAnyOf<T, char, wchar_t> or Configuration::IAnyOf<T, char*, const char*, wchar_t*, const wchar_t*> 
+        Configuration::IAnyOf<decay_t<T>, char, wchar_t> or Configuration::IAnyOf<T, char*, const char*, wchar_t*, const wchar_t*> 
         or requires { []<typename TRAITS, typename ALLOCATOR> (type_identity<std::basic_string<char, TRAITS, ALLOCATOR>>) {}(type_identity<T> ());  } 
         or requires { []<typename TRAITS, typename ALLOCATOR> (type_identity<std::basic_string<wchar_t, TRAITS, ALLOCATOR>>) {}(type_identity<T> ());  } 
         or requires { []<typename TRAITS> (type_identity<std::basic_string_view<char, TRAITS>>) {}(type_identity<T> ()); } 
         or requires { []<typename TRAITS> (type_identity<std::basic_string_view<wchar_t, TRAITS>>) {}(type_identity<T> ()); } 
         or requires { []<size_t N> (type_identity<wchar_t[N]>) {}(type_identity<T> ()); } 
         or std::is_arithmetic_v<T> 
-        or  Configuration::IAnyOf<T, nullptr_t, void*, const void*>
-
-        // chrono (INADEQUATE - NEED MUCH MORE/DIFFERENT)
+        or  Configuration::IAnyOf<decay_t<T>, nullptr_t, void*, const void*>
+        // chrono
 #if qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-        or same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
+        or same_as<decay_t<T>, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
 #else
         or Configuration::IDuration<T> 
+#endif
         or requires { []<typename DURATION> (type_identity<std::chrono::sys_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::utc_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::tai_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::gps_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::file_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::local_time<DURATION>>) {}(type_identity<T> ()); } 
-        // and many more
-#endif
+        or Configuration::IAnyOf<decay_t<T>, chrono::day, chrono::month, chrono::year, 
+            chrono::weekday, chrono::weekday_indexed, chrono::weekday_last,
+            chrono::month_day, chrono::month_day_last, chrono::month_weekday, chrono::month_weekday_last, 
+            chrono::year_month, chrono::year_month_day, chrono::year_month_day_last, chrono::year_month_weekday,chrono::year_month_weekday_last, 
+            chrono::sys_info, chrono::local_info
+        >
+        or requires { []<typename DURATION> (type_identity<chrono::hh_mm_ss<DURATION>>) {}(type_identity<T> ()); } 
+        or requires { []<typename DURATION, typename TimeZonePtr> (type_identity<chrono::zoned_time<DURATION, TimeZonePtr>>) {}(type_identity<T> ()); } 
 
         // C++23
-
-        // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
-        // this stuff needed for clang++-18-debug-libstdc++-c++23
+// sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
+// 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
+// value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
+// this stuff needed for clang++-18-debug-libstdc++-c++23
+#if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
 #if __cpp_lib_format_ranges
         or ranges::range<decay_t<T>>
 #endif
-
-// sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
-// 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
-#if !(_MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||  \
-    (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240412) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23))
-            or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
+#if _MSVC_LANG > 202004
+        // This is buggy in MSFT compilers as of 2024-07-22
+        or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
 #endif
-// need to check _LIBCPP_STD_VER for LIBC++ and clang++16 on ubuntu 23.10
-#if not(!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
-            // available in C++23
-            or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+        or Configuration::IAnyOf<remove_cvref_t<T>, stacktrace_entry, thread::id>
+        or requires { []<typename ALLOCATOR> (type_identity<basic_stacktrace<ALLOCATOR>>) {}(type_identity<T> ()); } 
+        or requires { []<typename TT> (type_identity<stack<TT>>) {}(type_identity<T> ()); } 
+        or requires { []<typename TT> (type_identity<queue<TT>>) {}(type_identity<T> ()); } 
 #endif
 
         // C++26
+#if __cplusplus > 202400L or _LIBCPP_STD_VER >= 26 or _MSVC_LANG >= 202400L
         // unsure what to check - __cpp_lib_format - test c++26  __cpp_lib_formatters < 202601L  -- 202302L  is c++23
-#if __cplusplus >= 202400L
-            or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
+        or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
 
         // AND throw in other libraries Stroika is built with (this is why the question in https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
         // is so important to better resolve!
 #if qHasFeature_fmtlib 
         or Configuration::IAnyOf<decay_t<T>, qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>
+#if (FMT_VERSION >= 110000)
+        // Workaround issue with fmtlib 11 ranges support - it matches these
+        or Configuration::IAnyOf<decay_t<T>,Characters::StringBuilder<>,Common::GUID, Memory::BLOB>
+#endif
 #endif
         ;
     // clang-format on
+
+#if 0
+    // CRAZY - but cannot check (at least on visual studio) - checking NOW, causes this to FAIL later (i guess compiler caches results cuz thinks its constant)
+    // make sure IStdFormatterPredefinedFor_ defined properly
+    // if this worked, I'd add more static_asserts to check...
+    //static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t> == IStdFormatterPredefinedFor_<std::filesystem::path>);
+#endif
 
     /*
      *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formattable so far'

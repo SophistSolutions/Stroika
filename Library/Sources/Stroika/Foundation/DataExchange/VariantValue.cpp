@@ -22,17 +22,6 @@ using namespace Stroika::Foundation::DataExchange;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_fmtlib && (FMT_VERSION >= 110000)
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String,Stroika::Foundation::DataExchange::VariantValue>, wchar_t>
-    : Stroika::Foundation::Characters::ToStringFormatter<Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String,Stroika::Foundation::DataExchange::VariantValue>> {};
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String,Stroika::Foundation::DataExchange::VariantValue>, char>
-    : Stroika::Foundation::Characters::ToStringFormatterASCII<Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String,Stroika::Foundation::DataExchange::VariantValue>> {};
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String,Stroika::Foundation::DataExchange::VariantValue>, wchar_t>);
- #endif
-
-
 namespace {
     // Mimic private class values - but cannot reference directly cuz private and this isn't part of the class
     using IntegerType_         = long long int;
