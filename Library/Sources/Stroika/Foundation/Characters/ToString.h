@@ -35,12 +35,6 @@
  */
 
 #if qHasFeature_fmtlib && (FMT_VERSION >= 110000)
-namespace Stroika::Foundation::Characters {
-    template <typename BUF_CHAR_T, size_t INLINE_BUF_SIZE>
-    struct StringBuilder_Options;
-    template <typename OPTIONS>
-    struct StringBuilder;
-}
 namespace Stroika::Foundation::Common {
     struct GUID;
 }
@@ -268,7 +262,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if __cpp_lib_format_ranges
         or ranges::range<decay_t<T>>
 #endif
-#if _MSVC_LANG > 202004
+#if !defined(_MSVC_LANG) || _MSVC_LANG > 202004
         // This is buggy in MSFT compilers as of 2024-07-22
         or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
 #endif
@@ -290,7 +284,9 @@ namespace Stroika::Foundation::Characters::Private_ {
         or Configuration::IAnyOf<decay_t<T>, qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>
 #if (FMT_VERSION >= 110000)
         // Workaround issue with fmtlib 11 ranges support - it matches these
-        or Configuration::IAnyOf<decay_t<T>,Characters::StringBuilder<>,Common::GUID, Memory::BLOB>
+        or Configuration::IAnyOf<decay_t<T>,Common::GUID, Memory::BLOB>
+        // FMT_VERSION has pair/tuple support after FMT version 11
+         or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
 #endif
 #endif
         ;
