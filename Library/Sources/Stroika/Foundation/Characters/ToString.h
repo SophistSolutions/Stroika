@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <chrono>
 #include <ios>
 #include <optional>
 #include <queue>
@@ -248,11 +249,15 @@ namespace Stroika::Foundation::Characters::Private_ {
         or Configuration::IAnyOf<decay_t<T>, chrono::day, chrono::month, chrono::year, 
             chrono::weekday, chrono::weekday_indexed, chrono::weekday_last,
             chrono::month_day, chrono::month_day_last, chrono::month_weekday, chrono::month_weekday_last, 
-            chrono::year_month, chrono::year_month_day, chrono::year_month_day_last, chrono::year_month_weekday,chrono::year_month_weekday_last, 
-            chrono::sys_info, chrono::local_info
+            chrono::year_month, chrono::year_month_day, chrono::year_month_day_last, chrono::year_month_weekday,chrono::year_month_weekday_last 
+#if not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12
+            , chrono::sys_info, chrono::local_info
+#endif
         >
         or requires { []<typename DURATION> (type_identity<chrono::hh_mm_ss<DURATION>>) {}(type_identity<T> ()); } 
+#if not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12
         or requires { []<typename DURATION, typename TimeZonePtr> (type_identity<chrono::zoned_time<DURATION, TimeZonePtr>>) {}(type_identity<T> ()); } 
+#endif
 
         // C++23
 // sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
