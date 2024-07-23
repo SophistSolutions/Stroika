@@ -61,11 +61,11 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 //
-                // This case is more complicated. we must 'transcode' from one 'unicode' character type to another.
+                // This case is more complicated. we must 'transcode' from one 'Unicode character type to another.
                 //
                 // But before falling back on the expensive UTFConvert call, first try some special cases.
                 //      (1) src is ASCII - can just be copied in
-                //      (2) NYI, but if src is char16_t (or equiv) and target is char32_t or equiv, can just look for if is surroage or not.
+                //      (2) NYI, but if src is char16_t (or equiv) and target is char32_t or equiv, can just look for if is surrogate or not.
                 //
                 //  In both cases, walk source - and find first non-complaint character. Use quick algorithm for compliant ones
                 //  and if needed, slow algorithm for the rest.
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline
 #if defined(_MSC_VER)
-        // Makes significant differnce in JSON parser runtime with vs2k 17.4.3
+        // Makes significant difference in JSON parser runtime with vs2k 17.4.3
         __forceinline
 #endif
         void

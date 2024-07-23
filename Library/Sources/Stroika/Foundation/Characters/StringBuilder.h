@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief rarely used  directly - defaults generally fine
      * 
-     *  BUF_CHAR_T of char32_t probably does better if definitely using alot of wide unicode characters.
+     *  BUF_CHAR_T of char32_t probably does better if definitely using a lot of wide unicode characters.
      *  BUF_CHAR_T of char8_t probably best for mostly ASCII text. Note - GetCharAt/SetCharAt very slow
      *  unless using char32_t.
      * 
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo BUF_CHAR_T = char8_t, size_t INLINE_BUF_SIZE = 128>
     struct StringBuilder_Options {
         /**
-         *  Note that kInlineBufferSize is measured in 'buffer elements' - not (ncessarily the same as) bytes or Characters.
+         *  Note that kInlineBufferSize is measured in 'buffer elements' - not (necessarily the same as) bytes or Characters.
          */
         static constexpr size_t kInlineBufferSize = INLINE_BUF_SIZE;
 
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
-     *  \brief Similar to String, but intended to more efficiently construct a String. Mutable type (String is largly immutable).
+     *  \brief Similar to String, but intended to more efficiently construct a String. Mutable type (String is largely immutable).
      * 
      *  Has operator String() co can be used by value most places you can use a String.
      * 
@@ -278,8 +278,8 @@ namespace Stroika::Foundation::Characters {
          *        Well, that allocates memory, which must be freed, and that is not cost free. For some short-lived strings, it CAN
          *        be cheaper to just peek at the constructed in memory stack based String already being produced in this StringBuilder.
          *      
-         *        But this needs to be done in a way with data hiding (so we can change the internal represnetation of the StringBuilder class as needed)
-         *        and with respect for the possability that the string could be large (so break out of any small-string optimizations).
+         *        But this needs to be done in a way with data hiding (so we can change the internal representation of the StringBuilder class as needed)
+         *        and with respect for the possibility that the string could be large (so break out of any small-string optimizations).
          * 
          *        Passing in a reference to the 'StackBuffer' class is a compromise among all these considerations. The only cost
          *        is initializing a pointer, and checking that pointer on destruction, if no memory allocation is needed.
@@ -300,9 +300,6 @@ namespace Stroika::Foundation::Characters {
             requires (not is_const_v<CHAR_T>);
 
     public:
-        [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ();
-        [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* end ();
-        [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* c_str () const;
         [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] StringBuilder (const wchar_t* start, const wchar_t* end)
         {
             Append (span{start, end});
