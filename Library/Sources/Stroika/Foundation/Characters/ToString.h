@@ -12,7 +12,9 @@
 #include <queue>
 #include <sstream>
 #include <stack>
+#if __cpp_lib_stacktrace >= 202011
 #include <stacktrace>
+#endif
 #include <thread>
 #include <tuple>
 #include <typeindex>
@@ -235,21 +237,23 @@ namespace Stroika::Foundation::Characters::Private_ {
         or Configuration::IDuration<T> 
 #endif
         or requires { []<typename DURATION> (type_identity<std::chrono::sys_time<DURATION>>) {}(type_identity<T> ()); } 
+#if !defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 179999
         or requires { []<typename DURATION> (type_identity<std::chrono::utc_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::tai_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::gps_time<DURATION>>) {}(type_identity<T> ()); } 
+#endif
         or requires { []<typename DURATION> (type_identity<std::chrono::file_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::local_time<DURATION>>) {}(type_identity<T> ()); } 
         or Configuration::IAnyOf<decay_t<T>, chrono::day, chrono::month, chrono::year, 
             chrono::weekday, chrono::weekday_indexed, chrono::weekday_last,
             chrono::month_day, chrono::month_day_last, chrono::month_weekday, chrono::month_weekday_last, 
             chrono::year_month, chrono::year_month_day, chrono::year_month_day_last, chrono::year_month_weekday,chrono::year_month_weekday_last 
-#if not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12
+#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 179999)
             , chrono::sys_info, chrono::local_info
 #endif
         >
         or requires { []<typename DURATION> (type_identity<chrono::hh_mm_ss<DURATION>>) {}(type_identity<T> ()); } 
-#if not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12
+#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 179999)
         or requires { []<typename DURATION, typename TimeZonePtr> (type_identity<chrono::zoned_time<DURATION, TimeZonePtr>>) {}(type_identity<T> ()); } 
 #endif
 
@@ -266,8 +270,11 @@ namespace Stroika::Foundation::Characters::Private_ {
         // This is buggy in MSFT compilers as of 2024-07-22
         or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
 #endif
-        or Configuration::IAnyOf<remove_cvref_t<T>, stacktrace_entry, thread::id>
+        or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+#if __cpp_lib_stacktrace >= 202011
+        or Configuration::IAnyOf<remove_cvref_t<T>, stacktrace_entry>
         or requires { []<typename ALLOCATOR> (type_identity<basic_stacktrace<ALLOCATOR>>) {}(type_identity<T> ()); } 
+#endif
         or requires { []<typename TT> (type_identity<stack<TT>>) {}(type_identity<T> ()); } 
         or requires { []<typename TT> (type_identity<queue<TT>>) {}(type_identity<T> ()); } 
 #endif
@@ -315,6 +322,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 
 }
 
+
 /**
  *  add ToStringFormatter to the std::formatter object - so all std::format (and Stroika Format, and _f etc) format calls will
  *  apply ToString() as appropriate.
@@ -326,12 +334,12 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroi
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
+
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid)
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>);
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::optional<int>, wchar_t>);
