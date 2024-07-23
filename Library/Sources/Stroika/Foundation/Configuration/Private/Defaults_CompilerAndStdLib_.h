@@ -2153,6 +2153,11 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
  * tried debugging IUseToStringFormatterForFormatter with static_asserts and examples that failed, but the static asserts then worked, and problem for that type went away.
  * VERY confusing. So do old way for now...
  * 
+    NOTE: This APPEARS to be a compiler bug, not a library bug, since adding and defined(_LIBCPP_VERSION) to the if check
+    didn't correct the problem (so breaks with libc++ and libstdc++)
+
+--------------------------
+
  * 
  In file included from Fault.cpp:6:
 In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h:1016:
@@ -2231,10 +2236,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Da
 In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:10:
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/ToString.h:390:16: error: static assertion failed
   390 | static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
-      
-
-
-
  */
 #ifndef qCompiler_IUseToStringFormatterForFormatter_Buggy 
 #if defined (__clang__) and __clang_major__ <= 18
