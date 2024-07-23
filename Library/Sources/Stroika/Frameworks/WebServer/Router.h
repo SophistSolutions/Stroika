@@ -33,7 +33,7 @@
  *              url(r'^charge/$', 'credit.views.charge', name='credit-charge'),
  *          )
  *
- *          However, in terms of performance and flexability its not clear the regular expression matching would be any more efficent or easier to code than
+ *          However, in terms of performance and flexibility its not clear the regular expression matching would be any more efficient or easier to code than
  *          just having a C++ method on RequestHandler().
  */
 

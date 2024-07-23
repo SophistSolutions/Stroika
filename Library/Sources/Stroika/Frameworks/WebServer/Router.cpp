@@ -24,7 +24,7 @@ using namespace Stroika::Frameworks::WebServer;
 using HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  *  IMPLEMENTATION HINTS:
@@ -36,7 +36,12 @@ namespace {
     String ExtractHostRelPath_ (const URI& url)
     {
         try {
-            return url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
+            // Note - since Stroika v3.0d9 - normalize /// etc in requests to single standard form before matching
+            URI normal = url.Normalize (URI::NormalizationStyle::eAggressive);
+            if (url != normal) {
+                DbgTrace ("ExtractHostRelPath_('{}') normalized URL path to '{}'"_f, url, normal);
+            }
+            return normal.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
         }
         catch (...) {
             static const auto kException_ = ClientErrorException{HTTP::StatusCodes::kBadRequest, "request URI requires an absolute path"sv};
@@ -102,7 +107,7 @@ struct Router::Rep_ : Interceptor::_IRep {
     virtual void HandleMessage (Message* m) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{"Router::Rep_::HandleMessage", "...method={},url={}"_f, m->request ().httpMethod (), m->request ().url ()};
+        Debug::TraceContextBumper ctx{"Router::Rep_::HandleMessage", "...method='{}',url='{}'"_f, m->request ().httpMethod (), m->request ().url ()};
 #endif
         Sequence<String>         matches;
         optional<RequestHandler> handler = Lookup_ (m->request (), &matches);
