@@ -105,7 +105,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
             Execution::Throw (ClientErrorException{"Bad HTTP Request line - missing host-relative URL"sv});
         }
         using IO::Network::URL;
-        updatableRequest.url = URI{tokens[1]};
+        updatableRequest.url = URI::ParseRelative (tokens[1]);
         if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
