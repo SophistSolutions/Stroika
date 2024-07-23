@@ -49,7 +49,12 @@ namespace Stroika::Frameworks::WebServer {
 
     struct FileSystemRequestHandler::Options {
         /**
-         *  @todo DOCS
+         *  \brief typically starts with '/' since HTTP GET argument must be root relative
+         *
+         *  but if you have a fURLPrefix2Strip = "/Files/" that means 
+         *      GET /Files/phred
+         *
+         *  will look 'program EXE relative' for the file named 'phred' (convert /Files/phred, then strip leading "/Files/"
          */
         optional<String> fURLPrefix2Strip;
 

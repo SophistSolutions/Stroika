@@ -101,7 +101,8 @@ namespace {
         String ExtractURLHostRelPath_ (const Message* m) const
         {
             const Request& request        = m->request ();
-            String         urlHostRelPath = request.url ().GetAbsPath<String> ().SubString (1);
+            String         urlHostRelPath = request.url ().Normalize (URI::NormalizationStyle::eAggressive).GetAbsPath<String> ();
+            Assert (not urlHostRelPath.Contains ("/../")); // so no escape magic - normalize assures
             if (fURLPrefix2Strip) {
                 if (urlHostRelPath.StartsWith (*fURLPrefix2Strip)) {
                     urlHostRelPath = urlHostRelPath.SubString (fURLPrefix2Strip->length ());
