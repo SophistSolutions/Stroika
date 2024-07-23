@@ -65,7 +65,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note This code does not currently (as of v2.1d23) address https://tools.ietf.org/html/rfc3986#appendix-C - URI delimiting (finding the boundaries of the URI from
      *        surrounding text).
      *
-     *  \note   One subtlty with the URI syntax is that:
+     *  \note   One subtlety with the URI syntax is that:
      *          https://tools.ietf.org/html/rfc3986#section-3.3
      *              If a URI contains an authority component, then the path component
      *              must either be empty or begin with a slash ("/") character
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::IO::Network {
      *          on a URI that has an authority.
      *
      *          This poses some difficulties for code that wants to update BOTH the authority and the path of a URI (which do you do first - tricky).
-     *          But its easy enough to avoid by re-constructing the URI from scratch using the URI (individiaul components) constructor.
+     *          But its easy enough to avoid by re-constructing the URI from scratch using the URI (individual components) constructor.
      *      
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::IO::Network {
          *  \note URL/0 is treated as of empty path and nullopt for authority, query, scheme, fragment.
          *
          *  \todo https://stroika.atlassian.net/browse/STK-750
-         *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexect
+         *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexcept
          *        on GCC. THIS compiles fine, but then later bits of code that use it fail to compile (g++ 9 at least).
          */
         URI () = default;
@@ -135,12 +135,17 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  This takes argument string url, with possibly % encoded characters, accordind to https://tools.ietf.org/html/rfc3986
-         *  The input characterset is always ASCII (but may encode UCS after %PCT substitions).
+         *  This takes argument string url, with possibly % encoded characters, according to https://tools.ietf.org/html/rfc3986
+         *  The input character set is always ASCII (but may encode UCS after %PCT substitutions).
          *  If not handed ASCII text, an exception will be thrown.
          */
-        //static URI Parse (const string& rawURL);
         static URI Parse (const String& rawURL);
+
+    public:
+        /**
+         *  Same as URI::Parse () - except that it starts looking at the Path part - and will not interpret the leading bits as part of a scheme or authority
+         */
+        static URI ParseRelative (const String& rawRelativeURL);
 
     public:
         /**
@@ -230,16 +235,15 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note Alias - this used to be called GetHostRelativePathPlusQuery
          *
-         *  This returns the path + the query (omitting authory, scheme, and fragment).
+         *  This returns the path + the query (omitting authority, scheme, and fragment).
          *
          *  RETURN_TYPE may be:
          *      o   String (default)
          *      o   string (because its all ASCII return since ENCODED)
          *      o   URI (in which case it just copies the path, and query elements)
          */
-        template <typename RETURN_TYPE = String>
-        nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const
-            requires (same_as<RETURN_TYPE, String> or same_as<RETURN_TYPE, string> or same_as<RETURN_TYPE, URI>);
+        template <Configuration::IAnyOf<String, string, URI> RETURN_TYPE = String>
+        nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const;
 
     public:
         /**
@@ -265,9 +269,8 @@ namespace Stroika::Foundation::IO::Network {
          *  In either case, the special case of GetPath ().empty () will be treated as '/'.
          *  So in either case, if a string is returned, its length always >= 1.
          */
-        template <typename RETURN_VALUE = String>
-        nonvirtual RETURN_VALUE GetAbsPath () const
-            requires (same_as<RETURN_VALUE, String> or same_as<RETURN_VALUE, optional<String>>);
+        template <Configuration::IAnyOf<String, optional<String>> RETURN_VALUE = String>
+        nonvirtual RETURN_VALUE GetAbsPath () const;
 
     public:
         /*
@@ -278,9 +281,8 @@ namespace Stroika::Foundation::IO::Network {
          *      o   Query (a parsed query string - much akin to a Mapping<String,String>)
          *
          */
-        template <typename RETURN_TYPE = Query>
-        nonvirtual optional<RETURN_TYPE> GetQuery () const
-            requires (same_as<RETURN_TYPE, String> or same_as<RETURN_TYPE, URI::Query>);
+        template <Configuration::IAnyOf<String, URI::Query> RETURN_TYPE = Query>
+        nonvirtual optional<RETURN_TYPE> GetQuery () const;
 
     public:
         /**
@@ -300,14 +302,33 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  RFC 3986 lists a few specific normalizations to perform.
+         *  https://en.wikipedia.org/wiki/URI_normalization lists a few more common ones, we also perform.
+         */
+        enum class NormalizationStyle {
+            eRFC3986,
+
+            /**
+             *  This adds (from https://en.wikipedia.org/wiki/URI_normalization):
+             *      o   Removing duplicate slashes
+             */
+            eAggressive,
+
+            eDefault = eRFC3986,
+
+            Stroika_Define_Enum_Bounds (eRFC3986, eAggressive)
+        };
+
+    public:
+        /**
          *  \brief Produce a normalized representation of the URI.
          *
-         *  Since constructing the URI object already does alot of this, some parts are not needed (like 
+         *  Since constructing the URI object already does a lot of this, some parts are not needed (like 
          *  Percent-Encoding Normalization, and character set conversion. But other parts are still useful/impactful (like tolower).
          *
          *  @see https://tools.ietf.org/html/rfc3986#section-6
          */
-        nonvirtual URI Normalize () const;
+        nonvirtual URI Normalize (NormalizationStyle normalization = NormalizationStyle::eDefault) const;
 
     public:
         /**
@@ -318,9 +339,8 @@ namespace Stroika::Foundation::IO::Network {
          *  if T==String, pctEncoded defaults to eDecoded
          *  if T==string, pctEncoded defaults to ePCTEncoded
          */
-        template <typename T>
-        nonvirtual T As (optional<StringPCTEncodedFlag> pctEncoded = {}) const
-            requires (same_as<T, String> or same_as<T, string>);
+        template <Configuration::IAnyOf<String, string> T>
+        nonvirtual T As (optional<StringPCTEncodedFlag> pctEncoded = {}) const;
 
     private:
         nonvirtual String AsString_ (optional<StringPCTEncodedFlag> pctEncoded) const;

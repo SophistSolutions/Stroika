@@ -15,7 +15,7 @@
 #include "URI.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -47,8 +47,12 @@ namespace {
 }
 
 namespace {
-    String remove_dot_segments_ (const String& p)
+    String remove_dot_segments_ (const String& p, URI::NormalizationStyle normalization = URI::NormalizationStyle::eRFC3986)
     {
+        // @todo - this is a fairly inefficient implementation, but so far hasn't shown up in profiles
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        //Debug::TraceContextBumper{"remove_dot_segments_", "p={},normalization={}"_f, p, normalization};
+#endif
         // from https://tools.ietf.org/html/rfc3986#section-5.2.4
         vector<String> segments; // for our purpose here, segments may (or not in case of first) contain a leading /
         StringBuilder  accumulatingSegment;
@@ -86,20 +90,36 @@ namespace {
         }
 
         StringBuilder result;
+        bool          soFarEndsWithSlash = false;
         for (const String& segment : segments2) {
-            result << segment;
+            if (normalization == URI::NormalizationStyle::eAggressive) {
+                if (segment.StartsWith ('/') and soFarEndsWithSlash) {
+                    String add = segment.SubString (1);
+                    if (not add.empty ()) {
+                        result << add;
+                        soFarEndsWithSlash = add.EndsWith ('/');
+                    }
+                }
+                else {
+                    result << segment;
+                    soFarEndsWithSlash = segment.EndsWith ('/');
+                }
+            }
+            else {
+                result << segment;
+            }
         }
         if (lastSegmentShouldHaveSlash and not result.str ().EndsWith ("/"sv)) {
             result << "/"sv;
         }
-        return result.str ();
+        return result;
     };
 }
 
 URI URI::Parse (const String& rawURL)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper{L"IO::Network::URI::Parse", L"%s", rawURL.c_str ()};
+    Debug::TraceContextBumper{"IO::Network::URI::Parse", "{}"_f, rawURL};
 #endif
     // https://tools.ietf.org/html/rfc3986#appendix-B
     static const RegularExpression kParseURLRegExp_{"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"_RegEx};
@@ -123,6 +143,37 @@ URI URI::Parse (const String& rawURL)
     }
     else {
         static const Execution::RuntimeErrorException kException_{"Ill-formed URI"sv};
+        Execution::Throw (kException_); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
+    }
+}
+
+URI URI::ParseRelative (const String& rawRelativeURL)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper{"IO::Network::URI::ParseRelative", "{}"_f, rawRelativeURL};
+#endif
+    // https://tools.ietf.org/html/rfc3986#appendix-B
+    static const RegularExpression kParseRelativeURLRegExp_{"([^?#]*)(\\?([^#]*))?(#(.*))?"_RegEx};
+    optional<String>               scheme;
+    optional<String>               authority;
+    optional<String>               path;
+    optional<String>               query;
+    optional<String>               fragment;
+    auto                           emptyStr2Missing = [] (const optional<String>& s) -> optional<String> {
+        if (s) {
+            if (not s->empty ()) {
+                return s;
+            }
+        }
+        return nullopt;
+    };
+    (void)rawRelativeURL.AsASCII (); // for throw check side-effect
+    if (rawRelativeURL.Matches (kParseRelativeURLRegExp_, &path, nullptr, &query, nullptr, &fragment)) {
+        return URI{nullopt, nullopt, UniformResourceIdentification::PCTDecode2String (path.value_or (String{})), emptyStr2Missing (query),
+                   emptyStr2Missing (fragment)};
+    }
+    else {
+        static const Execution::RuntimeErrorException kException_{"Ill-formed relative URI"sv};
         Execution::Throw (kException_); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
     }
 }
@@ -213,7 +264,7 @@ String URI::GetAuthorityRelativeResourceDir () const
     return baseDir.value_or (String{});
 }
 
-URI URI::Normalize () const
+URI URI::Normalize (NormalizationStyle normalization) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     optional<SchemeType>                           scheme = fScheme_;
@@ -224,8 +275,7 @@ URI URI::Normalize () const
     if (authority) {
         authority = authority->Normalize ();
     }
-    String path = remove_dot_segments_ (fPath_); // review https://tools.ietf.org/html/rfc3986#section-6.2.2.3 - this algorithm for removing dots was from merge code, so not sure it applies here
-
+    String path = remove_dot_segments_ (fPath_, normalization); // review https://tools.ietf.org/html/rfc3986#section-6.2.2.3 - this algorithm for removing dots was from merge code, so not sure it applies here
     return URI{scheme, authority, path, fQuery_, fFragment_};
 }
 
@@ -247,7 +297,7 @@ String URI::ToString () const
     if (fFragment_) {
         result << "#"sv << *fFragment_;
     }
-    return Characters::ToString (result.str ());
+    return result;
 }
 
 void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, const String& path)
@@ -268,7 +318,7 @@ URI URI::Combine (const URI& overridingURI) const
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
 
     /*
-     *  This is not stricly according to Hoyle, but it avoids a common inconvenience with the Scheme check below. And avoids having to write alot of
+     *  This is not strictly according to Hoyle, but it avoids a common inconvenience with the Scheme check below. And avoids having to write a lot of
      *  code like:
      *      if (l) {
      *          return l.Combine (r);

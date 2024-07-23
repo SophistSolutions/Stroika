@@ -91,9 +91,8 @@ namespace Stroika::Foundation::IO::Network {
     {
         return URI{GetScheme (), GetAuthority ()};
     }
-    template <typename RETURN_TYPE>
+    template <Configuration::IAnyOf<String, string, URI> RETURN_TYPE>
     RETURN_TYPE URI::GetAuthorityRelativeResource () const
-        requires (same_as<RETURN_TYPE, String> or same_as<RETURN_TYPE, string> or same_as<RETURN_TYPE, URI>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (same_as<RETURN_TYPE, String>) {
@@ -114,9 +113,8 @@ namespace Stroika::Foundation::IO::Network {
             return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
         }
     }
-    template <typename RETURN_VALUE>
+    template <Configuration::IAnyOf<String, optional<String>> RETURN_VALUE>
     RETURN_VALUE URI::GetAbsPath () const
-        requires (same_as<RETURN_VALUE, String> or same_as<RETURN_VALUE, optional<String>>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (same_as<RETURN_VALUE, String>) {
@@ -136,9 +134,8 @@ namespace Stroika::Foundation::IO::Network {
             return nullopt;
         }
     }
-    template <typename RETURN_TYPE>
+    template <Configuration::IAnyOf<String, URI::Query> RETURN_TYPE>
     inline optional<RETURN_TYPE> URI::GetQuery () const
-        requires (same_as<RETURN_TYPE, String> or same_as<RETURN_TYPE, URI::Query>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (same_as<RETURN_TYPE, String>) {
@@ -179,9 +176,8 @@ namespace Stroika::Foundation::IO::Network {
     {
         return URI::TWC_ (*this, rhs) == 0;
     }
-    template <typename T>
+    template <Configuration::IAnyOf<String, string> T>
     inline T URI::As (optional<StringPCTEncodedFlag> pctEncode) const
-        requires (same_as<T, String> or same_as<T, string>)
     {
         if constexpr (same_as<T, String>) {
             return AsString_ (pctEncode);
@@ -191,4 +187,12 @@ namespace Stroika::Foundation::IO::Network {
         }
     }
 
+}
+
+namespace Stroika::Foundation::Configuration {
+    template <>
+    constexpr EnumNames<IO::Network::URI::NormalizationStyle> DefaultNames<IO::Network::URI::NormalizationStyle>::k{{{
+        {IO::Network::URI::NormalizationStyle::eRFC3986, L"RFC3986"},
+        {IO::Network::URI::NormalizationStyle::eAggressive, L"Aggressively"},
+    }}};
 }
