@@ -2147,6 +2147,104 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 
 #endif
 
+/**
+ * VERY confusing bug - ONLY with ALL versions of clang++ (14..18)
+ * 
+ * tried debugging IUseToStringFormatterForFormatter with static_asserts and examples that failed, but the static asserts then worked, and problem for that type went away.
+ * VERY confusing. So do old way for now...
+ * 
+ * 
+ In file included from Fault.cpp:6:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h:1016:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.inl:823:21: error: no matching member function for call to 'EmitTraceMessage'
+  823 |                     DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, type_index{typeid (ENUM_TYPE)}, fBuf_);
+      |                     ^~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/Trace.h:308:72: note: expanded from macro 'DbgTrace'
+
+
+
+
+In file included from Test.cpp:15:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h:16:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeNotSupportedException.h:41:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeNotSupportedException.inl:4:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:10:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/ToString.h:387:16: error: static assertion failed
+  387 | static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/ToString.h:387:16: note: because 'Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>' evaluated to false
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/StdCompat.h:92:9: note: because 'Private_::_Formattable_with<remove_reference_t<__thread_id>, std::basic_format_context<Private_::_Phony_fmt_iter_for<wchar_t>, wchar_t> >' evaluated to false
+   92 |         Private_::_Formattable_with<remove_reference_t<T>, qStroika_Foundation_Characters_FMT_PREFIX_::basic_format_context<Private_::_Phony_fmt_iter_for<CharT>, CharT>>;
+      |         ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/StdCompat.h:80:37: note: because 'std::formatter<std::__thread_id, wchar_t>' does not satisfy 'semiregular'
+   80 |         concept _Formattable_with = semiregular<_Formatter> && requires (_Formatter& __f, const _Formatter& __cf, _Ty&& __t, _Context __fc,
+      |                                     ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/semiregular.h:27:23: note: because 'std::formatter<std::__thread_id, wchar_t>' does not satisfy 'copyable'
+   27 | concept semiregular = copyable<_Tp> && default_initializable<_Tp>;
+      |                       ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/copyable.h:30:5: note: because 'std::formatter<std::__thread_id, wchar_t>' does not satisfy 'copy_constructible'
+   30 |     copy_constructible<_Tp> &&
+      |     ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/constructible.h:45:5: note: because 'std::formatter<std::__thread_id, wchar_t>' does not satisfy 'move_constructible'
+   45 |     move_constructible<_Tp> &&
+      |     ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/constructible.h:39:30: note: because 'constructible_from<std::formatter<std::__thread_id, wchar_t>, std::formatter<std::__thread_id, wchar_t> >' evaluated to false
+   39 | concept move_constructible = constructible_from<_Tp, _Tp> && convertible_to<_Tp, _Tp>;
+      |                              ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/constructible.h:27:51: note: because 'is_constructible_v<std::formatter<std::__thread_id, wchar_t>, std::formatter<std::__thread_id, wchar_t> >' evaluated to false
+   27 | concept constructible_from = destructible<_Tp> && is_constructible_v<_Tp, _Args...>;
+      |                                                   ^
+In file included from Test.cpp:15:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h:16:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeNotSupportedException.h:41:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeNotSupportedException.inl:4:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:10:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/ToString.h:389:16: error: static assertion failed
+  389 | static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/ToString.h:389:16: note: because 'Stroika::Foundation::Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>' evaluated to false
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/StdCompat.h:92:9: note: because 'Private_::_Formattable_with<remove_reference_t<exception_ptr>, std::basic_format_context<Private_::_Phony_fmt_iter_for<wchar_t>, wchar_t> >' evaluated to false
+   92 |         Private_::_Formattable_with<remove_reference_t<T>, qStroika_Foundation_Characters_FMT_PREFIX_::basic_format_context<Private_::_Phony_fmt_iter_for<CharT>, CharT>>;
+      |         ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/StdCompat.h:80:37: note: because 'std::formatter<std::exception_ptr, wchar_t>' does not satisfy 'semiregular'
+   80 |         concept _Formattable_with = semiregular<_Formatter> && requires (_Formatter& __f, const _Formatter& __cf, _Ty&& __t, _Context __fc,
+      |                                     ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/semiregular.h:27:23: note: because 'std::formatter<std::exception_ptr, wchar_t>' does not satisfy 'copyable'
+   27 | concept semiregular = copyable<_Tp> && default_initializable<_Tp>;
+      |                       ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/copyable.h:30:5: note: because 'std::formatter<std::exception_ptr, wchar_t>' does not satisfy 'copy_constructible'
+   30 |     copy_constructible<_Tp> &&
+      |     ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/constructible.h:45:5: note: because 'std::formatter<std::exception_ptr, wchar_t>' does not satisfy 'move_constructible'
+   45 |     move_constructible<_Tp> &&
+      |     ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/constructible.h:39:30: note: because 'constructible_from<std::formatter<std::exception_ptr, wchar_t>, std::formatter<std::exception_ptr, wchar_t> >' evaluated to false
+   39 | concept move_constructible = constructible_from<_Tp, _Tp> && convertible_to<_Tp, _Tp>;
+      |                              ^
+/usr/lib/llvm-18/bin/../include/c++/v1/__concepts/constructible.h:27:51: note: because 'is_constructible_v<std::formatter<std::exception_ptr, wchar_t>, std::formatter<std::exception_ptr, wchar_t> >' evaluated to false
+   27 | concept constructible_from = destructible<_Tp> && is_constructible_v<_Tp, _Args...>;
+      |                                                   ^
+In file included from Test.cpp:15:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h:16:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeNotSupportedException.h:41:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/InternetMediaTypeNotSupportedException.inl:4:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:10:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/ToString.h:390:16: error: static assertion failed
+  390 | static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
+      
+
+
+
+ */
+#ifndef qCompiler_IUseToStringFormatterForFormatter_Buggy 
+#if defined (__clang__) and __clang_major__ <= 18
+#define qCompiler_IUseToStringFormatterForFormatter_Buggy 1
+#else
+#define qCompiler_IUseToStringFormatterForFormatter_Buggy 0
+#endif
+#endif
+
+
 // libstd c++ clang versions (around 14) have badly fucked this up.
 // they leave __cpp_lib_three_way_comparison undefined, but still provide (in some versions - like V14) a partly broken
 // version available to introduce compiler ambiguiity errors when used

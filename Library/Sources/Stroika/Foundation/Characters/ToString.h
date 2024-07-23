@@ -119,9 +119,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IToString = requires (T t) {
-        {
-            ToString (t)
-        } -> convertible_to<Characters::String>;
+        { ToString (t) } -> convertible_to<Characters::String>;
     };
 
     /**
@@ -237,7 +235,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         or Configuration::IDuration<T> 
 #endif
         or requires { []<typename DURATION> (type_identity<std::chrono::sys_time<DURATION>>) {}(type_identity<T> ()); } 
-#if !defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 179999
+#if !defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999
         or requires { []<typename DURATION> (type_identity<std::chrono::utc_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::tai_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::gps_time<DURATION>>) {}(type_identity<T> ()); } 
@@ -248,12 +246,12 @@ namespace Stroika::Foundation::Characters::Private_ {
             chrono::weekday, chrono::weekday_indexed, chrono::weekday_last,
             chrono::month_day, chrono::month_day_last, chrono::month_weekday, chrono::month_weekday_last, 
             chrono::year_month, chrono::year_month_day, chrono::year_month_day_last, chrono::year_month_weekday,chrono::year_month_weekday_last 
-#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 179999)
+#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999)
             , chrono::sys_info, chrono::local_info
 #endif
         >
         or requires { []<typename DURATION> (type_identity<chrono::hh_mm_ss<DURATION>>) {}(type_identity<T> ()); } 
-#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 179999)
+#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999)
         or requires { []<typename DURATION, typename TimeZonePtr> (type_identity<chrono::zoned_time<DURATION, TimeZonePtr>>) {}(type_identity<T> ()); } 
 #endif
 
@@ -314,26 +312,64 @@ namespace Stroika::Foundation::Characters::Private_ {
      */
     template <typename T>
     concept IUseToStringFormatterForFormatter_ =
+
         // If Characters::ToString() would work
         IToString<T>
 
+#if !qCompiler_IUseToStringFormatterForFormatter_Buggy
         // But NOT anything std c++ defined to already support (else we get ambiguity error)
-        and not IStdFormatterPredefinedFor_<T>;
+        and not IStdFormatterPredefinedFor_<T>
+#else
+        and (requires (T t) {
+                { t.ToString () } -> convertible_to<Characters::String>;
+            } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
+#if !__cpp_lib_format_ranges
+#if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
+             or (ranges::range<decay_t<T>> and
+                 not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
+                                           qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
+#endif
+#endif
+#if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||    \
+    (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240412) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
+#if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
+             // available in C++23
+             or Configuration::IPair<remove_cvref_t<T>> or
+             Configuration::ITuple<remove_cvref_t<T>>
+#endif
+#endif
+#if (!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
+             // available in C++23
+             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+#endif
+#if __cplusplus < 202400L
+             or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
+#endif
+             or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>>
+             or same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
+             or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>);
+#endif /*qCompiler_IUseToStringFormatterForFormatter_Buggy*/
+        ;
 
 }
-
 
 /**
  *  add ToStringFormatter to the std::formatter object - so all std::format (and Stroika Format, and _f etc) format calls will
  *  apply ToString() as appropriate.
  * 
  *  And a few static_asserts to verify this is working as expected.
+ * 
+ *  This should allow all the formattable features of up to C++26 - to work on compilers with older settings (such as C++20, or c++23)
+ *  where possible (like cannot format stacktrace if it its impl doesn't exist, but can always format filesystem::path - just using Stroika
+ *  formatter instead of stdc++ formatter).
  */
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
+static_assert (Stroika::Foundation::Characters::IToString<std::type_index>); // note not type_info (result of typeid)
+static_assert (not Stroika::Foundation::Characters::Private_::IStdFormatterPredefinedFor_<std::type_index>); // note not type_info (result of typeid)
 
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid)
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
