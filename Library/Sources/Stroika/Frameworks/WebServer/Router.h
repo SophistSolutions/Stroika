@@ -77,7 +77,10 @@ namespace Stroika::Frameworks::WebServer {
          *  Any route to apply the handler, must match ALL argument constraints.
          *  If verbMatch is omitted, it it assumed to be IO::Network::HTTP::MethodsRegEx::kGet (NOT RegularExpression::kAny)
          * 
-         *  Note that the request handler is called with any String arguments based on the pathMatch regular expression
+         *  \note that the request handler is called with any String arguments based on the pathMatch regular expression.
+         * 
+         *  \note that Routes that match on a hostRelativeURI, the hostRelativeURI is first normalized (funny characters translated to unicode, sequences of // removed etc)
+         *        before matching against the regular expression.
          * 
          *  \par Example Usage (GET with explicit method regexp)
          *      \code
