@@ -53,7 +53,9 @@ namespace {
     const ConstantProperty<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_{
             {RegularExpression{".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}};
-        return FileSystemRequestHandler::Options{"Files"_k, Sequence<String>{"index.html"_k}, nullopt, cacheControlSettings_};
+        return FileSystemRequestHandler::Options{.fURLPrefix2Strip       = "/Files/"_k,
+                                                 .fDefaultIndexFileNames = Sequence<String>{"index.html"_k},
+                                                 .fCacheControlSettings  = cacheControlSettings_};
     }};
 
     /**
@@ -87,7 +89,7 @@ namespace {
 
         MyWebServer_ (uint16_t portNumber)
             : kRoutes_{Route{""_RegEx, DefaultPage_}, Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
-                       Route{"FRED"_RegEx,
+                       Route{"FRED/?"_RegEx,
                              [] (Request*, Response* response) {
                                  response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                                  response->write (L"FRED");
@@ -96,6 +98,7 @@ namespace {
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
                               ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
+            cerr << "Listening on {}..."_f(fConnectionMgr_.bindings ()) << endl;
         }
         // Can declare arguments as Request*,Response*
         static void DefaultPage_ (Request*, Response* response)
