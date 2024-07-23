@@ -34,7 +34,9 @@ namespace Stroika::Foundation::Characters {
     namespace Private_ {
         template <typename T>
         concept IToString = requires (T t) {
-            { UnoverloadedToString (t) } -> convertible_to<Characters::String>;
+            {
+                UnoverloadedToString (t)
+            } -> convertible_to<Characters::String>;
         };
     }
 
@@ -133,9 +135,8 @@ namespace Stroika::Foundation::Characters {
          *  Alias for Append
          */
         template <typename APPEND_ARG_T>
-        nonvirtual auto operator+= (APPEND_ARG_T&& a) -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) {
-            s.Append (forward<APPEND_ARG_T> (a));
-        })
+        nonvirtual auto operator+= (APPEND_ARG_T&& a)
+            -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
             if constexpr (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {

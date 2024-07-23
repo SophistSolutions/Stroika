@@ -119,7 +119,9 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IToString = requires (T t) {
-        { ToString (t) } -> convertible_to<Characters::String>;
+        {
+            ToString (t)
+        } -> convertible_to<Characters::String>;
     };
 
     /**
@@ -321,7 +323,9 @@ namespace Stroika::Foundation::Characters::Private_ {
         and not IStdFormatterPredefinedFor_<T>
 #else
         and (requires (T t) {
-                { t.ToString () } -> convertible_to<Characters::String>;
+                {
+                    t.ToString ()
+                } -> convertible_to<Characters::String>;
             } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
 #if !__cpp_lib_format_ranges
 #if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
@@ -345,9 +349,9 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if __cplusplus < 202400L
              or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
-             or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>>
-             or same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
-             or Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>);
+             or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>> or
+             same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>> or
+             Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>);
 #endif /*qCompiler_IUseToStringFormatterForFormatter_Buggy*/
         ;
 

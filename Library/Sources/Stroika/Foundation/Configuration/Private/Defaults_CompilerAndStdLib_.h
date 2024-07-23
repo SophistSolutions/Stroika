@@ -2237,14 +2237,13 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/ToString.h:390:16: error: static assertion failed
   390 | static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
  */
-#ifndef qCompiler_IUseToStringFormatterForFormatter_Buggy 
-#if defined (__clang__) and __clang_major__ <= 18
+#ifndef qCompiler_IUseToStringFormatterForFormatter_Buggy
+#if defined(__clang__) and __clang_major__ <= 18
 #define qCompiler_IUseToStringFormatterForFormatter_Buggy 1
 #else
 #define qCompiler_IUseToStringFormatterForFormatter_Buggy 0
 #endif
 #endif
-
 
 // libstd c++ clang versions (around 14) have badly fucked this up.
 // they leave __cpp_lib_three_way_comparison undefined, but still provide (in some versions - like V14) a partly broken
