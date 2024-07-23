@@ -368,9 +368,6 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroi
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
-static_assert (Stroika::Foundation::Characters::IToString<std::type_index>); // note not type_info (result of typeid)
-static_assert (not Stroika::Foundation::Characters::Private_::IStdFormatterPredefinedFor_<std::type_index>); // note not type_info (result of typeid)
-
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid)
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
