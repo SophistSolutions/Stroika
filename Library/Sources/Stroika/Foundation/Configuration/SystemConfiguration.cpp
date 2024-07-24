@@ -735,12 +735,12 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         catch (...) {
             DbgTrace ("Exception suppressed looking up windows version in registry: {}"_f, current_exception ());
         }
-        
+
         // https://stackoverflow.com/questions/74645458/how-to-detect-windows-11-programmatically
         if (currentVersion == "10.0"sv and Characters::FloatConversion::ToFloat<double> (kernelOSBuildVersion) >= 21996.0) {
             currentVersion = "11.0"sv;
             if (productName and productName->StartsWith ("Windows 10"sv)) {
-                productName = "Windows 11"sv + productName->SubString (10);   // not sure this is best way to fix? --LGP 2024-07-24
+                productName = "Windows 11"sv + productName->SubString (10); // not sure this is best way to fix? --LGP 2024-07-24
             }
         }
 
