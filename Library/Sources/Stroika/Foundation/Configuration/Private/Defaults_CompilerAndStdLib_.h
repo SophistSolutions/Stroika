@@ -2265,7 +2265,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
       |             ^                        ~~~~~
  */
 #ifndef qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
-#if defined(__clang__) and __clang_major__ <= 18 && __cpp_lib_stacktrace >= 202011 && defined (_GLIBCXX_RELEASE)
+#if defined(__clang__) and __clang_major__ <= 18 && __cpp_lib_stacktrace >= 202011 && defined(_GLIBCXX_RELEASE)
 #define qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy 1
 #else
 #define qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy 0
