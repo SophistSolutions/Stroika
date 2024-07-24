@@ -650,8 +650,10 @@ namespace Stroika::Foundation::Characters {
          *
          *  Similar to:
          *      return Matches (X + ".*");
-         *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
+         *  except for the fact that with StartsWith() doesn't interpret 'X' as a regular expression
          *
+         *  \req not subString.empty () -- for the subString overload (because otherwise "".StartsWith("") would be ill-defined)
+         * 
          *  @see Match
          *  @see EndsWith
          */
@@ -664,7 +666,9 @@ namespace Stroika::Foundation::Characters {
          *
          *  Similar to:
          *      return Matches (X + ".*");
-         *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
+         *  except for the fact that with StartsWith() doesn't interpret 'X' as a regular expression
+         *
+         *  \req not subString.empty () -- for the subString overload (because otherwise "".EndsWith("") would be ill-defined)
          *
          *  @see Match
          *  @see StartsWith

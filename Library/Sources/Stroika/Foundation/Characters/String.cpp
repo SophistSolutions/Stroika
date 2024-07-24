@@ -1102,6 +1102,7 @@ bool String::StartsWith (const Character& c, CompareOptions co) const
 
 bool String::StartsWith (const String& subString, CompareOptions co) const
 {
+    Require (not subString.empty ());
     if (subString.size () > size ()) {
         return false;
     }
@@ -1132,6 +1133,7 @@ bool String::EndsWith (const Character& c, CompareOptions co) const
 
 bool String::EndsWith (const String& subString, CompareOptions co) const
 {
+    Require (not subString.empty ());
     _SafeReadRepAccessor subStrAccessor{&subString};
     _SafeReadRepAccessor accessor{this};
     size_t               thisStrLen = accessor._ConstGetRep ().size ();
