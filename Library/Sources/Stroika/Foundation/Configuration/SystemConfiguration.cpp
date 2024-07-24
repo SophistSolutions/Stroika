@@ -742,6 +742,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             if (productName and productName->StartsWith ("Windows 10"sv)) {
                 productName = "Windows 11"sv + productName->SubString (10); // not sure this is best way to fix? --LGP 2024-07-24
             }
+            platformVersion = nullopt;  // in this case, the number doesn't appear to be meaningful --LGP 2024-07-24
         }
 
         if (tmp.fShortPrettyName.empty ()) {
