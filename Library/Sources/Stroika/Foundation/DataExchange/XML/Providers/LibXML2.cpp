@@ -1011,7 +1011,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         }
         while (auto n = useInput.Read (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                AssertNotNull (errCatcher.fCapturedException);  // double check I understood API properly - and error handler getting called
+                AssertNotNull (errCatcher.fCapturedException); // double check I understood API properly - and error handler getting called
             }
             errCatcher.ThrowIf ();
         }
