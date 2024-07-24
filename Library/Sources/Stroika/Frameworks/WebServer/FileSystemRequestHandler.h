@@ -86,7 +86,7 @@ namespace Stroika::Frameworks::WebServer {
         static constexpr ETagStrategy kDefault_ETagStrategy{eDigest};
 
         // @todo
-        // ETagCacheSize (ether digest or datestamp - whether we keep in RAM idea of current value
+        // ETagCacheSize (ether digest or date stamp - whether we keep in RAM idea of current value
         // to respond without read (note date check is still a form of read); but this cache is less
         // useful IF using datestamp etag strategy
         // @see https://stroika.atlassian.net/browse/STK-732
