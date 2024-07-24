@@ -12,9 +12,6 @@
 #include <queue>
 #include <sstream>
 #include <stack>
-#if __cpp_lib_stacktrace >= 202011
-#include <stacktrace>
-#endif
 #include <thread>
 #include <tuple>
 #include <typeindex>
@@ -26,6 +23,10 @@
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Configuration/StdCompat.h"
+
+#if __cpp_lib_stacktrace >= 202011 && !qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
+#include <stacktrace>
+#endif
 
 /**
  *  \file Convert arbitrary objects to String form, for the purpose of debugging (not reversible).
@@ -271,7 +272,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
 #endif
         or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
-#if __cpp_lib_stacktrace >= 202011
+#if __cpp_lib_stacktrace >= 202011 && !qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
         or Configuration::IAnyOf<remove_cvref_t<T>, stacktrace_entry>
         or requires { []<typename ALLOCATOR> (type_identity<basic_stacktrace<ALLOCATOR>>) {}(type_identity<T> ()); } 
 #endif
@@ -372,15 +373,15 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroi
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::optional<int>, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid)
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
 static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::optional<int>, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
 #if qCompilerAndStdLib_formattable_of_tuple_Buggy
 static_assert (Stroika::Foundation::Configuration::ITuple<std::remove_cvref_t<std::tuple<int>>>);
 #else
