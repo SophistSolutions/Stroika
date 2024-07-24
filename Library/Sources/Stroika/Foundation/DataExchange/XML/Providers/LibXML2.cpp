@@ -739,7 +739,7 @@ namespace {
                 byte                           buf[1024]; // intentionally uninitialized
                 while (auto n = in.Read (span{buf}).size ()) {
                     if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                        xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
+                     //   xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
                                                                 // return 1;
                     }
                     errCatcher.ThrowIf ();
@@ -1012,7 +1012,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         }
         while (auto n = useInput.Read (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
+              //  xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
             }
             errCatcher.ThrowIf ();
         }
