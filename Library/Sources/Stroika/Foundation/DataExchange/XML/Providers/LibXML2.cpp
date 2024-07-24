@@ -704,11 +704,11 @@ namespace {
                         AssertNotReached ();
                         break;
                     case XML_ERR_WARNING:
-                        DbgTrace ("Ignore warnings for now: {}"_f, String::FromUTF8 (error->message));
+                        DbgTrace ("libxml2 (xmlStructuredErrorFunc_): Ignore warnings for now: {}"_f, String::FromUTF8 (error->message));
                         break;
                     case XML_ERR_ERROR:
                     case XML_ERR_FATAL:
-                        DbgTrace ("Capturing Error {}"_f, String::FromUTF8 (error->message));
+                        DbgTrace ("libxml2 (xmlStructuredErrorFunc_): Capturing Error {}"_f, String::FromUTF8 (error->message));
                         useThis->fCapturedException = make_shared<DataExchange::BadFormatException> (
                             "Failure Parsing XML: {}, line {}"_f(String::FromUTF8 (error->message), error->line),
                             static_cast<unsigned int> (error->line), nullopt, nullopt);
@@ -739,8 +739,7 @@ namespace {
                 byte                           buf[1024]; // intentionally uninitialized
                 while (auto n = in.Read (span{buf}).size ()) {
                     if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                     //   xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
-                                                                // return 1;
+                        AssertNotNull (errCatcher.fCapturedException); // double check I understood API properly - and error handler getting called
                     }
                     errCatcher.ThrowIf ();
                 }
@@ -1012,7 +1011,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         }
         while (auto n = useInput.Read (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-              //  xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
+                AssertNotNull (errCatcher.fCapturedException);  // double check I understood API properly - and error handler getting called
             }
             errCatcher.ThrowIf ();
         }
