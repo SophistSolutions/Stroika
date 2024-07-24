@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *      pinned to -numeric_limits<T>::infinity () or numeric_limits<T>::infinity ().
      *
      *      If the input string is INF or INFINITY (with an optional +/- prefix) - the returned
-     *      value will be the appropriate verison of infinity.
+     *      value will be the appropriate version of infinity.
      *
      *      If the argument is the string "NAN", a quiet NAN will be returned. If the string -INF or -INFINITY,
      *      a negative infinite float will be returned, and if INF or INFINITY is passed, a positive infinite
