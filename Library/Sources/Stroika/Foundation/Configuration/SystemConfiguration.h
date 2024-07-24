@@ -241,15 +241,17 @@ namespace Stroika::Foundation::Configuration {
         /**
          *  Info about the actual operating system this software is running on (if possible to tell, it could be well hidden)
          *
-         *  Often virtualization (things like compatability mode in a manifest, or perhaps docker, or WSL) makes the apprarent
+         *  Often virtualization (things like compatibility mode in a manifest, or perhaps docker, or WSL) makes the apparent
          *  operating system different than the one you are actually running on).
+         * 
+         *  \note Actual Operating System is typically what you would report to a user (GUI).
          */
         OperatingSystem fActualOperatingSystem;
 
         /**
          *  Return info about the apparent operating system this software is running on.
          *
-         *  Often virtualization (things like compatability mode in a manifest, or perhaps docker, or WSL) makes the apprarent
+         *  Often virtualization (things like compatibility mode in a manifest, or perhaps docker, or WSL) makes the apparent
          *  operating system different than the one you are actually running on).
          */
         OperatingSystem fApparentOperatingSystem;

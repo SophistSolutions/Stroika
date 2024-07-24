@@ -735,6 +735,14 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         catch (...) {
             DbgTrace ("Exception suppressed looking up windows version in registry: {}"_f, current_exception ());
         }
+        
+        // https://stackoverflow.com/questions/74645458/how-to-detect-windows-11-programmatically
+        if (currentVersion == "10.0"sv and Characters::FloatConversion::ToFloat<double> (kernelOSBuildVersion) >= 21996.0) {
+            currentVersion = "11.0"sv;
+            if (productName and productName->StartsWith ("Windows 10"sv)) {
+                productName = "Windows 11"sv + productName->SubString (10);   // not sure this is best way to fix? --LGP 2024-07-24
+            }
+        }
 
         if (tmp.fShortPrettyName.empty ()) {
             tmp.fShortPrettyName = productName.value_or ("Windows"sv);
@@ -797,33 +805,33 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Appar
         // not sure if/how to do this differently on linux? Probably pay MORE attention to stuff from uname and less to stuff like /etc/os-release
 #if qPlatform_Windows
         // Dizzy numbering - from https://docs.microsoft.com/en-us/windows/desktop/sysinfo/operating-system-version
-        optional<String> winCompatabilityVersionName;
-        optional<String> winCompatabilityVersionNumber;
+        optional<String> winCompatibilityVersionName;
+        optional<String> winCompatibilityVersionNumber;
         {
-            if (not winCompatabilityVersionName and IsWindows10OrGreater ()) {
-                winCompatabilityVersionName   = "10.0"sv;
-                winCompatabilityVersionNumber = "10.0"sv;
+            if (not winCompatibilityVersionName and IsWindows10OrGreater ()) {
+                winCompatibilityVersionName   = "10.0"sv;
+                winCompatibilityVersionNumber = "10.0"sv;
             }
-            if (not winCompatabilityVersionName and IsWindows8Point1OrGreater ()) {
-                winCompatabilityVersionName   = "8.1"sv;
-                winCompatabilityVersionNumber = "6.3"sv;
+            if (not winCompatibilityVersionName and IsWindows8Point1OrGreater ()) {
+                winCompatibilityVersionName   = "8.1"sv;
+                winCompatibilityVersionNumber = "6.3"sv;
             }
-            if (not winCompatabilityVersionName and IsWindows8OrGreater ()) {
-                winCompatabilityVersionName   = "8.0"sv;
-                winCompatabilityVersionNumber = "6.2"sv;
+            if (not winCompatibilityVersionName and IsWindows8OrGreater ()) {
+                winCompatibilityVersionName   = "8.0"sv;
+                winCompatibilityVersionNumber = "6.2"sv;
             }
-            if (not winCompatabilityVersionName and IsWindows7SP1OrGreater ()) {
+            if (not winCompatibilityVersionName and IsWindows7SP1OrGreater ()) {
                 // unclear cuz 7.1 not listed as operating system on that page???
-                winCompatabilityVersionName   = "7.1"sv;
-                winCompatabilityVersionNumber = "6.2"sv;
+                winCompatibilityVersionName   = "7.1"sv;
+                winCompatibilityVersionNumber = "6.2"sv;
             }
-            if (not winCompatabilityVersionName and IsWindows7OrGreater ()) {
-                winCompatabilityVersionName   = "7.0"sv;
-                winCompatabilityVersionNumber = "6.1"sv;
+            if (not winCompatibilityVersionName and IsWindows7OrGreater ()) {
+                winCompatibilityVersionName   = "7.0"sv;
+                winCompatibilityVersionNumber = "6.1"sv;
             }
         }
-        String useWinMajorMinorVersionNameStr     = winCompatabilityVersionName.value_or ("unknown"sv);
-        String useWinMajorMinorVersionNumberStr   = winCompatabilityVersionNumber.value_or ("unknown"sv);
+        String useWinMajorMinorVersionNameStr     = winCompatibilityVersionName.value_or ("unknown"sv);
+        String useWinMajorMinorVersionNumberStr   = winCompatibilityVersionNumber.value_or ("unknown"sv);
         tmp.fShortPrettyName                      = "Windows "sv + useWinMajorMinorVersionNameStr;
         tmp.fPrettyNameWithMajorVersion           = tmp.fShortPrettyName;
         tmp.fPrettyNameWithVersionDetails         = tmp.fShortPrettyName;
