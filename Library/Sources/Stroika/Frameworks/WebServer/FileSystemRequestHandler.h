@@ -55,6 +55,8 @@ namespace Stroika::Frameworks::WebServer {
          *      GET /Files/phred
          *
          *  will look 'program EXE relative' for the file named 'phred' (convert /Files/phred, then strip leading "/Files/"
+         * 
+         *  Defaults to "/"
          */
         optional<String> fURLPrefix2Strip;
 

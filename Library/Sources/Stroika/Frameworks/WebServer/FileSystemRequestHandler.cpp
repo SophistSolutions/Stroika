@@ -18,6 +18,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Memory;
@@ -34,14 +35,14 @@ using IO::Network::HTTP::ClientErrorException;
 namespace {
     struct FSRouterRep_ {
         filesystem::path                              fFSRoot_;
-        optional<String>                              fURLPrefix2Strip;
+        String                                        fURLPrefix2Strip_;
         Sequence<String>                              fDefaultIndexFileNames;
         vector<pair<RegularExpression, CacheControl>> fCacheControlSettings;
 
         FSRouterRep_ (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames,
                       const optional<Sequence<pair<RegularExpression, CacheControl>>>& cacheControlSettings)
             : fFSRoot_{filesystem::canonical (filesystemRoot)}
-            , fURLPrefix2Strip{urlPrefix2Strip}
+            , fURLPrefix2Strip_{urlPrefix2Strip.value_or ("/"sv)}
             , fDefaultIndexFileNames{defaultIndexFileNames}
         {
             if (cacheControlSettings) {
@@ -103,9 +104,9 @@ namespace {
             const Request& request        = m->request ();
             String         urlHostRelPath = request.url ().Normalize (URI::NormalizationStyle::eAggressive).GetAbsPath<String> ();
             Assert (not urlHostRelPath.Contains ("/../")); // so no escape magic - normalize assures
-            if (fURLPrefix2Strip) {
-                if (urlHostRelPath.StartsWith (*fURLPrefix2Strip)) {
-                    urlHostRelPath = urlHostRelPath.SubString (fURLPrefix2Strip->length ());
+            if (not fURLPrefix2Strip_.empty ()) {
+                if (urlHostRelPath.StartsWith (fURLPrefix2Strip_)) {
+                    urlHostRelPath = urlHostRelPath.SubString (fURLPrefix2Strip_.length ());
                     if (urlHostRelPath.StartsWith ("/"sv)) {
                         urlHostRelPath = urlHostRelPath.SubString (1);
                     }
