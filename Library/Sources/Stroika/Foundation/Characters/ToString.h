@@ -306,30 +306,35 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
 #if __cplusplus == 202002L && _GLIBCXX_RELEASE == 13
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
 #if __cplusplus == 202002L && _GLIBCXX_RELEASE == 14
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
 #if __cplusplus == 202302L && _GLIBCXX_RELEASE == 14
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
 #if defined(__APPLE__) && __clang_major__ == 15
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
 
 // make sure IStdFormatterPredefinedFor_ defined properly
