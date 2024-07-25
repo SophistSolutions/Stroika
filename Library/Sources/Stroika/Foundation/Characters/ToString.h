@@ -257,8 +257,8 @@ namespace Stroika::Foundation::Characters::Private_ {
 
         // C++23
         //
-        // sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
-        // 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
+        // sadly MSFT doesn't support __cplusplus with right value
+        // 202302L is right value (of __cplusplus) to check for C++ 23, but 202101L needed for clang++16 ;-(
         // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
         // this stuff needed for clang++-18-debug-libstdc++-c++23
         //
