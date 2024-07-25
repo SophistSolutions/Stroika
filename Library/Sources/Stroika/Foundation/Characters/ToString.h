@@ -120,7 +120,9 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IToString = requires (T t) {
-        { ToString (t) } -> convertible_to<Characters::String>;
+        {
+            ToString (t)
+        } -> convertible_to<Characters::String>;
     };
 
     /**
@@ -232,11 +234,11 @@ namespace Stroika::Foundation::Characters::Private_ {
         or std::is_arithmetic_v<T> 
         or  Configuration::IAnyOf<decay_t<T>, nullptr_t, void*, const void*>
         // chrono
-#if qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-        or same_as<decay_t<T>, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
-#else
+//#if qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
+//        or same_as<decay_t<T>, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
+//#else
         or Configuration::IDuration<T> 
-#endif
+//#endif
         or requires { []<typename DURATION> (type_identity<std::chrono::sys_time<DURATION>>) {}(type_identity<T> ()); } 
 #if !defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999
         or requires { []<typename DURATION> (type_identity<std::chrono::utc_time<DURATION>>) {}(type_identity<T> ()); } 
@@ -305,7 +307,6 @@ namespace Stroika::Foundation::Characters::Private_ {
         ;
     // clang-format on
 
-
 #if 0
     // CRAZY - but cannot check (at least on visual studio) - checking NOW, causes this to FAIL later (i guess compiler caches results cuz thinks its constant)
     // make sure IStdFormatterPredefinedFor_ defined properly
@@ -322,13 +323,13 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
 #if __cplusplus == 202002L && _GLIBCXX_RELEASE == 14
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
-    static_assert ( not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
 #endif
 #if __cplusplus == 202302L && _GLIBCXX_RELEASE == 14
-    static_assert ( IStdFormatterPredefinedFor_<std::pair<int, char>>);
-    static_assert ( not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
 #endif
@@ -381,7 +382,9 @@ namespace Stroika::Foundation::Characters::Private_ {
         and not IStdFormatterPredefinedFor_<T>
 #else
         and (requires (T t) {
-                { t.ToString () } -> convertible_to<Characters::String>;
+                {
+                    t.ToString ()
+                } -> convertible_to<Characters::String>;
             } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
 #if !__cpp_lib_format_ranges
 #if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
