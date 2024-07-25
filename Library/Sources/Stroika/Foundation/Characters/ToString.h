@@ -265,11 +265,8 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if __cpp_lib_format_ranges
         or ranges::range<decay_t<T>>
 #endif
-#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG > 202004)
-        or Configuration::IPair<remove_cvref_t<T>> 
-#endif
 #if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG > 202004) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
-        or Configuration::ITuple<remove_cvref_t<T>>
+        or Configuration::IPair<remove_cvref_t<T>>  or Configuration::ITuple<remove_cvref_t<T>>
 #endif
 #if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
         or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
@@ -323,7 +320,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
 #endif
 #if __cplusplus == 202302L && _GLIBCXX_RELEASE == 14
-    static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
@@ -343,7 +340,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 // Just use briefly to verify we fail AFTER this point
 #if 0
     static_assert (IStdFormatterPredefinedFor_<std::type_index> == Configuration::StdCompat::formattable<std::type_index, wchar_t>);
-    static_assert (IStdFormatterPredefinedFor_<::pair<int, char>> == Configuration::StdCompat::formattable<::pair<int, char>, wchar_t>);
+    static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>> == Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
     static_assert (IStdFormatterPredefinedFor_<std::tuple<int>> == Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id> == Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
     static_assert (IStdFormatterPredefinedFor_<std::filesystem::path> == Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
