@@ -349,6 +349,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (IStdFormatterPredefinedFor_<std::tuple<int>> == Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id> == Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
     static_assert (IStdFormatterPredefinedFor_<std::filesystem::path> == Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
+    static_assert (IStdFormatterPredefinedFor_<std::exception_ptr> == Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>);
 #endif
 
     /*
