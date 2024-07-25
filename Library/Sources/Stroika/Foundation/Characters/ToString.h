@@ -233,11 +233,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         or std::is_arithmetic_v<T> 
         or  Configuration::IAnyOf<decay_t<T>, nullptr_t, void*, const void*>
         // chrono
-//#if qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-//        or same_as<decay_t<T>, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>>
-//#else
         or Configuration::IDuration<T> 
-//#endif
         or requires { []<typename DURATION> (type_identity<std::chrono::sys_time<DURATION>>) {}(type_identity<T> ()); } 
 #if !defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999
         or requires { []<typename DURATION> (type_identity<std::chrono::utc_time<DURATION>>) {}(type_identity<T> ()); } 
