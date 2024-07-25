@@ -307,13 +307,6 @@ namespace Stroika::Foundation::Characters::Private_ {
         ;
     // clang-format on
 
-#if 0
-    // CRAZY - but cannot check (at least on visual studio) - checking NOW, causes this to FAIL later (i guess compiler caches results cuz thinks its constant)
-    // make sure IStdFormatterPredefinedFor_ defined properly
-    // if this worked, I'd add more static_asserts to check...
-    //static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t> == IStdFormatterPredefinedFor_<std::filesystem::path>);
-#endif
-
 // Debug hack to spot-check IStdFormatterPredefinedFor_
 #if _MSVC_LANG == 202004
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
@@ -340,7 +333,11 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
 #endif
 
-// NOTE - CANNOT LEAVE THESE ENABLED CUZ (some/all) compilers memoize results and it screws up checks later
+// make sure IStdFormatterPredefinedFor_ defined properly
+//
+// CRAZY - but cannot check (at least on visual studio) here: checking NOW causes this to FAIL later (i guess compiler caches results
+// cuz thinks its constant). if this worked, I'd add more static_asserts to check...
+//
 // Just use briefly to verify we fail AFTER this point
 #if 0
     static_assert (IStdFormatterPredefinedFor_<std::type_index> == Configuration::StdCompat::formattable<std::type_index, wchar_t>);
@@ -409,7 +406,7 @@ namespace Stroika::Foundation::Characters::Private_ {
  * 
  *  This should allow all the formattable features of up to C++26 - to work on compilers with older settings (such as C++20, or c++23)
  *  where possible (like cannot format stacktrace if it its impl doesn't exist, but can always format filesystem::path - just using Stroika
- *  formatter instead of stdc++ formatter).
+ *  formatter instead of std-c++ formatter).
  */
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
