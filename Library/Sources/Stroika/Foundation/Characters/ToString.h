@@ -120,9 +120,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IToString = requires (T t) {
-        {
-            ToString (t)
-        } -> convertible_to<Characters::String>;
+        { ToString (t) } -> convertible_to<Characters::String>;
     };
 
     /**
@@ -318,6 +316,12 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
 #endif
+#if defined(__APPLE__) && __clang_major__ == 15
+    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
+#endif
+
 // NOTE - CANNOT LEAVE THESE ENABLED CUZ (some/all) compilers memoize results and it screws up checks later
 // Just use briefly to verify we fail AFTER this point
 #if 0
@@ -330,6 +334,11 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert ( not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
     static_assert ( not Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
     static_assert ( Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
+#endif
+#if defined(__APPLE__) && __clang_major__ == 15
+    static_assert ( not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+    static_assert ( not Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
+    static_assert ( not Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif
 #endif
 
@@ -350,9 +359,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         and not IStdFormatterPredefinedFor_<T>
 #else
         and (requires (T t) {
-                {
-                    t.ToString ()
-                } -> convertible_to<Characters::String>;
+                { t.ToString () } -> convertible_to<Characters::String>;
             } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
 #if !__cpp_lib_format_ranges
 #if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
