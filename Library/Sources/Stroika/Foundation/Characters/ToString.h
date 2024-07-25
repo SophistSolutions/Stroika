@@ -212,6 +212,8 @@ namespace Stroika::Foundation::Characters::Private_ {
     //};
 
     /**
+     *  \brief IStdFormatterPredefinedFor_<T> = what formattable<T,wchar_t> WOULD have returned if it could be evaluated safely without its value being memoized.
+     * 
      * \see       \see https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
      * 
      * \see https://en.cppreference.com/w/cpp/utility/format/formatter    std::formatter predefined for
@@ -261,19 +263,24 @@ namespace Stroika::Foundation::Characters::Private_ {
 // 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
 // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
 // this stuff needed for clang++-18-debug-libstdc++-c++23
-#if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
 #if __cpp_lib_format_ranges
         or ranges::range<decay_t<T>>
 #endif
-#if !defined(_MSVC_LANG) || _MSVC_LANG > 202004
-        // This is buggy in MSFT compilers as of 2024-07-22
-        or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
+
+#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004)
+        or Configuration::IPair<remove_cvref_t<T>> 
 #endif
+#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
+        or Configuration::ITuple<remove_cvref_t<T>>
+#endif
+#if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
         or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+#endif
 #if __cpp_lib_stacktrace >= 202011 && !qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
         or Configuration::IAnyOf<remove_cvref_t<T>, stacktrace_entry>
         or requires { []<typename ALLOCATOR> (type_identity<basic_stacktrace<ALLOCATOR>>) {}(type_identity<T> ()); } 
 #endif
+#if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
         or requires { []<typename TT> (type_identity<stack<TT>>) {}(type_identity<T> ()); } 
         or requires { []<typename TT> (type_identity<queue<TT>>) {}(type_identity<T> ()); } 
 #endif
@@ -298,6 +305,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         ;
     // clang-format on
 
+
 #if 0
     // CRAZY - but cannot check (at least on visual studio) - checking NOW, causes this to FAIL later (i guess compiler caches results cuz thinks its constant)
     // make sure IStdFormatterPredefinedFor_ defined properly
@@ -312,9 +320,15 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
 #endif
-#if __cplusplus == 202302L && _GLIBCXX_RELEASE == 14
+#if __cplusplus == 202002L && _GLIBCXX_RELEASE == 14
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
-    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert ( not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
+    static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+#endif
+#if __cplusplus == 202302L && _GLIBCXX_RELEASE == 14
+    static_assert ( IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert ( not IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
 #endif
@@ -332,6 +346,11 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert ( not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
     static_assert ( not Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
     static_assert (   Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
+#endif
+#if __cplusplus == 202002L && _GLIBCXX_RELEASE == 14
+    static_assert ( not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+    static_assert ( not Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
+    static_assert ( not Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif
 #if __cplusplus == 202302L && _GLIBCXX_RELEASE == 14
     static_assert ( not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
