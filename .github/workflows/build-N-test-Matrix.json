@@ -152,6 +152,28 @@
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
         "run_on_branch": "v3-Release"
     },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-24.04-g++-14",
+        "compiler": "g++-14",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests:v3",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "always"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-24.04-g++-14-c++23",
+        "compiler": "g++-14",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests:v3",
+        "cpp_version": "c++23",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
     {},
     {
         "comment": "MacOS"
