@@ -206,19 +206,18 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Characters::Private_ {
 
-    // experiment based on hints in https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
-    //template <typename T, typename TUnique = decltype ([] () -> void {})>
-    //concept IStdFormatterPredefinedFor_ = requires (T t) {
-    //    typename TUnique;
-    //    Stroika::Foundation::Configuration::StdCompat::formattable<T, wchar_t>;
-    //};
-
     /**
      *  \brief IStdFormatterPredefinedFor_<T> = what formattable<T,wchar_t> WOULD have returned if it could be evaluated safely without its value being memoized.
      * 
      * \see       \see https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
      * 
      * \see https://en.cppreference.com/w/cpp/utility/format/formatter    std::formatter predefined for
+     *
+         //template <typename T, typename TUnique = decltype ([] () -> void {})>
+        //concept IStdFormatterPredefinedFor_ = requires (T t) {
+        //    typename TUnique;
+        //    Stroika::Foundation::Configuration::StdCompat::formattable<T, wchar_t>;
+        //};
      */
     template <typename T>
     concept IStdFormatterPredefinedFor_ =
