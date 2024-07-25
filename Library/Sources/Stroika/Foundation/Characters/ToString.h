@@ -260,18 +260,19 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
 
         // C++23
-// sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
-// 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
-// value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
-// this stuff needed for clang++-18-debug-libstdc++-c++23
+        //
+        // sadly MSFT doesn't support all, and doesn't support __cplusplus with right value
+        // 202302L is right value to check for C++ 23, but 202101L needed for clang++16 ;-(
+        // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
+        // this stuff needed for clang++-18-debug-libstdc++-c++23
+        //
 #if __cpp_lib_format_ranges
         or ranges::range<decay_t<T>>
 #endif
-
-#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004)
+#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG > 202004)
         or Configuration::IPair<remove_cvref_t<T>> 
 #endif
-#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
+#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG > 202004) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
         or Configuration::ITuple<remove_cvref_t<T>>
 #endif
 #if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
