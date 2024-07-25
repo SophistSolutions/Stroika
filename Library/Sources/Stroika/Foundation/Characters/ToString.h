@@ -314,6 +314,12 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
 #endif
+#if __cplusplus == 202002L && _GLIBCXX_RELEASE == 13
+    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
+    static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+#endif
 #if __cplusplus == 202002L && _GLIBCXX_RELEASE == 14
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
