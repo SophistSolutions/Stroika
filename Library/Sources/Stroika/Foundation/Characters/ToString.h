@@ -307,23 +307,31 @@ namespace Stroika::Foundation::Characters::Private_ {
     //static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t> == IStdFormatterPredefinedFor_<std::filesystem::path>);
 #endif
 
-
 // Debug hack to spot-check IStdFormatterPredefinedFor_
+#if _MSVC_LANG == 202004
+    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
+#endif
+#if __cplusplus == 202302L && _GLIBCXX_RELEASE == 14
+    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
+#endif
 // NOTE - CANNOT LEAVE THESE ENABLED CUZ (some/all) compilers memoize results and it screws up checks later
 // Just use briefly to verify we fail AFTER this point
 #if 0
 #if _MSVC_LANG == 202004
-    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>> and not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
-    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>> and not Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
-    static_assert ( IStdFormatterPredefinedFor_<std::thread::id> and  Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
+    static_assert ( not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+    static_assert ( not Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
+    static_assert (   Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif
 #if __cplusplus == 202302L && _GLIBCXX_RELEASE == 14
-    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>> and not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
-    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>> and not Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
-    static_assert (IStdFormatterPredefinedFor_<std::thread::id> and Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
+    static_assert ( not Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+    static_assert ( not Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
+    static_assert ( Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif
 #endif
-
 
     /*
      *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formattable so far'
