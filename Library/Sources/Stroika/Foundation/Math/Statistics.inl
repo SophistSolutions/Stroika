@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Math {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"");
         if ((size % 2) == 0) {
             Assert (size >= 2); // cuz require at start >=1 and since even
-            // NB: Could use sort instead of nth_element, and some on the web suggest faster, but sort is O(n*log(n)), and nth_elemnet is O(n) (even
+            // NB: Could use sort instead of nth_element, and some on the web suggest faster, but sort is O(n*log(n)), and nth_element is O(n) (even
             // when you do it twice.
             nth_element (tmp.begin (), tmp.begin () + size / 2 - 1, tmp.end (), compare);
             result += tmp[size / 2 - 1];

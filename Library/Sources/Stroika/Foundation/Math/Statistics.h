@@ -42,8 +42,11 @@
 namespace Stroika::Foundation::Math {
 
     /**
-     *  SUPER ROUGH DRAFT
+     *  \brief Mean (average) of a collection of numbers computed
+     * 
      *  \req not empty
+     * 
+     *  \note O(N) time complexity
      */
     template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
     RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end);
@@ -51,8 +54,11 @@ namespace Stroika::Foundation::Math {
     RESULT_TYPE Mean (const CONTAINER_OF_T& container);
 
     /**
-     *  SUPER ROUGH DRAFT
+     *  \brief Median of a collection of numbers computed
+     * 
      *  \req not empty
+     * 
+     *  \note O(N) time complexity
      */
     template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type,
               Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
