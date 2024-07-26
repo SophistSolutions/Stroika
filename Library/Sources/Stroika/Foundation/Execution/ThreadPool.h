@@ -348,7 +348,10 @@ namespace Stroika::Foundation::Execution {
             unsigned int          fNumberOfTasksReporting{0};
             Time::DurationSeconds fTotalTimeConsumed{0.0};
 
-            Time::DurationSeconds GetMeanTimeConsumed () const;
+            /**
+             *
+             */
+            optional<Time::DurationSeconds> GetMeanTimeConsumed () const;
 
             /**
              *  See Characters::ToString ()

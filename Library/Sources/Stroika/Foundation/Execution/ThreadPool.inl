@@ -54,10 +54,10 @@ namespace Stroika::Foundation::Execution {
      *************************** ThreadPool::Statistics *****************************
      ********************************************************************************
      */
-    inline Time::DurationSeconds ThreadPool::Statistics::GetMeanTimeConsumed () const
+    inline optional<Time::DurationSeconds> ThreadPool::Statistics::GetMeanTimeConsumed () const
     {
         if (fNumberOfTasksReporting == 0) {
-            return Time::DurationSeconds{Math::nan<Time::DurationSeconds::rep> ()};
+            return nullopt;
         }
         return fTotalTimeConsumed / fNumberOfTasksReporting;
     }
