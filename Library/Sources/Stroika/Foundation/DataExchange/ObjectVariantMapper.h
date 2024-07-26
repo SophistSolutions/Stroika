@@ -640,15 +640,13 @@ namespace Stroika::Foundation::DataExchange {
          * 
          *  \note AddSubClass captures the existing mapping for BASE_CLASS at the time of this call, so this
          *        can be used to subclass in place, adding a few extra properties.
-         * 
-         *  \par Example Usage
-         *      \code
-         *          #if qDebug
-         *              mapper.AddSubClass<Network, Network> ({
-         *                  {"debugProps"sv, &Network::fDebugProps},
-         *              });
-         *          #endif
-         *      \endcode
+         *          \code
+         *              #if qDebug
+         *                  mapper.AddSubClass<Network, Network> ({
+         *                      {"debugProps"sv, &Network::fDebugProps},
+         *                  });
+         *              #endif
+         *          \endcode
          * 
          *  \note furtherDerivedClass operations to type performed AFTER the argument ones here, so that they can change values
          *        (either map to or from object) done in the base 'class' or set of properties being extended.
