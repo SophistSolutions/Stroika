@@ -52,7 +52,7 @@ String ObjectVariantMapper::TypeMappingDetails::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "for-type: "sv << fForType;
+    sb << "for-type: "sv << fForType_;
     // @todo maybe also print function pointers? Not sure a good reason
     sb << "}"sv;
     return sb;

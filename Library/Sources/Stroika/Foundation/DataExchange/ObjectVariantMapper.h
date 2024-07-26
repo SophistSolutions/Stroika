@@ -118,6 +118,27 @@ namespace Stroika::Foundation::DataExchange {
     using Containers::Set;
 
     /**
+     *  copyable is really needed; default_initializable is needed unless you do some work.
+     *      &&DRAFT NOT USED YET
+     */
+    template <typename T>
+    concept IObjectVariantMapper_Serializable = std::copy_constructible<T>;
+
+    /**
+     *      &&DRAFT NOT USED YET
+     * &&& NOT RIGHT - JUST PROTYPE..fiddling
+     */
+    template <typename T>
+    concept IObjectVariantMapper_SerializableOrGeneric = IObjectVariantMapper_Serializable<T> or same_as<T, void>;
+
+    /**
+     *      &&DRAFT NOT USED YET
+     * &&& NOT RIGHT - JUST PROTYPE..fiddling
+     */
+    template <typename T>
+    concept IObjectVariantMapper_AutomaticallySerializable = IObjectVariantMapper_Serializable<T> and default_initializable<T>;
+
+    /**
      *  This isn't very expensive (if your compiler supports cheap thread_local variables) - but its not free, and not very
      *  useful if you have reliable data (just produces better exception messages decoding structured data).
      */
@@ -208,6 +229,8 @@ namespace Stroika::Foundation::DataExchange {
          *          But using T* into works with subclassing, whereas its less clear how to make the return T approach work with subclassing.
          * 
          *          @todo - perhaps have it RETURN a unique_ptr<T>?
+         * 
+         *          \see https://stroika.atlassian.net/browse/STK-1015  (we hope to lose the default_initializable at some point)
          */
         template <typename T>
         using ToObjectMapperType = function<void (const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
@@ -265,17 +288,10 @@ namespace Stroika::Foundation::DataExchange {
          *  helpers like MakeCommonSerializer () or AddClass will be used.
          *
          *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>         * 
-         *  \note fFromObjectMapper is nullptr, then this field is added as nullptr.
+         *  \note fFromObjectMapper_ is nullptr, then this field is added as nullptr.
          *  \note toObjectMapper is nullptr, then it is simply not called (as if did nothing or empty function)
          */
         struct TypeMappingDetails {
-        public:
-            // @todo probably hide these in v3.x
-
-            type_index                  fForType;
-            FromGenericObjectMapperType fFromObjectMapper;
-            ToGenericObjectMapperType   fToObjectMapper;
-
         public:
             /**
              *  \par Example Usage
@@ -318,7 +334,10 @@ namespace Stroika::Foundation::DataExchange {
 
         public:
             /**
-             *  See FromGenericObjectMapperType
+             *  \see FromGenericObjectMapperType
+             *  \see GetGenericFromObjectMapper
+             * 
+             *  \req 'T' same_as one TypeMappingDetails constructed from (using type_info dynamic type compare)
              */
             template <typename T>
             static FromObjectMapperType<T> FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper);
@@ -327,7 +346,10 @@ namespace Stroika::Foundation::DataExchange {
 
         public:
             /**
-             *  See ToGenericObjectMapperType
+             *  \see ToGenericObjectMapperType
+             *  \see GetGenericToObjectMapper
+             * 
+             *  \req 'T' same_as one TypeMappingDetails constructed from (using type_info dynamic type compare)
              */
             template <typename T>
             static ToObjectMapperType<T> ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper);
@@ -375,6 +397,11 @@ namespace Stroika::Foundation::DataExchange {
             static FromGenericObjectMapperType mkGenericFromMapper_ (const FromObjectMapperType<T>& fromObjectMapper);
             template <typename T>
             static ToGenericObjectMapperType mkGenericToMapper_ (const ToObjectMapperType<T>& toObjectMapper);
+
+        private:
+            type_index                  fForType_;
+            FromGenericObjectMapperType fFromObjectMapper_;
+            ToGenericObjectMapperType   fToObjectMapper_;
         };
 
     public:
@@ -647,9 +674,19 @@ namespace Stroika::Foundation::DataExchange {
          *                  });
          *              #endif
          *          \endcode
-         * 
-         *  \note furtherDerivedClass operations to type performed AFTER the argument ones here, so that they can change values
-         *        (either map to or from object) done in the base 'class' or set of properties being extended.
+         *
+         *          // Another example - add 'virtual field' - readonly
+         *          \code
+         *              mapper.AddSubClass<Network, Network> ({
+         *                  {"fingerprint"sv,
+         *                   // Note since no StructFieldMetaInfo provided, the TypeMappingDetails takes the parent object type (in this case Network)
+         *                   ObjectVariantMapper::TypeMappingDetails{
+         *                       ObjectVariantMapper::FromObjectMapperType<Network> ([] (const ObjectVariantMapper&, const Network* objOfType) -> VariantValue {
+         *                           return VariantValue{objOfType->GenerateFingerprintFromProperties ().As<String> ()};
+         *                       }),
+         *                       ObjectVariantMapper::ToObjectMapperType<Network> (nullptr)}},
+         *              });
+         *          \endcode
          */
         template <typename CLASS, typename BASE_CLASS>
         nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
@@ -670,6 +707,10 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  The overloads that takes 'toObjectMapper' are just an optimization, and need not be used, but if used, the value
          *  passed in MUST the the same as that returned by ToObjectMapper ().
+         * 
+         *  \note due to https://stroika.atlassian.net/browse/STK-1015 - we require default_initializable<T> for overloads that construct the 'T'
+         *        (but importantly NOT for overloads that ToObject into an address, so you can create a sucblass or your own instance with arguments and
+         *        ToObject() into it)
          */
         template <typename T>
         nonvirtual T ToObject (const VariantValue& v) const;
@@ -806,10 +847,10 @@ namespace Stroika::Foundation::DataExchange {
             return MakeClassSerializer<T> (
                 fieldDescriptions,
                 ClassMapperOptions<T>{
-                    .fBeforeFrom = baseClass and baseClass->fFromObjectMapper ? baseClass->FromObjectMapper<T> () : nullptr,
-                    .fBeforeTo   = baseClass and baseClass->fToObjectMapper ? baseClass->ToObjectMapper<T> () : nullptr,
-                    .fAfterFrom = furtherDerivedClass and furtherDerivedClass->fFromObjectMapper ? furtherDerivedClass->FromObjectMapper<T> () : nullptr,
-                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->fToObjectMapper ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
+                    .fBeforeFrom = baseClass and baseClass->fFromObjectMapper_ ? baseClass->FromObjectMapper<T> () : nullptr,
+                    .fBeforeTo   = baseClass and baseClass->fToObjectMapper_ ? baseClass->ToObjectMapper<T> () : nullptr,
+                    .fAfterFrom = furtherDerivedClass and furtherDerivedClass->fFromObjectMapper_ ? furtherDerivedClass->FromObjectMapper<T> () : nullptr,
+                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->fToObjectMapper_ ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
                 nullptr);
         }
 
@@ -1048,7 +1089,7 @@ namespace Stroika::Foundation::DataExchange {
             struct TypeMappingDetails_Extractor_ {
                 auto operator() (const TypeMappingDetails& t) const -> type_index
                 {
-                    return t.fForType;
+                    return t.GetForType ();
                 };
             };
             using TypeMappingDetails_Traits_ = Containers::KeyedCollection_DefaultTraits<TypeMappingDetails, type_index, TypeMappingDetails_Extractor_>;
@@ -1089,13 +1130,14 @@ namespace Stroika::Foundation::DataExchange {
         * ***DEPRECATED SINCE STROIKA v3.0d8...
          *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - parent object created with missing values if missing from object
          */
-        static constexpr NullFieldHandling eOmitNullFields = NullFieldHandling::eOmit; // instead of using NullFieldHandling::eOmit
+        [[deprecated ("Since Stroika v3.0d8")]] static constexpr NullFieldHandling eOmitNullFields = NullFieldHandling::eOmit; // instead of using NullFieldHandling::eOmit
 
         /**
         * ***DEPRECATED SINCE STROIKA v3.0d8...
          *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - parent object created with explicitly null values if missing from object
          */
-        static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
+        [[deprecated ("Since Stroika v3.0d8")]] static constexpr NullFieldHandling eIncludeNullFields =
+            NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
 
     private:
         /*
@@ -1132,6 +1174,17 @@ namespace Stroika::Foundation::DataExchange {
          *  \par Example Usage
          *      \code
          *          {"BasicArray1"sv, &SharedContactsConfig_::fBasicArray1, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          {"fingerprint"sv,
+         *              // Note since no StructFieldMetaInfo provided, the TypeMappingDetails takes the parent object type (in this case Network)
+         *              ObjectVariantMapper::TypeMappingDetails{
+         *                  ObjectVariantMapper::FromObjectMapperType<Network> ([] (const ObjectVariantMapper&, const Network* objOfType) -> VariantValue {
+         *                          return VariantValue{objOfType->GenerateFingerprintFromProperties ().As<String> ()};
+         *                  }),
+         *                  ObjectVariantMapper::ToObjectMapperType<Network> (nullptr)}},
          *      \endcode
          */
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo);
