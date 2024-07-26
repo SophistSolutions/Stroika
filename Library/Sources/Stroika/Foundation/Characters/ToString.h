@@ -337,12 +337,14 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
 
-// make sure IStdFormatterPredefinedFor_ defined properly
+// Debugging hacks to make sure IStdFormatterPredefinedFor_ defined properly
 //
-// CRAZY - but cannot check (at least on visual studio) here: checking NOW causes this to FAIL later (i guess compiler caches results
-// cuz thinks its constant). if this worked, I'd add more static_asserts to check...
+//      CRAZY - but cannot check (at least on visual studio) here: checking NOW causes
+//      this to FAIL later (i guess compiler caches results
+//      cuz thinks its constant). if this worked, I'd add more static_asserts to check...
 //
-// Just use briefly to verify we fail AFTER this point
+// Just use briefly - to debug IStdFormatterPredefinedFor_ -  to verify we fail AFTER this point;
+// enable #if below and just look if these static_asserts fail - ignore any issues which come after (which is why this cannot be left #if 1)
 #if 0
     static_assert (IStdFormatterPredefinedFor_<std::type_index> == Configuration::StdCompat::formattable<std::type_index, wchar_t>);
     static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>> == Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
