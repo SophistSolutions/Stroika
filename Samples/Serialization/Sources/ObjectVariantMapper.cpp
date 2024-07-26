@@ -201,9 +201,10 @@ namespace {
             {
                 {"Enabled"sv, &MyType2Serialize1_::fEnabled},
             },
-            {.fAfterFrom = [] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
-                // value will be merged with base mapper value
-                return VariantValue{Mapping<String, VariantValue>{{"RandomValue"sv, VariantValue{objOfType->fEnabled ? 2 : 99}}}};
+            {.fAfterFrom = [] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType, VariantValue* updateResult) -> void {
+                Mapping<String, VariantValue> m = updateResult->As<Mapping<String, VariantValue>> ();
+                m.Add ("RandomValue"sv, VariantValue{objOfType->fEnabled ? 2 : 99});
+                *updateResult = VariantValue{m};
             }});
         trySerializing (mapper, tmp);
     }

@@ -681,8 +681,8 @@ namespace Stroika::Foundation::DataExchange {
          *              {},
          *              {.fAfterFrom = 
          *                  [] (const ObjectVariantMapper&, const Network* objOfType, VariantValue* updateResult) -> void {
-         *                      Mapping<String,VariantValue> m = updateResult->As<Mapping<String,VariantValue>> ();
-         *                      m.Add ("fingerprint"sv, VariantValue{objOfType->GenerateFingerprintFromProperties ().As<String> ()});
+         *                      Mapping<String, VariantValue> m = updateResult->As<Mapping<String, VariantValue>> ();
+         *                      m.Add ("RandomValue"sv, VariantValue{objOfType->fEnabled ? 2 : 99});
          *                      *updateResult = VariantValue{m};
          *                  }
          *              });
