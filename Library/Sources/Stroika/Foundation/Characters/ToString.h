@@ -213,11 +213,11 @@ namespace Stroika::Foundation::Characters::Private_ {
      * 
      * \see https://en.cppreference.com/w/cpp/utility/format/formatter    std::formatter predefined for
      *
-         //template <typename T, typename TUnique = decltype ([] () -> void {})>
-        //concept IStdFormatterPredefinedFor_ = requires (T t) {
-        //    typename TUnique;
-        //    Stroika::Foundation::Configuration::StdCompat::formattable<T, wchar_t>;
-        //};
+     *      template <typename T, typename TUnique = decltype ([] () -> void {})>
+     *      concept IStdFormatterPredefinedFor_ = requires (T t) {
+     *          typename TUnique;
+     *          Stroika::Foundation::Configuration::StdCompat::formattable<T, wchar_t>;
+     *      };
      */
     template <typename T>
     concept IStdFormatterPredefinedFor_ =
