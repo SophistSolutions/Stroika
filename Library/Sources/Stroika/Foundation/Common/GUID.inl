@@ -20,6 +20,26 @@ namespace Stroika::Foundation::Common {
         }
     }
 #endif
+    namespace Private_ {
+        template <Characters::IConvertibleToString STRISH_TYPE>
+        inline string AsAscii (STRISH_TYPE&& src)
+        {
+            // @todo could be more efficient either using spans and passed in buffer arg for if needed (like with String Peek) but
+            // also could just do additional template specializations in CPP file for cases like string_view or const char*
+            if constexpr (same_as<STRISH_TYPE, Characters::String>) {
+                return src.AsASCII ();
+            }
+            if constexpr (Configuration::IAnyOf<STRISH_TYPE, const char*, string_view, string>) {
+                return forward<STRISH_TYPE> (src);
+            }
+            return Characters::String{src}.AsASCII ();
+        }
+    }
+    template <Characters::IConvertibleToString STRISH_TYPE>
+    inline GUID::GUID (STRISH_TYPE&& src)
+        : GUID{mk_ (Private_::AsAscii (src))}
+    {
+    }
     inline Common::GUID::GUID (const array<uint8_t, 16>& src) noexcept
     {
         ::memcpy (this, src.data (), 16);

@@ -12,6 +12,7 @@
 #include <guiddef.h>
 #endif
 
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
@@ -32,6 +33,8 @@ namespace Stroika::Foundation::Common {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct GUID {
+        static GUID mk_ (const string& src);
+
     public:
         /**
          *  \note - when converting from a string, GUID allows the leading/trailing {} to be optionally provided.
@@ -47,11 +50,11 @@ namespace Stroika::Foundation::Common {
 #if qPlatform_Windows
         constexpr GUID (const ::GUID& src) noexcept;
 #endif
-        GUID (const string& src);
+        template <Characters::IConvertibleToString STRISH_TYPE>
+        GUID (STRISH_TYPE&& src);
         GUID (const Memory::BLOB& src);
         GUID (const array<byte, 16>& src) noexcept;
         GUID (const array<uint8_t, 16>& src) noexcept;
-        GUID (const Characters::String& src);
 
     public:
         uint32_t Data1{};

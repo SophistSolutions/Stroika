@@ -424,8 +424,8 @@ namespace {
                 using namespace Characters; // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
                 EXPECT_TRUE (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
                 EXPECT_TRUE (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
-                EXPECT_TRUE ((Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
-                EXPECT_TRUE ((Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+                EXPECT_TRUE ((Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+                EXPECT_TRUE ((Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
             }
         }
     }
