@@ -48,7 +48,7 @@
  *  TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
  *              use KeyedCollection<> instead of Mapping for fSerializers - was using Set<> which is closer API wise, but Set<> has misfeature
- *              that adding when already there does nothing, and new KeyedCollection will have property - lilke Mapping - of replacing value.
+ *              that adding when already there does nothing, and new KeyedCollection will have property - like Mapping - of replacing value.
  *
  *      @todo   Fix MakeCommonSerializer() for tuple<> to be variadic.
  *
@@ -593,7 +593,7 @@ namespace Stroika::Foundation::DataExchange {
             /**
              *  FromObjectMapperType (to variant value) after before the StructFieldInfo mappers in an AddClass () method. Typically null, but useful as a hook to refine mapping done by default algorithm 
              */
-            FromObjectMapperType<CLASS> fAfterFrom;
+            function<void (const ObjectVariantMapper& mapper, const CLASS* objOfType, VariantValue* updateVariantValue)> fAfterFrom;
 
             /**
              *  ToObjectMapperType (to CLASS) after before the StructFieldInfo mappers in an AddClass () method. Typically null, but useful as a hook to refine mapping done by default algorithm 
@@ -677,14 +677,14 @@ namespace Stroika::Foundation::DataExchange {
          *
          *          // Another example - add 'virtual field' - readonly
          *          \code
-         *              mapper.AddSubClass<Network, Network> ({
-         *                  {"fingerprint"sv,
-         *                   // Note since no StructFieldMetaInfo provided, the TypeMappingDetails takes the parent object type (in this case Network)
-         *                   ObjectVariantMapper::TypeMappingDetails{
-         *                       ObjectVariantMapper::FromObjectMapperType<Network> ([] (const ObjectVariantMapper&, const Network* objOfType) -> VariantValue {
-         *                           return VariantValue{objOfType->GenerateFingerprintFromProperties ().As<String> ()};
-         *                       }),
-         *                       ObjectVariantMapper::ToObjectMapperType<Network> (nullptr)}},
+         *              mapper.AddSubClass<Network, Network> (
+         *              {},
+         *              {.fAfterFrom = 
+         *                  [] (const ObjectVariantMapper&, const Network* objOfType, VariantValue* updateResult) -> void {
+         *                      Mapping<String,VariantValue> m = updateResult->As<Mapping<String,VariantValue>> ();
+         *                      m.Add ("fingerprint"sv, VariantValue{objOfType->GenerateFingerprintFromProperties ().As<String> ()});
+         *                      *updateResult = VariantValue{m};
+         *                  }
          *              });
          *          \endcode
          */
@@ -844,12 +844,19 @@ namespace Stroika::Foundation::DataExchange {
                                                                       const optional<TypeMappingDetails>& furtherDerivedClass = nullopt)
             requires (is_class_v<T>)
         {
+            function<void (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue)> afterFrom = nullptr;
+            if (furtherDerivedClass and furtherDerivedClass->fFromObjectMapper_) {
+                afterFrom = [=] (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue) {
+                    VariantValue vv = furtherDerivedClass->FromObjectMapper<T> () (mapper, objOfType);
+                    *updateVariantValue = vv;
+                };
+            }
             return MakeClassSerializer<T> (
                 fieldDescriptions,
                 ClassMapperOptions<T>{
                     .fBeforeFrom = baseClass and baseClass->fFromObjectMapper_ ? baseClass->FromObjectMapper<T> () : nullptr,
                     .fBeforeTo   = baseClass and baseClass->fToObjectMapper_ ? baseClass->ToObjectMapper<T> () : nullptr,
-                    .fAfterFrom = furtherDerivedClass and furtherDerivedClass->fFromObjectMapper_ ? furtherDerivedClass->FromObjectMapper<T> () : nullptr,
+                    .fAfterFrom  = afterFrom,
                     .fAfterTo = furtherDerivedClass and furtherDerivedClass->fToObjectMapper_ ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
                 nullptr);
         }
@@ -1174,17 +1181,6 @@ namespace Stroika::Foundation::DataExchange {
          *  \par Example Usage
          *      \code
          *          {"BasicArray1"sv, &SharedContactsConfig_::fBasicArray1, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
-         *      \endcode
-         *
-         *  \par Example Usage
-         *      \code
-         *          {"fingerprint"sv,
-         *              // Note since no StructFieldMetaInfo provided, the TypeMappingDetails takes the parent object type (in this case Network)
-         *              ObjectVariantMapper::TypeMappingDetails{
-         *                  ObjectVariantMapper::FromObjectMapperType<Network> ([] (const ObjectVariantMapper&, const Network* objOfType) -> VariantValue {
-         *                          return VariantValue{objOfType->GenerateFingerprintFromProperties ().As<String> ()};
-         *                  }),
-         *                  ObjectVariantMapper::ToObjectMapperType<Network> (nullptr)}},
          *      \endcode
          */
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo);

@@ -1133,10 +1133,11 @@ namespace Stroika::Foundation::DataExchange {
                     m.Add (i.fSerializedFieldName_, vv);
                 }
             }
+            VariantValue result{m};
             if (options.fAfterFrom) [[unlikely]] {
-                m.AddAll (options.fAfterFrom (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> ()); // so we can extend
+                options.fAfterFrom (mapper, fromObjOfTypeT, &result);
             }
-            return VariantValue{m};
+            return result;
         };
         ToObjectMapperType<CLASS> toObjectMapper = [fields, options] (const ObjectVariantMapper& mapper, const VariantValue& d,
                                                                       CLASS* intoObjOfTypeT) -> void {
