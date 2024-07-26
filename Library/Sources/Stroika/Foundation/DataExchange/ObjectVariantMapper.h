@@ -845,7 +845,7 @@ namespace Stroika::Foundation::DataExchange {
             requires (is_class_v<T>)
         {
             function<void (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue)> afterFrom = nullptr;
-            if (furtherDerivedClass and furtherDerivedClass->fFromObjectMapper_) {
+            if (furtherDerivedClass and furtherDerivedClass->GetGenericFromObjectMapper()) {
                 afterFrom = [=] (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue) {
                     VariantValue vv = furtherDerivedClass->FromObjectMapper<T> () (mapper, objOfType);
                     *updateVariantValue = vv;
@@ -854,10 +854,10 @@ namespace Stroika::Foundation::DataExchange {
             return MakeClassSerializer<T> (
                 fieldDescriptions,
                 ClassMapperOptions<T>{
-                    .fBeforeFrom = baseClass and baseClass->fFromObjectMapper_ ? baseClass->FromObjectMapper<T> () : nullptr,
-                    .fBeforeTo   = baseClass and baseClass->fToObjectMapper_ ? baseClass->ToObjectMapper<T> () : nullptr,
+                    .fBeforeFrom = baseClass and baseClass->GetGenericFromObjectMapper() ? baseClass->FromObjectMapper<T> () : nullptr,
+                    .fBeforeTo   = baseClass and baseClass->GetGenericToObjectMapper() ? baseClass->ToObjectMapper<T> () : nullptr,
                     .fAfterFrom  = afterFrom,
-                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->fToObjectMapper_ ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
+                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->GetGenericToObjectMapper() ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
                 nullptr);
         }
 
