@@ -563,7 +563,7 @@ namespace Stroika::Foundation::DataExchange {
             for (const VariantValue& encodedPair : s) {
                 Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                 if (p.size () != 2) [[unlikely]] {
-                    DbgTrace ("Bijection ('{}') element with item count (%d) other than 2"_f,
+                    DbgTrace ("Bijection ('{}') element with item count ({}) other than 2"_f,
                               type_index{typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)}, static_cast<int> (p.size ()));
                     static const auto kException_ = BadFormatException{"Mapping element with item count other than 2"sv};
                     Execution::Throw (kException_);

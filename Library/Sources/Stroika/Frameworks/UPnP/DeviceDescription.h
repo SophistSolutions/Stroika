@@ -66,18 +66,18 @@ namespace Stroika::Frameworks::UPnP {
         /**
          */
         struct Icon {
-            Icon () = default;
-
-            InternetMediaType fMimeType;
-            uint16_t          fHorizontalPixels{16};
-            uint16_t          fVerticalPixels{16};
-            uint16_t          fColorDepth{8};
-            URI               fURL; // url to the icon image file
+            optional<InternetMediaType> fMimeType;
+            optional<uint16_t>          fHorizontalPixels;
+            optional<uint16_t>          fVerticalPixels;
+            optional<uint16_t>          fColorDepth;
+            optional<URI>               fURL; // url to the icon image file
 
             /**
              *  @see Characters::ToString ();
              */
             nonvirtual String ToString () const;
+
+            static const Icon kDefault;
         };
         optional<Collection<Icon>> fIcons;
 
@@ -112,6 +112,9 @@ namespace Stroika::Frameworks::UPnP {
     private:
         static Foundation::DataExchange::ObjectVariantMapper mkMapper_ ();
     };
+    #if qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
+    static_assert (is_constructible_v<DeviceDescription::Icon>);
+    #endif
     const inline Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> DeviceDescription::kMapper{DeviceDescription::mkMapper_};
 
     /**

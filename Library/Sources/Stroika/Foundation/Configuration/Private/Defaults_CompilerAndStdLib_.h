@@ -2327,6 +2327,16 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 #endif
 
+#ifndef qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
+#if defined(__GNUC__)
+#define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 12))
+#else
+#define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy 0
+#endif
+#endif
+
+
+
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
 #if defined(_LIBCPP_VERSION)
 #if _LIBCPP_VERSION < 170000
