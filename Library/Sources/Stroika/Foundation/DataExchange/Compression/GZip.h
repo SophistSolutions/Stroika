@@ -40,11 +40,17 @@ namespace Stroika::Foundation::DataExchange::Compression::GZip {
      *  \note if not kSupported, these 'New ()' functions just throw FeatureNotSupportedException{}
      */
     namespace Compress {
-        using Compression::Compress::Options;
+        struct Options : Compression::Compress::Options {
+            // NYI (see https://stackoverflow.com/questions/72499500/whats-special-about-deflateinit2-that-prevents-deflatesetheader-be-used-with-de)
+            optional<Memory::BLOB> fDictionary;
+        };
         Ptr New (const Options& o = {});
     }
     namespace Decompress {
-        using Compression::Decompress::Options;
+        struct Options : Compression::Compress::Options {
+            // NYI (see https://stackoverflow.com/questions/72499500/whats-special-about-deflateinit2-that-prevents-deflatesetheader-be-used-with-de)
+            optional<Memory::BLOB> fDictionary;
+        };
         Ptr New (const Options& o = {});
     }
 

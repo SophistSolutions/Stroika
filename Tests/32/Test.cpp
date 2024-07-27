@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/DataExchange/Compression/Zip/Reader.h"
 #endif
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
+#include "Stroika/Foundation/DataExchange/Compression/GZip.h"
 #if qHasFeature_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
@@ -1091,20 +1092,28 @@ namespace {
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, CompressionTests_)
     {
         auto RoundTripCompressTest_ = [] (const Memory::BLOB& b) {
+            // Compression::Deflate
+            if constexpr (Compression::Deflate::kSupported) {
+                Memory::BLOB compressed = Compression::Deflate::Compress::New ().Transform (b);
+                EXPECT_EQ (b, Compression::Deflate::Decompress::New ().Transform (compressed));
 #if qHasFeature_ZLib
-            Memory::BLOB compressed = Compression::Deflate::Compress::New ().Transform (b);
-            EXPECT_EQ (b, Compression::Deflate::Decompress::New ().Transform (compressed));
-            {
-                DISABLE_COMPILER_MSC_WARNING_START (4996);
-                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-                EXPECT_EQ (Compression::Zip::Reader{}.Compress (b), Compression::Deflate::Compress::New ().Transform (b));
-                EXPECT_EQ (Compression::Zip::Reader{}.Decompress (compressed), Compression::Deflate::Decompress::New ().Transform (compressed));
-                DISABLE_COMPILER_MSC_WARNING_END (4996);
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-            }
+                {
+                    DISABLE_COMPILER_MSC_WARNING_START (4996);
+                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+                    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+                    EXPECT_EQ (Compression::Zip::Reader{}.Compress (b), Compression::Deflate::Compress::New ().Transform (b));
+                    EXPECT_EQ (Compression::Zip::Reader{}.Decompress (compressed), Compression::Deflate::Decompress::New ().Transform (compressed));
+                    DISABLE_COMPILER_MSC_WARNING_END (4996);
+                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+                }
 #endif
+            }
+            // Compression::GZip
+            if constexpr (Compression::GZip::kSupported) {
+                Memory::BLOB compressed = Compression::GZip::Compress::New ().Transform (b);
+                EXPECT_EQ (b, Compression::GZip::Decompress::New ().Transform (compressed));
+            }
         };
         RoundTripCompressTest_ (Memory::BLOB::FromHex ("aa1234abcd01010102030405"));
         RoundTripCompressTest_ (Memory::BLOB::FromHex ("aa1234abcd01010102030405"sv));
