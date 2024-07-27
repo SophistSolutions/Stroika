@@ -220,6 +220,9 @@
     <Filter Include="Sources\DataExchange\JSON">
       <UniqueIdentifier>{a50ba3e7-577e-465c-9f89-a61b37a0c1fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\Compression\Private_">
+      <UniqueIdentifier>{2f800298-4b38-4bf4-aeaf-df9dcbf7bc59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -841,6 +844,9 @@
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.cpp">
+      <Filter>Sources\DataExchange\Compression</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\GZip.cpp">
       <Filter>Sources\DataExchange\Compression</Filter>
     </ClCompile>
   </ItemGroup>
@@ -2218,6 +2224,12 @@
       <Filter>Sources\DataExchange\Compression</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Common.h">
+      <Filter>Sources\DataExchange\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Private_\ZLibSupport.h">
+      <Filter>Sources\DataExchange\Compression\Private_</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\GZip.h">
       <Filter>Sources\DataExchange\Compression</Filter>
     </ClInclude>
   </ItemGroup>

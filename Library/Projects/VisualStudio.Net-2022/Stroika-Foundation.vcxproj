@@ -115,6 +115,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\GZip.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp" />
@@ -478,6 +479,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\GZip.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Private_\ZLibSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.h" />

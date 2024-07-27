@@ -11,7 +11,7 @@
 #include "Private_/ZLibSupport.h"
 #endif
 
-#include "Deflate.h"
+#include "GZip.h"
 
 using std::byte;
 
@@ -22,33 +22,32 @@ using namespace Stroika::Foundation::DataExchange::Compression;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Streams;
 
-#if qHasFeature_ZLib
-using Compression::Private_::DeflateRep_;
-using Compression::Private_::InflateRep_;
-#endif
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #if !qHasFeature_ZLib
 namespace {
-    const auto kNotSuppExcept_ = Execution::FeatureNotSupportedException{"Deflate (ZLIB)"sv};
+    const auto kNotSuppExcept_ = Execution::FeatureNotSupportedException{"GZip (ZLIB)"sv};
 }
 #endif
+#if qHasFeature_ZLib
+using Compression::Private_::DeflateRep_;
+using Compression::Private_::InflateRep_;
+#endif
 
-Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
+Compression::Ptr GZip::Compress::New (const GZip::Compress::Options& o)
 {
 #if qHasFeature_ZLib
     struct MyRep_ : IRep {
-        Deflate::Compress::Options fOptions_;
-        shared_ptr<DeflateRep_>    fDelegate2;
-        MyRep_ (const Deflate::Compress::Options& o)
+        GZip::Compress::Options fOptions_;
+        shared_ptr<DeflateRep_> fDelegate2;
+        MyRep_ (const GZip::Compress::Options& o)
             : fOptions_{o}
         {
         }
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<DeflateRep_> (src, fOptions_, false);
+            fDelegate2 = make_shared<Private_::DeflateRep_> (src, fOptions_, true);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
@@ -61,14 +60,14 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
     Execution::Throw (kNotSuppExcept_);
 #endif
 }
-Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decompress::Options& o)
+Compression::Ptr GZip::Decompress::New ([[maybe_unused]] const GZip::Decompress::Options& o)
 {
 #if qHasFeature_ZLib
     struct MyRep_ : IRep {
-        shared_ptr<Private_::InflateRep_> fDelegate2;
-        virtual InputStream::Ptr<byte>    Transform (const InputStream::Ptr<byte>& src)
+        shared_ptr<InflateRep_>        fDelegate2;
+        virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<Private_::InflateRep_> (src, false);
+            fDelegate2 = make_shared<InflateRep_> (src, true);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const

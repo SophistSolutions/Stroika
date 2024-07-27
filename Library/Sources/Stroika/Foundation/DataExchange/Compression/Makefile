@@ -16,6 +16,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=	\
 	$(ObjDir)Deflate${OBJ_SUFFIX}\
+	$(ObjDir)GZip${OBJ_SUFFIX}\
 
 SubDirs	:=	\
 	Zip \
