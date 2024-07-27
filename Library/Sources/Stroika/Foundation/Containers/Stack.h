@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *
-         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
+         *  \todo   @todo http://stroika-bugs.sophists.com/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Stack ();
         Stack (Stack&& src) noexcept      = default;

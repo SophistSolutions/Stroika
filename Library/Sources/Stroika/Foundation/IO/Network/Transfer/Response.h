@@ -31,7 +31,7 @@
  *              But maybe add GetFailed () as a return value for 400/500 responses and use that
  *              in Connection::Send()
  * 
- *      @todo   https://stroika.atlassian.net/browse/STK-724 - IO::Network::Transfer::Request/Response should use IO::Network::HTTP::Headers (not mapping)
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-724 - IO::Network::Transfer::Request/Response should use IO::Network::HTTP::Headers (not mapping)
  */
 
 namespace Stroika::Foundation::IO::Network::Transfer {

@@ -24,7 +24,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-428 - See how to map EqualsComparer to CountedValue we use
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-428 - See how to map EqualsComparer to CountedValue we use
  *              probably added template param to CountedValue - TRAITS.
  *
  *              MAYBE add    using   MultisetEntryType                       =       CountedValue<T>; to

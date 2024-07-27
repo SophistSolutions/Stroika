@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Execution {
         if (result) {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wtsan\""); // Needed in g++-13 and later, it appears, with --sanitize=thread, but so far no obvious real problems
             /*
-             *  See https://stroika.atlassian.net/browse/STK-494 for notes on why this is right (using eReleaseAcquire/memory_order_acquire)
+             *  See http://stroika-bugs.sophists.com/browse/STK-494 for notes on why this is right (using eReleaseAcquire/memory_order_acquire)
              */
             switch (fBarrierFlag_) {
                 case BarrierType::eReleaseAcquire:

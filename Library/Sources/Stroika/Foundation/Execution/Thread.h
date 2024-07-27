@@ -230,12 +230,12 @@ namespace Stroika::Foundation::Execution {
          */
         struct Configuration {
             /**
-             *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
+             *      \note see http://stroika-bugs.sophists.com/browse/STK-474 - @todo and NYI
              */
             optional<size_t> fStackSize;
 
             /**
-             *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
+             *      \note see http://stroika-bugs.sophists.com/browse/STK-474 - @todo and NYI
              *
              *      \note   NYI - see &&&& - probably availble for POSIX, but not sure for windoze threads
              *              http://man7.org/linux/man-pages/man3/pthread_attr_setguardsize.3.html
@@ -727,7 +727,7 @@ namespace Stroika::Foundation::Execution {
              *  may not be available on your system.
              *
              *  \note   @todo - IMPLEMENT ON SOME SYSTEM ;-) Not sure if/where we can do this. Tricky...
-             *  \note   NYI - see https://stroika.atlassian.net/browse/STK-475
+             *  \note   NYI - see http://stroika-bugs.sophists.com/browse/STK-475
              */
             nonvirtual ConfigurationStatus GetConfigurationStatus () const;
 
@@ -1065,7 +1065,7 @@ namespace Stroika::Foundation::Execution {
          *  If the current (calling) thread is a 'Stroika thread' - that thread Ptr is returned. If the current thread is NOT a stroika thread (e.g. the main thread)
          *  this will return a nullptr.
          * 
-         *  \note SEE https://stroika.atlassian.net/browse/STK-994 - for the idea of creating a special Ptr - just for the main thread. But really
+         *  \note SEE http://stroika-bugs.sophists.com/browse/STK-994 - for the idea of creating a special Ptr - just for the main thread. But really
          *        no reason I can see --LGP 2023-10-18
          */
         Ptr GetCurrent ();

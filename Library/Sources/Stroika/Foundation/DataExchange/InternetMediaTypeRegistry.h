@@ -66,7 +66,7 @@ namespace Stroika::Foundation::DataExchange {
      *      \endcode
      *
      *  TODO:
-     *      \todo   https://stroika.atlassian.net/browse/STK-714 - InternetMediaTypeRegistry Add mechanism to fetch subtypes more generally - enhance IsA
+     *      \todo   http://stroika-bugs.sophists.com/browse/STK-714 - InternetMediaTypeRegistry Add mechanism to fetch subtypes more generally - enhance IsA
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -297,7 +297,7 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  @todo REDO this - and dont count on above old algorith. Will add new mechanism EITHER based on what I can read from
          *        the MIME config files on each OS (except it appears windows), or from some registration;
-         *        see https://stroika.atlassian.net/browse/STK-714
+         *        see http://stroika-bugs.sophists.com/browse/STK-714
          * 
          *  As of Stroika v3.0d5 - this just checks the type and subtype atoms for equality (which are already case insensitive) and 
          *  ignores file suffix and parameters.

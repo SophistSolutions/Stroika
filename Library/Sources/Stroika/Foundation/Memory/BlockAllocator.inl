@@ -373,7 +373,7 @@ namespace Stroika::Foundation::Memory {
         T* result = reinterpret_cast<T*> (::operator new (sizeof (T)));
 #endif
         EnsureNotNull (result);
-        Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0); // see https://stroika.atlassian.net/browse/STK-511 - assure aligned
+        Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0); // see http://stroika-bugs.sophists.com/browse/STK-511 - assure aligned
         return result;
     }
     template <typename T>

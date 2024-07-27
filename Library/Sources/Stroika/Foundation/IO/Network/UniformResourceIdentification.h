@@ -109,7 +109,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *        to specify in some 'As<String>' APIs - which is preferred for output. The default often depends on the type being produced
      *        in the As<> method.
      * 
-     *  \note - SEE https://stroika.atlassian.net/browse/STK-1000 -- issue about maybe needed more nuanced approach
+     *  \note - SEE http://stroika-bugs.sophists.com/browse/STK-1000 -- issue about maybe needed more nuanced approach
      *         PERHAPS add another flag eDecodedUNICODEButEncodeSOMETUFFNeededToUnparseDisambiguate (not sure that ever happens)?
      *         (OK - I do have an example - the # character - and maybe sometimes ? character??? - (# in query for example - comes before fragment).
      */
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *
          *  So, \req not registeredName.empty ()
          * 
-         *  \todo https://stroika.atlassian.net/browse/STK-750
+         *  \todo http://stroika-bugs.sophists.com/browse/STK-750
          *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexcept
          *        on GCC. THIS compiles fine, but then later bits of code that use it fail to compile (g++ 9 at least).
          */
@@ -454,7 +454,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /**
-         *  \todo https://stroika.atlassian.net/browse/STK-750
+         *  \todo http://stroika-bugs.sophists.com/browse/STK-750
          *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexect
          *        on GCC. THIS compiles fine, but then later bits of code that use it fail to compile (g++ 9 at least).
          */
@@ -569,7 +569,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *          comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
      *          So pick a preferred ordering (alphabetical) - and compare one after the other
-     *          @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
+     *          @todo see http://stroika-bugs.sophists.com/browse/STK-144 and fix when that is fixed
      *
      * According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before doing % etc substitution, so support u8string overload.
      */

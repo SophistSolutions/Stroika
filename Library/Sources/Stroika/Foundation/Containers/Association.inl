@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Containers {
     void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RetainAll (const ITERABLE_OF_KEY_TYPE& items)
     {
         static_assert (is_convertible_v<ranges::range_value_t<ITERABLE_OF_KEY_TYPE>, key_type>);
-        // @see https://stroika.atlassian.net/browse/STK-539
+        // @see http://stroika-bugs.sophists.com/browse/STK-539
 #if 0
                 Association<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Association<KEY_TYPE, MAPPED_VALUE_TYPE> { _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().CloneEmpty () };
                 for (auto key2Keep : items) {

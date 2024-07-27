@@ -105,7 +105,7 @@ namespace {
             constexpr auto kHeaderNameEqualsComparer = String::EqualsComparer{Characters::eCaseInsensitive};
             Set<String>    m;
             auto           m1 = Set<String>{decltype (kHeaderNameEqualsComparer) (kHeaderNameEqualsComparer), m};
-            auto m2 = Set<String>{kHeaderNameEqualsComparer, m}; // https://stroika.atlassian.net/browse/STK-720 failed to compile before fix in 2.1b10x
+            auto m2 = Set<String>{kHeaderNameEqualsComparer, m}; // http://stroika-bugs.sophists.com/browse/STK-720 failed to compile before fix in 2.1b10x
         }
     }
 }

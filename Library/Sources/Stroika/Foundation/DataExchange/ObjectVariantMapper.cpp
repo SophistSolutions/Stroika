@@ -541,7 +541,7 @@ String ObjectVariantMapper::ToString () const
     return sb;
 }
 
-//  https://stroika.atlassian.net/browse/STK-910
+//  http://stroika-bugs.sophists.com/browse/STK-910
 template <>
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<IO::Network::CIDR>*)
 {
@@ -561,7 +561,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
             *intoObjOfTypeT = nullopt;
         }
         else {
-            // SEE https://stroika.atlassian.net/browse/STK-910
+            // SEE http://stroika-bugs.sophists.com/browse/STK-910
             // fix here - I KNOW I have something there, but how to construct
             T tmp{IO::Network::V4::kLocalhost};
             mapper.ToObject<T> (d, &tmp);

@@ -490,7 +490,7 @@ namespace {
                  *  Queer, but libxml2 appears to require this attribute have the given namespace (fine) - but not provide a usable xmlNs object.
                  *  So we must create it on the document, and free it when we free the document.
                  *
-                 *      \see https://stroika.atlassian.net/browse/STK-1001
+                 *      \see http://stroika-bugs.sophists.com/browse/STK-1001
                  */
                 xmlSetNsProp (fNode_, GetSharedReUsableXMLNSParentNamespace_ (fNode_), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
                               v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));

@@ -69,7 +69,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     using MountedFilesystemNameType = filesystem::path;
 
     /**
-     *  \todo This is NYI, for Linux (https://stroika.atlassian.net/browse/STK-733)
+     *  \todo This is NYI, for Linux (http://stroika-bugs.sophists.com/browse/STK-733)
      */
     struct DiskInfoType {
         /*

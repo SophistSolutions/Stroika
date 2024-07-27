@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Time {
         Require (y.ok () and m.ok () and d.ok ());
         Require (y / m / d >= kMinDateReference.fYMD);
 
-        // @todo https://stroika.atlassian.net/browse/STK-976 - improve precision of map to/from JulianDateRep
+        // @todo http://stroika-bugs.sophists.com/browse/STK-976 - improve precision of map to/from JulianDateRep
 
         JulianDayNumber result = [&] () noexcept -> JulianDayNumber {
             if (y / m / d >= kGregorianCalendarEpoch.fYMD) {
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Time {
         }
         Require (kMinJulianRep <= jr and jr <= kMaxJulianRep);
 
-        // @todo https://stroika.atlassian.net/browse/STK-976 - improve precision of map to/from JulianDateRep
+        // @todo http://stroika-bugs.sophists.com/browse/STK-976 - improve precision of map to/from JulianDateRep
         year_month_day result = [&] () noexcept -> year_month_day {
             if (jr >= kGregorianCalendarEpoch.fJulianRep) {
                 return chrono::sys_days{kGregorianCalendarEpoch.fYMD} + days{(jr - kGregorianCalendarEpoch.fJulianRep)};

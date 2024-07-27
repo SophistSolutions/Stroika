@@ -26,7 +26,7 @@
  *
  *
  * TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-467 Lose shared_ptr<> with SignalHandlerRegistry::SafeSignalsManager::Rep_
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-467 Lose shared_ptr<> with SignalHandlerRegistry::SafeSignalsManager::Rep_
  *              and change semantics - assert or autodelete - safe handlers on destroy of safe signal mgr.
  *
  *      @todo   Small issue - AddSignalHandler versus SetSignalHandler (). This can be confusing. I had a bug

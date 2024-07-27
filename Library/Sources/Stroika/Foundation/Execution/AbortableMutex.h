@@ -19,7 +19,7 @@
  * TODO:
  *      @todo   CONSIDER DEPRECATING - since totally unused as of 2024-06-24 - I think - and looks like a bad idea.
  * 
- *      @todo   https://stroika.atlassian.net/browse/STK-600
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-600
  *              Rename this to InterruptibleMutex - and simple wrapper around any existing timed mutex, but with args
  *              saying time freq to check, and automatically so try with shorter timeouts.
  *

@@ -35,7 +35,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *
      *      @todo maybe reconsider?
      * 
-     *  @todo   https://stroika.atlassian.net/browse/STK-724 - IO::Network::Transfer::Request/Response should use IO::Network::HTTP::Headers (not mapping)
+     *  @todo   http://stroika-bugs.sophists.com/browse/STK-724 - IO::Network::Transfer::Request/Response should use IO::Network::HTTP::Headers (not mapping)
      */
     struct Request {
         String fMethod;

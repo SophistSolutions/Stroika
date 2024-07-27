@@ -247,7 +247,7 @@ namespace Stroika::Foundation::DataExchange {
          * 
          *  \note   Most constructors are not explicit to make it more easy to assign to (could do operator= for that)?
          *          A few are marked as explicit, only because its too easy to accidentally invoke 
-         *          (as with https://stroika.atlassian.net/browse/STK-739) - Iterable<VariantValue> or Set<VariantValue> etc...
+         *          (as with http://stroika-bugs.sophists.com/browse/STK-739) - Iterable<VariantValue> or Set<VariantValue> etc...
          *          Roughly, explicit types can be used directly, and composite (aggregating) types are explicit.
          * 
          *  \todo Can shorten this a bit using templates and concepts (integral, floating_point etc - like I did for "StringIsh").

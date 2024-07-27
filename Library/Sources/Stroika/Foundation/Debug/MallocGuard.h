@@ -25,7 +25,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-621 stopped testing regularly in Stroika
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-621 stopped testing regularly in Stroika
  *              2.0a217 (october 2017).
  *
  *      @todo   Support on Windows/MSVC

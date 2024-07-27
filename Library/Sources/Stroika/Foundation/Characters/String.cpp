@@ -1668,7 +1668,7 @@ void String::erase (size_t from)
 
 void String::erase (size_t from, size_t count)
 {
-    // https://stroika.atlassian.net/browse/STK-445
+    // http://stroika-bugs.sophists.com/browse/STK-445
     // @todo - NOT ENVELOPE THREADSAFE
     // MUST ACQUIRE ACCESSOR HERE - not just that RemoteAt threadsafe - but must SYNC at this point - need AssureExternallySycnonized stuff here!!!
     //

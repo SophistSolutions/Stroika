@@ -884,7 +884,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) con
          *  This really only has effect #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
          *  because that's the only time we have an important side effect of the threads finalizing.
          *
-         *  @see https://stroika.atlassian.net/browse/STK-496
+         *  @see http://stroika-bugs.sophists.com/browse/STK-496
          *
          *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
          *  longer access fThread_ (and therefore not lock fAccessSTDThreadMutex_)

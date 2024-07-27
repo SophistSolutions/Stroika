@@ -94,22 +94,22 @@
  *
  *      @todo   Get rid of or do differently the Run() methods - so can turn on/off Context debugging easier.
  *
- *      @todo   USE UnknownSubElementDisposition more throughly...
+ *      @todo   USE UnknownSubElementDisposition more thoroughly...
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-408 - cleanup template specializations
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-408 - cleanup template specializations
  *
  *
  *  \em Design Overview
  *      This module provides a set of classes to support reading objects from a SAX (event oriented) data source
  *      (https://en.wikipedia.org/wiki/Simple_API_for_XML)
  *
- *      With SAX parsing, you get a nested series of OPEN TAG and matching CLOSE TAG events, mimicing the structure of
+ *      With SAX parsing, you get a nested series of OPEN TAG and matching CLOSE TAG events, mimicking the structure of
  *      the XML structured document.
  *
  *      Typically, you will have data structures which roughly map (structurally similarly) to the structure in the XML document
  *      (if not, this module will probably not help you).
  *
- *      These classes allow you to easily define readers for particular C++ types that correspond to sections of XML (so serioes
+ *      These classes allow you to easily define readers for particular C++ types that correspond to sections of XML (so series
  *      of open/close tag and data in between events).
  *
  *      Think of each @IElementConsumer subclass (reader) as an object that knows how to read a section of XML (series of open/close

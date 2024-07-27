@@ -728,7 +728,7 @@ namespace Stroika::Foundation::Traversal {
     template <Common::IPotentiallyComparer<T> COMPARER>
     Iterable<T> Iterable<T>::Top (COMPARER&& cmp) const
     {
-        // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
+        // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{this->begin (), this->end ()};
 #if __cpp_lib_execution >= 201603L
         sort (std::execution::par, tmp.begin (), tmp.end (), forward<COMPARER> (cmp));
@@ -753,7 +753,7 @@ namespace Stroika::Foundation::Traversal {
         if (n >= size ()) {
             return Top (cmp);
         }
-        // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
+        // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{this->begin (), this->end ()};
 #if __cpp_lib_execution >= 201603L
         partial_sort (std::execution::par, tmp.begin (), tmp.begin () + n, tmp.end (), forward<COMPARER> (cmp));
@@ -786,7 +786,7 @@ namespace Stroika::Foundation::Traversal {
     template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
     Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
-        // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
+        // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
 #if __cpp_lib_execution >= 201603L
         if (seq == Execution::SequencePolicy::eSeq) {

@@ -247,7 +247,7 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
 #if qPlatform_Windows
     return WindowsRegistryDefaultBackend ();
 #endif
-    // @todo fix for MacOS - which doesn't support these - https://stroika.atlassian.net/browse/STK-795
+    // @todo fix for MacOS - which doesn't support these - http://stroika-bugs.sophists.com/browse/STK-795
     if (filesystem::exists ("/usr/share/mime"sv)) {
         try {
             return UsrSharedDefaultBackend ();

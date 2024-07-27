@@ -240,7 +240,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
          *  separately count established, listening, and other (usually shutting down)
          *  TCP streams.
          *
-         *  \note   @todo https://stroika.atlassian.net/browse/STK-478  - fTCPStats for whole computer not process
+         *  \note   @todo http://stroika-bugs.sophists.com/browse/STK-478  - fTCPStats for whole computer not process
          */
         struct TCPStats {
             unsigned int fEstablished{};

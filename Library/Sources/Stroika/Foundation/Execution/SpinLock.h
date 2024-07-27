@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   Stroika 2.0a155 and earlier - Execution::kSpinLock_IsFasterThan_mutex was always true
      *
-     *  \note   Stroika 2.0a156 and later - due to threadFence and https://stroika.atlassian.net/browse/STK-494 - SpinLock
+     *  \note   Stroika 2.0a156 and later - due to threadFence and http://stroika-bugs.sophists.com/browse/STK-494 - SpinLock
      *          slowed slightly, but its still notably faster (with the default barrier style) on gcc/unix/windows (x86 only tested).
      */
     constexpr bool kSpinLock_IsFasterThan_mutex = true;

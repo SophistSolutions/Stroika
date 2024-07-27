@@ -261,7 +261,7 @@ namespace {
 }
 
 // Skip some locale tests cuz so little works
-//////https://stroika.atlassian.net/browse/STK-107 -- BROKEN
+//////http://stroika-bugs.sophists.com/browse/STK-107 -- BROKEN
 #define qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_ 0
 #define qSupport_TestRoundTripFormatThenParseNoChange_For_Date_ 0
 #define qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_ 0
@@ -688,7 +688,7 @@ namespace {
             }
         }
         {
-            // https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
+            // http://stroika-bugs.sophists.com/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
             {
                 constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
@@ -712,7 +712,7 @@ namespace {
             }
         }
         {
-            // https://stroika.atlassian.net/browse/STK-950
+            // http://stroika-bugs.sophists.com/browse/STK-950
             try {
                 [[maybe_unused]]DateTime dt = DateTime::Parse ("1906-05-12x12:00:00+00", DateTime::kISO8601Format);
                 EXPECT_TRUE (false);
@@ -968,7 +968,7 @@ namespace {
          *
          * This test wont always work, but at least for now seems to work on the systems i test on.
          *
-         *  @see https://stroika.atlassian.net/browse/STK-634
+         *  @see http://stroika-bugs.sophists.com/browse/STK-634
          */
         {
             DateTime n = DateTime{Date{Year{2011}, December, DayOfMonth{30}}, TimeOfDay::Parse ("1 pm", locale::classic ()), Timezone::kLocalTime};
@@ -1100,7 +1100,7 @@ namespace {
         {
             Range<DateTime> d1{DateTime{Date{Year{2000}, April, DayOfMonth{20}}}, DateTime{Date{Year{2000}, April, DayOfMonth{22}}}};
             EXPECT_EQ (d1.GetDistanceSpanned () / 2, Duration{"PT1D"});
-            // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
+            // SEE http://stroika-bugs.sophists.com/browse/STK-514 for accuracy of compare (sb .1 or less)
             EXPECT_TRUE (Math::NearlyEquals (d1.GetMidpoint (), DateTime{Date{Year{2000}, April, DayOfMonth{21}}}, DurationSeconds{2}));
         }
     }
@@ -1110,7 +1110,7 @@ namespace {
     GTEST_TEST (Foundation_Time, timepoint_)
     {
         TraceContextBumper ctx{"timepoint_"};
-        // @see https://stroika.atlassian.net/browse/STK-619 - EXPECT_TRUE (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinity) == time_point<chrono::steady_clock>::max ());
+        // @see http://stroika-bugs.sophists.com/browse/STK-619 - EXPECT_TRUE (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinity) == time_point<chrono::steady_clock>::max ());
         EXPECT_TRUE (Time::GetTickCount () + Time::kInfinity > chrono::steady_clock::now () + chrono::seconds (10000));
     }
 }

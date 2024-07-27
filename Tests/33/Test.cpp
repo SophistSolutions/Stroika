@@ -771,7 +771,7 @@ namespace {
 }
 
 namespace {
-    // https://stroika.atlassian.net/browse/STK-909
+    // http://stroika-bugs.sophists.com/browse/STK-909
     namespace Test14_ObjVarMapperAsStringVsToString_STK_909_ {
         void DoIt ()
         {

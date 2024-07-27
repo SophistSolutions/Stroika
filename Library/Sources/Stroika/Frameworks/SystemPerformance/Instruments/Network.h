@@ -21,7 +21,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-479 - Add (elaborated) TCPStats - like we have in Process TCPStats
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-479 - Add (elaborated) TCPStats - like we have in Process TCPStats
  */
 
 namespace Stroika::Frameworks::SystemPerformance::Instruments::Network {

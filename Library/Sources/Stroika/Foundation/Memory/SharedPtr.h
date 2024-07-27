@@ -287,9 +287,9 @@ namespace Stroika::Foundation::Memory {
      *          to make_shared<T> (), and that is obviously unfairly biased. Using make_shared, the stl::shared_ptr is clearly faster,
      *          even on VS2k.
      * 
-     *      // @todo GET RID OF in v3 after testing - https://stroika.atlassian.net/browse/STK-967
+     *      // @todo GET RID OF in v3 after testing - http://stroika-bugs.sophists.com/browse/STK-967
      */
-    constexpr bool kSharedPtr_IsFasterThan_shared_ptr = false;
+    [[deprecated ("Since Stroika v3.0d8")]] constexpr bool kSharedPtr_IsFasterThan_shared_ptr = false;
 }
 
 namespace Stroika::Foundation::Execution {

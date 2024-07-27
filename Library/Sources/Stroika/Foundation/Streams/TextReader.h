@@ -18,14 +18,14 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-588 - TextReader should be seekable (maybe just optionally)
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-588 - TextReader should be seekable (maybe just optionally)
  *              INCOMPLETE IMPLEMENTATION - API probably OK.
  *
  *      @todo   DOCUMENT why we put ReadLine etc in InputStream::Ptr, instead of here. Gist of why - though more
  *              logical here - requires no state - and so more flexible there. May reconsider.
  *              -- LGP 2015-07-06
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySynchronized are AssertNotImplemented on TextReader and TextWriter
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-611 - some cases of Execution::InternallySynchronized are AssertNotImplemented on TextReader and TextWriter
  */
 
 namespace Stroika::Foundation::Memory {

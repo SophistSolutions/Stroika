@@ -46,7 +46,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
  *              use KeyedCollection<> instead of Mapping for fSerializers - was using Set<> which is closer API wise, but Set<> has misfeature
  *              that adding when already there does nothing, and new KeyedCollection will have property - like Mapping - of replacing value.
  *
@@ -72,9 +72,6 @@
  *              When serializing / deserializing - (e.g to/from JSON or XML) - we construct DOM tree which is
  *              intrinsically not very cost effective. We DO have the XML sax parser (but that wont work with this).
  *
- *      @todo   Current serializer/de-serializer API needlessly requires that objects have default CTOR.
- *              https://stroika.atlassian.net/browse/STK-1015
- *
  *      @todo   NOTE and TODO
  *              The cast to byte* loses some type safety (we may want to store the class size through template magic)
  *              in the struct type info record, so it can be validated against the offsets in the typeinfo (in debug builds).
@@ -95,7 +92,7 @@
  *
  *              Anyhow - this is a long-term todo item, so no need to work out details now.
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-743 - Add SupportsAdder concept and use that to simplify use in ObjectVariantMapper
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-743 - Add SupportsAdder concept and use that to simplify use in ObjectVariantMapper
  */
 
 namespace Stroika::Foundation::DataExchange {
@@ -117,6 +114,7 @@ namespace Stroika::Foundation::DataExchange {
     using Containers::Sequence;
     using Containers::Set;
 
+#if 0
     /**
      *  copyable is really needed; default_initializable is needed unless you do some work.
      *      &&DRAFT NOT USED YET
@@ -137,6 +135,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     template <typename T>
     concept IObjectVariantMapper_AutomaticallySerializable = IObjectVariantMapper_Serializable<T> and default_initializable<T>;
+#endif
 
     /**
      *  This isn't very expensive (if your compiler supports cheap thread_local variables) - but its not free, and not very
@@ -206,8 +205,8 @@ namespace Stroika::Foundation::DataExchange {
      *              this can be done with reflections TS).
      * 
      *  \note   Design Note (ToObject construction strategy):
-     *              Some possibilities:
-     * 
+     *          \see http://stroika-bugs.sophists.com/browse/STK-1015
+     *          Some possibilities:
      *              (1) ToObject () requires pre-constructed object argument, and takes &o as argument, and fills in/overrides fields
      * 
      *                  This is extra costly, because it requires 'default constructing' T before assigning/overwriting its field values.
@@ -225,7 +224,7 @@ namespace Stroika::Foundation::DataExchange {
      *                  caller(?).
      * 
      *                  Another variation on this - would be to have for each T/ToObject description - a CONSTRUCTOR function, and a FILL function. Then these
-     *                  could be somehow combined for the baseclass/subclass case?
+     *                  could be somehow combined for the base class/subclass case?
      */
     class [[nodiscard]] ObjectVariantMapper {
     public:
@@ -250,9 +249,7 @@ namespace Stroika::Foundation::DataExchange {
          *          in many ways more natural. Doing T *into has the DEFECT, that it requires T to be default constructible (or greatly encourages ;-)).
          *          But using T* into works with subclassing, whereas its less clear how to make the return T approach work with subclassing.
          * 
-         *          @todo - perhaps have it RETURN a unique_ptr<T>?
-         * 
-         *          \see https://stroika.atlassian.net/browse/STK-1015  (we hope to lose the default_initializable at some point)
+         *          \see Design Note (ToObject construction strategy)
          */
         template <typename T>
         using ToObjectMapperType = function<void (const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
@@ -263,7 +260,7 @@ namespace Stroika::Foundation::DataExchange {
          *  for internal storage of mappers.
          *
          *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
-         *        see https://stroika.atlassian.net/browse/STK-601 for details but, with UBSan, we need todo an extra
+         *        see http://stroika-bugs.sophists.com/browse/STK-601 for details but, with UBSan, we need todo an extra
          *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see ToGenericObjectMapperType
@@ -277,7 +274,7 @@ namespace Stroika::Foundation::DataExchange {
          *  for internal storage of mappers.
          *
          *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
-         *        see https://stroika.atlassian.net/browse/STK-601 for details but, with ubsan, we need todo an extra
+         *        see http://stroika-bugs.sophists.com/browse/STK-601 for details but, with ubsan, we need todo an extra
          *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see FromGenericObjectMapperType
@@ -730,9 +727,14 @@ namespace Stroika::Foundation::DataExchange {
          *  The overloads that takes 'toObjectMapper' are just an optimization, and need not be used, but if used, the value
          *  passed in MUST the the same as that returned by ToObjectMapper ().
          * 
-         *  \note due to https://stroika.atlassian.net/browse/STK-1015 - we require default_initializable<T> for overloads that construct the 'T'
-         *        (but importantly NOT for overloads that ToObject into an address, so you can create a sucblass or your own instance with arguments and
-         *        ToObject() into it)
+         *  \note The default implementation of ToObject (const VariantValue& v) and ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v) require
+         *        T be default_initializable. If you have a type without this ability, simply construct it otherwise, and pass the address to ToObject (...T* into)
+         *        or explicitly specialize the ToObject() template todo this.
+         * 
+         *  \note   These !default_initializable <T> types are directly specialized by Stroika to support ToObject():
+         *              o   Time::Date
+         *              o   Time::DateTime
+         *              o   Time::TimeOfDay
          */
         template <typename T>
         nonvirtual T ToObject (const VariantValue& v) const;

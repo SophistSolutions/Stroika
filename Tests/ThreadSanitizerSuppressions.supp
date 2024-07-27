@@ -5,11 +5,11 @@
 
 
 #race:__interceptor_pipe #### NO LONGER SEEMS NEEDED - LGP 2023-10-03
-#workaround https://stroika.atlassian.net/browse/STK-673 - Seen on Ubuntu 23.04, and appears unrelated to my code
+#workaround http://stroika-bugs.sophists.com/browse/STK-673 - Seen on Ubuntu 23.04, and appears unrelated to my code
 race:pipe
 
 
-#workaround https://stroika.atlassian.net/browse/STK-677 - sem_post() called from inside signal handler, and can spoil errno	- rare and only seen so far on Ubunt1804 but should affect anything
+#workaround http://stroika-bugs.sophists.com/browse/STK-677 - sem_post() called from inside signal handler, and can spoil errno	- rare and only seen so far on Ubunt1804 but should affect anything
 # REMOVED workaround when I added code that should eliminate the problem in SemWaitableEvent::Set(). Not sure tsan will see
 # this as a fix, so must test quite a few times (this was hard to reproduce) -- LGP 2018-12-13
 #
@@ -34,7 +34,7 @@ race:pipe
 signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_(int)
 
 
-#https://stroika.atlassian.net/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_
+#http://stroika-bugs.sophists.com/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_
 #since hard to reproduce hard to write/test supressions - want to match on BOTH FirstPassSignalHandler_ AND AssertExternallySynchronizedMutex (in one stacktrace)
 #NB: This is ONLY needed on DEBUG builds
 

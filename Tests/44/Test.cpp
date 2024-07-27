@@ -137,14 +137,14 @@ namespace {
                 h2.date = nullopt;
                 h2.Set (HTTP::HeaderName::kDate, kTest2_);
 #if 0
-                // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
+                // see http://stroika-bugs.sophists.com/browse/STK-731 - should support parsing (not writing) older formats too
                 EXPECT_TRUE (h2.date == kReferenceTest_);
                 EXPECT_TRUE (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
 #endif
                 h2.date = nullopt;
                 h2.Set (HTTP::HeaderName::kDate, kTest3_);
 #if 0
-                // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
+                // see http://stroika-bugs.sophists.com/browse/STK-731 - should support parsing (not writing) older formats too
                 EXPECT_TRUE (h2.date == kReferenceTest_);
                 EXPECT_TRUE (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
 #endif

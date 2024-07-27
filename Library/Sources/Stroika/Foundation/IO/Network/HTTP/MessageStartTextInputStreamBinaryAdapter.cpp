@@ -203,7 +203,7 @@ protected:
         size_t outN = 0;
         for (auto outChar = intoBuffer.begin (); outChar != intoBuffer.end (); ++outChar) {
             if (fOffset_ < fBufferFilledUpValidBytes_) {
-                // SEE https://stroika.atlassian.net/browse/STK-969 - treat incoming chars as ascii for now
+                // SEE http://stroika-bugs.sophists.com/browse/STK-969 - treat incoming chars as ascii for now
                 *outChar = Characters::Character{(char32_t)*(fAllDataReadBuf_.begin () + fOffset_)};
                 fOffset_++;
                 outN++;

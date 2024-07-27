@@ -693,7 +693,7 @@ namespace SequenceIndexing_Test_16_ {
             a += 1;
             [[maybe_unused]] int a0 = a[0];
             // Should fail to compile
-            //a[0]   = 3; --- @todo - @see and maybe use https://stroika.atlassian.net/browse/STK-583 AssertDoesntCompile
+            //a[0]   = 3; --- @todo - @see and maybe use http://stroika-bugs.sophists.com/browse/STK-583 AssertDoesntCompile
         }
 #if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
         {
@@ -721,7 +721,7 @@ namespace SequenceIndexing_Test_16_ {
             a += L"1";
             String a0 = a[0];
             // Should fail to compile
-            //a[0]   = 3; --- @todo - @see and maybe use https://stroika.atlassian.net/browse/STK-583 AssertDoesntCompile
+            //a[0]   = 3; --- @todo - @see and maybe use http://stroika-bugs.sophists.com/browse/STK-583 AssertDoesntCompile
         }
 #if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
         {

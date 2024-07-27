@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers {
      *  cuz String&& CTOR gets called with arg TemporaryReference<String>, and so but the time TemporaryReference DTOR called, value has
      *  gone away. No obvious way to tell underlying value 'stolen' so maybe the subclassing trick wont work after all.
      *
-     *  @see https://stroika.atlassian.net/browse/STK-582
+     *  @see http://stroika-bugs.sophists.com/browse/STK-582
      */
 #ifndef Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
 #define Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket 0

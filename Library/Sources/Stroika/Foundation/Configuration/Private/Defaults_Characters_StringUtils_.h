@@ -26,7 +26,7 @@
 #define qPlatformSupports_wcsncasecmp qPlatformSupports_wcscasecmp
 #endif
 
-// See https://stroika.atlassian.net/browse/STK-650
+// See http://stroika-bugs.sophists.com/browse/STK-650
 #if __cplusplus
 #ifndef qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8
 #define qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8 1

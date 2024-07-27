@@ -692,7 +692,7 @@ namespace Stroika::Frameworks::Service {
      *  Wrap this around any IServiceIntegrationRep, to get Logging to work.
      *
      *      \note - LoggerServiceWrapper doesn't work with WindowsService to get logging on _RunAsService cuz we don't get a hook
-     *              https://stroika.atlassian.net/browse/STK-476
+     *              http://stroika-bugs.sophists.com/browse/STK-476
      */
     class Main::LoggerServiceWrapper : public Main::IServiceIntegrationRep {
     public:
@@ -814,7 +814,7 @@ namespace Stroika::Frameworks::Service {
      *  Run as a windows service - integrating with the Windows Service Mgr
      *
      *      \note - LoggerServiceWrapper doesn't work with WindowsService to get logging on _RunAsService cuz we don't get a hook
-     *              https://stroika.atlassian.net/browse/STK-476
+     *              http://stroika-bugs.sophists.com/browse/STK-476
      */
     class Main::WindowsService : public Main::IServiceIntegrationRep {
     public:

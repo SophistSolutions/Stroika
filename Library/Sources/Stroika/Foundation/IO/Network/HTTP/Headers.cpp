@@ -612,7 +612,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kDate)) {
         optional<Time::DateTime> useDT;
-        // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
+        // see http://stroika-bugs.sophists.com/browse/STK-731 - should support parsing (not writing) older formats too
         try {
             if (value) {
                 useDT = Time::DateTime::Parse (*value, Time::DateTime::kRFC1123Format).AsUTC ();

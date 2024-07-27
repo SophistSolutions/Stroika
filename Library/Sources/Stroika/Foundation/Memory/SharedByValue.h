@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Memory {
      *      Better to let the caller use opeartor<=> on cget() or *cget() to make clear their intentions.
      * 
      *  TODO:
-     *      @todo https://stroika.atlassian.net/browse/STK-798 - review docs and threadsafety
+     *      @todo http://stroika-bugs.sophists.com/browse/STK-798 - review docs and threadsafety
      */
     template <typename T, typename TRAITS = SharedByValue_Traits<T>>
     class SharedByValue {

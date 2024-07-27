@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  NOTE - see https://stroika.atlassian.net/browse/STK-995 for how we might cheaply significantly improve these stats
+         *  NOTE - see http://stroika-bugs.sophists.com/browse/STK-995 for how we might cheaply significantly improve these stats
          */
         struct Statistics {
             unsigned int fNumberOfTasksAdded{0};
@@ -340,12 +340,14 @@ namespace Stroika::Foundation::Execution {
              *  Reports number of tasks that ran to completion, possibly with exceptions, possibly without
              */
             unsigned int fNumberOfTasksCompleted{0};
+
             /**
              *  This is the divisor for fTotalTimeConsumed, and may not include all tasks for a variety of reasons (canceled etc).
              *  It doesn't contain tasks not yet run. Number of tasks reporting COULD exceed number added (since you can reset counters
              *  while there are tasks in queue).
              */
-            unsigned int          fNumberOfTasksReporting{0};
+            unsigned int fNumberOfTasksReporting{0};
+
             Time::DurationSeconds fTotalTimeConsumed{0.0};
 
             /**

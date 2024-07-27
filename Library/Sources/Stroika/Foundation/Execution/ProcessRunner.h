@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
-     *      @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here
+     *      @todo warning: http://stroika-bugs.sophists.com/browse/STK-585 - lots broken here
      */
     class ProcessRunner::BackgroundProcess {
     private:

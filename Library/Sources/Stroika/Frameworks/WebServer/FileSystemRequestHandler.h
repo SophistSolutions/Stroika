@@ -66,7 +66,7 @@ namespace Stroika::Frameworks::WebServer {
         optional<Sequence<String>> fDefaultIndexFileNames;
 
         /**
-         *  NYI - see https://stroika.atlassian.net/browse/STK-732
+         *  NYI - see http://stroika-bugs.sophists.com/browse/STK-732
          */
         enum ETagStrategy {
             eDont,
@@ -77,7 +77,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * ReportETags
          *      @todo NYI
-         *  NYI - see https://stroika.atlassian.net/browse/STK-732
+         *  NYI - see http://stroika-bugs.sophists.com/browse/STK-732
          */
         optional<ETagStrategy> fETagStrategy;
 
@@ -89,7 +89,7 @@ namespace Stroika::Frameworks::WebServer {
         // ETagCacheSize (ether digest or date stamp - whether we keep in RAM idea of current value
         // to respond without read (note date check is still a form of read); but this cache is less
         // useful IF using datestamp etag strategy
-        // @see https://stroika.atlassian.net/browse/STK-732
+        // @see http://stroika-bugs.sophists.com/browse/STK-732
 
         /**
          *  fCacheControlSettings provides a sequence of RegExp: CacheControl pairs. These are automatically applied

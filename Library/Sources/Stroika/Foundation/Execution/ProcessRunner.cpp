@@ -493,7 +493,7 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
         }
     }
     else {
-        // @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here - must shutdown threads on timeout!
+        // @todo warning: http://stroika-bugs.sophists.com/browse/STK-585 - lots broken here - must shutdown threads on timeout!
         if (processResult == nullptr) {
             Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
@@ -857,7 +857,7 @@ namespace {
                                 if (bytesWritten == 0) {
                                     // don't busy wait, but not clear how long to wait? Maybe should only sleep if readSoNotBlocking above returns no change
                                     //
-                                    // OK - this is clearly wrong - @see https://stroika.atlassian.net/browse/STK-589 - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
+                                    // OK - this is clearly wrong - @see http://stroika-bugs.sophists.com/browse/STK-589 - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
                                     //
                                     Execution::Sleep (1ms);
                                 }

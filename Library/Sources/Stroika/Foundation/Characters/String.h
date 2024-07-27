@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Characters {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   Design note - mutability vs. immutability
-     *          https://stroika.atlassian.net/browse/STK-968
+     *          http://stroika-bugs.sophists.com/browse/STK-968
      *          String objects are MUTABLE
      *          String reps are IMMUTABLE.
      *          Changes to string like +=, create new string reps (and so WORK but are quite costly). Consider
@@ -1591,7 +1591,7 @@ namespace Stroika::Foundation::Characters {
         {
             return Character::AsASCIIQuietly (span<const wchar_t>{fromStart, fromEnd}, into);
         }
-        [[deprecated ("Since Stroika v3.0d1 due to https://stroika.atlassian.net/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
+        [[deprecated ("Since Stroika v3.0d1 due to http://stroika-bugs.sophists.com/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
         [[deprecated ("Since Stroika v3.0d8 - use RemoveFirstIf")]] String Remove (Character c) const
         {
             return RemoveFirstIf (c);

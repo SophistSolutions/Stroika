@@ -97,7 +97,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper)
     {
-        // See https://stroika.atlassian.net/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
+        // See http://stroika-bugs.sophists.com/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             return [fromObjectMapper] (const ObjectVariantMapper& mapper, const T* objOfType) -> VariantValue {
                 return fromObjectMapper (mapper, objOfType);
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper)
     {
-        // See https://stroika.atlassian.net/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
+        // See http://stroika-bugs.sophists.com/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             return [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, T* into) -> void {
                 toObjectMapper (mapper, d, into);
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::DataExchange {
     inline ObjectVariantMapper::FromGenericObjectMapperType
     ObjectVariantMapper::TypeMappingDetails::mkGenericFromMapper_ (const FromObjectMapperType<T>& fromObjectMapper)
     {
-        // See https://stroika.atlassian.net/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
+        // See http://stroika-bugs.sophists.com/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             return [fromObjectMapper] (const ObjectVariantMapper& mapper, const void* objOfType) -> VariantValue {
                 return fromObjectMapper (mapper, reinterpret_cast<const T*> (objOfType));
@@ -295,7 +295,8 @@ namespace Stroika::Foundation::DataExchange {
     inline T ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v) const
     {
 #if !qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
-        static_assert (default_initializable<T>, "to use ToObject<> on this type, you must specialize ObjectVariantMapper::ToObject");
+        static_assert (default_initializable<T>, "to use ToObject<> on this type, you must specialize ObjectVariantMapper::ToObject, or "
+                                                 "externally construct a T object, and pass its address to a T* overload of ToObject");
 #endif
         /*
          *  NOTE: It is because of this line of code (the default CTOR for tmp) - that ObjectVariantMapper requires
@@ -616,7 +617,7 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObjOfTypeT = nullopt;
             }
             else {
-                // SEE https://stroika.atlassian.net/browse/STK-910
+                // SEE http://stroika-bugs.sophists.com/browse/STK-910
                 // fix here - I KNOW I have something there, but how to construct
                 *intoObjOfTypeT = mapper.ToObject<T> (d);
             }
@@ -645,7 +646,7 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObjOfTypeT = nullopt;
             }
             else {
-                // SEE https://stroika.atlassian.net/browse/STK-910
+                // SEE http://stroika-bugs.sophists.com/browse/STK-910
                 // fix here - I KNOW I have something there, but how to construct
                 T tmp{};
                 options.fTMapper->ToObjectMapper<T> () (mapper, d, &tmp);
@@ -654,7 +655,7 @@ namespace Stroika::Foundation::DataExchange {
         };
         return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (optional<T>)};
     }
-    //  https://stroika.atlassian.net/browse/STK-910
+    //  http://stroika-bugs.sophists.com/browse/STK-910
     template <>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<IO::Network::CIDR>*);
     template <typename T, typename TRAITS>
@@ -846,7 +847,7 @@ namespace Stroika::Foundation::DataExchange {
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
     {
         using namespace Characters::Literals;
-        // @todo - see https://stroika.atlassian.net/browse/STK-581 - to switch from generic to 'T' based mapper.
+        // @todo - see http://stroika-bugs.sophists.com/browse/STK-581 - to switch from generic to 'T' based mapper.
         auto fromObjectMapper = [] (const ObjectVariantMapper& mapper, const void* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             FromObjectMapperType<T> valueMapper{mapper.FromObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0

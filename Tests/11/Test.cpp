@@ -183,11 +183,11 @@ namespace {
     namespace ClearBug_Test_8_ {
         void DoAll ()
         {
-            // https://stroika.atlassian.net/browse/STK-541
+            // http://stroika-bugs.sophists.com/browse/STK-541
             Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
                                     KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
             Association<int, int> mm{move (m)};
-            // SEE https://stroika.atlassian.net/browse/STK-541  - this call to clear is ILLEGAL - after m has been moved from
+            // SEE http://stroika-bugs.sophists.com/browse/STK-541  - this call to clear is ILLEGAL - after m has been moved from
             //m.clear ();
         }
     }
@@ -225,7 +225,7 @@ namespace {
             using namespace Characters;
             {
                 Association<String, String> parameters{String::EqualsComparer{Characters::eCaseInsensitive}};
-                // https://stroika.atlassian.net/browse/STK-738 (and see other workarounds in other files)
+                // http://stroika-bugs.sophists.com/browse/STK-738 (and see other workarounds in other files)
                 Association<String, String> parameters2{String::EqualsComparer{Characters::eCaseInsensitive}, parameters};
             }
         }

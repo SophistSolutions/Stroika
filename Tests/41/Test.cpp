@@ -554,7 +554,7 @@ namespace {
 #if 0
                             /*
                              *  SADLY, even after major cleanups to container code, I still have this bug:
-                             *      https://stroika.atlassian.net/browse/STK-700
+                             *      http://stroika-bugs.sophists.com/browse/STK-700
                              * 
                              *  To reproduce:
                              *      +   Use Ubuntu 2004
@@ -574,7 +574,7 @@ namespace {
 #endif
 
                             /**
-                             *  Note that this code is something of an ANTI-PATTERN (even once we fix https://stroika.atlassian.net/browse/STK-700).
+                             *  Note that this code is something of an ANTI-PATTERN (even once we fix http://stroika-bugs.sophists.com/browse/STK-700).
                              *  Because the syncObj.load () upps the reference count to 2 during the iteration, the other threads will then be forced
                              *  (as part of their updates) to do a storm of Clones. It would be better performance wise - typically - do do 
                              *  a scoped_lock on syncObj before the load, since that way UPDATES will BLOCK (instead of going ahead and cloning). You might
@@ -594,7 +594,7 @@ namespace {
         {
             //
             //  If you see hang here/TSAN issue - see
-            //      https://stroika.atlassian.net/browse/STK-700
+            //      http://stroika-bugs.sophists.com/browse/STK-700
             //
             Debug::TraceContextBumper traceCtx{"{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()"};
             if (Debug::kBuiltWithThreadSanitizer) {

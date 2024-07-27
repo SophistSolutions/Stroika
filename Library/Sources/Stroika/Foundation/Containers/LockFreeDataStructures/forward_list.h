@@ -25,7 +25,7 @@
  *              need - the definition of reference, and how that fits with push_front, pop_front... Could implement both ways
  *              with ifdefs?
  * 
- *              @see https://stroika.atlassian.net/browse/STK-723 for details on stuff todo above
+ *              @see http://stroika-bugs.sophists.com/browse/STK-723 for details on stuff todo above
  */
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {

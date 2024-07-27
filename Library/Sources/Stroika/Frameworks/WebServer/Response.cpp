@@ -136,7 +136,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
         if (thisObj->fCodeCvt_ == nullopt) {
             AssertExternallySynchronizedMutex::WriteContext declareContext2{const_cast<Response*> (thisObj)->_fThisAssertExternallySynchronized};
-            // https://stroika.atlassian.net/browse/STK-983
+            // http://stroika-bugs.sophists.com/browse/STK-983
             thisObj->fCodeCvt_ = Characters::CodeCvt<>{thisObj->fCodePage_};
         }
         return *thisObj->fCodeCvt_;

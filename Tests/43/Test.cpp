@@ -331,7 +331,7 @@ namespace {
             }
             void Test_UPNPBadURIIPv6_ ()
             {
-                // Test case for fix: https://stroika.atlassian.net/browse/STK-957
+                // Test case for fix: http://stroika-bugs.sophists.com/browse/STK-957
                 {
                     using namespace IO::Network::UniformResourceIdentification;
                     // Sub-problem where original bug lies
@@ -548,7 +548,7 @@ GTEST_TEST (Foundation_IO_Network, Test5_CIDR_)
         EXPECT_TRUE (Characters::ToString (cidr) == "172.17.185.0/28");
     }
     {
-        // fix for https://stroika.atlassian.net/browse/STK-909
+        // fix for http://stroika-bugs.sophists.com/browse/STK-909
         auto cidr = CIDR{V6::kAddrAny, 64};
         EXPECT_TRUE (Characters::ToString (cidr) == "in6addr_any/64");
         EXPECT_TRUE (CIDR{cidr.As<String> ()} == cidr); // can roundtrip numeric form

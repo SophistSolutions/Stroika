@@ -312,7 +312,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *      This means it ALLOWS leading whitespace (skipped). And it allows junk at the end (remainder parameter filled in with what).
      * 
-     *  \note SEE https://stroika.atlassian.net/browse/STK-748
+     *  \note SEE http://stroika-bugs.sophists.com/browse/STK-748
      *        We will PROBABLY change this API to take a ToFloatOptions parameter to handle proper locale/conversions of strings to numbers
      *        but so far I've not been able to get any of that working, so ignore for now...
      *

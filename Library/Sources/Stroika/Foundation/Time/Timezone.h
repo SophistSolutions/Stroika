@@ -25,7 +25,7 @@
  *              But Stroika tz allows representing explicit stuff like +04:00 etc, which cannot be represented by time_zone
  *              class.  --LGP 2022-11-07
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-636
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-636
  *              Enhance Timezone class to support real timezones (e.g. American/NewYork) and handle all the cases
  *              of mapping offsets (applying all teh rules for different dates)
  *
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Time {
      *
      *      America/New_York    EST         Eastern Standard Time   EDT         Eastern Daylight Time   -05:00:00   +01:00:00       2;0;3                   +02:00:00   1;0;11              +02:00:00
      *
-     *  @see https://stroika.atlassian.net/browse/STK-636
+     *  @see http://stroika-bugs.sophists.com/browse/STK-636
      */
     struct [[nodiscard]] TimeZoneInformationType {
         struct Details {
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Time {
      *      o   Fixed Offset from UTC (suitable for reading and writing ISO8601 times)
      *
      *  But it currently does NOT support the notion of timezone like American/NewYork (unless that happens to be localtime)
-     *  That feature may be eventually added - https://stroika.atlassian.net/browse/STK-636
+     *  That feature may be eventually added - http://stroika-bugs.sophists.com/browse/STK-636
      *
      *  @see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
      *

@@ -32,7 +32,7 @@
  *              performance approaches? One closely related issue is the backend type returned. Now we use
  *              default but maybe should use left or right side type?
  * 
- *      @todo   https://stroika.atlassian.net/browse/STK-754 - Add (REP METHOD) should return bool if really added (if size changed) to make a few things 
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-754 - Add (REP METHOD) should return bool if really added (if size changed) to make a few things 
  *              like addif cheaper. But think through carefully semantics of object - we actually change what is there, but it maybe just pading
  *              soemthing - so DOES have affect but doesnt change if its present or not.
  */

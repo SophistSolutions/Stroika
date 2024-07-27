@@ -76,7 +76,7 @@ namespace {
         CodeCvt<wchar_t> codeCvt{UnicodeExternalEncodings::eUTF8};
         size_t           sz = codeCvt.ComputeTargetByteBufferSize (w.length ());
         // const auto       bom = GetByteOrderMark (UnicodeExternalEncodings::eUTF8);
-        // out.write (reinterpret_cast<const char*> (bom.data ()), bom.size ());         // https://stroika.atlassian.net/browse/STK-982 - this should work (and I think is) - but causes later failure (reader) - so debug why
+        // out.write (reinterpret_cast<const char*> (bom.data ()), bom.size ());         // http://stroika-bugs.sophists.com/browse/STK-982 - this should work (and I think is) - but causes later failure (reader) - so debug why
         Memory::StackBuffer<byte> buf{Memory::UninitializedConstructorFlag::eUninitialized, sz};
         span<byte>                outSpan = codeCvt.Characters2Bytes (span{w}, span{buf});
         out.write (reinterpret_cast<const char*> (outSpan.data ()), outSpan.size ());
@@ -1588,12 +1588,12 @@ namespace {
                 * NOTE:
                 *       When appending, if NS not specified, its copied from parent node (elt appending to).
                 * 
-                *   TBD about attributes - https://stroika.atlassian.net/browse/STK-999
+                *   TBD about attributes - http://stroika-bugs.sophists.com/browse/STK-999
                 */
                 auto concept2Add = conceptsElt.Append (NameWithNamespace{kNS_, "ConceptDetails"});
                 {
                     auto primaryKey = concept2Add.Append (NameWithNamespace{"PrimaryKey"}, "C1547289");
-                    // Using kNS_ in the SetAttribute call will produce schema validation failure with libxml2 - https://stroika.atlassian.net/browse/STK-999
+                    // Using kNS_ in the SetAttribute call will produce schema validation failure with libxml2 - http://stroika-bugs.sophists.com/browse/STK-999
                     primaryKey.SetAttribute (NameWithNamespace{"Type"}, "UMLS");
                 }
                 concept2Add.Append (NameWithNamespace{"Priority"}, "5");

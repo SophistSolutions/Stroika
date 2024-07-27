@@ -26,7 +26,7 @@
  *      DateRangeType/DateTimeRangeType code.
  *
  *  TODO:
- *          @todo   Better integrate with https://stroika.atlassian.net/browse/STK-779 - C++20 ranges library
+ *          @todo   Better integrate with http://stroika-bugs.sophists.com/browse/STK-779 - C++20 ranges library
  * 
  *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the

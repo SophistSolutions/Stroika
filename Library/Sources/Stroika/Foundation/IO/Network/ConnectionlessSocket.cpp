@@ -61,7 +61,7 @@ namespace {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
 
             if constexpr (qPlatform_Windows) {
-                // TMPHACK for - https://stroika.atlassian.net/browse/STK-964
+                // TMPHACK for - http://stroika-bugs.sophists.com/browse/STK-964
                 auto s = Execution::WaitForIOReady{fSD_}.WaitQuietly (timeout);
                 Execution::Thread::CheckForInterruption ();
                 if (s.empty ()) {
@@ -188,7 +188,7 @@ namespace {
                     break;
                 }
                 case SocketAddress::INET6: {
-                    constexpr bool kIPV6LoophackMulticastTTLLinuxBug_{qPlatform_Linux}; // https://stroika.atlassian.net/browse/STK-578
+                    constexpr bool kIPV6LoophackMulticastTTLLinuxBug_{qPlatform_Linux}; // http://stroika-bugs.sophists.com/browse/STK-578
                     if (kIPV6LoophackMulticastTTLLinuxBug_) {
                         try {
                             setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl);
@@ -237,7 +237,7 @@ namespace {
                     break;
                 }
                 case SocketAddress::INET6: {
-                    constexpr bool kIPV6LoophackMulticastModeLinuxBug_{qPlatform_Linux}; // https://stroika.atlassian.net/browse/STK-578
+                    constexpr bool kIPV6LoophackMulticastModeLinuxBug_{qPlatform_Linux}; // http://stroika-bugs.sophists.com/browse/STK-578
                     if (kIPV6LoophackMulticastModeLinuxBug_) {
                         try {
                             setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);

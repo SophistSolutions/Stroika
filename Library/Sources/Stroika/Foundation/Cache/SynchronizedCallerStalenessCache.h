@@ -52,9 +52,9 @@ namespace Stroika::Foundation::Cache {
          *  \note Another thing to be aware of, if setting fHoldWriteLockDuringCacheFill true, is that it increases the risk
          *        of Deadlock (if what you don the fill code is complicated and difficult to analyze for what locks it might acquire).
          * 
-         *  \note See https://stroika.atlassian.net/browse/STK-906 - possible enhancement to this configuration to work better avoiding
+         *  \note See http://stroika-bugs.sophists.com/browse/STK-906 - possible enhancement to this configuration to work better avoiding
          *        deadlocks
-         *  \note See https://stroika.atlassian.net/browse/STK-907 - about needing some new mechanism in Stroika for deadlock detection/avoidance.
+         *  \note See http://stroika-bugs.sophists.com/browse/STK-907 - about needing some new mechanism in Stroika for deadlock detection/avoidance.
          * 
          */
         bool fHoldWriteLockDuringCacheFill{false};

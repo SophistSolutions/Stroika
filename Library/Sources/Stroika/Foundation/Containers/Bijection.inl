@@ -342,7 +342,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterableOf<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> CONTAINER_OF_KEYVALUE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
     {
-        // see https://stroika.atlassian.net/browse/STK-645
+        // see http://stroika-bugs.sophists.com/browse/STK-645
         /*
          *  Note - unlike some other containers - we don't need to check for this != &s because if we
          *  attempt to add items that already exist, it would do nothing to our iteration

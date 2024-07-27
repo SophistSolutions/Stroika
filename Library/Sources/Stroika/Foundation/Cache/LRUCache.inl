@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::begin_ () const -> CacheIterator_
     {
-        LRUCache* ncThis = const_cast<LRUCache*> (this); // https://stroika.atlassian.net/browse/STK-764
+        LRUCache* ncThis = const_cast<LRUCache*> (this); // http://stroika-bugs.sophists.com/browse/STK-764
         return CacheIterator_{std::begin (ncThis->fCachedElts_First_), std::end (ncThis->fCachedElts_First_)};
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>

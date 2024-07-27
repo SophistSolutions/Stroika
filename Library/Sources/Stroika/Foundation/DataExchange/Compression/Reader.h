@@ -6,18 +6,10 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-//#include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-//#include "Stroika/Foundation/DataExchange/VariantValue.h"
 
-/**
- *  \file
- *
- * TODO:
- *      @todo   UNDOCUMENTED - PRELIMINARY - ROUGH DRAFT TO THINK OUT API
- *
- *      @todo   https://stroika.atlassian.net/browse/STK-609 - Redo the Compression Reader code to use a factory style like used in the rest of Stroika - ::New - instead of Compress methods??? needs some thought...
- */
+// FILE DEPRECATED!!!
+/// FILE DEPRECATED
 
 namespace Stroika::Foundation::DataExchange::Compression {
 

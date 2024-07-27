@@ -29,9 +29,9 @@
  *      @todo   Deadlock from two threads doing UpgradeLockNonAtomically(quietly) is ??? detectable, so in DEBUG builds translate that to an
  *              assert erorr?
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficent if not subclassing each other
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficent if not subclassing each other
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in synchronized
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in synchronized
  *
  *      @todo   Tons of cleanups, orthoganality, docs, etc.
  *

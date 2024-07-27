@@ -17,7 +17,7 @@
  *
  * TODO:
  *      @todo   Add InsertAt() methods - like from String class (before I deprecate them).
- *              https://stroika.atlassian.net/browse/STK-34
+ *              http://stroika-bugs.sophists.com/browse/STK-34
  *
  *      @todo   Think about how to add support for STL manipulator/inserters like endl;
  * 

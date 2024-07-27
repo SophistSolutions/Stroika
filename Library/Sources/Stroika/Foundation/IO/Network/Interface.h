@@ -334,7 +334,7 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     /**
-     *  \todo   @todo https://stroika.atlassian.net/browse/STK-710
+     *  \todo   @todo http://stroika-bugs.sophists.com/browse/STK-710
      *          add some level of caching to this object, possible with arguments to CTOR saying
      *          allowed latency for fetch from OS
      *

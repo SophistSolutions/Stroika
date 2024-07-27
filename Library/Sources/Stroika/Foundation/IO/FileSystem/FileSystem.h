@@ -22,12 +22,12 @@
  *
  * TODO:
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-685 - 
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-685 - 
  *              MAJOR CHANGES required to accomodate std::filesystem 
  *              - maybe losing this alltogether, or at least big changes 
  *              (like using path class instead of String) - force use of ToPath ()
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-612
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-612
  *              Probably rename class IO::FileSystem::FileSystem to IO::FileSystem::Ptr (or FileSystemPtr)
  *
  *              OLD TODOS this subsumes:
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  SUPER ROUGH DRAFT .... Move much code from Directory and FileUtils as methods here. See KDJ comment above. Do other filesystems.
      *  POSIX, WINDOWS, and MacOS, and ZIPFILE, etc...
      *
-     *  \note SOON TODO REP class and shared_ptr here- https://stroika.atlassian.net/browse/STK-612 - 
+     *  \note SOON TODO REP class and shared_ptr here- http://stroika-bugs.sophists.com/browse/STK-612 - 
      *
      *  \par Example Usage
      *      \code

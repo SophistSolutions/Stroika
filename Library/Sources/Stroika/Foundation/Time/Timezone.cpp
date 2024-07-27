@@ -427,7 +427,7 @@ namespace {
          *  APPEARS to work since... --LGP 2011-10-15
          */
         asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
-        // https://stroika.atlassian.net/browse/STK-515  only works back to 1970 (Unix epoch time) - else assume NOT daylight savings time
+        // http://stroika-bugs.sophists.com/browse/STK-515  only works back to 1970 (Unix epoch time) - else assume NOT daylight savings time
         if (::mktime (&asTM) == -1) {
             return false;
         }

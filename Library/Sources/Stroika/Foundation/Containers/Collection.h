@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note - this nextI value is therefore of very little value, since you cannot reliably continue iterating with it, knowing
          *        what you will get next. @todo consider if this should be deprecated.
-         *        https://stroika.atlassian.net/browse/STK-922
+         *        http://stroika-bugs.sophists.com/browse/STK-922
          *
          *  \note mutates container
          */

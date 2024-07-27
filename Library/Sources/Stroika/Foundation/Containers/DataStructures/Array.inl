@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void Array<T>::reserve (size_t slotsAlloced)
     {
         /*
-         *  @todo NOTE - https://stroika.atlassian.net/browse/STK-757 - use realloc sometimes - if constexpr
+         *  @todo NOTE - http://stroika-bugs.sophists.com/browse/STK-757 - use realloc sometimes - if constexpr
          */
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (size () <= slotsAlloced);
