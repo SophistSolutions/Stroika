@@ -42,8 +42,6 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
             double f1MinuteAve{};
             double f5MinuteAve{};
             double f15MinuteAve{};
-            LoadAverage () = default;
-            LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve);
         };
         optional<LoadAverage> fLoadAverage;
 #endif

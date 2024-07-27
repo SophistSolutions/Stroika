@@ -61,20 +61,6 @@ namespace {
 }
 #endif
 
-#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-/*
- ********************************************************************************
- *********************** Instruments::CPU::Info::LoadAverage ********************
- ********************************************************************************
- */
-Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve)
-    : f1MinuteAve{oneMinuteAve}
-    , f5MinuteAve{fiveMinuteAve}
-    , f15MinuteAve{fifteenMinuteAve}
-{
-}
-#endif
-
 /*
  ********************************************************************************
  **************************** Instruments::CPU::Info ****************************
@@ -243,7 +229,7 @@ namespace {
                 double loadAve[3];
                 int    lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
-                    result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
+                    result.fLoadAverage = Info::LoadAverage {loadAve[0], loadAve[1], loadAve[2]};
                     auto tcNow          = Time::GetTickCount ();
                     result.fRunQLength  = EstimateRunQFromLoadAveArray_ ((tcNow - _GetCaptureContextTime ()).count (), loadAve);
                     Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (),
