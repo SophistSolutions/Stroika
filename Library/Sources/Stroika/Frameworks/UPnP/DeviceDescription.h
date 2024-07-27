@@ -64,6 +64,9 @@ namespace Stroika::Frameworks::UPnP {
         optional<String> fUPC;
 
         /**
+         *  @todo made several fields optional - so Icon default constructible - but according to 
+         *        https://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf these sb required (so not optional).
+         *        @todo FIX
          */
         struct Icon {
             optional<InternetMediaType> fMimeType;
@@ -76,8 +79,6 @@ namespace Stroika::Frameworks::UPnP {
              *  @see Characters::ToString ();
              */
             nonvirtual String ToString () const;
-
-            static const Icon kDefault;
         };
         optional<Collection<Icon>> fIcons;
 
@@ -112,9 +113,6 @@ namespace Stroika::Frameworks::UPnP {
     private:
         static Foundation::DataExchange::ObjectVariantMapper mkMapper_ ();
     };
-    #if qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
-    static_assert (is_constructible_v<DeviceDescription::Icon>);
-    #endif
     const inline Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> DeviceDescription::kMapper{DeviceDescription::mkMapper_};
 
     /**
