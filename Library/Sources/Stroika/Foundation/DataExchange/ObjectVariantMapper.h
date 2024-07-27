@@ -204,6 +204,28 @@ namespace Stroika::Foundation::DataExchange {
      * 
      *              But will have to wait a bit it appears (MSFT still doesn't support reflections TS, and I'm not sure
      *              this can be done with reflections TS).
+     * 
+     *  \note   Design Note (ToObject construction strategy):
+     *              Some possibilities:
+     * 
+     *              (1) ToObject () requires pre-constructed object argument, and takes &o as argument, and fills in/overrides fields
+     * 
+     *                  This is extra costly, because it requires 'default constructing' T before assigning/overwriting its field values.
+     *                  And it requires some mechanism to 'default construct' T.
+     * 
+     *                  But it allows for 'subclassing' T easily. You play the base-class ToObject (&o) functions first, and in sequence.
+     * 
+     *              (2) ToObject allocates a new smart_ptr<T>.
+     *                  In this case, we potentially avoid default-constructing and then overwriting/assigning field values. But in case our application
+     *                  isn't using smart pointers for 'T' - it involves a memory allocation of a smart pointer which will just be thrown away quickly.
+     *                  It also makes the subclassing story muddy. You need to ALLOCATE the object in the most specific class (subclass) but need to start
+     *                  filling in fields in the most general (base) class.
+     * 
+     *                  This is a promising idea, but with challenges. Maybe some kind of smart pointer with a custom deleter, so it can be stack allocated by the
+     *                  caller(?).
+     * 
+     *                  Another variation on this - would be to have for each T/ToObject description - a CONSTRUCTOR function, and a FILL function. Then these
+     *                  could be somehow combined for the baseclass/subclass case?
      */
     class [[nodiscard]] ObjectVariantMapper {
     public:
@@ -845,19 +867,19 @@ namespace Stroika::Foundation::DataExchange {
             requires (is_class_v<T>)
         {
             function<void (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue)> afterFrom = nullptr;
-            if (furtherDerivedClass and furtherDerivedClass->GetGenericFromObjectMapper()) {
+            if (furtherDerivedClass and furtherDerivedClass->GetGenericFromObjectMapper ()) {
                 afterFrom = [=] (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue) {
-                    VariantValue vv = furtherDerivedClass->FromObjectMapper<T> () (mapper, objOfType);
+                    VariantValue vv     = furtherDerivedClass->FromObjectMapper<T> () (mapper, objOfType);
                     *updateVariantValue = vv;
                 };
             }
             return MakeClassSerializer<T> (
                 fieldDescriptions,
                 ClassMapperOptions<T>{
-                    .fBeforeFrom = baseClass and baseClass->GetGenericFromObjectMapper() ? baseClass->FromObjectMapper<T> () : nullptr,
-                    .fBeforeTo   = baseClass and baseClass->GetGenericToObjectMapper() ? baseClass->ToObjectMapper<T> () : nullptr,
+                    .fBeforeFrom = baseClass and baseClass->GetGenericFromObjectMapper () ? baseClass->FromObjectMapper<T> () : nullptr,
+                    .fBeforeTo   = baseClass and baseClass->GetGenericToObjectMapper () ? baseClass->ToObjectMapper<T> () : nullptr,
                     .fAfterFrom  = afterFrom,
-                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->GetGenericToObjectMapper() ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
+                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->GetGenericToObjectMapper () ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
                 nullptr);
         }
 

@@ -229,7 +229,7 @@ namespace {
                 double loadAve[3];
                 int    lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
-                    result.fLoadAverage = Info::LoadAverage {loadAve[0], loadAve[1], loadAve[2]};
+                    result.fLoadAverage = Info::LoadAverage{loadAve[0], loadAve[1], loadAve[2]};
                     auto tcNow          = Time::GetTickCount ();
                     result.fRunQLength  = EstimateRunQFromLoadAveArray_ ((tcNow - _GetCaptureContextTime ()).count (), loadAve);
                     Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (),

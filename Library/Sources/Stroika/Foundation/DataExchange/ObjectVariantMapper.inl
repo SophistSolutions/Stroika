@@ -294,9 +294,9 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline T ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v) const
     {
-    #if !qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
+#if !qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
         static_assert (default_initializable<T>, "to use ToObject<> on this type, you must specialize ObjectVariantMapper::ToObject");
-    #endif
+#endif
         /*
          *  NOTE: It is because of this line of code (the default CTOR for tmp) - that ObjectVariantMapper requires
          *  all its types to have a default constructor. To avoid that dependency, you may provide a template
