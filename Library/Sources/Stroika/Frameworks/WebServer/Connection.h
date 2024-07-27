@@ -201,16 +201,16 @@ namespace Stroika::Frameworks::WebServer {
         };
 
     private:
-        InterceptorChain                      fInterceptorChain_;
-        Headers                               fDefaultResponseHeaders_;
-        optional<Headers>                     fDefaultGETResponseHeaders_;
-        optional<bool>                        fAutoComputeETagResponse_;
+        InterceptorChain                                 fInterceptorChain_;
+        Headers                                          fDefaultResponseHeaders_;
+        optional<Headers>                                fDefaultGETResponseHeaders_;
+        optional<bool>                                   fAutoComputeETagResponse_;
         optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
-        ConnectionOrientedStreamSocket::Ptr   fSocket_;
-        Streams::InputOutputStream::Ptr<byte> fSocketStream_;
-        Time::TimePointSeconds                fConnectionStartedAt_{};
-        unique_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
-        optional<HTTP::KeepAlive>             fRemaining_;
+        ConnectionOrientedStreamSocket::Ptr              fSocket_;
+        Streams::InputOutputStream::Ptr<byte>            fSocketStream_;
+        Time::TimePointSeconds                           fConnectionStartedAt_{};
+        unique_ptr<MyMessage_>                           fMessage_; // always there, but ptr so it can be replaced
+        optional<HTTP::KeepAlive>                        fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;
 #endif
