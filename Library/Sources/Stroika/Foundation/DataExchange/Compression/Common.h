@@ -30,7 +30,7 @@ namespace Stroika::Foundation::DataExchange::Compression {
     };
 
     /**
-     *  API NOT synchronized - use one at a time
+     *  API NOT internally synchronized - use one at a time
      * 
      *  Reason Transform API not re-entrant is so you can optionally accumulate state, and return it only at the end.
      *  Would need to hook that state into Stream - or into instance of compressor - and that's intrinsically non-re-entrant.

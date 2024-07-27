@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
+#include "Stroika/Foundation/DataExchange/Compression/GZip.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -358,12 +359,19 @@ void Response::ApplyBodyEncodingIfNeeded_ ()
                 rwHeaders ().contentEncoding = ce;
             }
         };
-        Compression::Ptr currentCompression;
+        Compression::Ptr currentCompression; // @todo could support multiple compression schemes, but I don't see the point - so don't
         if constexpr (Compression::Deflate::kSupported) {
             if (fBodyEncoding_->Contains (HTTP::ContentEncoding::kDeflate)) {
                 constexpr auto compressOpts = Compression::Deflate::Compress::Options{.fCompressionLevel = 1.0f}; // @todo config option - passed in - didn't seem to help here
                 currentCompression = Compression::Deflate::Compress::New (compressOpts);
                 applyBodyEncoding (HTTP::ContentEncoding::kDeflate);
+            }
+        }
+        if constexpr (Compression::GZip::kSupported) {
+            if (currentCompression == nullptr and fBodyEncoding_->Contains (HTTP::ContentEncoding::kGZip)) {
+                static const auto compressOpts = Compression::GZip::Compress::Options{{.fCompressionLevel = 1.0f}}; // @todo config option - passed in - didn't seem to help here
+                currentCompression = Compression::GZip::Compress::New (compressOpts);
+                applyBodyEncoding (HTTP::ContentEncoding::kGZip);
             }
         }
         if (currentCompression) {

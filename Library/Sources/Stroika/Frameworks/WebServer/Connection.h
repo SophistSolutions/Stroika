@@ -205,6 +205,7 @@ namespace Stroika::Frameworks::WebServer {
         Headers                               fDefaultResponseHeaders_;
         optional<Headers>                     fDefaultGETResponseHeaders_;
         optional<bool>                        fAutoComputeETagResponse_;
+        optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
         Streams::InputOutputStream::Ptr<byte> fSocketStream_;
         Time::TimePointSeconds                fConnectionStartedAt_{};

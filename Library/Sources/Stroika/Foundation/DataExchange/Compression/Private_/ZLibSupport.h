@@ -194,8 +194,8 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
                                             : Z_DEFAULT_COMPRESSION;
             Assert (level == Z_DEFAULT_COMPRESSION or (Z_BEST_SPEED <= level and level <= Z_BEST_COMPRESSION));
             if (useGZip) {
-                constexpr int kWindowBits = 15 + 16;    // 16 => gzip - https://zlib.net/manual.html#Advanced
-                constexpr int kMemLevel   = 8;  // default
+                constexpr int kWindowBits = 15 + 16; // 16 => gzip - https://zlib.net/manual.html#Advanced
+                constexpr int kMemLevel   = 8;       // default
                 ThrowIfZLibErr_ (::deflateInit2 (&fZStream_, level, Z_DEFLATED, kWindowBits, kMemLevel, Z_DEFAULT_STRATEGY));
             }
             else {

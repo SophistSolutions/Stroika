@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
+#include "Stroika/Foundation/DataExchange/Compression/GZip.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -188,6 +189,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , fDefaultResponseHeaders_{options.fDefaultResponseHeaders}
     , fDefaultGETResponseHeaders_{options.fDefaultGETResponseHeaders}
     , fAutoComputeETagResponse_{options.fAutoComputeETagResponse}
+    , fSupportedCompressionEncodings_{options.fSupportedCompressionEncodings}
     , fSocket_{s}
     , fConnectionStartedAt_{Time::GetTickCount ()}
 {
@@ -290,7 +292,6 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         // @todo can short-circuit the acceptEncoding logic if not bodyHasEntity...(but careful about checking that cuz no content yet
         // so may need to revisit the bodyHasEntity logic) - just look at METHOD of request and http-status - oh - that cannot check
         // yet/until done... so maybe need other check like bodyCannotHaveEntity - stuff can check before filled out response?
-
         if (optional<HTTP::ContentEncodings> acceptEncoding = fMessage_->request ().headers ().acceptEncoding) {
             optional<HTTP::ContentEncodings> oBodyEncoding = fMessage_->rwResponse ().bodyEncoding ();
             auto                             addCT         = [this, &oBodyEncoding] (HTTP::ContentEncoding contentEncoding2Add) {
@@ -306,13 +307,21 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 }();
             };
             bool needBodyEncoding = not oBodyEncoding.has_value ();
-            if constexpr (DataExchange::Compression::Deflate::kSupported) {
-                if (needBodyEncoding and acceptEncoding->Contains (HTTP::ContentEncoding::kDeflate)) {
-                    addCT (HTTP::ContentEncoding::kDeflate);
+            // prefer deflate over gzip cuz smaller header and otherwise same
+            auto maybeAddIt = [&] (HTTP::ContentEncoding ce) {
+                if (needBodyEncoding and acceptEncoding->Contains (ce) and
+                    (fSupportedCompressionEncodings_ == nullopt or fSupportedCompressionEncodings_->Contains (ce))) {
+                    addCT (ce);
                     needBodyEncoding = false;
                 }
+            };
+            if constexpr (DataExchange::Compression::Deflate::kSupported) {
+                maybeAddIt (HTTP::ContentEncoding::kDeflate);
             }
-            // @todo add gzip, and a few others...zstd best probably...
+            if constexpr (DataExchange::Compression::GZip::kSupported) {
+                maybeAddIt (HTTP::ContentEncoding::kGZip);
+            }
+            // @todo add zstd, and others? zstd best probably...
         }
 
         /*
