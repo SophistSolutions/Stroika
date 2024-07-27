@@ -2327,15 +2327,26 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 #endif
 
+/*
+e included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.h:1290:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:297:9: error: static assertion failed: to use ToObject<> on this type, you must specialize ObjectVariantMapper::ToObject
+        static_assert (default_initializable<T>, "to use ToObject<> on this type, you must specialize ObjectVariantMapper::ToObject");
+        ^              ~~~~~~~~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:311:16: note: in instantiation of function template specialization 'Stroika::Foundation::DataExchange::ObjectVariantMapper::ToObject<Stroika::Frameworks::SystemPerformance::Instruments::Process::ProcessType::TCPStats>' requested here
+        return ToObject<T> (ToObjectMapper<T> (), v);
+               ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:619:42: note: in instantiation of function template specialization 'Stroika::Foundation::DataExchange::ObjectVariantMapper::ToObject<Stroika::Frameworks::SystemPerformance::Instruments::Process::ProcessType::TCPStats>' requested here
+       
+*/
 #ifndef qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
-#if defined(__GNUC__)
-#define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 12))
+// fails with clang++-15 using this glib cxx and with g++-12
+#if defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy                                                              \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE == 12))
 #else
 #define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy 0
 #endif
 #endif
-
-
 
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
 #if defined(_LIBCPP_VERSION)
