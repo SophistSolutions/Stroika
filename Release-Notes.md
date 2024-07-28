@@ -9,10 +9,27 @@ especially those they need to be aware of when upgrading.
 
 ###### START 3.0d9 notes
 
-- Docs cleanups
 
-- configure: added comment VERSIONS section in configure output
+### 3.0d9 {2024-07-???} {[diff](../../compare/v3.0d8...v3.0d9)}
 
+#### TLDR
+
+#### Upgrade Notes (3.0d8 to 3.0d9)
+
+#### Change Details
+
+- Various docs/comments cleanups
+- Build System
+  - Compilers Bug Workarounds
+    - new qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy BWA
+    - qCompilerAndStdLib_defaultconstructibleFails_Buggy define and BWA; and related fixes to UPNP DeviceDescription::Icon definition
+  - configure: added comment VERSIONS section in configure output
+  - github actions
+    - Added ubuntu-24.04-g++-14 ubuntu-24.04-g++-14-c++23 builds git .githubactions
+
+
+
+##### TO ORG
 - tried more workarounds for FMT_VERSION >= 110000 ; but since fmtlib is just a stopgap for older compilers - probably not worth upgrading to latest version - just revert to 10.2.1 for now
 
 - Slight cleanup of IUseToStringFormatterForFormatter_ hack/BWA
@@ -24,127 +41,86 @@ especially those they need to be aware of when upgrading.
 - Build ETC
   - DOCKER
     - docker VS_17_10_5
-  - github actions
-    -     Added ubuntu-24.04-g++-14 ubuntu-24.04-g++-14-c++23 builds git .githubactions
 
 
-- Bug Defines
-  -     new qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy BWA
 
-
-- Characters
-  - String
-    - String::StartsWith and EndsWith now Require(not subString.empty ()) for string overload
-  - Format
-    - progress trying to address IStdFormatterPredefinedFor_ issue for g++-14 and c++23 mode - but still incomplete/non-functional
-
-- Common
-  - GUID
-    - Fixed Common::GUID CTOR to accept any STRINGISH type
-    
-- Configuration
-  - Fix GetSystemConfiguration () logic for windows to appropriately print Windows 11, instead of Windows 10 (for the most part)
-
-
-- DataExchange
-  - ObjectVariantMapper
-    - Generally improved use of concepts (lots more todo)
-    - Lots of docs improvements/examples
-
-    - DefaultConstructForRead<IO::Network::CIDR>
-  - libxml2
-    - lose xmlParserErorr call in Providers/LibXML2.cpp - seems unneeded and writes to stdout
-    - minor libxml2 error catching/reporting cleanups
-
-- Execution
-  - ThreadPool
-    - ThreadPool::Statistics::GetMeanTimeConsumed () const now returns optional rather than nan for no-stats case
-
-- IO::Network
-  - URI
-    new URI::ParseRelative () - because sometimes URI::Parse() will treat part of the Path as part of the authority -
-    and for example in HTTP first line - this would be wrong; cleanup some use of requires - using IAnyOf<> prefix typename filter (cosmetic); 
-    new NormalizationStyle for Normalize() method - so sometimes can say (aggressive) - and remove // sequences (not part of RFC3986 standard normalization) -
-    but very handy - cuz can use in Routes/Router - and easy to accidentally get // in wrong place due to javascript spling strings togehter;
-
+- Library
+  - Foundation
+    - Characters
+      - String
+        - String::StartsWith and EndsWith now Require(not subString.empty ()) for string overload
+      - Format
+        - progress trying to address IStdFormatterPredefinedFor_ issue for g++-14 and c++23 mode - but still incomplete/non-functional
+    - Common
+      - GUID
+        - Fixed Common::GUID CTOR to accept any STRINGISH type
+    - Configuration
+      - Fix GetSystemConfiguration () logic for windows to appropriately print Windows 11, instead of Windows 10 (for the most part)
+    - DataExchange
+      - Compression
+        -  Added gzip compression/decompression support
+      - ObjectVariantMapper
+        - Generally improved use of concepts (lots more todo)
+        - Lots of docs improvements/examples
+        - redo ClassOptions for ObjectVariantMapper AddClass code - fAfterFrom - now takes extra var parameter
+        - replace ToObject<> specialization with DefaultConstructForRead<> specialization in ObjectVariantMapper
+        - DefaultConstructForRead<IO::Network::CIDR>
+      - libxml2
+        - lose xmlParserErorr call in Providers/LibXML2.cpp - seems unneeded and writes to stdout
+        - minor libxml2 error catching/reporting cleanups
+    - Execution
+      - ThreadPool
+        - ThreadPool::Statistics::GetMeanTimeConsumed () const now returns optional rather than nan for no-stats case
+    - IO::Network
+      - URI
+        new URI::ParseRelative () - because sometimes URI::Parse() will treat part of the Path as part of the authority -
+        and for example in HTTP first line - this would be wrong; cleanup some use of requires - using IAnyOf<> prefix typename filter (cosmetic); 
+        new NormalizationStyle for Normalize() method - so sometimes can say (aggressive) - and remove // sequences (not part of RFC3986 standard normalization) -
+        but very handy - cuz can use in Routes/Router - and easy to accidentally get // in wrong place due to javascript spling strings togehter;
 - Frameworks
   - WebServer
     - use new URI::ParseRelative in Frameworks/WebServer/Connection cuz method line argument MUST be relative url - and dont want to sometimes confuse part of it as authority
     - docs about FileSystemRequestHandler options improved, and use url ().Normalize (URI::NormalizationStyle::eAggressive) - so extra // etc properly handled
     - Router: docs, and use url.Normalize (URI::NormalizationStyle::eAggressive) so router use will automatically match more often - in intuitive cases an
     - Frameworks/WebServer/FileSystemRequestHandler options - now document and enforce that if fURLPrefix2Strip option missing - default is '/'
-
+    - https://stroika.atlassian.net/browse/STK-1012: added gzip compression support to webserver
+    - and also supported fSupportedCompressionEncodings param from webserver configuration (not tested)
 - Samples
   - WebServer
     - adjusted FileSystemRequestHandler::Options use in sample to be more clear, and other stuff in sample to better handle /// indpenendence ;
     - and print Listening on {} as part of sample - useful hint in a sample (but not real app)
 
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 14, 15, 16, 17, 18; XCode: 15.2, 15.3}
+  - MSVC: { 17.10.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 14.4 - arm64/m1 chip
+    - 14.3, 14.4 on github actions
+  - Linux: { Ubuntu: [22.04, 23.10, 24.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, DEBIABVERSION###), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+  - Ubuntu 24.04
+    - TSAN somewhat broken - https://stroika.atlassian.net/browse/STK-1010
 
-#if 0
-
-commit d35d203410f56426cef8abf7346bd2907d58e9ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 11:54:37 2024 -0400
-
-    redo ClassOptions for ObjectVariantMapper AddClass code - fAfterFrom - now takes extra var parameter
-
-commit ac9452a81034c0a7c6b174db94eb30f32246df09
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Jul 26 22:27:54 2024 -0400
-
-    qCompilerAndStdLib_defaultconstructibleFails_Buggy define and BWA; and related fixes to UPNP DeviceDescription::Icon definition
-
-
-commit 3e97f7dad41555ef67c059a343f5e4c7e9b4b423
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Jul 27 09:24:55 2024 -0400
-
-    loosen restriction on clang++ with libstdc++ - seems to work with clang++15 on ubuntu 22.0
-
-commit 630502e7be97aa4b7d5a597afb61749ec577d304
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Jul 27 09:26:34 2024 -0400
-
-    use aggregate initialization for Info::LoadAverage
-
-commit 483461f730e8740623a6c9d9a1699099d5644e3d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 27 11:32:56 2024 -0400
-
-    draft/untested gzip compression/decompression support
-
-commit 042b440ecb5084c0ae3b75e796e5cf089e785276
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 27 11:45:10 2024 -0400
-
-    Added regtests for gzip compression support (basd on zlib)
-
-commit 9f23ecef3feb47fa9cb9c75e9a14c09f780367c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 27 12:32:50 2024 -0400
-
-    https://stroika.atlassian.net/browse/STK-1012: added gzip compression support to webserver - and also supported fSupportedCompressionEncodings param from webserver configuration (not tested)
-
-commit 2c93b2006b56865149e8a74025c529a1d65d60d6
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Jul 28 08:35:27 2024 -0400
-
-    fixed recent regression in configure - clang++-15-libstdc++ not building right on ubuntu 24.04 (but OK on 22.04)
-
-commit 9a693ec18feb0c28a94f895b12e6a9c186fff29c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 28 08:37:28 2024 -0400
-
-    replace ToObject<> specialization with DefaultConstructForRead<> specialization in ObjectVariantMapper
-
-commit 2322d16868e308312dd6d22bfd83ac04a71886e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 28 08:37:57 2024 -0400
-
-    lose no longer needed (and inappropraite/wrong) changes to Frameworks/UPnP/DeviceDescription Icon class
-
-#endif
-
+---
 
 ### 3.0d8 {2024-07-20} {[diff](../../compare/v3.0d7...v3.0d8)}
 
