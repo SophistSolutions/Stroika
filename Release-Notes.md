@@ -48,6 +48,8 @@ especially those they need to be aware of when upgrading.
   - ObjectVariantMapper
     - Generally improved use of concepts (lots more todo)
     - Lots of docs improvements/examples
+
+    - DefaultConstructForRead<IO::Network::CIDR>
   - libxml2
     - lose xmlParserErorr call in Providers/LibXML2.cpp - seems unneeded and writes to stdout
     - minor libxml2 error catching/reporting cleanups

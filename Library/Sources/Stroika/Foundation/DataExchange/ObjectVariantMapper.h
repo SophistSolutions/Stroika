@@ -141,6 +141,8 @@ namespace Stroika::Foundation::DataExchange {
     struct DefaultConstructForRead<Time::DateTime>;
     template <>
     struct DefaultConstructForRead<Time::TimeOfDay>;
+    template <>
+    struct DefaultConstructForRead<IO::Network::CIDR>;
 
     /**
      *  \brief IDefaultConstructForRead checks if argument T is either default_initializable, or has been specialized to allow working with ObjectVariantMapper::ToObject

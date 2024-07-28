@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/CheckedConverter.h"
 #include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/IO/Network/CIDR.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module (note the extra long name since its in a header)
 //#define Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -45,6 +46,14 @@ namespace Stroika::Foundation::DataExchange {
         constexpr Time::TimeOfDay operator() () const
         {
             return Time::TimeOfDay::kMin;
+        }
+    };
+    template <>
+    struct DefaultConstructForRead<IO::Network::CIDR> {
+        IO::Network::CIDR operator() () const
+        {
+            using namespace IO::Network;
+            return CIDR{InternetAddress{}, 0};
         }
     };
 
