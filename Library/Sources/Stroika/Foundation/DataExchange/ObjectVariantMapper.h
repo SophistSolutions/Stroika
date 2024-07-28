@@ -114,6 +114,40 @@ namespace Stroika::Foundation::DataExchange {
     using Containers::Sequence;
     using Containers::Set;
 
+    /**
+     *  \brief algorithm used by ObjectOrientedMapper to construct an empty object to read (before fill in fields).
+     * 
+     *  Normally, this is trivial, and can be ignored. But if you have a type with no default constructor (say because its usually
+     *  a bug to default construct) - but maybe sometimes useful (say for ObjectVariantMapper reading) - just specialize this
+     *  class.
+     * 
+     *  This is for use in ObjectVariantMapper::ToObject ()
+     */
+    template <typename T>
+    struct DefaultConstructForRead {
+        constexpr T operator() () const
+        {
+#if !qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
+            static_assert (default_initializable<T>,
+                           "to use ObjectVariantMapper::ToObject<> on this type, you must specialize DefaultConstructForRead, or "
+                           "externally construct a T object, and pass its address to a T* overload of ToObject");
+#endif
+            return T{};
+        }
+    };
+    template <>
+    struct DefaultConstructForRead<Time::Date>;
+    template <>
+    struct DefaultConstructForRead<Time::DateTime>;
+    template <>
+    struct DefaultConstructForRead<Time::TimeOfDay>;
+
+    /**
+     *  \brief IDefaultConstructForRead checks if argument T is either default_initializable, or has been specialized to allow working with ObjectVariantMapper::ToObject
+     */
+    template <typename T>
+    concept IDefaultConstructForRead = invocable<DefaultConstructForRead<T>>;
+
 #if 0
     /**
      *  copyable is really needed; default_initializable is needed unless you do some work.
@@ -727,22 +761,17 @@ namespace Stroika::Foundation::DataExchange {
          *  The overloads that takes 'toObjectMapper' are just an optimization, and need not be used, but if used, the value
          *  passed in MUST the the same as that returned by ToObjectMapper ().
          * 
-         *  \note The default implementation of ToObject (const VariantValue& v) and ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v) require
-         *        T be default_initializable. If you have a type without this ability, simply construct it otherwise, and pass the address to ToObject (...T* into)
-         *        or explicitly specialize the ToObject() template todo this.
-         * 
-         *  \note   These !default_initializable <T> types are directly specialized by Stroika to support ToObject():
-         *              o   Time::Date
-         *              o   Time::DateTime
-         *              o   Time::TimeOfDay
+         *  \note The most simple overloads of ToObject () require the type argument T to satisfy IDefaultConstructForRead.
+         *        This is normally just amounts to being default initializable, and is not a problem. But if it is, either
+         *        use one of the other overloads of ToObject (), or specialize DefaultConstructForRead<T>;
          */
-        template <typename T>
+        template <IDefaultConstructForRead T>
         nonvirtual T ToObject (const VariantValue& v) const;
         template <typename T>
         nonvirtual void ToObject (const VariantValue& v, T* into) const;
         template <typename T>
         nonvirtual void ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const;
-        template <typename T>
+        template <IDefaultConstructForRead T>
         nonvirtual T ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v) const;
 
     public:
@@ -933,7 +962,8 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  @see MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
          */
-        template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
+        template <typename ACTUAL_CONTAINTER_TYPE, IDefaultConstructForRead KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type,
+                  IDefaultConstructForRead VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
         static TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey ();
 
     public:
@@ -944,7 +974,8 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  @see MakeCommonSerializer_MappingWithStringishKey
          */
-        template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
+        template <typename ACTUAL_CONTAINTER_TYPE, IDefaultConstructForRead KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type,
+                  IDefaultConstructForRead VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
         static TypeMappingDetails MakeCommonSerializer_MappingAsArrayOfKeyValuePairs ();
 
     public:
@@ -1130,14 +1161,6 @@ namespace Stroika::Foundation::DataExchange {
     private:
         TypesRegistry fTypeMappingRegistry_;
     };
-
-    // ToObject specializations - to handle lack of default constructors
-    template <>
-    Time::Date ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::Date>& toObjectMapper, const VariantValue& v) const;
-    template <>
-    Time::DateTime ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::DateTime>& toObjectMapper, const VariantValue& v) const;
-    template <>
-    Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::TimeOfDay>& toObjectMapper, const VariantValue& v) const;
 
     /**
      *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a

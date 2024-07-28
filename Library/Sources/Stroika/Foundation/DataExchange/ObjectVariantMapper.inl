@@ -23,6 +23,33 @@ namespace Stroika::Foundation::DataExchange {
 
     /*
      ********************************************************************************
+     ************************** DefaultConstructForRead *****************************
+     ********************************************************************************
+     */
+    template <>
+    struct DefaultConstructForRead<Time::Date> {
+        constexpr Time::Date operator() () const
+        {
+            return Time::Date::kMin;
+        }
+    };
+    template <>
+    struct DefaultConstructForRead<Time::DateTime> {
+        constexpr Time::DateTime operator() () const
+        {
+            return Time::DateTime::kMin;
+        }
+    };
+    template <>
+    struct DefaultConstructForRead<Time::TimeOfDay> {
+        constexpr Time::TimeOfDay operator() () const
+        {
+            return Time::TimeOfDay::kMin;
+        }
+    };
+
+    /*
+     ********************************************************************************
      ******************** ObjectVariantMapper::StructFieldInfo **********************
      ********************************************************************************
      */
@@ -291,24 +318,14 @@ namespace Stroika::Foundation::DataExchange {
         RequireNotNull (into);
         ToObject<T> (ToObjectMapper<T> (), v, into);
     }
-    template <typename T>
+    template <IDefaultConstructForRead T>
     inline T ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v) const
     {
-#if !qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
-        static_assert (default_initializable<T>, "to use ToObject<> on this type, you must specialize ObjectVariantMapper::ToObject, or "
-                                                 "externally construct a T object, and pass its address to a T* overload of ToObject");
-#endif
-        /*
-         *  NOTE: It is because of this line of code (the default CTOR for tmp) - that ObjectVariantMapper requires
-         *  all its types to have a default constructor. To avoid that dependency, you may provide a template
-         *  specialization of this method, which passes specific (default) args to CLASS, and then they will be filled in/replaced
-         *  by the two argument ToObject.
-         */
-        T tmp;
+        T tmp = DefaultConstructForRead<T>{}();
         ToObject (toObjectMapper, v, &tmp);
         return tmp;
     }
-    template <typename T>
+    template <IDefaultConstructForRead T>
     inline T ObjectVariantMapper::ToObject (const VariantValue& v) const
     {
         return ToObject<T> (ToObjectMapper<T> (), v);
@@ -986,7 +1003,7 @@ namespace Stroika::Foundation::DataExchange {
         };
         return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ENUM_TYPE)};
     }
-    template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename ACTUAL_CONTAINTER_TYPE, IDefaultConstructForRead KEY_TYPE, IDefaultConstructForRead VALUE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
     {
         FromObjectMapperType<ACTUAL_CONTAINTER_TYPE> fromObjectMapper = [] (const ObjectVariantMapper&    mapper,
@@ -1014,7 +1031,7 @@ namespace Stroika::Foundation::DataExchange {
         };
         return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ACTUAL_CONTAINTER_TYPE)};
     }
-    template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename ACTUAL_CONTAINTER_TYPE, IDefaultConstructForRead KEY_TYPE, IDefaultConstructForRead VALUE_TYPE>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingAsArrayOfKeyValuePairs ()
     {
         return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, ACTUAL_CONTAINTER_TYPE> ();
