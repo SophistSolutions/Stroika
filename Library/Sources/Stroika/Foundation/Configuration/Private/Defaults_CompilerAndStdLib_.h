@@ -2359,14 +2359,15 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 
 
 */
-#ifndef qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
+#ifndef qCompilerAndStdLib_defaultconstructibleFails_Buggy
 // fails with clang++-15 using this glib cxx and with g++-12
 // fails with clang++16 using _GLIBCXX_RELEASE
+// fails with clang++17 using _GLIBCXX_RELEASE
 #if defined(_GLIBCXX_RELEASE)
-#define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy                                                              \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE == 12) or (__clang_major__ <= 16))
+#define qCompilerAndStdLib_defaultconstructibleFails_Buggy                                                              \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE == 12) or (__clang_major__ <= 17))
 #else
-#define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy 0
+#define qCompilerAndStdLib_defaultconstructibleFails_Buggy 0
 #endif
 #endif
 
