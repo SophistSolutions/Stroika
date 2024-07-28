@@ -2337,12 +2337,34 @@ e included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExch
                ^
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:619:42: note: in instantiation of function template specialization 'Stroika::Foundation::DataExchange::ObjectVariantMapper::ToObject<Stroika::Frameworks::SystemPerformance::Instruments::Process::ProcessType::TCPStats>' requested here
        
+
+In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h:15:
+In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Frameworks/SystemPerformance/Instrument.h:16:
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.h:131:13: error: static assertion failed: to use ObjectVariantMapper::ToObject<> on this type, you must specialize DefaultConstructForRead, or externally construct a T object, and pass its address to a T* overload of ToObject
+            static_assert (default_initializable<T>,
+            ^              ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:324:17: note: in instantiation of member function 'Stroika::Foundation::DataExchange::DefaultConstructForRead<Stroika::Frameworks::SystemPerformance::Instruments::CPU::Info::LoadAverage>::operator()' requested here
+        T tmp = DefaultConstructForRead<T>{}();
+                ^
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:331:16: note: in instantiation of function template specialization 'Stroika::Foundation::DataExchange::ObjectVariantMapper::ToObject<Stroika::Frameworks::SystemPerformance::Instruments::CPU::Info::LoadAverage>' requested here
+        return ToObject<T> (ToObjectMapper<T> (), v);
+               ^
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:639:42: note: in instantiation of function template specialization 'Stroika::Foundation::DataExchange::ObjectVariantMapper::ToObject<Stroika::Frameworks::SystemPerformance::Instruments::CPU::Info::LoadAverage>' requested here
+                *intoObjOfTypeT = mapper.ToObject<T> (d);
+                                         ^
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:538:32: note: in instantiation of function template specialization 'Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_<Stroika::Frameworks::SystemPerformance::Instruments::CPU::Info::LoadAverage>' requested here
+        TypeMappingDetails tmp{MakeCommonSerializer_ (n, forward<ARGS> (args)...)};
+                               ^
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:273:29: note: in instantiation of function template specialization 'Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer<std::optional<Stroika::Frameworks::SystemPerformance::Instruments::CPU::Info::LoadAverage>>' requested here
+
+
 */
 #ifndef qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
 // fails with clang++-15 using this glib cxx and with g++-12
+// fails with clang++16 using _GLIBCXX_RELEASE
 #if defined(_GLIBCXX_RELEASE)
 #define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy                                                              \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE == 12))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE == 12) or (__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy 0
 #endif

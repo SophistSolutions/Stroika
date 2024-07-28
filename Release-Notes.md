@@ -92,31 +92,14 @@ commit ac9452a81034c0a7c6b174db94eb30f32246df09
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Fri Jul 26 22:27:54 2024 -0400
 
-    qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy define and BWA; and related fixes to UPNP DeviceDescription::Icon definition
+    qCompilerAndStdLib_defaultconstructibleFails_Buggy define and BWA; and related fixes to UPNP DeviceDescription::Icon definition
 
-commit 7701cb25e94b6c86dfc5d45d614a95dbf8d17876
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Jul 27 09:04:53 2024 -0400
-
-    better BWA for qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy
 
 commit 3e97f7dad41555ef67c059a343f5e4c7e9b4b423
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sat Jul 27 09:24:55 2024 -0400
 
     loosen restriction on clang++ with libstdc++ - seems to work with clang++15 on ubuntu 22.0
-
-commit 200c9138ee7e7368db7b396a930ebe080ba48fed
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Jul 27 09:25:34 2024 -0400
-
-    fixed bug define qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy to only depend on _GLIBCXX_RELEASE not GNUC version
-
-commit 3e66f6d1f055dd8da6db949e092160fe13bcb14e
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Jul 27 09:26:13 2024 -0400
-
-    lose old qCompilerAndStdLib_defaultconstructibleFailsWithoutStaticAssert_Buggy - newer one works better
 
 commit 630502e7be97aa4b7d5a597afb61749ec577d304
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
