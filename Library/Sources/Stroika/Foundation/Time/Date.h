@@ -317,7 +317,7 @@ namespace Stroika::Foundation::Time {
      *          instead of creating invalid values.
      *
      *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedMutex to assure its not accidentially modified, but
-     *          thats difficult beacuse its sometimes uses as a constexpr
+     *          that's difficult because its sometimes uses as a constexpr
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
