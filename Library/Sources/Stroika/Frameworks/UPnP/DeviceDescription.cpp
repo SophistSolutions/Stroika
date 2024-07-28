@@ -111,22 +111,21 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     ObjectVariantMapper mapper;
 
     mapper.AddClass<Icon> ({
-        {"Alive"sv, &Icon::fMimeType},
-        {"USN"sv, &Icon::fHorizontalPixels},
-        {"Server"sv, &Icon::fVerticalPixels},
-        {"Target"sv, &Icon::fColorDepth},
-        {"RawHeaders"sv, &Icon::fURL},
+        {"mimetype"sv, &Icon::fMimeType},
+        {"width"sv, &Icon::fHorizontalPixels},
+        {"height"sv, &Icon::fVerticalPixels},
+        {"depth"sv, &Icon::fColorDepth},
+        {"url"sv, &Icon::fURL},
     });
-    static_assert (default_initializable<Icon>);
     mapper.AddCommonType<Collection<Icon>> ();
     mapper.AddCommonType<optional<Collection<Icon>>> ();
 
     mapper.AddClass<Service> ({
-        {"Alive"sv, &Service::fServiceType},
-        {"USN"sv, &Service::fServiceID},
-        {"Server"sv, &Service::fSCPDURL},
-        {"Target"sv, &Service::fControlURL},
-        {"RawHeaders"sv, &Service::fEventSubURL},
+        {"serviceType"sv, &Service::fServiceType},
+        {"serviceId"sv, &Service::fServiceID},
+        {"SCPDURL"sv, &Service::fSCPDURL},
+        {"controlURL"sv, &Service::fControlURL},
+        {"eventSubURL"sv, &Service::fEventSubURL},
     });
     mapper.AddCommonType<Collection<Service>> ();
     mapper.AddCommonType<optional<Collection<Service>>> ();
@@ -135,20 +134,20 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     mapper.AddCommonType<optional<URI>> ();
 
     mapper.AddClass<DeviceDescription> ({
-        {"PresentationURL"sv, &DeviceDescription::fPresentationURL},
-        {"DeviceType"sv, &DeviceDescription::fDeviceType},
-        {"ManufactureName"sv, &DeviceDescription::fManufactureName},
-        {"FriendlyName"sv, &DeviceDescription::fFriendlyName},
-        {"ManufacturingURL"sv, &DeviceDescription::fManufacturingURL},
-        {"ModelDescription"sv, &DeviceDescription::fModelDescription},
-        {"ModelName"sv, &DeviceDescription::fModelName},
-        {"ModelNumber"sv, &DeviceDescription::fModelNumber},
-        {"ModelURL"sv, &DeviceDescription::fModelURL},
-        {"SerialNumber"sv, &DeviceDescription::fSerialNumber},
+        {"presentationURL"sv, &DeviceDescription::fPresentationURL},
+        {"deviceType"sv, &DeviceDescription::fDeviceType},
+        {"manufacturer"sv, &DeviceDescription::fManufactureName},
+        {"friendlyName"sv, &DeviceDescription::fFriendlyName},
+        {"manufacturerURL"sv, &DeviceDescription::fManufacturingURL},
+        {"modelDescription"sv, &DeviceDescription::fModelDescription},
+        {"modelName"sv, &DeviceDescription::fModelName},
+        {"modelNumber"sv, &DeviceDescription::fModelNumber},
+        {"modelURL"sv, &DeviceDescription::fModelURL},
+        {"serialNumber"sv, &DeviceDescription::fSerialNumber},
         {"UDN"sv, &DeviceDescription::fUDN},
         {"UPC"sv, &DeviceDescription::fUPC},
-        {"Icons"sv, &DeviceDescription::fIcons},
-        {"Services"sv, &DeviceDescription::fServices},
+        {"iconList"sv, &DeviceDescription::fIcons},
+        {"serviceList"sv, &DeviceDescription::fServices},
     });
     return mapper;
 };
