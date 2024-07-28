@@ -23,34 +23,23 @@ especially those they need to be aware of when upgrading.
   - Compilers Bug Workarounds
     - new qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy BWA
     - qCompilerAndStdLib_defaultconstructibleFails_Buggy define and BWA; and related fixes to UPNP DeviceDescription::Icon definition
-  - configure: added comment VERSIONS section in configure output
+    - qCompiler_IUseToStringFormatterForFormatter_Buggy BWA - for clang++
+  - configure
+    - added comment VERSIONS section in configure output
   - github actions
     - Added ubuntu-24.04-g++-14 ubuntu-24.04-g++-14-c++23 builds git .githubactions
-
-
-
-##### TO ORG
-- tried more workarounds for FMT_VERSION >= 110000 ; but since fmtlib is just a stopgap for older compilers - probably not worth upgrading to latest version - just revert to 10.2.1 for now
-
-- Slight cleanup of IUseToStringFormatterForFormatter_ hack/BWA
-- more IStdFormatterPredefinedFor_ tweaks for old gcc
-
-- lose begin/end/c_str() deprecated methods from StringBuilder since a while back appear to have removed implementation; and about to lose anyhow
-
--  draft qCompiler_IUseToStringFormatterForFormatter_Buggy BWA - for clang++
-- Build ETC
-  - DOCKER
+  - Supported Compilers
     - docker VS_17_10_5
-
-
-
 - Library
   - Foundation
     - Characters
       - String
         - String::StartsWith and EndsWith now Require(not subString.empty ()) for string overload
+      - StringBuilder
+        - lose begin/end/c_str() deprecated methods from StringBuilder since a while back appear to have removed implementation; and about to lose anyhow
       - Format
-        - progress trying to address IStdFormatterPredefinedFor_ issue for g++-14 and c++23 mode - but still incomplete/non-functional
+        - progress trying to address IStdFormatterPredefinedFor_ issue for various compilers (including post to stackoverflow). Still a mess, but better, and working
+          for current compilers.
     - Common
       - GUID
         - Fixed Common::GUID CTOR to accept any STRINGISH type
@@ -107,7 +96,7 @@ especially those they need to be aware of when upgrading.
     - 14.3, 14.4 on github actions
   - Linux: { Ubuntu: [22.04, 23.10, 24.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
 - Hardware Tested/Supported
-  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, DEBIABVERSION###), arm64 (macos/m1)
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
 - Sanitizers and Code Quality Validators
   - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
   - [CodeQL](https://codeql.github.com/)
