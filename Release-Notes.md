@@ -9,336 +9,80 @@ especially those they need to be aware of when upgrading.
 
 ###### START 3.0d9 notes
 
+- Docs cleanups
+
 - tried more workarounds for FMT_VERSION >= 110000 ; but since fmtlib is just a stopgap for older compilers - probably not worth upgrading to latest version - just revert to 10.2.1 for now
 
 - Slight cleanup of IUseToStringFormatterForFormatter_ hack/BWA
 - more IStdFormatterPredefinedFor_ tweaks for old gcc
 
+- lose begin/end/c_str() deprecated methods from StringBuilder since a while back appear to have removed implementation; and about to lose anyhow
+
+-  draft qCompiler_IUseToStringFormatterForFormatter_Buggy BWA - for clang++
+- Build ETC
+  - DOCKER
+    - docker VS_17_10_5
+  - github actions
+    -     Added ubuntu-24.04-g++-14 ubuntu-24.04-g++-14-c++23 builds git .githubactions
+
+
+- Bug Defines
+  -     new qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy BWA
+
+
+- Characters
+  - String
+    - String::StartsWith and EndsWith now Require(not subString.empty ()) for string overload
+  - Format
+    - progress trying to address IStdFormatterPredefinedFor_ issue for g++-14 and c++23 mode - but still incomplete/non-functional
+
+- Common
+  - GUID
+    - Fixed Common::GUID CTOR to accept any STRINGISH type
+    
+- Configuration
+  - Fix GetSystemConfiguration () logic for windows to appropriately print Windows 11, instead of Windows 10 (for the most part)
+
+
+- DataExchange
+  - ObjectVariantMapper
+    - Generally improved use of concepts (lots more todo)
+    - Lots of docs improvements/examples
+  - libxml2
+    - lose xmlParserErorr call in Providers/LibXML2.cpp - seems unneeded and writes to stdout
+    - minor libxml2 error catching/reporting cleanups
+
+- Execution
+  - ThreadPool
+    - ThreadPool::Statistics::GetMeanTimeConsumed () const now returns optional rather than nan for no-stats case
+
+- IO::Network
+  - URI
+    new URI::ParseRelative () - because sometimes URI::Parse() will treat part of the Path as part of the authority -
+    and for example in HTTP first line - this would be wrong; cleanup some use of requires - using IAnyOf<> prefix typename filter (cosmetic); 
+    new NormalizationStyle for Normalize() method - so sometimes can say (aggressive) - and remove // sequences (not part of RFC3986 standard normalization) -
+    but very handy - cuz can use in Routes/Router - and easy to accidentally get // in wrong place due to javascript spling strings togehter;
+
+- Frameworks
+  - WebServer
+    - use new URI::ParseRelative in Frameworks/WebServer/Connection cuz method line argument MUST be relative url - and dont want to sometimes confuse part of it as authority
+    - docs about FileSystemRequestHandler options improved, and use url ().Normalize (URI::NormalizationStyle::eAggressive) - so extra // etc properly handled
+    - Router: docs, and use url.Normalize (URI::NormalizationStyle::eAggressive) so router use will automatically match more often - in intuitive cases an
+    - Frameworks/WebServer/FileSystemRequestHandler options - now document and enforce that if fURLPrefix2Strip option missing - default is '/'
+
+- Samples
+  - WebServer
+    - adjusted FileSystemRequestHandler::Options use in sample to be more clear, and other stuff in sample to better handle /// indpenendence ;
+    - and print Listening on {} as part of sample - useful hint in a sample (but not real app)
+
+
 #if 0
-
-commit 7993a103843c82a9ba1e484feae0b52b41b57b7d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Jul 22 14:16:39 2024 -0400
-
-    try newer fmtlib - but still no-go - matches String class - meaning I cannot override formattable<String>
-
-commit c600236a416f7dae3a65c28570f7e4297fd149d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 22 23:39:16 2024 -0400
-
-    Minor tweaks to recent IUseToStringFormatterForFormatter_ cleanuup but still not working on xcode
-
-commit 8001d55cb855813b43349feb16bb0846fafbc607
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 08:41:48 2024 -0400
-
-    cosmetic; and lose begin/end/c_str() deprecated methods from StringBuilder since a while back appear to have removed implementation; and about to lose anyhow
-
-commit f4063aaf044536130e1187684f0b72fa3ef65615
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Jul 23 10:33:06 2024 -0400
-
-    draft qCompiler_IUseToStringFormatterForFormatter_Buggy BWA - for clang++
-
-commit 29bc9d63a8b0f81fbe7ecf7dd47d6081a4fc5811
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Jul 23 10:40:09 2024 -0400
-
-    debug notes
-
-commit e21a142c5fafa4ecc8f8ce0bbdc2b4912d41684c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 10:40:31 2024 -0400
-
-    cosmetic
-
-commit 3fa76b0021de118065e1cb4fd42325427c203a56
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 10:47:04 2024 -0400
-
-    cosmetic
-
-commit 99c178cb7d9c517d9c491e17331e8001269ac7e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 16:13:57 2024 -0400
-
-    URI code: new URI::ParseRelative () - because sometimes URI::Parse() will treat part of the Path as part of the authority - and for example in HTTP first line - this would be wrong; cleanup some use of requires - using IAnyOf<> prefix typename filter (cosmetic); new NormalizationStyle for Normalize() method - so sometimes can say (aggressive) - and remove // sequences (not part of RFC3986 standard normalization) - but very handy - cuz can use in Routes/Router - and easy to accidentally get // in wrong place due to javascript spling strings togehter;
-
-commit 6dc1149ad75ecfba90bc3573d675fb8a45ee6499
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 16:15:07 2024 -0400
-
-    use new URI::ParseRelative in Frameworks/WebServer/Connection cuz method line argument MUST be relative url - and dont want to sometimes confuse part of it as scauthority
-
-commit e55a799aef8317779bf9f9ee8175ac6e754b18d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 16:16:23 2024 -0400
-
-    Frameworks/WebServer - docs about FileSystemRequestHandler options improved, and use url ().Normalize (URI::NormalizationStyle::eAggressive) - so extra // etc properly easyen
-
-commit 38b0471c3f856076714b0be5721387f973ca30f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 16:17:39 2024 -0400
-
-    Frameworks/WebServer/Router: docs, and use url.Normalize (URI::NormalizationStyle::eAggressive) so router use will automatically match more often - in intuitive cases an
-
-commit 6ca23c28a42b3f2ae0c33bb2756c1600794c97e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 16:19:09 2024 -0400
-
-    adjusted FileSystemRequestHandler::Options use in sample to be more clear, and other stuff in sample to better handle /// indpenendence ; and print Listening on {}     as part of sample - useful hint in a sample (but not real app)
-
-commit 2d6367e6c9d87040c79075dca2c66b2507d4d0ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 16:40:18 2024 -0400
-
-    comments
-
-commit 6effc270a95d17ece71166c8930903d19c37bedd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 21:52:26 2024 -0400
-
-    String::StartsWith and EndsWith now Require(not subString.empty ()) for string overload
-
-commit 82f99cec79cbde91fdc3fca1f8878f039139f925
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 21:53:02 2024 -0400
-
-    lose xmlParserErorr call in Providers/LibXML2.cpp - seems unneeded and writes to stdout
-
-commit bada781869c68eb75ec224769d4d1584b39112fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 21:54:29 2024 -0400
-
-    Frameworks/WebServer/FileSystemRequestHandler options - now document and enforce that if fURLPrefix2Strip option missing - default is '/'
-
-commit 97ffd7438edaa73c5cc4278f125a066bf89de5dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 10:46:27 2024 -0400
-
-    minor libxml2 error catching/reporting cleanups
-
-commit 8495543f6384ab642309a4388b20879b85b03225
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 11:16:31 2024 -0400
-
-    cosmetic
-
-commit 1a693925449a196c1e1a8f117c2e7d0ecb6c0b5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 11:16:51 2024 -0400
-
-    cosmetic
-
-commit dee7b8cd04e265157a61966e7d5588f35a1aa774
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 11:17:46 2024 -0400
-
-    Fix GetSystemConfiguration () logic for windows to appropriately print Windows 11, instead of Windows 10 (for the most part)
-
-commit 6c50801dffcbbaf73f54fc298bdd443aa53c9753
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Jul 24 11:58:27 2024 -0400
-
-    new qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy BWA
-
-commit 9353d10296cc899dd5f311835226676f8cf078c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 11:58:58 2024 -0400
-
-    Cosmetic
-
-commit b91373678ef7a22a915e952f93748388e1a44830
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 12:06:08 2024 -0400
-
-    cosmeitc
-
-commit 9088b5588aff4c4f819cfc5da670251c7788512b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 12:29:02 2024 -0400
-
-    anpther tweak of reported windows 11 version
-
-commit 03dad1993aaeae22731805a8a155cfdd2efb911e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 12:29:10 2024 -0400
-
-    Comment
-
-commit 3f81a2f42862d639c8e847e8ecfddff44e94d69a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 13:05:18 2024 -0400
-
-    debugging code for IStdFormatterPredefinedFor_ (ifdefed out)
-
-commit 43ad007ae5ad6b3072c441edc9d39aa7b3ca1b32
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 21:49:10 2024 -0400
-
-    Tweak debugging for IStdFormatterPredefinedFor_
-
-commit 481f785daeb2632aa0256a39836ec795d4ba31fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 21:56:27 2024 -0400
-
-    more debug hacks for IStdFormatterPredefinedFor_
-
-commit 1e751890c8968e76f938e8a040033dc10abf525e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 24 22:04:28 2024 -0400
-
-    Minor tweaks to recent IStdFormatterPredefinedFor_ debugging static_assert
-
-commit 9fe447b081c9557e8961449eae7d76980d78367a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Jul 25 09:02:53 2024 -0400
-
-    progress trying to address IStdFormatterPredefinedFor_ issue for g++-14 and c++23 mode - but still incomplete/non-functional
-
-commit a5dd87eab57058b2599bbc1034239e305e42cb71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 09:08:45 2024 -0400
-
-    cosmetic; and lose one unneeded qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy BWA
-
-commit dfaf025c467a09ea5c19d99e0c0c3cda1483b6e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 09:51:37 2024 -0400
-
-    cosmetic
-
-commit 56e4376971c37760b3fcf9fa968660002e43c0fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 09:59:58 2024 -0400
-
-    fixed small regression with IStdFormatterPredefinedFor_
-
-commit 2effb7024fa46de3c10bd6131065457640a7f80a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 10:06:06 2024 -0400
-
-    IStdFormatterPredefinedFor_ cleanups
-
-commit 5dfc0195453c8f0ea76cb2cc3418bf09e8bd4487
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 10:13:42 2024 -0400
-
-    cosmetic
-
-commit 42926d80c7d7e58196241729ec79104df08d143a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Jul 25 16:00:01 2024 -0400
-
-    progress trying to address IStdFormatterPredefinedFor_ issue for g++-14 and c++23 mode - but still incomplete/non-functional
-
-commit e2be0a0f31ff89f9190d3d43e98cc877352c7bc6
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Jul 25 16:01:16 2024 -0400
-
-    progress trying to address IStdFormatterPredefinedFor_ issue for g++-14 and c++23 mode - but still incomplete/non-functional
-
-commit 7aea24c1956490a5968c90ca5a871c0b83b7a529
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Jul 25 16:09:52 2024 -0400
-
-    maybe fixed IStdFormatterPredefinedFor_ for g++-14 and stdc++23
-
-commit 67d2ea651333e5589d41f3e992ecfcabb12a902f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 16:23:53 2024 -0400
-
-    Minor debug hacks for IStdFormatterPredefinedFor_
-
-commit 6c5c6b57c0c9fa1d2baca19485dfe39f244e64dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 16:24:18 2024 -0400
-
-    Minor debug hacks for IStdFormatterPredefinedFor_
-
-commit e5369e6f85455d3c4993e522099f0a03dc619fad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 16:37:29 2024 -0400
-
-    Comments
-
-commit d82739c03401c1bf24236e0698c7c33560631b9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 16:43:02 2024 -0400
-
-    Added ubuntu-24.04-g++-14 ubuntu-24.04-g++-14-c++23 builds git .githubactions
-
-commit ffc9a7ef2d5d164fdd2a8fb5e4b3e284b5024ee0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 17:06:41 2024 -0400
-
-    docker VS_17_10_5
-
-commit 3e7e2033724f095fbc7631e94ebd5b9b864a66c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 08:45:51 2024 -0400
-
-    ThreadPool::Statistics::GetMeanTimeConsumed () const now returns optional rather than nan for no-stats case
-
-commit 4b14fa5461e19205439e35254e973f71bda918ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 08:46:36 2024 -0400
-
-    Fixed Common::GUID CTOR to accept any STRINGISH type
-
-commit 1563cbf0bd1b37aab1015ca421230d01c7674c52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 09:42:30 2024 -0400
-
-    docs
-
-commit 4b01d8adb5c810857b2df7b79bdde675a023dcdb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 09:43:16 2024 -0400
-
-    docs
-
-commit dd7a7cf9c72ab2ce20fb5fa73ab4616886bb4ebd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 09:47:26 2024 -0400
-
-    docs
-
-commit 75f7961faa3a1395f10cab60509740439ae1f33e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 11:12:21 2024 -0400
-
-    ObjectVariantMapper: draft concepts use (not ready to test); more data hiding and docs/examples
-
-commit 94b4b9943eedd500a007d9166aceca13a126bcd4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 11:53:42 2024 -0400
-
-    Comments
 
 commit d35d203410f56426cef8abf7346bd2907d58e9ff
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jul 26 11:54:37 2024 -0400
 
     redo ClassOptions for ObjectVariantMapper AddClass code - fAfterFrom - now takes extra var parameter
-
-commit 53cb08a7f2055073eb3714e444c33ab44e1a6862
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 11:58:14 2024 -0400
-
-    fixed recent typo
-
-commit 642e9162e5724a640220bdb0fd9345999beae66a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 13:21:35 2024 -0400
-
-    fixed typo
-
-commit 6ba5f200cd69ffa4852f20bf98782a86cde0a3db
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Jul 26 13:59:30 2024 -0400
-
-    cosmetic
 
 commit ac9452a81034c0a7c6b174db94eb30f32246df09
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -376,18 +120,6 @@ Date:   Sat Jul 27 09:26:34 2024 -0400
 
     use aggregate initialization for Info::LoadAverage
 
-commit b5e00a4be0b787cfb74c3fda707ea199106bee9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 27 09:43:35 2024 -0400
-
-    cosmetic/docs
-
-commit 98a5c0e37838964167bc2cb922d8eabb2a1f2b52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 27 10:44:52 2024 -0400
-
-    cosmetic/docs
-
 commit 483461f730e8740623a6c9d9a1699099d5644e3d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jul 27 11:32:56 2024 -0400
@@ -406,23 +138,11 @@ Date:   Sat Jul 27 12:32:50 2024 -0400
 
     https://stroika.atlassian.net/browse/STK-1012: added gzip compression support to webserver - and also supported fSupportedCompressionEncodings param from webserver configuration (not tested)
 
-commit bb9b47a178a30118852fc2317cbbb673f58e8ca4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 27 12:39:19 2024 -0400
-
-    cosmetic
-
 commit 2c93b2006b56865149e8a74025c529a1d65d60d6
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sun Jul 28 08:35:27 2024 -0400
 
     fixed recent regression in configure - clang++-15-libstdc++ not building right on ubuntu 24.04 (but OK on 22.04)
-
-commit 156b58945e8db765f6e5cfa8ce258038c03cbbb5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 28 08:36:33 2024 -0400
-
-    cosmetic
 
 commit 9a693ec18feb0c28a94f895b12e6a9c186fff29c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -435,13 +155,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jul 28 08:37:57 2024 -0400
 
     lose no longer needed (and inappropraite/wrong) changes to Frameworks/UPnP/DeviceDescription Icon class
-
-commit 0b9de83af1f340913e3696a4564a84b96f20fcb0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 28 08:43:10 2024 -0400
-
-    start 3.0d9 release
-
 
 #endif
 
