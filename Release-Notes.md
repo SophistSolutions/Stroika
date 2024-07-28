@@ -94,7 +94,7 @@ especially those they need to be aware of when upgrading.
 - Compilers Tested/Supported
   - g++ { 11, 12, 13, 14 }
   - Clang++ { unix: 14, 15, 16, 17, 18; XCode: 15.2, 15.3}
-  - MSVC: { 17.10.4 }
+  - MSVC: { 17.10.5 }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 11 version 23H2
