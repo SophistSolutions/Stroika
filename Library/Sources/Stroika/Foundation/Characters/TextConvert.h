@@ -9,6 +9,8 @@
 #include <optional>
 #include <span>
 
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+
 /**
  *  \file
  *      Wrappers and extensions to the CodeCvt/std::codecvt<> logic. Often when reading/writing files (or a series of bytes)
