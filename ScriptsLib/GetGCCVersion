@@ -24,7 +24,7 @@ VER_=`($CC --version 2>/dev/null) | head -1 | sed 's/([^)]*)/x/' | awk '{print \
 if [ "$VER_" == "" ] ; then
     exit 1;
 fi
-if [ $INTEGERONLY ] ; then
+if [ "1" == "$INTEGERONLY" ] ; then
     echo $VER_ | awk  '{printf("%d\n", $1)}'
 else
     echo $VER_

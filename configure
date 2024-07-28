@@ -509,11 +509,18 @@ sub     GetGCCVersion_
 {
 	# no warnings;	#@todo sometimes gives warning about use of  uninitialized variable - not sure why - debug later
 	my $x = shift(@_);
-	my $v = trim (`./ScriptsLib/GetGCCVersion $x`);
-	if ($v eq '') {
-		return 0;
+	my $fullString = trim(shift(@_));
+	if (defined $fullString) {
+		my $v = trim (`./ScriptsLib/GetGCCVersion $x`);
+		return $v;
 	}
-	return $v * 1;	# times one to convert to number
+	else {
+		my $v = trim (`./ScriptsLib/GetGCCVersion $x -i`);
+		if ($v eq '') {
+			return 0;
+		}
+		return $v * 1;	# times one to convert to number
+	}
 }
 
 
@@ -521,11 +528,18 @@ sub     GetGCCVersion_
 sub     GetClangVersion_
 {
 	my $x = trim(shift(@_));
-	my $v = trim (`./ScriptsLib/GetClangVersion $x`);
-	if ($v eq '') {
-		return 0;
+	my $fullString = trim(shift(@_));
+	if (defined $fullString) {
+		my $v = trim (`./ScriptsLib/GetClangVersion $x`);
+		return $v;
 	}
-	return $v * 1;	# times one to convert to number
+	else {
+		my $v = trim (`./ScriptsLib/GetClangVersion $x -i`);
+		if ($v eq '') {
+			return 0;
+		}
+		return $v * 1;	# times one to convert to number
+	}
 }
 
 sub     IsMSVCCompiler_
@@ -3039,11 +3053,11 @@ sub	WriteConfigFile_
 
 	print (OUT "\n    <!--VERSIONS-->\n");
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus, true);
 		print (OUT "        <!--g++ version: $itsVersion-->\n");
 	}
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus, true);
 		print (OUT "        <!--clang++ version: $itsVersion-->\n");
 	}
 	if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
