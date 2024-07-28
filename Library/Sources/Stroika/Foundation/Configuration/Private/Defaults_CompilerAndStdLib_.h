@@ -2364,7 +2364,7 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // fails with clang++16 using _GLIBCXX_RELEASE
 // fails with clang++17 using _GLIBCXX_RELEASE
 #if defined(_GLIBCXX_RELEASE)
-#define qCompilerAndStdLib_defaultconstructibleFails_Buggy                                                              \
+#define qCompilerAndStdLib_defaultconstructibleFails_Buggy                                                                                 \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE == 12) or (__clang_major__ <= 17))
 #else
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy 0
