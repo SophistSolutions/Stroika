@@ -3036,6 +3036,26 @@ sub	WriteConfigFile_
 	if (defined ($qCompiler_ValgrindLTO_Buggy)) {
 		print (OUT "    <qCompiler_ValgrindLTO_Buggy>$qCompiler_ValgrindLTO_Buggy</qCompiler_ValgrindLTO_Buggy>\n");
 	}
+
+	print (OUT "\n    <!--VERSIONS-->\n");
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		print (OUT "        <!--g++ version: $itsVersion-->\n");
+	}
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		print (OUT "        <!--clang++ version: $itsVersion-->\n");
+	}
+	if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
+		print (OUT "        <!--MSVC++ version: $itsVersion-->\n");
+	}
+
+	my $ubuntuVersion = getUbuntuVersion();
+	if ($ubuntuVersion != 0) {
+		print (OUT "        <!--Ubuntu: $ubuntuVersion-->\n");
+	}
+
 	print (OUT "</Configuration>\n");
 	close(OUT);
 }

@@ -11,6 +11,8 @@ especially those they need to be aware of when upgrading.
 
 - Docs cleanups
 
+- configure: added comment VERSIONS section in configure output
+
 - tried more workarounds for FMT_VERSION >= 110000 ; but since fmtlib is just a stopgap for older compilers - probably not worth upgrading to latest version - just revert to 10.2.1 for now
 
 - Slight cleanup of IUseToStringFormatterForFormatter_ hack/BWA
