@@ -202,21 +202,11 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
         tmp << "                <iconList>" << endl;
         for (const DeviceDescription::Icon& i : *dd.fIcons) {
             tmp << "                    <icon>" << endl;
-            if (i.fMimeType) {
-                tmp << "                            <mimetype>" << QuoteForXML (i.fMimeType->As<String> ()) << "</mimetype>" << endl;
-            }
-            if (i.fHorizontalPixels) {
-                tmp << "                            <width>" << *i.fHorizontalPixels << "</width>" << endl;
-            }
-            if (i.fVerticalPixels) {
-                tmp << "                            <height>" << *i.fVerticalPixels << "</height>" << endl;
-            }
-            if (i.fColorDepth) {
-                tmp << "                            <depth>" << *i.fColorDepth << "</depth>" << endl;
-            }
-            if (i.fURL) {
-                tmp << "                            <url>" << QuoteForXML (i.fURL->As<String> ()) << "</url>" << endl;
-            }
+            tmp << "                            <mimetype>" << QuoteForXML (i.fMimeType.As<String> ()) << "</mimetype>" << endl;
+            tmp << "                            <width>" << i.fHorizontalPixels << "</width>" << endl;
+            tmp << "                            <height>" << i.fVerticalPixels << "</height>" << endl;
+            tmp << "                            <depth>" << i.fColorDepth << "</depth>" << endl;
+            tmp << "                            <url>" << QuoteForXML (i.fURL.As<String> ()) << "</url>" << endl;
             tmp << "                    </icon>" << endl;
         }
         tmp << "                </iconList>" << endl;

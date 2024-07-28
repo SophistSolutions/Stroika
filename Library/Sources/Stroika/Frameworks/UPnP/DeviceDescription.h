@@ -69,11 +69,11 @@ namespace Stroika::Frameworks::UPnP {
          *        @todo FIX
          */
         struct Icon {
-            optional<InternetMediaType> fMimeType;
-            optional<uint16_t>          fHorizontalPixels;
-            optional<uint16_t>          fVerticalPixels;
-            optional<uint16_t>          fColorDepth;
-            optional<URI>               fURL; // url to the icon image file
+            InternetMediaType fMimeType{};
+            uint16_t          fHorizontalPixels{16};
+            uint16_t          fVerticalPixels{16};
+            uint16_t          fColorDepth{8};
+            URI               fURL{}; // url to the icon image file
 
             /**
              *  @see Characters::ToString ();
