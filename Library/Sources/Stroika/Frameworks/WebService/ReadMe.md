@@ -6,7 +6,7 @@ This Folder contains the [Frameworks](../)::WebService Framework source code.
 
 The Stroika WebService Framework allows you to expose programatic APIs through web services (SOAP, JSON, REST).
 
-This framework depends on the Web-Server framework
+This framework depends on the [Web Server Framework](../WebServer)
 
 ## Highlights
   - Easy to add programatic API (web services control) to any Stroika based application
