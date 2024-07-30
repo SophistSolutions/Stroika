@@ -7,17 +7,18 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-###### START 3.0d9 notes
-
-
-### 3.0d9 {2024-07-???} {[diff](../../compare/v3.0d8...v3.0d9)}
+### 3.0d9 {2024-07-30} {[diff](../../compare/v3.0d8...v3.0d9)}
 
 #### TLDR
+- Various cleanups to ObjectVariantMapper (docs, DefaultConstructForRead<> specialization point, more concepts use, AddClass(.fAfterFrom) impovements)
+- gzip compression
+- WebServer and URL normalization so GET ///foo matches rule /foo
+- libxml2 warnings improvements
 
 #### Upgrade Notes (3.0d8 to 3.0d9)
+- none
 
 #### Change Details
-
 - Various docs/comments cleanups
 - Build System
   - Compilers Bug Workarounds
@@ -60,6 +61,8 @@ especially those they need to be aware of when upgrading.
         - lose xmlParserErorr call in Providers/LibXML2.cpp - seems unneeded and writes to stdout
         - minor libxml2 error catching/reporting cleanups
     - Execution
+      - CommandLine
+        - docs, tweak Has () method
       - ThreadPool
         - ThreadPool::Statistics::GetMeanTimeConsumed () const now returns optional rather than nan for no-stats case
     - IO::Network
