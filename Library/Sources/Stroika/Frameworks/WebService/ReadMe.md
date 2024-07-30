@@ -16,10 +16,6 @@ This framework depends on the Web-Server framework
 ## Getting Started
   - [Sample Web Services App](../../../../../Samples/WebService/)
 
-## Status
-
-[[[This is just at the early prototyping phase]]]
-
 ## Modules
 
 - [Basic.h](Basic.h)
