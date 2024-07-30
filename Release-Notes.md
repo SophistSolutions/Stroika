@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d9 {2024-07-30} {[diff](../../compare/v3.0d8...v3.0d9)}
+### 3.0d9 {2024-07-31} {[diff](../../compare/v3.0d8...v3.0d9)}
 
 #### TLDR
 - Various cleanups to ObjectVariantMapper (docs, DefaultConstructForRead<> specialization point, more concepts use, AddClass(.fAfterFrom) impovements)
@@ -28,7 +28,7 @@ especially those they need to be aware of when upgrading.
   - configure
     - added comment VERSIONS section in configure output
   - Regression Tests
-    - on ubuntu 23.10 - release g++-debug-sanitize_address_undefined_leak with g++-debug-sanitize_address_undefined test
+    - on ubuntu 23.10 - disabled leak sanitizer tests - they crash - not sure why... - no useful report
   - github actions
     - Added ubuntu-24.04-g++-14 ubuntu-24.04-g++-14-c++23 builds git .githubactions
   - Supported Compilers
