@@ -151,6 +151,8 @@ namespace Stroika::Foundation::Execution {
         /*
          * return get<bool> true iff arg is present in command line.
          * Either way, get<Sequence<String>>> returns same as GetArguments ();
+         *
+         *  \see often simpler GetArgument ()
          */
         nonvirtual tuple<bool, Sequence<String>> Get (const Option& o) const;
 
