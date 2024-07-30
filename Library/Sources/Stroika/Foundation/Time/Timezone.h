@@ -32,7 +32,7 @@
  *              Could use boost or  http://www.iana.org/time-zones/repository/releases/tzdata2015b.tar.gz  or other.
  *
  *              But good news - I think I have API right now. Just construct a Timezone object with enum or data read from file
- *              and can be used as is throughtout rest of DateTime code (well, TimeZoneInformationType probably needs changes).
+ *              and can be used as is throughout rest of DateTime code (well, TimeZoneInformationType probably needs changes).
  *
  *              REVIEW C++20 support here - I think they added support for named timezone map to offsets.
  */
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Time {
     /**
      *  Information about the current system timezone setting.
      *
-     *  A timezone contains a name for BOTH 'standard time' - most of the year when you are in the nomral
+     *  A timezone contains a name for BOTH 'standard time' - most of the year when you are in the normal
      *  time range - and 'daylight savings time' - a period of the year when you have an alternate timezone name
      *  and offset.
      *
@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Time {
         Details fDaylightSavingsTime;
 
         /**
-         *  This is the 'olsen database name' (e..g. 'America/New_York').
+         *  This is the 'Olsen database name' (e..g. 'America/New_York').
          *
          *  It is OFTEN not available (on older OSes).
          */
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Time {
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *          o   comparison of < not 100% intuitive, but unambiguous, so these can be compared (by numeric value of flags/offets).
+     *          o   comparison of < not 100% intuitive, but unambiguous, so these can be compared (by numeric value of flags/offsets).
      */
     class [[nodiscard]] Timezone {
     private:
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Time {
          *  generate a string of the form:
          *      [+-]?HHMM, or [+-]?HH:MM, so for example -0500 is Timezone (-5*60), or -04:00 would be Timezone (-4*60).
          *
-         *  \note Date/Time required in case Timezone is 'localtime' to determinte DST
+         *  \note Date/Time required in case Timezone is 'localtime' to determine DST
          */
         nonvirtual String AsHHMM (const Date& date, const TimeOfDay& tod, bool insertColon) const;
 
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Time {
          *
          *  Can generate "GMT" or AsHMM(false) above.
          *
-         *  \note Date/Time required in case Timezone is 'localtime' to determinte DST
+         *  \note Date/Time required in case Timezone is 'localtime' to determine DST
          *
          *  \note alias - could have been called AsRFC822 ()
          */
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Depending on the form of the timezone, the offset from UTC could depned on the date (cuz of daylight savings time)
+         *  Depending on the form of the timezone, the offset from UTC could depend on the date (cuz of daylight savings time)
          *
          *  This offset (number of minutes) - is added to a UTC time to get the time in that local timezone.
          *

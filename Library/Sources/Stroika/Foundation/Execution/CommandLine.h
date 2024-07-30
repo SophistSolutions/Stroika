@@ -46,7 +46,6 @@ namespace Stroika::Foundation::Execution {
      *  inspired partly by https://man7.org/linux/man-pages/man3/getopt.3.html
      * 
      *  TODO:
-     *      o   \todo perahps add some mechanism to be able to help/generate 'usage' command output automatically.
      *      o   \todo find some way to better handle std::filesystem::path arguments (hande quoting, normalizing paths so they work better cross platform if needed/helpful (e.g. /cygrdrive/c/???)
      * 
      */
@@ -108,7 +107,9 @@ namespace Stroika::Foundation::Execution {
              */
             bool fRepeatable{false};
 
-            // If true, then Get () will throw if this option isn't found in the commandline
+            /**
+             * If true, then Get (o) (and GetArgument (i)) will throw if this option isn't found in the commandline; though Has () will not throw.
+             */
             bool fRequired{false};
 
             /**
@@ -130,15 +131,21 @@ namespace Stroika::Foundation::Execution {
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
 
-            String GetArgumentDescription (bool includeArg = false) const;
+            nonvirtual String GetArgumentDescription (bool includeArg = false) const;
 
-            String ToString () const;
+            nonvirtual String ToString () const;
         };
 
     public:
         /**
          *  Throw InvalidCommandLineArgument if arguments not fit with options.
          *  This checks for unrecognized arguments.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          const initializer_list<Execution::CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, ...others...};
+         *          cmdLine.Validate (kAllOptions_);        // throws InvalidCommandLineArgument if bad args so catch/report usage
+         *      \endcode
          */
         nonvirtual void Validate (Iterable<Option> options) const;
 
@@ -158,7 +165,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         * Return true iff arguments (in this object) have that option set.
+         * Return true iff arguments (in this object) have that option set. Note this will not throw just because option is required and missing (but may if ill formed).
          */
         nonvirtual bool Has (const Option& o) const;
 

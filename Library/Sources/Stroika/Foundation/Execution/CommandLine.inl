@@ -23,7 +23,14 @@ namespace Stroika::Foundation::Execution {
     }
     inline bool CommandLine::Has (const Option& o) const
     {
-        return get<bool> (Get (o));
+        for (Traversal::Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
+            if (optional<pair<bool, optional<String>>> oRes = ParseOneArg_ (o, &argi)) {
+                if (oRes->first) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     inline optional<String> CommandLine::GetArgument (const Option& o) const
     {
