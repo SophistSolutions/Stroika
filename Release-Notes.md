@@ -26,6 +26,8 @@ especially those they need to be aware of when upgrading.
     - qCompiler_IUseToStringFormatterForFormatter_Buggy BWA - for clang++
   - configure
     - added comment VERSIONS section in configure output
+  - Regression Tests
+    - on ubuntu 23.10 - release g++-debug-sanitize_address_undefined_leak with g++-debug-sanitize_address_undefined test
   - github actions
     - Added ubuntu-24.04-g++-14 ubuntu-24.04-g++-14-c++23 builds git .githubactions
   - Supported Compilers
