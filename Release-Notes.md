@@ -16,7 +16,7 @@ especially those they need to be aware of when upgrading.
 - libxml2 warnings improvements
 
 #### Upgrade Notes (3.0d8 to 3.0d9)
-- none
+- ObjectVariantMapper::AddSubClass () use of {rarely used .fAfterFrom now takes VariantValue*  updateVariantValue parameter)}
 
 #### Change Details
 - Various docs/comments cleanups
