@@ -10,11 +10,11 @@ This framework depends on the Web-Server framework
 
 ## Highlights
   - Easy to add programatic API (web services control) to any Stroika based application
-  - Leverages [ObjectVariantMapper](../../../../Foundation/DataExchange/ObjectVariantMapper.h) to easily serialize, and WebServer framework to serve-up content via http
+  - Leverages [ObjectVariantMapper](../../../../Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.h) to easily serialize, and WebServer framework to serve-up content via http
   - Early draft support for things like JSON-RPC, and OpenAPI
 
 ## Getting Started
-  - [Sample Web Services App](../../../../../Samples/WebServices/)
+  - [Sample Web Services App](../../../../../Samples/WebService/)
 
 ## Status
 
