@@ -96,6 +96,49 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
             @todo - should we use shared_ptr for Node*? at last use blockallocation - must be more carefula bout leaks if not using shared_ptr
 
+
+        // OLD DOCS to lift from
+
+From Wikipedia:
+    A skip list is a data structure for storing a sorted list of items using a hierarchy of linked lists that connect increasingly sparse subsequences of the items.
+    These auxiliary lists allow item lookup with efficiency comparable to balanced binary search trees (that is, with number of probes proportional to log n instead of n).
+    see http://en.wikipedia.org/wiki/Skip_list
+
+    SkipLists have the following desireable features
+    fast find, reasonably fast add and remove (about 20-30% as many comparisons as finds)
+
+    robust about order of additions
+
+    space efficient (1.33 links per value, as opposed to tree structures requiring 2 links per value)
+
+    ability to add more than one entry with the same key
+
+    ability to reorder links into nearly optimal configuration. You can optimize the node structure in a skip list in a single pass (order N).
+    This reduces the total comparisons in a search by between 20 and 40%.
+
+    possible to efficiently parallelize (not yet attempted -- see http://www.1024cores.net/home/parallel-computing/concurrent-skip-list)
+
+    SkipLists support fast forward iteration (linked list traversal). They do not support backwards iteration.
+
+    In principle you can use different probabilies for having more than one link. The optimal probability for finds is 1/4, and that also produces a list
+    that is more space efficient than a traditional binary tree, as it has only 1.33 nodes per entry, compared with a binary tree using 2.
+
+
+    Testing SkipList of 100000 entries, sorted add, link creation probability of 0.25
+      Unoptimized SkipList
+      total links = 133298; avg link height = 1.33298; max link height= 9
+      find avg comparisons = 28.8035; expected = 33.2193
+      add  avg comparisons = 37.5224; expected = 35.5526
+      remove  avg comparisons = 38.1671; expected = 35.5526
+
+      After optimizing links
+      total links = 133330; avg link height = 1.3333; max link height= 9
+      find avg comparisons = 18.1852; expected = 33.2193
+      find reduction = 36.8646%
+
+
+   The "expected" above is from wikipedia, and is calculated as (log base 1/p n)/p.
+
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
@@ -220,6 +263,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // calling this will result in maximal search performance until further adds or removes
         // call when list is relatively stable in size, and it will set links to near classic log(n/2) search time
         // relatively fast to call, as is order N (single list traversal)
+         *  \note alias: Could be called 'Optimize'
          */
         nonvirtual void ReBalance ();
 
