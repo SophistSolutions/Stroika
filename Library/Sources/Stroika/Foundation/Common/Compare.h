@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Common {
 
     /**
      *  Utility class to serve as base class when constructing a comparison 'function' object comparer so ExtractComparisonTraits<> knows
-     *  the type, or (with just one argument) as base for class that itself provives the operator() method.
+     *  the type, or (with just one argument) as base for class that itself provides the operator() method.
      *         
      *  \par Example Usage
      *      \code
