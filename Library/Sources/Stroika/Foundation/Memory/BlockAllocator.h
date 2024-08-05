@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Memory {
      *          We use sizeof(). We always allocate large blocks which (I htink are always) aligned to the largest
      *          alignemnt required by the system, and we that as an array.
      *
-     *          But I think since sizeof(T) is the offset from one elemnet of an array[T] - our allocations will always be aligned
+     *          But I think since sizeof(T) is the offset from one element of an array[T] - our allocations will always be aligned
      *          if the first big block is aligned.
      *
      *          To double/triple check, we have an Ensure in BlockAllocator<T>::Allocate () to assure aligned allocations

@@ -196,6 +196,10 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
+     *  \brief for type T, either use BlockAllocator<T>, or std::allocator
+     * 
+     *  \note If using this, allocate objects <T> with Memory::MakeSharedPtr, not 'new' directly, or grave disorder may result.
+     *      @todo find way to check this! - and cleanup this doc cuz not totally right - cuz can still use without shared_ptr...
      */
     template <typename T, bool andTrueCheck = true>
     using BlockAllocatorOrStdAllocatorAsAppropriate =

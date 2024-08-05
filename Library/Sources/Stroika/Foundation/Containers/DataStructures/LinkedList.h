@@ -201,8 +201,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(N)
          *
-         *      Not alot of point in having these, as they are terribly slow,
-         *  but the could be convienient.
+         *      Not a lot of point in having these, as they are terribly slow,
+         *  but the could be convenient.
          */
         nonvirtual void Append (ArgByValueType<T> item);
 
@@ -211,8 +211,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(N)
          *
-         *      Not alot of point in having these, as they are terribly slow,
-         *  but the could be convienient.
+         *      Not a lot of point in having these, as they are terribly slow,
+         *  but the could be convenient.
          */
         nonvirtual T GetAt (size_t i) const;
 
@@ -221,8 +221,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(N)
          *
-         *      Not alot of point in having these, as they are terribly slow,
-         *  but the could be convienient.
+         *      Not a lot of point in having these, as they are terribly slow,
+         *  but the could be convenient.
          */
         nonvirtual void SetAt (T item, size_t i);
 
