@@ -21,12 +21,21 @@ using namespace Stroika::Frameworks;
 
 #if qHasFeature_GoogleTest
 namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicTest)
+    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicSmokeTest)
     {
         DataStructures::SkipList<int, int> t;
-        //EXPECT_TRUE (not t.Find (1));
+        EXPECT_TRUE (not t.contains (1));
         t.Add (1, 2);
-        //EXPECT_TRUE (t.Find (1));
+        EXPECT_TRUE (t.contains (1));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicIteration)
+    {
+        DataStructures::SkipList<int, int> t;
+        // test ForwardIterator...
+        //EXPECT_EQ (distance (t.begin (), t.end ()), 0);  ///
     }
 }
 #endif

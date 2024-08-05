@@ -198,8 +198,7 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief for type T, either use BlockAllocator<T>, or std::allocator
      * 
-     *  \note If using this, allocate objects <T> with Memory::MakeSharedPtr, not 'new' directly, or grave disorder may result.
-     *      @todo find way to check this! - and cleanup this doc cuz not totally right - cuz can still use without shared_ptr...
+     *  \note If using this, allocate shared_ptr<T> with Memory::MakeSharedPtr.
      */
     template <typename T, bool andTrueCheck = true>
     using BlockAllocatorOrStdAllocatorAsAppropriate =
@@ -209,7 +208,7 @@ namespace Stroika::Foundation::Memory {
      *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qStroika_Foundation_Memory_PreferBlockAllocation defined, this will use block allocation for a given type - at a given call.
      *
      *   This is in sharp contrast to struct T : UseBlockAllocationIfAppropriate<T> {};
-     *   If you use UseBlockAllocationIfAppropriate<> - the blockallocation strategy happens automatically for all new creations of objects of that type.
+     *   If you use UseBlockAllocationIfAppropriate<> - the block allocation strategy happens automatically for all new creations of objects of that type.
      *
      *   Using ManuallyBlockAllocated, only the particular places ManuallyBlockAllocated<T>::New ()/Delete are used will participate in block allocations, and other uses
      *   of T wont be block allocated. Note that means you MUST BE VERY CAREFUL with this and assure all objects allocated this way are deleted this way, and vice versa, and 

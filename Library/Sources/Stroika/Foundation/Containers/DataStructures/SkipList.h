@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Configuration/Empty.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -34,12 +35,41 @@ namespace Stroika::Foundation::Containers::DataStructures {
             eDuplicateAddThrowException = 0x0010,
         };
 
-        template <typename KEY_TYPE, Common::IInOrderComparer<KEY_TYPE> KEY_COMPARER, int POLICY = eDefaultPolicy>
+        template <typename KEY_TYPE, Common::IInOrderComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>, int POLICY = eDefaultPolicy>
         struct DefaultTraits {
             using KeyComparerType = KEY_COMPARER;
-            KEY_COMPARER     Comparer{};
+            //  KEY_COMPARER     Comparer{};
+
+            // @todo LOSE THIS PROBABLY BUT DISCUSS WITH STERL
             static const int kPolicy = POLICY; // bit field for now
+
+            /**
+             *  Store stats about performance of skiplist, for tuning purposes
+             */
+            static constexpr bool kKeepStatistics{false};
         };
+
+        /**
+        * @todo add cjeck for kKeepStatistics static bool member
+         */
+        template <typename TRAITS, typename KEY_TYPE>
+        concept IValidTraits = Common::IInOrderComparer<typename TRAITS::KeyComparerType, KEY_TYPE>;
+
+        struct Stats_Basic {
+
+            size_t fCompares{0};
+            size_t fRotations{0}; // skiplists don't really do rotations, but we treak link patching as same thing
+
+            /**
+         *  @see Characters::ToString ();
+         */
+            //nonvirtual Characters::String ToString () const;
+        };
+
+        /**
+         */
+        template <typename KEY_TYPE, IValidTraits<KEY_TYPE> TRAITS>
+        using StatsType = conditional_t<TRAITS::kKeepStatistics, Stats_Basic, Configuration::Empty>;
     }
 
     /*
@@ -65,7 +95,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             @todo - should we use shared_ptr for Node*? at last use blockallocation - must be more carefula bout leaks if not using shared_ptr
 
      */
-    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE, less<KEY_TYPE>>>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
     public:
         using key_type = KEY_TYPE;
@@ -77,9 +107,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using KeyComparerType = TRAITS::KeyComparerType;
 
     public:
+        using StatsType = SkipList_Support::StatsType<KEY_TYPE, TRAITS>;
+
+    public:
         using value_type = Common::KeyValuePair<KEY_TYPE, MAPPED_TYPE>;
 
     public:
+        /**
+         */
         SkipList (KeyComparerType keyComparer = {});
         SkipList (const SkipList& s);
         ~SkipList ();
@@ -94,8 +129,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
                         Basic find operation. If pass in nullptr for val then only tests inclusion, otherwise fills val with value linked to key.
                         In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for
                         how to do this.
+
+                    \see contains()
                     */
         nonvirtual bool Find (const key_type& key, mapped_type* val = nullptr) const;
+
+    public:
+        /**
+         *  \see https://en.cppreference.com/w/cpp/container/map/contains
+         *
+         *  \note Complexity:
+         *      Average/WorseCase??? - I think ave log(N), worst N, but probably not quite - depends on max keys etc...
+         */
+        nonvirtual bool contains (const key_type& key) const;
 
     public:
         /**
@@ -132,7 +178,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t size () const; // always equal to total Add minus total Remove
 
     public:
-        class ForwardIterator; // @todo
+        class ForwardIterator;
+
+    public:
+        /**
+         */
+        //   nonvirtual ForwardIterator MakeIterator () const;
+
+        // returns the first entry equal to, or the smallest entry with key larger than the passed in key
+        //  nonvirtual ForwardIterator MakeIterator (const key_type& key) const;
 
     public:
         //    nonvirtual void Update (const ForwardIterator& it, const mapped_type& newValue);
@@ -175,16 +229,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         static size_t GetLinkHeightProbability (); // percent chance. We use 25%, which appears optimal
 
-    private:
-        struct Node_;
-
     public:
         /**
          */
-        //   nonvirtual ForwardIterator MakeIterator () const;
+        nonvirtual StatsType GetStats () const;
 
-        // returns the first entry equal to, or the smallest entry with key larger than the passed in key
-        //  nonvirtual ForwardIterator MakeIterator (const key_type& key) const;
+    private:
+        struct Node_;
 
     private:
         nonvirtual Node_* GetFirst_ () const; // synonym for begin (), MakeIterator ()
@@ -194,14 +245,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
                                              //        nonvirtual ForwardIterator GetLast () const;  // returns iterator to largest key
 
     private:
-        static constexpr size_t kMaxLinkHeight = sizeof (size_t) * 8;
+        // @todo maybe make part of traits??? and use in InlineBuffer somehow? instead of vector
+        // maybe no need for MAX - just optimized-for-max - size of inline buffer - not sure why we need any other max (can use stackbuffer for that)
+        static constexpr size_t kMaxLinkHeight_ = sizeof (size_t) * 8;
 
     private:
-        struct Node_ /* : public Memory::UseBlockAllocationIfAppropriate<Node_> @todo use this but be more careful about allocator/deallocator use... */ {
-            Node_ (const key_type& key, const mapped_type& val);
+        struct Node_ : public Memory::UseBlockAllocationIfAppropriate<Node_> {
+            constexpr Node_ (const key_type& key, const mapped_type& val);
 
             value_type     fEntry;
             vector<Node_*> fNext; // for a skiplist, you have an array of next pointers, rather than just one
+            // @todo consider using Memory::InlineBuffer<> - so fewer memory allocations for some small buffer size???, and tune impl to prefer this size or take param in traits used for this
         };
         vector<Node_*> fHead;
 
@@ -248,13 +302,54 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         [[no_unique_address]] KeyComparerType fKeysStrictInOrderComparer_;
-        size_t                                fLength{0};
+        size_t                                fLength_{0};
 
-#if qKeepADTStatistics
+    private:
+        [[no_unique_address]] mutable StatsType fStats_;
+    };
+
+    /**
+    * DRAFT - INCOMPLETE... For example, no ++ etc...
+     */
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    class SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator {
     public:
-        mutable size_t fCompares{0};
-        mutable size_t fRotations{0}; // skiplists don't really do rotations, but we treak link patching as same thing
+        /**
+         */
+        ForwardIterator () = delete;
+        constexpr ForwardIterator (const SkipList* data, const Node_* n = nullptr);
+        ForwardIterator (const ForwardIterator& src) = default;
+
+#if qDebug
+        ~ForwardIterator ();
 #endif
+
+    public:
+        nonvirtual value_type Current () const; //  Error to call if Done (), otherwise OK
+
+    public:
+        /**
+         *  \req GetUnderlyingData() == rhs.GetUnderlyingData (), or special case of one or the other is nullptr
+         */
+        constexpr bool Equals (const ForwardIterator& rhs) const;
+
+    public:
+        constexpr const SkipList* GetUnderlyingData () const;
+
+    public:
+        constexpr void Invariant () const noexcept;
+
+#if qDebug
+    private:
+        nonvirtual void Invariant_ () const noexcept;
+#endif
+
+    private:
+        const SkipList* fData_{nullptr}; // @todo - maybe only keep this for DEBUG case? Can we always navigate by Node_?
+        Node_*          fCurrent_{nullptr};
+
+    private:
+        friend class SkipList;
     };
 
 }
