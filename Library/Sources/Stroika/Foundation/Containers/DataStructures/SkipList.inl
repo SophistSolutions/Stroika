@@ -102,6 +102,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fLength_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () const -> ForwardIterator
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        return ForwardIterator{this, GetFirst_ ()};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () const -> ForwardIterator
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        return ForwardIterator{this, nullptr};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Node_* SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNode_ (const key_type& key) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
@@ -561,7 +573,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fCurrent_->fEntry;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline constexpr bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Equals (const ForwardIterator& rhs) const
+    inline constexpr bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
         Require (fData_ == nullptr or rhs.fData_ == nullptr or fData_ == rhs.fData_);
         return fCurrent_ == rhs.fCurrent_;
@@ -570,6 +582,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::GetUnderlyingData () const -> const SkipList*
     {
         return fData_;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ () -> ForwardIterator&
+    {
+        fCurrent_ = fCurrent_->fNext[0]; //tmphack...
+        return *this;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept

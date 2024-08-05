@@ -4,6 +4,7 @@
 //  TEST    Foundation::Containers::DataStructures::SkipList
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 
@@ -34,8 +35,9 @@ namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicIteration)
     {
         DataStructures::SkipList<int, int> t;
-        // test ForwardIterator...
-        //EXPECT_EQ (distance (t.begin (), t.end ()), 0);  ///
+        EXPECT_EQ (distance (t.begin (), t.end ()), 0);
+        t.Add (1, 2);
+        //EXPECT_EQ (distance (t.begin (), t.end ()), 1); // not sure this will work with my tmphakc impl of ++
     }
 }
 #endif

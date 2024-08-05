@@ -6,6 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+// for now uses std::vector...
+#include <vector>
+
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Configuration/Common.h"
@@ -38,7 +41,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         template <typename KEY_TYPE, Common::IInOrderComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>, int POLICY = eDefaultPolicy>
         struct DefaultTraits {
             using KeyComparerType = KEY_COMPARER;
-            //  KEY_COMPARER     Comparer{};
 
             // @todo LOSE THIS PROBABLY BUT DISCUSS WITH STERL
             static const int kPolicy = POLICY; // bit field for now
@@ -184,7 +186,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         //   nonvirtual ForwardIterator MakeIterator () const;
+        nonvirtual ForwardIterator begin () const;
 
+    public:
+        nonvirtual ForwardIterator end () const;
         // returns the first entry equal to, or the smallest entry with key larger than the passed in key
         //  nonvirtual ForwardIterator MakeIterator (const key_type& key) const;
 
@@ -314,6 +319,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     class SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator {
     public:
+        // stuff STL requires you to set to look like an iterator
+        using iterator_category = forward_iterator_tag;
+        using value_type        = SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type;
+        using difference_type   = ptrdiff_t;
+        using pointer           = const value_type*;
+        using reference         = const value_type&;
+
+    public:
         /**
          */
         ForwardIterator () = delete;
@@ -331,10 +344,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \req GetUnderlyingData() == rhs.GetUnderlyingData (), or special case of one or the other is nullptr
          */
-        constexpr bool Equals (const ForwardIterator& rhs) const;
+        constexpr bool operator== (const ForwardIterator& rhs) const;
 
     public:
         constexpr const SkipList* GetUnderlyingData () const;
+
+    public:
+        nonvirtual ForwardIterator& operator++ ();
 
     public:
         constexpr void Invariant () const noexcept;
@@ -346,7 +362,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         const SkipList* fData_{nullptr}; // @todo - maybe only keep this for DEBUG case? Can we always navigate by Node_?
-        Node_*          fCurrent_{nullptr};
+        const Node_*    fCurrent_{nullptr};
 
     private:
         friend class SkipList;
