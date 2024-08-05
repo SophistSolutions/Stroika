@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return *this;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::~SkipList ()
+    inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::~SkipList ()
     {
         RemoveAll ();
     }
@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return false;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (const key_type& key) const
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (const key_type& key) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return FindNode_ (key) != nullptr;
@@ -176,9 +176,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         AddNode_ (new Node_ (key, val), links);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& keyAndValue)
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v)
     {
-        Add (keyAndValue, keyAndValue);
+        Add (v.fKey, v.fValue);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddNode_ (Node_* node, const vector<Node_*>& links)

@@ -100,18 +100,34 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
     public:
+        /**
+         *  This is the key for the associative container. It need not be unique (see various Add / Lookup APIs).
+         */
         using key_type = KEY_TYPE;
 
     public:
+        /**
+         *  This is typically NOT void, but may be void (NYI).
+         */
         using mapped_type = MAPPED_TYPE;
 
     public:
+        /**
+         *  SkipLists intrinsically require knowing the in-order comparison function applied to key data.
+         */
         using KeyComparerType = TRAITS::KeyComparerType;
 
     public:
+        /**
+         *  This is typically Configuration::Empty, but can contain real stats used to debug/tune parameters,
+         *  if you construct the SkipList with TRAITS having kKeepStatistics true.
+         */
         using StatsType = SkipList_Support::StatsType<KEY_TYPE, TRAITS>;
 
     public:
+        /**
+         *  KeyValuePair of KEY_TYPE and MAPPED_TYPE. This is what you iterate over, and the SkipList is a container of these.
+         */
         using value_type = Common::KeyValuePair<KEY_TYPE, MAPPED_TYPE>;
 
     public:
@@ -155,7 +171,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average/WorseCase???
          */
         nonvirtual void Add (const key_type& key, const mapped_type& val);
-        nonvirtual void Add (const key_type& keyAndValue); // convenient when key and value are the same, like a sorted list of names
+        nonvirtual void Add (const value_type& v);
 
     public:
         /**
