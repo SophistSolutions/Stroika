@@ -1,45 +1,65 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
+#include <random>
+
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    template <typename KEY, typename VALUE, typename TRAITS>
-    SkipList<KEY, VALUE, TRAITS>::Node::Node (const KeyType& key, const ValueType& val)
+    namespace Private_ {
+
+        inline size_t RandomSize_t (size_t first, size_t last)
+        {
+            static thread_local std::mt19937 sRng_{std::random_device () ()};
+            Assert (sRng_.min () <= first);
+            //  Assert (eng.max () >= last);    // g++ has 8 byte size_t in 64 bit??
+            std::uniform_int_distribution<size_t> unif (first, last);
+            size_t                                result = unif (sRng_);
+            Ensure (result >= first);
+            Ensure (result <= last);
+            return result;
+        }
+
+    }
+
+    /*
+     ********************************************************************************
+     ***************** SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Node_ **************************
+     ********************************************************************************
+     */
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Node_::Node_ (const key_type& key, const mapped_type& val)
         : fEntry{key, val}
     {
     }
 
-    template <typename KEY, typename VALUE, typename TRAITS>
-    SkipList<KEY, VALUE, TRAITS>::SkipList ()
-        : fLength{0}
-#if qKeepADTStatistics
-        , fCompares{0}
-        , fRotations{0}
-#endif
+    /*
+     ********************************************************************************
+     *********************** SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> ***************************
+     ********************************************************************************
+     */
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (KeyComparerType keyComparer)
+        : fKeysStrictInOrderComparer_{keyComparer}
     {
-        GrowHeadLinksIfNeeded (1, nullptr);
+        GrowHeadLinksIfNeeded_ (1, nullptr);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    SkipList<KEY, VALUE, TRAITS>::SkipList (const SkipList& s)
-        : fLength{0}
-#if qKeepADTStatistics
-        , fCompares{0}
-        , fRotations{0}
-#endif
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (const SkipList& s)
+        : fKeysStrictInOrderComparer_{s.fKeysStrictInOrderComparer_}
     {
         operator= (s);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    SkipList<KEY, VALUE, TRAITS>& SkipList<KEY, VALUE, TRAITS>::operator= (const SkipList& t)
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>& SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::operator= (const SkipList& t)
     {
         RemoveAll ();
         if (t.size () != 0) {
-            Node* prev = nullptr;
-            Node* n    = (t.fHead.size () == 0) ? nullptr : t.fHead[0];
+            Node_* prev = nullptr;
+            Node_* n    = (t.fHead.size () == 0) ? nullptr : t.fHead[0];
             while (n != nullptr) {
-                Node* newNode = new Node (n->fEntry.GetKey (), n->fEntry.GetValue ());
+                Node_* newNode = new Node_ (n->fEntry.fKey, n->fEntry.fValue);
                 if (prev == nullptr) {
                     Assert (fHead.size () == 1);
                     Assert (fHead[0] == nullptr);
@@ -60,42 +80,42 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return *this;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    SkipList<KEY, VALUE, TRAITS>::~SkipList ()
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::~SkipList ()
     {
         RemoveAll ();
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    inline size_t SkipList<KEY, VALUE, TRAITS>::GetLinkHeightProbability ()
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    inline size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetLinkHeightProbability ()
     {
         return 25;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    inline size_t SkipList<KEY, VALUE, TRAITS>::size () const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    inline size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::size () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fLength;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::FindNode (const KeyType& key) const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Node_* SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNode_ (const key_type& key) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Assert (fHead.size () > 0);
 
-        vector<Node*> const* startV = &fHead;
+        vector<Node_*> const* startV = &fHead;
         for (size_t linkHeight = fHead.size (); linkHeight > 0; --linkHeight) {
-            Node* n = (*startV)[linkHeight - 1];
+            Node_* n = (*startV)[linkHeight - 1];
 
             // tweak to use pointer comparisons rather than key field compares. We know any link heigher than the current link being
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
-            Node* overShotNode = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
+            Node_* overShotNode = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
             while (n != overShotNode) {
 #if qKeepADTStatistics
-                const_cast<SkipList<KEY, VALUE, TRAITS>*> (this)->fCompares++;
+                const_cast<SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>*> (this)->fCompares++;
 #endif
 
-                int comp = TRAITS::Comparer::Compare (n->fEntry.GetKey (), key);
+                int comp = TRAITS::Comparer::Compare (n->fEntry.fKey, key);
                 if (comp == 0) {
                     return n;
                 }
@@ -111,56 +131,56 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         return nullptr;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    bool SkipList<KEY, VALUE, TRAITS>::Find (const KeyType& key, ValueType* val) const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (const key_type& key, mapped_type* val) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        Node*                                          n = FindNode (key);
+        Node_*                                         n = FindNode_ (key);
         if (n != nullptr) {
             if (val != nullptr) {
-                *val = n->fEntry.GetValue ();
+                *val = n->fEntry.fValue;
             }
             return true;
         }
         return false;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::Add (const KeyType& key, const ValueType& val)
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& key, const mapped_type& val)
     {
-        Debug::AssertExternallySynchronizeWriteLock critSec{*this};
-        vector<Node*>                               links;
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        vector<Node_*>                                  links;
 
-        Node* n = FindNearest (key, links);
-        if ((n != nullptr) and (TRAITS::kPolicy & ADT::eDuplicateAddThrowException)) {
-            throw DuplicateAddException ();
+        Node_* n = FindNearest_ (key, links);
+        if ((n != nullptr) and (TRAITS::kPolicy & SkipList_Support::eDuplicateAddThrowException)) {
+            // @todo named subclass of runtime exption / logic exption or ??? See other stroika appraoches throw DuplicateAddException ();
         }
-        AddNode (new Node (key, val), links);
+        AddNode_ (new Node_ (key, val), links);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::Add (const KeyType& keyAndValue)
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& keyAndValue)
     {
         Add (keyAndValue, keyAndValue);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::AddNode (Node* node, const vector<Node*>& links)
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddNode_ (Node_* node, const vector<Node_*>& links)
     {
-        Debug::AssertExternallySynchronizeWriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         RequireNotNull (node);
-        size_t newLinkHeight = DetermineLinkHeight ();
+        size_t newLinkHeight = DetermineLinkHeight_ ();
         node->fNext.resize (newLinkHeight);
 
         size_t linksToPatch = min (fHead.size (), newLinkHeight);
         for (size_t i = 0; i < linksToPatch; ++i) {
-            Node* nextL = nullptr;
+            Node_* nextL = nullptr;
             if (links[i] == nullptr) {
                 nextL    = fHead[i];
                 fHead[i] = node;
             }
             else {
 #if qKeepADTStatistics
-                const_cast<SkipList<KEY, VALUE, TRAITS>*> (this)->fRotations++;
+                const_cast<SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>*> (this)->fRotations++;
 #endif
-                Node* oldLink = links[i];
+                Node_* oldLink = links[i];
                 AssertNotNull (oldLink);
                 nextL             = oldLink->fNext[i];
                 oldLink->fNext[i] = node;
@@ -169,33 +189,36 @@ namespace Stroika::Foundation::Containers::DataStructures {
             node->fNext[i] = nextL;
         }
 
-        GrowHeadLinksIfNeeded (newLinkHeight, node);
+        GrowHeadLinksIfNeeded_ (newLinkHeight, node);
         ++fLength;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::Remove (const KeyType& key)
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const key_type& key)
     {
-        Debug::AssertExternallySynchronizeWriteLock critSec{*this};
-        vector<Node*>                               links;
-        Node*                                       n = FindNearest (key, links);
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        vector<Node_*>                                  links;
+        Node_*                                          n = FindNearest_ (key, links);
         if (n != nullptr) {
-            RemoveNode (n, links);
+            RemoveNode_ (n, links);
         }
         else {
+#if 0
+            // @todo new policy handler
             if (not(TRAITS::kPolicy & ADT::eInvalidRemoveIgnored)) {
                 throw InvalidRemovalException ();
             }
+#endif
         }
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::RemoveNode (Node* n, const vector<Node*>& links)
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveNode_ (Node_* n, const vector<Node_*>& links)
     {
         for (auto it = links.begin (); it != links.end (); ++it) {
-            size_t index     = it - links.begin ();
-            Node** patchNode = (*it == nullptr) ? &fHead[index] : &(*it)->fNext[index];
+            size_t  index     = it - links.begin ();
+            Node_** patchNode = (*it == nullptr) ? &fHead[index] : &(*it)->fNext[index];
             if (*patchNode == n) {
 #if qKeepADTStatistics
-                const_cast<SkipList<KEY, VALUE, TRAITS>*> (this)->fRotations++;
+                const_cast<SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>*> (this)->fRotations++;
 #endif
                 *patchNode = n->fNext[index];
             }
@@ -204,36 +227,33 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         if (n->fNext.size () == fHead.size ()) {
-            ShrinkHeadLinksIfNeeded ();
+            ShrinkHeadLinksIfNeeded_ ();
         }
         delete n;
 
         --fLength;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    size_t SkipList<KEY, VALUE, TRAITS>::DetermineLinkHeight () const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::DetermineLinkHeight_ () const
     {
-        enum {
-            kMaxNewGrowth = 1
-        };
-
-        int linkHeight = 1;
-        int maxHeight  = min (fHead.size () + kMaxNewGrowth, size_t (kMaxLinkHeight));
-        while ((linkHeight < maxHeight) and (RandomSize_t (1, 100) <= GetLinkHeightProbability ())) {
+        constexpr size_t kMaxNewGrowth = 1;
+        size_t           linkHeight    = 1;
+        size_t           maxHeight     = min (fHead.size () + kMaxNewGrowth, size_t (kMaxLinkHeight));
+        while ((linkHeight < maxHeight) and (Private_::RandomSize_t (1, 100) <= GetLinkHeightProbability ())) {
             ++linkHeight;
         }
         return linkHeight;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::GrowHeadLinksIfNeeded (size_t newSize, Node* nodeToPointTo)
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GrowHeadLinksIfNeeded_ (size_t newSize, Node_* nodeToPointTo)
     {
         if (newSize > fHead.size ()) {
             fHead.resize (newSize, nodeToPointTo);
             Assert (fHead[newSize - 1] == nodeToPointTo);
         }
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::ShrinkHeadLinksIfNeeded ()
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ShrinkHeadLinksIfNeeded_ ()
     {
         if (fHead.size () <= 1)
             return;
@@ -244,12 +264,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::RemoveAll ()
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveAll ()
     {
-        Node* link = (fHead.size () == 0) ? nullptr : fHead[0];
+        Node_* link = (fHead.size () == 0) ? nullptr : fHead[0];
         while (link != nullptr) {
-            Node* nextLink = link->fNext[0];
+            Node_* nextLink = link->fNext[0];
             delete link;
             link = nextLink;
         }
@@ -259,42 +279,42 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         Ensure (size () == 0);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::FindNearest (KeyType key, vector<Node*>& links) const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Node_* SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const key_type& key,
+                                                                                                                    vector<Node_*>& links) const
     {
         Require (links.size () == 0); // we want to be passed in a totally empty vector
         Assert (fHead.size () > 0);
 
         links = fHead;
 
-        Node*  newOverShotNode = nullptr;
-        Node*  foundNode       = nullptr;
+        Node_* newOverShotNode = nullptr;
+        Node_* foundNode       = nullptr;
         size_t linkIndex       = links.size () - 1;
         do {
-            Node* n = links[linkIndex];
+            Node_* n = links[linkIndex];
 
-            // tweak to use pointer comparisons rather than key field compares. We know any link heigher than the current link being
+            // tweak to use pointer comparisons rather than key field compares. We know any link higher than the current link being
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
-            Node* overShotNode = newOverShotNode;
-            Assert (n == nullptr or overShotNode == nullptr or (TRAITS::Comparer::Compare (n->fEntry.GetKey (), overShotNode->fEntry.GetKey ())) <= 0);
+            Node_* overShotNode = newOverShotNode;
+            Assert (n == nullptr or overShotNode == nullptr or (not fKeysStrictInOrderComparer_ (overShotNode->fEntry.fKey, n->fEntry.fKey)));
 
             links[linkIndex] = nullptr;
             while (n != overShotNode) {
 #if qKeepADTStatistics
-                const_cast<SkipList<KEY, VALUE, TRAITS>*> (this)->fCompares++;
+                const_cast<SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>*> (this)->fCompares++;
 #endif
 
-                int comp = TRAITS::Comparer::Compare (n->fEntry.GetKey (), key);
-                if (comp == 0) {
-                    foundNode       = n;
-                    newOverShotNode = foundNode;
-                    break;
-                }
-                else if (comp < 0) {
+                if (fKeysStrictInOrderComparer_ (n->fEntry.fKey, key)) {
                     links[linkIndex] = n;
                     n                = n->fNext[linkIndex];
                     newOverShotNode  = n;
+                }
+                else if (not fKeysStrictInOrderComparer_ (key, n->fEntry.fKey)) {
+                    foundNode       = n;
+                    newOverShotNode = foundNode;
+                    break;
                 }
                 else {
                     break;
@@ -308,25 +328,25 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         return foundNode;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::GetFirst () const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetFirst_ () const -> Node_*
     {
         if (fHead.size () == 0) {
             return nullptr;
         }
         return fHead[0];
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::GetLast () const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetLast_ () const -> Node_*
     {
         if (fHead.size () == 0) {
             return nullptr;
         }
 
         size_t linkIndex = fHead.size () - 1;
-        Node*  n         = fHead[linkIndex];
+        Node_* n         = fHead[linkIndex];
         if (n != nullptr) {
-            Node* prev = n;
+            Node_* prev = n;
             while (true) {
                 while (n != nullptr) {
                     prev = n;
@@ -341,15 +361,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return n;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::Prioritize (const KeyType& key)
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Prioritize (const key_type& key)
     {
-        vector<Node*> links;
+        vector<Node_*> links;
 
-        Node* node = FindNearest (key, links);
+        Node_* node = FindNearest_ (key, links);
         if (node != nullptr and node->fNext.size () <= fHead.size ()) {
             if (node->fNext.size () == fHead.size ()) {
-                GrowHeadLinksIfNeeded (fHead.size () + 1, node);
+                GrowHeadLinksIfNeeded_ (fHead.size () + 1, node);
                 links.resize (fHead.size (), node);
             }
 
@@ -367,20 +387,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 }
                 else {
 #if qKeepADTStatistics
-                    const_cast<SkipList<KEY, VALUE, TRAITS>*> (this)->fRotations++;
+                    const_cast<SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>*> (this)->fRotations++;
 #endif
-                    Node* oldLink = links[i];
+                    Node_* oldLink = links[i];
                     AssertNotNull (oldLink);
                     Assert (oldLink->fNext.size () > i);
-                    Node* nextL       = oldLink->fNext[i];
+                    Node_* nextL      = oldLink->fNext[i];
                     oldLink->fNext[i] = node;
                     node->fNext[i]    = nextL;
                 }
             }
         }
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::ReBalance ()
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReBalance ()
     {
         if (size () == 0)
             return;
@@ -402,18 +422,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
 
         // wipe out everything, keeping only a link to the first item in list
-        Node* node = fHead[0];
+        Node_* node = fHead[0];
         fHead.clear ();
         fHead.resize (kMaxLinkHeight);
 
-        Node** patchNodes[kMaxLinkHeight];
+        Node_** patchNodes[kMaxLinkHeight];
         for (size_t i = 0; i < sizeof (patchNodes) / sizeof (size_t); ++i) {
             patchNodes[i] = &fHead[i];
         }
 
         size_t index = 1;
         while (node != nullptr) {
-            Node* next = node->fNext[0];
+            Node_* next = node->fNext[0];
             node->fNext.clear ();
 
 #if qDebug
@@ -439,11 +459,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Assert (index == size () + 1);
 
-        ShrinkHeadLinksIfNeeded ();
+        ShrinkHeadLinksIfNeeded_ ();
     }
 #if qDebug
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::ListAll () const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ListAll () const
     {
         cout << "[";
         for (size_t i = 0; i < fHead.size (); ++i) {
@@ -457,44 +477,43 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         cout << "]  ";
 
-        Node* n = fHead[0];
+        Node_* n = fHead[0];
         while (n != nullptr) {
             cout << n->fEntry.GetValue () << " (" << n->fNext.size () << "), ";
             n = n->fNext[0];
         }
         cout << endl << flush;
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    void SkipList<KEY, VALUE, TRAITS>::ValidateAll () const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ValidateAll () const
     {
-        Node* n = fHead[0];
+        Node_* n = fHead[0];
 
         while (n != nullptr) {
-            KEY oldKey = n->fEntry.GetKey ();
+            KEY_TYPE oldKey = n->fEntry.fKey;
             for (size_t i = 1; i < n->fNext.size (); ++i) {
-                Node* newN = n->fNext[i];
+                Node_* newN = n->fNext[i];
                 if (n == nullptr) {
                     Assert (newN == nullptr);
                 }
                 else {
                     Assert (newN != n);
-                    Assert (newN == nullptr or (TRAITS::Comparer::Compare (oldKey, newN->fEntry.GetKey ()) <= 0));
+                    Assert (newN == nullptr or (TRAITS::Comparer::Compare (oldKey, newN->fEntry.fKey) <= 0));
                 }
             }
             n = n->fNext[0];
-            Assert (n == nullptr or (TRAITS::Comparer::Compare (n->fEntry.GetKey (), oldKey) >= 0));
+            Assert (n == nullptr or (TRAITS::Comparer::Compare (n->fEntry.fKey, oldKey) >= 0));
         }
     }
 #endif
-#if qKeepADTStatistics
-    template <typename KEY, typename VALUE, typename TRAITS>
-    size_t SkipList<KEY, VALUE, TRAITS>::CalcHeight (size_t* totalHeight) const
+    template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+    size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::CalcHeight (size_t* totalHeight) const
     {
         if (totalHeight != nullptr) {
             *totalHeight         = 0;
             size_t maxLinkHeight = 0;
 
-            Node* n = fHead[0];
+            Node_* n = fHead[0];
             while (n != nullptr) {
                 maxLinkHeight = max (maxLinkHeight, n->fNext.size ());
                 *totalHeight += n->fNext.size ();
@@ -505,5 +524,4 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         return fHead.size ();
     }
-#endif
 }

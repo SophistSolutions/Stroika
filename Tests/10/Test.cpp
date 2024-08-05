@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -14,13 +15,18 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
 #if qHasFeature_GoogleTest
 namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, all)
+    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicTest)
     {
+        DataStructures::SkipList<int, int> t;
+        //EXPECT_TRUE (not t.Find (1));
+        t.Add (1, 2);
+        //EXPECT_TRUE (t.Find (1));
     }
 }
 #endif
