@@ -1558,7 +1558,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /*
          *  \see _IRep::MakeIterator for rules about lifetime of returned Iterator<T>
-         *  Defaults to, and is equivilent to, walking the Iterable, and applyting 'that' function, and returning the first (depending on seq) entry that
+         *  Defaults to, and is equivalent to, walking the Iterable, and applying 'that' function, and returning the first (depending on seq) entry that
          *  returns true, or empty iterator if none does.
          */
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<T> item)>& that, Execution::SequencePolicy seq) const;
