@@ -43,7 +43,14 @@ namespace Stroika::Foundation::Containers {
      *  \see also AddOrExtendOrReplaceMode
      */
     enum class AddReplaceMode {
+        /**
+         *  Associate argument value iff key argument missing
+         */
         eAddIfMissing,
+
+        /**
+         *  Associate argument with value unconditionally
+         */
         eAddReplaces
     };
 
@@ -52,42 +59,26 @@ namespace Stroika::Foundation::Containers {
      * 
      *  \see also AddReplaceMode
      */
-    struct AddOrExtendOrReplaceMode {
-    private:
-        constexpr AddOrExtendOrReplaceMode (uint8_t v) noexcept;
-
-    public:
-        /**
-         */
-        constexpr AddOrExtendOrReplaceMode (AddReplaceMode v) noexcept;
-        constexpr AddOrExtendOrReplaceMode (const AddOrExtendOrReplaceMode&) noexcept = default;
-
-    public:
-        /**
-         * allows values to be used in switch statements...
-         */
-        constexpr operator uint8_t () const noexcept;
-
-    public:
+    enum class AddOrExtendOrReplaceMode {
         /**
          * same value as AddReplaceMode::eAddIfMissing
          */
-        static const AddOrExtendOrReplaceMode eAddIfMissing;
+        eAddIfMissing = AddReplaceMode::eAddIfMissing,
+
         /**
          * same value as AddReplaceMode::eAddReplaces
          */
-        static const AddOrExtendOrReplaceMode eAddReplaces;
+        eAddReplaces = AddReplaceMode::eAddReplaces,
 
         /**
-         */
-        static const AddOrExtendOrReplaceMode eAddExtras;
+          * Used in multisets (where key can be associated with multiple values) - just add extra values.
+          */
+        eAddExtras,
 
         /**
-         */
-        static const AddOrExtendOrReplaceMode eDuplicatesRejected;
-
-    private:
-        uint8_t fValue_;
+          * if key already present, throw runtime exception
+          */
+        eDuplicatesRejected
     };
 
 }

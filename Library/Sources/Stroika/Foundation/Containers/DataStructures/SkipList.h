@@ -21,6 +21,8 @@
  *
  * TODO:
  *      STATUS : nearly working - but still several man-hours to complete - plan to work with sterl on this... --LGP 2024-08-05
+ *      - @todo consider if this API should use IThreeWayComparer instead of less, since that seems to be how
+ *        itsused (better matches how its used)
  *
  */
 
@@ -58,6 +60,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         struct Stats_Basic {
             size_t fCompares{0};
             // skiplists don't really do rotations, but we treat link patching as same thing
+            // @todo rename so more appropriate - and looking at code - not clear what this is actually counting
             size_t fRotations{0};
 
             /**

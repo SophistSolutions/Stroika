@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
                 }
-                if (this->fKeysStrictInOrderComparer_ (n->fEntry.fKey, key)) {
+                if (fKeysStrictInOrderComparer_ (n->fEntry.fKey, key)) {
                     startV = &n->fNext;
                     n      = n->fNext[linkHeight - 1];
                 }
