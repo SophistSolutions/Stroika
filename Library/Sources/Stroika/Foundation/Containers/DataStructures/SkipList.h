@@ -30,8 +30,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace SkipList_Support {
 
-        template <typename KEY_TYPE, /*Common::IThreeWayComparer<KEY_TYPE>*/ typename KEY_COMPARER = compare_three_way,
-                  AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras>
+        template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE>  KEY_COMPARER = compare_three_way, AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras>
         struct DefaultTraits {
             using KeyComparerType = KEY_COMPARER;
 
@@ -49,17 +48,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         template <typename TRAITS, typename KEY_TYPE>
-        concept IValidTraits = true;
+        concept IValidTraits =
 
-#if 0
-            Common::IThreeWayComparer < typename TRAITS::KeyComparerType, KEY_TYPE>and requires(TRAITS a) {
-            {
-                TRAITS::kKeepStatistics
-            } -> std::convertible_to<bool>;
-            {
-                TRAITS::kAddOrExtendOrReplaceMode
-            } -> std::convertible_to<AddOrExtendOrReplaceMode>;
-        };
+#if 1
+            Common::IThreeWayComparer<typename TRAITS::KeyComparerType, KEY_TYPE> and requires (TRAITS a) {
+                {
+                    TRAITS::kKeepStatistics
+                } -> std::convertible_to<bool>;
+                {
+                    TRAITS::kAddOrExtendOrReplaceMode
+                } -> std::convertible_to<AddOrExtendOrReplaceMode>;
+            };
 #endif
 
         struct Stats_Basic {
@@ -97,6 +96,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 This reduces the total comparisons in a search by between 20 and 40%.
             o   possible to efficiently parallelize (not yet attempted -- see http://www.1024cores.net/home/parallel-computing/concurrent-skip-list)
             o   SkipLists support fast forward iteration (linked list traversal). They do not support backwards iteration.
+
+     *  Design Overview:
+     *      This is an ORDERED linked list. To get extra speed on lookups, besides a 'next' pointer,
+     *      each node may have a list of additional pointers that go (each progressively) further into the linked
+     *      list. Ideally, these 'jumps' deeper into the linked list would be 'well spaced' so that you approach
+     *      log(N) lookup times trying to find a Node.
+     * 
     
     @todo DISCUSS WITH STERL
 
@@ -364,8 +370,17 @@ From Wikipedia:
         nonvirtual Node_* FindNode_ (const key_type& key) const;
 
     private:
-        // this is specialized for the case of adding or removing elements, as it caches
+        /*
+         *  This searches the list for the given key. If found exactly, it is returned.
+
+         
+         // this is specialized for the case of adding or removing elements, as it caches
         // all links that will need to be updated for the new element or the element to be removed
+
+
+                \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
+
+         */
         nonvirtual Node_* FindNearest_ (const key_type& key, vector<Node_*>& links) const;
 
     private:

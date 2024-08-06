@@ -311,8 +311,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Ensure (size () == 0);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Node_* SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const key_type& key,
-                                                                                                                    vector<Node_*>& links) const
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const key_type& key, vector<Node_*>& links) const -> Node_*
     {
         using Common::ToInt;
         Require (links.size () == 0); // we want to be passed in a totally empty vector
@@ -320,7 +319,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         links                  = fHead_;
         Node_* newOverShotNode = nullptr;
         Node_* foundNode       = nullptr;
-        size_t linkIndex       = links.size () - 1;
+        Assert (not links.empty ()); // now
+        size_t linkIndex = links.size () - 1;
         do {
             Node_* n = links[linkIndex];
             // tweak to use pointer comparisons rather than key field compares. We know any link higher than the current link being
@@ -356,6 +356,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         } while (linkIndex-- != 0);
 
+        Ensure (foundNode == nullptr or fKeyThreeWayComparer_ (foundNode->fEntry.fKey, key) == strong_ordering::equal);
         return foundNode;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
