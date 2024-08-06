@@ -298,8 +298,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const noexcept;
 
     private:
+        const Link_* fCurrent_;
+#if qDebug
         const LinkedList* fData_;
-        const Link_*      fCurrent_;
+#endif
 
 #if qDebug
     private:

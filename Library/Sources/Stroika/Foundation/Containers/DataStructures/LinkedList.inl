@@ -425,8 +425,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt)
-        : fData_{data}
-        , fCurrent_{startAt}
+        : fCurrent_{startAt}
+#if qDebug
+        , fData_{data}
+#endif
     {
         RequireNotNull (data);
     }
@@ -440,7 +442,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline typename LinkedList<T>::ForwardIterator& LinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
     {
         Invariant ();
-        fData_    = rhs.fData_;
+#if qDebug
+        fData_ = rhs.fData_;
+#endif
         fCurrent_ = rhs.fCurrent_;
         Invariant ();
         return *this;
@@ -503,6 +507,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool LinkedList<T>::ForwardIterator::Equals (const typename LinkedList<T>::ForwardIterator& rhs) const
     {
+#if qDebug
+        Require (fData_ == rhs.fData_);
+#endif
         return fCurrent_ == rhs.fCurrent_;
     }
 #if qDebug
