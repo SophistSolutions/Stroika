@@ -591,12 +591,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data, const Node_* n)
+    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt)
 #if qDebug
         : fData_{data}
-        , fCurrent_{n}
+        , fCurrent_{startAt}
 #else
-        : fCurrent_{n}
+        : fCurrent_{startAt}
 #endif
     {
     }

@@ -136,6 +136,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
+    private:
+        struct Node_;
+
     public:
         /**
          *  This is the key for the associative container. It need not be unique (see various Add / Lookup APIs).
@@ -166,6 +169,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  KeyValuePair of KEY_TYPE and MAPPED_TYPE. This is what you iterate over, and the SkipList is a container of these.
          */
         using value_type = Common::KeyValuePair<KEY_TYPE, MAPPED_TYPE>;
+
+    public:
+        /**
+         *  Basic (mostly internal) element used by ForwardIterator. Abstract name so can be referenced generically across 'DataStructure' objects
+         */
+        using UnderlyingIteratorRep = const Node_*;
 
     public:
         /**
@@ -342,9 +351,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual StatsType GetStats () const;
 
     private:
-        struct Node_;
-
-    private:
         /*
          *  These return the first and last entries in the tree (defined as the first and last entries that would be returned via
          *  iteration, assuming other users did not alter the tree.  Note that these routines require no key compares, and are thus very fast.
@@ -427,7 +433,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         ForwardIterator () = delete;
-        constexpr ForwardIterator (const SkipList* data, const Node_* n = nullptr);
+        constexpr ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt);
         ForwardIterator (const ForwardIterator& src) = default;
 
 #if qDebug

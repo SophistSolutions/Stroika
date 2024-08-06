@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <iostream>
-//#include <sstream>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
@@ -24,22 +23,16 @@ using namespace Stroika::Foundation::Containers::DataStructures;
 using namespace Stroika::Frameworks;
 
 namespace {
-
     // removed from stdc++ but still handy here
     template <class RandomIt>
     void random_shuffle_ (RandomIt first, RandomIt last)
     {
         typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
-
         for (diff_t i = last - first - 1; i > 0; --i) {
             using std::swap;
             swap (first[i], first[std::rand () % (i + 1)]);
-            // rand() % (i + 1) is not actually correct, because the generated number is
-            // not uniformly distributed for most values of i. The correct code would be
-            // a variation of the C++11 std::uniform_int_distribution implementation.
         }
     }
-
 }
 
 #if qHasFeature_GoogleTest
@@ -82,7 +75,10 @@ namespace {
                 EXPECT_TRUE (t.size () == i);
                 EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Invariant ();
-                strong_ordering comp = t.GetComparer () (biggestKey, key);
+                if (biggestKey == nullopt) {
+                    biggestKey = key;
+                }
+                strong_ordering comp = t.GetComparer () (*biggestKey, key);
                 if (comp == strong_ordering::greater or comp == strong_ordering::less) {
                     biggestKey = key;
                 }
@@ -92,16 +88,16 @@ namespace {
                 EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Remove (key);
                 EXPECT_TRUE (not t.Find (key));
-                EXPECT_TRUE (t.size () == testLength - i);
+                EXPECT_EQ (t.size (), testLength - i);
                 t.Invariant ();
             }
-            Assert (t.size () == 0);
+            EXPECT_EQ (t.size (), 0);
             DbgTrace ("Add and remove {} items, backwards direction"_f, testLength);
             for (int i = static_cast<int> (testLength); i >= 1; --i) {
                 KEY_TYPE key{i};
                 EXPECT_TRUE (not t.Find (key));
                 t.Add (key, i);
-                EXPECT_TRUE (t.size () == testLength - i + 1);
+                EXPECT_EQ (t.size (), testLength - i + 1);
                 EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Invariant ();
                 Assert (biggestKey);
@@ -115,10 +111,10 @@ namespace {
                 EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Remove (key);
                 EXPECT_TRUE (not t.Find (key));
-                EXPECT_TRUE (t.size () == i - 1);
+                EXPECT_EQ (t.size (), i - 1);
                 t.Invariant ();
             }
-            Assert (t.size () == 0);
+            EXPECT_EQ (t.size (), 0);
         }
     }
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicAddRemoveTest_)
@@ -127,7 +123,6 @@ namespace {
         SkipList<int, int>        t;
         Private_::BasicAddRemoveTestsHelper_ (t, 1000);
     }
-
 }
 
 namespace {
@@ -184,7 +179,6 @@ namespace {
         SkipList<int, int>        t;
         Private_::RandomOrderAddRemoveTestsHelper_ (t, 25);
     }
-
 }
 
 namespace {
@@ -195,8 +189,7 @@ namespace {
             SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.GetComparer ()};
             Require (t.size () == 0);
             Debug::TraceContextBumper ctx{"Balance Tests", "Add and remove (len={})"_f, testLength};
-
-            vector<int> data;
+            vector<int>               data;
             data.reserve (testLength);
             for (int i = 0; i < static_cast<int> (testLength); ++i) {
                 data.push_back (i);
@@ -220,13 +213,11 @@ namespace {
     }
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, OptimizeTests_)
     {
-        Debug::TraceContextBumper ctx{"RandomOrderAddRemoveTests_"};
+        Debug::TraceContextBumper ctx{"OptimizeTests_"};
         SkipList<int, int>        t;
         Private_::OptimizeTestsHelper_ (t, 25);
     }
-
 }
-
 #endif
 
 int main (int argc, const char* argv[])
