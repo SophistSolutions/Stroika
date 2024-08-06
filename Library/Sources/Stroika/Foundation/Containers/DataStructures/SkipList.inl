@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             static thread_local std::mt19937 sRng_{std::random_device () ()};
             Assert (sRng_.min () <= first);
             //  Assert (eng.max () >= last);    // g++ has 8 byte size_t in 64 bit??
-            std::uniform_int_distribution<size_t> unif (first, last);
+            std::uniform_int_distribution<size_t> unif{first, last};
             size_t                                result = unif (sRng_);
             Ensure (result >= first);
             Ensure (result <= last);
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         RemoveAll ();
         if (t.size () != 0) {
             Node_* prev = nullptr;
-            Node_* n    = (t.fHead_.size () == 0) ? nullptr : t.fHead_[0];
+            Node_* n    = t.fHead_[0];
             while (n != nullptr) {
                 Node_* newNode = new Node_{n->fEntry.fKey, n->fEntry.fValue};
                 if (prev == nullptr) {
@@ -132,6 +132,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
             Node_* overShotNode = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
+           // Assert (overShotNode == nullptr); //tmphack to test
             while (n != overShotNode) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
@@ -318,9 +319,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ShrinkHeadLinksIfNeeded_ ()
     {
-        if (fHead_.size () <= 1)
-            return;
-        for (size_t i = fHead_.size () - 1; i > 1; --i) {
+        Require (fHead_.size () >= 1);
+        for (size_t i = fHead_.size () - 1; i >= 1; --i) {
             if (fHead_[i] == nullptr) {
                 fHead_.pop_back ();
             }
@@ -393,17 +393,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetFirst_ () const -> Node_*
     {
-        if (fHead_.size () == 0) {
-            return nullptr;
-        }
+        Require (fHead_.size () >= 1);
         return fHead_[0];
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetLast_ () const -> Node_*
     {
-        if (fHead_.size () == 0) {
-            return nullptr;
-        }
+        Require (fHead_.size () >= 1);
         size_t linkIndex = fHead_.size () - 1;
         Node_* n         = fHead_[linkIndex];
         if (n != nullptr) {

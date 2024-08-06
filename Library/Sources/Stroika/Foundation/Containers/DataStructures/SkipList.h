@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
             /**
              */
-            static constexpr bool kCostlyInvariants{true}; //tmphack set true
+            static constexpr bool kCostlyInvariants{false};
         };
 
         /**

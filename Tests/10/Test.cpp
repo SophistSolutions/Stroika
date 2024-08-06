@@ -23,6 +23,25 @@ using namespace Stroika::Foundation::Containers::DataStructures;
 
 using namespace Stroika::Frameworks;
 
+namespace {
+
+    // removed from stdc++ but still handy here
+template <class RandomIt>
+    void random_shuffle_ (RandomIt first, RandomIt last)
+    {
+        typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
+
+        for (diff_t i = last - first - 1; i > 0; --i) {
+            using std::swap;
+            swap (first[i], first[std::rand () % (i + 1)]);
+            // rand() % (i + 1) is not actually correct, because the generated number is
+            // not uniformly distributed for most values of i. The correct code would be
+            // a variation of the C++11 std::uniform_int_distribution implementation.
+        }
+    }
+
+}
+
 #if qHasFeature_GoogleTest
 namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicSmokeTest)
@@ -51,7 +70,7 @@ namespace {
         template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
         void BasicAddRemoveTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
         {
-            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t = prototypeList;
+            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.GetComparer ()};
             Require (t.size () == 0);
             Debug::TraceContextBumper ctx{"BasicAddRemoveTests_", "Add and remove (len={}, forward direction)"_f, testLength};
             MAPPED_TYPE               val = 0;
@@ -107,7 +126,64 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"BasicAddRemoveTest_"};
         SkipList<int, int>        t;
-        Private_::BasicAddRemoveTestsHelper_ (t, 25);
+        Private_::BasicAddRemoveTestsHelper_ (t, 1000);
+    }
+
+}
+
+namespace {
+    namespace Private_ {
+        template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+        void RandomOrderAddRemoveTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
+        {
+            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.GetComparer ()};
+            Require (t.size () == 0);
+            Debug::TraceContextBumper ctx{"RandomOrderAddRemoveTestsHelper_", "Add and remove (len={}, items, in random order)"_f, testLength};
+
+            vector<int> data;
+            data.reserve (testLength);
+            for (int i = 0; i < static_cast<int> (testLength); ++i) {
+                data.push_back (i);
+            }
+            random_shuffle_ (data.begin (), data.end ());
+            MAPPED_TYPE        val = 0;
+            optional<KEY_TYPE> biggestKey;
+            optional<KEY_TYPE> smallestKey;
+            for (int i = 0; i < data.size (); ++i) {
+                KEY_TYPE key = {data[i]};
+                Assert (not t.Find (key));
+                t.Add (key, i);
+                Assert (t.size () == i + 1);
+                Assert (t.Find (key, &val) and (val == i));
+                t.Invariant ();
+                if (i == 0) {
+                    smallestKey = key;
+                    biggestKey = key;
+                }
+                if (t.GetComparer () (*biggestKey, key) < 0) {
+                    biggestKey = key;
+                }
+                if (t.GetComparer () (*smallestKey, key) > 0) {
+                    smallestKey = key;
+                }
+            }
+            random_shuffle_ (data.begin (), data.end ());
+            for (int i = 0; i <= static_cast<int> (testLength - 1); ++i) {
+                KEY_TYPE v = {data[i]};
+                Assert (t.Find (v));
+                t.Remove (v);
+                Assert (not t.Find (v));
+                Assert (t.size () == testLength - i - 1);
+                t.Invariant ();
+            }
+            Assert (t.size () == 0);
+        }
+    }
+    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, RandomOrderAddRemoveTests_)
+    {
+        Debug::TraceContextBumper ctx{"RandomOrderAddRemoveTests_"};
+        SkipList<int, int>        t;
+        Private_::RandomOrderAddRemoveTestsHelper_ (t, 25);
     }
 
 }
