@@ -257,6 +257,17 @@ namespace Stroika::Foundation::Common {
                                ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
 
     /**
+     *  Checks that the argument comparer compares values of type ARG_T, and returns a three-way-compare comparison result.
+     * 
+     *  This won't let confuse equal_to with actual in-order comparison functions.
+     * 
+     *  \see IPotentiallyComparer, and use DeclareInOrderComparer to mark a given function as a three-way comparer.
+     */
+    template <typename COMPARER, typename ARG_T>
+    concept IThreeWayComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and
+                                ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eThreeWayCompare;
+
+    /**
      *  Utility class to serve as base class when constructing a comparison 'function' object comparer so ExtractComparisonTraits<> knows
      *  the type, or (with just one argument) as base for class that itself provides the operator() method.
      *         
@@ -432,6 +443,21 @@ namespace Stroika::Foundation::Common {
      */
     template <typename FROM_INT_TYPE>
     constexpr strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
+
+    /**
+     */
+    constexpr int ToInt (strong_ordering f)
+    {
+        if (f == strong_ordering::less) {
+            return -1;
+        }
+        else if (f == strong_ordering::equal or f == strong_ordering::equivalent) {
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    }
 
     /**
      *  Map equals to equals, but less becomes greater and greater becomes less
