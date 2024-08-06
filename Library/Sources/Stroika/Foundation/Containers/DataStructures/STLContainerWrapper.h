@@ -15,7 +15,7 @@
  *  \file
  *
  *  Description:
- *      This module genericly wraps STL containers (such as map, vector etc), and facilitates
+ *      This module generically wraps STL containers (such as map, vector etc), and facilitates
  *      using them as backends for Stroika containers.
  *
  *  TODO:
