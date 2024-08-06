@@ -63,21 +63,21 @@ namespace Stroika::Foundation::Containers {
         /**
          * same value as AddReplaceMode::eAddIfMissing
          */
-        eAddIfMissing = AddReplaceMode::eAddIfMissing,
+        eAddIfMissing = static_cast<int> (AddReplaceMode::eAddIfMissing),
 
         /**
          * same value as AddReplaceMode::eAddReplaces
          */
-        eAddReplaces = AddReplaceMode::eAddReplaces,
+        eAddReplaces = static_cast<int> (AddReplaceMode::eAddReplaces),
 
         /**
-          * Used in multisets (where key can be associated with multiple values) - just add extra values.
-          */
+         * Used in multisets (where key can be associated with multiple values) - just add extra values.
+         */
         eAddExtras,
 
         /**
-          * if key already present, throw runtime exception
-          */
+         * if key already present, throw runtime exception
+         */
         eDuplicatesRejected
     };
 
