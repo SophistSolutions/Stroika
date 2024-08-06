@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Node_* prev = nullptr;
             Node_* n    = (t.fHead_.size () == 0) ? nullptr : t.fHead_[0];
             while (n != nullptr) {
-                Node_* newNode = new Node_ (n->fEntry.fKey, n->fEntry.fValue);
+                Node_* newNode = new Node_{n->fEntry.fKey, n->fEntry.fValue};
                 if (prev == nullptr) {
                     Assert (fHead_.size () == 1);
                     Assert (fHead_[0] == nullptr);
@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Assert (fHead_.size () > 0);
         vector<Node_*> const* startV = &fHead_;
-        for (size_t linkHeight = fHead_.size (); linkHeight > 0; linkHeight--) {
+        for (size_t linkHeight = fHead_.size (); linkHeight > 0; --linkHeight) {
             Node_* n = (*startV)[linkHeight - 1];
             // tweak to use pointer comparisons rather than key field compares. We know any link heigher than the current link being
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Node_* overShotNode = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
             while (n != overShotNode) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
-                    fStats_.fCompares++;
+                    ++fStats_.fCompares;
                 }
                 if (this->fKeysStrictInOrderComparer_ (n->fEntry.fKey, key)) {
                     startV = &n->fNext;
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         vector<Node_*>                                  links;
         Node_*                                          n = FindNearest_ (key, links);
         if (n == nullptr) {
-            AddNode_ (new Node_ (key, val), links);
+            AddNode_ (new Node_{key, val}, links);
             return true;
         }
         else {
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     n->fEntry.fValue = val;
                     return true;
                 case AddOrExtendOrReplaceMode::eAddExtras:
-                    AddNode_ (new Node_ (key, val), links);
+                    AddNode_ (new Node_{key, val}, links);
                     return true;
                 case AddOrExtendOrReplaceMode::eDuplicatesRejected:
                     static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t newLinkHeight = DetermineLinkHeight_ ();
         node->fNext.resize (newLinkHeight);
         size_t linksToPatch = min (fHead_.size (), newLinkHeight);
-        for (size_t i = 0; i < linksToPatch; i++) {
+        for (size_t i = 0; i < linksToPatch; ++i) {
             Node_* nextL = nullptr;
             if (links[i] == nullptr) {
                 nextL     = fHead_[i];
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
             else {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
-                    fStats_.fRotations++;
+                    ++fStats_.fRotations;
                 }
                 Node_* oldLink = links[i];
                 AssertNotNull (oldLink);
@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             node->fNext[i] = nextL;
         }
         GrowHeadLinksIfNeeded_ (newLinkHeight, node);
-        fLength_++;
+        ++fLength_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const key_type& key)
@@ -245,12 +245,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveNode_ (Node_* n, const vector<Node_*>& links)
     {
-        for (auto it = links.begin (); it != links.end (); it++) {
+        for (auto it = links.begin (); it != links.end (); ++it) {
             size_t  index     = it - links.begin ();
             Node_** patchNode = (*it == nullptr) ? &fHead_[index] : &(*it)->fNext[index];
             if (*patchNode == n) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
-                    fStats_.fRotations++;
+                    ++fStats_.fRotations;
                 }
                 *patchNode = n->fNext[index];
             }
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             ShrinkHeadLinksIfNeeded_ ();
         }
         delete n;
-        fLength_--;
+        --fLength_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::DetermineLinkHeight_ () const
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t           linkHeight    = 1;
         size_t           maxHeight     = min (fHead_.size () + kMaxNewGrowth, size_t (kMaxLinkHeight_));
         while ((linkHeight < maxHeight) and (Private_::RandomSize_t (1, 100) <= GetLinkHeightProbability ())) {
-            linkHeight++;
+            ++linkHeight;
         }
         return linkHeight;
     }
@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         if (fHead_.size () <= 1)
             return;
-        for (size_t i = fHead_.size () - 1; i > 1; i--) {
+        for (size_t i = fHead_.size () - 1; i > 1; --i) {
             if (fHead_[i] == nullptr) {
                 fHead_.pop_back ();
             }
@@ -329,7 +329,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             links[linkIndex] = nullptr;
             while (n != overShotNode) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
-                    fStats_.fCompares++;
+                    ++fStats_.fCompares;
                 }
                 if (fKeysStrictInOrderComparer_ (n->fEntry.fKey, key)) {
                     links[linkIndex] = n;
@@ -380,7 +380,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 if (linkIndex == 0) {
                     break;
                 }
-                linkIndex--;
+                --linkIndex;
             }
         }
         return n;
@@ -399,7 +399,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             node->fNext.resize (fHead_.size (), nullptr);
             size_t newLinkHeight = node->fNext.size ();
             Assert (oldLinkHeight < newLinkHeight);
-            for (size_t i = oldLinkHeight; i <= newLinkHeight - 1; i++) {
+            for (size_t i = oldLinkHeight; i <= newLinkHeight - 1; ++i) {
                 if (links[i] == nullptr) {
                     fHead_[i] = node;
                 }
@@ -408,7 +408,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 }
                 else {
                     if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
-                        fStats_.fRotations++;
+                        ++fStats_.fRotations;
                     }
                     Node_* oldLink = links[i];
                     AssertNotNull (oldLink);
@@ -432,7 +432,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         double indexBase = (GetLinkHeightProbability () == 0) ? 0 : 1 / (GetLinkHeightProbability () / 100.0);
         size_t height[kMaxLinkHeight_];
         size_t lastValidHeight = 0;
-        for (size_t i = 0; i < sizeof (height) / sizeof (size_t); i++) {
+        for (size_t i = 0; i < sizeof (height) / sizeof (size_t); ++i) {
             height[i] = size_t (pow (indexBase, double (i)));
 
             if (height[i] == 0 or height[i] > size ()) {
@@ -447,7 +447,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fHead_.resize (kMaxLinkHeight_);
 
         Node_** patchNodes[kMaxLinkHeight_];
-        for (size_t i = 0; i < sizeof (patchNodes) / sizeof (size_t); i++) {
+        for (size_t i = 0; i < sizeof (patchNodes) / sizeof (size_t); ++i) {
             patchNodes[i] = &fHead_[i];
         }
 
@@ -476,7 +476,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (patched);
 #endif
 
-            index++;
+            ++index;
             node = next;
         }
         Assert (index == size () + 1);
@@ -488,7 +488,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         // replace with ToString() overload???? - enable-if ToString(KEY_TYPE and MAPPED_TYPE)
         cout << "[";
-        for (size_t i = 0; i < fHead_.size (); i++) {
+        for (size_t i = 0; i < fHead_.size (); ++i) {
             if (fHead_[i] == nullptr) {
                 cout << "*"
                      << ", ";
@@ -513,7 +513,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         while (n != nullptr) {
             KEY_TYPE oldKey = n->fEntry.fKey;
-            for (size_t i = 1; i < n->fNext.size (); i++) {
+            for (size_t i = 1; i < n->fNext.size (); ++i) {
                 Node_* newN = n->fNext[i];
                 if (n == nullptr) {
                     Assert (newN == nullptr);

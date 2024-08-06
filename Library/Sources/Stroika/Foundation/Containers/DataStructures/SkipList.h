@@ -78,16 +78,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  used by programmers, except in implementing concrete container reps, but of course can be
      *  where extra performance maybe needed, over convenience and flexibility.
      *
-     @todo DISCUSS WITH STERL
+        Key Features (compared with balanced binary tree)
+            o   Explicit Rebalance () call
+            o   (optional)Prioritize() call - can optimize lookup of any key
+                SkipLists have the following desireable features
+            o   fast find, reasonably fast add and remove (about 20-30% as many comparisons as finds)
+            o   robust about order of additions
+            o   space efficient (1.33 links per value, as opposed to tree structures requiring 2 links per value)
+            o   ability to add more than one entry with the same key
+            o   ability to reorder links into nearly optimal configuration. You can optimize the node structure in a skip list in a single pass (order N).
+                This reduces the total comparisons in a search by between 20 and 40%.
+            o   possible to efficiently parallelize (not yet attempted -- see http://www.1024cores.net/home/parallel-computing/concurrent-skip-list)
+            o   SkipLists support fast forward iteration (linked list traversal). They do not support backwards iteration.
+    
+    @todo DISCUSS WITH STERL
 
         o   I THINK IDEA IS ROUGHLY - std::map<KEY_TYPE,VALUE> - that compare is generally on KEY_TYPE (not on value), and can use where we would use std::map
         o   NOT sure we need traits. CAN probably handle policies the way we do other such situations in stroika containers - with overloads.
         o   Instead - just have as parameter to type - KEY_COMPARER.
         o   OR - maybe KEEP traits for FLAG indicating 'keep statistics'; define StatisticsType record...
 
-        Key Features (compared with balanced binary tree)
-            o   Explicit Rebalance () call
-            o   (optional)Prioritize() call - can optimize lookup of any key
 
             @todo assure works with MAPPED_TYPE=void
 
@@ -101,21 +111,6 @@ From Wikipedia:
     These auxiliary lists allow item lookup with efficiency comparable to balanced binary search trees (that is, with number of probes proportional to log n instead of n).
     see http://en.wikipedia.org/wiki/Skip_list
 
-    SkipLists have the following desireable features
-    fast find, reasonably fast add and remove (about 20-30% as many comparisons as finds)
-
-    robust about order of additions
-
-    space efficient (1.33 links per value, as opposed to tree structures requiring 2 links per value)
-
-    ability to add more than one entry with the same key
-
-    ability to reorder links into nearly optimal configuration. You can optimize the node structure in a skip list in a single pass (order N).
-    This reduces the total comparisons in a search by between 20 and 40%.
-
-    possible to efficiently parallelize (not yet attempted -- see http://www.1024cores.net/home/parallel-computing/concurrent-skip-list)
-
-    SkipLists support fast forward iteration (linked list traversal). They do not support backwards iteration.
 
     In principle you can use different probabilies for having more than one link. The optimal probability for finds is 1/4, and that also produces a list
     that is more space efficient than a traditional binary tree, as it has only 1.33 nodes per entry, compared with a binary tree using 2.
