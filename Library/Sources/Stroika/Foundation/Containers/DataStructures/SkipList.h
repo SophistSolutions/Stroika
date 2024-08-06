@@ -108,12 +108,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
      * 
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-
-
-        @todo assure works with MAPPED_TYPE=void
-
-        @todo - should we use shared_ptr for Node*? at last use blockallocation - must be more carefula bout leaks if not using shared_ptr
-
+     * 
+     *  \note   TODOS:
+     *              @todo assure works with MAPPED_TYPE=void
+     *              @todo - should we use shared_ptr for Node*? at last use blockallocation - must be more carefula bout leaks if not using shared_ptr
+     *              @todo Cleanup docs
+     *              @todo Integrate into concrete containers
+     *              @todo use InlineBuffer instead of vector, and make size of pre-allocated guy fixed in TRAITS (@todo discuss with sterl)
 
     // OLD DOCS to lift from (from SSW impl)
     In principle you can use different probabilies for having more than one link. The optimal probability for finds is 1/4, and that also produces a list
@@ -187,8 +188,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *
          *  Returns true if the list was changed (if eAddReplaces, and key found, return true even if val same as value already there because we cannot generically compare values)
          * 
-         *  \note Complexity:
-         *      Average/WorseCase???
+         *  \note Complexity:   ??
+         *      Average:    log(N)
+         *      Worst:      N
          */
         nonvirtual bool Add (const key_type& key, const mapped_type& val);
         nonvirtual bool Add (const value_type& v);
@@ -201,8 +203,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \note same as Verify (RemoveIf (key))
          * 
-         *  \note Complexity:
-         *      Average/WorseCase???
+         *  \note Complexity:   ??
+         *      Average:    log(N)
+         *      Worst:      N
          */
         nonvirtual void Remove (const key_type& key);
 
@@ -210,8 +213,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          * \brief Remove the first item with the given key, if any. Return true if a value found and removed.
          * 
-         *  \note Complexity:
-         *      Average/WorseCase???
+         *  \note Complexity:   ??
+         *      Average:    log(N)
+         *      Worst:      N
          */
         nonvirtual bool RemoveIf (const key_type& key);
 
@@ -244,14 +248,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator begin () const;
 
     public:
+        /**
+         */
         nonvirtual ForwardIterator end () const;
 
     public:
         /**
          *  \see https://en.cppreference.com/w/cpp/container/map/contains
          *
-         *  \note Complexity:
-         *      Average/WorseCase??? - I think ave log(N), worst N, but probably not quite - depends on max keys etc...
+         *  \note Complexity:   ??
+         *      Average:    log(N)
+         *      Worst:      N
          */
         nonvirtual bool contains (const key_type& key) const;
 

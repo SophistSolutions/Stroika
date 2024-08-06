@@ -6,7 +6,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include <sstream>
+//#include <sstream>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
@@ -172,7 +172,7 @@ namespace {
                 EXPECT_TRUE (t.Find (v));
                 t.Remove (v);
                 EXPECT_TRUE (not t.Find (v));
-                EXPECT_TRUE (t.size () == testLength - i - 1);
+                EXPECT_EQ (t.size (), testLength - i - 1);
                 t.Invariant ();
             }
             EXPECT_TRUE (t.size () == 0);
@@ -207,7 +207,7 @@ namespace {
                 KEY_TYPE key{data[i]};
                 t.Add (key, i);
             }
-            EXPECT_TRUE (t.size () == testLength);
+            EXPECT_EQ (t.size (), testLength);
             t.Invariant ();
             t.ReBalance ();
             t.Invariant ();
