@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstddef>
+#include <cstdint>
 
 namespace Stroika::Foundation::Containers {
 
@@ -35,6 +36,59 @@ namespace Stroika::Foundation::Containers {
     typename CONTAINER::value_type* End (CONTAINER& c);
     template <typename CONTAINER>
     const typename CONTAINER::value_type* End (const CONTAINER& c);
+
+    /**
+     *  \brief Mode flag to say if Adding to a container replaces, or if the first addition wins.
+     * 
+     *  \see also AddOrExtendOrReplaceMode
+     */
+    enum class AddReplaceMode {
+        eAddIfMissing,
+        eAddReplaces
+    };
+
+    /**
+     *  \brief Mode flag to say if Adding to a container replaces, or if the first addition wins (Logically AddOrExtendOrReplaceMode subclasses AddReplaceMode)
+     * 
+     *  \see also AddReplaceMode
+     */
+    struct AddOrExtendOrReplaceMode {
+    private:
+        constexpr AddOrExtendOrReplaceMode (uint8_t v) noexcept;
+
+    public:
+        /**
+         */
+        constexpr AddOrExtendOrReplaceMode (AddReplaceMode v) noexcept;
+        constexpr AddOrExtendOrReplaceMode (const AddOrExtendOrReplaceMode&) noexcept = default;
+
+    public:
+        /**
+         * allows values to be used in switch statements...
+         */
+        constexpr operator uint8_t () const noexcept;
+
+    public:
+        /**
+         * same value as AddReplaceMode::eAddIfMissing
+         */
+        static const AddOrExtendOrReplaceMode eAddIfMissing;
+        /**
+         * same value as AddReplaceMode::eAddReplaces
+         */
+        static const AddOrExtendOrReplaceMode eAddReplaces;
+
+        /**
+         */
+        static const AddOrExtendOrReplaceMode eAddExtras;
+
+        /**
+         */
+        static const AddOrExtendOrReplaceMode eDuplicatesRejected;
+
+    private:
+        uint8_t fValue_;
+    };
 
 }
 

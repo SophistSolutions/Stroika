@@ -4,6 +4,7 @@
 #include <random>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
@@ -164,21 +165,37 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return FindNode_ (key) != nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& key, const mapped_type& val)
+    bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& key, const mapped_type& val, AddOrExtendOrReplaceMode addOrReplaceMode)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         vector<Node_*>                                  links;
-
-        Node_* n = FindNearest_ (key, links);
-        if ((n != nullptr) and (TRAITS::kPolicy & SkipList_Support::eDuplicateAddThrowException)) {
-            // @todo named subclass of runtime exption / logic exption or ??? See other stroika appraoches throw DuplicateAddException ();
+        Node_*                                          n = FindNearest_ (key, links);
+        if (n == nullptr) {
+            AddNode_ (new Node_ (key, val), links);
+            return true;
         }
-        AddNode_ (new Node_ (key, val), links);
+        else {
+            switch (addOrReplaceMode) {
+                case AddOrExtendOrReplaceMode::eAddIfMissing:
+                    return false;
+                case AddOrExtendOrReplaceMode::eAddReplaces:
+                    n->fEntry.fValue = val;
+                    return true;
+                case AddOrExtendOrReplaceMode::eAddExtras:
+                    AddNode_ (new Node_ (key, val), links);
+                    return true;
+                case AddOrExtendOrReplaceMode::eDuplicatesRejected:
+                    static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
+                    Execution::Throw (kExcept_);
+            }
+            AssertNotReached ();
+            return false;
+        }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v)
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v, AddOrExtendOrReplaceMode addOrReplaceMode)
     {
-        Add (v.fKey, v.fValue);
+        return Add (v.fKey, v.fValue, addOrReplaceMode);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddNode_ (Node_* node, const vector<Node_*>& links)
@@ -212,21 +229,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ++fLength_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const key_type& key)
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const key_type& key)
+    {
+        Verify (RemoveIf (key));
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveIf (const key_type& key)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         vector<Node_*>                                  links;
         Node_*                                          n = FindNearest_ (key, links);
         if (n != nullptr) {
             RemoveNode_ (n, links);
+            return true;
         }
         else {
-#if 0
-            // @todo new policy handler
-            if (not(TRAITS::kPolicy & ADT::eInvalidRemoveIgnored)) {
-                throw InvalidRemovalException ();
-            }
-#endif
+            return false;
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>

@@ -42,14 +42,6 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  @todo consider moving this elsewhere in containers code (Containers/Common.h) as this maybe useful elsewhere
-     */
-    enum class AddReplaceMode {
-        eAddIfMissing,
-        eAddReplaces
-    };
-
-    /**
      *  \brief document requirements for a Mapping key
      * 
      *  \note we do NOT require equality_comparable<KEY_TYPE>, but if its not, Mapping's must be created with a comparison function.
