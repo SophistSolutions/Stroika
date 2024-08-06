@@ -81,7 +81,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Key Features (compared with balanced binary tree)
             o   Explicit Rebalance () call
             o   (optional)Prioritize() call - can optimize lookup of any key
-                SkipLists have the following desireable features
             o   fast find, reasonably fast add and remove (about 20-30% as many comparisons as finds)
             o   robust about order of additions
             o   space efficient (1.33 links per value, as opposed to tree structures requiring 2 links per value)
