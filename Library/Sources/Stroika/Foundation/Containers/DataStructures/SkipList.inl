@@ -42,13 +42,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (KeyComparerType keyComparer)
-        : fKeysStrictInOrderComparer_{keyComparer}
+        : fKeyThreeWayComparer_{keyComparer}
     {
         GrowHeadLinksIfNeeded_ (1, nullptr);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (const SkipList& s)
-        : fKeysStrictInOrderComparer_{s.fKeysStrictInOrderComparer_}
+        : fKeyThreeWayComparer_{s.fKeyThreeWayComparer_}
     {
         operator= (s);
     }
@@ -116,12 +116,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNode_ (const key_type& key) const -> Node_*
     {
+        using Common::ToInt;
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Assert (fHead_.size () > 0);
         vector<Node_*> const* startV = &fHead_;
         for (size_t linkHeight = fHead_.size (); linkHeight > 0; --linkHeight) {
             Node_* n = (*startV)[linkHeight - 1];
-            // tweak to use pointer comparisons rather than key field compares. We know any link heigher than the current link being
+            // tweak to use pointer comparisons rather than key field compares. We know any link higher than the current link being
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
             Node_* overShotNode = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
@@ -129,17 +130,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
                 }
-                if (fKeysStrictInOrderComparer_ (n->fEntry.fKey, key)) {
-                    startV = &n->fNext;
-                    n      = n->fNext[linkHeight - 1];
-                }
-                else if (not fKeysStrictInOrderComparer_ (key, n->fEntry.fKey)) {
-                    return n;
-                }
-                else {
-                    break; // overshot
+                switch (ToInt (fKeyThreeWayComparer_ (n->fEntry.fKey, key))) {
+                    case ToInt (strong_ordering::equal):
+                        return n;
+                    case ToInt (strong_ordering::less):
+                        startV = &n->fNext;
+                        n      = n->fNext[linkHeight - 1];
+                        break;
+                    case ToInt (strong_ordering::greater):
+                        goto overshoot;
                 }
             }
+        overshoot:;
         }
         return nullptr;
     }
@@ -312,6 +314,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Node_* SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const key_type& key,
                                                                                                                     vector<Node_*>& links) const
     {
+        using Common::ToInt;
         Require (links.size () == 0); // we want to be passed in a totally empty vector
         Assert (fHead_.size () > 0);
         links                  = fHead_;
@@ -324,27 +327,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
             Node_* overShotNode = newOverShotNode;
-            Assert (n == nullptr or overShotNode == nullptr or (not fKeysStrictInOrderComparer_ (overShotNode->fEntry.fKey, n->fEntry.fKey)));
+            Assert (n == nullptr or overShotNode == nullptr or (fKeyThreeWayComparer_ (overShotNode->fEntry.fKey, n->fEntry.fKey) != strong_ordering::greater));
 
             links[linkIndex] = nullptr;
             while (n != overShotNode) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
                 }
-                if (fKeysStrictInOrderComparer_ (n->fEntry.fKey, key)) {
-                    links[linkIndex] = n;
-                    n                = n->fNext[linkIndex];
-                    newOverShotNode  = n;
-                }
-                else if (not fKeysStrictInOrderComparer_ (key, n->fEntry.fKey)) {
-                    foundNode       = n;
-                    newOverShotNode = foundNode;
-                    break;
-                }
-                else {
-                    break;
+                switch (ToInt (fKeyThreeWayComparer_ (n->fEntry.fKey, key))) {
+                    case ToInt (strong_ordering::equal):
+                        foundNode       = n;
+                        newOverShotNode = foundNode;
+                        break;
+                    case ToInt (strong_ordering::less):
+                        links[linkIndex] = n;
+                        n                = n->fNext[linkIndex];
+                        newOverShotNode  = n;
+                        break;
+                    case ToInt (strong_ordering::greater):
+                        goto overshoot;
                 }
             }
+        overshoot:;
             if (linkIndex > 0 and links[linkIndex] != nullptr) {
                 links[linkIndex - 1] = links[linkIndex];
             }

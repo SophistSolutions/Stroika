@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace SkipList_Support {
 
-        template <typename KEY_TYPE, Common::IInOrderComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>>
+        template <typename KEY_TYPE, /*Common::IThreeWayComparer<KEY_TYPE>*/typename KEY_COMPARER = compare_three_way>
         struct DefaultTraits {
             using KeyComparerType = KEY_COMPARER;
 
@@ -48,7 +48,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         template <typename TRAITS, typename KEY_TYPE>
-        concept IValidTraits = Common::IInOrderComparer<typename TRAITS::KeyComparerType, KEY_TYPE> and requires (TRAITS a) {
+        concept IValidTraits = true;
+            
+            #if 0
+            Common::IThreeWayComparer < typename TRAITS::KeyComparerType, KEY_TYPE>and requires(TRAITS a) {
             {
                 TRAITS::kKeepStatistics
             } -> std::convertible_to<bool>;
@@ -56,6 +59,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 TRAITS::kDefaultAddOrExtendOrReplaceMode
             } -> std::convertible_to<AddOrExtendOrReplaceMode>;
         };
+        #endif
 
         struct Stats_Basic {
             size_t fCompares{0};
@@ -383,7 +387,7 @@ From Wikipedia:
         nonvirtual size_t DetermineLinkHeight_ () const;
 
     private:
-        [[no_unique_address]] KeyComparerType   fKeysStrictInOrderComparer_;
+        [[no_unique_address]] KeyComparerType   fKeyThreeWayComparer_;
         size_t                                  fLength_{0};
         [[no_unique_address]] mutable StatsType fStats_;
     };
