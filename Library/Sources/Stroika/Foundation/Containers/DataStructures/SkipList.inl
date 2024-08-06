@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return FindNode_ (key) != nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& key, const mapped_type& val, AddOrExtendOrReplaceMode addOrReplaceMode)
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& key, const mapped_type& val)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         vector<Node_*>                                  links;
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return true;
         }
         else {
-            switch (addOrReplaceMode) {
+            switch (TRAITS::kAddOrExtendOrReplaceMode) {
                 case AddOrExtendOrReplaceMode::eAddIfMissing:
                     return false;
                 case AddOrExtendOrReplaceMode::eAddReplaces:
@@ -193,9 +193,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v, AddOrExtendOrReplaceMode addOrReplaceMode)
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v)
     {
-        return Add (v.fKey, v.fValue, addOrReplaceMode);
+        return Add (v.fKey, v.fValue);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddNode_ (Node_* node, const vector<Node_*>& links)
@@ -327,7 +327,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
             Node_* overShotNode = newOverShotNode;
-            Assert (n == nullptr or overShotNode == nullptr or (fKeyThreeWayComparer_ (overShotNode->fEntry.fKey, n->fEntry.fKey) != strong_ordering::greater));
+            Assert (n == nullptr or overShotNode == nullptr or
+                    (fKeyThreeWayComparer_ (overShotNode->fEntry.fKey, n->fEntry.fKey) != strong_ordering::greater));
 
             links[linkIndex] = nullptr;
             while (n != overShotNode) {

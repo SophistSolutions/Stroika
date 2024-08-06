@@ -22,7 +22,7 @@
  * TODO:
  *      STATUS : nearly working - but still several man-hours to complete - plan to work with sterl on this... --LGP 2024-08-05
  *      - @todo consider if this API should use IThreeWayComparer instead of less, since that seems to be how
- *        itsused (better matches how its used)
+ *        its used (better matches how its used)
  *
  */
 
@@ -30,14 +30,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace SkipList_Support {
 
-        template <typename KEY_TYPE, /*Common::IThreeWayComparer<KEY_TYPE>*/typename KEY_COMPARER = compare_three_way>
+        template <typename KEY_TYPE, /*Common::IThreeWayComparer<KEY_TYPE>*/ typename KEY_COMPARER = compare_three_way,
+                  AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras>
         struct DefaultTraits {
             using KeyComparerType = KEY_COMPARER;
 
             /**
              *  no idea what good default is here... Probably isn't one...
              */
-            static constexpr AddOrExtendOrReplaceMode kDefaultAddOrExtendOrReplaceMode{AddOrExtendOrReplaceMode::eAddIfMissing};
+            static constexpr AddOrExtendOrReplaceMode kAddOrExtendOrReplaceMode{addOrExtendOrReplace};
 
             /**
              *  Store stats about performance of SkipList, for tuning purposes
@@ -49,17 +50,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         template <typename TRAITS, typename KEY_TYPE>
         concept IValidTraits = true;
-            
-            #if 0
+
+#if 0
             Common::IThreeWayComparer < typename TRAITS::KeyComparerType, KEY_TYPE>and requires(TRAITS a) {
             {
                 TRAITS::kKeepStatistics
             } -> std::convertible_to<bool>;
             {
-                TRAITS::kDefaultAddOrExtendOrReplaceMode
+                TRAITS::kAddOrExtendOrReplaceMode
             } -> std::convertible_to<AddOrExtendOrReplaceMode>;
         };
-        #endif
+#endif
 
         struct Stats_Basic {
             size_t fCompares{0};
@@ -136,7 +137,9 @@ From Wikipedia:
 
 
    The "expected" above is from wikipedia, and is calculated as (log base 1/p n)/p.
-
+     *
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
@@ -190,9 +193,8 @@ From Wikipedia:
          *  \note Complexity:
          *      Average/WorseCase???
          */
-        nonvirtual bool Add (const key_type& key, const mapped_type& val,
-                             AddOrExtendOrReplaceMode addOrReplaceMode = TRAITS::kDefaultAddOrExtendOrReplaceMode);
-        nonvirtual bool Add (const value_type& v, AddOrExtendOrReplaceMode addOrReplaceMode = TRAITS::kDefaultAddOrExtendOrReplaceMode);
+        nonvirtual bool Add (const key_type& key, const mapped_type& val);
+        nonvirtual bool Add (const value_type& v);
 
     public:
         /**
