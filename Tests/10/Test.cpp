@@ -26,7 +26,7 @@ using namespace Stroika::Frameworks;
 namespace {
 
     // removed from stdc++ but still handy here
-template <class RandomIt>
+    template <class RandomIt>
     void random_shuffle_ (RandomIt first, RandomIt last)
     {
         typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
@@ -77,10 +77,10 @@ namespace {
             optional<KEY_TYPE>        biggestKey;
             for (int i = 1; i <= testLength; ++i) {
                 KEY_TYPE key{i};
-                Assert (not t.Find (key));
+                EXPECT_TRUE (not t.Find (key));
                 t.Add (key, i);
-                Assert (t.size () == i);
-                Assert (t.Find (key, &val) and (val == i));
+                EXPECT_TRUE (t.size () == i);
+                EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Invariant ();
                 strong_ordering comp = t.GetComparer () (biggestKey, key);
                 if (comp == strong_ordering::greater or comp == strong_ordering::less) {
@@ -89,22 +89,21 @@ namespace {
             }
             for (int i = 1; i <= testLength; ++i) {
                 KEY_TYPE key{i};
-                Assert (t.Find (key, &val) and (val == i));
+                EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Remove (key);
-                Assert (not t.Find (key));
-                Assert (t.size () == testLength - i);
+                EXPECT_TRUE (not t.Find (key));
+                EXPECT_TRUE (t.size () == testLength - i);
                 t.Invariant ();
             }
             Assert (t.size () == 0);
             DbgTrace ("Add and remove {} items, backwards direction"_f, testLength);
             for (int i = static_cast<int> (testLength); i >= 1; --i) {
                 KEY_TYPE key{i};
-                Assert (not t.Find (key));
+                EXPECT_TRUE (not t.Find (key));
                 t.Add (key, i);
-                Assert (t.size () == testLength - i + 1);
-                Assert (t.Find (key, &val) and (val == i));
+                EXPECT_TRUE (t.size () == testLength - i + 1);
+                EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Invariant ();
-
                 Assert (biggestKey);
                 strong_ordering comp = t.GetComparer () (*biggestKey, key);
                 if (i == testLength or comp < 0) {
@@ -113,10 +112,10 @@ namespace {
             }
             for (int i = static_cast<int> (testLength); i >= 1; --i) {
                 KEY_TYPE key{i};
-                Assert (t.Find (key, &val) and (val == i));
+                EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Remove (key);
-                Assert (not t.Find (key));
-                Assert (t.size () == i - 1);
+                EXPECT_TRUE (not t.Find (key));
+                EXPECT_TRUE (t.size () == i - 1);
                 t.Invariant ();
             }
             Assert (t.size () == 0);
@@ -151,14 +150,14 @@ namespace {
             optional<KEY_TYPE> smallestKey;
             for (int i = 0; i < data.size (); ++i) {
                 KEY_TYPE key = {data[i]};
-                Assert (not t.Find (key));
+                EXPECT_TRUE (not t.Find (key));
                 t.Add (key, i);
-                Assert (t.size () == i + 1);
-                Assert (t.Find (key, &val) and (val == i));
+                EXPECT_TRUE (t.size () == i + 1);
+                EXPECT_TRUE (t.Find (key, &val) and (val == i));
                 t.Invariant ();
                 if (i == 0) {
                     smallestKey = key;
-                    biggestKey = key;
+                    biggestKey  = key;
                 }
                 if (t.GetComparer () (*biggestKey, key) < 0) {
                     biggestKey = key;
@@ -170,13 +169,13 @@ namespace {
             random_shuffle_ (data.begin (), data.end ());
             for (int i = 0; i <= static_cast<int> (testLength - 1); ++i) {
                 KEY_TYPE v = {data[i]};
-                Assert (t.Find (v));
+                EXPECT_TRUE (t.Find (v));
                 t.Remove (v);
-                Assert (not t.Find (v));
-                Assert (t.size () == testLength - i - 1);
+                EXPECT_TRUE (not t.Find (v));
+                EXPECT_TRUE (t.size () == testLength - i - 1);
                 t.Invariant ();
             }
-            Assert (t.size () == 0);
+            EXPECT_TRUE (t.size () == 0);
         }
     }
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, RandomOrderAddRemoveTests_)
@@ -184,6 +183,46 @@ namespace {
         Debug::TraceContextBumper ctx{"RandomOrderAddRemoveTests_"};
         SkipList<int, int>        t;
         Private_::RandomOrderAddRemoveTestsHelper_ (t, 25);
+    }
+
+}
+
+namespace {
+    namespace Private_ {
+        template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
+        void OptimizeTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
+        {
+            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.GetComparer ()};
+            Require (t.size () == 0);
+            Debug::TraceContextBumper ctx{"Balance Tests", "Add and remove (len={})"_f, testLength};
+
+            vector<int> data;
+            data.reserve (testLength);
+            for (int i = 0; i < static_cast<int> (testLength); ++i) {
+                data.push_back (i);
+            }
+            random_shuffle_ (data.begin (), data.end ());
+            MAPPED_TYPE val = 0;
+            for (int i = 0; i < static_cast<int> (data.size ()); ++i) {
+                KEY_TYPE key{data[i]};
+                t.Add (key, i);
+            }
+            EXPECT_TRUE (t.size () == testLength);
+            t.Invariant ();
+            t.ReBalance ();
+            t.Invariant ();
+            Assert (t.size () == testLength);
+            for (size_t i = 0; i <= static_cast<int> (testLength - 1); ++i) {
+                KEY_TYPE key{data[i]};
+                EXPECT_TRUE (t.Find (key, &val) and (val == i));
+            }
+        }
+    }
+    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, OptimizeTests_)
+    {
+        Debug::TraceContextBumper ctx{"RandomOrderAddRemoveTests_"};
+        SkipList<int, int>        t;
+        Private_::OptimizeTestsHelper_ (t, 25);
     }
 
 }
