@@ -120,6 +120,34 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return ForwardIterator{this, nullptr};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const SkipList* movedFrom) const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        RequireNotNull (pi);
+        RequireNotNull (movedFrom);
+        Require (pi->fData_ == movedFrom);
+        // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
+        // only way
+        //
+        // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
+        // old for old, and when I match, stop on new
+        Node_*                  newI = this->fHead_[0];
+        [[maybe_unused]] Node_* newE = nullptr;
+        Node_*                  oldI = movedFrom->fHead_[0];
+        [[maybe_unused]] Node_* oldE = nullptr;
+        while (oldI != pi->fCurrent_) {
+            Assert (newI != newE);
+            Assert (oldI != oldE);
+            newI = newI->fNext[0];
+            oldI = oldI->fNext[0];
+            Assert (newI != newE);
+            Assert (oldI != oldE);
+        }
+        Assert (oldI == pi->fCurrent_);
+        pi->fCurrent_ = newI;
+        pi->fData_    = this;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNode_ (const key_type& key) const -> Node_*
     {
         using Common::ToInt;
@@ -608,7 +636,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Current () const -> value_type
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator* () const -> value_type
     {
         RequireNotNull (fCurrent_);
         return fCurrent_->fEntry;
@@ -616,13 +644,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline constexpr bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
+#if qDebug
         Require (fData_ == nullptr or rhs.fData_ == nullptr or fData_ == rhs.fData_);
+#endif
         return fCurrent_ == rhs.fCurrent_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::GetUnderlyingData () const -> const SkipList*
+    constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
-        return fData_;
+        return fCurrent_;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::SetUnderlyingIteratorRep (const UnderlyingIteratorRep l)
+    {
+        fCurrent_ = l;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ () -> ForwardIterator&

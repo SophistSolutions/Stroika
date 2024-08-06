@@ -262,6 +262,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator end () const;
 
     public:
+        /*
+         *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+         *  iterator from 'this' - which points at the same logical position. This requires that this container
+         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+         *  the container they were iterating over).
+         */
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const SkipList* movedFrom) const;
+
+    public:
         /**
          *  \see https://en.cppreference.com/w/cpp/container/map/contains
          *
@@ -441,7 +450,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     public:
-        nonvirtual value_type Current () const; //  Error to call if Done (), otherwise OK
+        nonvirtual value_type operator* () const; //  Error to call if Done (), otherwise OK
 
     public:
         /**
@@ -450,7 +459,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         constexpr bool operator== (const ForwardIterator& rhs) const;
 
     public:
-        constexpr const SkipList* GetUnderlyingData () const;
+        constexpr UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
+
+    public:
+        nonvirtual void SetUnderlyingIteratorRep (const UnderlyingIteratorRep l);
 
     public:
         nonvirtual ForwardIterator& operator++ ();

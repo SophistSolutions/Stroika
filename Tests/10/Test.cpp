@@ -54,7 +54,7 @@ namespace {
         SkipList<int, int>        t;
         EXPECT_EQ (distance (t.begin (), t.end ()), 0);
         t.Add (1, 2);
-        EXPECT_EQ (distance (t.begin (), t.end ()), 1); // not sure this will work with my tmphakc impl of ++
+        EXPECT_EQ (distance (t.begin (), t.end ()), 1);
     }
 }
 
