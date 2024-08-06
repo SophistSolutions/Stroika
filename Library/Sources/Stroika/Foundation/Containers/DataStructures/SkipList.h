@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace SkipList_Support {
 
-        template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE>  KEY_COMPARER = compare_three_way, AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras>
+        template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way, AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras>
         struct DefaultTraits {
             using KeyComparerType = KEY_COMPARER;
 
@@ -43,23 +43,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
              *  Store stats about performance of SkipList, for tuning purposes
              */
             static constexpr bool kKeepStatistics{false};
+
+            /**
+             */
+            static constexpr bool kCostlyInvariants{true};  //tmphack set true
         };
 
         /**
          */
         template <typename TRAITS, typename KEY_TYPE>
-        concept IValidTraits =
-
-#if 1
-            Common::IThreeWayComparer<typename TRAITS::KeyComparerType, KEY_TYPE> and requires (TRAITS a) {
-                {
-                    TRAITS::kKeepStatistics
-                } -> std::convertible_to<bool>;
-                {
-                    TRAITS::kAddOrExtendOrReplaceMode
-                } -> std::convertible_to<AddOrExtendOrReplaceMode>;
-            };
-#endif
+        concept IValidTraits = Common::IThreeWayComparer<typename TRAITS::KeyComparerType, KEY_TYPE> and requires (TRAITS a) {
+            {
+                TRAITS::kKeepStatistics
+            } -> std::convertible_to<bool>;
+            {
+                TRAITS::kAddOrExtendOrReplaceMode
+            } -> std::convertible_to<AddOrExtendOrReplaceMode>;
+        };
 
         struct Stats_Basic {
             size_t fCompares{0};
@@ -102,6 +102,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      each node may have a list of additional pointers that go (each progressively) further into the linked
      *      list. Ideally, these 'jumps' deeper into the linked list would be 'well spaced' so that you approach
      *      log(N) lookup times trying to find a Node.
+     * 
+     *      For each node, the fLinks[0] is always == NEXT link.
      * 
     
     @todo DISCUSS WITH STERL
@@ -192,6 +194,11 @@ From Wikipedia:
 
     public:
         /**
+         */
+        nonvirtual KeyComparerType GetComparer () const;
+
+    public:
+        /**
          *  You can add more than one item with the same key. If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove calls.
          *
          *  Returns true if the list was changed (if eAddReplaces, and key found, return true even if val same as value already there because we cannot generically compare values)
@@ -232,10 +239,17 @@ From Wikipedia:
 
     public:
         /**
-        * @todo better document - cost and means same as length - ; unclear rule about DUPS (DOC IN CLASS DECLARATION)
-        * 
+         *  \note Complexity:
+         *      Always: constant
          */
-        nonvirtual size_t size () const; // always equal to total Add minus total Remove
+        nonvirtual size_t size () const;
+
+    public:
+        /**
+         *  \note Complexity:
+         *      Always: constant
+         */
+        nonvirtual bool empty () const;
 
     public:
         class ForwardIterator;
@@ -309,13 +323,12 @@ From Wikipedia:
         nonvirtual void Prioritize (const key_type& key);
 
     public:
-        nonvirtual void Invariant () const noexcept;
+        constexpr void Invariant () const noexcept;
 
 #if qDebug
         // @todo maybe lose these APIs?? Can do with iterator easily enuf, and validateall part of invariant???
     public:
         nonvirtual void ListAll () const;
-        nonvirtual void ValidateAll () const;
 #endif
 
     public:

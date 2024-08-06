@@ -102,6 +102,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fLength_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::empty () const
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        return fLength_ == 0;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () const -> ForwardIterator
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
@@ -165,11 +171,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return FindNode_ (key) != nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetComparer () const -> KeyComparerType
+    {
+        return this->fKeyThreeWayComparer_;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& key, const mapped_type& val)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        vector<Node_*>                                  links;
-        Node_*                                          n = FindNearest_ (key, links);
+        if constexpr (TRAITS::kCostlyInvariants) {
+            Invariant ();
+        }
+        vector<Node_*> links;
+        Node_*         n = FindNearest_ (key, links);
         if (n == nullptr) {
             AddNode_ (new Node_{key, val}, links);
             return true;
@@ -234,10 +248,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveIf (const key_type& key)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        vector<Node_*>                                  links;
-        Node_*                                          n = FindNearest_ (key, links);
+        if constexpr (TRAITS::kCostlyInvariants) {
+            Invariant ();
+        }
+        vector<Node_*> links;
+        Node_*         n = FindNearest_ (key, links);
         if (n != nullptr) {
             RemoveNode_ (n, links);
+            if constexpr (TRAITS::kCostlyInvariants) {
+                Invariant ();
+            }
             return true;
         }
         else {
@@ -247,6 +267,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveNode_ (Node_* n, const vector<Node_*>& links)
     {
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         for (auto it = links.begin (); it != links.end (); ++it) {
             size_t  index     = it - links.begin ();
             Node_** patchNode = (*it == nullptr) ? &fHead_[index] : &(*it)->fNext[index];
@@ -299,7 +320,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveAll ()
     {
-        Node_* link = (fHead_.size () == 0) ? nullptr : fHead_[0];
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Node_*                                          link = (fHead_.size () == 0) ? nullptr : fHead_[0];
         while (link != nullptr) {
             Node_* nextLink = link->fNext[0];
             delete link;
@@ -512,27 +534,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         cout << endl << flush;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ValidateAll () const
-    {
-        Node_* n = fHead_[0];
-
-        while (n != nullptr) {
-            KEY_TYPE oldKey = n->fEntry.fKey;
-            for (size_t i = 1; i < n->fNext.size (); ++i) {
-                Node_* newN = n->fNext[i];
-                if (n == nullptr) {
-                    Assert (newN == nullptr);
-                }
-                else {
-                    Assert (newN != n);
-                    Assert (newN == nullptr or (TRAITS::Comparer::Compare (oldKey, newN->fEntry.fKey) <= 0));
-                }
-            }
-            n = n->fNext[0];
-            Assert (n == nullptr or (TRAITS::Comparer::Compare (n->fEntry.fKey, oldKey) >= 0));
-        }
-    }
 #endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::CalcHeight (size_t* totalHeight) const
@@ -550,6 +551,35 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return fHead_.size ();
     }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant () const noexcept
+    {
+#if qDebug
+        Invariant_ ();
+#endif
+    }
+#if qDebug
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant_ () const noexcept
+    {
+        Node_* n = fHead_[0];
+        while (n != nullptr) {
+            KEY_TYPE oldKey = n->fEntry.fKey;
+            for (size_t i = 1; i < n->fNext.size (); ++i) {
+                Node_* newN = n->fNext[i];
+                if (n == nullptr) {
+                    Assert (newN == nullptr);
+                }
+                else {
+                    Assert (newN != n);
+                    Assert (newN == nullptr or fKeyThreeWayComparer_ (oldKey, newN->fEntry.fKey) != strong_ordering::greater);
+                }
+            }
+            n = n->fNext[0];
+            Assert (n == nullptr or (fKeyThreeWayComparer_ (n->fEntry.fKey, oldKey) != strong_ordering::less));
+        }
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -589,7 +619,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ () -> ForwardIterator&
     {
-        fCurrent_ = fCurrent_->fNext[0]; //tmphack...
+        fCurrent_ = fCurrent_->fNext[0];
         return *this;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
