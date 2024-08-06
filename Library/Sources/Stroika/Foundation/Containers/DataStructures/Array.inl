@@ -477,7 +477,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::IteratorBase::~IteratorBase ()
     {
         // hack so crash and debug easier
-        fData_       = reinterpret_cast<Array<T>*> (-1);
+#if qDebug
+        fData_ = reinterpret_cast<Array<T>*> (-1);
+#endif
         fCurrentIdx_ = numeric_limits<size_t>::max ();
     }
 #endif
@@ -485,6 +487,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool Array<T>::IteratorBase::Equals (const IteratorBase& rhs) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
+        Require (fData_ == rhs.fData_);
         return fCurrentIdx_ == rhs.fCurrentIdx_;
     }
     template <typename T>
