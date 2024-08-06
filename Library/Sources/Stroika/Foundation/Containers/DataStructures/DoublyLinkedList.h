@@ -62,7 +62,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual DoublyLinkedList& operator= (const DoublyLinkedList& list);
 
-    public:
     private:
         class Link_;
 
@@ -296,7 +295,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual bool Done () const noexcept;
 
-        nonvirtual T                Current () const;
+    public:
+        nonvirtual T Current () const;
+
+    public:
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:

@@ -105,7 +105,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      A skip list is a data structure for storing a sorted list of items using a hierarchy of linked lists that connect
      *      increasingly sparse subsequences of the items. These auxiliary lists allow item lookup with efficiency comparable 
      *      to balanced binary search trees (that is, with number of probes proportional to log n instead of n).
-     * 
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      * 
@@ -137,7 +136,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
     private:
-        struct Node_;
+        struct Link_;
 
     public:
         /**
@@ -174,7 +173,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  Basic (mostly internal) element used by ForwardIterator. Abstract name so can be referenced generically across 'DataStructure' objects
          */
-        using UnderlyingIteratorRep = const Node_*;
+        using UnderlyingIteratorRep = const Link_*;
 
     public:
         /**
@@ -364,9 +363,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  These return the first and last entries in the tree (defined as the first and last entries that would be returned via
          *  iteration, assuming other users did not alter the tree.  Note that these routines require no key compares, and are thus very fast.
          */
-        nonvirtual Node_* GetFirst_ () const; // synonym for begin (), MakeIterator ()
+        nonvirtual Link_* GetFirst_ () const; // synonym for begin (), MakeIterator ()
     private:
-        nonvirtual Node_* GetLast_ () const; // returns iterator to largest key
+        nonvirtual Link_* GetLast_ () const; // returns iterator to largest key
 
     private:
         // @todo maybe make part of traits??? and use in InlineBuffer somehow? instead of vector
@@ -374,20 +373,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
         static constexpr size_t kMaxLinkHeight_ = sizeof (size_t) * 8;
 
     private:
-        struct Node_ : public Memory::UseBlockAllocationIfAppropriate<Node_> {
-            constexpr Node_ (const key_type& key, const mapped_type& val);
+        // Fundamentally a linked-list, but with a quirky 'next' pointer(s)
+        struct Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (value_type) <= 1024> {
+            constexpr Link_ (const key_type& key, const mapped_type& val);
 
             value_type     fEntry;
-            vector<Node_*> fNext; // for a skiplist, you have an array of next pointers, rather than just one
+            vector<Link_*> fNext; // for a SkipList, you have an array of next pointers, rather than just one
             // @todo consider using Memory::InlineBuffer<> - so fewer memory allocations for some small buffer size???, and tune impl to prefer this size or take param in traits used for this
         };
-        vector<Node_*> fHead_;
+        vector<Link_*> fHead_;
 
     private:
         /*
-         * Find node for key in skiplist, else nullptr. In cases of duplicate values, return first found
+         * Find node for key in SkipList, else nullptr. In cases of duplicate values, return first found
          */
-        nonvirtual Node_* FindNode_ (const key_type& key) const;
+        nonvirtual Link_* FindNode_ (const key_type& key) const;
 
     private:
         /*
@@ -398,13 +398,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *
          *      \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
          */
-        nonvirtual Node_* FindNearest_ (const key_type& key, vector<Node_*>& links) const;
+        nonvirtual Link_* FindNearest_ (const key_type& key, vector<Link_*>& links) const;
 
     private:
-        nonvirtual void AddNode_ (Node_* n, const vector<Node_*>& linksToPatch);
+        nonvirtual void AddNode_ (Link_* n, const vector<Link_*>& linksToPatch);
 
     private:
-        nonvirtual void RemoveNode_ (Node_* n, const vector<Node_*>& linksToPatch);
+        nonvirtual void RemoveNode_ (Link_* n, const vector<Link_*>& linksToPatch);
 
 #if qDebug
     private:
@@ -415,7 +415,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void ShrinkHeadLinksIfNeeded_ ();
 
     private:
-        nonvirtual void GrowHeadLinksIfNeeded_ (size_t newSize, Node_* nodeToPointTo);
+        nonvirtual void GrowHeadLinksIfNeeded_ (size_t newSize, Link_* nodeToPointTo);
 
     private:
         nonvirtual size_t DetermineLinkHeight_ () const;
@@ -454,6 +454,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \note Complexity:
+         *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
+         */
+        nonvirtual size_t CurrentIndex () const;
+
+    public:
+        /**
          *  \req GetUnderlyingData() == rhs.GetUnderlyingData (), or special case of one or the other is nullptr
          */
         constexpr bool operator== (const ForwardIterator& rhs) const;
@@ -476,10 +483,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     private:
-#if qDebug
-        const SkipList* fData_{nullptr}; // @todo - maybe only keep this for DEBUG case? Can we always navigate by Node_?
-#endif
-        const Node_* fCurrent_{nullptr};
+        const SkipList* fData_{nullptr}; // even needed in debug builds for CurrentIndex API
+        const Link_*    fCurrent_{nullptr};
 
     private:
         friend class SkipList;
