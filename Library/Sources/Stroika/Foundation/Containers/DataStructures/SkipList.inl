@@ -186,6 +186,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Node_*         n = FindNearest_ (key, links);
         if (n == nullptr) {
             AddNode_ (new Node_{key, val}, links);
+            if constexpr (TRAITS::kCostlyInvariants) {
+                Invariant ();
+            }
             return true;
         }
         else {
@@ -194,9 +197,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     return false;
                 case AddOrExtendOrReplaceMode::eAddReplaces:
                     n->fEntry.fValue = val;
+                    if constexpr (TRAITS::kCostlyInvariants) {
+                        Invariant ();
+                    }
                     return true;
                 case AddOrExtendOrReplaceMode::eAddExtras:
                     AddNode_ (new Node_{key, val}, links);
+                    if constexpr (TRAITS::kCostlyInvariants) {
+                        Invariant ();
+                    }
                     return true;
                 case AddOrExtendOrReplaceMode::eDuplicatesRejected:
                     static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
@@ -350,7 +359,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
             Node_* overShotNode = newOverShotNode;
             Assert (n == nullptr or overShotNode == nullptr or
-                    (fKeyThreeWayComparer_ (overShotNode->fEntry.fKey, n->fEntry.fKey) != strong_ordering::greater));
+                    (fKeyThreeWayComparer_ (n->fEntry.fKey, overShotNode->fEntry.fKey) != strong_ordering::greater));
 
             links[linkIndex] = nullptr;
             while (n != overShotNode) {
@@ -361,17 +370,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     case ToInt (strong_ordering::equal):
                         foundNode       = n;
                         newOverShotNode = foundNode;
-                        break;
+                        goto finished;
                     case ToInt (strong_ordering::less):
                         links[linkIndex] = n;
                         n                = n->fNext[linkIndex];
                         newOverShotNode  = n;
                         break;
                     case ToInt (strong_ordering::greater):
-                        goto overshoot;
+                        goto finished;
                 }
             }
-        overshoot:;
+        finished:;
             if (linkIndex > 0 and links[linkIndex] != nullptr) {
                 links[linkIndex - 1] = links[linkIndex];
             }
