@@ -80,6 +80,8 @@
  *
  *      @todo   (close to rvalue thing above) - fix construction/destruction stuff. More mdoern C++.
  *              That crap was written around 1990!!!
+ *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Containers::DataStructures {

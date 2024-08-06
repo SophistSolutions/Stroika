@@ -29,6 +29,7 @@
  *
  *      @todo   Include Performance numbers for each operation (done for many).
  *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  */
 

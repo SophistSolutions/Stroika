@@ -132,7 +132,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
             Node_* overShotNode = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
-            // Assert (overShotNode == nullptr); //tmphack to test
             while (n != overShotNode) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
@@ -593,8 +592,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data, const Node_* n)
+#if qDebug
         : fData_{data}
         , fCurrent_{n}
+#else
+        : fCurrent_{n}
+#endif
     {
     }
 #if qDebug
@@ -638,7 +641,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant_ () const noexcept
     {
-        // @todo
+        fData_->Invariant (); // @todo more... fNode from somewhere inside fData_....
     }
 #endif
 

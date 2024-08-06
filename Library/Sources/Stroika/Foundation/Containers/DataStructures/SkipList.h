@@ -18,12 +18,7 @@
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 /**
- *
- * TODO:
- *      STATUS : nearly working - but still several man-hours to complete - plan to work with sterl on this... --LGP 2024-08-05
- *      - @todo consider if this API should use IThreeWayComparer instead of less, since that seems to be how
- *        its used (better matches how its used)
- *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Containers::DataStructures {
@@ -32,6 +27,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way, AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras>
         struct DefaultTraits {
+            /**
+             */
             using KeyComparerType = KEY_COMPARER;
 
             /**
@@ -80,23 +77,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 
     /*
-     *
      *      SkipList<> is a (low level) data structure class. It is not intended to be directly
      *  used by programmers, except in implementing concrete container reps, but of course can be
      *  where extra performance maybe needed, over convenience and flexibility.
      *
-        Key Features (compared with balanced binary tree)
-            o   Explicit Rebalance () call
-            o   (optional)Prioritize() call - can optimize lookup of any key
-            o   fast find, reasonably fast add and remove (about 20-30% as many comparisons as finds)
-            o   robust about order of additions
-            o   space efficient (1.33 links per value, as opposed to tree structures requiring 2 links per value)
-            o   ability to add more than one entry with the same key
-            o   ability to reorder links into nearly optimal configuration. You can optimize the node structure in a skip list in a single pass (order N).
-                This reduces the total comparisons in a search by between 20 and 40%.
-            o   possible to efficiently parallelize (not yet attempted -- see http://www.1024cores.net/home/parallel-computing/concurrent-skip-list)
-            o   SkipLists support fast forward iteration (linked list traversal). They do not support backwards iteration.
-
+     *  Key Features (compared with balanced binary tree)
+     *      o   Explicit Rebalance () call
+     *      o   (optional)Prioritize() call - can optimize lookup of any key
+     *      o   fast find, reasonably fast add and remove (about 20-30% as many comparisons as finds)
+     *      o   robust about order of additions
+     *      o   space efficient (1.33 links per value, as opposed to tree structures requiring 2 links per value)
+     *      o   ability to add more than one entry with the same key
+     *      o   ability to reorder links into nearly optimal configuration. You can optimize the node structure in a skip list in a single pass (order N).
+     *          This reduces the total comparisons in a search by between 20 and 40%.
+     *      o   possible to efficiently parallelize (not yet attempted -- see http://www.1024cores.net/home/parallel-computing/concurrent-skip-list)
+     *      o   SkipLists support fast forward iteration (linked list traversal). They do not support backwards iteration.
+     *
      *  Design Overview:
      *      This is an ORDERED linked list. To get extra speed on lookups, besides a 'next' pointer,
      *      each node may have a list of additional pointers that go (each progressively) further into the linked
@@ -105,31 +101,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
      * 
      *      For each node, the fLinks[0] is always == NEXT link.
      * 
-    
-    @todo DISCUSS WITH STERL
-
-        o   I THINK IDEA IS ROUGHLY - std::map<KEY_TYPE,VALUE> - that compare is generally on KEY_TYPE (not on value), and can use where we would use std::map
-        o   NOT sure we need traits. CAN probably handle policies the way we do other such situations in stroika containers - with overloads.
-        o   Instead - just have as parameter to type - KEY_COMPARER.
-        o   OR - maybe KEEP traits for FLAG indicating 'keep statistics'; define StatisticsType record...
-
-
-            @todo assure works with MAPPED_TYPE=void
-
-            @todo - should we use shared_ptr for Node*? at last use blockallocation - must be more carefula bout leaks if not using shared_ptr
+     * \see http://en.wikipedia.org/wiki/Skip_list:
+     *      A skip list is a data structure for storing a sorted list of items using a hierarchy of linked lists that connect
+     *      increasingly sparse subsequences of the items. These auxiliary lists allow item lookup with efficiency comparable 
+     *      to balanced binary search trees (that is, with number of probes proportional to log n instead of n).
+     * 
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
 
 
-        // OLD DOCS to lift from
+        @todo assure works with MAPPED_TYPE=void
 
-From Wikipedia:
-    A skip list is a data structure for storing a sorted list of items using a hierarchy of linked lists that connect increasingly sparse subsequences of the items.
-    These auxiliary lists allow item lookup with efficiency comparable to balanced binary search trees (that is, with number of probes proportional to log n instead of n).
-    see http://en.wikipedia.org/wiki/Skip_list
+        @todo - should we use shared_ptr for Node*? at last use blockallocation - must be more carefula bout leaks if not using shared_ptr
 
 
+    // OLD DOCS to lift from (from SSW impl)
     In principle you can use different probabilies for having more than one link. The optimal probability for finds is 1/4, and that also produces a list
     that is more space efficient than a traditional binary tree, as it has only 1.33 nodes per entry, compared with a binary tree using 2.
-
 
     Testing SkipList of 100000 entries, sorted add, link creation probability of 0.25
       Unoptimized SkipList
@@ -143,11 +131,7 @@ From Wikipedia:
       find avg comparisons = 18.1852; expected = 33.2193
       find reduction = 36.8646%
 
-
    The "expected" above is from wikipedia, and is calculated as (log base 1/p n)/p.
-     *
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
@@ -346,6 +330,7 @@ From Wikipedia:
 
     public:
         /**
+         *  Instantiate with TRAITS::kKeepStatistics==true to get useful stats.
          */
         nonvirtual StatsType GetStats () const;
 
@@ -385,14 +370,11 @@ From Wikipedia:
     private:
         /*
          *  This searches the list for the given key. If found exactly, it is returned.
-
-         
-         // this is specialized for the case of adding or removing elements, as it caches
-        // all links that will need to be updated for the new element or the element to be removed
-
-
-                \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
-
+         *
+         * this is specialized for the case of adding or removing elements, as it caches
+         * all links that will need to be updated for the new element or the element to be removed
+         *
+         *      \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
          */
         nonvirtual Node_* FindNearest_ (const key_type& key, vector<Node_*>& links) const;
 
@@ -423,7 +405,6 @@ From Wikipedia:
     };
 
     /**
-    * DRAFT - INCOMPLETE... 
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     class SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator {
@@ -470,8 +451,10 @@ From Wikipedia:
 #endif
 
     private:
+#if qDebug
         const SkipList* fData_{nullptr}; // @todo - maybe only keep this for DEBUG case? Can we always navigate by Node_?
-        const Node_*    fCurrent_{nullptr};
+#endif
+        const Node_* fCurrent_{nullptr};
 
     private:
         friend class SkipList;
