@@ -23,8 +23,6 @@ TODO (Foundation::Containers::Concrete)
 	o	MAJOR and most important thing todo is copy forward Stroika 1.0 Archive concrete
 		implementations and update them for Stroika 2.0
 
-	o	Better documentation of THREAINDG support/control
-
 	o	Careful, precise documentation of semantics.
 
 	o	Perhaps use something like Concepts ('ElementTraits') to capture requirements on type "T" our

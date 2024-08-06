@@ -352,7 +352,7 @@ From Wikipedia:
             vector<Node_*> fNext; // for a skiplist, you have an array of next pointers, rather than just one
             // @todo consider using Memory::InlineBuffer<> - so fewer memory allocations for some small buffer size???, and tune impl to prefer this size or take param in traits used for this
         };
-        vector<Node_*> fHead;
+        vector<Node_*> fHead_;
 
     private:
         /*

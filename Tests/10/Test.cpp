@@ -17,6 +17,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Containers::DataStructures;
 
 using namespace Stroika::Frameworks;
 
@@ -24,7 +25,7 @@ using namespace Stroika::Frameworks;
 namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicSmokeTest)
     {
-        DataStructures::SkipList<int, int> t;
+        SkipList<int, int> t;
         EXPECT_TRUE (not t.contains (1));
         t.Add (1, 2);
         EXPECT_TRUE (t.contains (1));
@@ -34,7 +35,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicIteration)
     {
-        DataStructures::SkipList<int, int> t;
+        SkipList<int, int> t;
         EXPECT_EQ (distance (t.begin (), t.end ()), 0);
         t.Add (1, 2);
         //EXPECT_EQ (distance (t.begin (), t.end ()), 1); // not sure this will work with my tmphakc impl of ++
