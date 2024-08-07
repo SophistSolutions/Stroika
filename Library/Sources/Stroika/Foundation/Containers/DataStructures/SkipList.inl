@@ -8,8 +8,10 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
+    // a few smoke checks to assure SkipList defined properly...
     static_assert (constructible_from<SkipList<int, int>>);
     static_assert (constructible_from<SkipList<int, void>>);
+    static_assert (input_or_output_iterator<SkipList<int, int>::ForwardIterator>);
 
     namespace Private_ {
 
@@ -194,7 +196,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         return ForwardIterator{this, FindNode_ (key)};
     }
-    #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) const -> ForwardIterator
@@ -206,7 +208,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return end ();
     }
-    #endif
+#endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (ArgByValueType<key_type> key) const -> optional<mapped_type>
     {
@@ -215,7 +217,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return nullopt;
     }
-    #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (FUNCTION&& firstThat) const -> optional<mapped_type>
@@ -227,7 +229,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return nullopt;
     }
-    #endif
+#endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (ArgByValueType<key_type> key) const
     {
@@ -778,6 +780,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         fCurrent_ = fCurrent_->fNext[0];
         return *this;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ (int) -> ForwardIterator
+    {
+        ForwardIterator result = *this;
+        this->operator++ ();
+        return result;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept
