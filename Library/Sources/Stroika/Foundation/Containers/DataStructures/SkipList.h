@@ -23,6 +23,8 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
+    using Configuration::ArgByValueType;
+
     namespace SkipList_Support {
 
         template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way, AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras>
@@ -202,7 +204,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average:    log(N)
          *      Worst:      N
          */
-        nonvirtual bool Add (const key_type& key, const mapped_type& val);
+        nonvirtual bool Add (ArgByValueType<key_type> key)
+            requires (same_as<mapped_type, void>);
+        template <typename CHECK_T = mapped_type>
+        nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val)
+            requires (not same_as<mapped_type, void>);
         nonvirtual bool Add (const value_type& v);
 
     public:
@@ -217,7 +223,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average:    log(N)
          *      Worst:      N
          */
-        nonvirtual void Remove (const key_type& key);
+        nonvirtual void Remove (ArgByValueType<key_type> key);
 
     public:
         /**
@@ -227,7 +233,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average:    log(N)
          *      Worst:      N
          */
-        nonvirtual bool RemoveIf (const key_type& key);
+        nonvirtual bool RemoveIf (ArgByValueType<key_type> key);
 
     public:
         /**
@@ -279,7 +285,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average:    log(N)
          *      Worst:      N
          */
-        nonvirtual bool contains (const key_type& key) const;
+        nonvirtual bool contains (ArgByValueType<key_type> key) const;
 
     public:
         /*
@@ -295,15 +301,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     maybe replace with LookupOne (returns optional) - maybe FindOne? See names used elsewhere
                     Find (returns Iterator<> with promise all 'equal value' items sorted together.
                     */
-        nonvirtual bool Find (const key_type& key, mapped_type* val = nullptr) const;
+        nonvirtual bool Find (ArgByValueType<key_type> key, mapped_type* val = nullptr) const;
 
     public:
         // returns the first entry equal to, or the smallest entry with key larger than the passed in key
         // // probably call this Find ()
-        //  nonvirtual ForwardIterator MakeIterator (const key_type& key) const;
+        //  nonvirtual ForwardIterator MakeIterator (ArgByValueType<key_type> key) const;
 
     public:
-        //    nonvirtual void Update (const ForwardIterator& it, const mapped_type& newValue);
+        //    nonvirtual void Update (const ForwardIterator& it, ArgByValueType < mapped_type> newValue);
 
     public:
         //   nonvirtual void Remove (const ForwardIterator& it);
@@ -330,7 +336,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Average/WorseCase???
          */
-        nonvirtual void Prioritize (const key_type& key);
+        nonvirtual void Prioritize (ArgByValueType<key_type> key);
 
     public:
         constexpr void Invariant () const noexcept;
@@ -381,7 +387,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     private:
         // Fundamentally a linked-list, but with a quirky 'next' pointer(s)
         struct Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (value_type) <= 1024> {
-            constexpr Link_ (const key_type& key, const mapped_type& val);
+            constexpr Link_ (ArgByValueType<key_type> key, ArgByValueType<mapped_type> val)
+                requires (not same_as<mapped_type, void>);
+            constexpr Link_ (ArgByValueType<key_type> key)
+                requires (same_as<mapped_type, void>);
 
             value_type  fEntry;
             LinkVector_ fNext; // for a SkipList, you have an array of next pointers, rather than just one
@@ -392,7 +401,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          * Find node for key in SkipList, else nullptr. In cases of duplicate values, return first found
          */
-        nonvirtual Link_* FindNode_ (const key_type& key) const;
+        nonvirtual Link_* FindNode_ (ArgByValueType<key_type> key) const;
 
     private:
         /*
@@ -403,7 +412,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *
          *      \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
          */
-        nonvirtual Link_* FindNearest_ (const key_type& key, vector<Link_*>& links) const;
+        nonvirtual Link_* FindNearest_ (ArgByValueType<key_type> key, vector<Link_*>& links) const;
 
     private:
         nonvirtual void AddNode_ (Link_* n, const LinkVector_& linksToPatch);
