@@ -78,6 +78,8 @@ namespace Stroika::Foundation::Containers::Private {
         template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
         explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr,
                                       ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
+        template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
+        explicit IteratorImplHelper_ (const ContainerDebugChangeCounts_* changeCounter = nullptr, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
 
     public:
         virtual ~IteratorImplHelper_ () = default;

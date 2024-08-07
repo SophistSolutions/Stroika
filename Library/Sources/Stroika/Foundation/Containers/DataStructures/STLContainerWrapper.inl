@@ -82,24 +82,24 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename STL_CONTAINER_OF_T>
-    template <typename FUNCTION>
-    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION&& doToElement) const -> const_iterator
+    template <predicate<typename STL_CONTAINER_OF_T ::value_type> FUNCTION>
+    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION&& firstThat) const -> const_iterator
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
-            if ((doToElement)(*i)) {
+            if ((firstThat)(*i)) {
                 return i;
             }
         }
         return this->end ();
     }
     template <typename STL_CONTAINER_OF_T>
-    template <typename FUNCTION>
-    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION&& doToElement) -> iterator
+    template <predicate<typename STL_CONTAINER_OF_T ::value_type> FUNCTION>
+    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION&& firstThat) -> iterator
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
-            if (doToElement (*i)) {
+            if (firstThat (*i)) {
                 return i;
             }
         }
@@ -145,6 +145,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         : ForwardIterator{data, data->cbegin ()}
     {
         RequireNotNull (data);
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator bool () const
+    {
+        return not Done ();
     }
     template <typename STL_CONTAINER_OF_T>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const noexcept

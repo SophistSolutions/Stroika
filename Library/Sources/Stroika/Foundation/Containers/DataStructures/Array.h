@@ -229,6 +229,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
 
     public:
+        class IteratorBase;
+
+    public:
+        class ForwardIterator;
+        class BackwardIterator;
+
+    public:
+        /**
+         */
+        nonvirtual ForwardIterator begin () const;
+
+    public:
+        /**
+         */
+        nonvirtual ForwardIterator end () const;
+
+    public:
         /**
          *  Return index of first place in the array matching, or nullopt if not found
          * 
@@ -238,13 +255,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \note in Stroika v2.1, this returned value == size() means not found, but now uses optional to make clearer
          *        and more similar to LinkedList find ...
+         * 
+         *  \note before Stroika v3.0d10, this returned optional<size_t>
          */
-        template <typename FUNCTION>
-        nonvirtual optional<size_t> Find (FUNCTION&& doToElement) const;
+        template <predicate<T> FUNCTION>
+        nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
 
     public:
         /*
-         * Memory savings/optimization methods.  Use this to tune useage
+         * Memory savings/optimization methods.  Use this to tune usage
          * of arrays so that they don't waste time in Realloc's.
          */
         nonvirtual size_t capacity () const;
@@ -254,13 +273,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual void shrink_to_fit ();
-
-    public:
-        class IteratorBase;
-
-    public:
-        class ForwardIterator;
-        class BackwardIterator;
 
     public:
         /*
@@ -372,9 +384,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using inherited = IteratorBase;
 
     public:
-        ForwardIterator (const Array* data);
-        ForwardIterator (const Array* data, UnderlyingIteratorRep startAt);
+        /**
+         *  overload taking only 'data' starts at beginning.
+         *  note startAt = 0 for begin(), and startAt = data->size () for end
+         */
+        explicit ForwardIterator (const Array* data, UnderlyingIteratorRep startAt = static_cast<UnderlyingIteratorRep> (0));
         ForwardIterator (const ForwardIterator& src) = default;
+
+    public:
+        /**
+         *  return true if iterator not Done
+         */
+        explicit operator bool () const;
 
     public:
         nonvirtual bool Done () const noexcept;

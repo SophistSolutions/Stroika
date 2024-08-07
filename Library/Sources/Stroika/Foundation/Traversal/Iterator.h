@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Traversal {
      *  has been modified (rule as in STL, but unlike most STLs, Stroika will automatically detect such
      *  illegal use in debug builds).
      *
-     *  Itererators CAN be used to MODIFY a container, but not directly - only by passing that iterator as an
+     *  Iterators CAN be used to MODIFY a container, but not directly - only by passing that iterator as an
      *  argument to a container method (such as Remove). Here the iterator cannot actually update the container
      *  but acts as an marker/indicator of what element to update. Such APIs will optionally return an updated iterator,
      *  so that you can continue with iteration (if desired).

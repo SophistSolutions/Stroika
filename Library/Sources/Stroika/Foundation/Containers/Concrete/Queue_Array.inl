@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool empty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.size () == 0;
+            return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, Execution::SequencePolicy seq) const override
         {
@@ -51,8 +51,8 @@ namespace Stroika::Foundation::Containers::Concrete {
                                            [[maybe_unused]] Execution::SequencePolicy              seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (optional<size_t> i = fData_.Find (that)) {
-                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *i)};
+            if (auto i = fData_.Find (that)) {
+                return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, i)};
             }
             return nullptr;
         }
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual optional<value_type> RemoveHeadIf () override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            if (fData_.size () == 0) {
+            if (fData_.empty ()) {
                 return optional<value_type>{};
             }
             T item = fData_.GetAt (0);
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual optional<value_type> HeadIf () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (fData_.size () == 0) {
+            if (fData_.empty ()) {
                 return optional<value_type>{};
             }
             return fData_.GetAt (0);

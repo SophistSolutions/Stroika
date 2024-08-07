@@ -16,17 +16,10 @@
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 /**
- *
- *
  *      LinkedList<T,TRAITS> is a backend implementation. It is not intended to be directly
  *  used by programmers, except in implementing concrete container reps.
  *
- *
  * TODO:
- *      @todo   In ForwardIterator object - maintain cached prev - so as we navigate - we can often
- *              avoid the back nav. Maybe make this a configurable class option? Anyhow - mostly include
- *              and use as cahce. ALready there mostly - but commented out (fPrev)
- *
  *      @todo   Include Performance numbers for each operation (done for many).
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
@@ -38,7 +31,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     using Configuration::ArgByValueType;
 
     /*
-     *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation.
+     *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation (similar to std::forward_list).
      *   We provide no public means to access the links themselves.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
@@ -59,7 +52,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         class ForwardIterator;
 
-    public:
     private:
         class Link_;
 
@@ -143,7 +135,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
         template <typename FUNCTION>
-        nonvirtual UnderlyingIteratorRep Find (FUNCTION&& doToElement) const;
+        nonvirtual UnderlyingIteratorRep Find (FUNCTION&& firstThat) const;
 
     public:
         /**
@@ -267,12 +259,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class LinkedList<T>::ForwardIterator {
     public:
+        /**
+         *  overload taking only 'data' starts at beginning.
+         */
         ForwardIterator (const ForwardIterator& from) = default;
-        ForwardIterator (const LinkedList* data);
-        ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt);
+        explicit ForwardIterator (const LinkedList* data);
+        explicit ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt);
 
     public:
         nonvirtual ForwardIterator& operator= (const ForwardIterator& it);
+
+    public:
+        /**
+         *  return true if iterator not Done
+         */
+        explicit operator bool () const;
 
     public:
         nonvirtual bool Done () const noexcept;

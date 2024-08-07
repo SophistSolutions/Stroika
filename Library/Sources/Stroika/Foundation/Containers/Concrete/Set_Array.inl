@@ -73,8 +73,8 @@ namespace Stroika::Foundation::Containers::Concrete {
                                            [[maybe_unused]] Execution::SequencePolicy              seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (optional<size_t> i = fData_.Find (that)) {
-                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *i)};
+            if (auto i = fData_.Find (that)) {
+                return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, i)};
             }
             return nullptr;
         }
@@ -109,12 +109,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fData_};
-            if (optional<size_t> l = fData_.Find ([this, item] (ArgByValueType<value_type> i) { return fEqualsComparer_ (i, item); })) {
+            if (auto l = fData_.Find ([this, item] (ArgByValueType<value_type> i) { return fEqualsComparer_ (i, item); })) {
                 if (oResult != nullptr) {
-                    *oResult = fData_[*l];
+                    *oResult = *l;
                 }
                 if (iResult != nullptr) {
-                    *iResult = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *l)};
+                    *iResult = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, l)};
                 }
                 return true;
             }

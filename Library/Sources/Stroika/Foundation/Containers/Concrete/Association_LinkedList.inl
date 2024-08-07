@@ -75,9 +75,10 @@ namespace Stroika::Foundation::Containers::Concrete {
                                            [[maybe_unused]] Execution::SequencePolicy              seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (auto iLink = fData_.Find (that)) {
-                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
+            if (auto i = fData_.Find (that)) {
+                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, i)};
             }
+            AssertNotReached ();
             return nullptr;
         }
 

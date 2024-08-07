@@ -195,6 +195,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return ForwardIterator{this, FindNode_ (key)};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) const -> ForwardIterator
+    {
+        for (auto i = begin (); i; ++i) {
+            if (firstThat (*i)) {
+                return i;
+            }
+        }
+        return end ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (ArgByValueType<key_type> key) const -> optional<mapped_type>
     {
         if (auto o = FindNode_ (key)) {
@@ -696,6 +707,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         , fCurrent_{startAt}
     {
     }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data)
+        : ForwardIterator{data, data->fHead_[0]}
+    {
+    }
 #if qDebug
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::~ForwardIterator ()
@@ -703,6 +719,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
 #endif
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator bool () const
+    {
+        return not Done ();
+    }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Done () const noexcept -> bool
     {

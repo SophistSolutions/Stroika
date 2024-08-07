@@ -26,11 +26,6 @@
  *              datastrcutre code and we have it here in the patching code. Note SURE what is better
  *              probably patching code) - but make them consistent!
  *
- *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
- *
- *      @todo   Major cleanup needed - not doubly-linked list. Look at old Stroika code. Somehow the double link
- *              part got lost.
- *
  *  Long-Term TODO:
  *      @todo   Could add iterator subclass (or use traits to control) which tracks index internally, as with Stroika v1
  *              but this will do for and maybe best (depending on frequency of calls to CurrentIndex ()
@@ -166,7 +161,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
         template <typename FUNCTION>
-        nonvirtual UnderlyingIteratorRep Find (FUNCTION&& doToElement) const;
+        nonvirtual UnderlyingIteratorRep Find (FUNCTION&& firstThat) const;
 
     public:
         /**
@@ -289,12 +284,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class DoublyLinkedList<T>::ForwardIterator {
     public:
+        /**
+         *  overload taking only 'data' starts at beginning.
+         */
         ForwardIterator (const ForwardIterator& from) = default;
-        ForwardIterator (const DoublyLinkedList* data);
-        ForwardIterator (const DoublyLinkedList* data, UnderlyingIteratorRep startAt);
+        explicit ForwardIterator (const DoublyLinkedList* data);
+        explicit ForwardIterator (const DoublyLinkedList* data, UnderlyingIteratorRep startAt);
 
     public:
         nonvirtual ForwardIterator& operator= (const ForwardIterator& list);
+
+    public:
+        /**
+         *  return true if iterator not Done
+         */
+        explicit operator bool () const;
 
     public:
         nonvirtual bool Done () const noexcept;

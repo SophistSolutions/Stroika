@@ -352,11 +352,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline auto LinkedList<T>::Find (FUNCTION&& doToElement) const -> UnderlyingIteratorRep
+    inline auto LinkedList<T>::Find (FUNCTION&& firstThat) const -> UnderlyingIteratorRep
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            if (doToElement (i->fItem)) {
+            if (firstThat (i->fItem)) {
                 return i;
             }
         }
@@ -451,6 +451,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #if qDebug
         Invariant_ ();
 #endif
+    }
+    template <typename T>
+    inline LinkedList<T>::ForwardIterator::operator bool () const
+    {
+        return not Done ();
     }
     template <typename T>
     inline bool LinkedList<T>::ForwardIterator::Done () const noexcept

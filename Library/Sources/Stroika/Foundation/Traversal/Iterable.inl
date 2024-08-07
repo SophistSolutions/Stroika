@@ -1145,7 +1145,7 @@ namespace Stroika::Foundation::Traversal {
     CONTAINER_OF_T Iterable<T>::As (CONTAINER_OF_T_CONSTRTOR_ARGS... args) const
     {
         return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRTOR_ARGS> (args)..., begin (),
-                               end ()); // use () instead of {} because we do want to allow coersion here - since use explictly called As<>
+                               end ()); // use () instead of {} because we do want to allow coercion here - since use explicitly called As<>
     }
     template <typename T>
     T Iterable<T>::Nth (size_t n) const

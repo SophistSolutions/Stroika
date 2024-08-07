@@ -153,19 +153,29 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename T>
-    template <typename FUNCTION>
-    inline optional<size_t> Array<T>::Find (FUNCTION&& doToElement) const
+    inline auto Array<T>::begin () const -> ForwardIterator
+    {
+        return ForwardIterator{this, 0};
+    }
+    template <typename T>
+    inline auto Array<T>::end () const -> ForwardIterator
+    {
+        return ForwardIterator{this, this->fLength_};
+    }
+    template <typename T>
+    template <predicate<T> FUNCTION>
+    auto Array<T>::Find (FUNCTION&& firstThat) const -> ForwardIterator
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         const T*                                              start = &fItems_[0];
         const T*                                              i     = start;
         const T*                                              last  = &fItems_[fLength_];
         for (; i < last; ++i) {
-            if (doToElement (*i)) {
-                return i - start;
+            if (firstThat (*i)) {
+                return ForwardIterator{this, static_cast<size_t> (i - start)};
             }
         }
-        return nullopt;
+        return end ();
     }
     template <typename T>
     void Array<T>::reserve (size_t slotsAlloced)
@@ -580,10 +590,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         this->fCurrentIdx_ = startAt;
         this->Invariant ();
     }
+#if 0
     template <typename T>
     inline Array<T>::ForwardIterator::ForwardIterator (const Array* data)
         : ForwardIterator{data, 0}
     {
+    }
+#endif
+    template <typename T>
+    inline Array<T>::ForwardIterator::operator bool () const
+    {
+        return not Done ();
     }
     template <typename T>
     inline bool Array<T>::ForwardIterator::Done () const noexcept

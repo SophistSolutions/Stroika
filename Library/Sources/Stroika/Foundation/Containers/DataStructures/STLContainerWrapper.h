@@ -98,10 +98,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
-        template <typename FUNCTION>
-        nonvirtual iterator Find (FUNCTION&& doToElement);
-        template <typename FUNCTION>
-        nonvirtual const_iterator Find (FUNCTION&& doToElement) const;
+        template <predicate<typename STL_CONTAINER_OF_T ::value_type> FUNCTION>
+        nonvirtual iterator Find (FUNCTION&& firstThat);
+        template <predicate<typename STL_CONTAINER_OF_T ::value_type> FUNCTION>
+        nonvirtual const_iterator Find (FUNCTION&& firstThat) const;
 
     public:
         template <typename PREDICATE>
@@ -132,10 +132,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
     class STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
     public:
         /**
+         *  overload taking only 'data' starts at beginning.
          */
         explicit ForwardIterator (const STLContainerWrapper* data);
         explicit ForwardIterator (const STLContainerWrapper* data, UnderlyingIteratorRep startAt);
-        explicit ForwardIterator (const ForwardIterator& from) = default;
+        ForwardIterator (const ForwardIterator& from) = default;
+
+    public:
+        /**
+         *  return true if iterator not Done
+         */
+        explicit operator bool () const;
 
     public:
         nonvirtual bool Done () const noexcept;

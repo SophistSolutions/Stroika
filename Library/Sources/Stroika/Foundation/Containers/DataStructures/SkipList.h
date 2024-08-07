@@ -485,14 +485,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  overload taking only 'data' starts at beginning.
          */
         ForwardIterator () = delete;
-        constexpr ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt);
+        explicit constexpr ForwardIterator (const SkipList* data);
+        explicit constexpr ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt);
         ForwardIterator (const ForwardIterator& src) = default;
 
 #if qDebug
         ~ForwardIterator ();
 #endif
+
+    public:
+        /**
+         *  return true if iterator not Done
+         */
+        explicit operator bool () const;
 
     public:
         nonvirtual bool Done () const noexcept;
