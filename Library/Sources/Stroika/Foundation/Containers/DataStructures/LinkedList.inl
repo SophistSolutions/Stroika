@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  returning ptr to next node would do it).
          */
         for (ForwardIterator it{this}; not it.Done (); ++it) {
-            if (equalsComparer (it.Current (), item)) {
+            if (equalsComparer (*it, item)) {
                 this->RemoveAt (it);
                 break;
             }
@@ -469,12 +469,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return *this;
     }
     template <typename T>
-    inline T LinkedList<T>::ForwardIterator::Current () const
+    inline T LinkedList<T>::ForwardIterator::operator* () const
     {
         Require (not(Done ()));
         Invariant ();
         AssertNotNull (fCurrent_);
         return fCurrent_->fItem;
+    }
+    template <typename T>
+    inline const T* LinkedList<T>::ForwardIterator::operator->() const
+    {
+        Require (not(Done ()));
+        Invariant ();
+        AssertNotNull (fCurrent_);
+        return &fCurrent_->fItem;
     }
     template <typename T>
     size_t LinkedList<T>::ForwardIterator::CurrentIndex () const

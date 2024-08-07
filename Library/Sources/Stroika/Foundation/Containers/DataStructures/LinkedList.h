@@ -39,8 +39,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /*
      *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation.
-     *   We provide
-     *  no public means to access the links themselves.
+     *   We provide no public means to access the links themselves.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -102,6 +101,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \alias Prepend
+         * 
          *  Complexity:
          *      Always: constant
          */
@@ -197,6 +198,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \alias Append
+         * 
          *  Complexity:
          *      Always: O(N)
          *
@@ -278,7 +281,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:
-        nonvirtual T Current () const;
+        nonvirtual T operator* () const;
+
+    public:
+        nonvirtual const T* operator->() const;
 
     public:
         nonvirtual size_t CurrentIndex () const;

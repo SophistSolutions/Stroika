@@ -62,7 +62,7 @@ namespace {
         {
             size_t i = 1;
             for (DataStructures::LinkedList<size_t>::ForwardIterator it{&someLL}; not it.Done (); ++it, ++i) {
-                [[maybe_unused]] auto cur = it.Current ();
+                [[maybe_unused]] auto cur = *it;
                 if (i == 100) {
                     someLL.AddAfter (it, 1);
                     break;

@@ -111,8 +111,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                if (fEqualsComparer_ (it.Current ().fValue, item)) {
-                    Assert (it.Current ().fCount != 0);
+                if (fEqualsComparer_ (it->fValue, item)) {
+                    Assert (it->fCount != 0);
                     return true;
                 }
             }
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (count != 0) {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
                 for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                    auto current = it.Current ();
+                    auto current = *it;
                     if (fEqualsComparer_ (current.fValue, item)) {
                         current.fCount += count;
                         fData_.SetAt (it, current);
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Require (count != 0);
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                auto current = it.Current ();
+                auto current = *it;
                 if (fEqualsComparer_ (current.fValue, item)) {
                     size_t result; // intentionally uninitialized
                     if (current.fCount > count) {
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.RemoveAt (mir.fIterator);
             }
             else {
-                value_type c = mir.fIterator.Current ();
+                value_type c = *mir.fIterator;
                 c.fCount     = newCount;
                 fData_.SetAt (mir.fIterator, c);
                 if (nextI != nullptr) {
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                auto current = it.Current ();
+                auto current = *it;
                 if (fEqualsComparer_ (current.fValue, item)) {
                     Ensure (current.fCount != 0);
                     return current.fCount;

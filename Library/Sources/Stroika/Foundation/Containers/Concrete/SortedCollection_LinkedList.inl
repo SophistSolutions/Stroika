@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             // equals might examine a subset of the object and we still want to update the whole object, but
             // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-            if (Common::EqualsComparerAdapter{fInorderComparer_}(mir.fIterator.Current (), newValue)) {
+            if (Common::EqualsComparerAdapter{fInorderComparer_}(*mir.fIterator, newValue)) {
                 fData_.SetAt (mir.fIterator, newValue);
             }
             else {
@@ -170,7 +170,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
             // skip the smaller items
-            for (; not it.Done () and fInorderComparer_ (it.Current (), item); ++it)
+            for (; not it.Done () and fInorderComparer_ (*it, item); ++it)
                 ;
             // at this point - we are pointing at the first link >= item, so insert before it
             fData_.AddBefore (it, item);

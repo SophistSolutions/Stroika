@@ -113,9 +113,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             vector<mapped_type>                                   result;
-            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
-                if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
-                    result.push_back (it.Current ().fValue);
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                if (fKeyEqualsComparer_ (it->fKey, key)) {
+                    result.push_back (it->fValue);
                 }
             }
             return Iterable<mapped_type>{move (result)};
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
-                if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
+                if (fKeyEqualsComparer_ (it->fKey, key)) {
                     fData_.RemoveAt (it.CurrentIndex ());
                     return true;
                 }

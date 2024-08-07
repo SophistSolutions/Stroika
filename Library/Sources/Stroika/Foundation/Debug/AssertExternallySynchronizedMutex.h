@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *          // this style of use - subclassing - is especially useful if the object foo will be subclassed, and checked throughtout the
+     *          // this style of use - subclassing - is especially useful if the object foo will be subclassed, and checked throughout the
      *          // code (or subclasses) with Debug::AssertExternallySynchronizedMutex::ReadContext (or WriteContext)
      *          struct foo : public Debug::AssertExternallySynchronizedMutex {
      *              inline  void    DoReadWriteStuffOnData ()

@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.RemoveAt (mir.fIterator);
             }
             else {
-                value_type c = mir.fIterator.Current ();
+                value_type c = *mir.fIterator;
                 c.fCount     = newCount;
                 fData_.SetAt (mir.fIterator, c);
                 if (nextI != nullptr) {

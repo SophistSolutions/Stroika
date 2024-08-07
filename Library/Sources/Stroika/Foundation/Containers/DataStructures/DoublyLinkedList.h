@@ -106,6 +106,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \alias Prepend
+         * 
          *  \note Complexity:
          *      Always: constant
          */
@@ -113,6 +115,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \alias Append
+         * 
          *  \note Complexity:
          *      Always: constant
          */
@@ -206,7 +210,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
          *  iterator from 'this' - which points at the same logical position. This requires that this container
-         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+         *  was just 'copied' from 'movedFrom' - and is used to produce an equivalent iterator (since iterators are tied to
          *  the container they were iterating over).
          */
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T>* movedFrom) const;
@@ -296,13 +300,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool Done () const noexcept;
 
     public:
-        nonvirtual T Current () const;
+        nonvirtual T operator* () const;
+
+    public:
+        nonvirtual const T* operator->() const;
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:
-        // Warning - intrinsically slow
+        /**
+         *  \note Complexity:
+         *      Worst Case/Typical Case: O(N)
+         */
         nonvirtual size_t CurrentIndex () const;
 
     public:

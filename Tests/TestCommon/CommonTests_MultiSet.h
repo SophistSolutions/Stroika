@@ -211,7 +211,7 @@ namespace CommonTests {
 
                     for (size_t i = 1; i <= s.size (); i++) {
                         for (auto it = s.begin (); it != s.end (); ++it) {
-                            if (testingSchema.fEqualsComparer (it.Current ().fValue, i)) {
+                            if (testingSchema.fEqualsComparer (it->fValue, i)) {
                                 break;
                             }
                         }

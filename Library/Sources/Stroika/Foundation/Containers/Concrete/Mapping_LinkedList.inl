@@ -106,9 +106,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
+                if (fKeyEqualsComparer_ (it->fKey, key)) {
                     if (item != nullptr) {
-                        *item = it.Current ().fValue;
+                        *item = it->fValue;
                     }
                     return true;
                 }
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
+                if (fKeyEqualsComparer_ (it->fKey, key)) {
                     switch (addReplaceMode) {
                         case AddReplaceMode::eAddReplaces:
                             fData_.SetAt (it, value_type{key, newElt});
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
+                if (fKeyEqualsComparer_ (it->fKey, key)) {
                     fData_.RemoveAt (it);
                     fChangeCounts_.PerformedChange ();
                     return true;

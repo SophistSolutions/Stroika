@@ -632,15 +632,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Done () const -> bool
+    {
+        return fCurrent_;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator* () const -> value_type
     {
         RequireNotNull (fCurrent_);
         return fCurrent_->fEntry;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator->() const -> const value_type*
+    {
+        RequireNotNull (fCurrent_);
+        return &fCurrent_->fEntry;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::CurrentIndex () const -> size_t
     {
-        //Require (not(Done ()));
+        Require (not Done ());
         RequireNotNull (fData_);
         RequireNotNull (this->fCurrent_);
         size_t i = 0;

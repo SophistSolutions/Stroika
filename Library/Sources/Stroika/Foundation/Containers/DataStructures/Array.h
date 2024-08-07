@@ -49,7 +49,7 @@
  *  final test would be fCurrent < _fStart. This would be illegal in ANSI C.
  *
  *      The next possible trick is for backwards iteration always point one
- *  past the one you mean, and have it.Current () subtract one before
+ *  past the one you mean, and have *it subtract one before
  *  dereferencing. This works pretty well, but makes source code sharing between
  *  the forwards and backwards cases difficult.
  *
@@ -133,7 +133,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          */
-        nonvirtual T* PeekAt (size_t i);
+        nonvirtual T*       PeekAt (size_t i);
+        nonvirtual const T* PeekAt (size_t i) const;
 
     public:
         /**
@@ -185,6 +186,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \brief STL-ish alias for Insert (size(), item)
+         * 
+         *  \alias Append
          * 
          *  \note Complexity:
          *      Worst Case: O(N)
@@ -263,7 +266,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
          *  iterator from 'this' - which points at the same logical position. This requires that this container
-         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+         *  was just 'copied' from 'movedFrom' - and is used to produce an equivalent iterator (since iterators are tied to
          *  the container they were iterating over).
          */
         nonvirtual void MoveIteratorHereAfterClone (IteratorBase* pi, const Array* movedFrom) const;
@@ -322,7 +325,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     public:
-        nonvirtual T Current () const; //  Error to call if Done (), otherwise OK
+        nonvirtual T operator* () const; //  Error to call if Done (), otherwise OK
+
+    public:
+        nonvirtual const T* operator->() const; //  Error to call if Done (), otherwise OK
 
     public:
         nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns size() + 1.

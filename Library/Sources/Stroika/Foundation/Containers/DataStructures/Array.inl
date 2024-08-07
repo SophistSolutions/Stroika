@@ -352,6 +352,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return &fItems_[i];
     }
     template <typename T>
+    inline const T* Array<T>::PeekAt (size_t i) const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Require (i >= 0);
+        Require (i < fLength_);
+        return &fItems_[i];
+    }
+    template <typename T>
     inline void Array<T>::SetAt (size_t i, ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
@@ -501,12 +509,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fCurrentIdx_;
     }
     template <typename T>
-    inline T Array<T>::IteratorBase::Current () const
+    inline T Array<T>::IteratorBase::operator* () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         Invariant ();
         Require (0 <= fCurrentIdx_ and fCurrentIdx_ < fData_->fLength_);
         return (*fData_)[fCurrentIdx_];
+    }
+    template <typename T>
+    inline const T* Array<T>::IteratorBase::operator->() const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
+        Invariant ();
+        Require (0 <= fCurrentIdx_ and fCurrentIdx_ < fData_->fLength_);
+        return fData_->PeekAt (fCurrentIdx_);
     }
     template <typename T>
     inline void Array<T>::IteratorBase::SetIndex (size_t i)

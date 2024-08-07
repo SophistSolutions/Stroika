@@ -144,7 +144,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:
-        nonvirtual value_type Current () const;
+        nonvirtual value_type operator* () const;
+
+    public:
+        nonvirtual const value_type* operator->() const;
 
     public:
         /**

@@ -584,6 +584,8 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \alias Append
+         * 
          *  \note mutates container
          */
         nonvirtual void push_back (ArgByValueType<value_type> item);

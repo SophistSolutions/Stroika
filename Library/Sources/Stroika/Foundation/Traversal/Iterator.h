@@ -435,7 +435,7 @@ namespace Stroika::Foundation::Traversal {
          *  Only one things can change the current value of Current():
          *      o   any non-const method of the iterator
          *
-         *  Two subsequent calls to it.Current () *cannot* return different values with no
+         *  Two subsequent calls to *it *cannot* return different values with no
          *  intervening (non-const) calls on the iterator.
          *
          *  The value of returned is undefined (Assertion error) if called when Done().
@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Traversal {
          *  @see operator*()
          *  @see operator++()
          *
-         *  \note Until Stroika 2.1r1, this returend T, and was switched to return const T& on the theorey that it might
+         *  \note Until Stroika 2.1r1, this returned T, and was switched to return const T& on the theory that it might
          *        perform better, but testing has not confirmed that (though this does appear to be existing practice in things like STL).
          * 
          *  \note It is illegal (but goes undetected) to hang onto (and use) the reference returned past when the iterator is next modified

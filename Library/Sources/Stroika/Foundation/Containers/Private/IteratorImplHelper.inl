@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::Private {
             *result = nullopt;
         }
         else {
-            *result = fIterator.Current ();
+            *result = *fIterator;
         }
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>

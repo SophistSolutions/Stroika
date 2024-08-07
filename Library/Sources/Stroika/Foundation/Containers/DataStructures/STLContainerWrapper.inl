@@ -163,12 +163,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return *this;
     }
     template <typename STL_CONTAINER_OF_T>
-    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Current () const -> value_type
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator* () const -> value_type
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         AssertNotNull (fData_);
         Require (not Done ());
         return *fStdIterator_;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator->() const -> const value_type*
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
+        AssertNotNull (fData_);
+        Require (not Done ());
+        return &*fStdIterator_;
     }
     template <typename STL_CONTAINER_OF_T>
     inline size_t STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const

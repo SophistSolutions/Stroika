@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     *result = nullopt;
                 }
                 else {
-                    auto tmp = fIterator.Current ();
+                    auto tmp = *fIterator;
                     *result  = tuple_cat (tuple<T>{tmp.second}, tmp.first);
                 }
             }

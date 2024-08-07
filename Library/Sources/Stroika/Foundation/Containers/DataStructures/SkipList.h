@@ -94,10 +94,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      o   SkipLists support fast forward iteration (linked list traversal). They do not support backwards iteration.
      *
      *  Design Overview:
-     *      This is an ORDERED linked list. To get extra speed on lookups, besides a 'next' pointer,
-     *      each node may have a list of additional pointers that go (each progressively) further into the linked
-     *      list. Ideally, these 'jumps' deeper into the linked list would be 'well spaced' so that you approach
-     *      log(N) lookup times trying to find a Node.
+     *      This is an ORDERED linked list (so no push_front, cuz order implied by key value and comparer). 
+     *      To get extra speed on lookups, besides a 'next' pointer, each node may have a list of additional
+     *      pointers that go (each progressively) further into the linked list. Ideally, these 'jumps' deeper 
+     *      into the linked list would be 'well spaced' so that you approach log(N) lookup times trying to find a Node.
      * 
      *      For each node, the fLinks[0] is always == NEXT link.
      * 
@@ -132,6 +132,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
       find reduction = 36.8646%
 
    The "expected" above is from wikipedia, and is calculated as (log base 1/p n)/p.
+
+     *  \original Author: Sterling Wight
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
@@ -264,7 +266,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
          *  iterator from 'this' - which points at the same logical position. This requires that this container
-         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+         *  was just 'copied' from 'movedFrom' - and is used to produce an equivalent iterator (since iterators are tied to
          *  the container they were iterating over).
          */
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const SkipList* movedFrom) const;
@@ -453,7 +455,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     public:
+        nonvirtual bool Done () const noexcept;
+
+    public:
         nonvirtual value_type operator* () const; //  Error to call if Done (), otherwise OK
+
+    public:
+        nonvirtual const value_type* operator->() const; //  Error to call if Done (), otherwise OK
 
     public:
         /**

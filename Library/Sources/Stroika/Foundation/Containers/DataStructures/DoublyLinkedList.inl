@@ -580,13 +580,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return *this;
     }
     template <typename T>
-    inline T DoublyLinkedList<T>::ForwardIterator::Current () const
+    inline T DoublyLinkedList<T>::ForwardIterator::operator* () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         Require (not Done ());
         Invariant ();
         AssertNotNull (fCurrent_);
         return fCurrent_->fItem;
+    }
+    template <typename T>
+    inline const T* DoublyLinkedList<T>::ForwardIterator::operator->() const
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
+        Require (not Done ());
+        Invariant ();
+        AssertNotNull (fCurrent_);
+        return &fCurrent_->fItem;
     }
     template <typename T>
     size_t DoublyLinkedList<T>::ForwardIterator::CurrentIndex () const
