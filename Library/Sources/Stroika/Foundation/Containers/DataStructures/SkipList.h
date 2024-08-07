@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
-        nonvirtual ForwardIterator end () const;
+        nonvirtual ForwardIterator end () const noexcept;
 
     public:
         /*
@@ -512,8 +512,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  overload taking only 'data' starts at beginning.
          */
         ForwardIterator () = delete;
-        explicit constexpr ForwardIterator (const SkipList* data);
-        explicit constexpr ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt);
+        explicit constexpr ForwardIterator (const SkipList* data) noexcept;
+        explicit constexpr ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt) noexcept;
         ForwardIterator (const ForwardIterator& src) = default;
 
 #if qDebug

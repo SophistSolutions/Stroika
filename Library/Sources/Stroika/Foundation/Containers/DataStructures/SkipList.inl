@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     // a few smoke checks to assure SkipList defined properly...
     static_assert (constructible_from<SkipList<int, int>>);
     static_assert (constructible_from<SkipList<int, void>>);
-    static_assert (input_or_output_iterator<SkipList<int, int>::ForwardIterator>);
+    static_assert (input_iterator<SkipList<int, int>::ForwardIterator>);
 
     namespace Private_ {
 
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return ForwardIterator{this, GetFirst_ ()};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () const -> ForwardIterator
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () const noexcept -> ForwardIterator
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return ForwardIterator{this, nullptr};
@@ -708,13 +708,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt)
+    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt) noexcept
         : fData_{data}
         , fCurrent_{startAt}
     {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data)
+    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data) noexcept
         : ForwardIterator{data, data->fHead_[0]}
     {
     }
