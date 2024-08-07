@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   you can only Add a T/value_type, not a KEY_TYPE, but 'lookup-style' operations can operate on KEY_TYPE.
      * 
-     *  \note   Not based on, but useful to refer to .Net KeyedColleciton<KEY,T>
+     *  \note   Not based on, but useful to refer to .Net KeyedCollection<KEY,T>
      *          @see https://msdn.microsoft.com/en-us/library/ms132438%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
      *
      *  \note   Important that KeyedCollection<>::Add () will REPLACE the value, unlike with set.
@@ -122,14 +122,14 @@ namespace Stroika::Foundation::Containers {
      *              As-part-of-TRAITS:  Logically cannot change for a given container type, so unambiguous how stuff pulled out of T (extractor etc)
      *                  THis makes the most sense, but its inconvenient in usage.
      *              As constructor argument to container: 
-     *                  This might appear slightly more loosy goosy - but no more so than having differnt comparers for Set<T>. And its more
+     *                  This might appear slightly more loosie goosy - but no more so than having different comparers for Set<T>. And its more
      *                  convenient in use/practice.
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
      *  TODO:
-     *      @todo   Consider adding methods from Set<T>, like Union, Interection, Difference etc. Or way to create
+     *      @todo   Consider adding methods from Set<T>, like Union, Intersection, Difference etc. Or way to create
      *              Set easily (maybe more logical).
      */
     template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>>
