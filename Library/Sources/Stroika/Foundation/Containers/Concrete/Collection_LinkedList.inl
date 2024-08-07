@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.Prepend (item); // order meaningless for collection, and prepend cheaper on linked list
+            fData_.push_front (item); // order meaningless for collection, and prepend cheaper on linked list
             fChangeCounts_.PerformedChange ();
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override

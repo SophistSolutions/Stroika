@@ -373,15 +373,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         static constexpr size_t kMaxLinkHeight_ = sizeof (size_t) * 8;
 
     private:
+        // @todo consider using Memory::InlineBuffer<> - so fewer memory allocations for some small buffer size???, and tune impl to prefer this size or take param in traits used for this
+        using LinkVector_ = vector<Link_*>;
+
+    private:
         // Fundamentally a linked-list, but with a quirky 'next' pointer(s)
         struct Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (value_type) <= 1024> {
             constexpr Link_ (const key_type& key, const mapped_type& val);
 
-            value_type     fEntry;
-            vector<Link_*> fNext; // for a SkipList, you have an array of next pointers, rather than just one
-            // @todo consider using Memory::InlineBuffer<> - so fewer memory allocations for some small buffer size???, and tune impl to prefer this size or take param in traits used for this
+            value_type  fEntry;
+            LinkVector_ fNext; // for a SkipList, you have an array of next pointers, rather than just one
         };
-        vector<Link_*> fHead_;
+        LinkVector_ fHead_;
 
     private:
         /*
@@ -401,10 +404,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual Link_* FindNearest_ (const key_type& key, vector<Link_*>& links) const;
 
     private:
-        nonvirtual void AddNode_ (Link_* n, const vector<Link_*>& linksToPatch);
+        nonvirtual void AddNode_ (Link_* n, const LinkVector_& linksToPatch);
 
     private:
-        nonvirtual void RemoveNode_ (Link_* n, const vector<Link_*>& linksToPatch);
+        nonvirtual void RemoveNode_ (Link_* n, const LinkVector_& linksToPatch);
 
 #if qDebug
     private:

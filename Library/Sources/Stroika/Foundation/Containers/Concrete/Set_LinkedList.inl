@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     return;
                 }
             }
-            fData_.Prepend (item); // order meaningless for set, and prepend cheaper on linked list
+            fData_.push_front (item); // order meaningless for set, and prepend cheaper on linked list
             fChangeCounts_.PerformedChange ();
         }
         virtual bool RemoveIf (ArgByValueType<value_type> item) override

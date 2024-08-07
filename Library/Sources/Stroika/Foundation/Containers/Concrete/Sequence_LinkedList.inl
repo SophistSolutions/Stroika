@@ -138,12 +138,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
             if (at == 0) {
                 for (size_t i = (to - from); i > 0; --i) {
-                    fData_.Prepend (from[i - 1]);
+                    fData_.push_front (from[i - 1]);
                 }
             }
             else if (at == fData_.size ()) { // ** very costly - see if below case works for both - I THINK it does
                 for (const T* p = from; p != to; ++p) {
-                    fData_.Append (*p);
+                    fData_.push_back (*p);
                 }
             }
             else {

@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom) const;
 
     public:
-        nonvirtual bool Contains (ArgByValueType<value_type> item) const;
+        nonvirtual bool contains (ArgByValueType<value_type> item) const;
 
     public:
         /**

@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.Contains (item);
+            return fData_.contains (item);
         }
         virtual void Remove (ArgByValueType<value_type> item) override
         {

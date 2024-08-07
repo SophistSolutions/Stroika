@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      @todo - this could be a bit more efficient
          */
         for (const Link_* cur = from.fHead_; cur != nullptr; cur = cur->fNext) {
-            Append (cur->fItem);
+            push_back (cur->fItem);
         }
         Invariant ();
     }
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fTail_->fItem;
     }
     template <typename T>
-    inline void DoublyLinkedList<T>::Prepend (ArgByValueType<T> item)
+    inline void DoublyLinkedList<T>::push_front (ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    inline void DoublyLinkedList<T>::Append (ArgByValueType<T> item)
+    inline void DoublyLinkedList<T>::push_back (ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
@@ -427,13 +427,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
              *  to Appending to the list.
              */
             Assert (i.Done ());
-            Append (newValue);
+            push_back (newValue);
             Assert (i.Done ()); // what is done, cannot be undone!!!
         }
         else {
             Link_* prev = i.fCurrent_->fPrev;
             if (prev == nullptr) {
-                Prepend (newValue);
+                push_front (newValue);
             }
             else {
                 /*
@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                  */
                 Assert (prev->fNext == i.fCurrent_);
                 Link_* iteratorCurLink = const_cast<Link_*> (i.fCurrent_);
-                prev->fNext            = new Link_ (newValue, prev, iteratorCurLink);
+                prev->fNext            = new Link_{newValue, prev, iteratorCurLink};
                 // Since fCurrent != nullptr from above, we update its prev, and don't have
                 // to worry about fTail_.
                 iteratorCurLink->fPrev = prev->fNext;

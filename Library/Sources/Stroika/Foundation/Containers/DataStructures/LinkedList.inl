@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fHead_->fItem;
     }
     template <typename T>
-    inline void LinkedList<T>::Prepend (ArgByValueType<T> item)
+    inline void LinkedList<T>::push_front (ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
@@ -164,11 +164,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    void LinkedList<T>::Append (ArgByValueType<T> item)
+    void LinkedList<T>::push_back (ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         if (this->fHead_ == nullptr) [[unlikely]] {
-            Prepend (item);
+            push_front (item);
         }
         else {
             Link_* last = this->fHead_;

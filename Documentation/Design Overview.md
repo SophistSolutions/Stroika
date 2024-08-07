@@ -148,6 +148,8 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 
 - clear()
 - empty()
+- contains
+- push_front
 - push_back
 - erase
 - c_str()

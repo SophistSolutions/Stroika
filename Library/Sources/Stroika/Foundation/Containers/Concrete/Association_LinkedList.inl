@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.Prepend (value_type{key, newElt}); // cheaper to prepend, and order doesn't matter
+            fData_.push_front (value_type{key, newElt}); // cheaper to prepend, and order doesn't matter
             fChangeCounts_.PerformedChange ();
         }
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override

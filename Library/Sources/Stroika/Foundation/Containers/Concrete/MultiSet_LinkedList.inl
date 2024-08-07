@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                         return;
                     }
                 }
-                fData_.Prepend (value_type{item, count}); // order meaningless for collection, and prepend cheaper on linked list
+                fData_.push_front (value_type{item, count}); // order meaningless for collection, and prepend cheaper on linked list
                 fChangeCounts_.PerformedChange ();
             }
         }

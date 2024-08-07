@@ -72,9 +72,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-         *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
-         *  iteartor from 'this' - which points at the same logical position. This requires that this container
-         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivalent iterator (since iterators are tied to
+         *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+         *  iterator from 'this' - which points at the same logical position. This requires that this container
+         *  was just 'copied' from 'movedFrom' - and is used to produce an equivalent iterator (since iterators are tied to
          *  the container they were iterating over).
          */
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList* movedFrom) const;
@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: constant
          */
-        nonvirtual void Prepend (ArgByValueType<T> item);
+        nonvirtual void push_front (ArgByValueType<T> item);
 
     public:
         /**
@@ -121,8 +121,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average Case: O(N)
          *
          *  Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
-         *
-         *  Contains(T item) == Lookup (item) != nullptr;
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual const T* Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
@@ -205,7 +203,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Not a lot of point in having these, as they are terribly slow,
          *  but the could be convenient.
          */
-        nonvirtual void Append (ArgByValueType<T> item);
+        nonvirtual void push_back (ArgByValueType<T> item);
 
     public:
         /*

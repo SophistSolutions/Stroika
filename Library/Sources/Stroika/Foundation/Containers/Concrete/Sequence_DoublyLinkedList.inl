@@ -134,19 +134,19 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (at == _kSentinelLastItemIndex) {
                 for (const T* p = from; p != to; ++p) {
-                    fData_.Append (*p);
+                    fData_.push_back (*p);
                 }
             }
             // quickie poor impl
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
             else if (at == 0) {
                 for (size_t i = (to - from); i > 0; --i) {
-                    fData_.Prepend (from[i - 1]);
+                    fData_.push_front (from[i - 1]);
                 }
             }
             else if (at == fData_.size ()) {
                 for (const T* p = from; p != to; ++p) {
-                    fData_.Append (*p);
+                    fData_.push_back (*p);
                 }
             }
             else {

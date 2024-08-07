@@ -2,10 +2,10 @@ Overview
 --------
 	This module contains concrete, directly usable container data structures.
 
-	These data structures are very similar - structurally - to those in STL.
+	These data structures are very similar - structurally - to those in STL (using STL-style naming, patterns, etc).
 
 	They
-		-	are not threadsafe (externally synchronized)
+		-	are not <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a> (externally synchronized)
 		-	they are not organized around the Stroika Container abstractions/access patterns
 		-	they are primarily building blocks used in Stroika's concrete container library,
 			though they can be used directly if someone wishes to

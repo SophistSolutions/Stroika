@@ -109,14 +109,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          */
-        nonvirtual void Prepend (ArgByValueType<T> item);
+        nonvirtual void push_front (ArgByValueType<T> item);
 
     public:
         /**
          *  \note Complexity:
          *      Always: constant
          */
-        nonvirtual void Append (ArgByValueType<T> item);
+        nonvirtual void push_back (ArgByValueType<T> item);
 
     public:
         /**

@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void AddTail (ArgByValueType<T> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.Append (item);
+            fData_.push_back (item);
             fChangeCounts_.PerformedChange ();
         }
         virtual value_type RemoveHead () override

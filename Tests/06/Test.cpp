@@ -34,13 +34,13 @@ namespace {
         EXPECT_TRUE (someLL.size () == 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
-                someLL.Prepend (0);
+                someLL.push_front (0);
             }
         }
         someLL.RemoveAll ();
         {
             for (size_t i = 1; i <= kBigSize; i++) {
-                someLL.Prepend (0);
+                someLL.push_front (0);
             }
         }
         {
@@ -51,13 +51,13 @@ namespace {
         someLL.RemoveAll (); //  someLL.SetLength(kBigSize, 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
-                someLL.Prepend (0);
+                someLL.push_front (0);
             }
         }
 
-        EXPECT_TRUE (someLL.size () == kBigSize);
+        EXPECT_EQ (someLL.size (), kBigSize);
         someLL.SetAt (55, 55);                 //  someLL [55] = 55;
-        EXPECT_TRUE (someLL.GetAt (55) == 55); //  EXPECT_TRUE(someArray [55] == 55);
+        EXPECT_EQ (someLL.GetAt (55), 55);     //  EXPECT_TRUE(someArray [55] == 55);
         EXPECT_TRUE (someLL.GetAt (55) != 56); //  EXPECT_TRUE(someArray [55] != 56);
         {
             size_t i = 1;
@@ -91,13 +91,13 @@ namespace {
         EXPECT_TRUE (someLL.size () == 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
-                someLL.Prepend (0);
+                someLL.push_front (0);
             }
         }
         someLL.RemoveAll ();
         {
             for (size_t i = 1; i <= kBigSize; i++) {
-                someLL.Prepend (0);
+                someLL.push_front (0);
             }
         }
         {
@@ -108,7 +108,7 @@ namespace {
         someLL.RemoveAll (); //  someLL.SetLength(kBigSize, 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
-                someLL.Prepend (0);
+                someLL.push_front (0);
             }
         }
 
@@ -123,7 +123,7 @@ namespace {
 
         for (size_t i = kBigSize; i >= 1; --i) {
             EXPECT_TRUE (someLL.Lookup (i) == nullptr);
-            someLL.Prepend (i);
+            someLL.push_front (i);
             EXPECT_TRUE (someLL.GetFirst () == i);
             EXPECT_TRUE (someLL.Lookup (i) != nullptr);
         }
@@ -135,7 +135,7 @@ namespace {
         EXPECT_TRUE (someLL.size () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
-            someLL.Prepend (i);
+            someLL.push_front (i);
         }
         for (size_t i = kBigSize; i >= 1; --i) {
             //cerr << "i, getat(i-1) = " << i << ", " << someLL.GetAt (i-1).GetValue () << endl;
