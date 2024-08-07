@@ -68,16 +68,18 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::Set_LinkedList<>
      *      o   @see Concrete::Set_stdset<>
+     * 
+     *  \note   See also: KeyedCollection<> - like Set<>, but for case where object has extra attributes to be preserved (Add)
      *
      *  \em Factory:
      *      @see Factory::Set_Factory<> to see default implementations.
      *
      *  \em Design Note:
      *      Included <set> and have explicit CTOR for set<> so that Stroika Set can be used more interoperably
-     *      with set<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
+     *      with set<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental conversions. But
      *      if you declare an API with Set<T> arguments, its important STL sources passing in set<T> work transparently.
      *
-     *      Similarly for std::initalizer_list.
+     *      Similarly for std::initializer_list.
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
@@ -89,11 +91,11 @@ namespace Stroika::Foundation::Containers {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison equality (==, <=> etc) - because all sets have an equalsComparer for their elements
      *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering between the set elements
-     *        o when comparing a Set to any Itererable<> - this is treated as 'set' equality comparison
+     *        o when comparing a Set to any Iterable<> - this is treated as 'set' equality comparison
      *
      *        It remains questionable whether or not we should have overloads for comparing Set<> and Iterable<>. When
      *        also done with other containers like Sequence, this could produce ambiguity. (like comparing Set with Sequence).
-     *        But thats probably OK, becase when we have ambiguity, we can always explicitly resolve it. So keep these
+     *        But that's probably OK, because when we have ambiguity, we can always explicitly resolve it. So keep these
      *        overloads which are pretty convenient.
      */
     template <typename T>
@@ -253,10 +255,13 @@ namespace Stroika::Foundation::Containers {
          *  container (not an error or exception).
          *
          *  So for a user-defined type T (or any type where the caller specifies the compare function)
-         *  it is left undefined whether or not the new (not included) attributes assocaited with the added
+         *  it is left undefined whether or not the new (not included) attributes associated with the added
          *  item make it into the Set.
          *
          *  If you really want an association list (Mapping) from one thing to another, use that.
+         * 
+         *  If you really want a 'set' where the object has a bunch of extra attributes, but compares 'equal', and you want
+         *  to preserve those extra attributes, use KeyedCollection<T>.
          *
          *  \note mutates container
          */
