@@ -10,7 +10,6 @@ namespace Stroika::Foundation::Common {
      ******************** Common::KeyValuePair<KEY_TYPE,VALUE_TYPE> *****************
      ********************************************************************************
      */
-
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
         requires (is_copy_constructible_v<KEY_TYPE> and is_copy_constructible_v<VALUE_TYPE>)
@@ -37,7 +36,6 @@ namespace Stroika::Foundation::Common {
     {
         // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
     }
-
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2>
     KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (const pair<KEY_TYPE2, VALUE_TYPE2>& rhs)
@@ -85,6 +83,68 @@ namespace Stroika::Foundation::Common {
         requires (equality_comparable<KEY_TYPE> and equality_comparable<VALUE_TYPE>)
     {
         return fKey == rhs.fKey and fValue == rhs.fValue;
+    }
+
+    /*
+     ********************************************************************************
+     *********************** Common::KeyValuePair<KEY_TYPE,void> ********************
+     ********************************************************************************
+     */
+    template <typename KEY_TYPE>
+    template <typename KEY_TYPE2>
+    constexpr KeyValuePair<KEY_TYPE, void>::KeyValuePair (const pair<KEY_TYPE2, void>& src)
+        requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&>)
+        : fKey (src.first)
+    {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+    }
+    template <typename KEY_TYPE>
+    template <typename KEY_TYPE2>
+    constexpr KeyValuePair<KEY_TYPE, void>::KeyValuePair (const KeyValuePair<KEY_TYPE2, void>& src)
+        requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&>)
+        : fKey (src.fKey)
+    {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+    }
+    template <typename KEY_TYPE>
+    template <typename KEY_TYPE2>
+    KeyValuePair<KEY_TYPE, void>& KeyValuePair<KEY_TYPE, void>::operator= (const pair<KEY_TYPE2, void>& rhs)
+    {
+        fKey = rhs.first;
+        return *this;
+    }
+    template <typename KEY_TYPE>
+    template <typename KEY_TYPE2>
+    inline KeyValuePair<KEY_TYPE, void>& KeyValuePair<KEY_TYPE, void>::operator= (const KeyValuePair<KEY_TYPE2, void>& rhs)
+    {
+        rhs = rhs.fKey;
+        return *this;
+    }
+    template <typename KEY_TYPE>
+    template <typename KEY_TYPE2>
+    inline KeyValuePair<KEY_TYPE, void>& KeyValuePair<KEY_TYPE, void>::operator= (pair<KEY_TYPE2, void>&& rhs)
+    {
+        fKey = forward<KEY_TYPE2> (rhs.first);
+        return *this;
+    }
+    template <typename KEY_TYPE>
+    template <typename KEY_TYPE2>
+    inline KeyValuePair<KEY_TYPE, void>& KeyValuePair<KEY_TYPE, void>::operator= (KeyValuePair<KEY_TYPE2, void>&& rhs)
+    {
+        fKey = forward<KEY_TYPE2> (rhs.fKey);
+        return *this;
+    }
+    template <typename KEY_TYPE>
+    constexpr inline auto KeyValuePair<KEY_TYPE, void>::operator<=> (const KeyValuePair& rhs) const
+        requires (three_way_comparable<KEY_TYPE>)
+    {
+        return fKey <=> rhs.fKey;
+    }
+    template <typename KEY_TYPE>
+    constexpr inline bool KeyValuePair<KEY_TYPE, void>::operator== (const KeyValuePair& rhs) const
+        requires (equality_comparable<KEY_TYPE>)
+    {
+        return fKey == rhs.fKey;
     }
 
 }
