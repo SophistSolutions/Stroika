@@ -190,17 +190,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ArgByValueType<key_type> key, mapped_type* val) const
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ArgByValueType<key_type> key) const -> ForwardIterator
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        Link_*                                         n = FindNode_ (key);
-        if (n != nullptr) {
-            if (val != nullptr) {
-                *val = n->fEntry.fValue;
-            }
-            return true;
+        return ForwardIterator{this, FindNode_ (key)};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (ArgByValueType<key_type> key) const -> optional<mapped_type>
+    {
+        if (auto o = FindNode_ (key)) {
+            return o->fEntry.fValue;
         }
-        return false;
+        return nullopt;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (FUNCTION&& firstThat) const -> optional<mapped_type>
+    {
+        for (auto i : *this) {
+            if (firstThat (*i)) {
+                return i->fValue;
+            }
+        }
+        return nullopt;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (ArgByValueType<key_type> key) const
@@ -500,6 +511,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return n;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename FUNCTION>
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement) const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        std::for_each (begin (), end (), forward<FUNCTION> (doToElement));
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Prioritize (ArgByValueType<key_type> key)
     {
         LinkVector_ links;
@@ -537,7 +555,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReBalance ()
     {
-        if (size () == 0) [[unlikely]] {
+        if (empty ()) [[unlikely]] {
             return;
         }
         // precompute table of indices height

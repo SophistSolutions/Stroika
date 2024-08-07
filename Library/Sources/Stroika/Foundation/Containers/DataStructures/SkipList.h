@@ -288,25 +288,48 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool contains (ArgByValueType<key_type> key) const;
 
     public:
-        /*
-        * @todo cleanup API - should use optional? Overloading?
-        * 
-                        Basic find operation. If pass in nullptr for val then only tests inclusion, otherwise fills val with value linked to key.
-                        In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for
-                        how to do this.
-
-                    \see contains()
-
-
-                    maybe replace with LookupOne (returns optional) - maybe FindOne? See names used elsewhere
-                    Find (returns Iterator<> with promise all 'equal value' items sorted together.
-                    */
-        nonvirtual bool Find (ArgByValueType<key_type> key, mapped_type* val = nullptr) const;
+        /**
+         *  \note Complexity (key_type):   ??
+         *      Average:    log(N)
+         *      Worst:      N
+         *  \note Complexity (FUNCTION&& f overload):
+         *      Average/Worst:    O(N)
+         */
+        nonvirtual ForwardIterator Find (ArgByValueType<key_type> key) const;
+        template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
+        nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
 
     public:
-        // returns the first entry equal to, or the smallest entry with key larger than the passed in key
-        // // probably call this Find ()
-        //  nonvirtual ForwardIterator MakeIterator (ArgByValueType<key_type> key) const;
+        /**
+         *  \par Example Usage:
+         *      \code
+         *          EXPECT_EQ (t.First (key), i);
+         *      \endcode
+         * 
+         *  \par Example Usage:
+         *      \code
+         *          if (auto o = t.First (key)) {
+         *              useO = *o;
+         *          }
+         *      \endcode
+         * 
+         *  \par Example Usage:
+         *      \code
+         *          // find value of first odd key
+         *          if (auto o = t.First ([] (auto kvp) { return kvp.fKey & 1; }) {
+         *              useO = *o;
+         *          }
+         *      \endcode
+         * 
+         *  \note Complexity (key_type):   ??
+         *      Average:    log(N)
+         *      Worst:      N
+         *  \note Complexity (FUNCTION&& f overload):
+         *      Average/Worst:    O(N)
+         */
+        nonvirtual optional<mapped_type> First (ArgByValueType<key_type> key) const;
+        template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
+        nonvirtual optional<mapped_type> First (FUNCTION&& firstThat) const;
 
     public:
         //    nonvirtual void Update (const ForwardIterator& it, ArgByValueType < mapped_type> newValue);
@@ -337,6 +360,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average/WorseCase???
          */
         nonvirtual void Prioritize (ArgByValueType<key_type> key);
+
+    public:
+        /**
+         *  \note Complexity:
+         *      Always: O(N)
+         */
+        template <typename FUNCTION>
+        nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
         constexpr void Invariant () const noexcept;

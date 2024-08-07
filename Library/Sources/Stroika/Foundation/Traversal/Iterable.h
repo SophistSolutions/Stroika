@@ -585,7 +585,7 @@ namespace Stroika::Foundation::Traversal {
          *          on a temporary (except with the trick if (auto i = x().Find(...)) { ok to access i here cuz x() temporary
          *          not destroyed yet).
          * 
-         *  \note desipte the name EQUALS_COMPARER, we allow EQUALS_COMPARER to just be IPotentiallyComparer<> and don't require
+         *  \note despite the name EQUALS_COMPARER, we allow EQUALS_COMPARER to just be IPotentiallyComparer<> and don't require
          *        EqualsComparer, just to simplify use, and because we cannot anticipate any real ambiguity or confusion resulting from this loose restriction.
          */
         template <predicate<T> THAT_FUNCTION>
@@ -1055,6 +1055,8 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  return first element in iterable, or if 'that' specified, first where 'that' is true, (or return nullopt if none)
          *
+         *  \alias Find () - but in Stroika, Find () returns an Iterator<>
+         * 
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };

@@ -66,14 +66,13 @@ namespace {
             SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.GetComparer ()};
             Require (t.size () == 0);
             Debug::TraceContextBumper ctx{"BasicAddRemoveTests_", "Add and remove (len={}, forward direction)"_f, testLength};
-            MAPPED_TYPE               val = 0;
             optional<KEY_TYPE>        biggestKey;
             for (int i = 1; i <= testLength; ++i) {
                 KEY_TYPE key{i};
-                EXPECT_TRUE (not t.Find (key));
+                EXPECT_TRUE (not t.contains (key));
                 t.Add (key, i);
-                EXPECT_TRUE (t.size () == i);
-                EXPECT_TRUE (t.Find (key, &val) and (val == i));
+                EXPECT_EQ (t.size (), i);
+                EXPECT_EQ (t.First (key), i);
                 t.Invariant ();
                 if (biggestKey == nullopt) {
                     biggestKey = key;
@@ -85,9 +84,9 @@ namespace {
             }
             for (int i = 1; i <= testLength; ++i) {
                 KEY_TYPE key{i};
-                EXPECT_TRUE (t.Find (key, &val) and (val == i));
+                EXPECT_EQ (t.First (key), i);
                 t.Remove (key);
-                EXPECT_TRUE (not t.Find (key));
+                EXPECT_TRUE (not t.contains (key));
                 EXPECT_EQ (t.size (), testLength - i);
                 t.Invariant ();
             }
@@ -95,10 +94,10 @@ namespace {
             DbgTrace ("Add and remove {} items, backwards direction"_f, testLength);
             for (int i = static_cast<int> (testLength); i >= 1; --i) {
                 KEY_TYPE key{i};
-                EXPECT_TRUE (not t.Find (key));
+                EXPECT_TRUE (not t.contains (key));
                 t.Add (key, i);
                 EXPECT_EQ (t.size (), testLength - i + 1);
-                EXPECT_TRUE (t.Find (key, &val) and (val == i));
+                EXPECT_EQ (t.First (key), i);
                 t.Invariant ();
                 Assert (biggestKey);
                 strong_ordering comp = t.GetComparer () (*biggestKey, key);
@@ -108,9 +107,9 @@ namespace {
             }
             for (int i = static_cast<int> (testLength); i >= 1; --i) {
                 KEY_TYPE key{i};
-                EXPECT_TRUE (t.Find (key, &val) and (val == i));
+                EXPECT_EQ (t.First (key), i);
                 t.Remove (key);
-                EXPECT_TRUE (not t.Find (key));
+                EXPECT_TRUE (not t.contains (key));
                 EXPECT_EQ (t.size (), i - 1);
                 t.Invariant ();
             }
@@ -140,15 +139,14 @@ namespace {
                 data.push_back (i);
             }
             random_shuffle_ (data.begin (), data.end ());
-            MAPPED_TYPE        val = 0;
             optional<KEY_TYPE> biggestKey;
             optional<KEY_TYPE> smallestKey;
             for (int i = 0; i < data.size (); ++i) {
                 KEY_TYPE key = {data[i]};
-                EXPECT_TRUE (not t.Find (key));
+                EXPECT_TRUE (not t.contains (key));
                 t.Add (key, i);
-                EXPECT_TRUE (t.size () == i + 1);
-                EXPECT_TRUE (t.Find (key, &val) and (val == i));
+                EXPECT_EQ (t.size (), i + 1);
+                EXPECT_EQ (t.First (key), i);
                 t.Invariant ();
                 if (i == 0) {
                     smallestKey = key;
@@ -164,9 +162,9 @@ namespace {
             random_shuffle_ (data.begin (), data.end ());
             for (int i = 0; i <= static_cast<int> (testLength - 1); ++i) {
                 KEY_TYPE v = {data[i]};
-                EXPECT_TRUE (t.Find (v));
+                EXPECT_TRUE (t.contains (v));
                 t.Remove (v);
-                EXPECT_TRUE (not t.Find (v));
+                EXPECT_TRUE (not t.contains (v));
                 EXPECT_EQ (t.size (), testLength - i - 1);
                 t.Invariant ();
             }
@@ -195,7 +193,6 @@ namespace {
                 data.push_back (i);
             }
             random_shuffle_ (data.begin (), data.end ());
-            MAPPED_TYPE val = 0;
             for (int i = 0; i < static_cast<int> (data.size ()); ++i) {
                 KEY_TYPE key{data[i]};
                 t.Add (key, i);
@@ -207,7 +204,7 @@ namespace {
             Assert (t.size () == testLength);
             for (size_t i = 0; i <= static_cast<int> (testLength - 1); ++i) {
                 KEY_TYPE key{data[i]};
-                EXPECT_TRUE (t.Find (key, &val) and (val == i));
+                EXPECT_EQ (t.First (key), i);
             }
         }
     }
