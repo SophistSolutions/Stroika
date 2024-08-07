@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -215,6 +216,28 @@ namespace {
         Private_::OptimizeTestsHelper_ (t, 25);
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, ToString)
+    {
+        Debug::TraceContextBumper ctx{"ToString"};
+        SkipList<int, int>        t;
+        t.Add (1, 2);
+#if 1
+        using TTT = SkipList<int, int>;
+        using TI  = TTT::ForwardIterator;
+        static_assert (input_or_output_iterator<TI>);
+        static_assert (input_iterator<TI>);
+        auto bb = ranges::begin (t);
+        static_assert (input_iterator<decltype (bb)>);
+        // auto ee = ranges::end (t);
+        // static_assert (input_iterator<decltype (ee)>);
+        // static_assert (ranges::range<TTT>);
+        //DbgTrace ("t={}"_f, t);   -- should work cuz of ranges support
+#endif
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])
