@@ -297,7 +297,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         nonvirtual ForwardIterator Find (ArgByValueType<key_type> key) const;
         template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
-        nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
+        nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const
+            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    {
+        for (auto i = begin (); i; ++i) {
+            if (firstThat (*i)) {
+                return i;
+            }
+        }
+        return end ();
+    }
+    #else
+    ;
+    #endif
+
 
     public:
         /**
@@ -329,7 +342,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         nonvirtual optional<mapped_type> First (ArgByValueType<key_type> key) const;
         template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
-        nonvirtual optional<mapped_type> First (FUNCTION&& firstThat) const;
+        nonvirtual optional<mapped_type> First (FUNCTION&& firstThat) const
+            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+         {
+        for (auto i : *this) {
+            if (firstThat (*i)) {
+                return i->fValue;
+            }
+        }
+        return nullopt;
+    }
+    #else
+    ;
+    #endif
 
     public:
         //    nonvirtual void Update (const ForwardIterator& it, ArgByValueType < mapped_type> newValue);
