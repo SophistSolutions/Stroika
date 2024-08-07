@@ -514,7 +514,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ForwardIterator () = delete;
         explicit constexpr ForwardIterator (const SkipList* data) noexcept;
         explicit constexpr ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt) noexcept;
-        ForwardIterator (const ForwardIterator& src) = default;
+        ForwardIterator (const ForwardIterator&)     = default;
+        ForwardIterator (ForwardIterator&&) noexcept = default;
+
+        ForwardIterator& operator= (const ForwardIterator&)     = default;
+        ForwardIterator& operator= (ForwardIterator&&) noexcept = default;
 
 #if qDebug
         ~ForwardIterator ();
