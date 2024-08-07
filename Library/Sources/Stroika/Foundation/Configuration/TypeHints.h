@@ -25,8 +25,8 @@ namespace Stroika::Foundation::Configuration {
      *  if you should pass a given argument by value or by const reference.
      *
      *  \note   Use sizeof(T) <= 2*sizeof(void*) - because passing by reference involves copying one pointer and then if you
-     *          access once, thats a second copy. So may as well copy 2 directly (very loosy goosy, as depends on
-     *          releative cost of main memory access versus stack).
+     *          access once, that's a second copy. So may as well copy 2 directly (very loosie goosy, as depends on
+     *          relative cost of main memory access versus stack).
      */
     template <typename T, typename CHECK_T = remove_cvref_t<T>>
     using ArgByValueType = conditional_t<(sizeof (CHECK_T) <= 2 * sizeof (void*)) and is_trivially_copyable_v<CHECK_T>, CHECK_T, const CHECK_T&>;
