@@ -9,9 +9,10 @@
 namespace Stroika::Foundation::Containers::DataStructures {
 
     // a few smoke checks to assure SkipList defined properly...
-    static_assert (constructible_from<SkipList<int, int>>);
-    static_assert (constructible_from<SkipList<int, void>>);
-    static_assert (input_iterator<SkipList<int, int>::ForwardIterator>);
+    //static_assert (constructible_from<SkipList<int, int>>);
+    //static_assert (constructible_from<SkipList<int, void>>);
+    //static_assert (input_iterator<SkipList<int, int>::ForwardIterator>);
+    static_assert (ranges::input_range<SkipList<int, int>>);
 
     namespace Private_ {
 
@@ -126,10 +127,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return ForwardIterator{this, GetFirst_ ()};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () const noexcept -> ForwardIterator
+    constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () const noexcept -> ForwardIterator
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        return ForwardIterator{this, nullptr};
+        return ForwardIterator{};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const SkipList* movedFrom) const
@@ -712,6 +713,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         : fData_{data}
         , fCurrent_{startAt}
     {
+        RequireNotNull (data);
+        // startAt may be nullptr (end)
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data) noexcept

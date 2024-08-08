@@ -223,18 +223,7 @@ namespace {
         Debug::TraceContextBumper ctx{"ToString"};
         SkipList<int, int>        t;
         t.Add (1, 2);
-#if 1
-        using TTT = SkipList<int, int>;
-        using TI  = TTT::ForwardIterator;
-        static_assert (input_or_output_iterator<TI>);
-        static_assert (input_iterator<TI>);
-        auto bb = ranges::begin (t);
-        static_assert (input_iterator<decltype (bb)>);
-        // auto ee = ranges::end (t);
-        // static_assert (input_iterator<decltype (ee)>);
-        // static_assert (ranges::range<TTT>);
-        //DbgTrace ("t={}"_f, t);   -- should work cuz of ranges support
-#endif
+        DbgTrace ("t={}"_f, t);
     }
 }
 
