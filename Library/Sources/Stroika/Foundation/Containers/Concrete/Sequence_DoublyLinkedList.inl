@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             auto&                                                 mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return mir.fIterator.CurrentIndex ();
+            return mir.fIterator.CurrentIndex (&fData_);
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {

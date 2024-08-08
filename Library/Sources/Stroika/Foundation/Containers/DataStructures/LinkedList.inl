@@ -7,8 +7,6 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    static_assert (ranges::input_range<LinkedList<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
-
 // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
 #ifndef qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_
 #define qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_ 0
@@ -505,7 +503,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     size_t LinkedList<T>::ForwardIterator::CurrentIndex (const LinkedList* data) const
     {
-        Require (not(Done ()));
+        Require (not Done ());
 #if qDebug
         Require (data == fData_);
         RequireNotNull (fData_);

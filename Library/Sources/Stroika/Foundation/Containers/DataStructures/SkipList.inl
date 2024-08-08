@@ -8,8 +8,6 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    static_assert (ranges::input_range<SkipList<int, int>>);        // smoke test - make sure basic iteration etc should work (allows formattable to work)
-
     namespace Private_ {
 
         inline size_t RandomSize_t (size_t first, size_t last)

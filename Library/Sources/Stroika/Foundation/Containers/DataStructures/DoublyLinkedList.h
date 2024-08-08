@@ -212,6 +212,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         */
+        nonvirtual ForwardIterator begin () const;
+
+    public:
+        /**
+         */
+        constexpr ForwardIterator end () const noexcept;
+
+    public:
+        /**
          *  \note Complexity:
          *      Always: constant
          * 
@@ -293,14 +303,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  overload taking only 'data' starts at beginning.
+         *  /0 overload: sets iterator to 'end' - sentinel
+         *  /1 (data) overload: sets iterator to begin
+         *  /2 (data,startAt) overload: sets iterator to startAt
          */
-        ForwardIterator (const ForwardIterator& from) = default;
-        explicit ForwardIterator (const DoublyLinkedList* data);
-        explicit ForwardIterator (const DoublyLinkedList* data, UnderlyingIteratorRep startAt);
+        constexpr ForwardIterator () noexcept = default;
+        explicit constexpr ForwardIterator (const DoublyLinkedList* data) noexcept;
+        explicit constexpr ForwardIterator (const DoublyLinkedList* data, UnderlyingIteratorRep startAt) noexcept;
+        constexpr ForwardIterator (const ForwardIterator&) noexcept = default;
+        constexpr ForwardIterator (ForwardIterator&&) noexcept      = default;
 
     public:
-        nonvirtual ForwardIterator& operator= (const ForwardIterator& list);
+        nonvirtual ForwardIterator& operator= (const ForwardIterator&)     = default;
+        nonvirtual ForwardIterator& operator= (ForwardIterator&&) noexcept = default;
 
     public:
         /**
@@ -321,12 +336,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator& operator++ () noexcept;
         nonvirtual ForwardIterator  operator++ (int) noexcept;
 
-    public:
         /**
          *  \note Complexity:
-         *      Worst Case/Typical Case: O(N)
+         *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
+         * 
+         *  \req data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_
          */
-        nonvirtual size_t CurrentIndex () const;
+        nonvirtual size_t CurrentIndex (const DoublyLinkedList* data) const;
 
     public:
         nonvirtual UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
@@ -341,8 +357,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const noexcept;
 
     private:
+        const Link_* fCurrent_{nullptr};
+#if qDebug
         const DoublyLinkedList* fData_{nullptr};
-        const Link_*            fCurrent_{nullptr};
+#endif
 
 #if qDebug
     private:
@@ -352,6 +370,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     private:
         friend class DoublyLinkedList;
     };
+
+    static_assert (ranges::input_range<DoublyLinkedList<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
 
 }
 

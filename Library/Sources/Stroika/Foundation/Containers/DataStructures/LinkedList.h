@@ -352,6 +352,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         friend class LinkedList;
     };
 
+    static_assert (ranges::input_range<LinkedList<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
+
 }
 
 /*

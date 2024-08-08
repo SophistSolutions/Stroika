@@ -584,6 +584,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         friend class SkipList;
     };
 
+    static_assert (ranges::input_range<SkipList<int, int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
+
 }
 
 /*
