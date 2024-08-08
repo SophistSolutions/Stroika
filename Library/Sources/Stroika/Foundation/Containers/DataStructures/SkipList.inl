@@ -129,8 +129,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () const noexcept -> ForwardIterator
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        return ForwardIterator{};
+          return ForwardIterator{};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const SkipList* movedFrom) const
