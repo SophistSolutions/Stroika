@@ -8,10 +8,6 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    // a few smoke checks to assure SkipList defined properly...
-    //static_assert (constructible_from<SkipList<int, int>>);
-    //static_assert (constructible_from<SkipList<int, void>>);
-    //static_assert (input_iterator<SkipList<int, int>::ForwardIterator>);
     static_assert (ranges::input_range<SkipList<int, int>>);
 
     namespace Private_ {
@@ -124,12 +120,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () const -> ForwardIterator
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        return ForwardIterator{this, GetFirst_ ()};
+        return ForwardIterator{this};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () const noexcept -> ForwardIterator
     {
-          return ForwardIterator{};
+        return ForwardIterator{};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const SkipList* movedFrom) const
@@ -631,31 +627,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Assert (index == size () + 1);
         ShrinkHeadLinksIfNeeded_ ();
     }
-#if qDebug
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ListAll () const
-    {
-        // replace with ToString() overload???? - enable-if ToString(KEY_TYPE and MAPPED_TYPE)
-        cout << "[";
-        for (size_t i = 0; i < fHead_.size (); ++i) {
-            if (fHead_[i] == nullptr) {
-                cout << "*"
-                     << ", ";
-            }
-            else {
-                cout << fHead_[i]->fEntry.GetValue () << ", ";
-            }
-        }
-        cout << "]  ";
-
-        Link_* n = fHead_[0];
-        while (n != nullptr) {
-            cout << n->fEntry.GetValue () << " (" << n->fNext.size () << "), ";
-            n = n->fNext[0];
-        }
-        cout << endl << flush;
-    }
-#endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::CalcHeight (size_t* totalHeight) const
     {
@@ -717,7 +688,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data) noexcept
-        : ForwardIterator{data, data->fHead_[0]}
+        : ForwardIterator{data, (RequireExpression (data != nullptr), data->fHead_[0])}
     {
     }
 #if qDebug
@@ -735,10 +706,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Done () const noexcept -> bool
     {
-        return fCurrent_;
+        return fCurrent_ == nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator* () const -> value_type
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator* () const -> const value_type&
     {
         RequireNotNull (fCurrent_);
         return fCurrent_->fEntry;
@@ -801,7 +772,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant_ () const noexcept
     {
-        fData_->Invariant (); // @todo more... fNode from somewhere inside fData_....
+        // fData_ not always present - for end () iterators
+        Require (Done () or fData_ != nullptr);
+        if (fData_ != nullptr) {
+            fData_->Invariant (); // @todo more... fNode from somewhere inside fData_....
+        }
     }
 #endif
 

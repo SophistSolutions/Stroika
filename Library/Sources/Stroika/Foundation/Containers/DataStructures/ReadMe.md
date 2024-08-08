@@ -4,6 +4,8 @@ Overview
 
 	These data structures are very similar - structurally - to those in STL (using STL-style naming, patterns, etc).
 
+	These data structures are all 'ranges aware' - and all valid ranges.
+
 	They
 		-	are not <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a> (externally synchronized)
 		-	they are not organized around the Stroika Container abstractions/access patterns

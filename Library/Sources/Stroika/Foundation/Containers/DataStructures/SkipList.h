@@ -111,12 +111,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      * 
      *  \note   TODOS:
-     *              @todo assure works with MAPPED_TYPE=void
      *              @todo - should we use shared_ptr for Node*? at last use blockallocation - must be more carefula bout leaks if not using shared_ptr
      *              @todo Cleanup docs
      *              @todo Integrate into concrete containers
      *              @todo use InlineBuffer instead of vector, and make size of pre-allocated guy fixed in TRAITS (@todo discuss with sterl)
-
+     *              @todo perhaps add API to print forward-links - for debugging structure - but didn't want to introduce dependency on StringBuilder here...
+     *                    (deleted ListAll for old impl - maybe do something like that in debug mode and take STRINGBUILDER as templated argument)
+     *              @todo   https://stroika.atlassian.net/browse/STK-1016 - ranges/sentinel support
+     * 
     // OLD DOCS to lift from (from SSW impl)
     In principle you can use different probabilies for having more than one link. The optimal probability for finds is 1/4, and that also produces a list
     that is more space efficient than a traditional binary tree, as it has only 1.33 nodes per entry, compared with a binary tree using 2.
@@ -396,12 +398,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         constexpr void Invariant () const noexcept;
 
-#if qDebug
-        // @todo maybe lose these APIs?? Can do with iterator easily enuf, and validateall part of invariant???
-    public:
-        nonvirtual void ListAll () const;
-#endif
-
     public:
         /**
         * @todo doc api just for debugging? And not generally useful. And maybe have return tuple, not take var param?
@@ -502,27 +498,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         // stuff STL requires you to set to look like an iterator
         using iterator_category = forward_iterator_tag;
-        using value_type        = SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type;
+        using value_type        = SkipList::value_type;
         using difference_type   = ptrdiff_t;
         using pointer           = const value_type*;
         using reference         = const value_type&;
 
     public:
         /**
-         *  overload taking only 'data' starts at beginning.
          *  /0 overload: sets iterator to 'end' - sentinel
          *  /1 (data) overload: sets iterator to begin
-         *  /2 (data,start) overload: sets iterator to startAt
+         *  /2 (data,startAt) overload: sets iterator to startAt
          */
         constexpr ForwardIterator () noexcept = default;
         explicit constexpr ForwardIterator (const SkipList* data) noexcept;
         explicit constexpr ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt) noexcept;
-        ForwardIterator (const ForwardIterator&)     = default;
-        ForwardIterator (ForwardIterator&&) noexcept = default;
+        constexpr ForwardIterator (const ForwardIterator&) noexcept = default;
+        constexpr ForwardIterator (ForwardIterator&&) noexcept      = default;
 
     public:
-        ForwardIterator& operator= (const ForwardIterator&)     = default;
-        ForwardIterator& operator= (ForwardIterator&&) noexcept = default;
+        nonvirtual ForwardIterator& operator= (const ForwardIterator&)     = default;
+        nonvirtual ForwardIterator& operator= (ForwardIterator&&) noexcept = default;
 
 #if qDebug
     public:
@@ -539,7 +534,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool Done () const noexcept;
 
     public:
-        nonvirtual value_type operator* () const; //  Error to call if Done (), otherwise OK
+        nonvirtual const value_type& operator* () const; //  Error to call if Done (), otherwise OK
 
     public:
         nonvirtual const value_type* operator->() const; //  Error to call if Done (), otherwise OK
