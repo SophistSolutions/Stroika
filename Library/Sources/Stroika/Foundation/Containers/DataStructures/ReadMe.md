@@ -21,3 +21,9 @@ Overview
 
 	These can be used to understand/review the underlying implementations of the normal
 	Stroika containers.
+
+## Supported Data Structures
+---
+
+- [Array\<T>](Array.h)
+  - basic dynamically sized array type (similar to std::vector)

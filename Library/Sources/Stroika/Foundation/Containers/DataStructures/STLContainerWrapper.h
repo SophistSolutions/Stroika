@@ -131,6 +131,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     class STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
     public:
+        // stuff STL requires you to set to look like an iterator
+        using iterator_category = forward_iterator_tag;
+        using value_type        = STLContainerWrapper::value_type;
+        using difference_type   = ptrdiff_t;
+        using pointer           = const value_type*;
+        using reference         = const value_type&;
+
+    public:
         /**
          *  overload taking only 'data' starts at beginning.
          */
@@ -151,7 +159,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:
-        nonvirtual value_type operator* () const;
+        nonvirtual const value_type& operator* () const;
 
     public:
         nonvirtual const value_type* operator->() const;
@@ -169,7 +177,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetUnderlyingIteratorRep (UnderlyingIteratorRep l);
 
     public:
-        nonvirtual bool Equals (const ForwardIterator& rhs) const;
+        nonvirtual bool operator== (const ForwardIterator& rhs) const;
 
     public:
         nonvirtual const STLContainerWrapper* GetReferredToData () const;

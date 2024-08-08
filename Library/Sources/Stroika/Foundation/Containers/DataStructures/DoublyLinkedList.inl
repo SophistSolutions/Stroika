@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline DoublyLinkedList<T>::Link_::Link_ (ArgByValueType<T> item, Link_* prev, Link_* next)
+    constexpr DoublyLinkedList<T>::Link_::Link_ (ArgByValueType<T> item, Link_* prev, Link_* next)
         : fItem{item}
         , fPrev{prev}
         , fNext{next}
@@ -585,7 +585,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return *this;
     }
     template <typename T>
-    inline T DoublyLinkedList<T>::ForwardIterator::operator* () const
+    inline auto DoublyLinkedList<T>::ForwardIterator::operator++ (int) noexcept -> ForwardIterator
+    {
+        ForwardIterator result = *this;
+        this->operator++ ();
+        return result;
+    }
+    template <typename T>
+    inline const T& DoublyLinkedList<T>::ForwardIterator::operator* () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         Require (not Done ());
@@ -628,7 +635,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrent_ = l;
     }
     template <typename T>
-    inline bool DoublyLinkedList<T>::ForwardIterator::Equals (const ForwardIterator& rhs) const
+    inline bool DoublyLinkedList<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         return fCurrent_ == rhs.fCurrent_;

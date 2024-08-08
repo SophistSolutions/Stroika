@@ -8,7 +8,7 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    static_assert (ranges::input_range<SkipList<int, int>>);
+    static_assert (ranges::input_range<SkipList<int, int>>);        // smoke test - make sure basic iteration etc should work (allows formattable to work)
 
     namespace Private_ {
 
@@ -680,8 +680,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt) noexcept
-        : fData_{data}
-        , fCurrent_{startAt}
+        : fCurrent_{startAt}
+#if qDebug
+        , fData_{data}
+#endif
     {
         RequireNotNull (data);
         // startAt may be nullptr (end)
@@ -721,21 +723,30 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return &fCurrent_->fEntry;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::CurrentIndex () const -> size_t
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::CurrentIndex (const SkipList* data) const -> size_t
     {
         Require (not Done ());
+#if qDebug
         RequireNotNull (fData_);
+        Require (fData_ == data);
+#endif
         RequireNotNull (this->fCurrent_);
         size_t i = 0;
-        for (const Link_* l = fData_->fHead_; l != fCurrent_; l = l->fNext[0], ++i) {
+        for (const Link_* l = data->fHead_;; l = l->fNext[0], ++i) {
             AssertNotNull (l);
+            if (l == fCurrent_) [[unlikely]] {
+                return i;
+            }
         }
+        AssertNotReached ();
         return i;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline constexpr bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
-        Require (fData_ == nullptr or rhs.fData_ == nullptr or fData_ == rhs.fData_);
+#if qDebug
+        Require (fData_ == nullptr or rhs.fData_ == nullptr or fData_ == rhs.fData_); // fData_==null for end sentinel case
+#endif
         return fCurrent_ == rhs.fCurrent_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>

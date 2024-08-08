@@ -7,8 +7,7 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    static_assert (input_iterator<LinkedList<int>::ForwardIterator>);
-    //static_assert (ranges::input_range<LinkedList<int>>); // @todo why failing???
+    static_assert (ranges::input_range<LinkedList<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
 
 // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
 #ifndef qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_
@@ -17,7 +16,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /*
      ********************************************************************************
-     ********************** LinkedList<T,TRAITS>::Link_ *****************************
+     ************************ LinkedList<T,TRAITS>::Link_ ***************************
      ********************************************************************************
      */
     template <typename T>
@@ -439,14 +438,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     constexpr LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt) noexcept
-        : fData_{data}
-        , fCurrent_{startAt}
+        : fCurrent_{startAt}
+#if qDebug
+        , fData_{data}
+#endif
     {
         RequireNotNull (data);
     }
     template <typename T>
     constexpr LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data) noexcept
-        : ForwardIterator{data, data->fHead_}
+        : ForwardIterator{data, (RequireExpression (data != nullptr), data->fHead_)}
     {
         RequireNotNull (data);
     }
@@ -502,15 +503,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return &fCurrent_->fItem;
     }
     template <typename T>
-    size_t LinkedList<T>::ForwardIterator::CurrentIndex () const
+    size_t LinkedList<T>::ForwardIterator::CurrentIndex (const LinkedList* data) const
     {
         Require (not(Done ()));
+#if qDebug
+        Require (data == fData_);
         RequireNotNull (fData_);
+#endif
         RequireNotNull (this->fCurrent_);
         size_t i = 0;
-        for (const Link_* l = fData_->fHead_; l != this->fCurrent_; l = l->fNext, ++i) {
+        for (const Link_* l = data->fHead_;; l = l->fNext, ++i) {
             AssertNotNull (l);
+            if (l == fCurrent_) [[unlikely]] {
+                return i;
+            }
         }
+        AssertNotReached ();
         return i;
     }
     template <typename T>
@@ -526,9 +534,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrent_ = l;
     }
     template <typename T>
-    inline bool LinkedList<T>::ForwardIterator::Equals (const typename LinkedList<T>::ForwardIterator& rhs) const
+    inline bool LinkedList<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
-        Require (fData_ == rhs.fData_);
+#if qDebug
+        Require (fData_ == nullptr or rhs.fData_ == nullptr or fData_ == rhs.fData_); // fData_==null for end sentinel case
+#endif
         return fCurrent_ == rhs.fCurrent_;
     }
 #if qDebug

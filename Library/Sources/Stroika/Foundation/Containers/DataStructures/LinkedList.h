@@ -268,10 +268,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     };
 
     /*
-     *      ForwardIterator<T> allows you to iterate over a LinkedList<T,TRAITS>. Its API
-     *  is designed to make easy implementations of subclasses of IteratorRep<T>.
-     *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
-     *  for that.
+     *      ForwardIterator allows you to iterate over a LinkedList<T>. It is not safe to use a ForwardIterator after any
+     *      update to the LinkedList.
      */
     template <typename T>
     class LinkedList<T>::ForwardIterator {
@@ -319,7 +317,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual const T* operator->() const;
 
     public:
-        nonvirtual size_t CurrentIndex () const;
+        /**
+         *  \note Complexity:
+         *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
+         * 
+         *  \req data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_
+         */
+        nonvirtual size_t CurrentIndex (const LinkedList* data) const;
 
     public:
         nonvirtual UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
@@ -328,18 +332,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetUnderlyingIteratorRep (const UnderlyingIteratorRep l);
 
     public:
-        nonvirtual bool Equals (const ForwardIterator& rhs) const;
+        nonvirtual bool operator== (const ForwardIterator& rhs) const;
 
     public:
         nonvirtual void Invariant () const noexcept;
 
     private:
-        const LinkedList* fData_{nullptr}; // even needed in debug builds for 'current-index' api
-        const Link_*      fCurrent_{nullptr};
+        const Link_* fCurrent_{nullptr};
+#if qDebug
+        const LinkedList* fData_{nullptr};
+#endif
 
 #if qDebug
     private:
-        virtual void Invariant_ () const noexcept;
+        nonvirtual void Invariant_ () const noexcept;
 #endif
 
     private:

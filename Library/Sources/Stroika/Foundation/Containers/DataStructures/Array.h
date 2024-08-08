@@ -325,19 +325,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     class Array<T>::IteratorBase {
+    public:
+        // stuff STL requires you to set to look like an iterator
+        using iterator_category = forward_iterator_tag;
+        using value_type        = Array::value_type;
+        using difference_type   = ptrdiff_t;
+        using pointer           = const value_type*;
+        using reference         = const value_type&;
+
     private:
         IteratorBase () = delete;
 
     public:
         IteratorBase (const Array* data);
-        IteratorBase (const IteratorBase& src) = default;
+        IteratorBase (const IteratorBase&) noexcept = default;
+        //IteratorBase (IteratorBase&&)      = default;
 
 #if qDebug
         ~IteratorBase ();
 #endif
 
     public:
-        nonvirtual T operator* () const; //  Error to call if Done (), otherwise OK
+        nonvirtual const T& operator* () const; //  Error to call if Done (), otherwise OK
 
     public:
         nonvirtual const T* operator->() const; //  Error to call if Done (), otherwise OK
@@ -349,7 +358,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetIndex (size_t i);
 
     public:
-        nonvirtual bool Equals (const IteratorBase& rhs) const;
+        nonvirtual bool operator== (const IteratorBase& rhs) const;
 
     public:
         nonvirtual UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
@@ -376,7 +385,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     /**
      *      Use this iterator to iterate forwards over the array. Be careful
      *  not to add or remove things from the array while using this iterator,
-     *  since it is not safe. Use ForwardIterator_Patch for those cases.
+     *  since it is not safe.
      */
     template <typename T>
     class Array<T>::ForwardIterator : public Array<T>::IteratorBase {
@@ -389,7 +398,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  note startAt = 0 for begin(), and startAt = data->size () for end
          */
         explicit ForwardIterator (const Array* data, UnderlyingIteratorRep startAt = static_cast<UnderlyingIteratorRep> (0));
-        ForwardIterator (const ForwardIterator& src) = default;
+        ForwardIterator (const ForwardIterator&) noexcept = default;
+        //ForwardIterator (ForwardIterator&&) noexcept      = default;
+
+    public:
+        nonvirtual ForwardIterator& operator= (const ForwardIterator&)     = default;
+        nonvirtual ForwardIterator& operator= (ForwardIterator&&) noexcept = default;
 
     public:
         /**
@@ -402,6 +416,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
+        nonvirtual ForwardIterator  operator++ (int) noexcept;
     };
 
     /**

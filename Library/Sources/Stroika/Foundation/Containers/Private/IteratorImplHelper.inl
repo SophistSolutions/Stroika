@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers::Private {
         RequireNotNull (rhs);
         using ActualIterImplType_ = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>;
         const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
-        return fIterator.Equals (rrhs->fIterator);
+        return fIterator == rrhs->fIterator;
     }
 #if qDebug
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>

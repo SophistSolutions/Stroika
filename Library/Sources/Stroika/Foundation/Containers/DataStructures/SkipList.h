@@ -491,7 +491,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         [[no_unique_address]] mutable StatsType fStats_;
     };
 
-    /**
+    /*
+     *      ForwardIterator allows you to iterate over a SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>. It is not safe to use a ForwardIterator after any
+     *      update to the SkipList.
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     class SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator {
@@ -543,8 +545,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \note Complexity:
          *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
+         * 
+         *  \req data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_
          */
-        nonvirtual size_t CurrentIndex () const;
+        nonvirtual size_t CurrentIndex (const SkipList* data) const;
 
     public:
         /**
@@ -571,8 +575,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     private:
-        const SkipList* fData_{nullptr}; // even needed in debug builds for CurrentIndex API
-        const Link_*    fCurrent_{nullptr};
+        const Link_* fCurrent_{nullptr};
+#if qDebug
+        const SkipList* fData_{nullptr};
+#endif
 
     private:
         friend class SkipList;

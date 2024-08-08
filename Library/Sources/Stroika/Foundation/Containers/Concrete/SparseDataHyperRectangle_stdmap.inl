@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 using ActualIterImplType_       = MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>;
                 const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
                 AssertNotNull (rrhs);
-                return fIterator.Equals (rrhs->fIterator);
+                return fIterator == rrhs->fIterator;
             }
 
         public:

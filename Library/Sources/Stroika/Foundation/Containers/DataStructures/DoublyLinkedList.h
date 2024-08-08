@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         Link_ ()             = delete;
         Link_ (const Link_&) = delete;
-        Link_ (ArgByValueType<T> item, Link_* prev, Link_* next);
+        constexpr Link_ (ArgByValueType<T> item, Link_* prev, Link_* next);
 
     public:
         T      fItem;
@@ -283,6 +283,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     class DoublyLinkedList<T>::ForwardIterator {
+    public:
+        // stuff STL requires you to set to look like an iterator
+        using iterator_category = forward_iterator_tag;
+        using value_type        = DoublyLinkedList::value_type;
+        using difference_type   = ptrdiff_t;
+        using pointer           = const value_type*;
+        using reference         = const value_type&;
+
     public:
         /**
          *  overload taking only 'data' starts at beginning.
@@ -304,13 +312,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool Done () const noexcept;
 
     public:
-        nonvirtual T operator* () const;
+        nonvirtual const T& operator* () const;
 
     public:
         nonvirtual const T* operator->() const;
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
+        nonvirtual ForwardIterator  operator++ (int) noexcept;
 
     public:
         /**
@@ -326,7 +335,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetUnderlyingIteratorRep (UnderlyingIteratorRep l);
 
     public:
-        nonvirtual bool Equals (const ForwardIterator& rhs) const;
+        nonvirtual bool operator== (const ForwardIterator& rhs) const;
 
     public:
         nonvirtual void Invariant () const noexcept;
