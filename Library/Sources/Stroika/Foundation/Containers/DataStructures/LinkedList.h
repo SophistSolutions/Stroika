@@ -21,6 +21,7 @@
  *
  * TODO:
  *      @todo   Include Performance numbers for each operation (done for many).
+ *      @todo   https://stroika.atlassian.net/browse/STK-1016 - ranges/sentinel support
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
@@ -72,6 +73,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         */
+        nonvirtual ForwardIterator begin () const;
+
+    public:
+        /**
+         */
+        constexpr ForwardIterator end () const noexcept;
+
+    public:
+        /**
          *  \note Complexity:
          *      Always: constant
          */
@@ -114,6 +125,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average Case: O(N)
          *
          *  Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
+         * 
+         * 
+         * @TODO - rename to Find () - I THINK - but slight change to using iterator??? - maybe also do First() overloads like this as well
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual const T* Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
@@ -124,6 +138,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \note Complexity:
          *      Always: O(N)
+         *  @todo add function concept
          */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
@@ -133,6 +148,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of container
+         * 
+         *  @todo add predicate
          */
         template <typename FUNCTION>
         nonvirtual UnderlyingIteratorRep Find (FUNCTION&& firstThat) const;
@@ -242,7 +259,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     class LinkedList<T>::Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (T) <= 1024> {
     public:
         Link_ () = delete;
-        Link_ (ArgByValueType<T> item, Link_* next);
+        constexpr Link_ (ArgByValueType<T> item, Link_* next);
         Link_ (const Link_&) = delete;
 
     public:
@@ -259,15 +276,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class LinkedList<T>::ForwardIterator {
     public:
-        /**
-         *  overload taking only 'data' starts at beginning.
-         */
-        ForwardIterator (const ForwardIterator& from) = default;
-        explicit ForwardIterator (const LinkedList* data);
-        explicit ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt);
+        // stuff STL requires you to set to look like an iterator
+        using iterator_category = forward_iterator_tag;
+        using value_type        = LinkedList::value_type;
+        using difference_type   = ptrdiff_t;
+        using pointer           = const value_type*;
+        using reference         = const value_type&;
 
     public:
-        nonvirtual ForwardIterator& operator= (const ForwardIterator& it);
+        /**
+         *  /0 overload: sets iterator to 'end' - sentinel
+         *  /1 (data) overload: sets iterator to begin
+         *  /2 (data,startAt) overload: sets iterator to startAt
+         */
+        constexpr ForwardIterator () noexcept = default;
+        explicit constexpr ForwardIterator (const LinkedList* data) noexcept;
+        explicit constexpr ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt) noexcept;
+        constexpr ForwardIterator (const ForwardIterator&) noexcept = default;
+        constexpr ForwardIterator (ForwardIterator&&) noexcept      = default;
+
+    public:
+        nonvirtual ForwardIterator& operator= (const ForwardIterator&)     = default;
+        nonvirtual ForwardIterator& operator= (ForwardIterator&&) noexcept = default;
 
     public:
         /**
@@ -280,6 +310,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
+        nonvirtual ForwardIterator  operator++ (int) noexcept;
 
     public:
         nonvirtual T operator* () const;
@@ -303,8 +334,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const noexcept;
 
     private:
-        const LinkedList* fData_; // even needed in debug builds for 'current-index' api
-        const Link_*      fCurrent_;
+        const LinkedList* fData_{nullptr}; // even needed in debug builds for 'current-index' api
+        const Link_*      fCurrent_{nullptr};
 
 #if qDebug
     private:

@@ -7,6 +7,9 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
+    static_assert (input_iterator<LinkedList<int>::ForwardIterator>);
+    //static_assert (ranges::input_range<LinkedList<int>>); // @todo why failing???
+
 // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
 #ifndef qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_
 #define qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_ 0
@@ -18,7 +21,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline LinkedList<T>::Link_::Link_ (ArgByValueType<T> item, Link_* next)
+    constexpr LinkedList<T>::Link_::Link_ (ArgByValueType<T> item, Link_* next)
         : fItem{item}
         , fNext{next}
     {
@@ -26,7 +29,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /*
      ********************************************************************************
-     ************************** LinkedList<T,TRAITS> ********************************
+     **************************** LinkedList<T,TRAITS> ******************************
      ********************************************************************************
      */
     template <typename T>
@@ -130,6 +133,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Assert (oldI == pi->fCurrent_);
         pi->fCurrent_ = newI;
         pi->fData_    = this;
+    }
+    template <typename T>
+    inline auto LinkedList<T>::begin () const -> ForwardIterator
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        return ForwardIterator{this};
+    }
+    template <typename T>
+    constexpr auto LinkedList<T>::end () const noexcept -> ForwardIterator
+    {
+        return ForwardIterator{};
     }
     template <typename T>
     inline bool LinkedList<T>::empty () const
@@ -413,7 +427,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * Check we are properly linked together.
          */
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            // at least make sure no currupted links and no infinite loops
+            // at least make sure no corrupted links and no infinite loops
         }
     }
 #endif
@@ -424,26 +438,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt)
+    constexpr LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt) noexcept
         : fData_{data}
         , fCurrent_{startAt}
     {
         RequireNotNull (data);
     }
     template <typename T>
-    inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data)
+    constexpr LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data) noexcept
         : ForwardIterator{data, data->fHead_}
     {
         RequireNotNull (data);
-    }
-    template <typename T>
-    inline typename LinkedList<T>::ForwardIterator& LinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
-    {
-        Invariant ();
-        fData_    = rhs.fData_;
-        fCurrent_ = rhs.fCurrent_;
-        Invariant ();
-        return *this;
     }
     template <typename T>
     inline void LinkedList<T>::ForwardIterator::Invariant () const noexcept
@@ -472,6 +477,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrent_ = fCurrent_->fNext;
         Invariant ();
         return *this;
+    }
+    template <typename T>
+    inline auto LinkedList<T>::ForwardIterator::operator++ (int) noexcept -> ForwardIterator
+    {
+        ForwardIterator result = *this;
+        this->operator++ ();
+        return result;
     }
     template <typename T>
     inline T LinkedList<T>::ForwardIterator::operator* () const
