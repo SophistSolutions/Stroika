@@ -223,7 +223,7 @@ namespace {
         Debug::TraceContextBumper ctx{"ToString"};
         SkipList<int, int>        t;
         t.Add (1, 2);
-        DbgTrace ("t={}"_f, t);
+        DbgTrace ("t={}"_f, t); // test using ranges support
     }
 }
 
