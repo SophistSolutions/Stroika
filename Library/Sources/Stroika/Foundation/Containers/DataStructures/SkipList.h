@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  SkipLists intrinsically require knowing the in-order comparison function applied to key data.
          */
-        using KeyComparerType = TRAITS::KeyComparerType;
+        using KeyComparerType = typename TRAITS::KeyComparerType;
 
     public:
         /**
