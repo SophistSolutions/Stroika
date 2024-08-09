@@ -15,72 +15,6 @@
 #include "Stroika/Foundation/Execution/Common.h"
 
 /**
- *
- *  Description:
- *
- *      Array<T> is simple data structure implementation. It is not intended to be directly
- *  used by programmers, except in implementing concrete container reps.
- *
- *      Array<T> is a template which provides a dynamic array class (very similar to std::vector). Elements
- *  of type T can be assigned, and accessed much like a normal array, except
- *  that when debug is on, accesses are range-checked.
- *
- *      Array<T> also provides a dynamic sizing capability. It reallocs its
- *  underlying storage is such a ways as to keep a buffer of n(currently 5)%
- *  extra, so that reallocs on resizes only occur logn times on n appends.
- *  To save even this space, you can call shrink_to_fit().
- *
- *      Unlike other dynamic array implementations, when an item is removed,
- *  it is destructed then. So the effects of buffering have no effects on the
- *  semantics of the Array.
- *
- *
- *  Notes:
- *
- *  C++/StandardC arrays and segmented architectures: ((@todo DOCS OBSOLETE))
- *
- *      Our iterators use address arithmetic since that is faster than
- *  array indexing, but that requires care in the presence of patching,
- *  and in iterating backwards.
- *
- *      The natural thing to do in iteration would be to have fCurrent
- *  point to the current item, but that would pose difficulties in the
- *  final test at the end of the iteration when iterating backwards. The
- *  final test would be fCurrent < _fStart. This would be illegal in ANSI C.
- *
- *      The next possible trick is for backwards iteration always point one
- *  past the one you mean, and have *it subtract one before
- *  dereferencing. This works pretty well, but makes source code sharing between
- *  the forwards and backwards cases difficult.
- *
- *      The next possible trick, and the one we use for now, is to have
- *  fCurrent point to the current item, and in the Next() code, when
- *  going backwards, reset fCurrent to _fEnd - bizarre as this may seem
- *  then the test code can be shared among the forwards and backwards
- *  implementations, all the patching code can be shared, with only this
- *  one minor check. Other potential choices are presented in the TODO
- *  below.
- *
- *
- *  TODO:
- *      @todo   See if there is some way to get the performance of realloc for the cases where we could have
- *              realloced without moving.
- *
- *      @todo   Improve perofrmance/cleanup memory allocation. ALREADY got rid of  realloc().
- *              but celanup safety/use uninitalized_copy and stl destroy functions.
- *
- *              NOTE - CAN USE realloc() if is_trivially_copyable<T>::value, so maybe do SFINAE
- *              different impls...
- *
- *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
- *              (IN FACT, Find (function) overload basically same thing - maybe have two find overloads - with function and comparer
- *              but easily confusable, and redundant, but maybe useful for performance?)
- *
- *      @todo   Add RVALUE-REF (MOVE) stuff.
- *
- *      @todo   (close to rvalue thing above) - fix construction/destruction stuff. More mdoern C++.
- *              That crap was written around 1990!!!
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
@@ -96,6 +30,68 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  ..fSlotsAlloced) are uninitialized memory. This is important because
      *  it means you can count on DTORs of your T being called when you
      *  remove them from contains, not when the caches happen to empty.
+     *
+     *      Array<T> is simple data structure implementation. It is not intended to be directly
+     *  used by programmers, except in implementing concrete container reps.
+     *
+     *      Array<T> is a template which provides a dynamic array class (very similar to std::vector). Elements
+     *  of type T can be assigned, and accessed much like a normal array, except
+     *  that when debug is on, accesses are range-checked.
+     *
+     *      Array<T> also provides a dynamic sizing capability. It reallocs its
+     *  underlying storage is such a ways as to keep a buffer of n(currently 5)%
+     *  extra, so that reallocs on resizes only occur logn times on n appends.
+     *  To save even this space, you can call shrink_to_fit().
+     *
+     *      Unlike other dynamic array implementations, when an item is removed,
+     *  it is destructed then. So the effects of buffering have no effects on the
+     *  semantics of the Array.
+     *
+     *
+     *  Notes:
+     *
+     *  C++/StandardC arrays and segmented architectures: ((@todo DOCS OBSOLETE))
+     *
+     *      Our iterators use address arithmetic since that is faster than
+     *  array indexing, but that requires care in the presence of patching,
+     *  and in iterating backwards.
+     *
+     *      The natural thing to do in iteration would be to have fCurrent
+     *  point to the current item, but that would pose difficulties in the
+     *  final test at the end of the iteration when iterating backwards. The
+     *  final test would be fCurrent < _fStart. This would be illegal in ANSI C.
+     *
+     *      The next possible trick is for backwards iteration always point one
+     *  past the one you mean, and have *it subtract one before
+     *  dereferencing. This works pretty well, but makes source code sharing between
+     *  the forwards and backwards cases difficult.
+     *
+     *      The next possible trick, and the one we use for now, is to have
+     *  fCurrent point to the current item, and in the Next() code, when
+     *  going backwards, reset fCurrent to _fEnd - bizarre as this may seem
+     *  then the test code can be shared among the forwards and backwards
+     *  implementations, all the patching code can be shared, with only this
+     *  one minor check. Other potential choices are presented in the TODO
+     *  below.
+     *
+     *  TODO:
+     *      @todo   See if there is some way to get the performance of realloc for the cases where we could have
+     *              realloced without moving.
+     *
+     *      @todo   Improve perofrmance/cleanup memory allocation. ALREADY got rid of  realloc().
+     *              but celanup safety/use uninitalized_copy and stl destroy functions.
+     *
+     *              NOTE - CAN USE realloc() if is_trivially_copyable<T>::value, so maybe do SFINAE
+     *              different impls...
+     *
+     *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
+     *              (IN FACT, Find (function) overload basically same thing - maybe have two find overloads - with function and comparer
+     *              but easily confusable, and redundant, but maybe useful for performance?)
+     *
+     *      @todo   Add RVALUE-REF (MOVE) stuff.
+     *
+     *      @todo   (close to rvalue thing above) - fix construction/destruction stuff. More mdoern C++.
+     *              That crap was written around 1990!!!
      */
     template <typename T>
     class Array : public Debug::AssertExternallySynchronizedMutex {
@@ -441,6 +437,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual BackwardIterator& operator++ () noexcept;
     };
+
+    //static_assert (ranges::input_range<Array<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
 
 }
 
