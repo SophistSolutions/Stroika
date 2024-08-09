@@ -206,7 +206,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline T* LinkedList<T>::PeekAt (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        #if qDebug
         Require (i.fData_ == this); // assure iterator not stale
+        #endif
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
@@ -217,7 +219,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
+#if qDebug
         Require (i.fData_ == this); // assure iterator not stale
+        #endif
         Invariant ();
         i.Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
@@ -227,7 +231,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+#if qDebug
         Require (i.fData_ == this); // assure iterator not stale
+        #endif
         /*
          * NB: This code works fine, even if 'i' is Done ()
          */
@@ -257,7 +263,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
+#if qDebug
         Require (i.fData_ == this);  // assure iterator not stale
+        #endif
         AssertNotNull (i.fCurrent_); // since not done...
         i.Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fNext = new Link_{newValue, i.fCurrent_->fNext};
@@ -266,7 +274,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     auto LinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+#if qDebug
         Require (i.fData_ == this); // assure iterator not stale
+    #endif
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
