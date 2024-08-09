@@ -78,8 +78,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      @todo   See if there is some way to get the performance of realloc for the cases where we could have
      *              realloced without moving.
      *
-     *      @todo   Improve perofrmance/cleanup memory allocation. ALREADY got rid of  realloc().
-     *              but celanup safety/use uninitalized_copy and stl destroy functions.
+     *      @todo   Improve performance/cleanup memory allocation. ALREADY got rid of  realloc().
+     *              but celanup safety/use uninitialized_copy and stl destroy functions.
      *
      *              NOTE - CAN USE realloc() if is_trivially_copyable<T>::value, so maybe do SFINAE
      *              different impls...
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *
      *      @todo   Add RVALUE-REF (MOVE) stuff.
      *
-     *      @todo   (close to rvalue thing above) - fix construction/destruction stuff. More mdoern C++.
+     *      @todo   (close to rvalue thing above) - fix construction/destruction stuff. More modern C++.
      *              That crap was written around 1990!!!
      */
     template <typename T>

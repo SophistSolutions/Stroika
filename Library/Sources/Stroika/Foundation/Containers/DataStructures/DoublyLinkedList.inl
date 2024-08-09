@@ -328,7 +328,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         //
         // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
         // old for old, and when I match, stop on new
+#if qDebug
         Require (pi->fData_ == movedFrom);
+#endif
         auto                  newI = this->fHead_;
         [[maybe_unused]] auto newE = nullptr;
         auto                  oldI = movedFrom->fHead_;
@@ -343,7 +345,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Assert (oldI == pi->fCurrent_);
         pi->fCurrent_ = newI;
-        pi->fData_    = this;
+#if qDebug
+        pi->fData_ = this;
+#endif
     }
     template <typename T>
     inline auto DoublyLinkedList<T>::begin () const -> ForwardIterator
@@ -361,7 +365,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
+#if qDebug
         Require (i.fData_ == this); // assure iterator not stale
+#endif
         this->Invariant ();
         ForwardIterator next = i;
         ++next;
@@ -418,7 +424,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
+#if qDebug
         Require (i.fData_ == this); // assure iterator not stale
+#endif
         this->Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
         this->Invariant ();
@@ -427,7 +435,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void DoublyLinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+#if qDebug
         Require (i.fData_ == this); // assure iterator not stale
+#endif
         /*
          * NB: This code works fine, even if we are done!!!
          */
@@ -469,7 +479,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void DoublyLinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+#if qDebug
         Require (i.fData_ == this); // assure iterator not stale
+#endif
         this->Invariant ();
         Require (not i.Done ());
         AssertNotNull (i.fCurrent_); // since not done...
@@ -546,9 +558,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    constexpr DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList* data, UnderlyingIteratorRep startAt) noexcept
+    constexpr DoublyLinkedList<T>::ForwardIterator::ForwardIterator ([[maybe_unused]] const DoublyLinkedList* data, UnderlyingIteratorRep startAt) noexcept
         : fCurrent_{startAt}
+#if qDebug
         , fData_{data}
+#endif
     {
     }
     template <typename T>
@@ -571,10 +585,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::Done () const noexcept
     {
+#if qDebug
         if (fData_ != nullptr) {
             AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
             Invariant ();
         }
+#endif
         return fCurrent_ == nullptr;
     }
     template <typename T>
@@ -597,8 +613,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline const T& DoublyLinkedList<T>::ForwardIterator::operator* () const
     {
+#if qDebug
         RequireNotNull (fData_);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
+#endif
         Require (not Done ());
         Invariant ();
         AssertNotNull (fCurrent_);
@@ -607,8 +625,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline const T* DoublyLinkedList<T>::ForwardIterator::operator->() const
     {
+#if qDebug
         RequireNotNull (fData_);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
+#endif
         Require (not Done ());
         Invariant ();
         AssertNotNull (fCurrent_);
@@ -641,7 +661,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
     {
+#if qDebug
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*fData_};
+#endif
         // MUST COME FROM THIS LIST
         // CAN be nullptr
         fCurrent_ = l;
