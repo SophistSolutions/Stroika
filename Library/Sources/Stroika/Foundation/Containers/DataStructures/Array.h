@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
-        nonvirtual ForwardIterator end () const;
+        constexpr ForwardIterator end () const;
 
     public:
         /**
@@ -329,10 +329,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using pointer           = const value_type*;
         using reference         = const value_type&;
 
-    private:
-        IteratorBase () = delete;
-
     public:
+        constexpr IteratorBase () noexcept = default;
         IteratorBase (const Array* data);
         IteratorBase (const IteratorBase&) noexcept = default;
         //IteratorBase (IteratorBase&&)      = default;
@@ -370,9 +368,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant_ () const noexcept;
 #endif
 
-    private:
-        const Array* fData_{nullptr};
-        size_t       fCurrentIdx_{0};
+    protected:
+        const Array* _fData{nullptr};
+        size_t       _fCurrentIdx{0};
 
     private:
         friend class Array;
@@ -393,6 +391,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  overload taking only 'data' starts at beginning.
          *  note startAt = 0 for begin(), and startAt = data->size () for end
          */
+        constexpr ForwardIterator () noexcept = default;
         explicit ForwardIterator (const Array* data, UnderlyingIteratorRep startAt = static_cast<UnderlyingIteratorRep> (0));
         ForwardIterator (const ForwardIterator&) noexcept = default;
         //ForwardIterator (ForwardIterator&&) noexcept      = default;
@@ -438,7 +437,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual BackwardIterator& operator++ () noexcept;
     };
 
-    //static_assert (ranges::input_range<Array<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
+    static_assert (ranges::input_range<Array<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
 
 }
 

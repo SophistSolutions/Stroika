@@ -140,11 +140,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  overload taking only 'data' starts at beginning.
+         *  /0 overload: sets iterator to 'end' - sentinel
+         *  /1 (data) overload: sets iterator to begin
+         *  /2 (data,startAt) overload: sets iterator to startAt
          */
-        explicit ForwardIterator (const STLContainerWrapper* data);
-        explicit ForwardIterator (const STLContainerWrapper* data, UnderlyingIteratorRep startAt);
-        ForwardIterator (const ForwardIterator& from) = default;
+        constexpr ForwardIterator () noexcept = default;
+        explicit constexpr ForwardIterator (const STLContainerWrapper* data) noexcept;
+        explicit constexpr ForwardIterator (const STLContainerWrapper* data, UnderlyingIteratorRep startAt) noexcept;
+        constexpr ForwardIterator (const ForwardIterator&) noexcept = default;
+        constexpr ForwardIterator (ForwardIterator&&) noexcept      = default;
+
+    public:
+        nonvirtual ForwardIterator& operator= (const ForwardIterator&)     = default;
+        nonvirtual ForwardIterator& operator= (ForwardIterator&&) noexcept = default;
 
     public:
         /**
@@ -183,12 +191,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual const STLContainerWrapper* GetReferredToData () const;
 
     private:
-        const STLContainerWrapper* fData_;
-        const_iterator             fStdIterator_;
+        const STLContainerWrapper* fData_{nullptr};
+        const_iterator             fStdIterator_{};
 
     private:
         friend class STLContainerWrapper;
     };
+
+    static_assert (ranges::input_range<STLContainerWrapper<vector<int>>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
 
 }
 

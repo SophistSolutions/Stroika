@@ -134,17 +134,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename STL_CONTAINER_OF_T>
-    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper* data, UnderlyingIteratorRep startAt)
+    constexpr STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper* data, UnderlyingIteratorRep startAt) noexcept
         : fData_{data}
         , fStdIterator_{startAt}
     {
         RequireNotNull (data);
     }
     template <typename STL_CONTAINER_OF_T>
-    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper* data)
-        : ForwardIterator{data, data->cbegin ()}
+    constexpr STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper* data) noexcept
+        : ForwardIterator{data, (RequireExpression (data != nullptr), data->cbegin ())}
     {
-        RequireNotNull (data);
     }
     template <typename STL_CONTAINER_OF_T>
     inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator bool () const
