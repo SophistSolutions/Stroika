@@ -105,7 +105,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using UnderlyingIteratorRep = size_t;
 
     public:
+        /**
+         */
         Array () = default;
+        Array (Array&& from);
         Array (const Array& from);
 
     public:

@@ -43,8 +43,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using value_type = T;
 
     public:
+        /**
+         */
         LinkedList ();
-        LinkedList (const LinkedList& from);
+        LinkedList (LinkedList&& src);
+        LinkedList (const LinkedList& src);
         ~LinkedList ();
 
     public:

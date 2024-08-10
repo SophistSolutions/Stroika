@@ -185,7 +185,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         SkipList (KeyComparerType keyComparer = {});
-        SkipList (const SkipList& s);
+        SkipList (SkipList&& src);
+        SkipList (const SkipList& src);
         ~SkipList ();
 
     public:
@@ -423,6 +424,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  iteration, assuming other users did not alter the tree.  Note that these routines require no key compares, and are thus very fast.
          */
         nonvirtual Link_* GetFirst_ () const; // synonym for begin (), MakeIterator ()
+
     private:
         nonvirtual Link_* GetLast_ () const; // returns iterator to largest key
 
@@ -446,7 +448,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             value_type  fEntry;
             LinkVector_ fNext; // for a SkipList, you have an array of next pointers, rather than just one
         };
-        LinkVector_ fHead_;
+        LinkVector_ fHead_{};
 
     private:
         /*
@@ -486,9 +488,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t DetermineLinkHeight_ () const;
 
     private:
-        [[no_unique_address]] KeyComparerType   fKeyThreeWayComparer_;
+        [[no_unique_address]] KeyComparerType   fKeyThreeWayComparer_{};
         size_t                                  fLength_{0};
-        [[no_unique_address]] mutable StatsType fStats_;
+        [[no_unique_address]] mutable StatsType fStats_{};
     };
 
     /*

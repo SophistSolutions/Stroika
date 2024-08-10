@@ -68,6 +68,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         template <typename... EXTRA_ARGS>
         STLContainerWrapper (EXTRA_ARGS&&... args);
+        constexpr STLContainerWrapper (const STLContainerWrapper&)     = default;
+        constexpr STLContainerWrapper (STLContainerWrapper&&) noexcept = default;
 
     public:
         class ForwardIterator;

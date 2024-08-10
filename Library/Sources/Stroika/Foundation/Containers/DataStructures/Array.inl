@@ -47,6 +47,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
+    Array<T>::Array (Array&& from)
+        : fItems_{move (from.fItems_)}
+        , fLength_{from.fLength_}
+    {
+        Invariant ();
+        from.fItems_  = nullptr;
+        from.fLength_ = 0;
+        from.Invariant ();
+    }
+    template <typename T>
     void Array<T>::InsertAt (size_t index, ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};

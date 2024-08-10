@@ -35,19 +35,27 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    LinkedList<T>::LinkedList (const LinkedList& from)
+    inline LinkedList<T>::LinkedList (LinkedList&& src)
+        : fHead_{src.fHead_}
+    {
+        src.fHead_ = nullptr;
+        Invariant ();
+        src.Invariant ();
+    }
+    template <typename T>
+    LinkedList<T>::LinkedList (const LinkedList& src)
     {
         /*
-         *      Copy the link list by keeping a point to the new current and new
+         *      Copy the link list by keeping a pointer to the new current and new
          *  previous, and sliding them along in parallel as we construct the
          *  new list. Only do this if we have at least one element - then we
          *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
          *  case is handled outside, before the loop.
          */
-        if (from.fHead_ != nullptr) {
-            fHead_        = new Link_{from.fHead_->fItem, nullptr};
+        if (src.fHead_ != nullptr) {
+            fHead_        = new Link_{src.fHead_->fItem, nullptr};
             Link_* newCur = fHead_;
-            for (const Link_* cur = from.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
+            for (const Link_* cur = src.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
                 Link_* newPrev = newCur;
                 newCur         = new Link_{cur->fItem, nullptr};
                 newPrev->fNext = newCur;

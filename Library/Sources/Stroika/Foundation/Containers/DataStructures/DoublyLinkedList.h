@@ -22,9 +22,6 @@
  *
  *
  * TODO:
- *      @todo   DataStructures::DoublyLinkedList::ForwardIterator has the 'suporesMode' in the
- *              datastrcutre code and we have it here in the patching code. Note SURE what is better
- *              probably patching code) - but make them consistent!
  *
  *  Long-Term TODO:
  *      @todo   Could add iterator subclass (or use traits to control) which tracks index internally, as with Stroika v1
@@ -50,8 +47,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using value_type = T;
 
     public:
+        /**
+         */
         DoublyLinkedList ();
-        DoublyLinkedList (const DoublyLinkedList& from);
+        DoublyLinkedList (DoublyLinkedList&& src);
+        DoublyLinkedList (const DoublyLinkedList& src);
         ~DoublyLinkedList ();
 
     public:
@@ -84,20 +84,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \note Complexity:
          *      Always: constant
-         *
-         *  \req not empty ()
          */
-        nonvirtual T GetFirst () const;
+        nonvirtual optional<T> GetFirst () const;
 
     public:
         /**
          *  \note Complexity:
          *      Always: constant
-         *
-         *
-         *  \req not empty ()
          */
-        nonvirtual T GetLast () const;
+        nonvirtual optional<T> GetLast () const;
 
     public:
         /**
@@ -151,7 +146,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: O(N)
          */
-        template <typename FUNCTION>
+        template <invocable<T> FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
@@ -241,7 +236,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          *
-         *  NB: Can be called if done
+         *  \req not i.Done ()
          */
         nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
 

@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -77,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type RemoveHead () override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            T                                                      item = fData_.GetFirst ();
+            T                                                      item = Memory::ValueOf (fData_.GetFirst ());
             fData_.RemoveFirst ();
             fChangeCounts_.PerformedChange ();
             return item;
@@ -88,7 +89,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (fData_.empty ()) {
                 return optional<T>{};
             }
-            T item = fData_.GetFirst ();
+            T item = Memory::ValueOf (fData_.GetFirst ());
             fData_.RemoveFirst ();
             fChangeCounts_.PerformedChange ();
             return item;
@@ -96,14 +97,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type Head () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.GetFirst ();
+            return Memory::ValueOf (fData_.GetFirst ());
         }
         virtual optional<value_type> HeadIf () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (fData_.empty ()) {
-                return optional<T>{};
-            }
             return fData_.GetFirst ();
         }
 
@@ -118,7 +116,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type RemoveTail () override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            value_type                                             item = fData_.GetFirst ();
+            value_type                                             item = Memory::ValueOf (fData_.GetFirst ());
             fData_.RemoveLast ();
             fChangeCounts_.PerformedChange ();
             return item;
@@ -126,7 +124,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type Tail () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.GetLast ();
+            return Memory::ValueOf (fData_.GetLast ());
         }
 
     private:

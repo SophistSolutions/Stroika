@@ -202,13 +202,13 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
         AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext = nullptr) noexcept;
         AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, AssertExternallySynchronizedMutex&& src) noexcept;
-        AssertExternallySynchronizedMutex (AssertExternallySynchronizedMutex&& src) noexcept;
-        AssertExternallySynchronizedMutex (const AssertExternallySynchronizedMutex& src) noexcept;
+        AssertExternallySynchronizedMutex (AssertExternallySynchronizedMutex&&) noexcept;
+        AssertExternallySynchronizedMutex (const AssertExternallySynchronizedMutex&) noexcept;
         AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedMutex& src) noexcept;
 #else
-        constexpr AssertExternallySynchronizedMutex () noexcept                                   = default;
-        AssertExternallySynchronizedMutex (AssertExternallySynchronizedMutex&& src) noexcept      = default;
-        AssertExternallySynchronizedMutex (const AssertExternallySynchronizedMutex& src) noexcept = default;
+        constexpr AssertExternallySynchronizedMutex () noexcept                               = default;
+        AssertExternallySynchronizedMutex (AssertExternallySynchronizedMutex&&) noexcept      = default;
+        AssertExternallySynchronizedMutex (const AssertExternallySynchronizedMutex&) noexcept = default;
 #endif
 
     public:

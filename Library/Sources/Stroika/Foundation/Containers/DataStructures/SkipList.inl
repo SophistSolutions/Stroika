@@ -54,11 +54,45 @@ namespace Stroika::Foundation::Containers::DataStructures {
         GrowHeadLinksIfNeeded_ (1, nullptr);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (const SkipList& s)
-        : fKeyThreeWayComparer_{s.fKeyThreeWayComparer_}
+    SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (const SkipList& src)
+        : fKeyThreeWayComparer_{src.fKeyThreeWayComparer_}
     {
-        operator= (s);
+        GrowHeadLinksIfNeeded_ (1, nullptr);
+        Link_* prev = nullptr;
+        Link_* n    = src.fHead_[0];
+        while (n != nullptr) {
+            Link_* newNode = new Link_{n->fEntry.fKey, n->fEntry.fValue};
+            if (prev == nullptr) {
+                Assert (fHead_.size () == 1);
+                Assert (fHead_[0] == nullptr);
+                fHead_[0] = newNode;
+            }
+            else {
+                prev->fNext.push_back (newNode);
+            }
+            prev = newNode;
+            n    = n->fNext[0];
+        }
+        // AssertNotNull (prev);
+        if (prev != nullptr) {
+            Assert (prev->fNext.size () == 0);
+            prev->fNext.push_back (nullptr);
+        }
+        fLength_ = src.fLength_;
+        ReBalance (); // this will give us a proper link structure
     }
+#if 1
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (SkipList&& src)
+        : fKeyThreeWayComparer_{src.fKeyThreeWayComparer_}
+        , fHead_{move (src.fHead_)}
+        , fLength_{src.fLength_}
+    {
+        src.fHead_.resize (1);
+        src.fHead_[0] = 0;
+        src.fLength_  = 0;
+    }
+#endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>& SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::operator= (const SkipList& t)
     {
@@ -577,7 +611,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t lastValidHeight = 0;
         for (size_t i = 0; i < sizeof (height) / sizeof (size_t); ++i) {
             height[i] = size_t (pow (indexBase, double (i)));
-
             if (height[i] == 0 or height[i] > size ()) {
                 Assert (i > 0); // else have no valid heights
                 break;
@@ -598,7 +631,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         while (node != nullptr) {
             Link_* next = node->fNext[0];
             node->fNext.clear ();
-
 #if qDebug
             bool patched = false;
 #endif
@@ -666,7 +698,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 }
             }
             n = n->fNext[0];
-            Assert (n == nullptr or (fKeyThreeWayComparer_ (n->fEntry.fKey, oldKey) != strong_ordering::less));
+            Assert (n == nullptr or fKeyThreeWayComparer_ (n->fEntry.fKey, oldKey) != strong_ordering::less);
         }
     }
 #endif

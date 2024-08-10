@@ -34,15 +34,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList& from)
+    DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList& src)
     {
-        /*
-         *      @todo - this could be a bit more efficient
-         */
-        for (const Link_* cur = from.fHead_; cur != nullptr; cur = cur->fNext) {
+        for (const Link_* cur = src.fHead_; cur != nullptr; cur = cur->fNext) {
             push_back (cur->fItem);
         }
         Invariant ();
+    }
+    template <typename T>
+    DoublyLinkedList<T>::DoublyLinkedList (DoublyLinkedList&& src)
+        : fHead_{src.fHead_}
+        , fTail_{src.fTail_}
+    {
+        Invariant ();
+        src.fHead_ = nullptr;
+        src.fTail_ = nullptr;
+        src.Invariant ();
     }
     template <typename T>
     inline DoublyLinkedList<T>::~DoublyLinkedList ()
@@ -86,18 +93,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return n;
     }
     template <typename T>
-    inline T DoublyLinkedList<T>::GetFirst () const
+    inline optional<T> DoublyLinkedList<T>::GetFirst () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        RequireNotNull (fHead_);
-        return fHead_->fItem;
+        return fHead_ == nullptr ? optional<T>{} : fHead_->fItem;
     }
     template <typename T>
-    inline T DoublyLinkedList<T>::GetLast () const
+    inline optional<T> DoublyLinkedList<T>::GetLast () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        RequireNotNull (fTail_); // cannot call Getlast on empty list
-        return fTail_->fItem;
+        return fTail_ == nullptr ? optional<T>{} : fTail_->fItem;
     }
     template <typename T>
     inline void DoublyLinkedList<T>::push_front (ArgByValueType<T> item)
@@ -261,7 +266,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return false;
     }
     template <typename T>
-    template <typename FUNCTION>
+    template <invocable<T> FUNCTION>
     inline void DoublyLinkedList<T>::Apply (FUNCTION&& doToElement) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
