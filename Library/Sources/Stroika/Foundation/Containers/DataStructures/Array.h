@@ -224,7 +224,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: O(N)
          */
-        template <typename FUNCTION>
+        template <invocable<T> FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
 
     public:
@@ -336,7 +336,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         constexpr IteratorBase () noexcept = default;
         IteratorBase (const Array* data);
         IteratorBase (const IteratorBase&) noexcept = default;
-        //IteratorBase (IteratorBase&&)      = default;
 
 #if qDebug
         ~IteratorBase ();
@@ -397,7 +396,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         constexpr ForwardIterator () noexcept = default;
         explicit ForwardIterator (const Array* data, UnderlyingIteratorRep startAt = static_cast<UnderlyingIteratorRep> (0));
         ForwardIterator (const ForwardIterator&) noexcept = default;
-        //ForwardIterator (ForwardIterator&&) noexcept      = default;
+        constexpr ForwardIterator (ForwardIterator&&) noexcept;
 
     public:
         nonvirtual ForwardIterator& operator= (const ForwardIterator&)     = default;

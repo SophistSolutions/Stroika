@@ -393,7 +393,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: O(N)
          */
-        template <typename FUNCTION>
+        template <invocable<T> FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:

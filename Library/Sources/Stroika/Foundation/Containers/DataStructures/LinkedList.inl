@@ -171,12 +171,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return n;
     }
     template <typename T>
-    inline T LinkedList<T>::GetFirst () const
+    inline optional<T> LinkedList<T>::GetFirst () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        Require (not empty ());
-        AssertNotNull (fHead_);
-        return fHead_->fItem;
+        return fHead_ == nullptr ? optional<T>{} : fHead_->fItem;
     }
     template <typename T>
     inline void LinkedList<T>::push_front (ArgByValueType<T> item)
@@ -375,7 +373,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return nullptr;
     }
     template <typename T>
-    template <typename FUNCTION>
+    template <invocable<T> FUNCTION>
     inline void LinkedList<T>::Apply (FUNCTION&& doToElement) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};

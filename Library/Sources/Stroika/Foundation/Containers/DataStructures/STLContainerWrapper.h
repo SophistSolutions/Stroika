@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: O(N)
          */
-        template <typename FUNCTION>
+        template <invocable<typename STL_CONTAINER_OF_T::value_type> FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
@@ -100,13 +100,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
-        template <predicate<typename STL_CONTAINER_OF_T ::value_type> FUNCTION>
+        template <predicate<typename STL_CONTAINER_OF_T::value_type> FUNCTION>
         nonvirtual iterator Find (FUNCTION&& firstThat);
-        template <predicate<typename STL_CONTAINER_OF_T ::value_type> FUNCTION>
+        template <predicate<typename STL_CONTAINER_OF_T::value_type> FUNCTION>
         nonvirtual const_iterator Find (FUNCTION&& firstThat) const;
 
     public:
-        template <typename PREDICATE>
+        template <predicate<typename STL_CONTAINER_OF_T::value_type> PREDICATE>
         nonvirtual bool FindIf (PREDICATE&& pred) const;
 
     public:

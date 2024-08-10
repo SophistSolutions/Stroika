@@ -33,26 +33,22 @@ using namespace Stroika::Frameworks;
 
 #if qHasFeature_GoogleTest
 namespace {
-    void Test2_ThrowCatchStringException_ ()
+    GTEST_TEST (Foundation_Execution_Exceptions, ThrowCatchStringException_)
     {
-        Debug::TraceContextBumper ctx{L"Test2_ThrowCatchStringException_"};
-        {
-            try {
-                Throw (Exception{L"HiMom"});
-                EXPECT_TRUE (false);
-            }
-            catch (const Exception<>& e) {
-                EXPECT_TRUE (e.As<wstring> () == L"HiMom");
-            }
+        Debug::TraceContextBumper ctx{L"ThrowCatchStringException_"};
+        try {
+            Throw (Exception{"HiMom"});
+            EXPECT_TRUE (false);
         }
-        {
-            try {
-                Throw (Exception{L"HiMom"});
-                EXPECT_TRUE (false);
-            }
-            catch (const std::exception& e) {
-                EXPECT_TRUE (strcmp (e.what (), "HiMom") == 0); // IF THIS FAILS SEE qCompilerAndStdLib_Debug32_asan_Poison_Buggy
-            }
+        catch (const Exception<>& e) {
+            EXPECT_EQ (e.As<wstring> (), L"HiMom");
+        }
+        try {
+            Throw (Exception{"HiMom"});
+            EXPECT_TRUE (false);
+        }
+        catch (const std::exception& e) {
+            EXPECT_EQ (strcmp (e.what (), "HiMom"), 0); // IF THIS FAILS SEE qCompilerAndStdLib_Debug32_asan_Poison_Buggy
         }
     }
 }
@@ -64,17 +60,16 @@ namespace {
             {
                 static const int kErr2TestFor_ = make_error_code (errc::bad_address).value ();           // any value from errc would do
                 static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv; // maybe not always right due to locales?
-
                 try {
                     ThrowPOSIXErrNo (kErr2TestFor_);
                 }
                 catch (const std::system_error& e) {
-                    EXPECT_TRUE (e.code ().value () == kErr2TestFor_);
+                    EXPECT_EQ (e.code ().value (), kErr2TestFor_);
                     EXPECT_TRUE (e.code ().category () == system_category () or e.code ().category () == generic_category ());
                     EXPECT_TRUE (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::eCaseInsensitive));
                 }
                 catch (...) {
-                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace ("err={}"_f, current_exception ());
                     EXPECT_TRUE (false); //oops
                 }
                 // and test throwing fancy unicode string
@@ -84,12 +79,12 @@ namespace {
                     Execution::Throw (SystemErrorException{kErr2TestFor_, generic_category (), kMsgWithUnicode_});
                 }
                 catch (const std::system_error& e) {
-                    EXPECT_TRUE (e.code ().value () == kErr2TestFor_);
-                    EXPECT_TRUE (e.code ().category () == generic_category ());
+                    EXPECT_EQ (e.code ().value (), kErr2TestFor_);
+                    EXPECT_EQ (e.code ().category (), generic_category ());
                     EXPECT_TRUE (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::eCaseInsensitive));
                 }
                 catch (...) {
-                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()));
+                    DbgTrace ("err={}"_f, current_exception ());
                     EXPECT_TRUE (false); //oops
                 }
             }
@@ -103,18 +98,18 @@ namespace {
                     EXPECT_TRUE (e.code () != errc::already_connected);
                 }
                 catch (...) {
-                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()));
+                    DbgTrace ("err={}"_f, current_exception ());
                     EXPECT_TRUE (false); //oops
                 }
                 try {
                     Execution::Throw (Execution::TimeOutException{});
                 }
                 catch (const Execution::TimeOutException& e) {
-                    EXPECT_TRUE (e.code () == errc::timed_out);
+                    EXPECT_EQ (e.code () , errc::timed_out);
                     EXPECT_TRUE (e.code () != errc::already_connected);
                 }
                 catch (...) {
-                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()));
+                    DbgTrace ("err={}"_f, current_exception ());
                     EXPECT_TRUE (false); //oops
                 }
                 const Characters::String kMsg1_ = L"to abcd 123 zß水𝄋";
@@ -122,29 +117,28 @@ namespace {
                     Execution::Throw (Execution::TimeOutException{kMsg1_});
                 }
                 catch (const system_error& e) {
-                    EXPECT_TRUE (e.code () == errc::timed_out);
+                    EXPECT_EQ (e.code () , errc::timed_out);
                     EXPECT_TRUE (e.code () != errc::already_connected);
                     EXPECT_TRUE (Characters::ToString (e).Contains (kMsg1_));
                 }
                 catch (...) {
-                    DbgTrace ("err={}"_f, Characters::ToString (current_exception ()));
+                    DbgTrace ("err={}"_f, current_exception ());
                     EXPECT_TRUE (false); //oops
                 }
             }
         }
-        void TestAll_ ()
-        {
-            Debug::TraceContextBumper ctx{L"Test3_SystemErrorException_"};
-            Private_::T1_system_error_ ();
-            Private_::T2_TestTimeout_ ();
-        }
+    }
+    GTEST_TEST (Foundation_Execution_Exceptions, SystemErrorException_)
+    {
+        Debug::TraceContextBumper ctx{"SystemErrorException_"};
+        Test3_SystemErrorException_::Private_::T1_system_error_ ();
+        Test3_SystemErrorException_::Private_::T2_TestTimeout_ ();
     }
 }
 
 namespace {
     namespace Test4_Activities_ {
         namespace Private {
-
             void T1_Basics_ ()
             {
                 using Characters::String;
@@ -181,11 +175,11 @@ namespace {
                 }
             }
         }
-        void TestAll_ ()
-        {
-            Debug::TraceContextBumper ctx{"Test4_Activities_"};
-            Private::T1_Basics_ ();
-        }
+    }
+    GTEST_TEST (Foundation_Execution_Exceptions, Test4_Activities_)
+    {
+        Debug::TraceContextBumper ctx{"Test4_Activities_"};
+        Test4_Activities_::Private::T1_Basics_ ();
     }
 }
 
@@ -261,14 +255,14 @@ namespace {
             }
 #endif
         }
-        void TestAll_ ()
-        {
-            Debug::TraceContextBumper ctx{L"Test5_error_code_condition_compares_"};
-            Private::Bug1_ ();
+    }
+    GTEST_TEST (Foundation_Execution_Exceptions, Test5_error_code_condition_compares_)
+    {
+        Debug::TraceContextBumper ctx{L"Test5_error_code_condition_compares_"};
+        Test5_error_code_condition_compares_::Private::Bug1_ ();
 #if qPlatform_Windows
-            Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
+        Test5_error_code_condition_compares_::Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
 #endif
-        }
     }
 }
 
@@ -298,32 +292,21 @@ namespace {
                 }
             }
         }
-        void TestAll_ ()
-        {
-            Debug::TraceContextBumper ctx{"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
-            auto                      prevValue = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
-            DbgTrace ("sDefault_IncludeSourceLines = true"_f);
-            Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
-            Private::ThrowCatchStringException_ ();
-            DbgTrace ("sDefault_IncludeSourceLines = false"_f);
-            Debug::BackTrace::Options::sDefault_IncludeSourceLines = false;
-            Private::ThrowCatchStringException_ ();
-            DbgTrace ("sDefault_IncludeSourceLines = <<default>>"_f);
-            Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
-            Private::ThrowCatchStringException_ ();
-        }
     }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Execution_Exceptions, all)
+    GTEST_TEST (Foundation_Execution_Exceptions, Throw_Logging_with_and_without_srclines_in_stack_backtrace_)
     {
-        Debug::TraceContextBumper ctx{"DoRegressionTests_"};
-        Test2_ThrowCatchStringException_ ();
-        Test3_SystemErrorException_::TestAll_ ();
-        Test4_Activities_::TestAll_ ();
-        Test5_error_code_condition_compares_::TestAll_ ();
-        Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_::TestAll_ ();
+        using namespace Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_;
+        Debug::TraceContextBumper ctx{"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
+        auto                      prevValue = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
+        DbgTrace ("sDefault_IncludeSourceLines = true"_f);
+        Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
+        Private::ThrowCatchStringException_ ();
+        DbgTrace ("sDefault_IncludeSourceLines = false"_f);
+        Debug::BackTrace::Options::sDefault_IncludeSourceLines = false;
+        Private::ThrowCatchStringException_ ();
+        DbgTrace ("sDefault_IncludeSourceLines = <<default>>"_f);
+        Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
+        Private::ThrowCatchStringException_ ();
     }
 }
 #endif

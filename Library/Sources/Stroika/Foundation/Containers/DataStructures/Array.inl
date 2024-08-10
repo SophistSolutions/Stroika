@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return false;
     }
     template <typename T>
-    template <typename FUNCTION>
+    template <invocable<T> FUNCTION>
     inline void Array<T>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
@@ -605,6 +605,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
         this->_fCurrentIdx = startAt;
         this->Invariant ();
+    }
+    template <typename T>
+    constexpr Array<T>::ForwardIterator::ForwardIterator (ForwardIterator&& src) noexcept
+    {
+        this->_fData       = -src._fData;
+        this->_fCurrentIdx = src._fCurrentIdx;
+        src._fData         = nullptr;
     }
     template <typename T>
     inline Array<T>::ForwardIterator::operator bool () const

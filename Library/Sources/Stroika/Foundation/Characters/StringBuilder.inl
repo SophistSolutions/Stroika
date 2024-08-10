@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Characters {
     inline bool StringBuilder<OPTIONS>::empty () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return fData_.size () == 0;
+        return fData_.empty ();
     }
     template <typename OPTIONS>
     inline Character StringBuilder<OPTIONS>::GetAt (size_t index) const noexcept

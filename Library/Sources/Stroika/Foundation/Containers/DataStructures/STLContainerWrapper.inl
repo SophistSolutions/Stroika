@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         pi->fData_        = this;
     }
     template <typename STL_CONTAINER_OF_T>
-    template <typename FUNCTION>
+    template <invocable<typename STL_CONTAINER_OF_T::value_type> FUNCTION>
     void STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION&& doToElement) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
-            if ((firstThat)(*i)) {
+            if (firstThat (*i)) {
                 return i;
             }
         }
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return this->end ();
     }
     template <typename STL_CONTAINER_OF_T>
-    template <typename PREDICATE>
+    template <predicate<typename STL_CONTAINER_OF_T::value_type> PREDICATE>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE&& pred) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};

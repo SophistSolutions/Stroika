@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -77,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type Pop () override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            value_type                                             result = fData_.GetFirst ();
+            value_type                                             result = Memory::ValueOf (fData_.GetFirst ());
             fData_.RemoveFirst ();
             fChangeCounts_.PerformedChange ();
             return result;
@@ -85,7 +86,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type Top () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.GetFirst ();
+            return Memory::ValueOf (fData_.GetFirst ());
         }
 
     private:

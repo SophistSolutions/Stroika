@@ -556,7 +556,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return n;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    template <typename FUNCTION>
+    template <invocable<T> FUNCTION>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};

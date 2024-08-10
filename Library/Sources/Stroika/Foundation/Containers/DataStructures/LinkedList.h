@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: constant
          */
-        nonvirtual T GetFirst () const;
+        nonvirtual optional<T> GetFirst () const;
 
     public:
         /**
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: O(N)
          *  @todo add function concept
          */
-        template <typename FUNCTION>
+        template <invocable<T> FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
