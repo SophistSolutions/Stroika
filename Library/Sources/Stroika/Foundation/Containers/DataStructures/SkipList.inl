@@ -392,6 +392,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Verify (RemoveIf (key));
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const ForwardIterator& it)
+    {
+        AssertNotImplemented ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveIf (ArgByValueType<key_type> key)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};

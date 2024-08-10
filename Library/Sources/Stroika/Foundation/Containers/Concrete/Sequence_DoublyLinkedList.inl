@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *nextI = i;
                 ++(*nextI);
             }
-            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            fData_.Remove (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (index-- == 0) {
                     while (amountToRemove-- != 0) {
-                        it = fData_.RemoveAt (it);
+                        it = fData_.Remove (it);
                     }
                     break;
                 }

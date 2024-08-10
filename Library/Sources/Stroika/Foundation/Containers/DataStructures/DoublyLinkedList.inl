@@ -366,7 +366,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return ForwardIterator{};
     }
     template <typename T>
-    auto DoublyLinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
+    auto DoublyLinkedList<T>::Remove (const ForwardIterator& i) -> ForwardIterator
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());

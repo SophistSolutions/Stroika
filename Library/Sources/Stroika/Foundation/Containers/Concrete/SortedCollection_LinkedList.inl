@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.SetAt (mir.fIterator, newValue);
             }
             else {
-                fData_.RemoveAt (mir.fIterator);
+                fData_.Remove (mir.fIterator);
                 AddWithoutLocks_ (newValue);
             }
             fChangeCounts_.PerformedChange ();
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *nextI = i;
                 ++(*nextI);
             }
-            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            fData_.Remove (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();

@@ -105,7 +105,7 @@ namespace {
                     Execution::Throw (Execution::TimeOutException{});
                 }
                 catch (const Execution::TimeOutException& e) {
-                    EXPECT_EQ (e.code () , errc::timed_out);
+                    EXPECT_EQ (e.code (), errc::timed_out);
                     EXPECT_TRUE (e.code () != errc::already_connected);
                 }
                 catch (...) {
@@ -117,7 +117,7 @@ namespace {
                     Execution::Throw (Execution::TimeOutException{kMsg1_});
                 }
                 catch (const system_error& e) {
-                    EXPECT_EQ (e.code () , errc::timed_out);
+                    EXPECT_EQ (e.code (), errc::timed_out);
                     EXPECT_TRUE (e.code () != errc::already_connected);
                     EXPECT_TRUE (Characters::ToString (e).Contains (kMsg1_));
                 }

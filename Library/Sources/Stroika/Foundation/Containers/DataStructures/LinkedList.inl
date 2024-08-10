@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const_cast<Link_*> (i.fCurrent_)->fNext = new Link_{newValue, i.fCurrent_->fNext};
     }
     template <typename T>
-    auto LinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
+    auto LinkedList<T>::Remove (const ForwardIterator& i) -> ForwardIterator
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if qDebug
@@ -342,7 +342,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         for (ForwardIterator it{this}; not it.Done (); ++it) {
             if (equalsComparer (*it, item)) {
-                this->RemoveAt (it);
+                this->Remove (it);
                 break;
             }
         }

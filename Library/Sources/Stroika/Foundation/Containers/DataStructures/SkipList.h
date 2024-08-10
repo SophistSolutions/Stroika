@@ -198,6 +198,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual KeyComparerType GetComparer () const;
 
     public:
+        class ForwardIterator;
+
+    public:
         /**
          *  You can add more than one item with the same key. If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove calls.
          *
@@ -227,6 +230,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst:      N
          */
         nonvirtual void Remove (ArgByValueType<key_type> key);
+        nonvirtual void Remove (const ForwardIterator& it);
 
     public:
         /**
@@ -257,9 +261,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: constant
          */
         nonvirtual bool empty () const;
-
-    public:
-        class ForwardIterator;
 
     public:
         /**
@@ -359,10 +360,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     public:
-        //    nonvirtual void Update (const ForwardIterator& it, ArgByValueType < mapped_type> newValue);
-
-    public:
-        //   nonvirtual void Remove (const ForwardIterator& it);
+        nonvirtual void Update (const ForwardIterator& it, ArgByValueType<mapped_type> newValue);
 
     public:
         /**

@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *nextI = i;
                 ++(*nextI);
             }
-            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            fData_.Remove (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();

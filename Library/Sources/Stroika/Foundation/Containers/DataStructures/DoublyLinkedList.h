@@ -67,6 +67,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using UnderlyingIteratorRep = const Link_*;
 
     public:
+        class ForwardIterator;
+
+    public:
         /**
          *  \note Complexity:
          *      Always: constant
@@ -165,9 +168,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average Case: O(N)
          *
          *  Note - does nothing if item not found.
+
+         ForwardIterator OVERLOAD:
+         *  \note Complexity:
+         *      Always: constant
+         * 
+         *  returns the next link
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void Remove (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {});
+        nonvirtual void            Remove (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {});
+        nonvirtual ForwardIterator Remove (const ForwardIterator& i);
 
     public:
         /**
@@ -194,9 +204,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
 
     public:
-        class ForwardIterator;
-
-    public:
         /*
          *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
          *  iterator from 'this' - which points at the same logical position. This requires that this container
@@ -214,15 +221,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         constexpr ForwardIterator end () const noexcept;
-
-    public:
-        /**
-         *  \note Complexity:
-         *      Always: constant
-         * 
-         *  returns the next link
-         */
-        nonvirtual ForwardIterator RemoveAt (const ForwardIterator& i);
 
     public:
         /**

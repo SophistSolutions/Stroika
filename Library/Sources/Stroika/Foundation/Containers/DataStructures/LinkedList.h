@@ -162,15 +162,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: constant
          * 
-         *  Returns iterator pointing at next item.
-         */
-        nonvirtual ForwardIterator RemoveAt (const ForwardIterator& i);
-
-    public:
-        /**
-         *  Complexity:
-         *      Always: constant
-         * 
          *  \note lifetime of returned pointer only extends til the start of the next non-const call to this LinkedList object
          */
         nonvirtual T* PeekAt (const ForwardIterator& i);
@@ -200,10 +191,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Note - does nothing if item not found.
+         *  EQUALS_COMPARER overload: Note - does nothing if item not found.
+         * 
+         *  Complexity (ForwardIterator overload):
+         *      Always: constant
+         * 
+         *  Returns iterator pointing at next item.
          */
         template <typename EQUALS_COMPARER>
-        nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer);
+        nonvirtual void            Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer);
+        nonvirtual ForwardIterator Remove (const ForwardIterator& i);
 
     public:
         nonvirtual void RemoveAll ();
@@ -215,8 +212,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(N)
          *
-         *      Not a lot of point in having these, as they are terribly slow,
-         *  but the could be convenient.
+         *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
          */
         nonvirtual void push_back (ArgByValueType<T> item);
 
@@ -225,8 +221,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(N)
          *
-         *      Not a lot of point in having these, as they are terribly slow,
-         *  but the could be convenient.
+         *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
          */
         nonvirtual T GetAt (size_t i) const;
 
@@ -235,8 +230,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(N)
          *
-         *      Not a lot of point in having these, as they are terribly slow,
-         *  but the could be convenient.
+         *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
          */
         nonvirtual void SetAt (T item, size_t i);
 

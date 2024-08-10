@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     }
                     else {
                         result = current.fCount;
-                        fData_.RemoveAt (it);
+                        fData_.Remove (it);
                     }
                     fChangeCounts_.PerformedChange ();
                     return result;
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *nextI = i;
                 ++(*nextI);
             }
-            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            fData_.Remove (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     *nextI = i;
                     ++(*nextI);
                 }
-                fData_.RemoveAt (mir.fIterator);
+                fData_.Remove (mir.fIterator);
             }
             else {
                 value_type c = *mir.fIterator;

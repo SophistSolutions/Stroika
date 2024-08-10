@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fDomainEqualsComparer_ (it->first, d)) {
-                    fData_.RemoveAt (it);
+                    fData_.Remove (it);
                     fChangeCounts_.PerformedChange ();
                     return;
                 }
@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fRangeEqualsComparer_ (it->second, r)) {
-                    fData_.RemoveAt (it);
+                    fData_.Remove (it);
                     fChangeCounts_.PerformedChange ();
                     return;
                 }
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++(*nextI);
             }
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            fData_.RemoveAt (mir.fIterator);
+            fData_.Remove (mir.fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
