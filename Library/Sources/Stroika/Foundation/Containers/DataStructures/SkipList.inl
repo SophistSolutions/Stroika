@@ -698,11 +698,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant_ () const noexcept
     {
-        Link_* n = fHead_[0];
+        const Link_* n = fHead_[0];
         while (n != nullptr) {
             KEY_TYPE oldKey = n->fEntry.fKey;
             for (size_t i = 1; i < n->fNext.size (); ++i) {
-                Link_* newN = n->fNext[i];
+                const Link_* newN = n->fNext[i];
                 if (n == nullptr) {
                     Assert (newN == nullptr);
                 }

@@ -349,8 +349,29 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
+    template <invocable<T> FUNCTION>
+    inline void LinkedList<T>::Apply (FUNCTION&& doToElement) const
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
+            doToElement (i->fItem);
+        }
+    }
+    template <typename T>
+    template <predicate<T> FUNCTION>
+    inline auto LinkedList<T>::Find (FUNCTION&& firstThat) const -> UnderlyingIteratorRep
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
+            if (firstThat (i->fItem)) {
+                return i;
+            }
+        }
+        return nullptr;
+    }
+    template <typename T>
     template <typename EQUALS_COMPARER>
-    T* LinkedList<T>::Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
+    T* LinkedList<T>::Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; // lock not shared cuz return mutable ptr
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
@@ -362,33 +383,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    const T* LinkedList<T>::Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
+    const T* LinkedList<T>::Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
             if (equalsComparer (i->fItem, item)) {
                 return &i->fItem;
-            }
-        }
-        return nullptr;
-    }
-    template <typename T>
-    template <invocable<T> FUNCTION>
-    inline void LinkedList<T>::Apply (FUNCTION&& doToElement) const
-    {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            doToElement (i->fItem);
-        }
-    }
-    template <typename T>
-    template <typename FUNCTION>
-    inline auto LinkedList<T>::Find (FUNCTION&& firstThat) const -> UnderlyingIteratorRep
-    {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            if (firstThat (i->fItem)) {
-                return i;
             }
         }
         return nullptr;

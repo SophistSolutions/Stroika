@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.Lookup (item, Common::EqualsComparerAdapter{fInorderComparer_}) != nullptr;
+            return fData_.Find (item, Common::EqualsComparerAdapter{fInorderComparer_}) != nullptr;
         }
         virtual void Remove (ArgByValueType<value_type> item) override
         {

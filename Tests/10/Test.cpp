@@ -226,7 +226,6 @@ namespace {
         DbgTrace ("t={}"_f, t); // test using ranges support
     }
 }
-
 #endif
 
 int main (int argc, const char* argv[])

@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Configuration/TypeHints.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
@@ -84,7 +85,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom) const;
 
     public:
-        nonvirtual bool contains (ArgByValueType<value_type> item) const;
+        nonvirtual bool contains (Configuration::ArgByValueType<value_type> item) const;
 
     public:
         /**

@@ -123,22 +123,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Complexity:
-         *      Worst Case: O(N)
-         *      Average Case: O(N)
-         *
-         *  Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
-         * 
-         * 
-         * @TODO - rename to Find () - I THINK - but slight change to using iterator??? - maybe also do First() overloads like this as well
-         */
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual const T* Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual T* Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
-
-    public:
-        /**
          *  \note Complexity:
          *      Always: O(N)
          *  @todo add function concept
@@ -153,9 +137,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          * 
          *  @todo add predicate
+         * 
+         *  *  Complexity EQUALS_COMPARER OVERLOAD:
+         *      Worst Case: O(N)
+         *      Average Case: O(N)
+         *
+         *   EQUALS_COMPARER OVERLOAD : Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
+         * 
+         * @TODO - rename to Find () - I THINK - but slight change to using iterator??? - maybe also do First() overloads like this as well
          */
-        template <typename FUNCTION>
+        template <predicate<T> FUNCTION>
         nonvirtual UnderlyingIteratorRep Find (FUNCTION&& firstThat) const;
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual const T* Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {}) const;
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual T* Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {});
 
     public:
         /**

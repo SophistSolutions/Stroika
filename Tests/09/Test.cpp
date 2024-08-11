@@ -6,10 +6,10 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
-#include <sstream>
+#include <vector>
 
-//#include    "Stroika/Foundation/Containers/Private/PatchingDataStructures/DoublyLinkedList.h"
-
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Containers/DataStructures/STLContainerWrapper.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -17,6 +17,8 @@
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
+using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
@@ -24,6 +26,16 @@ using namespace Stroika::Frameworks;
 namespace {
     GTEST_TEST (Foundation_DataStructures_STLContainerWrapper, Test1)
     {
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_DataStructures_STLContainerWrapper, ToString)
+    {
+        Debug::TraceContextBumper                        ctx{"ToString"};
+        DataStructures::STLContainerWrapper<vector<int>> t;
+        t.push_back (1);
+        DbgTrace ("t={}"_f, t); // test using ranges support
     }
 }
 #endif

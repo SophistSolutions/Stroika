@@ -7,8 +7,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/DataStructures/DoublyLinkedList.h"
-
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
@@ -17,6 +17,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Containers::DataStructures;
 
 using namespace Stroika::Frameworks;
@@ -140,6 +141,16 @@ namespace {
             //cerr << "i, getat(i-1) = " << i << ", " << someLL.GetAt (i-1).GetValue () << endl;
             EXPECT_TRUE (someLL.GetAt (i - 1) == i);
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, ToString)
+    {
+        Debug::TraceContextBumper             ctx{"ToString"};
+        DataStructures::DoublyLinkedList<int> t;
+        t.push_back (1);
+        DbgTrace ("t={}"_f, t); // test using ranges support
     }
 }
 #endif
