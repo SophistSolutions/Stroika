@@ -567,6 +567,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator  operator++ (int);
 
     public:
+        // safe to update in place since doesn't change order of list (since not updating key)
+        nonvirtual void UpdateValue (ArgByValueType<mapped_type> newValue);
+
+    public:
         constexpr void Invariant () const noexcept;
 
 #if qDebug

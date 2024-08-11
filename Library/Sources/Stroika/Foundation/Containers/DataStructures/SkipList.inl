@@ -603,6 +603,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Update (const ForwardIterator& it, ArgByValueType<mapped_type> newValue)
+    {
+        it.UpdateValue (newValue);
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReBalance ()
     {
         if (empty ()) [[unlikely]] {
@@ -806,6 +811,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ForwardIterator result = *this;
         this->operator++ ();
         return result;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::UpdateValue (ArgByValueType<mapped_type> newValue)
+    {
+        fCurrent_->fEntry.fValue = newValue;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept
