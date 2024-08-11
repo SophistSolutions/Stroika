@@ -52,12 +52,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         template <typename TRAITS, typename KEY_TYPE>
         concept IValidTraits = Common::IThreeWayComparer<typename TRAITS::KeyComparerType, KEY_TYPE> and requires (TRAITS a) {
-            {
-                TRAITS::kKeepStatistics
-            } -> std::convertible_to<bool>;
-            {
-                TRAITS::kAddOrExtendOrReplaceMode
-            } -> std::convertible_to<AddOrExtendOrReplaceMode>;
+            { TRAITS::kKeepStatistics } -> std::convertible_to<bool>;
+            { TRAITS::kAddOrExtendOrReplaceMode } -> std::convertible_to<AddOrExtendOrReplaceMode>;
         };
 
         struct Stats_Basic {
@@ -212,94 +208,94 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         nonvirtual bool Add (ArgByValueType<key_type> key)
             requires (same_as<mapped_type, void>)
-            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        if constexpr (TRAITS::kCostlyInvariants) {
-            Invariant ();
-        }
-        LinkVector_ links;
-        Link_*      n = FindNearest_ (key, links);
-        if (n == nullptr) {
-            AddNode_ (new Link_{key, val}, links);
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
-            return true;
-        }
-        else {
-            switch (TRAITS::kAddOrExtendOrReplaceMode) {
-                case AddOrExtendOrReplaceMode::eAddIfMissing:
-                    return false;
-                case AddOrExtendOrReplaceMode::eAddReplaces:
-                    n->fEntry.fKey   = key; // two 'different' objects can compare equal, and this updates the value (e.g. stroika set)
-                    n->fEntry.fValue = val;
-                    if constexpr (TRAITS::kCostlyInvariants) {
-                        Invariant ();
-                    }
-                    return true;
-                case AddOrExtendOrReplaceMode::eAddExtras:
-                    AddNode_ (new Link_{key, val}, links);
-                    if constexpr (TRAITS::kCostlyInvariants) {
-                        Invariant ();
-                    }
-                    return true;
-                case AddOrExtendOrReplaceMode::eDuplicatesRejected:
-                    static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
-                    Execution::Throw (kExcept_);
+            LinkVector_ links;
+            Link_*      n = FindNearest_ (key, links);
+            if (n == nullptr) {
+                AddNode_ (new Link_{key}, links);
+                if constexpr (TRAITS::kCostlyInvariants) {
+                    Invariant ();
+                }
+                return true;
             }
-            AssertNotReached ();
-            return false;
+            else {
+                switch (TRAITS::kAddOrExtendOrReplaceMode) {
+                    case AddOrExtendOrReplaceMode::eAddIfMissing:
+                        return false;
+                    case AddOrExtendOrReplaceMode::eAddReplaces:
+                        n->fEntry.fKey = key; // two 'different' objects can compare equal, and this updates the value (e.g. stroika set)
+                        if constexpr (TRAITS::kCostlyInvariants) {
+                            Invariant ();
+                        }
+                        return true;
+                    case AddOrExtendOrReplaceMode::eAddExtras:
+                        AddNode_ (new Link_{key}, links);
+                        if constexpr (TRAITS::kCostlyInvariants) {
+                            Invariant ();
+                        }
+                        return true;
+                    case AddOrExtendOrReplaceMode::eDuplicatesRejected:
+                        static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
+                        Execution::Throw (kExcept_);
+                }
+                AssertNotReached ();
+                return false;
+            }
         }
-    }
-            #else
-            ;
-            #endif
+#else
+        ;
+#endif
         template <typename CHECK_T = mapped_type>
         nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val)
             requires (not same_as<mapped_type, void>)
-            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        if constexpr (TRAITS::kCostlyInvariants) {
-            Invariant ();
-        }
-        LinkVector_ links;
-        Link_*      n = FindNearest_ (key, links);
-        if (n == nullptr) {
-            AddNode_ (new Link_{key}, links);
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
-            return true;
-        }
-        else {
-            switch (TRAITS::kAddOrExtendOrReplaceMode) {
-                case AddOrExtendOrReplaceMode::eAddIfMissing:
-                    return false;
-                case AddOrExtendOrReplaceMode::eAddReplaces:
-                    n->fEntry.fKey = key; // two 'different' objects can compare equal, and this updates the value (e.g. stroika set)
-                    if constexpr (TRAITS::kCostlyInvariants) {
-                        Invariant ();
-                    }
-                    return true;
-                case AddOrExtendOrReplaceMode::eAddExtras:
-                    AddNode_ (new Link_{key}, links);
-                    if constexpr (TRAITS::kCostlyInvariants) {
-                        Invariant ();
-                    }
-                    return true;
-                case AddOrExtendOrReplaceMode::eDuplicatesRejected:
-                    static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
-                    Execution::Throw (kExcept_);
+            LinkVector_ links;
+            Link_*      n = FindNearest_ (key, links);
+            if (n == nullptr) {
+                AddNode_ (new Link_{key, val}, links);
+                if constexpr (TRAITS::kCostlyInvariants) {
+                    Invariant ();
+                }
+                return true;
             }
-            AssertNotReached ();
-            return false;
+            else {
+                switch (TRAITS::kAddOrExtendOrReplaceMode) {
+                    case AddOrExtendOrReplaceMode::eAddIfMissing:
+                        return false;
+                    case AddOrExtendOrReplaceMode::eAddReplaces:
+                        n->fEntry.fKey   = key; // two 'different' objects can compare equal, and this updates the value (e.g. stroika set)
+                        n->fEntry.fValue = val;
+                        if constexpr (TRAITS::kCostlyInvariants) {
+                            Invariant ();
+                        }
+                        return true;
+                    case AddOrExtendOrReplaceMode::eAddExtras:
+                        AddNode_ (new Link_{key, val}, links);
+                        if constexpr (TRAITS::kCostlyInvariants) {
+                            Invariant ();
+                        }
+                        return true;
+                    case AddOrExtendOrReplaceMode::eDuplicatesRejected:
+                        static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
+                        Execution::Throw (kExcept_);
+                }
+                AssertNotReached ();
+                return false;
+            }
         }
-    }
-            #else
-            ;
-            #endif
+#else
+        ;
+#endif
         nonvirtual bool Add (const value_type& v);
 
     public:
