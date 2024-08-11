@@ -271,6 +271,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         return this->fKeyThreeWayComparer_;
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     template <typename CHECK_T>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val)
@@ -355,6 +356,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return false;
         }
     }
+    #endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v)
     {
