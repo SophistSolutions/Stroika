@@ -391,7 +391,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: O(N)
          */
-        template <invocable<T> FUNCTION>
+        template <invocable<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
