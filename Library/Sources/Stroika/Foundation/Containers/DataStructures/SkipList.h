@@ -391,8 +391,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: O(N)
          */
+
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        template <typename FUNCTION>
+        nonvirtual void Apply (FUNCTION&& doToElement) const;
+#else
         template <invocable<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
+#endif
 
     public:
         constexpr void Invariant () const noexcept;
