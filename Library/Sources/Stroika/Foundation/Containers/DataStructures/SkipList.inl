@@ -29,6 +29,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ************** SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_ ******************
      ********************************************************************************
      */
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_::Link_ (ArgByValueType<key_type> key, ArgByValueType<mapped_type> val)
         requires (not same_as<mapped_type, void>)
@@ -41,6 +42,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         : fEntry{key}
     {
     }
+#endif
 
     /*
      ********************************************************************************

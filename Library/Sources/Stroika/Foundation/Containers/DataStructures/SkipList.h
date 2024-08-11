@@ -445,11 +445,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // Fundamentally a linked-list, but with a quirky 'next' pointer(s)
         struct Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (value_type) <= 1024> {
             constexpr Link_ (ArgByValueType<key_type> key, ArgByValueType<mapped_type> val)
-                requires (not same_as<mapped_type, void>);
-            constexpr Link_ (ArgByValueType<key_type> key)
-                requires (same_as<mapped_type, void>);
+                requires (not same_as<mapped_type, void>)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+                : fEntry{key, val} {}
+#else
+            ;
+#endif
+                constexpr Link_ (ArgByValueType<key_type> key)
+                    requires (same_as<mapped_type, void>)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+                : fEntry{key} {}
+#else
+            ;
+#endif
 
-            value_type  fEntry;
+                value_type fEntry;
             LinkVector_ fNext; // for a SkipList, you have an array of next pointers, rather than just one
         };
         LinkVector_ fHead_{};
