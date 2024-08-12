@@ -271,11 +271,60 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         return this->fKeyThreeWayComparer_;
     }
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add1_ (ArgByValueType<key_type> key)
+#else
+    template <typename CHECK_T>
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key)
+        requires (same_as<mapped_type, void>)
+#endif
+    {
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        if constexpr (TRAITS::kCostlyInvariants) {
+            Invariant ();
+        }
+        LinkVector_ links;
+        Link_*      n = FindNearest_ (key, links);
+        if (n == nullptr) {
+            AddNode_ (new Link_{key}, links);
+            if constexpr (TRAITS::kCostlyInvariants) {
+                Invariant ();
+            }
+            return true;
+        }
+        else {
+            switch (TRAITS::kAddOrExtendOrReplaceMode) {
+                case AddOrExtendOrReplaceMode::eAddIfMissing:
+                    return false;
+                case AddOrExtendOrReplaceMode::eAddReplaces:
+                    n->fEntry.fKey = key; // two 'different' objects can compare equal, and this updates the value (e.g. stroika set)
+                    if constexpr (TRAITS::kCostlyInvariants) {
+                        Invariant ();
+                    }
+                    return true;
+                case AddOrExtendOrReplaceMode::eAddExtras:
+                    AddNode_ (new Link_{key}, links);
+                    if constexpr (TRAITS::kCostlyInvariants) {
+                        Invariant ();
+                    }
+                    return true;
+                case AddOrExtendOrReplaceMode::eDuplicatesRejected:
+                    static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
+                    Execution::Throw (kExcept_);
+            }
+            AssertNotReached ();
+            return false;
+        }
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add2_ (ArgByValueType<key_type> key, ArgByValueType<MAPPED_TYPE> val)
+#else
     template <typename CHECK_T>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val)
         requires (not same_as<mapped_type, void>)
+#endif
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         if constexpr (TRAITS::kCostlyInvariants) {
@@ -315,48 +364,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return false;
         }
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key)
-        requires (same_as<mapped_type, void>)
-    {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        if constexpr (TRAITS::kCostlyInvariants) {
-            Invariant ();
-        }
-        LinkVector_ links;
-        Link_*      n = FindNearest_ (key, links);
-        if (n == nullptr) {
-            AddNode_ (new Link_{key}, links);
-            if constexpr (TRAITS::kCostlyInvariants) {
-                Invariant ();
-            }
-            return true;
-        }
-        else {
-            switch (TRAITS::kAddOrExtendOrReplaceMode) {
-                case AddOrExtendOrReplaceMode::eAddIfMissing:
-                    return false;
-                case AddOrExtendOrReplaceMode::eAddReplaces:
-                    n->fEntry.fKey = key; // two 'different' objects can compare equal, and this updates the value (e.g. stroika set)
-                    if constexpr (TRAITS::kCostlyInvariants) {
-                        Invariant ();
-                    }
-                    return true;
-                case AddOrExtendOrReplaceMode::eAddExtras:
-                    AddNode_ (new Link_{key}, links);
-                    if constexpr (TRAITS::kCostlyInvariants) {
-                        Invariant ();
-                    }
-                    return true;
-                case AddOrExtendOrReplaceMode::eDuplicatesRejected:
-                    static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
-                    Execution::Throw (kExcept_);
-            }
-            AssertNotReached ();
-            return false;
-        }
-    }
-    #endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v)
     {
