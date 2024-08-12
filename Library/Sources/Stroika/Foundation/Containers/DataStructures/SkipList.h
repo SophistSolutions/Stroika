@@ -220,7 +220,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             requires (same_as<mapped_type, void>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
-            Add1_ (key);
+            return Add1_ (key);
         }
 #else
         ;
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             requires (not same_as<mapped_type, void>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
-            Add2_ (key, val);
+            return Add2_ (key, val);
         }
 #else
         ;
