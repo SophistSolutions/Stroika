@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Common {
      *  \see IComparer or IEqualsComparer for something stricter
      */
     template <typename COMPARER, typename ARG_T>
-    concept IPotentiallyComparer = relation<COMPARER, ARG_T, ARG_T> or same_as<COMPARER, compare_three_way>;
+    concept IPotentiallyComparer = relation<COMPARER, ARG_T, ARG_T> or (same_as<COMPARER, compare_three_way> and three_way_comparable<ARG_T>);
 
     /**
      *  Concept IComparer checks if the argument is a (declared comparison type) Stroika comparer object.
