@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
         template <typename CHECK_T = MAPPED_TYPE>
         nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val)
-            requires (not same_as<MAPPED_TYPE, void>)
+            requires (not same_as<mapped_type, void>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
             Add2_ (key, val);

@@ -275,7 +275,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add1_ (ArgByValueType<key_type> key)
 #else
-    template <typename CHECK_T>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key)
         requires (same_as<mapped_type, void>)
 #endif
