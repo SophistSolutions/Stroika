@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDMAP is std::map<> that can be used inside Mapping_stdmap
          */
-        template <typename /*Common::IInOrderComparer<KEY_TYPE>*/ KEY_INORDER_COMPARER = less<key_type>>
+        template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         using STDMAP = map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER,
                            Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const key_type, mapped_type>, sizeof (value_type) <= 1024>>;
 
@@ -63,7 +63,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *       and added Mapping_stdmap (STDMAP<>&& src)
          */
         Mapping_stdmap ();
-        Mapping_stdmap (STDMAP<>&& src);
+        template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+        Mapping_stdmap (STDMAP<KEY_INORDER_COMPARER>&& src);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer);
         Mapping_stdmap (Mapping_stdmap&& src) noexcept      = default;

@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : fData_{inorderComparer}
         {
         }
-        Rep_ (STDMAP<>&& src)
+        Rep_ (STDMAP<KEY_INORDER_COMPARER>&& src)
             : fData_{move (src)}
         {
         }
@@ -203,8 +203,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (STDMAP<>&& src)
-        : inherited{Memory::MakeSharedPtr<Rep_<typename STDMAP<>::key_compare>> (move (src))}
+    template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+    inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (STDMAP<KEY_INORDER_COMPARER>&& src)
+        : inherited{Memory::MakeSharedPtr<Rep_<KEY_INORDER_COMPARER>> (move (src))}
     {
         AssertRepValidType_ ();
     }
