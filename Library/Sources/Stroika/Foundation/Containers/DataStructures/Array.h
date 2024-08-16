@@ -23,8 +23,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     using Configuration::ArgByValueType;
 
     /**
-     *      This class is the main core of the implementation. It provides
-     *  an array abstraction, where the size can be set dynamically, and
+     *      This class provides an array abstraction, where the size can be set dynamically, and
      *  extra sluff is maintained off the end to reduce copying from reallocs.
      *  Only items 0..size ()-1 are kept constructed. The rest (size()+1
      *  ..fSlotsAlloced) are uninitialized memory. This is important because
