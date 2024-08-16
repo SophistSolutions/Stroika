@@ -308,6 +308,9 @@ namespace Stroika::Foundation::Common {
         constexpr ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer);
         constexpr ComparisonRelationDeclaration (const ComparisonRelationDeclaration&) = default;
         constexpr ComparisonRelationDeclaration (ComparisonRelationDeclaration&&)      = default;
+
+        constexpr ComparisonRelationDeclaration& operator= (const ComparisonRelationDeclaration&) = default;
+        constexpr ComparisonRelationDeclaration& operator= (ComparisonRelationDeclaration&&)      = default;
     };
 
     /**
