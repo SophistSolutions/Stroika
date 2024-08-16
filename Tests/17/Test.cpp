@@ -44,8 +44,10 @@ namespace {
     void DoTestForConcreteContainer_ ()
     {
         using namespace CommonTests::MappingTests;
-        SimpleMappingTest_All_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
-        SimpleMappingTest_WithDefaultEqCompaerer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+        if constexpr (constructible_from<CONCRETE_CONTAINER>) {
+            SimpleMappingTest_All_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+            SimpleMappingTest_WithDefaultEqCompaerer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+        }
     }
     template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
     void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
@@ -60,8 +62,8 @@ namespace {
     void Test2_SimpleBaseClassConversionTraitsConfusion_ ()
     {
         Debug::TraceContextBumper ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
-        SortedMapping<int, float> xxxyy  = Concrete::SortedMapping_stdmap<int, float> ();
-        Mapping<int, float>       xxxyy1 = Concrete::Mapping_stdmap<int, float> ();
+        SortedMapping<int, float> xxxyy  = Concrete::SortedMapping_stdmap<int, float>{};
+        Mapping<int, float>       xxxyy1 = Concrete::Mapping_stdmap<int, float>{};
     }
 }
 
@@ -234,8 +236,8 @@ namespace {
         DoTestForConcreteContainer_<Mapping<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             [] () {
-                return Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+                return Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
+                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
             },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
@@ -243,8 +245,8 @@ namespace {
         DoTestForConcreteContainer_<Mapping_Array<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             [] () {
-                return Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+                return Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
+                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
             },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 

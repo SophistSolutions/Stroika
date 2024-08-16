@@ -1,6 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
+
+#include <typeindex>
+
+#include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Containers/DataStructures/STLContainerWrapper.h"
 #include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
 #include "Stroika/Foundation/Debug/Cast.h"
@@ -14,7 +18,11 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {};
+    class Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
+    public:
+        // \req KEY_INORDER_COMPARER == key_compare or the type used to construct the original Mapping_stdmap container.
+        virtual void GetKeyComp (const type_index& keyInorderComparerType, void* result) const = 0;
+    };
 
     /*
      ********************************************************************************
@@ -34,6 +42,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         Rep_ (const KEY_INORDER_COMPARER& inorderComparer)
             : fData_{inorderComparer}
+        {
+        }
+        Rep_ (const STDMAP<KEY_INORDER_COMPARER>& src)
+            : fData_{src}
         {
         }
         Rep_ (STDMAP<KEY_INORDER_COMPARER>&& src)
@@ -182,6 +194,21 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
         }
 
+        // Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ overrides
+    public:
+        virtual void GetKeyComp (const type_index& keyInorderComparerType, void* result) const
+        {
+            if (keyInorderComparerType == type_index{typeid (KEY_INORDER_COMPARER)}) {
+                *reinterpret_cast<KEY_INORDER_COMPARER*> (result) = fData_.key_comp ();
+            }
+            else if (keyInorderComparerType == type_index{typeid (key_compare)}) {
+                *reinterpret_cast<key_compare*> (result) = key_compare{fData_.key_comp ()};
+            }
+            else {
+                RequireNotReached ();
+            }
+        }
+
     private:
         using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDMAP<KEY_INORDER_COMPARER>>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
@@ -198,7 +225,15 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap ()
+        requires (totally_ordered<KEY_TYPE>)
         : Mapping_stdmap{less<KEY_TYPE>{}}
+    {
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+    inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (const STDMAP<KEY_INORDER_COMPARER>& src)
+        : inherited{Memory::MakeSharedPtr<Rep_<KEY_INORDER_COMPARER>> (src)}
     {
         AssertRepValidType_ ();
     }
@@ -218,6 +253,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        requires (totally_ordered<KEY_TYPE>)
         : Mapping_stdmap{}
     {
         this->AddAll (src);
@@ -237,6 +273,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (ITERABLE_OF_ADDABLE&& src)
+        requires (totally_ordered<KEY_TYPE>)
         : Mapping_stdmap{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -254,6 +291,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
     Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (totally_ordered<KEY_TYPE>)
         : Mapping_stdmap{}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -266,6 +304,38 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+    inline auto Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::GetInOrderKeyComparer () const -> KEY_INORDER_COMPARER
+    {
+        typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this};
+        if constexpr (same_as<KEY_INORDER_COMPARER, key_compare>) {
+            key_compare r;
+            tmp.GetKeyComp (type_index{key_compare}, &r);
+            return r;
+        }
+        else {
+            KEY_INORDER_COMPARER r;
+            tmp.GetKeyComp (type_index{KEY_INORDER_COMPARER}, &r);
+            return r;
+        }
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename CONTAINER_OF_Key_T>
+    nonvirtual CONTAINER_OF_Key_T Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::As () const
+    {
+        // need template match to say 'any STDMAP<...> and extra ... FUNC from it'...
+        if constexpr (requires (CONTAINER_OF_Key_T t) { []<typename KEY_INORDER_COMPARER> (const STDMAP<KEY_INORDER_COMPARER>&) {}(t); }) {
+            using comparerPredicateType =
+                decltype ([]<typename KEY, typename MAPPED_TYPE, typename KEY_COMP, typename ALLOCATOR> () { return declval<KEY_COMP> (); });
+            CONTAINER_OF_Key_T r{GetInOrderKeyComparer<comparerPredicateType> ()};
+            this->Apply ([&r] (auto i) { r.insert ({i.fKey, i.fValue}); });
+            return r;
+        }
+        else {
+            return inherited::template As<CONTAINER_OF_Key_T> ();
+        }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const

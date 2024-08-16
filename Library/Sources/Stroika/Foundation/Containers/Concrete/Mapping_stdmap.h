@@ -51,6 +51,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
+         *  Generic std::function-based function used to (strictly) compare two keys
+         */
+        using key_compare =
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (KEY_TYPE, KEY_TYPE)>>;
+
+    public:
+        /**
          *  \brief STDMAP is std::map<> that can be used inside Mapping_stdmap
          */
         template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
@@ -62,19 +69,24 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Mapping<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IInOrderComparer
          *       and added Mapping_stdmap (STDMAP<>&& src)
          */
-        Mapping_stdmap ();
+        Mapping_stdmap ()
+            requires (totally_ordered<KEY_TYPE>);
+        template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+        Mapping_stdmap (const STDMAP<KEY_INORDER_COMPARER>& src);
         template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         Mapping_stdmap (STDMAP<KEY_INORDER_COMPARER>&& src);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer);
         Mapping_stdmap (Mapping_stdmap&& src) noexcept      = default;
         Mapping_stdmap (const Mapping_stdmap& src) noexcept = default;
-        Mapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        Mapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+            requires (totally_ordered<KEY_TYPE>);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit Mapping_stdmap (ITERABLE_OF_ADDABLE&& src)
+            requires (totally_ordered<KEY_TYPE>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Mapping_stdmap{}
         {
@@ -86,7 +98,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        Mapping_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        Mapping_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (totally_ordered<KEY_TYPE>);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
@@ -95,6 +108,20 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         nonvirtual Mapping_stdmap& operator= (Mapping_stdmap&& rhs) noexcept = default;
         nonvirtual Mapping_stdmap& operator= (const Mapping_stdmap& rhs)     = default;
+
+    public:
+        /**
+        * \req KEY_INORDER_COMPARER == key_compare or the type used to construct the original Mapping_stdmap container.
+         */
+        template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = key_compare>
+        nonvirtual KEY_INORDER_COMPARER GetInOrderKeyComparer () const;
+
+    public:
+        /**
+         *  Extend to support STDMAP<key_compare> and STDMAP<KEY_INORDER_COMPARER> used to construct this object (require)
+         */
+        template <typename CONTAINER_OF_Key_T>
+        nonvirtual CONTAINER_OF_Key_T As () const;
 
     private:
         class IImplRepBase_;

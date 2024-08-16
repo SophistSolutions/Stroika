@@ -22,10 +22,11 @@ namespace CommonTests {
 
 #if qHasFeature_GoogleTest
         template <typename CONCRETE_CONTAINER>
+            requires (is_default_constructible_v<CONCRETE_CONTAINER>)
         struct DefaultFactory {
             CONCRETE_CONTAINER operator() () const
             {
-                return CONCRETE_CONTAINER ();
+                return CONCRETE_CONTAINER{};
             };
         };
 
@@ -73,14 +74,14 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
-                    Verify (m.Lookup (1, nullptr));
-                    Verify (not m.Lookup (2, nullptr));
+                    EXPECT_EQ (m.size (), 1);
+                    EXPECT_TRUE (m.Lookup (1, nullptr));
+                    EXPECT_TRUE (not m.Lookup (2, nullptr));
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
+                    EXPECT_EQ (m.size (), 1);
                     IterableTests::SimpleIterableTest_All_For_Type<ConcreteContainerType> (m);
                     m.Remove (1);
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0);
 
                     {
                         m.Add (1, 2);
@@ -88,30 +89,30 @@ namespace CommonTests {
                         size_t oldLength = m.size ();
                         m += m;
                         testingSchema.ApplyToContainerExtraTest (m);
-                        EXPECT_TRUE (m.size () == oldLength);
+                        EXPECT_EQ (m.size (), oldLength);
                     }
 
                     {
                         m.RemoveAll ();
                         m.Add (1, 2);
                         m.Add (3, 66);
-                        EXPECT_TRUE (m.size () == 2);
+                        EXPECT_EQ (m.size (), 2);
                         m.erase (1);
-                        EXPECT_TRUE (m.size () == 1);
+                        EXPECT_EQ (m.size (), 1);
                         auto i = m.erase (m.begin ());
                         //
-                        EXPECT_TRUE (m.size () == 0);
+                        EXPECT_EQ (m.size (), 0);
                         m.Add (1, 2);
                         m.Add (3, 66);
                         m.Add (5, 66);
-                        EXPECT_TRUE (m.size () == 3);
+                        EXPECT_EQ (m.size (), 3);
                         i = m.begin ();
                         i = m.erase (i);
-                        EXPECT_TRUE (m.size () == 2);
+                        EXPECT_EQ (m.size (), 2);
                     }
 
                     m.RemoveAll ();
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0);
                 }
             }
 
@@ -124,17 +125,17 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
+                    EXPECT_EQ (m.size (), 1);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
+                    EXPECT_EQ (m.size (), 1);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
                     m.Remove (1);
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0);
                     for ([[maybe_unused]] auto i : m) {
                         EXPECT_TRUE (false);
                     }
@@ -157,9 +158,9 @@ namespace CommonTests {
                         }
                         ss.push_back (i.fKey);
                     }
-                    EXPECT_TRUE (ss.size () == 3);
+                    EXPECT_EQ (ss.size (), 3);
                     m.RemoveAll ();
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0);
                 }
             }
 
@@ -176,7 +177,7 @@ namespace CommonTests {
                     ConcreteContainerType m2             = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-                    EXPECT_TRUE (m.size () == 2);
+                    EXPECT_EQ (m.size (), 2);
                     ConcreteContainerType m3 = m;
                     testingSchema.ApplyToContainerExtraTest (m);
                     testingSchema.ApplyToContainerExtraTest (m2);
@@ -206,13 +207,13 @@ namespace CommonTests {
                     m.Add (1, 88);
                     m.Add (2, 101);
 
-                    {
+                    /*if constexpr (constructible_from<ConcreteContainerType, map<key_type, mapped_type>>)*/ {
                         map<key_type, mapped_type> n = m.template As<map<key_type, mapped_type>> ();
-                        EXPECT_TRUE (n.size () == 2);
+                        EXPECT_EQ (n.size (), 2);
                         ConcreteContainerType tmp = ConcreteContainerType{n};
                         EXPECT_TRUE (testingSchema.fValueEqualsComparer (*tmp.Lookup (1), 88));
                         map<key_type, mapped_type> nn = tmp.template As<map<key_type, mapped_type>> ();
-                        EXPECT_TRUE (nn == n);
+                        EXPECT_EQ (nn, n);
                     }
                 }
             }
@@ -229,15 +230,15 @@ namespace CommonTests {
                     ConcreteContainerType m2    = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-                    EXPECT_TRUE (m.size () == 2);
+                    EXPECT_EQ (m.size (), 2);
 
                     {
                         vector<KeyValuePair<key_type, mapped_type>> n = m.template As<vector<KeyValuePair<key_type, mapped_type>>> ();
-                        EXPECT_TRUE (n.size () == m.size ());
+                        EXPECT_EQ (n.size (), m.size ());
                     }
                     {
                         vector<pair<key_type, mapped_type>> n = m.template As<vector<pair<key_type, mapped_type>>> ();
-                        EXPECT_TRUE (n.size () == m.size ());
+                        EXPECT_EQ (n.size (), m.size ());
                     }
                 }
             }
@@ -253,21 +254,21 @@ namespace CommonTests {
                     for (size_t i = 0; i < K; ++i) {
                         c.Add (i, i);
                     }
-                    EXPECT_TRUE (c.Keys ().length () == K);
+                    EXPECT_EQ (c.Keys ().length (), K);
                     {
                         // be sure copying and iterating multiple times over the iterable doesnt produce differnt results.
                         auto keys = c.Keys ();
-                        EXPECT_TRUE (keys.length () == K);
+                        EXPECT_EQ (keys.length (), K);
                         size_t a = 0;
                         for ([[maybe_unused]] auto i : keys) {
                             a++;
                         }
-                        EXPECT_TRUE (a == K);
+                        EXPECT_EQ (a, K);
                         a = 0;
                         for ([[maybe_unused]] auto i : keys) {
                             a++;
                         }
-                        EXPECT_TRUE (a == K);
+                        EXPECT_EQ (a, K);
                     }
                 }
             }
@@ -281,19 +282,19 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
+                    EXPECT_EQ (m.size (), 1);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                         EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                     }
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
+                    EXPECT_EQ (m.size (), 1);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                         EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                     }
                     m.Remove (1);
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0);
                     for ([[maybe_unused]] auto i : m) {
                         EXPECT_TRUE (false);
                     }
@@ -315,7 +316,7 @@ namespace CommonTests {
                         }
                     }
                     m.RemoveAll ();
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0);
                 }
             }
 

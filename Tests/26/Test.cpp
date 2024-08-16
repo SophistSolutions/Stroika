@@ -35,20 +35,22 @@ namespace {
     void DoTestForConcreteContainer_ ()
     {
         using namespace CommonTests::MappingTests;
-        auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
-        testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
-            // verify in sorted order
-            using value_type = typename CONCRETE_CONTAINER::value_type;
-            optional<value_type> last;
-            for (value_type i : m) {
-                if (last.has_value ()) {
-                    EXPECT_TRUE (Common::ThreeWayComparerAdapter{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0);
+        if constexpr (constructible_from<CONCRETE_CONTAINER>) {
+            auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
+            testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+                // verify in sorted order
+                using value_type = typename CONCRETE_CONTAINER::value_type;
+                optional<value_type> last;
+                for (value_type i : m) {
+                    if (last.has_value ()) {
+                        EXPECT_TRUE (Common::ThreeWayComparerAdapter{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0);
+                    }
+                    last = i;
                 }
-                last = i;
-            }
-        };
-        SimpleMappingTest_All_ (testSchema);
-        SimpleMappingTest_WithDefaultEqCompaerer_ (testSchema);
+            };
+            SimpleMappingTest_All_ (testSchema);
+            SimpleMappingTest_WithDefaultEqCompaerer_ (testSchema);
+        }
     }
     template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
     void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
