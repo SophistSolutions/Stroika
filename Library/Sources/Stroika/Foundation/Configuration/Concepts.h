@@ -304,6 +304,36 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     using ExtractValueType_t = typename Private_::ExtractValueType<remove_cvref_t<T>>::type;
 
+    /**
+     *  from https://stackoverflow.com/questions/32785105/implementing-a-switch-type-trait-with-stdconditional-t-chain-calls
+     *  \par Example Usage
+     *      \code
+     *           using Type = Select_t<Case<false, void>,
+     *                                 Case<false, int>,
+     *                                 Case<true, std::string>>;
+     *      \endcode
+     */
+    template <bool B, typename T>
+    struct Case {
+        static constexpr bool value = B;
+        using type                  = T;
+    };
+    template <typename HEAD, typename... TAIL>
+    struct Select : std::conditional_t<HEAD::value, HEAD, Select<TAIL...>> {};
+    template <typename T>
+    struct Select<T> {
+        using type = T;
+    };
+    template <bool B, typename T>
+    struct Select<Case<B, T>> {
+        // last one had better be true!
+        static_assert (B, "!");
+        using type = T;
+    };
+    template <typename HEAD, typename... TAIL>
+    using Select_t = typename Select<HEAD, TAIL...>::type;
+
+
     /////////////////////////////////////////////////////////////
     ////////////////////// DEPREACTED BELOW /////////////////////
     /////////////////////////////////////////////////////////////
