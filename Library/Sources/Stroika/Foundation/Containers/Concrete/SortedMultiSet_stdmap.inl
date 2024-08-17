@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
 
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            Assert (mir.fIterator.GetReferredToData () == &fData_);
+            mir.fIterator.AssertDataMatches (&fData_);
             (void)fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {

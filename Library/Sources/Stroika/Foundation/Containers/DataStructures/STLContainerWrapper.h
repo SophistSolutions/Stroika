@@ -191,7 +191,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool operator== (const ForwardIterator& rhs) const;
 
     public:
-        nonvirtual const STLContainerWrapper* GetReferredToData () const;
+        /**
+         *  For debugging, assert the iterator data matches argument data
+         */
+        constexpr void AssertDataMatches (const STLContainerWrapper* data) const;
 
     private:
         const STLContainerWrapper* fData_{nullptr};

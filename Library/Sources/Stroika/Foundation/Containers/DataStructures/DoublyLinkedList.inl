@@ -674,6 +674,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrent_ = l;
     }
     template <typename T>
+    constexpr void DoublyLinkedList<T>::ForwardIterator::AssertDataMatches (const DoublyLinkedList* data) const
+    {
+#if qDebug
+        Require (data == fData_);
+#endif
+    }
+    template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
         return fCurrent_ == rhs.fCurrent_;

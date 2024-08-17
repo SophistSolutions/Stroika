@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++(*nextI); // advance to next item if deleting current one
             }
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            //            Assert (mir.fIterator.GetReferredToData () == &fData_);
+            mir.fIterator.AssertDataMatches (&fData_);
             fData_.Remove (mir.fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {

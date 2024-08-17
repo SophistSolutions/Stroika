@@ -613,6 +613,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void UpdateValue (ArgByValueType<mapped_type> newValue);
 
     public:
+        /**
+         *  For debugging, assert the iterator data matches argument data
+         */
+        constexpr void AssertDataMatches (const SkipList* data) const;
+
+    public:
         constexpr void Invariant () const noexcept;
 
 #if qDebug

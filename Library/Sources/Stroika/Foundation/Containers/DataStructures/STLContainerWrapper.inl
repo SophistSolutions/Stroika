@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         //
         // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
         // old for old, and when I match, stop on new
-        Require (pi->GetReferredToData () == movedFrom);
+        pi->AssertDataMatches (movedFrom);
         auto                  newI = this->begin ();
         [[maybe_unused]] auto newE = this->end ();
         auto                  oldI = movedFrom->begin ();
@@ -202,15 +202,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fStdIterator_ = l;
     }
     template <typename STL_CONTAINER_OF_T>
+    constexpr void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::AssertDataMatches (const STLContainerWrapper* data) const
+    {
+#if qDebug
+        Require (data == fData_);
+#endif
+    }
+    template <typename STL_CONTAINER_OF_T>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator== (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         return fStdIterator_ == rhs.fStdIterator_;
-    }
-    template <typename STL_CONTAINER_OF_T>
-    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetReferredToData () const -> const STLContainerWrapper*
-    {
-        return fData_;
     }
 
 }

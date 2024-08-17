@@ -573,6 +573,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         _fCurrentIdx = i;
     }
     template <typename T>
+    constexpr void Array<T>::IteratorBase::AssertDataMatches (const Array* data) const
+    {
+#if qDebug
+        Require (data == _fData);
+#endif
+    }
+    template <typename T>
     inline void Array<T>::IteratorBase::Invariant () const noexcept
     {
 #if qDebug

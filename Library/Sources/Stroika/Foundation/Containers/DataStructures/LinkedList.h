@@ -325,6 +325,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetUnderlyingIteratorRep (const UnderlyingIteratorRep l);
 
     public:
+        /**
+         *  For debugging, assert the iterator data matches argument data
+         */
+        constexpr void AssertDataMatches (const LinkedList* data) const;
+
+    public:
         nonvirtual bool operator== (const ForwardIterator& rhs) const;
 
     public:
