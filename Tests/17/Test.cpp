@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
@@ -59,7 +60,17 @@ namespace {
 }
 
 namespace {
-    void Test2_SimpleBaseClassConversionTraitsConfusion_ ()
+    GTEST_TEST (Foundation_Containers_Mapping, TestMappingSkipList)
+    {
+        Debug::TraceContextBumper ctx{"{}::TestMappingSkipList"};
+        Mapping<int, float>       m = Concrete::Mapping_SkipList<int, float>{};
+        m.Add (1, 1);
+        EXPECT_EQ (m.size (), 1);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, Test2_SimpleBaseClassConversionTraitsConfusion_)
     {
         Debug::TraceContextBumper ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
         SortedMapping<int, float> xxxyy  = Concrete::SortedMapping_stdmap<int, float>{};
@@ -92,21 +103,20 @@ namespace {
             using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
             using T                       = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
         }
-        void DoIt ()
-        {
-            Debug::TraceContextBumper ctx{"{}::Test4_MappingCTOROverloads_"};
-            using namespace xPrivate_;
-            Mapping<int, A> from;
+    }
 
-            static_assert (Traversal::IIterableOf<Mapping<int, A>, KeyValuePair<int, A>>);
-            static_assert (Traversal::IIterableOf<Mapping<int, B>, KeyValuePair<int, B>>);
-
-            Mapping<int, B> to1;
-            for (auto i : from) {
-                to1.Add (i);
-            }
-            Mapping<int, B> to2{from};
+    GTEST_TEST (Foundation_Containers_Mapping, Test4_MappingCTOROverloads_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test4_MappingCTOROverloads_"};
+        using namespace Test4_MappingCTOROverloads_::xPrivate_;
+        Mapping<int, A> from;
+        static_assert (Traversal::IIterableOf<Mapping<int, A>, KeyValuePair<int, A>>);
+        static_assert (Traversal::IIterableOf<Mapping<int, B>, KeyValuePair<int, B>>);
+        Mapping<int, B> to1;
+        for (auto i : from) {
+            to1.Add (i);
         }
+        Mapping<int, B> to2{from};
     }
 }
 
@@ -318,12 +328,6 @@ namespace {
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 #endif
         }
-
-        Test2_SimpleBaseClassConversionTraitsConfusion_ ();
-
-        //Test3_SimpleMappingTest_WhichRequiresExplcitValueComparer ();
-
-        Test4_MappingCTOROverloads_::DoIt ();
 
         ExampleCTORS_Test_5_::DoTest ();
 

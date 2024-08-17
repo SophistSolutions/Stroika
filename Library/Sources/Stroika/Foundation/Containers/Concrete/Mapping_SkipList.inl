@@ -199,14 +199,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList ()
         requires (three_way_comparable<KEY_TYPE>)
-        : Mapping_SkipList{less<KEY_TYPE>{}}
+        : Mapping_SkipList{compare_three_way{}}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
     inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (SKIPLIST<KEY_THREEWAY_COMPARER>&& src)
-        : inherited{Memory::MakeSharedPtr<Rep_<typename SKIPLIST<>::key_compare>> (move (src))}
+        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<KEY_THREEWAY_COMPARER>>> (move (src))}
     {
         AssertRepValidType_ ();
     }
