@@ -133,19 +133,18 @@ namespace {
                 using Characters::String;
                 const auto kReference1a_ = Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}}};
                 const auto kReference1b_ =
-                    Mapping<String, String>{{KeyValuePair<String, String>{L"Content-Length", L"3"}, KeyValuePair<String, String>{L"xx", L"3"}}};
+                    Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}, KeyValuePair<String, String>{"xx", "3"}}};
                 const auto kReference1c_ = Mapping<String, String>{KeyValuePair<String, String>{L"Content-Length", L"3"}};
-                const auto kReference2a_ = Mapping<String, String>{{pair<String, String>{L"Content-Length", L"3"}}};
-                const auto kReference2b_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}, pair<String, String>{L"xx", L"3"}}};
-                const auto kReference2c_ =
-                    Mapping<String, String>{pair<String, String>{L"Content-Length", L"3"}, pair<String, String>{L"xx", L"3"}};
-                const auto kReference3a_ = Mapping<String, String>{{{L"Content-Length", L"3"}}};
-                EXPECT_TRUE (kReference3a_.size () == 1);
+                const auto kReference2a_ = Mapping<String, String>{{pair<String, String>{L"Content-Length", "3"}}};
+                const auto kReference2b_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}}};
+                const auto kReference2c_ = Mapping<String, String>{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}};
+                const auto kReference3a_ = Mapping<String, String>{{{"Content-Length", "3"}}};
+                EXPECT_EQ (kReference3a_.size (), 1);
                 using Characters::operator""_k;
-                const auto kReference3b_ = Mapping<String, String>{{{L"Content-Length"_k, L"3"_k}, {L"x"_k, L"3"_k}}}; // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
-                EXPECT_TRUE (kReference3b_.size () == 2);
-                const auto kReference3c_ = Mapping<String, String>{{L"Content-Length", L"3"}, {L"x", L"3"}};
-                EXPECT_TRUE (kReference3c_.size () == 2);
+                const auto kReference3b_ = Mapping<String, String>{{{"Content-Length"_k, "3"_k}, {"x"_k, "3"_k}}}; // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
+                EXPECT_EQ (kReference3b_.size (), 2);
+                const auto kReference3c_ = Mapping<String, String>{{"Content-Length", "3"}, {"x", "3"}};
+                EXPECT_EQ (kReference3c_.size (), 2);
             }
         }
     }
@@ -158,7 +157,7 @@ namespace {
             Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
             EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
                           Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
-            EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+            EXPECT_EQ ((m.Where ([] (int key) { return Math::IsPrime (key); })), (Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
         }
     }
 }

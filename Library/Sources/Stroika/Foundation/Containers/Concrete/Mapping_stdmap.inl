@@ -312,12 +312,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this};
         if constexpr (same_as<KEY_INORDER_COMPARER, key_compare>) {
             key_compare r;
-            tmp.GetKeyComp (type_index{key_compare}, &r);
+            tmp.GetKeyComp (type_index{typeid (key_compare)}, &r);
             return r;
         }
         else {
             KEY_INORDER_COMPARER r;
-            tmp.GetKeyComp (type_index{KEY_INORDER_COMPARER}, &r);
+            tmp.GetKeyComp (type_index{typeid (KEY_INORDER_COMPARER)}, &r);
             return r;
         }
     }

@@ -206,8 +206,7 @@ namespace CommonTests {
                     ConcreteContainerType m2    = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-
-                    /*if constexpr (constructible_from<ConcreteContainerType, map<key_type, mapped_type>>)*/ {
+                    {
                         map<key_type, mapped_type> n = m.template As<map<key_type, mapped_type>> ();
                         EXPECT_EQ (n.size (), 2);
                         ConcreteContainerType tmp = ConcreteContainerType{n};

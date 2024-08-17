@@ -15,12 +15,11 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
  */
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    using Common::IInOrderComparer;
+    using Common::IThreeWayComparer;
 
     /**
      *  \brief   Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
@@ -39,32 +38,36 @@ namespace Stroika::Foundation::Containers::Concrete {
         using mapped_type                  = typename inherited::mapped_type;
 
     public:
-        template <Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way>
-        struct SKIPLISTTRAITS = SkipList_Support::DefaultTraits<KEY_TYPE, KEY_COMPARER, AddOrExtendOrReplaceMode::eAddIfMissing>;
+        template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way>
+        using SKIPLISTTRAITS = DataStructures::SkipList_Support::DefaultTraits<KEY_TYPE, KEY_COMPARER, AddOrExtendOrReplaceMode::eAddIfMissing>;
 
         /**
          *  \brief SKIPLIST is SkipList that can be used inside Mapping_SkipList
          */
-        template <typename /*Common::IInOrderComparer<KEY_TYPE>*/ KEY_INORDER_COMPARER = less<key_type>>
+        template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way>
         using SKIPLIST = DataStructures::SkipList<KEY_TYPE, MAPPED_VALUE_TYPE, SKIPLISTTRAITS<KEY_COMPARER>>;
 
     public:
         /**
-         *  \see docs on Mapping<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IInOrderComparer
+         *  \see docs on Mapping<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_THREEWAY_COMPARER and EqualsComparer is replaced by IInOrderComparer
          *       and added Mapping_SkipList (SKIPLIST<>&& src)
          */
-        Mapping_SkipList ();
-        Mapping_SkipList (SKIPLIST<>&& src);
-        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-        explicit Mapping_SkipList (KEY_INORDER_COMPARER&& keyComparer);
+        Mapping_SkipList ()
+            requires (three_way_comparable<KEY_TYPE>);
+        template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
+        Mapping_SkipList (SKIPLIST<KEY_THREEWAY_COMPARER>&& src);
+        template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
+        explicit Mapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer);
         Mapping_SkipList (Mapping_SkipList&& src) noexcept      = default;
         Mapping_SkipList (const Mapping_SkipList& src) noexcept = default;
-        Mapping_SkipList (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-        Mapping_SkipList (KEY_INORDER_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        Mapping_SkipList (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+            requires (three_way_comparable<KEY_TYPE>);
+        template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
+        Mapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit Mapping_SkipList (ITERABLE_OF_ADDABLE&& src)
+            requires (three_way_comparable<KEY_TYPE>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Mapping_SkipList{}
         {
@@ -73,12 +76,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 #endif
         ;
-        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-        Mapping_SkipList (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
+        template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        Mapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        Mapping_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        Mapping_SkipList (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        Mapping_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (three_way_comparable<KEY_TYPE>);
+        template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
+        Mapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
         /**
@@ -88,7 +92,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<KEY_TYPE>) KEY_INORDER_COMPARER>
+        template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
         class Rep_;
 
     private:

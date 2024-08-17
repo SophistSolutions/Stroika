@@ -16,7 +16,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
  */
 
 namespace Stroika::Foundation::Containers::Concrete {
@@ -111,7 +110,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-        * \req KEY_INORDER_COMPARER == key_compare or the type used to construct the original Mapping_stdmap container.
+         * \req KEY_INORDER_COMPARER == key_compare or the type used to construct the original Mapping_stdmap constructor argument (for comparer).
          */
         template <Common::IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = key_compare>
         nonvirtual KEY_INORDER_COMPARER GetInOrderKeyComparer () const;
