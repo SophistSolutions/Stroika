@@ -172,7 +172,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
+#if qDebug
         Require (pi->fData_ == movedFrom);
+#endif
         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
         // only way
         //
