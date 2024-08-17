@@ -122,7 +122,14 @@ namespace Stroika::Foundation::Common {
 
     namespace Private_ {
         template <typename COMPARE_FUNCTION>
-        struct ExtractComparisonTraits_ {
+        struct ExtractComparisonTraits_ {};
+        template <typename COMPARE_FUNCTION>
+            requires requires (COMPARE_FUNCTION) {
+                {
+                    COMPARE_FUNCTION::kComparisonRelationKind
+                } -> convertible_to<ComparisonRelationType>;
+            }
+        struct ExtractComparisonTraits_<COMPARE_FUNCTION> {
             static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
         };
         template <typename T>
