@@ -405,7 +405,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const ForwardIterator& it)
     {
         LinkVector_ links;
-        Link_*      n = const_cast<Link_*> (it.fCurrent_);
+        // we need the links to reset, so have to refind
+        // Link_*      n = const_cast<Link_*> (it.fCurrent_);
+        Link_* n = FindNearest_ (it, links);
         RequireNotNull (n);
         RemoveNode_ (n, links);
         if constexpr (TRAITS::kCostlyInvariants) {
@@ -835,7 +837,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::UpdateValue (ArgByValueType<mapped_type> newValue)
     {
-        const_cast<Link_*> (fCurrent_)->fEntry.fValue = newValue;
+        Link_* link2Update = const_cast<Link_*> (fCurrent_); // logically we could walk from the head of the list without a const_cast, but this is obviously safe and more efficient
+        link2Update->fEntry.fValue = newValue;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept
