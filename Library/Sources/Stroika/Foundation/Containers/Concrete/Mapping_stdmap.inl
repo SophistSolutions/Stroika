@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ overrides
     public:
-        virtual void GetKeyComp (const type_index& keyInorderComparerType, void* result) const
+        virtual void GetKeyComp (const type_index& keyInorderComparerType, void* result) const override
         {
             if (keyInorderComparerType == type_index{typeid (KEY_INORDER_COMPARER)}) {
                 *reinterpret_cast<KEY_INORDER_COMPARER*> (result) = fData_.key_comp ();

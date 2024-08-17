@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             bool result{};
             switch (addReplaceMode) {
                 case AddReplaceMode::eAddReplaces:
-                    static_assert (typename DataStructureImplType_::TraitsType::kAddOrExtendOrReplaceMode == AddOrExtendOrReplaceMode::eAddReplaces);
+                    static_assert (DataStructureImplType_::TraitsType::kAddOrExtendOrReplaceMode == AddOrExtendOrReplaceMode::eAddReplaces);
                     result = fData_.Add (key, newElt);
                     break;
                 case AddReplaceMode::eAddIfMissing:
