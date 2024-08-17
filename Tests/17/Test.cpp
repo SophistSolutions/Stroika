@@ -36,6 +36,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::Mapping_Array;
 using Concrete::Mapping_LinkedList;
+using Concrete::Mapping_SkipList;
 using Concrete::Mapping_stdhashmap;
 using Concrete::Mapping_stdmap;
 
@@ -56,16 +57,6 @@ namespace {
         using namespace CommonTests::MappingTests;
         auto testschema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
         SimpleMappingTest_All_ (testschema);
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_Mapping, TestMappingSkipList)
-    {
-        Debug::TraceContextBumper ctx{"{}::TestMappingSkipList"};
-        Mapping<int, float>       m = Concrete::Mapping_SkipList<int, float>{};
-        m.Add (1, 1);
-        EXPECT_EQ (m.size (), 1);
     }
 }
 
@@ -259,9 +250,28 @@ namespace {
             },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
+        DoTestForConcreteContainer_<Mapping_SkipList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_SkipList<SimpleClass, SimpleClass>> ();
+#if 0
+        auto a = [] (SimpleClassWithoutComparisonOperators l, SimpleClassWithoutComparisonOperators r) -> strong_ordering {
+            return l.GetValue () <=> r.GetValue ();
+        };
+        static_assert (Common::IPotentiallyComparer<decltype (a), SimpleClassWithoutComparisonOperators>);
+        static_assert (Common::IThreeWayComparer<decltype (a), SimpleClassWithoutComparisonOperators>);
+        DoTestForConcreteContainer_<Mapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            [] () {
+                return Mapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
+                    [](SimpleClassWithoutComparisonOperators l, SimpleClassWithoutComparisonOperators r) -> strong_ordering
+                        {
+                        return l.GetValue () <=> r.GetValue ();
+                        }
+                };
+            },
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+#endif
+
         DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
-        // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             [] () {
                 return Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
