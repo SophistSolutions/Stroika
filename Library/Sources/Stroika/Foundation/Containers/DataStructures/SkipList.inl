@@ -551,6 +551,33 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return foundNode;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const ForwardIterator& it, LinkVector_& links) const -> Link_*
+    {
+        Link_* n = FindNearest_ (it.fCurrent_->fEntry.fKey, links);
+        AssertNotNull (n);
+        Assert (fKeyThreeWayComparer_ (n->fEntry.fKey, it.fCurrent_->fEntry.fKey) == strong_ordering::equal);
+        if constexpr (TRAITS::kAddOrExtendOrReplaceMode == AddOrExtendOrReplaceMode::eAddExtras) {
+            // not necessarily the correct node, just one that has the same key
+            // however, it should at least be the first in the list, so can scan forwards for correct one
+            while (n != it.fCurrent_) {
+                Link_* next = n->fNext[0];
+                Assert (fKeyThreeWayComparer_ (next->fEntry.fKey, it->fKey) == strong_ordering::equal); // else we were passed in a node not in the list
+                for (size_t i = 0; i < links.size (); ++i) {
+                    if (links[i] != nullptr and links[i]->fNext[i] == n) {
+                        links[i] = n;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                n = next;
+            }
+        }
+        Assert (n == it.fCurrent_);
+        return n;
+    }
+
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetFirst_ () const -> Link_*
     {
         Require (fHead_.size () >= 1);

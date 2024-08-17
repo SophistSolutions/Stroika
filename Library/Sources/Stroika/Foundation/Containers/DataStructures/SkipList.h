@@ -505,6 +505,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
          */
         nonvirtual Link_* FindNearest_ (ArgByValueType<key_type> key, LinkVector_& links) const;
+        nonvirtual Link_* FindNearest_ (const ForwardIterator& i, LinkVector_& links) const;
 
     private:
         nonvirtual void AddNode_ (Link_* n, const LinkVector_& linksToPatch);

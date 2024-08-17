@@ -64,7 +64,7 @@ namespace {
         template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
         void BasicAddRemoveTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
         {
-            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.GetComparer ()};
+            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.key_comp ()};
             Require (t.size () == 0);
             Debug::TraceContextBumper ctx{"BasicAddRemoveTests_", "Add and remove (len={}, forward direction)"_f, testLength};
             optional<KEY_TYPE>        biggestKey;
@@ -78,7 +78,7 @@ namespace {
                 if (biggestKey == nullopt) {
                     biggestKey = key;
                 }
-                strong_ordering comp = t.GetComparer () (*biggestKey, key);
+                strong_ordering comp = t.key_comp () (*biggestKey, key);
                 if (comp == strong_ordering::greater or comp == strong_ordering::less) {
                     biggestKey = key;
                 }
@@ -101,7 +101,7 @@ namespace {
                 EXPECT_EQ (t.First (key), i);
                 t.Invariant ();
                 Assert (biggestKey);
-                strong_ordering comp = t.GetComparer () (*biggestKey, key);
+                strong_ordering comp = t.key_comp () (*biggestKey, key);
                 if (i == testLength or comp < 0) {
                     biggestKey = key;
                 }
@@ -130,7 +130,7 @@ namespace {
         template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
         void RandomOrderAddRemoveTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
         {
-            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.GetComparer ()};
+            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.key_comp ()};
             Require (t.size () == 0);
             Debug::TraceContextBumper ctx{"RandomOrderAddRemoveTestsHelper_", "Add and remove (len={}, items, in random order)"_f, testLength};
 
@@ -153,10 +153,10 @@ namespace {
                     smallestKey = key;
                     biggestKey  = key;
                 }
-                if (t.GetComparer () (*biggestKey, key) < 0) {
+                if (t.key_comp () (*biggestKey, key) < 0) {
                     biggestKey = key;
                 }
-                if (t.GetComparer () (*smallestKey, key) > 0) {
+                if (t.key_comp () (*smallestKey, key) > 0) {
                     smallestKey = key;
                 }
             }
@@ -185,7 +185,7 @@ namespace {
         template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
         void OptimizeTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
         {
-            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.GetComparer ()};
+            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.key_comp ()};
             Require (t.size () == 0);
             Debug::TraceContextBumper ctx{"Balance Tests", "Add and remove (len={})"_f, testLength};
             vector<int>               data;
