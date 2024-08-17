@@ -38,8 +38,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         using mapped_type                  = typename inherited::mapped_type;
 
     public:
+        /**
+         *  AddOrExtendOrReplaceMode::eAddReplaces is the most common behavior for Mapping, so default to that in skiplist, and special case
+         *  AddOrExtendOrReplaceMode::eAddIfMissing.
+         */
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way>
-        using SKIPLISTTRAITS = DataStructures::SkipList_Support::DefaultTraits<KEY_TYPE, KEY_COMPARER, AddOrExtendOrReplaceMode::eAddIfMissing>;
+        using SKIPLISTTRAITS = DataStructures::SkipList_Support::DefaultTraits<KEY_TYPE, KEY_COMPARER, AddOrExtendOrReplaceMode::eAddReplaces>;
 
         /**
          *  \brief SKIPLIST is SkipList that can be used inside Mapping_SkipList

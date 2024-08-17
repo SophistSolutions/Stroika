@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (key);
+            auto                                                  i = fData_.Find (key);
             if (i == fData_.end ()) {
                 if (item != nullptr) {
                     *item = nullopt;
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             else {
                 if (item != nullptr) {
-                    *item = i->second;
+                    *item = i->fValue;
                 }
                 return true;
             }
@@ -126,11 +126,16 @@ namespace Stroika::Foundation::Containers::Concrete {
             bool result{};
             switch (addReplaceMode) {
                 case AddReplaceMode::eAddReplaces:
-                    result = fData_.insert_or_assign (key, newElt).second;
+                    static_assert (typename DataStructureImplType_::TraitsType::kAddOrExtendOrReplaceMode == AddOrExtendOrReplaceMode::eAddReplaces);
+                    result = fData_.Add (key, newElt);
                     break;
                 case AddReplaceMode::eAddIfMissing:
-                    result = fData_.insert ({key, newElt}).second;
-                    break;
+                    result = fData_.Add (key, newElt);
+                    // not ideally most efficient - maybe add AddIfMissing (variation) to SkipList API (if not compiled that way) - as I used to have
+                    if (fData_.Find (key)) {
+                        return false;
+                    }
+                    return fData_.Add (key, newElt);
                 default:
                     AssertNotReached ();
             }
@@ -142,9 +147,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Invariant ();
-            auto i = fData_.find (key);
-            if (i != fData_.end ()) {
-                fData_.erase (i);
+            if (auto i = fData_.Find (key)) {
+                fData_.Remove (i);
                 fChangeCounts_.PerformedChange ();
                 return true;
             }
@@ -159,8 +163,8 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++(*nextI); // advance to next item if deleting current one
             }
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            Assert (mir.fIterator.GetReferredToData () == &fData_);
-            (void)fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
+            //            Assert (mir.fIterator.GetReferredToData () == &fData_);
+            fData_.Remove (mir.fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
@@ -174,16 +178,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (nextI != nullptr) {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
             }
-            fData_
-                .remove_constness (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ())
-                ->second = newValue;
+            fData_.Update (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<SKIPLIST<KEY_THREEWAY_COMPARER>>;
+        using DataStructureImplType_ = SKIPLIST<KEY_THREEWAY_COMPARER>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:

@@ -184,6 +184,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
+        using TraitsType = TRAITS;
+
+    public:
+        /**
+         */
         SkipList (KeyComparerType keyComparer = {});
         SkipList (SkipList&& src);
         SkipList (const SkipList& src);
@@ -195,7 +200,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
-        nonvirtual KeyComparerType GetComparer () const;
+        constexpr KeyComparerType key_comp () const;
 
     public:
         class ForwardIterator;
