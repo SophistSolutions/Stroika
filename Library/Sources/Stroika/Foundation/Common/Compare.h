@@ -124,6 +124,12 @@ namespace Stroika::Foundation::Common {
         template <typename ARG_T, typename COMPARE_FUNCTION>
         struct ExtractComparisonTraits_ {};
         template <typename ARG_T, typename COMPARE_FUNCTION>
+        concept X = requires (COMPARE_FUNCTION) {
+            {
+                COMPARE_FUNCTION::kComparisonRelationKind
+            } -> convertible_to<ComparisonRelationType>;
+        };
+        template <typename ARG_T, typename COMPARE_FUNCTION>
             requires requires (COMPARE_FUNCTION) {
                 {
                     COMPARE_FUNCTION::kComparisonRelationKind
@@ -131,6 +137,21 @@ namespace Stroika::Foundation::Common {
             }
         struct ExtractComparisonTraits_<ARG_T, COMPARE_FUNCTION> {
             static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
+        };
+        template <typename ARG_T, typename COMPARE_FUNCTION>
+            requires (
+                requires (COMPARE_FUNCTION c, ARG_T a) {
+                    {
+                        c (a, a)
+                    } -> convertible_to<strong_ordering>;
+                } and
+                not requires (COMPARE_FUNCTION) {
+                    {
+                        COMPARE_FUNCTION::kComparisonRelationKind
+                    } -> convertible_to<ComparisonRelationType>;
+                })
+        struct ExtractComparisonTraits_<ARG_T, COMPARE_FUNCTION> {
+            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
         };
         template <typename ARG_T>
         struct ExtractComparisonTraits_<ARG_T, equal_to<ARG_T>> {
@@ -215,7 +236,7 @@ namespace Stroika::Foundation::Common {
      *  Basically, this means we KNOW if its a LESS or EQUALS etc comparer (see ExtractComparisonTraits_v).
      */
     template <typename POTENTIALLY_COMPARER, typename ARG_T>
-    concept IComparer = (Private_::HasRelationKind_<remove_cvref_t<POTENTIALLY_COMPARER>> and requires (POTENTIALLY_COMPARER) {
+    concept IComparer = (Private_::HasRelationKind_<remove_cvref_t<POTENTIALLY_COMPARER>> and requires (POTENTIALLY_COMPARER, ARG_T) {
                             {
                                 Private_::ExtractComparisonTraits_<ARG_T, remove_cvref_t<POTENTIALLY_COMPARER>>::kComparisonRelationKind
                             } -> convertible_to<ComparisonRelationType>;
