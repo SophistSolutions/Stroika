@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if __cpp_lib_format_ranges
         or ranges::range<decay_t<T>>
 #endif
-#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG > 202004) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
+#if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or (_MSVC_LANG >= 202004 and _MSC_VER >= _MSC_VER_2k22_17Pt11_)) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
         or Configuration::IPair<remove_cvref_t<T>>  or Configuration::ITuple<remove_cvref_t<T>>
 #endif
 #if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
@@ -301,9 +301,16 @@ namespace Stroika::Foundation::Characters::Private_ {
     // clang-format on
 
 // Debug hack to spot-check IStdFormatterPredefinedFor_
-#if _MSVC_LANG == 202004
+#if _MSVC_LANG == 202004 && (_MSC_VER < _MSC_VER_2k22_17Pt11_)
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
+    static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
+#endif
+#if _MSVC_LANG == 202004 && (_MSC_VER == _MSC_VER_2k22_17Pt11_)
+    static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);

@@ -121,6 +121,7 @@
 #define _MSC_VER_2k22_17Pt8_ 1938
 #define _MSC_VER_2k22_17Pt9_ 1939
 #define _MSC_VER_2k22_17Pt10_ 1940
+#define _MSC_VER_2k22_17Pt11_ 1941
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #if _MSC_VER < _MSC_VER_2k22_17Pt0_
