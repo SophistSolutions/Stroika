@@ -194,7 +194,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Assert (oldI == pi->fCurrent_);
         pi->fCurrent_ = newI;
-        pi->fData_    = this;
+#if qDebug
+        pi->fData_ = this;
+#endif
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNode_ (ArgByValueType<key_type> key) const -> Link_*
