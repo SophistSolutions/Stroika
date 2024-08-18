@@ -133,10 +133,10 @@ namespace Stroika::Foundation::Common {
          *  It would  be nice to be able to use switch statement but use constexpr if because 
          *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
          */
-        constexpr auto kRelationKind  = ExtractComparisonTraits_v<BASE_COMPARER>;
+        constexpr auto kRelationKind  = ExtractComparisonTraits_v<ARG_T, BASE_COMPARER>;
         auto           baseComparison = fBASE_COMPARER_ (forward<LT> (lhs), forward<RT> (rhs));
         if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
-            return kRelationKind;
+            return baseComparison;
         }
         if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
             return baseComparison and not fBASE_COMPARER_ (forward<RT> (rhs), forward<LT> (lhs)); // eliminate equals case
