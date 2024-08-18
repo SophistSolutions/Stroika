@@ -264,11 +264,10 @@ namespace {
         //        c (l, r)
         //   } -> convertible_to<strong_ordering>;
         //});
-
-        static_assert (Common::IPotentiallyComparer<decltype (a), SimpleClassWithoutComparisonOperators>);
+        static_assert (Common::IPotentiallyComparer<COMPARER, ARG_T>);
 #if 0
-        static_assert (Common::IComparer<decltype (a), SimpleClassWithoutComparisonOperators>);
-        static_assert (Common::IThreeWayComparer<decltype (a), SimpleClassWithoutComparisonOperators>);
+        static_assert (Common::IComparer<COMPARER, ARG_T>);
+        static_assert (Common::IThreeWayComparer<COMPARER, ARG_T>);
         DoTestForConcreteContainer_<Mapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             [] () {
                 return Mapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{

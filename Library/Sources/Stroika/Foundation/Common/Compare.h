@@ -124,12 +124,6 @@ namespace Stroika::Foundation::Common {
         template <typename ARG_T, typename COMPARE_FUNCTION>
         struct ExtractComparisonTraits_ {};
         template <typename ARG_T, typename COMPARE_FUNCTION>
-        concept X = requires (COMPARE_FUNCTION) {
-            {
-                COMPARE_FUNCTION::kComparisonRelationKind
-            } -> convertible_to<ComparisonRelationType>;
-        };
-        template <typename ARG_T, typename COMPARE_FUNCTION>
             requires requires (COMPARE_FUNCTION) {
                 {
                     COMPARE_FUNCTION::kComparisonRelationKind
@@ -140,9 +134,9 @@ namespace Stroika::Foundation::Common {
         };
         template <typename ARG_T, typename COMPARE_FUNCTION>
             requires (
-                requires (COMPARE_FUNCTION c, ARG_T a) {
+                requires (COMPARE_FUNCTION c, ARG_T l, ARG_T r) {
                     {
-                        c (a, a)
+                        c (l, r)
                     } -> convertible_to<strong_ordering>;
                 } and
                 not requires (COMPARE_FUNCTION) {
@@ -177,42 +171,6 @@ namespace Stroika::Foundation::Common {
         struct ExtractComparisonTraits_<ARG_T, compare_three_way> {
             static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
         };
-
-        template <typename COMPARE_FUNCTION>
-        struct HasExtractComparisonSpecialization_ {
-            static constexpr bool value = false;
-        };
-        template <typename T>
-        struct HasExtractComparisonSpecialization_<equal_to<T>> {
-            static constexpr bool value = true;
-        };
-        template <typename T>
-        struct HasExtractComparisonSpecialization_<less<T>> {
-            static constexpr bool value = true;
-        };
-        template <typename T>
-        struct HasExtractComparisonSpecialization_<greater<T>> {
-            static constexpr bool value = true;
-        };
-        template <typename T>
-        struct HasExtractComparisonSpecialization_<less_equal<T>> {
-            static constexpr bool value = true;
-        };
-        template <typename T>
-        struct HasExtractComparisonSpecialization_<greater_equal<T>> {
-            static constexpr bool value = true;
-        };
-        template <>
-        struct HasExtractComparisonSpecialization_<compare_three_way> {
-            static constexpr bool value = true;
-        };
-
-        template <typename T>
-        concept HasRelationKind_ = requires (T) {
-            {
-                T::kComparisonRelationKind
-            };
-        };
     }
 
     /**
@@ -236,11 +194,11 @@ namespace Stroika::Foundation::Common {
      *  Basically, this means we KNOW if its a LESS or EQUALS etc comparer (see ExtractComparisonTraits_v).
      */
     template <typename POTENTIALLY_COMPARER, typename ARG_T>
-    concept IComparer = (Private_::HasRelationKind_<remove_cvref_t<POTENTIALLY_COMPARER>> and requires (POTENTIALLY_COMPARER, ARG_T) {
-                            {
-                                Private_::ExtractComparisonTraits_<ARG_T, remove_cvref_t<POTENTIALLY_COMPARER>>::kComparisonRelationKind
-                            } -> convertible_to<ComparisonRelationType>;
-                        }) or Private_::HasExtractComparisonSpecialization_<remove_cvref_t<POTENTIALLY_COMPARER>>::value;
+    concept IComparer = requires (POTENTIALLY_COMPARER, ARG_T) {
+        {
+            Private_::ExtractComparisonTraits_<ARG_T, remove_cvref_t<POTENTIALLY_COMPARER>>::kComparisonRelationKind
+        } /*->same_as<ComparisonRelationType>*/;
+    };
 
     /**
      *  \brief ExtractComparisonTraits_v<> extracts the @ComparisonRelationType for the given argument comparer. 
