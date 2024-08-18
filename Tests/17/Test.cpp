@@ -265,6 +265,7 @@ namespace {
         //   } -> convertible_to<strong_ordering>;
         //});
         static_assert (Common::IPotentiallyComparer<COMPARER, ARG_T>);
+
 #if 0
         static_assert (Common::IComparer<COMPARER, ARG_T>);
         static_assert (Common::IThreeWayComparer<COMPARER, ARG_T>);

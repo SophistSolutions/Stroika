@@ -192,12 +192,14 @@ namespace Stroika::Foundation::Common {
      *  Concept IComparer checks if the argument is a (declared comparison type) Stroika comparer object.
      * 
      *  Basically, this means we KNOW if its a LESS or EQUALS etc comparer (see ExtractComparisonTraits_v).
+     * 
+     *  \note Any function object (eg lambda) taking 2 ARG_T arguments and returning ComparisonRelationType works automatically).
      */
     template <typename POTENTIALLY_COMPARER, typename ARG_T>
     concept IComparer = requires (POTENTIALLY_COMPARER, ARG_T) {
         {
             Private_::ExtractComparisonTraits_<ARG_T, remove_cvref_t<POTENTIALLY_COMPARER>>::kComparisonRelationKind
-        } /*->same_as<ComparisonRelationType>*/;
+        } -> convertible_to<ComparisonRelationType>;
     };
 
     /**
