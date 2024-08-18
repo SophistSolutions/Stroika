@@ -252,35 +252,14 @@ namespace {
 
         DoTestForConcreteContainer_<Mapping_SkipList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_SkipList<SimpleClass, SimpleClass>> ();
-#if 1
-        auto a = [] (SimpleClassWithoutComparisonOperators l, SimpleClassWithoutComparisonOperators r) -> strong_ordering {
-            return l.GetValue () <=> r.GetValue ();
-        };
-        auto b         = a (SimpleClassWithoutComparisonOperators{1}, SimpleClassWithoutComparisonOperators{1});
-        using COMPARER = decltype (a);
-        using ARG_T    = SimpleClassWithoutComparisonOperators;
-        //static_assert (regular_invocable<COMPARER, ARG_T, ARG_T> and requires (ARG_T l, ARG_T r, COMPARER c) {
-        //    {
-        //        c (l, r)
-        //   } -> convertible_to<strong_ordering>;
-        //});
-        static_assert (Common::IPotentiallyComparer<COMPARER, ARG_T>);
-
-#if 0
-        static_assert (Common::IComparer<COMPARER, ARG_T>);
-        static_assert (Common::IThreeWayComparer<COMPARER, ARG_T>);
         DoTestForConcreteContainer_<Mapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             [] () {
                 return Mapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
-                    [](SimpleClassWithoutComparisonOperators l, SimpleClassWithoutComparisonOperators r) -> strong_ordering
-                        {
+                    [] (SimpleClassWithoutComparisonOperators l, SimpleClassWithoutComparisonOperators r) -> strong_ordering {
                         return l.GetValue () <=> r.GetValue ();
-                        }
-                };
+                    }};
             },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
-#endif
-#endif
 
         DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
