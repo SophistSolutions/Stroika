@@ -38,11 +38,13 @@ namespace {
         auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
         testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
-            using value_type = typename CONCRETE_CONTAINER::value_type;
+            using value_type       = typename CONCRETE_CONTAINER::value_type;
+            using key_type         = typename CONCRETE_CONTAINER::key_type;
+            using INORDER_COMPARER = decltype (m.GetInOrderKeyComparer ());
             optional<value_type> last;
             for (value_type i : m) {
                 if (last.has_value ()) {
-                    EXPECT_TRUE (Common::ThreeWayComparerAdapter{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0);
+                    EXPECT_TRUE ((Common::ThreeWayComparerAdapter<key_type, INORDER_COMPARER>{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0));
                 }
                 last = i;
             }
@@ -57,11 +59,13 @@ namespace {
         auto testSchema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
         testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
-            using value_type = typename CONCRETE_CONTAINER::value_type;
+            using value_type       = typename CONCRETE_CONTAINER::value_type;
+            using key_type         = typename CONCRETE_CONTAINER::key_type;
+            using INORDER_COMPARER = decltype (m.GetInOrderKeyComparer ());
             optional<value_type> last;
             for (value_type i : m) {
                 if (last.has_value ()) {
-                    EXPECT_TRUE (Common::ThreeWayComparerAdapter{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0);
+                    EXPECT_TRUE ((Common::ThreeWayComparerAdapter<key_type, INORDER_COMPARER>{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0));
                 }
                 last = i;
             }

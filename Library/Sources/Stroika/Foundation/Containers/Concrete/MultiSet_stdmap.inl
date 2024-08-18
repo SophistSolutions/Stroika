@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return ElementEqualityComparerType{Common::EqualsComparerAdapter{fData_.key_comp ()}};
+            return ElementEqualityComparerType{Common::EqualsComparerAdapter<T, INORDER_COMPARER>{fData_.key_comp ()}};
         }
         virtual shared_ptr<typename MultiSet<T, TRAITS>::_IRep> CloneEmpty () const override
         {

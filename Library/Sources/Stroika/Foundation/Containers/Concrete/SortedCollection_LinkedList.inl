@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             // equals might examine a subset of the object and we still want to update the whole object, but
             // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-            if (Common::EqualsComparerAdapter{fInorderComparer_}(*mir.fIterator, newValue)) {
+            if (Common::EqualsComparerAdapter<value_type, INORDER_COMPARER>{fInorderComparer_}(*mir.fIterator, newValue)) {
                 fData_.SetAt (mir.fIterator, newValue);
             }
             else {
@@ -156,12 +156,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.Find (item, Common::EqualsComparerAdapter{fInorderComparer_}) != nullptr;
+            return fData_.Find (item, Common::EqualsComparerAdapter<value_type, INORDER_COMPARER>{fInorderComparer_}) != nullptr;
         }
         virtual void Remove (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.Remove (item, Common::EqualsComparerAdapter{fInorderComparer_});
+            fData_.Remove (item, Common::EqualsComparerAdapter<value_type, INORDER_COMPARER>{fInorderComparer_});
             fChangeCounts_.PerformedChange ();
         }
 

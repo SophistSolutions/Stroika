@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Common {
          *  Similar logic for what overloads are available to pair<>, but here we also allow construction from a 'pair<>'.
          * 
          *  @todo cleanup - should be BOTH simpler, and handle a bunch of other cases. See if I can find a good example. pair<> code
-         *  from visual studio uses a bunch of require's and is even more complex.
+         *  from visual studio uses a bunch of requires and is even more complex.
          */
         constexpr KeyValuePair ()
             requires (constructible_from<KEY_TYPE> and constructible_from<VALUE_TYPE>)

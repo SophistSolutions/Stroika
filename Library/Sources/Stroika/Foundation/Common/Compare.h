@@ -121,39 +121,39 @@ namespace Stroika::Foundation::Common {
     };
 
     namespace Private_ {
-        template <typename COMPARE_FUNCTION>
+        template <typename ARG_T, typename COMPARE_FUNCTION>
         struct ExtractComparisonTraits_ {};
-        template <typename COMPARE_FUNCTION>
+        template <typename ARG_T, typename COMPARE_FUNCTION>
             requires requires (COMPARE_FUNCTION) {
                 {
                     COMPARE_FUNCTION::kComparisonRelationKind
                 } -> convertible_to<ComparisonRelationType>;
             }
-        struct ExtractComparisonTraits_<COMPARE_FUNCTION> {
+        struct ExtractComparisonTraits_<ARG_T, COMPARE_FUNCTION> {
             static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
         };
-        template <typename T>
-        struct ExtractComparisonTraits_<equal_to<T>> {
+        template <typename ARG_T>
+        struct ExtractComparisonTraits_<ARG_T, equal_to<ARG_T>> {
             static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eEquals;
         };
-        template <typename T>
-        struct ExtractComparisonTraits_<less<T>> {
+        template <typename ARG_T>
+        struct ExtractComparisonTraits_<ARG_T, less<ARG_T>> {
             static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
         };
-        template <typename T>
-        struct ExtractComparisonTraits_<greater<T>> {
-            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
+        template <typename ARG_T>
+        struct ExtractComparisonTraits_<ARG_T, greater<ARG_T>> {
+            static constexpr ARG_T kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
         };
-        template <typename T>
-        struct ExtractComparisonTraits_<less_equal<T>> {
+        template <typename ARG_T>
+        struct ExtractComparisonTraits_<ARG_T, less_equal<ARG_T>> {
             static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
         };
-        template <typename T>
-        struct ExtractComparisonTraits_<greater_equal<T>> {
+        template <typename ARG_T>
+        struct ExtractComparisonTraits_<ARG_T, greater_equal<ARG_T>> {
             static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
         };
-        template <>
-        struct ExtractComparisonTraits_<compare_three_way> {
+        template <typename ARG_T>
+        struct ExtractComparisonTraits_<ARG_T, compare_three_way> {
             static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
         };
 
@@ -214,10 +214,10 @@ namespace Stroika::Foundation::Common {
      * 
      *  Basically, this means we KNOW if its a LESS or EQUALS etc comparer (see ExtractComparisonTraits_v).
      */
-    template <typename POTENTIALLY_COMPARER>
+    template <typename POTENTIALLY_COMPARER, typename ARG_T>
     concept IComparer = (Private_::HasRelationKind_<remove_cvref_t<POTENTIALLY_COMPARER>> and requires (POTENTIALLY_COMPARER) {
                             {
-                                Private_::ExtractComparisonTraits_<remove_cvref_t<POTENTIALLY_COMPARER>>::kComparisonRelationKind
+                                Private_::ExtractComparisonTraits_<ARG_T, remove_cvref_t<POTENTIALLY_COMPARER>>::kComparisonRelationKind
                             } -> convertible_to<ComparisonRelationType>;
                         }) or Private_::HasExtractComparisonSpecialization_<remove_cvref_t<POTENTIALLY_COMPARER>>::value;
 
@@ -229,9 +229,9 @@ namespace Stroika::Foundation::Common {
      *  This is ONLY defined for builtin c++ comparison objects, though your code can define it however you wish for
      *  specific user-defined types using ComparisonRelationDeclarationBase<>.
      */
-    template <IComparer COMPARE_FUNCTION>
+    template <typename ARG_T, IComparer<ARG_T> COMPARE_FUNCTION>
     static constexpr ComparisonRelationType ExtractComparisonTraits_v =
-        Private_::ExtractComparisonTraits_<remove_cvref_t<COMPARE_FUNCTION>>::kComparisonRelationKind;
+        Private_::ExtractComparisonTraits_<ARG_T, remove_cvref_t<COMPARE_FUNCTION>>::kComparisonRelationKind;
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns an equals comparison result.
@@ -254,8 +254,8 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      */
     template <typename COMPARER, typename ARG_T>
-    concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and
-                              ExtractComparisonTraits_v<remove_cvref_t<COMPARER>> == ComparisonRelationType::eEquals;
+    concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER, ARG_T> and
+                              ExtractComparisonTraits_v<ARG_T, remove_cvref_t<COMPARER>> == ComparisonRelationType::eEquals;
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns a (strict) in-order comparison result.
@@ -265,8 +265,8 @@ namespace Stroika::Foundation::Common {
      *  \see IPotentiallyComparer, and use DeclareInOrderComparer to mark a given function as an in-order comparer.
      */
     template <typename COMPARER, typename ARG_T>
-    concept IInOrderComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and
-                               ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
+    concept IInOrderComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER, ARG_T> and
+                               ExtractComparisonTraits_v<ARG_T, remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns a three-way-compare comparison result.
@@ -276,8 +276,8 @@ namespace Stroika::Foundation::Common {
      *  \see IPotentiallyComparer, and use DeclareInOrderComparer to mark a given function as a three-way comparer.
      */
     template <typename COMPARER, typename ARG_T>
-    concept IThreeWayComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and
-                                ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eThreeWayCompare;
+    concept IThreeWayComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER, ARG_T> and
+                                ExtractComparisonTraits_v<ARG_T, remove_cvref_t<COMPARER>> == ComparisonRelationType::eThreeWayCompare;
 
     /**
      *  Utility class to serve as base class when constructing a comparison 'function' object comparer so ExtractComparisonTraits<> knows
@@ -374,7 +374,7 @@ namespace Stroika::Foundation::Common {
      *
      *  This is done by querying the 'type' of the baseComparer with @see ExtractComparisonTraits_v, and mapping the logic accordingly.
      */
-    template <IComparer BASE_COMPARER>
+    template <typename ARG_T, IComparer<ARG_T> BASE_COMPARER>
     struct EqualsComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eEquals> {
         /**
          */
@@ -395,10 +395,10 @@ namespace Stroika::Foundation::Common {
      *
      *  \note this requires the argument comparer is eStrictInOrder, eInOrderOrEquals, or eThreeWayCompare
      */
-    template <IComparer BASE_COMPARER>
-        requires (ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eStrictInOrder or
-                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eInOrderOrEquals or
-                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare)
+    template <typename T, IComparer<T> BASE_COMPARER>
+        requires (ExtractComparisonTraits_v<T, BASE_COMPARER> == ComparisonRelationType::eStrictInOrder or
+                  ExtractComparisonTraits_v<T, BASE_COMPARER> == ComparisonRelationType::eInOrderOrEquals or
+                  ExtractComparisonTraits_v<T, BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare)
     struct InOrderComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eStrictInOrder> {
         /**
          */
@@ -417,9 +417,9 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief Use this to wrap a basic comparer, and produce a Three-Way comparer
      */
-    template <IComparer BASE_COMPARER>
-        requires (ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
-                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
+    template <typename T, IComparer<T> BASE_COMPARER>
+        requires (ExtractComparisonTraits_v<T, BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
+                  ExtractComparisonTraits_v<T, BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
     struct ThreeWayComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eThreeWayCompare> {
         /**
          */
@@ -442,18 +442,18 @@ namespace Stroika::Foundation::Common {
      *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
      *  'base comparer'.
      */
-    template <typename T, IComparer TCOMPARER = std::compare_three_way>
+    template <typename ARG_T, IComparer<ARG_T> TCOMPARER = std::compare_three_way>
     struct OptionalThreeWayComparer : ComparisonRelationDeclarationBase<ComparisonRelationType::eThreeWayCompare> {
         constexpr OptionalThreeWayComparer (TCOMPARER&& tComparer);
         constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
-        constexpr strong_ordering operator() (const optional<T>& lhs, const optional<T>& rhs) const;
+        constexpr strong_ordering operator() (const optional<ARG_T>& lhs, const optional<ARG_T>& rhs) const;
 
     private:
         [[no_unique_address]] TCOMPARER fTComparer_;
     };
 
     /**
-     * Take the given value and map it to -1, 0, 1 - without any compiler warnings. Handy for 32/64 bit etc codiing when you maybe comparing
+     * Take the given value and map it to -1, 0, 1 - without any compiler warnings. Handy for 32/64 bit etc coding when you maybe comparing
      * different sized values and just returning an int, but don't want the warnings about overflow etc.
      */
     template <typename FROM_INT_TYPE>

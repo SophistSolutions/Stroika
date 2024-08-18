@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool SortedCollection<T>::operator== (const SortedCollection& rhs) const
     {
-        auto elementEqualsComparer = Common::EqualsComparerAdapter{this->GetInOrderComparer ()};
+        auto elementEqualsComparer = Common::EqualsComparerAdapter<T, InOrderComparerType>{this->GetInOrderComparer ()};
         // @todo understand/fix why decltype(elementEqualsComparer>) needed, and not deduced
         return typename Iterable<T>::template SequentialEqualsComparer<decltype (elementEqualsComparer)>{elementEqualsComparer}(*this, rhs);
     }
