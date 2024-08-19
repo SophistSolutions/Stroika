@@ -124,8 +124,10 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual bool ProbablyContains (Configuration::ArgByValueType<T> elt) const;
 
-
-        [[deprecated("Since Stroika v3.0d10 use ProbablyContains")]] bool Contains (Configuration::ArgByValueType<T> elt) const { return ProbablyContains(elt); }
+        [[deprecated ("Since Stroika v3.0d10 use ProbablyContains")]] bool Contains (Configuration::ArgByValueType<T> elt) const
+        {
+            return ProbablyContains (elt);
+        }
 
     public:
         struct Statistics;
