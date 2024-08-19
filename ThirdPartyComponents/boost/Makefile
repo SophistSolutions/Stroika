@@ -110,7 +110,7 @@ else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
 	@if [ "$@" != "ORIGs" ] ; then \
-		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Extracting ... ";\
+		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Patching ... ";\
 		patch -p0 $@/tools/build/src/tools/msvc.jam Patches/MSVC144-Jam.Patch >> $@/PATCHING.OUT;\
 	fi
 
