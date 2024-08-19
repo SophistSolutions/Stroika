@@ -20,7 +20,8 @@ endif
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/GNOME/libxml2/tags
 #
-libxml2_VERSION_:=2.13.2
+libxml2_VERSION_:=2.13.3
+#libxml2_VERSION_:=2.13.2
 #libxml2_VERSION_:=2.13.1
 #libxml2_VERSION_:=2.12.7
 
