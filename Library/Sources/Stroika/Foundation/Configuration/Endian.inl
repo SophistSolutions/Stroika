@@ -59,12 +59,14 @@ namespace Stroika::Foundation::Configuration {
     template <integral T>
     constexpr inline T EndianConverter (T value, Endian from, Endian to)
     {
-        // @todo re-implement some cases using https://en.cppreference.com/w/cpp/numeric/byteswap
-        Require (from == Endian::eBig or from == Endian::eLittle); // just cuz that's all that's implemented
-        Require (to == Endian::eBig or to == Endian::eLittle);     // ""
         if (from == to) {
             return value;
         }
+        Require (from == Endian::eBig or from == Endian::eLittle); // just cuz that's all that's implemented
+        Require (to == Endian::eBig or to == Endian::eLittle);     // ""
+        // @todo re-implement some cases using https://en.cppreference.com/w/cpp/numeric/byteswap
+        // Require ((from == Endian::eBig or from == Endian::eLittle) and (to == Endian::eBig or to == Endian::eLittle));
+        // return std::byteswap (value) ;; double check this is right for all integral sizes... and use my stdcompat code for this
         if constexpr (sizeof (T) == 1) {
             return value;
         }
