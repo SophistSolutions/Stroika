@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Cache {
         fBits_.clear ();
     }
     template <typename T>
-    bool BloomFilter<T>::Contains (Configuration::ArgByValueType<T> elt) const
+    bool BloomFilter<T>::ProbablyContains (Configuration::ArgByValueType<T> elt) const
     {
         size_t sz{fBits_.size ()};
         for (const HashFunctionType& f : fHashFunctions_) {

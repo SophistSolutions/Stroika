@@ -44,6 +44,10 @@ namespace Stroika::Foundation::Cache {
         using HashResultType = uint64_t; // often something smaller will be used, but best to pick a wider type here, and @todo maybe make it a template parameter
 
     public:
+        /**
+         *  \note uses std::function instead of directly storing function-object (losing efficiency) because must maintain
+         *        an array of these, and thats trickier if we allow them to have different types.
+         */
         using HashFunctionType = function<HashResultType (T)>;
 
     public:
@@ -118,7 +122,10 @@ namespace Stroika::Foundation::Cache {
          * 
          *  Call GetEffectiveOptions ().ProbabilityOfFalsePositive (nEltsAdded) to an estimate of the probability of false positives.
          */
-        nonvirtual bool Contains (Configuration::ArgByValueType<T> elt) const;
+        nonvirtual bool ProbablyContains (Configuration::ArgByValueType<T> elt) const;
+
+
+        [[deprecated("Since Stroika v3.0d10 use ProbablyContains")]] bool Contains (Configuration::ArgByValueType<T> elt) const { return ProbablyContains(elt); }
 
     public:
         struct Statistics;
