@@ -117,8 +117,9 @@ namespace Stroika::Foundation::Characters {
                 eWindowsAPIWide2FromMultibyte,
 #endif
 
-                // CPPREFERENCE docs on std::codecvt somewhat confusing about what is deprected, but it appears the interface as a whole is still viable as of C++20
+                // CPPREFERENCE docs on std::codecvt somewhat confusing about what is deprecated, but it appears the interface as a whole is still viable as of C++20
                 // and just several sub-interfaces are deprecated -- LGP 2023-06-28
+                // https://cplusplus.github.io/LWG/issue3767
                 eCodeCVT,
 
                 // @todo LIBS TO LOOK AT

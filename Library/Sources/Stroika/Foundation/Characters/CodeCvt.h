@@ -42,8 +42,10 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename STD_CODECVT_T>
     concept IStdCodeCVT = Private_::IsStdCodeCvt_<const STD_CODECVT_T*>;
-    //static_assert (IStdCodeCVT<std::codecvt<char16_t, char8_t, std::mbstate_t>>); // https://cplusplus.github.io/LWG/issue3767 DEPRECATED
-    //static_assert (IStdCodeCVT<std::codecvt<char32_t, char8_t, std::mbstate_t>>);
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // https://cplusplus.github.io/LWG/issue3767 DEPRECATED
+    static_assert (IStdCodeCVT<std::codecvt<char16_t, char8_t, std::mbstate_t>>);
+    static_assert (IStdCodeCVT<std::codecvt<char32_t, char8_t, std::mbstate_t>>);
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
     static_assert (IStdCodeCVT<std::codecvt<wchar_t, char, std::mbstate_t>>);
     static_assert (IStdCodeCVT<std::codecvt_byname<wchar_t, char, std::mbstate_t>>);
 

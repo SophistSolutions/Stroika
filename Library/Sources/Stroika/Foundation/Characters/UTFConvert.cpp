@@ -683,6 +683,7 @@ namespace {
         inline UTFConvert::ConversionStatusFlag ConvertUTF8toUTF16_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
                                                                              char16_t** targetStart, char16_t* targetEnd)
         {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             static const deletable_facet_<codecvt<char16_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                            ignoredMBState{};
             const char8_t*                                                       sourceCursor = *sourceStart;
@@ -691,10 +692,12 @@ namespace {
             *sourceStart            = reinterpret_cast<const char8_t*> (sourceCursor);
             *targetStart            = outCursor;
             return cvt_stdcodecvt_results_ (rr);
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
         inline UTFConvert::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ (const char16_t** sourceStart, const char16_t* sourceEnd,
                                                                              char8_t** targetStart, char8_t* targetEnd)
         {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             static const deletable_facet_<codecvt<char16_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                            ignoredMBState{};
             const char16_t*                                                      sourceCursor = *sourceStart;
@@ -703,10 +706,12 @@ namespace {
             *sourceStart            = reinterpret_cast<const char16_t*> (sourceCursor);
             *targetStart            = reinterpret_cast<char8_t*> (outCursor);
             return cvt_stdcodecvt_results_ (rr);
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
         inline UTFConvert::ConversionStatusFlag ConvertUTF8toUTF32_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
                                                                              char32_t** targetStart, char32_t* targetEnd)
         {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             static const deletable_facet_<codecvt<char32_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                            ignoredState{};
 
@@ -716,10 +721,12 @@ namespace {
             *sourceStart            = reinterpret_cast<const char8_t*> (sourceCursor);
             *targetStart            = outCursor;
             return cvt_stdcodecvt_results_ (rr);
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
         inline UTFConvert::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ (const char32_t** sourceStart, const char32_t* sourceEnd,
                                                                              char8_t** targetStart, char8_t* targetEnd)
         {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             static const deletable_facet_<codecvt<char32_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                            ignoredState{};
             const char32_t*                                                      sourceCursor = *sourceStart;
@@ -728,6 +735,7 @@ namespace {
             *sourceStart            = reinterpret_cast<const char32_t*> (sourceCursor);
             *targetStart            = reinterpret_cast<char8_t*> (outCursor);
             return cvt_stdcodecvt_results_ (rr);
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
     }
 }

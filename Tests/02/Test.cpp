@@ -1891,8 +1891,10 @@ namespace {
             // simple fast converter from char16_t characters <-> UTF-8
             CodeCvt<char16_t> codeCvt1{};
             codeCvtChar16Test (codeCvt1);
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             // CodeCvt between char16_t characters <-> UTF-8 using std::codecvt<char16_t, char8_t, std::mbstate_t>
             CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt<char16_t, char8_t, std::mbstate_t>> ();
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
             codeCvtChar16Test (codeCvt2);
 
             auto hasLocale = [] (const string& n) {
@@ -1907,12 +1909,14 @@ namespace {
             // see https://en.cppreference.com/w/cpp/locale/codecvt_byname for cases not deprecated
             if (hasLocale ("en_US.UTF8")) {
                 // Now using codecvt_byname (locale converter)
+                DISABLE_COMPILER_MSC_WARNING_START (4996)
                 CodeCvt<wchar_t> codeCvt3a =
                     CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char, std::mbstate_t>> ({}, "en_US.UTF8");
                 CodeCvt<char32_t> codeCvt3b =
                     CodeCvt<char32_t>::mkFromStdCodeCvt<std::codecvt_byname<char32_t, char8_t, std::mbstate_t>> ({}, "en_US.UTF8");
                 CodeCvt<char16_t> codeCvt3c =
                     CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt_byname<char16_t, char8_t, std::mbstate_t>> ({}, "en_US.UTF8");
+                DISABLE_COMPILER_MSC_WARNING_END (4996)
                 codeCvtChar16Test (codeCvt3c);
                 CodeCvt<char16_t> codeCvt4c = CodeCvt<char16_t>{locale{"en_US.UTF8"}};
                 codeCvtChar16Test (codeCvt4c);

@@ -13,6 +13,7 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
         // crazy - from https://en.cppreference.com/w/cpp/locale/codecvt
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
         template <typename FACET>
         struct deletable_facet_ : FACET {
             template <typename... Args>
@@ -22,6 +23,7 @@ namespace Stroika::Foundation::Characters {
             }
             ~deletable_facet_ () = default;
         };
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
         void   ThrowErrorConvertingBytes2Characters_ (size_t nSrcCharsWhereError);
         void   ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);
         void   ThrowCodePageNotSupportedException_ (CodePage cp);
@@ -417,10 +419,12 @@ namespace Stroika::Foundation::Characters {
                 span<const CHAR_T>          invalCharPartlyEncode = fInvalidCharacterReplacement_->As<CHAR_T> (&tmpBuf);
                 const CHAR_T*               ignoreCharsConsumed   = nullptr;
                 extern_type*                bytesInvalChar        = fInvalidCharacterReplacementBytesBuf;
-                auto                        r =
+                DISABLE_COMPILER_MSC_WARNING_START (4996)
+                auto r =
                     fCodeCvt_->out (ignoredMBState, invalCharPartlyEncode.data (), invalCharPartlyEncode.data () + invalCharPartlyEncode.size (),
                                     ignoreCharsConsumed, fInvalidCharacterReplacementBytesBuf,
                                     fInvalidCharacterReplacementBytesBuf + Memory::NEltsOf (fInvalidCharacterReplacementBytesBuf), bytesInvalChar);
+                DISABLE_COMPILER_MSC_WARNING_END (4996)
                 if (r == STD_CODE_CVT_T::ok) {
                     fInvalidCharacterReplacementBytes_ = as_writable_bytes (
                         span{fInvalidCharacterReplacementBytesBuf}.subspan (0, bytesInvalChar - fInvalidCharacterReplacementBytesBuf));
@@ -598,6 +602,7 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l, const Options& options)
     {
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
         if constexpr (same_as<CHAR_T, wchar_t>) {
             *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (options, l.name ());
         }
@@ -612,6 +617,7 @@ namespace Stroika::Foundation::Characters {
             // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
             AssertNotImplemented ();
         }
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     CodeCvt<CHAR_T>::CodeCvt (const Charset& charset, const Options& options)
@@ -623,9 +629,11 @@ namespace Stroika::Foundation::Characters {
             *this = CodeCvt<CHAR_T>{UnicodeExternalEncodings::eUTF8};
         }
         else if (same_as<CHAR_T, Character>) {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             // best hope is to treat it as a locale name, and hope its found
             fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
                 CodeCvt<char32_t>::Options::New<CHAR_T> (options), charset.AsNarrowSDKString ()));
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
         else {
             Private_::ThrowCharsetNotSupportedException_ (charset);
