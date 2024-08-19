@@ -42,8 +42,8 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 ## Check latest release: https://www.boost.org/users/download/
 ##
 
-#VERSION:=1_86_0
-VERSION:=1_85_0
+VERSION:=1_86_0
+#VERSION:=1_85_0
 #VERSION:=1_84_0
 #VERSION=1_83_0
 #VERSION=1_82_0
@@ -111,9 +111,9 @@ else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
 	@if [ "$@" != "ORIGs" ] ; then \
-		if [ "${VERSION}" == "1_85_0" ] \
-			$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Patching $@ ... ";\
-			patch -p0 $@/tools/build/src/tools/msvc.jam Patches/MSVC144-Jam.Patch >> $@/PATCHING.OUT;\
+		if [ "${VERSION}" == "1_85_0" ] ; then \
+			$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Patching $@ (see ${OUTPUT_WORKDIR_PRETTYNAME}PATCHING.OUT) ... "`;\
+			patch -p0 $@/tools/build/src/tools/msvc.jam Patches/MSVC144-Jam.Patch >> PATCHING.OUT;\
 		fi;\
 	fi
 
