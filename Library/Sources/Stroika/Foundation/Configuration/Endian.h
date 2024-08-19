@@ -24,6 +24,8 @@ namespace Stroika::Foundation::Configuration {
 
     /**
      *  @see http://en.wikipedia.org/wiki/Endianness
+     * 
+     *  @todo DOCUMENT CONNECTION TO https://en.cppreference.com/w/cpp/types/endian
      */
     enum class Endian {
         eBigByte, // byte-swapped big-endian
@@ -40,10 +42,21 @@ namespace Stroika::Foundation::Configuration {
     };
 
     /**
+     * \brief returns Endianness flag. Can be complicated, mixed, etc. But often very simple and for the
+     *        simple cases, based on std::endian::native.
+     * 
+     *   if (endian::native == endian::little) {
+     *       return Endian::eLittle;
+     *   }
+     *   else if (endian::native == endian::big) {
+     *       return Endian::eBig;
+     *   }
+     *   else complicated...
      */
     constexpr Endian GetEndianness ();
 
     /**
+    * @todo redo with byteswap
      *  Utility to convert endianness. Logically this can be defined on any numeric
      *  integer type, but for now is restricted to uint16_t, uint32_t;
      * 

@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include <cstdint>
+#include <bit>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
@@ -23,6 +24,12 @@ namespace Stroika::Foundation::Configuration {
 #endif
     inline constexpr Endian GetEndianness ()
     {
+        if constexpr (endian::native == endian::little) {
+            return Endian::eLittle;
+        }
+        if constexpr (endian::native == endian::big) {
+            return Endian::eBig;
+        }
 #if !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
         return (Private_::kMix_.cdat[0] == 4) ? Endian::eLittleByte : // aka little endian
                    (Private_::kMix_.cdat[0] == 1) ? Endian::eBigByte
