@@ -15,17 +15,17 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
- *
- * TODO:
- *      @todo   Use new stdc++17 endian feature - http://stroika-bugs.sophists.com/browse/STK-850
  */
 
 namespace Stroika::Foundation::Configuration {
 
     /**
-     *  @see http://en.wikipedia.org/wiki/Endianness
+     *  \brief in principle complicated question of correspondence between bit and byte and word numbering, but often fairly simple - similar to but subtler version of std::endian
      * 
-     *  @todo DOCUMENT CONNECTION TO https://en.cppreference.com/w/cpp/types/endian
+     *  @see http://en.wikipedia.org/wiki/Endianness
+     *  @see https://en.cppreference.com/w/cpp/types/endian
+     * 
+     *  \note cannot use values from std::endian for matching cases (eBig/eLittle) because these values are impl defined
      */
     enum class Endian {
         eBigByte, // byte-swapped big-endian
@@ -34,15 +34,16 @@ namespace Stroika::Foundation::Configuration {
         eLittleByte, // byte-swapped little-endian  (e.g. x86)
         eLittleWord, // word-swapped little-endian
 
-        eBig    = eBigByte,
-        eLittle = eLittleByte, // e.g. x86
+        eBig    = eBigByte,    // (std::endian::big)
+        eLittle = eLittleByte, // e.g. x86  (std::endian::little)
         ePDP    = eLittleWord,
 
-        eX86 = eLittle // so common, worth an alias
+        eX86 = eLittle, // so common, worth an alias
+        eARM = eLittle  // ""
     };
 
     /**
-     * \brief returns Endianness flag. Can be complicated, mixed, etc. But often very simple and for the
+     * \brief returns native (std::endian::native) Endianness flag. Can be complicated (mixed, etc). But often very simple (e.g. Endian::eLittle) and for the
      *        simple cases, based on std::endian::native.
      * 
      *   if (endian::native == endian::little) {
@@ -56,7 +57,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr Endian GetEndianness ();
 
     /**
-    * @todo redo with byteswap
      *  Utility to convert endianness. Logically this can be defined on any numeric
      *  integer type, but for now is restricted to uint16_t, uint32_t;
      * 
@@ -65,15 +65,11 @@ namespace Stroika::Foundation::Configuration {
      *          EXPECT_EQ (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle), 0xBBAA);
      *          uint16_t useThisNumber = EndianConverter<uint16_t> (0xAABB, Endian::eBig, GetEndianness ());
      *      \endcode
+     * 
+     *  @see https://en.cppreference.com/w/cpp/numeric/byteswap
      */
     template <integral T>
     constexpr T EndianConverter (T value, Endian from, Endian to);
-#if 0
-    template <>
-    constexpr uint16_t EndianConverter (uint16_t value, Endian from, Endian to);
-    template <>
-    constexpr uint32_t EndianConverter (uint32_t value, Endian from, Endian to);
-#endif
 
 }
 

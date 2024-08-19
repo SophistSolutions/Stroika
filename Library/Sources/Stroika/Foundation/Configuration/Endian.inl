@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include <cstdint>
 #include <bit>
+#include <cstdint>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
@@ -59,6 +59,7 @@ namespace Stroika::Foundation::Configuration {
     template <integral T>
     constexpr inline T EndianConverter (T value, Endian from, Endian to)
     {
+        // @todo re-implement some cases using https://en.cppreference.com/w/cpp/numeric/byteswap
         Require (from == Endian::eBig or from == Endian::eLittle); // just cuz that's all that's implemented
         Require (to == Endian::eBig or to == Endian::eLittle);     // ""
         if (from == to) {
