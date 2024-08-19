@@ -385,10 +385,10 @@ namespace {
             unsigned int falsePositives{};
             for (auto i : Traversal::DiscreteRange<int>{1, kTotalEntries_}) {
                 if (i & 1) {
-                    EXPECT_TRUE (f.Contains (i));
+                    EXPECT_TRUE (f.ProbablyContains (i));
                 }
                 else {
-                    if (f.Contains (i)) {
+                    if (f.ProbablyContains (i)) {
                         falsePositives++;
                     }
                 }
@@ -423,10 +423,10 @@ namespace {
             unsigned int falsePositives{};
             for (const InternetAddress& ia : cidr.GetRange ()) {
                 if (oracle.Contains (ia)) {
-                    EXPECT_TRUE (f.Contains (ia));
+                    EXPECT_TRUE (f.ProbablyContains (ia));
                 }
                 else {
-                    if (f.Contains (ia)) {
+                    if (f.ProbablyContains (ia)) {
                         falsePositives++;
                     }
                 }
@@ -463,10 +463,10 @@ namespace {
             unsigned int falsePositives{};
             for (const InternetAddress& ia : cidr.GetRange ()) {
                 if (oracle.Contains (ia)) {
-                    EXPECT_TRUE (f.Contains (ia));
+                    EXPECT_TRUE (f.ProbablyContains (ia));
                 }
                 else {
-                    if (f.Contains (ia)) {
+                    if (f.ProbablyContains (ia)) {
                         falsePositives++;
                     }
                 }
@@ -506,10 +506,10 @@ namespace {
             unsigned int falsePositives{};
             for (const InternetAddress& ia : cidr.GetRange ()) {
                 if (oracle.Contains (ia)) {
-                    EXPECT_TRUE (f.Contains (ia));
+                    EXPECT_TRUE (f.ProbablyContains (ia));
                 }
                 else {
-                    if (f.Contains (ia)) {
+                    if (f.ProbablyContains (ia)) {
                         falsePositives++;
                     }
                 }
@@ -556,7 +556,7 @@ namespace {
                         unsigned int selected = uniform_int_distribution<unsigned int>{1, scanAddressRange.GetNumberOfContainedPoints () - 2}(sRng_);
                         InternetAddress ia                    = scanAddressRange.GetLowerBound ().Offset (selected);
                         bool            wasAlreadyPresent     = oracle.Contains (ia);
-                        bool            appearsAlreadyPresent = addressesProbablyUsed.Contains (ia);
+                        bool            appearsAlreadyPresent = addressesProbablyUsed.ProbablyContains (ia);
                         if (wasAlreadyPresent != appearsAlreadyPresent) {
                             nContainsMistakes++;
                         }
