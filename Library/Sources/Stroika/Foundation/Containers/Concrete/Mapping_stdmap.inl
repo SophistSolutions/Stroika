@@ -310,16 +310,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline auto Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::GetInOrderKeyComparer () const -> KEY_INORDER_COMPARER
     {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this};
-        if constexpr (same_as<KEY_INORDER_COMPARER, key_compare>) {
-            key_compare r;
-            tmp.GetKeyComp (type_index{typeid (key_compare)}, &r);
-            return r;
-        }
-        else {
-            KEY_INORDER_COMPARER r;
-            tmp.GetKeyComp (type_index{typeid (KEY_INORDER_COMPARER)}, &r);
-            return r;
-        }
+        key_compare                                                      r{};
+        tmp._ConstGetRep ().GetKeyComp (type_index{typeid (KEY_INORDER_COMPARER)}, &r);
+        return r;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_Key_T>
