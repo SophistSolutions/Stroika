@@ -22,6 +22,7 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
+SHELL=/bin/bash
 
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
@@ -110,8 +111,8 @@ else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
-	@if [ "$@" != "ORIGs" ] ; then \
-		if [ "${VERSION}" == "1_85_0" ] ; then \
+	@if [[ "$@" != "ORIGs" ]] ; then \
+		if [[ "${VERSION}" == "1_85_0" ]] ; then \
 			$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Patching $@ (see ${OUTPUT_WORKDIR_PRETTYNAME}PATCHING.OUT) ... "`;\
 			patch -p0 $@/tools/build/src/tools/msvc.jam Patches/MSVC144-Jam.Patch >> PATCHING.OUT;\
 		fi;\

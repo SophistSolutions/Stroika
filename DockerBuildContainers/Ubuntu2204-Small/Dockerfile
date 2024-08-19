@@ -39,6 +39,11 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y git; \
     apt-get -qq install -y xxd;
     
+### https://stackoverflow.com/questions/76974555/glibcxx-3-4-32-not-found-error-at-runtime-gcc-13-2-0
+RUN apt-get install -y software-properties-common; \
+    add-apt-repository -y ppa:ubuntu-toolchain-r/test; \
+    apt-get update -y ; \
+    apt-get install -y libstdc++6;
 
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
 RUN apt-get -qq install -y g++
