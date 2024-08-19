@@ -27,7 +27,7 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
-OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)")"
+OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)")/"
 
 
 # # Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01
@@ -42,6 +42,7 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 ## Check latest release: https://www.boost.org/users/download/
 ##
 
+#VERSION:=1_86_0
 VERSION:=1_85_0
 #VERSION:=1_84_0
 #VERSION=1_83_0
@@ -110,8 +111,10 @@ else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
 	@if [ "$@" != "ORIGs" ] ; then \
-		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Patching ... ";\
-		patch -p0 $@/tools/build/src/tools/msvc.jam Patches/MSVC144-Jam.Patch >> $@/PATCHING.OUT;\
+		if [ "${VERSION}" == "1_85_0" ] \
+			$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Patching $@ ... ";\
+			patch -p0 $@/tools/build/src/tools/msvc.jam Patches/MSVC144-Jam.Patch >> $@/PATCHING.OUT;\
+		fi;\
 	fi
 
 
