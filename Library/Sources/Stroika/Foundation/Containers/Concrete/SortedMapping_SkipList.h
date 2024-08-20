@@ -1,14 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_SkipList_h_
+#define _Stroika_Foundation_Containers_Concrete_SortedMapping_SkipList_h_
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
-
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_SkipList_h_
-#define _Stroika_Foundation_Containers_Concrete_SortedMapping_SkipList_h_
 
 /**
  *  \file
@@ -32,8 +31,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
     public:
-        using KeyEqualsCompareFunctionType       = typename inherited::KeyEqualsCompareFunctionType;
-        using KeyInOrderKeyComparerType       = typename inherited::KeyInOrderKeyComparerType;
+        using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
+        using KeyInOrderKeyComparerType    = typename inherited::KeyInOrderKeyComparerType;
         using key_type                     = typename inherited::key_type;
         using value_type                   = typename inherited::value_type;
         using mapped_type                  = typename inherited::mapped_type;

@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
+// Moved #includes outside #include guard to avoid deadly embrace with SortedMapping/Mapping/SortedMapping_std
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
