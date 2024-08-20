@@ -10,7 +10,7 @@
 #include <functional>
 
 /*
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  * 
  *  \note - this separate file exists to avoid mutual include issues - it logically would make sense to
  *          include this in Hash.h

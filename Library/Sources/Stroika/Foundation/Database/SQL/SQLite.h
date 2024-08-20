@@ -28,7 +28,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO
  *      @todo   Create SQLite Exception class and use sqlite3_errstr () to generate good string 

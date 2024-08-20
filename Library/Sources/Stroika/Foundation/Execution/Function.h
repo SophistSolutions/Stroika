@@ -15,7 +15,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO
  *      @todo   Instead of using shared_ptr<> - we could have an INT counter (except for special case of null where we use

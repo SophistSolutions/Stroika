@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 
 /**
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   maybe allow passing in Cache object as CTOR parameter as a way to specify the hash function etc (for LRUCache with hash)

@@ -11,7 +11,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   Be sure can move-semantics into and out of Sequence_stdvector() - with vector<T> -

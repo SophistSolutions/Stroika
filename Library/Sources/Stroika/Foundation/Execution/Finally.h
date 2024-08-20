@@ -17,7 +17,7 @@
  *
  *      Finally utility - to appoximate C++ try/finally support.
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   Consider checking noexcept (f), and avoiding the IgnoreExceptionsForCall

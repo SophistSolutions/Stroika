@@ -15,7 +15,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha/a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha/a>
  *
  * TODO:
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-606 - Implement StdIStreamFromInputStream and StdOStreamFromOutputStream classes

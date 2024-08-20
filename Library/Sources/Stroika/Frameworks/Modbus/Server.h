@@ -17,7 +17,7 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  \note Testing Note
  *        This code was tested and used by a client as of around Stroika v2.0a204, but may not have been used since, and

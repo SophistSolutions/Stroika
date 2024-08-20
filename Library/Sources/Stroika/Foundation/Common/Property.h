@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/Configuration/TypeHints.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  * 
  *  Notes:
  *      I've long thought about doing something like this, but only recently got frustrated with

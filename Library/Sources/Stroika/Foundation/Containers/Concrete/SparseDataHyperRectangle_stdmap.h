@@ -11,7 +11,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::Containers::Concrete {

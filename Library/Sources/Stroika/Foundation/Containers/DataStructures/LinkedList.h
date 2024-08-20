@@ -23,7 +23,7 @@
  *      @todo   Include Performance numbers for each operation (done for many).
  *      @todo   https://stroika.atlassian.net/browse/STK-1016 - ranges/sentinel support
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  */
 

@@ -27,7 +27,7 @@
  *      @todo   Could add iterator subclass (or use traits to control) which tracks index internally, as with Stroika v1
  *              but this will do for and maybe best (depending on frequency of calls to CurrentIndex ()
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  */
 

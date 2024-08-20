@@ -14,7 +14,7 @@
 /**
  *      \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   Get rid of copied/cloned CTORs (just for deduction guides) - and get the explicit deduction guides working

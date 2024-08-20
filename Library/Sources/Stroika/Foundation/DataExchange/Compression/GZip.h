@@ -13,7 +13,7 @@
  * 
  *  https://en.wikipedia.org/wiki/GZip
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::DataExchange::Compression::GZip {

@@ -12,7 +12,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   Properly handle seekability based on underlying stream seekability, and/or param/flag on construction (we can always make it seekable by buffering).

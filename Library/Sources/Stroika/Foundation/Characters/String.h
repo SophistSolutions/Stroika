@@ -25,7 +25,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   EXPLAIN why InsertAt () returns string and Append() doesn't! Or - change it!

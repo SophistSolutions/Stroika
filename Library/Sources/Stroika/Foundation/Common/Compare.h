@@ -20,7 +20,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 #if qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy

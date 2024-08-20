@@ -31,7 +31,7 @@
 /**
  *  \file Convert arbitrary objects to String form, for the purpose of debugging (not reversible).
  * 
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  * 
  *  TODO:
  *      @todo   ToString(tuple) should use variadic templates and support multiple (past 3) args

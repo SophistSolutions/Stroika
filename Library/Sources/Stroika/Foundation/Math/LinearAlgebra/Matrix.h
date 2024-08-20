@@ -14,7 +14,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *  TODO
  *      o   Look into integrating with popular C++ matrix libraries, blas, eigen, etc...

@@ -16,7 +16,7 @@
  *  \file
  *              ****VERY ROUGH UNUSABLE DRAFT
  *
- *  \version    <a href="Code-Status.md#Draft">Draft</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Draft">Draft</a>
  *
  */
 

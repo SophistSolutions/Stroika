@@ -23,7 +23,7 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   Consider if Response::GetSucceeded () should return true or false for 3xx responses.

@@ -12,7 +12,7 @@
 
 /*
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  * 
  *      @todo see concepts and add static_assert (ILockable - see diff lockable concepts and doc which and enforce wtih statis assert)
  */

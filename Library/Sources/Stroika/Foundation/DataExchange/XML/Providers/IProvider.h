@@ -20,7 +20,7 @@
  *  Generally ignore this file/module unless you need to control which XML provider you are using
  *  and/or to access internal representations from one of these providers.
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::DataExchange::XML::Providers {

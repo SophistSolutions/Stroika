@@ -21,7 +21,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-428 - See how to map EqualsComparer to CountedValue we use

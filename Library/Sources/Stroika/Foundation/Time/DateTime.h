@@ -29,7 +29,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Release">Release</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Release">Release</a>
  *
  * TODO:
  *      @todo - http://stroika-bugs.sophists.com/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)

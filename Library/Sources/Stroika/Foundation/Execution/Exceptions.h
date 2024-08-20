@@ -18,7 +18,7 @@
 #include "Throw.h"
 
 /**
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  \note \em Design Note
  *      (essentially) All exceptions thrown by Stroika (except where needed by quirks of underlying library

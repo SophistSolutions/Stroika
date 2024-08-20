@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
 /**
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and

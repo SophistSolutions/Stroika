@@ -14,7 +14,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   Review \u style Unicode characters (such as "\uFDD0") parsing. Its mostly right, but

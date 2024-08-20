@@ -13,7 +13,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Release">Release</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Release">Release</a>
  */
 
 namespace Stroika::Foundation::Configuration {

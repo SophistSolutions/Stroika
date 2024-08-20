@@ -17,7 +17,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   See https://en.cppreference.com/w/cpp/chrono/time_zone - and support this. But the C++20 doesn't REPLACE

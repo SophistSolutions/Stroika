@@ -12,7 +12,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *  TODO:
  *      @todo   Provide a variant of CopyAll which is safely always cancelable (at least of underlying src and target streams cancelable). Maybe this

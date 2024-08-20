@@ -14,7 +14,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 #define Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION 1

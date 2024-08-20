@@ -21,7 +21,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Release">Release</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Release">Release</a>
  *
  * TODO:
  *      @todo   Need DefaultNames<> for enums in TimeOfDay module

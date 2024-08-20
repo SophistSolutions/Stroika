@@ -17,7 +17,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   AddTask () implmentation is HORRIBLE (for case where fAddBlockTimeout != 0) and needs to be rewritten with condition variables.

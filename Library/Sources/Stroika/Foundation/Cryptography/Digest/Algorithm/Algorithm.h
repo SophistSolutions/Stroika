@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 
 /*
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  * 
  *  TODO:
  *      @todo   Consider losing IDigester, and IDigestAlgorithm - not REALLY used. We just want to have something like

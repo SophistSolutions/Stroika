@@ -23,7 +23,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
  *      @todo   Should this API be renamed InterfaceMonitor? Probably yes?

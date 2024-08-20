@@ -17,7 +17,7 @@
  *
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-998 - support EWouldBlock on output stream writes (like we do for InputStream)

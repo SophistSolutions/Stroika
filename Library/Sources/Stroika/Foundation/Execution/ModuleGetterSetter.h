@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Memory/Common.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  * 
  *  \todo   add Concept for IMPL type so clear documentation on how to use.
  */

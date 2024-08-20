@@ -13,7 +13,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  @see    http://en.wikipedia.org/wiki/Jenkins_hash_function
  *

@@ -23,7 +23,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Release">Release</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Release">Release</a>
  *
  *  TODO:
  *      @todo   see if fSharedLocks_ can be replaced with LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread

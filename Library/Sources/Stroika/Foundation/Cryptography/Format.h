@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Streams/InputStream.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *  TODO:
  *      @todo   Consider renaming this module FormatResult

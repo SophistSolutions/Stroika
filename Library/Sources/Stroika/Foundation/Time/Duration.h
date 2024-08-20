@@ -26,7 +26,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md">Beta</a>
  *
  * TODO:
  *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up

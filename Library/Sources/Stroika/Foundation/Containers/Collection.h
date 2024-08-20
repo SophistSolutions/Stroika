@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
 /**
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   Have Difference/Union/Interesection??? methods/?? Do research....

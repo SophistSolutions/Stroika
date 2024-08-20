@@ -12,7 +12,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  @todo   Document why we didn't use BlockAllocated<T> : T ... issue is that wouldn't work for non-class T, such
  *          as int.

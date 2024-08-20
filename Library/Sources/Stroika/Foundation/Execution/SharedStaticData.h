@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/Memory/Common.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
  *      @todo   See about static buffer style from ModuleInit - so no NEW operation!

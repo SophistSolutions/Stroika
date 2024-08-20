@@ -18,7 +18,7 @@
 #include "Algorithm/SuperFastHash.h" // for default algorithm
 
 /*
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  */
 

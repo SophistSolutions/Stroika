@@ -18,7 +18,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *      @todo   ADD TO DOCUMENTATION AND IMPLEMNENTATION - when Ptr
  *              goes out of scope - AUTO-CLOSE the stream (so any future reads just return

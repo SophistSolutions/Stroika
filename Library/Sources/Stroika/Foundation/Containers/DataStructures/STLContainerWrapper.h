@@ -28,7 +28,7 @@
  *
  *      @todo   Add special subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *              that uses forward_list code...
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Containers::DataStructures {

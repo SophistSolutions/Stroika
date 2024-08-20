@@ -20,7 +20,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Release">Release</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Release">Release</a>
  *
  * TODO:
  *      @todo   Add PREDEFINED namespace and list predefined protocols

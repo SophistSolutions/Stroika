@@ -16,7 +16,7 @@
 #include "Stroika/Frameworks/WebServer/RequestHandler.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *  \note   Inspired by, but fairly different from
  *          @see http://guides.rubyonrails.org/routing.html

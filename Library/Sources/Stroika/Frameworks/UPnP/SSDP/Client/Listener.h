@@ -17,7 +17,7 @@
 /**
 *  \file
 *
-*  \version    <a href="Code-Status.md#Beta">Beta</a>
+*  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
 *
 * TODO:
  *      @todo   Should probably add Network::NetlinkListener - to check for net up/down messages, and

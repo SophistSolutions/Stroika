@@ -16,7 +16,7 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *
  * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol

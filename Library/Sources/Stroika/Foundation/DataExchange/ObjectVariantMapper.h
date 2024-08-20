@@ -43,7 +43,7 @@
 /**
  *
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready

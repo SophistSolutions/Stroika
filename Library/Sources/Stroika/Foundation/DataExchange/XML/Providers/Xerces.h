@@ -39,7 +39,7 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  * 
  *  \note - Generally most code should NOT include this file - its implementation specific data for each provider
  *          Mostly use to control which implementation you are using for SAX, Schema etc, and/or to access implementation-specific objects
