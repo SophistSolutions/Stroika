@@ -2547,9 +2547,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>

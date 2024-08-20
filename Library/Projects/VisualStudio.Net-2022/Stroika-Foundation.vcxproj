@@ -821,7 +821,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_SkipList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdhashmap.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_stdmap.inl" />
