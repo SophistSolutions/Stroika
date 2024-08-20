@@ -12,9 +12,9 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -36,9 +36,9 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::Mapping_Array;
 using Concrete::Mapping_LinkedList;
-using Concrete::Mapping_SkipList;
 using Concrete::Mapping_stdhashmap;
 using Concrete::Mapping_stdmap;
+using Concrete::SortedMapping_SkipList;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -250,11 +250,11 @@ namespace {
             },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
-        DoTestForConcreteContainer_<Mapping_SkipList<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Mapping_SkipList<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<Mapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+        DoTestForConcreteContainer_<SortedMapping_SkipList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<SimpleClass, SimpleClass>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             [] () {
-                return Mapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
+                return SortedMapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
                     [] (SimpleClassWithoutComparisonOperators l, SimpleClassWithoutComparisonOperators r) -> strong_ordering {
                         return l.GetValue () <=> r.GetValue ();
                     }};

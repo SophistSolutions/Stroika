@@ -2232,7 +2232,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\GZip.h">
       <Filter>Sources\DataExchange\Compression</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_SkipList.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_SkipList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3682,7 +3682,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_SkipList.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_SkipList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>

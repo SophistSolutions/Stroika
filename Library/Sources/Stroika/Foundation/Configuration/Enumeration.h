@@ -24,7 +24,7 @@
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-549 - RequireItemsOrderedByEnumValue and
  *              static_cast usage confusion.
  *
- *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
+ *      @todo   I tried using EnumNames<> as an alias for initializer_list, but then I couldn't add the
  *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
  *              but this has the same lifetime issues with subclassing std::initializer_list. In the end I had
  *              to copy. That maybe a poor tradeoff. The only reason for not using aliases was to add

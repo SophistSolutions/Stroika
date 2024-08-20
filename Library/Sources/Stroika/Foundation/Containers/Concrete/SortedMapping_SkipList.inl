@@ -10,21 +10,21 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ********* Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ *********
+     **** SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ ********
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {};
+    class SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {};
 
     /*
      ********************************************************************************
-     *********** Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ****************
+     ******** SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ *************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
-    class Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
-                                                                public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_THREEWAY_COMPARER>> {
+    class SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
+                                                                      public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_THREEWAY_COMPARER>> {
     public:
         static_assert (not is_reference_v<KEY_THREEWAY_COMPARER>);
 
@@ -184,6 +184,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
         }
 
+        // SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
+    public:
+        virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return KeyInOrderKeyComparerType{Common::InOrderComparerAdapter<KEY_TYPE, KEY_THREEWAY_COMPARER>{fData_.key_comp ()}};
+        }
+
     private:
         using DataStructureImplType_ = SKIPLIST<KEY_THREEWAY_COMPARER>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
@@ -195,43 +203,43 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ***************** Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE> ****************
+     ************ SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE> ***************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList ()
+    inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList ()
         requires (three_way_comparable<KEY_TYPE>)
-        : Mapping_SkipList{compare_three_way{}}
+        : SortedMapping_SkipList{compare_three_way{}}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
-    inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (SKIPLIST<KEY_THREEWAY_COMPARER>&& src)
+    inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (SKIPLIST<KEY_THREEWAY_COMPARER>&& src)
         : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<KEY_THREEWAY_COMPARER>>> (move (src))}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
-    inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer)
+    inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<KEY_THREEWAY_COMPARER>>> (keyComparer)}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+    inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         requires (three_way_comparable<KEY_TYPE>)
-        : Mapping_SkipList{}
+        : SortedMapping_SkipList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
-    inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer,
-                                                                            const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : Mapping_SkipList{forward<KEY_THREEWAY_COMPARER> (keyComparer)}
+    inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer,
+                                                                                        const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        : SortedMapping_SkipList{forward<KEY_THREEWAY_COMPARER> (keyComparer)}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -239,10 +247,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>>)
-    inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (ITERABLE_OF_ADDABLE&& src)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>>)
+    inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (ITERABLE_OF_ADDABLE&& src)
         requires (three_way_comparable<KEY_TYPE>)
-        : Mapping_SkipList{}
+        : SortedMapping_SkipList{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -250,32 +258,32 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-    inline Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
-        : Mapping_SkipList{forward<KEY_THREEWAY_COMPARER> (keyComparer)}
+    inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedMapping_SkipList{forward<KEY_THREEWAY_COMPARER> (keyComparer)}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-    Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         requires (three_way_comparable<KEY_TYPE>)
-        : Mapping_SkipList{}
+        : SortedMapping_SkipList{}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-    Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
-                                                                     ITERATOR_OF_ADDABLE&& end)
-        : Mapping_SkipList{forward<KEY_THREEWAY_COMPARER> (keyComparer)}
+    SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer,
+                                                                                 ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        : SortedMapping_SkipList{forward<KEY_THREEWAY_COMPARER> (keyComparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Mapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
+    inline void SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
     {
         if constexpr (qDebug) {
             typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
