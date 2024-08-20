@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief subset of this SortedMapping matching filter-function
          * 
-         *  Identical to base class code, but for differnt RESULT_CONTAINER default.
+         *  Identical to base class code, but for different RESULT_CONTAINER default.
          */
         template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER = SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>, typename INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const
