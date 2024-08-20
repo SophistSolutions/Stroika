@@ -140,12 +140,12 @@ namespace {
                 const auto kReference2b_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}}};
                 const auto kReference2c_ = Mapping<String, String>{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}};
                 const auto kReference3a_ = Mapping<String, String>{{{"Content-Length", "3"}}};
-                EXPECT_EQ (kReference3a_.size (), 1);
+                EXPECT_EQ (kReference3a_.size (), 1u);
                 using Characters::operator""_k;
                 const auto kReference3b_ = Mapping<String, String>{{{"Content-Length"_k, "3"_k}, {"x"_k, "3"_k}}}; // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
-                EXPECT_EQ (kReference3b_.size (), 2);
+                EXPECT_EQ (kReference3b_.size (), 2u);
                 const auto kReference3c_ = Mapping<String, String>{{"Content-Length", "3"}, {"x", "3"}};
-                EXPECT_EQ (kReference3c_.size (), 2);
+                EXPECT_EQ (kReference3c_.size (), 2u);
             }
         }
     }
@@ -156,9 +156,9 @@ namespace {
         void DoAll ()
         {
             Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-            EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
-                          Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
-            EXPECT_EQ ((m.Where ([] (int key) { return Math::IsPrime (key); })), (Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+            EXPECT_EQ (m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }),
+                       (Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+            EXPECT_EQ (m.Where ([] (int key) { return Math::IsPrime (key); }), (Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
         }
     }
 }
@@ -168,7 +168,7 @@ namespace {
         void DoAll ()
         {
             Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-            EXPECT_TRUE ((m.WithKeys ({2, 5}) == Mapping<int, int>{{2, 4}, {5, 7}}));
+            EXPECT_EQ (m.WithKeys ({2, 5}), (Mapping<int, int>{{2, 4}, {5, 7}}));
         }
     }
 }
