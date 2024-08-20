@@ -28,6 +28,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *
      *      o   size () is constant complexity
      *      o   Uses Memory::BlockAllocatorOrStdAllocatorAsAppropriate
+     *      o   O (log N) adds, removes and lookups
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

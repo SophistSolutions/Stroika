@@ -75,8 +75,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::Mapping_Array<>
      *      o   @see Concrete::Mapping_LinkedList<>
-     *      o   @see Concrete::Mapping_stdmap<>
      *      o   @see Concrete::Mapping_stdhashmap<>
+     *      o   @see Concrete::SortedMapping_SkipList<>
+     *      o   @see Concrete::SortedMapping_stdmap<>
      *
      *  \em Factory:
      *      @see Concrete::Mapping_Factory<> to see default implementations.
