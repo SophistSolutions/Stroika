@@ -74,14 +74,14 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_EQ (m.size (), 1);
+                    EXPECT_EQ (m.size (), 1u);
                     EXPECT_TRUE (m.Lookup (1, nullptr));
                     EXPECT_TRUE (not m.Lookup (2, nullptr));
                     m.Add (1, 2);
-                    EXPECT_EQ (m.size (), 1);
+                    EXPECT_EQ (m.size (), 1u);
                     IterableTests::SimpleIterableTest_All_For_Type<ConcreteContainerType> (m);
                     m.Remove (1);
-                    EXPECT_EQ (m.size (), 0);
+                    EXPECT_EQ (m.size (), 0u);
 
                     {
                         m.Add (1, 2);
@@ -96,23 +96,23 @@ namespace CommonTests {
                         m.RemoveAll ();
                         m.Add (1, 2);
                         m.Add (3, 66);
-                        EXPECT_EQ (m.size (), 2);
+                        EXPECT_EQ (m.size (), 2u);
                         m.erase (1);
-                        EXPECT_EQ (m.size (), 1);
+                        EXPECT_EQ (m.size (), 1u);
                         auto i = m.erase (m.begin ());
                         //
-                        EXPECT_EQ (m.size (), 0);
+                        EXPECT_EQ (m.size (), 0u);
                         m.Add (1, 2);
                         m.Add (3, 66);
                         m.Add (5, 66);
-                        EXPECT_EQ (m.size (), 3);
+                        EXPECT_EQ (m.size (), 3u);
                         i = m.begin ();
                         i = m.erase (i);
-                        EXPECT_EQ (m.size (), 2);
+                        EXPECT_EQ (m.size (), 2u);
                     }
 
                     m.RemoveAll ();
-                    EXPECT_EQ (m.size (), 0);
+                    EXPECT_EQ (m.size (), 0u);
                 }
             }
 
@@ -125,17 +125,17 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_EQ (m.size (), 1);
+                    EXPECT_EQ (m.size (), 1u);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
                     m.Add (1, 2);
-                    EXPECT_EQ (m.size (), 1);
+                    EXPECT_EQ (m.size (), 1u);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
                     m.Remove (1);
-                    EXPECT_EQ (m.size (), 0);
+                    EXPECT_EQ (m.size (), 0u);
                     for ([[maybe_unused]] auto i : m) {
                         EXPECT_TRUE (false);
                     }
@@ -158,9 +158,9 @@ namespace CommonTests {
                         }
                         ss.push_back (i.fKey);
                     }
-                    EXPECT_EQ (ss.size (), 3);
+                    EXPECT_EQ (ss.size (), 3u);
                     m.RemoveAll ();
-                    EXPECT_EQ (m.size (), 0);
+                    EXPECT_EQ (m.size (), 0u);
                 }
             }
 
@@ -177,7 +177,7 @@ namespace CommonTests {
                     ConcreteContainerType m2             = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-                    EXPECT_EQ (m.size (), 2);
+                    EXPECT_EQ (m.size (), 2u);
                     ConcreteContainerType m3 = m;
                     testingSchema.ApplyToContainerExtraTest (m);
                     testingSchema.ApplyToContainerExtraTest (m2);
@@ -208,7 +208,7 @@ namespace CommonTests {
                     m.Add (2, 101);
                     {
                         map<key_type, mapped_type> n = m.template As<map<key_type, mapped_type>> ();
-                        EXPECT_EQ (n.size (), 2);
+                        EXPECT_EQ (n.size (), 2u);
                         ConcreteContainerType tmp = ConcreteContainerType{n};
                         EXPECT_TRUE (testingSchema.fValueEqualsComparer (*tmp.Lookup (1), 88));
                         map<key_type, mapped_type> nn = tmp.template As<map<key_type, mapped_type>> ();
@@ -229,7 +229,7 @@ namespace CommonTests {
                     ConcreteContainerType m2    = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-                    EXPECT_EQ (m.size (), 2);
+                    EXPECT_EQ (m.size (), 2u);
 
                     {
                         vector<KeyValuePair<key_type, mapped_type>> n = m.template As<vector<KeyValuePair<key_type, mapped_type>>> ();
@@ -281,19 +281,19 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_EQ (m.size (), 1);
+                    EXPECT_EQ (m.size (), 1u);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                         EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                     }
                     m.Add (1, 2);
-                    EXPECT_EQ (m.size (), 1);
+                    EXPECT_EQ (m.size (), 1u);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                         EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                     }
                     m.Remove (1);
-                    EXPECT_EQ (m.size (), 0);
+                    EXPECT_EQ (m.size (), 0u);
                     for ([[maybe_unused]] auto i : m) {
                         EXPECT_TRUE (false);
                     }
@@ -315,7 +315,7 @@ namespace CommonTests {
                         }
                     }
                     m.RemoveAll ();
-                    EXPECT_EQ (m.size (), 0);
+                    EXPECT_EQ (m.size (), 0u);
                 }
             }
 

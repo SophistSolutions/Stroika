@@ -41,11 +41,11 @@ namespace CommonTests {
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (i);
                     }
-                    EXPECT_TRUE (s.size () == kTestSize);
+                    EXPECT_EQ (s.size (), kTestSize);
 
                     IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
-                    EXPECT_TRUE (s.size () == kTestSize);
+                    EXPECT_EQ (s.size (), kTestSize);
                     s.RemoveAll ();
                     EXPECT_TRUE (s.size () == 0);
                     for (size_t i = 1; i <= kTestSize; i++) {
@@ -57,28 +57,28 @@ namespace CommonTests {
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
                     }
-                    EXPECT_TRUE (s.size () == kTestSize);
+                    EXPECT_EQ (s.size (), kTestSize);
 
                     s.clear ();
 
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
                     }
-                    EXPECT_TRUE (s.size () == kTestSize);
+                    EXPECT_EQ (s.size (), kTestSize);
 
                     s.clear ();
-                    EXPECT_TRUE (s.size () == 0);
+                    EXPECT_EQ (s.size (), 0u);
                 }
                 /*
                 * Try removes multiple iterators present.
                 */
                 {
                     s.RemoveAll ();
-                    EXPECT_TRUE (s.size () == 0);
+                    EXPECT_EQ (s.size (), 0u);
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (i);
                     }
-                    EXPECT_TRUE (s.size () == kTestSize);
+                    EXPECT_EQ (s.size (), kTestSize);
                 }
 
                 s.RemoveAll ();
@@ -102,7 +102,7 @@ namespace CommonTests {
                 }
                 s.RemoveAll ();
                 EXPECT_TRUE (s.empty ());
-                EXPECT_TRUE (s.size () == 0);
+                EXPECT_EQ (s.size (), 0u);
 
                 for ([[maybe_unused]] auto&& it1 : s) {
                     for ([[maybe_unused]] auto&& it2 : s) {
@@ -135,9 +135,9 @@ namespace CommonTests {
 
                 EXPECT_TRUE (s.empty ());
                 s.Add (three);
-                EXPECT_TRUE (s.size () == 1);
+                EXPECT_EQ (s.size (), 1u);
                 s += three;
-                EXPECT_TRUE (s.size () == 2);
+                EXPECT_EQ (s.size (), 2u);
                 s.RemoveAll ();
                 EXPECT_TRUE (s.empty ());
 
@@ -154,7 +154,7 @@ namespace CommonTests {
 
                 for (i = 1; i <= K; ++i) {
                     s.Add (i);
-                    EXPECT_TRUE (s.size () == i);
+                    EXPECT_EQ (s.size (), i);
                 }
 #if qPrintTimings
                 t = GetCurrentTime () - t;
@@ -192,12 +192,12 @@ namespace CommonTests {
 
                 EXPECT_TRUE (s.empty ());
                 s.Add (three);
-                EXPECT_TRUE (s.size () == 1);
+                EXPECT_EQ (s.size (), 1u);
                 s += three;
-                EXPECT_TRUE (s.size () == 2);
+                EXPECT_EQ (s.size (), 2u);
                 EXPECT_TRUE (s.Contains (three));
                 s.Remove (three);
-                EXPECT_TRUE (s.size () == 1);
+                EXPECT_EQ (s.size (), 1u);
                 s.RemoveAll ();
                 EXPECT_TRUE (s.empty ());
 
@@ -210,7 +210,7 @@ namespace CommonTests {
                 for (i = 1; i <= K; i++) {
                     s.Add (i);
                     EXPECT_TRUE (s.Contains (i));
-                    EXPECT_TRUE (s.size () == i + K);
+                    EXPECT_EQ (s.size (), i + K);
                 }
             }
 

@@ -244,6 +244,7 @@ namespace Stroika::Foundation::Common {
      *  This won't let confuse equal_to with actual in-order comparison functions.
      * 
      *  \see IPotentiallyComparer, and use DeclareInOrderComparer to mark a given function as an in-order comparer.
+     *  \see also InOrderComparerAdapter (if you have another sort of comparer, and want to use it as an In-Order comparer).
      */
     template <typename COMPARER, typename ARG_T>
     concept IInOrderComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER, ARG_T> and

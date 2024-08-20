@@ -68,12 +68,12 @@ namespace {
             Require (t.size () == 0);
             Debug::TraceContextBumper ctx{"BasicAddRemoveTests_", "Add and remove (len={}, forward direction)"_f, testLength};
             optional<KEY_TYPE>        biggestKey;
-            for (int i = 1; i <= testLength; ++i) {
-                KEY_TYPE key{i};
+            for (size_t i = 1; i <= testLength; ++i) {
+                KEY_TYPE key{static_cast<int> (i)};
                 EXPECT_TRUE (not t.contains (key));
                 t.Add (key, i);
                 EXPECT_EQ (t.size (), i);
-                EXPECT_EQ (t.First (key), i);
+                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
                 t.Invariant ();
                 if (biggestKey == nullopt) {
                     biggestKey = key;
@@ -83,22 +83,22 @@ namespace {
                     biggestKey = key;
                 }
             }
-            for (int i = 1; i <= testLength; ++i) {
-                KEY_TYPE key{i};
-                EXPECT_EQ (t.First (key), i);
+            for (size_t i = 1; i <= testLength; ++i) {
+                KEY_TYPE key{static_cast<int> (i)};
+                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
                 t.Remove (key);
                 EXPECT_TRUE (not t.contains (key));
                 EXPECT_EQ (t.size (), testLength - i);
                 t.Invariant ();
             }
-            EXPECT_EQ (t.size (), 0);
+            EXPECT_EQ (t.size (), 0u);
             DbgTrace ("Add and remove {} items, backwards direction"_f, testLength);
-            for (int i = static_cast<int> (testLength); i >= 1; --i) {
-                KEY_TYPE key{i};
+            for (size_t i = testLength; i >= 1; --i) {
+                KEY_TYPE key{static_cast<int> (i)};
                 EXPECT_TRUE (not t.contains (key));
                 t.Add (key, i);
                 EXPECT_EQ (t.size (), testLength - i + 1);
-                EXPECT_EQ (t.First (key), i);
+                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
                 t.Invariant ();
                 Assert (biggestKey);
                 strong_ordering comp = t.key_comp () (*biggestKey, key);
@@ -106,15 +106,15 @@ namespace {
                     biggestKey = key;
                 }
             }
-            for (int i = static_cast<int> (testLength); i >= 1; --i) {
-                KEY_TYPE key{i};
-                EXPECT_EQ (t.First (key), i);
+            for (size_t i = testLength; i >= 1; --i) {
+                KEY_TYPE key{static_cast<int> (i)};
+                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
                 t.Remove (key);
                 EXPECT_TRUE (not t.contains (key));
-                EXPECT_EQ (t.size (), i - 1);
+                EXPECT_EQ (t.size (), i - 1u);
                 t.Invariant ();
             }
-            EXPECT_EQ (t.size (), 0);
+            EXPECT_EQ (t.size (), 0u);
         }
     }
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicAddRemoveTest_)
@@ -142,11 +142,11 @@ namespace {
             random_shuffle_ (data.begin (), data.end ());
             optional<KEY_TYPE> biggestKey;
             optional<KEY_TYPE> smallestKey;
-            for (int i = 0; i < data.size (); ++i) {
+            for (int i = 0; static_cast<size_t> (i) < data.size (); ++i) {
                 KEY_TYPE key = {data[i]};
                 EXPECT_TRUE (not t.contains (key));
                 t.Add (key, i);
-                EXPECT_EQ (t.size (), i + 1);
+                EXPECT_EQ (t.size (), static_cast<size_t> (i + 1));
                 EXPECT_EQ (t.First (key), i);
                 t.Invariant ();
                 if (i == 0) {
@@ -166,7 +166,7 @@ namespace {
                 EXPECT_TRUE (t.contains (v));
                 t.Remove (v);
                 EXPECT_TRUE (not t.contains (v));
-                EXPECT_EQ (t.size (), testLength - i - 1);
+                EXPECT_EQ (t.size (), static_cast<size_t> (testLength - i - 1));
                 t.Invariant ();
             }
             EXPECT_TRUE (t.size () == 0);
@@ -205,7 +205,7 @@ namespace {
             Assert (t.size () == testLength);
             for (size_t i = 0; i <= static_cast<int> (testLength - 1); ++i) {
                 KEY_TYPE key{data[i]};
-                EXPECT_EQ (t.First (key), i);
+                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
             }
         }
     }

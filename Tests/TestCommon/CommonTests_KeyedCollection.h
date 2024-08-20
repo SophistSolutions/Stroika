@@ -39,10 +39,10 @@ namespace CommonTests {
                 EXPECT_TRUE (coll.empty ());
                 testFunction (coll);
                 coll.Add (T1{1, 101});
-                EXPECT_EQ (coll.size (), 1);
+                EXPECT_EQ (coll.size (), 1u);
                 EXPECT_EQ (coll.Lookup (1)->value, 101);
                 coll.Add (T1{1, 201});
-                EXPECT_EQ (coll.size (), 1);
+                EXPECT_EQ (coll.size (), 1u);
                 EXPECT_TRUE (coll.Contains (1));
                 EXPECT_EQ (coll.Lookup (1)->value, 201);
                 EXPECT_TRUE (not coll.Contains (2));
@@ -51,12 +51,12 @@ namespace CommonTests {
                 coll.Add (T1{2, 102});
                 EXPECT_TRUE (prevValue != coll);
                 EXPECT_TRUE (coll.Contains (2));
-                EXPECT_EQ (coll.size (), 2);
-                EXPECT_TRUE ((coll.Keys () == Set<int>{1, 2}));
+                EXPECT_EQ (coll.size (), 2u);
+                EXPECT_EQ (coll.Keys (), (Set<int>{1, 2}));
                 EXPECT_TRUE (not coll.RemoveIf (99));
-                EXPECT_EQ (coll.size (), 2);
+                EXPECT_EQ (coll.size (), 2u);
                 coll.Remove (1);
-                EXPECT_EQ (coll.size (), 1);
+                EXPECT_EQ (coll.size (), 1u);
                 testFunction (coll);
             };
         }
