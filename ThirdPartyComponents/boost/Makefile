@@ -247,10 +247,11 @@ B2_CONFIGURATION_ARGS +=	--without-wave
 # and build-n-test-MacOS (MacOS, MacOS-13-XCode-14.3-Debug, macos-13, 14.3, Debug, --apply-default-debu...
 #		--LGP 2023-12-15
 ifeq (clang,$(findstring clang,$(CXX)))
-ifeq ($(VERSION),1_84_0)
-B2_CONFIGURATION_ARGS +=	--without-cobalt
-endif
-ifeq ($(VERSION),1_85_0)
+# only seems to affect libc++ (not libstdc++) -- 
+#	./boost/cobalt/config.hpp:51:10: fatal error: 'memory_resource' file not found
+#	#include <memory_resource>
+#             ^~~~~~~~~~~~~~~~~
+ifeq (-stdlib=libc++,$(findstring -stdlib=libc++,$(CXXFLAGS)))
 B2_CONFIGURATION_ARGS +=	--without-cobalt
 endif
 endif
