@@ -51,17 +51,6 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-clang++-14",
-        "compiler": "clang++-14",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
-        "cpp_version": "c++20",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release"
-    },
-    {
-        "build_job": "Linux",
         "displayTargetName": "ubuntu-22.04-clang++-15-debug-libc++",
         "compiler": "clang++-15",
         "runs_on": "ubuntu-latest",

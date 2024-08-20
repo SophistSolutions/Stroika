@@ -1123,19 +1123,6 @@ sub	SetDefaultForCompilerDriver_
 			$sanitizerFlagsIsDefined = true;
 		}
 
-		# if (!NeedsFmtLib_()) {
-		# 	if (not (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
-		# 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		# 		# For <format> support - in (non-macos) clang++15 - appears good enuf, just disabled... --LGP 2024-03-13
-		# 		# NOTE - this -fexperimental hack requires lots of companion hacks to thirdpartycomponetns makefiles, so be sure to lose those when
-		# 		# we can lose this hack (or maybe not worth it - and better to use fmtlib???) --LGP 2024-03-14
-		# 		if ($itsVersion < 16) {
-		# 			push @CXXFLAGS, "-fexperimental-library";
-		# 			$LinkerArgs_ExtraSuffix .= " -fexperimental-library";
-		# 		}
-		# 	}
-		# }
-
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 1;
 		}
@@ -1313,12 +1300,12 @@ sub	SetDefaultForCompilerDriver_
 
 	if ($onlyGenerateIfCompilerExists == false) {
 		if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
-				print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 (xcode 14) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 15) {
+				print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 (xcode 15) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 			}
 		}
-		if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 15) {
+			print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
 
@@ -2761,8 +2748,8 @@ PostProcessOptions_ ();
 
 sub ValidateConfigurationAndEmitNeededWarnings_
 {
-	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '14.0') {
-		print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '15.0') {
+		print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 	}
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER) < 11) {
 		print "CONFIGURATION-WARNING: Stroika 3 requires gcc 11 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
