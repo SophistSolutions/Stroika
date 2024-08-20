@@ -12,7 +12,7 @@
 /**
  *      \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   Add StatsType support (like other caches).

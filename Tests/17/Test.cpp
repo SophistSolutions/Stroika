@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 //  TEST    Foundation::Containers::Mapping
-//      STATUS  Alpha-Late
+//      \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
