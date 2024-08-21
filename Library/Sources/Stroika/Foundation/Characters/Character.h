@@ -208,6 +208,9 @@ namespace Stroika::Foundation::Characters {
     static_assert (not IUNICODECanUnambiguouslyConvertTo<Latin1>);
 
     /**
+     *  \note Satisfies Concepts:
+     *      o   static_assert (regular<Character>);
+     * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *      o   Character::EqualsComparer and Character::ThreeWayComparer provided with construction parameters to allow case insensitive compares 

@@ -18,7 +18,7 @@
  *  Each platform SDK has its own policy for representing characters. Some use narrow characters (char),
  *  and a predefined code page (often configured via locale), and others use wide-characters (wchar_t unicode).
  *
- *  SDKChar is the underlying represenation of the SDK's characters - whether it be narrow or wide.
+ *  SDKChar is the underlying representation of the SDK's characters - whether it be narrow or wide.
  */
 
 namespace Stroika::Foundation::Characters {

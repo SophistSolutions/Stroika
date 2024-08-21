@@ -151,6 +151,9 @@ namespace Stroika::Foundation::Characters {
      *      , or operator"" _k, it is checked with Require () - so assertion failure. If you construct
      *      with String::CTOR, it will generate a runtime exception (so more costly runtime checking).
      *
+     *  \note Satisfies Concepts:
+     *      o   static_assert (regular<String>);
+     * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   Design note - mutability vs. immutability
@@ -999,14 +1002,14 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         * Return a new string based on this string where each lower case characer is replaced by its
+         * Return a new string based on this string where each lower case character is replaced by its
          * upper case equivalent. Note that non-lower-case characters (such as punctuation) un unchanged.
          */
         nonvirtual String ToLowerCase () const;
 
     public:
         /**
-         * Return a new string based on this string where each lower case characer is replaced by its
+         * Return a new string based on this string where each lower case character is replaced by its
          * upper case equivalent. Note that non-upper-case characters (such as punctuation) un unchanged.
          */
         nonvirtual String ToUpperCase () const;

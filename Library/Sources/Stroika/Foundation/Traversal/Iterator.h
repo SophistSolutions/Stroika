@@ -214,6 +214,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         static_assert (is_constructible_v<optional<T>, T>,
                        "Must be able to create optional<T> to use Iterator, because Iterator uses this internally");
+        static_assert (copyable<T>); // cannot use as type constraint on T cuz fails?? ill understood - probably complex usages with incomplete types..
 
     public:
         //  @todo hould we enforce more?? forward_iterator??? unclear

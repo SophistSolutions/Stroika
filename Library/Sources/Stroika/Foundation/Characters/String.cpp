@@ -35,6 +35,9 @@ using namespace Stroika::Foundation::Characters;
 using Memory::StackBuffer;
 using Traversal::Iterator;
 
+// see Satisfies Concepts:
+static_assert (regular<String>);
+
 namespace {
 
     /**

@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Traversal {
     using Configuration::ArgByValueType;
 
     /**
-     *  IIterable concept: std::ranges::range and iterated over values satisify argument predicate (if given)
+     *  IIterable concept: std::ranges::range and iterated over values satisfy argument predicate (if given)
      *
      *  Checks if argument is ranges::range and if the value of items iterated over ITEM_PREDICATE.
      * 
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         static_assert (copy_constructible<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
         // static_assert (IIterableOf<Iterable<T>, T>);   -- Logically true, but doesn't work presumably cuz Iterable<T> incomplete type at this stage, but should be doable!
-        static_assert (copyable<T>);
+        static_assert (copyable<T>); // cannot use as type constraint on T cuz fails with String - cuz??? not sure why - just??? test more...
 
     public:
         /**
