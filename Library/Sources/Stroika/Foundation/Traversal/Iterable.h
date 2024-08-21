@@ -215,8 +215,8 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     class Iterable {
-    // requirements about properties of 'T' which logically should have been template type constraints, but wasn't able to get
-    // that working
+        // requirements about properties of 'T' which logically should have been template type constraints, but wasn't able to get
+        // that working
     public:
         static_assert (copy_constructible<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
         static_assert (copyable<T>); // cannot use as type constraint on T cuz fails with String - cuz??? not sure why - just??? test more...
@@ -246,13 +246,13 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  Iterable are safely copyable (by value). Since Iterable uses COW, this just copies the underlying pointer and increments the reference count.
          */
-        Iterable (const Iterable& ) noexcept = default;
+        Iterable (const Iterable&) noexcept = default;
 
     public:
         /**
          *  \brief  Iterable are safely moveable.
          */
-        Iterable (Iterable&& ) noexcept = default;
+        Iterable (Iterable&&) noexcept = default;
 
     public:
         /**

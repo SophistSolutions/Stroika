@@ -36,8 +36,8 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 using Concrete::Mapping_Array;
 using Concrete::Mapping_LinkedList;
 using Concrete::Mapping_stdhashmap;
-using Concrete::Mapping_stdmap;
 using Concrete::SortedMapping_SkipList;
+using Concrete::SortedMapping_stdmap;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -64,7 +64,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
         SortedMapping<int, float> xxxyy  = Concrete::SortedMapping_stdmap<int, float>{};
-        Mapping<int, float>       xxxyy1 = Concrete::Mapping_stdmap<int, float>{};
+        Mapping<int, float>       xxxyy1 = Concrete::SortedMapping_stdmap<int, float>{};
     }
 }
 
@@ -269,8 +269,8 @@ namespace {
             },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
-        DoTestForConcreteContainer_<Mapping_stdmap<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
         {
             struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
                 : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
@@ -280,9 +280,9 @@ namespace {
                     return v1.GetValue () < v2.GetValue ();
                 }
             };
-            DoTestForConcreteContainer_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
                 [] () {
-                    return Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
                         MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
                 },
                 //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})

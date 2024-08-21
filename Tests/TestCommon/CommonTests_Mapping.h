@@ -22,7 +22,7 @@ namespace CommonTests {
 
 #if qHasFeature_GoogleTest
         template <typename CONCRETE_CONTAINER>
-            requires (is_default_constructible_v<CONCRETE_CONTAINER>)
+            requires (default_initializable<CONCRETE_CONTAINER>)
         struct DefaultFactory {
             CONCRETE_CONTAINER operator() () const
             {

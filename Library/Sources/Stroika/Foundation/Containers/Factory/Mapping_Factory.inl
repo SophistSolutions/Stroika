@@ -50,12 +50,12 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         if (this->fFactory_ == nullptr) [[likely]] {
             if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
-                          is_default_constructible_v<Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>>) {
+                          default_initializable<Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>>) {
                 static const auto kDefault_ = Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }
             else if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
-                               is_default_constructible_v<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
+                               default_initializable<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
                 static const auto kDefault_ = Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }

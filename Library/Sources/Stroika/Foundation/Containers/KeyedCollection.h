@@ -9,7 +9,6 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
 /*
@@ -59,7 +58,7 @@ namespace Stroika::Foundation::Containers {
      *                  s2.Add (Obj_{typeid (long int)});
      *              }
      *              {
-     *                  // Or slighltly more flexiblely, but less efficiently
+     *                  // Or slightly more flexibly, but less efficiently
      *                  KeyedCollection<Obj_, type_index>                  s2{My_Extractor_{}};
      *                  s2.Add (Obj_{typeid (int)});
      *                  s2.Add (Obj_{typeid (long int)});
@@ -77,7 +76,7 @@ namespace Stroika::Foundation::Containers {
 
     /**
      *  KeyedCollection can be templated with a KeyExtractorType that allows it to be used with default construction
-     *  and no keyextractor specfied.
+     *  and no key extractor specfied.
      * 
      *  But the default definition - using std::function - requires the constructor to provide an extractor function
      *  since the default for this std::function is not callable.
@@ -86,7 +85,7 @@ namespace Stroika::Foundation::Containers {
     concept IKeyedCollection_ExtractorCanBeDefaulted =
         is_invocable_v<typename TRAITS::KeyExtractorType, T> and
         std::is_convertible_v<std::invoke_result_t<typename TRAITS::KeyExtractorType, T>, KEY_TYPE> and
-        is_default_constructible_v<typename TRAITS::KeyExtractorType> and not same_as<typename TRAITS::KeyExtractorType, function<KEY_TYPE (T)>> and
+        default_initializable<typename TRAITS::KeyExtractorType> and not same_as<typename TRAITS::KeyExtractorType, function<KEY_TYPE (T)>> and
         not same_as<typename TRAITS::KeyExtractorType, function<KEY_TYPE (const T&)>>;
 
     /**
@@ -308,7 +307,7 @@ namespace Stroika::Foundation::Containers {
          *  maybe smart enough to use lazy copying).
          *
          *  \em Design Note:
-         *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
+         *      The analogous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
          *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
          *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
          *

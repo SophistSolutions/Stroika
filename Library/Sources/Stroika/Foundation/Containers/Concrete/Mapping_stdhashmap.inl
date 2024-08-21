@@ -214,12 +214,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (STDHASHMAP<>&& src)
 #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-        requires (is_default_constructible_v<Mapping_stdhashmap>)
+        requires (default_initializable<Mapping_stdhashmap>)
 #endif
         : inherited{Memory::MakeSharedPtr<Rep_<typename STDHASHMAP<>::hasher, typename STDHASHMAP<>::key_equal>> (move (src))}
     {
 #if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-        static_assert (is_default_constructible_v<Mapping_stdhashmap>);
+        static_assert (default_initializable<Mapping_stdhashmap>);
 #endif
         AssertRepValidType_ ();
     }
@@ -235,12 +235,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
 #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-        requires (is_default_constructible_v<Mapping_stdhashmap>)
+        requires (default_initializable<Mapping_stdhashmap>)
 #endif
         : Mapping_stdhashmap{}
     {
 #if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-        static_assert (is_default_constructible_v<Mapping_stdhashmap>);
+        static_assert (default_initializable<Mapping_stdhashmap>);
 #endif
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-        requires (is_default_constructible_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
+        requires (default_initializable<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
         : Mapping_stdhashmap{}
@@ -283,12 +283,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
     Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
 #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-        requires (is_default_constructible_v<Mapping_stdhashmap>)
+        requires (default_initializable<Mapping_stdhashmap>)
 #endif
         : Mapping_stdhashmap{}
     {
 #if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-        static_assert (is_default_constructible_v<Mapping_stdhashmap>);
+        static_assert (default_initializable<Mapping_stdhashmap>);
 #endif
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();

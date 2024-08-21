@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (Cryptography::Digest::IHashFunction<std::hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
         Mapping_stdhashmap (STDHASHMAP<>&& src)
 #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-            requires (is_default_constructible_v<Mapping_stdhashmap>)
+            requires (default_initializable<Mapping_stdhashmap>)
 #endif
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
@@ -81,14 +81,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_stdhashmap (const Mapping_stdhashmap& src) noexcept = default;
         Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
 #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-            requires (is_default_constructible_v<Mapping_stdhashmap>)
+            requires (default_initializable<Mapping_stdhashmap>)
 #endif
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
             requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE>)
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-            requires (is_default_constructible_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
+            requires (default_initializable<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
 
 #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-            requires (is_default_constructible_v<Mapping_stdhashmap>)
+            requires (default_initializable<Mapping_stdhashmap>)
 #endif
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>

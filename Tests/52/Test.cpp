@@ -1041,7 +1041,7 @@ namespace {
             };
             SpectrumType ()
                 // : Mapping<double, double>{CompareNumbersEqual_{}} //works but slower
-                : Mapping<double, double>{Containers::Concrete::Mapping_stdmap<double, double>{CompareNumbersLess_{}}}
+                : Mapping<double, double>{Containers::Concrete::SortedMapping_stdmap<double, double>{CompareNumbersLess_{}}}
             {
             }
             bool operator== (const SpectrumType& rhs) const

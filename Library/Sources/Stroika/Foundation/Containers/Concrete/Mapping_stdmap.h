@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \todo probably deprecate -- LGP 2024-08-20
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    using Mapping_stdmap  [[deprecated("Since Stroika v3.0d10 - use SortedMapping_stdmap")]] = SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>;
+    using Mapping_stdmap [[deprecated ("Since Stroika v3.0d10 - use SortedMapping_stdmap")]] = SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
 }
 
