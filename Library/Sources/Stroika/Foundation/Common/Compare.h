@@ -23,28 +23,6 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
-#if qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-// Quirky workaround for clang++-14 on XCode 14 (and probably others).
-// No bug define for now - specific to clang++, because not sure what it depends on besides this, and this is bad enuf...
-// this value being too low...
-// This is PROBABLY an issue with the LIBC++ STD LIBRARY, and not CLANG COMPILER, BUT VERIFY THIS....
-namespace std {
-    struct compare_three_way {
-        // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
-        template <typename LT, typename RT>
-        constexpr auto operator() (LT&& lhs, RT&& rhs) const
-        {
-            using CT = common_type_t<LT, RT>;
-            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-                return strong_ordering::equal;
-            }
-            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
-        }
-        using is_transparent = void;
-    };
-}
-#endif
-
 namespace Stroika::Foundation::Common {
 
     /**

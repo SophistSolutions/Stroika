@@ -108,7 +108,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
         return Common::compare_three_way_BWA{}(fForType_, rhs.fForType_);
 #else
         return fForType_ <=> rhs.fForType_; // just compare types, not functions

@@ -103,7 +103,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
         if (strong_ordering cmp = Common::compare_three_way_BWA{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != strong_ordering::equal) {
             return cmp;
         }
@@ -212,7 +212,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
         if (auto cmp = Common::compare_three_way_BWA{}(lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {
             return cmp;
         }

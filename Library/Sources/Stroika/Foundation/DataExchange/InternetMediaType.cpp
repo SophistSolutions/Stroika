@@ -103,7 +103,7 @@ strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rh
     if (cmp != strong_ordering::equal) {
         return cmp;
     }
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
     cmp = Common::compare_three_way_BWA{}(fSuffix_, rhs.fSuffix_);
 #else
     cmp = fSuffix_ <=> rhs.fSuffix_;

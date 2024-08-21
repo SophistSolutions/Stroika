@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Execution {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock2{rhs.fThisAssertExternallySynchronized_};
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
         return Common::compare_three_way_BWA{}(fRep_, rhs.fRep_);
 #else
         return fRep_ <=> rhs.fRep_;
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Execution {
     inline strong_ordering Thread::Ptr::operator<=> (nullptr_t) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
         return Common::compare_three_way_BWA{}(fRep_, nullptr);
 #else
         return fRep_ <=> nullptr;

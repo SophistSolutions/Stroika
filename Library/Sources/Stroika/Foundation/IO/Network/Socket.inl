@@ -105,7 +105,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{_fThisAssertExternallySynchronized}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext2{rhs._fThisAssertExternallySynchronized};
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
         return Common::compare_three_way_BWA{}(_GetSharedRep (), rhs._GetSharedRep ());
 #else
         return _GetSharedRep () <=> rhs._GetSharedRep ();

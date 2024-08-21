@@ -152,7 +152,7 @@
  *      NOTE ON _LIBCPP_VERSION  went from 15000 (5 digits) to 160000 (6 digits)
  */
 #if defined(_LIBCPP_VERSION)
-#if _LIBCPP_VERSION < 14000
+#if _LIBCPP_VERSION < 15000
 #error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++14 (missing new chrono/span code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
 #endif
 #endif
@@ -2382,7 +2382,7 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
 #if defined(_LIBCPP_VERSION)
 #if _LIBCPP_VERSION < 170000
-#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy !qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
 #else
 #if defined(__APPLE__)
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
@@ -2393,10 +2393,6 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 #else
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
 #endif
-#endif
-
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy and qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-#error "These cannot be both defined"
 #endif
 
 /*
@@ -3095,7 +3091,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #ifndef qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
 #if defined(_LIBCPP_VERSION)
-// Broken in _LIBCPP_VERSION  14000
 // Broken in _LIBCPP_VERSION  15007
 // Broken in _LIBCPP_VERSION  160000
 // Broken broken in 170002

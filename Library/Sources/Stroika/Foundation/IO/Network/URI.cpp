@@ -403,7 +403,7 @@ URI URI::Combine (const URI& overridingURI) const
 strong_ordering URI::TWC_ (const URI& lhs, const URI& rhs)
 {
     using namespace UniformResourceIdentification;
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
     if (auto cmp = Common::compare_three_way_BWA{}(lhs.GetScheme (), rhs.GetScheme ()); cmp != strong_ordering::equal) {
         return cmp;
     }
