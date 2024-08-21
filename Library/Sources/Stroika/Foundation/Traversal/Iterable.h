@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
         // static_assert (IIterableOf<Iterable<T>, T>);   -- Logically true, but doesn't work presumably cuz Iterable<T> incomplete type at this stage, but should be doable!
-
+static_assert(copyable<T>);
     public:
         /**
          * \brief value_type is an alias for the type iterated over - like vector<T>::value_type
