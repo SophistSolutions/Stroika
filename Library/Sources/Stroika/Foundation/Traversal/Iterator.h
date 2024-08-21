@@ -212,7 +212,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<forward_iterator_tag, T>>
     class Iterator {
     public:
-        static_assert (is_constructible_v<optional<T>, T>,
+        static_assert (constructible_from<optional<T>, T>,
                        "Must be able to create optional<T> to use Iterator, because Iterator uses this internally");
         static_assert (copyable<T>); // cannot use as type constraint on T cuz fails?? ill understood - probably complex usages with incomplete types..
 

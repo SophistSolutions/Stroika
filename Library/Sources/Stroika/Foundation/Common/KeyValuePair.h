@@ -59,10 +59,10 @@ namespace Stroika::Foundation::Common {
             requires (copy_constructible<KEY_TYPE> and copy_constructible<VALUE_TYPE>);
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
         constexpr KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
-            requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>);
+            requires (constructible_from<KEY_TYPE, const KEY_TYPE2&> and constructible_from<VALUE_TYPE, const VALUE_TYPE2&>);
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
         constexpr KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
-            requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>);
+            requires (constructible_from<KEY_TYPE, const KEY_TYPE2&> and constructible_from<VALUE_TYPE, const VALUE_TYPE2&>);
 
     public:
         /**
@@ -125,10 +125,10 @@ namespace Stroika::Foundation::Common {
         = default;
         template <typename KEY_TYPE2>
         constexpr KeyValuePair (const pair<KEY_TYPE2, void>& src)
-            requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&>);
+            requires (constructible_from<KEY_TYPE, const KEY_TYPE2&>);
         template <typename KEY_TYPE2>
         constexpr KeyValuePair (const KeyValuePair<KEY_TYPE2, void>& src)
-            requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&>);
+            requires (constructible_from<KEY_TYPE, const KEY_TYPE2&>);
 
     public:
         /**

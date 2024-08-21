@@ -12,7 +12,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         template <typename OUT_RESULT, typename IN_RESULT>
         constexpr OUT_RESULT mkReturnType_ (IN_RESULT hashVal)
         {
-            if constexpr (is_constructible_v<OUT_RESULT, IN_RESULT>) {
+            if constexpr (constructible_from<OUT_RESULT, IN_RESULT>) {
                 return OUT_RESULT (hashVal); // intentionally allow narrowing conversions (so () not {})
             }
             else if constexpr (is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>) {
