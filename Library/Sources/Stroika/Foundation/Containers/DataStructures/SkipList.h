@@ -111,12 +111,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      * 
      *  \note   TODOS:
-     *              @todo - should we use shared_ptr for Node*? at last use blockallocation - must be more carefula bout leaks if not using shared_ptr
+     *              @todo - should we use shared_ptr  - must be more careful bout leaks if not using shared_ptr
      *              @todo Cleanup docs
-     *              @todo Integrate into concrete containers
      *              @todo use InlineBuffer instead of vector, and make size of pre-allocated guy fixed in TRAITS (@todo discuss with sterl)
-     *              @todo perhaps add API to print forward-links - for debugging structure - but didn't want to introduce dependency on StringBuilder here...
-     *                    (deleted ListAll for old impl - maybe do something like that in debug mode and take STRINGBUILDER as templated argument)
      *              @todo   https://stroika.atlassian.net/browse/STK-1016 - ranges/sentinel support
      * 
     // OLD DOCS to lift from (from SSW impl)
@@ -499,7 +496,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          *  This searches the list for the given key. If found exactly, it is returned.
          *
-         * this is specialized for the case of adding or removing elements, as it caches
+         * this is specialized for the case of adding or removing elements, as it also returns
          * all links that will need to be updated for the new element or the element to be removed
          *
          *      \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);

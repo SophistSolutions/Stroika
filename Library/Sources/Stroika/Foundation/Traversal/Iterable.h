@@ -106,6 +106,9 @@ namespace Stroika::Foundation::Traversal {
      *  Iterable<T> is much like idea of 'abstract readonly container', but which only supports an
      *  exceedingly simplistic pattern of access.
      *
+     *  \note Satisfies Concepts:
+     *      o   static_assert (copyable<Iterable<T>>);  // not not default-unitarizable, and not equals_comparable
+     * 
      *  *Important Design Note* (lifetime of iterators):
      *      The Lifetime of Iterator<T> objects created by an Iterable<T> instance must always be less
      *      than the creating Iterable's lifetime.
@@ -212,9 +215,10 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     class Iterable {
+    // requirements about properties of 'T' which logically should have been template type constraints, but wasn't able to get
+    // that working
     public:
         static_assert (copy_constructible<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
-        // static_assert (IIterableOf<Iterable<T>, T>);   -- Logically true, but doesn't work presumably cuz Iterable<T> incomplete type at this stage, but should be doable!
         static_assert (copyable<T>); // cannot use as type constraint on T cuz fails with String - cuz??? not sure why - just??? test more...
 
     public:
@@ -242,13 +246,13 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  Iterable are safely copyable (by value). Since Iterable uses COW, this just copies the underlying pointer and increments the reference count.
          */
-        Iterable (const Iterable& src) noexcept = default;
+        Iterable (const Iterable& ) noexcept = default;
 
     public:
         /**
          *  \brief  Iterable are safely moveable.
          */
-        Iterable (Iterable&& src) noexcept = default;
+        Iterable (Iterable&& ) noexcept = default;
 
     public:
         /**
@@ -1626,6 +1630,11 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual auto     operator() (const Iterable& lhs, const Iterable& rhs) const;
         T_THREEWAY_COMPARER fElementComparer;
     };
+
+    // see Satisfies Concepts
+    //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
+    //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
+    static_assert (copyable<Iterable<int>>);
 
 }
 

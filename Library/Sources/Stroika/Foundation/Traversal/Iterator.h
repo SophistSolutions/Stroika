@@ -194,6 +194,10 @@ namespace Stroika::Foundation::Traversal {
      *          I DID run some simple tests to see how often we even use the Clone method. It turns out - quite rarely.
      *          And most can be eliminated by slightly better Move constructor support on the iterator class.
      *
+     *  \note Satisfies Concepts:
+     *      o   static_assert (regular<Iterator<T>>);
+     *      o   static_assert (input_iterator<Iterator<T>>);
+     * 
      *  @see Iterable<T>
      *
      *  \note   \em Thread-Safety
@@ -215,11 +219,6 @@ namespace Stroika::Foundation::Traversal {
         static_assert (constructible_from<optional<T>, T>,
                        "Must be able to create optional<T> to use Iterator, because Iterator uses this internally");
         static_assert (copyable<T>); // cannot use as type constraint on T cuz fails?? ill understood - probably complex usages with incomplete types..
-
-    public:
-        //  @todo hould we enforce more?? forward_iterator??? unclear
-        //  I think we now support input_iterator but this wont compile here - just eslewhere..... @todo
-        //static_assert (input_iterator<Iterator<T, ITERATOR_TRAITS>>);
 
     public:
         /**
@@ -669,6 +668,12 @@ namespace Stroika::Foundation::Traversal {
     static_assert (IInputIterator<Iterator<long int>, int>);
     static_assert (IInputIterator<Iterator<int>, long int>);
     static_assert (not IInputIterator<Iterator<string>, int>);
+
+    // see Satisfies Concepts
+    //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
+    //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
+    static_assert (input_iterator<Iterator<int>>);
+    static_assert (regular<Iterator<int>>);
 
 }
 

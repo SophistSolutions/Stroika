@@ -11,7 +11,6 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
-
 // see Satisfies Concepts:
 static_assert (regular<Character>);
 

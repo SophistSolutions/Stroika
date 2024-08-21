@@ -12,9 +12,11 @@
 /**
  *  \file
  *
- *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *  TODO:
+ *      @todo   Complete redesign in light of C++23 coroutines (when we do Stroika v3.1).
+ * 
  *      @todo   See if/how DiscreteRange<> can be made simpler using this generator code.
  *
  *      @todo   I have old docs comment:
