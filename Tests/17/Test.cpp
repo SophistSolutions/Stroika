@@ -13,7 +13,6 @@
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Mapping.h"

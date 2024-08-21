@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Adapters/Adder.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
