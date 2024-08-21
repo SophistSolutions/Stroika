@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  This function is a synonym for @ref Current();
          * 
-         *  \note Until Stroika 2.1r1, this returend T, and was switched to return const T& on the theorey that it might
+         *  \note Until Stroika 2.1r1, this returned T, and was switched to return const T& on the theory that it might
          *        perform better, but testing has not confirmed that (though this does appear to be existing practice in things like STL).
          * 
          *  \note It is illegal (but goes undetected) to hang onto (and use) the reference returned past when the iterator is next modified
@@ -479,7 +479,7 @@ namespace Stroika::Foundation::Traversal {
          *  \brief
          *      Set to done and disassociate with owner.
          *
-         *   Equivilent to *this = GetEmptyIterator();
+         *   Equivalent to *this = GetEmptyIterator();
          *
          *  @see clear () - and alias
          */
@@ -490,7 +490,7 @@ namespace Stroika::Foundation::Traversal {
          *  \brief
          *      Set to done and disassociate with owner.
          *
-         *  Equivilent to *this = GetEmptyIterator();
+         *  Equivalent to *this = GetEmptyIterator();
          *
          *  @see reset () - and alias
          */
@@ -578,7 +578,7 @@ namespace Stroika::Foundation::Traversal {
      *      o   More (optional<T>*, bool advance) API combines operator++ and iterator != end ()
      *      o   The reason it combines the two, is because they TYPICALLY are done together at the same time,
      *          and its a virtual call, so combining the two into a single call will most frequently be a
-     *          performance optimizaiton.
+     *          performance optimization.
      * 
      *  typical uses:
      *

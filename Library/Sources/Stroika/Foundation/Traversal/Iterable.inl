@@ -1084,7 +1084,7 @@ namespace Stroika::Foundation::Traversal {
         return MakeIterator ();
     }
     template <typename T>
-    constexpr Iterator<T> Iterable<T>::end () const noexcept
+    constexpr Iterator<T> Iterable<T>::end ()  noexcept
     {
         return Iterator<T>::GetEmptyIterator ();
     }

@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Traversal {
      *      Iterable uses 'SharedByValue', so that subclasses of Iterable (especially containers) CAN implement
      *      Copy-On-Write (COW). However, not ALL Iterables implement COW. In fact, not all Iterables are mutable!
      * 
-     *      Iterable's data can come from arbitrary, programatic sources (like a sequence of uncomputed random numbers).
+     *      Iterable's data can come from arbitrary, programmatic sources (like a sequence of uncomputed random numbers).
      *      If you wish to capture something like an Iterable for later use, but don't want its value to change once you've captured it,
      *      consider using Collection<T> or Sequence<> which is almost the same, but will make a copy of the data, and not allow it to
      *      change without preserve COW semantics.
@@ -483,7 +483,7 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  \note in INCOMPATIBLE change in Stroika v3.0d1 - from v2.1 - making this instance method instead of static method (needed for 'std::ranges' concept compatability).
          */
-        nonvirtual constexpr Iterator<T> end () const noexcept;
+        static constexpr Iterator<T> end () noexcept;
 
     public:
         /**
