@@ -71,7 +71,7 @@ namespace {
             for (size_t i = 1; i <= testLength; ++i) {
                 KEY_TYPE key{static_cast<int> (i)};
                 EXPECT_TRUE (not t.contains (key));
-                t.Add (key, i);
+                t.Add (key, MAPPED_TYPE{static_cast<int> (i)});
                 EXPECT_EQ (t.size (), i);
                 EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
                 t.Invariant ();
@@ -96,7 +96,7 @@ namespace {
             for (size_t i = testLength; i >= 1; --i) {
                 KEY_TYPE key{static_cast<int> (i)};
                 EXPECT_TRUE (not t.contains (key));
-                t.Add (key, i);
+                t.Add (key, MAPPED_TYPE{static_cast<int> (i)});
                 EXPECT_EQ (t.size (), testLength - i + 1);
                 EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
                 t.Invariant ();
