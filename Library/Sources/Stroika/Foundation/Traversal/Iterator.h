@@ -28,15 +28,15 @@
  *
  *              THIS IS BAD AND MUST BE REWRITEN - NOT WAHT WE WANT - TOO STRONG A PROMISE.
  *
- *      @todo   Speed tweeks
+ *      @todo   Speed tweaks
  *
- *              The Major Design limitaiton of this approach to iterators is that it requires a non-inlinable
+ *              The Major Design limitation of this approach to iterators is that it requires a non-inlinable
  *              function call per iteration (roughly). Basically - if you pass a callback into an iterator rep
  *              then to APPLY that function on each iteration requires a non-inlinable (indirect through pointer)
- *              function call, or if you do the reverse, and directly use the iteraotr so no you can inline
+ *              function call, or if you do the reverse, and directly use the iterator so no you can inline
  *              apply the function, you must call a virtual function for each iteration to bump the next pointer.
  *
- *              Fundementally - you have multiple polypmorphism (on representation of container and thing to apply
+ *              Fundamentally - you have multiple polymorphism (on representation of container and thing to apply
  *              at each iteration).
  *
  *              Two tricks:
@@ -45,7 +45,7 @@
  *                      complexity (because it reduces number of virtual calls by a constant factor). But if that
  *                      constant factor is big enough - 10-100-1000? - that still could be relevant pragmatically.
  *
- *                      The biggest challenge is preserving the existing stafety and patch semantics generically,
+ *                      The biggest challenge is preserving the existing safety and patch semantics generically,
  *                      in light of update during iteration, and making sure for uses where that doesn't help its
  *                      not allowed to hurt.
  *
@@ -62,7 +62,7 @@
  *                      Maybe when the iterator is constructed - it checks for a couple important types
  *                      and sets a flag, so the only cost when this doesn't work is checking that bool flag.
  *                      And the benefit in the more common case is you avoid the virtual function call! so the it++ can be
- *                      inlined (a big win oftne times).
+ *                      inlined (a big win often times).
  *
  */
 
@@ -149,14 +149,14 @@ namespace Stroika::Foundation::Traversal {
      *              the underlying container has changed (some STL's may do this too?)
      *
      *      2.      Stroika iterators carry around their 'done' state all in one object.
-     *              For compatability with existing C++ idiom, and some C++11 language features
+     *              For compatibility with existing C++ idiom, and some C++11 language features
      *              Stroika iterators inherit from std::iterator<> and allow use of end(),
      *              and i != end() to check for if an iterator is done. But internally,
      *              Stroika just checks i.Done(), and so can users of Stroika iterators.
      *
      *      3.      Stroika iterators are not 'random access'. They just go forwards, one step at a
      *              time. In STL, some kinds of iterators act more like pointers where you can do
-     *              address arithmatic.
+     *              address arithmetic.
      *              <<<< RETHINK - WE WANT BIDIITERATOR/ETC>>>>
      *
      *      4.      In STL, reverse iterators are a special type, incompatible with regular iterators.
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Traversal {
      *          However, given how Iterators are meant to be, and are typically, used, this presents
      *          no problem.
      *
-     *          They can be safely transfered across threads, and the underlying things being iterated over
+     *          They can be safely transferred across threads, and the underlying things being iterated over
      *          can be safely and transparently read/written from other threads
      *
      *          <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

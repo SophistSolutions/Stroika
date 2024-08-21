@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
+#include <concepts>
 #include <map>
 #include <vector>
 
@@ -475,6 +476,7 @@ namespace Stroika::Foundation::DataExchange {
         static const shared_ptr<IRep_> kFalseRep_; // avoid even cheap needless allocations
         static const shared_ptr<IRep_> kTrueRep_;
     };
+    //static_assert (regular<VariantValue>);    @todo debug why causes issue?
 
     /**
      *  \brief Compares values as if first normalized with Normalize () method
