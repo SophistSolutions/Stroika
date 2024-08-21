@@ -2281,7 +2281,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 
 // libstd c++ clang versions (around 14) have badly fucked this up.
 // they leave __cpp_lib_three_way_comparison undefined, but still provide (in some versions - like V14) a partly broken
-// version available to introduce compiler ambiguiity errors when used
+// version available to introduce compiler ambiguity errors when used
 //
 //  NOTE: Generally the issue is for any STL types, like shared_ptr or optional - you must do something like this
 //

@@ -17,6 +17,8 @@
  *
  */
 
+// NOTE FILE DEPRECATED SINCE STROIKA v3.0d10 - use SortedMapping_stdmap
+
 namespace Stroika::Foundation::Containers::Concrete {
 
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

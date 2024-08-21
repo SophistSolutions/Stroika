@@ -1020,12 +1020,13 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (fromObjOfTypeT);
             FromObjectMapperType<KEY_TYPE>   keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
             FromObjectMapperType<VALUE_TYPE> valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
-            map<String, VariantValue>        m; // use std::map instead of Mapping<> as slight speed tweak to avoid virtual call adding
+            using namespace Containers::Concrete;
+            SortedMapping_stdmap<String, VariantValue>::STDMAP<> m; // use std::map instead of Mapping<> as slight speed tweak to avoid virtual call adding
             for (const Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>& i : *fromObjOfTypeT) {
                 m.insert ({mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (),
                            mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue)});
             }
-            return VariantValue{Containers::Concrete::SortedMapping_stdmap<String, VariantValue>{move (m)}};
+            return VariantValue{SortedMapping_stdmap<String, VariantValue>{move (m)}};
         };
         ToObjectMapperType<ACTUAL_CONTAINTER_TYPE> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d,
                                                                         ACTUAL_CONTAINTER_TYPE* intoObjOfTypeT) -> void {
