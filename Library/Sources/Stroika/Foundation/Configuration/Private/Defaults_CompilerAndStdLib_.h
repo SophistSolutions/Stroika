@@ -2279,37 +2279,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 #endif
 
-// libstd c++ clang versions (around 14) have badly fucked this up.
-// they leave __cpp_lib_three_way_comparison undefined, but still provide (in some versions - like V14) a partly broken
-// version available to introduce compiler ambiguity errors when used
-//
-//  NOTE: Generally the issue is for any STL types, like shared_ptr or optional - you must do something like this
-//
-//#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-//        return Common::compare_three_way_BWA{}(fRep_, rhs.fRep_);
-//#else
-//        return fRep_ <=> rhs.fRep_;
-//#endif
-//
-#ifndef qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-#if defined(_LIBCPP_VERSION)
-#if _LIBCPP_VERSION <= 14000
-#if defined(__APPLE__)
-#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 1
-#else
-// for clang++-14 stdlib=libc+++, on ununtu 22.04, we have __cpp_lib_three_way_comparison undefined and yet the class DOES exist - just in
-// a buggy form - so cannot test __cpp_lib_three_way_comparison to decide if we define it
-#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (_LIBCPP_VERSION < 13000)
-#endif
-#else
-
-#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
-#endif
-#else
-#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
-#endif
-#endif
-
 /**
  *      This is going to limit how much I can support ranges in Stroika v3.
  * 
