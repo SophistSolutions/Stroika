@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Common.h"
@@ -42,7 +42,7 @@ namespace {
          */
         Execution::SpinLock                                    fCritSec; // lock needed here to keep map and sequence in sync
         Mapping<String, AtomManager_Default::AtomInternalType> fMap{
-            Concrete::Mapping_stdmap<String, AtomManager_Default::AtomInternalType>{String::LessComparer{Characters::eCaseInsensitive}}};
+            Concrete::SortedMapping_stdmap<String, AtomManager_Default::AtomInternalType>{String::LessComparer{Characters::eCaseInsensitive}}};
         Sequence<String> fSeq;
     };
     inline AtomManager_CaseInsensitive_Rep_& GetAtomManager_CaseInsensitive_Rep_ ()

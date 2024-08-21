@@ -6,7 +6,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
     // avoid issue with #include deadly embrace
@@ -55,8 +55,8 @@ namespace Stroika::Foundation::Containers::Factory {
                 return kDefault_;
             }
             else if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
-                               is_default_constructible_v<Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
-                static const auto kDefault_ = Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
+                               is_default_constructible_v<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
+                static const auto kDefault_ = Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }
             else {
