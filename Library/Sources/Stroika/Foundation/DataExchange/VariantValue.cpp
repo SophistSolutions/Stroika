@@ -22,6 +22,10 @@ using namespace Stroika::Foundation::DataExchange;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+// see Satisfies Concepts:
+static_assert (regular<VariantValue>);
+
+
 namespace {
     // Mimic private class values - but cannot reference directly cuz private and this isn't part of the class
     using IntegerType_         = long long int;

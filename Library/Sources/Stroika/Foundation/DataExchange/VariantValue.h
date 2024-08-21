@@ -147,6 +147,9 @@ namespace Stroika::Foundation::DataExchange {
      *          EXPECT_EQ (roundTrip (optional<String>{String{}}), nullopt);    // oops - but really how could it tell?
      *      \endcode    
      * 
+     *  \note Satisfies Concepts:
+     *      o   static_assert (regular<VariantValue);
+     * 
      *  TODO:
      *
      *      @todo   XPath / JPath / JSONPath feature in DataExchange::VariantValue - https://github.com/SophistSolutions/Stroika/issues/110
@@ -476,7 +479,6 @@ namespace Stroika::Foundation::DataExchange {
         static const shared_ptr<IRep_> kFalseRep_; // avoid even cheap needless allocations
         static const shared_ptr<IRep_> kTrueRep_;
     };
-    //static_assert (regular<VariantValue>);    @todo debug why causes issue?
 
     /**
      *  \brief Compares values as if first normalized with Normalize () method
