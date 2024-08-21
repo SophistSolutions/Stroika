@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
+#include <concepts>
 #include <functional>
 #include <ranges>
 #include <vector>
@@ -212,9 +213,10 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     class Iterable {
     public:
-        static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
+        static_assert (copy_constructible<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
         // static_assert (IIterableOf<Iterable<T>, T>);   -- Logically true, but doesn't work presumably cuz Iterable<T> incomplete type at this stage, but should be doable!
-static_assert(copyable<T>);
+        static_assert (copyable<T>);
+
     public:
         /**
          * \brief value_type is an alias for the type iterated over - like vector<T>::value_type
@@ -223,7 +225,7 @@ static_assert(copyable<T>);
 
     public:
         /**
-         *  For Stroika containers, all iteartors are really const_iteartors, but this allows for better STL interoperability.
+         *  For Stroika containers, all iterators are really const_iterators, but this allows for better STL interoperability.
          */
         using iterator = Iterator<T>;
 
@@ -273,7 +275,7 @@ static_assert(copyable<T>);
          *  \note   Use of initializer_list<T> (@see http://stroika-bugs.sophists.com/browse/STK-739)
          *          Because of quirks of C++ overload resolution (https://en.cppreference.com/w/cpp/language/list_initialization)
          *          use of mem-initializers with Iterable<T> constructor calls have the unintuitive behavior of
-         *          invoking the initializer_list<T> constructor preferatially (see docs above and 'Otherwise, the constructors of T are considered, in two phases'
+         *          invoking the initializer_list<T> constructor preferentially (see docs above and 'Otherwise, the constructors of T are considered, in two phases'
          */
         Iterable (const initializer_list<T>& from);
 

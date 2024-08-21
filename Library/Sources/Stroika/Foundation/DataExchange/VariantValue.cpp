@@ -25,7 +25,6 @@ using namespace Stroika::Foundation::DataExchange;
 // see Satisfies Concepts:
 static_assert (regular<VariantValue>);
 
-
 namespace {
     // Mimic private class values - but cannot reference directly cuz private and this isn't part of the class
     using IntegerType_         = long long int;

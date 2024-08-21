@@ -12,7 +12,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
-        requires (is_copy_constructible_v<KEY_TYPE> and is_copy_constructible_v<VALUE_TYPE>)
+        requires (copy_constructible<KEY_TYPE> and copy_constructible<VALUE_TYPE>)
         : fKey (key)
         , fValue (value)
     {

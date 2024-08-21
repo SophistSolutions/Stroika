@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
-
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -50,13 +50,13 @@ namespace Stroika::Foundation::Common {
             requires (constructible_from<KEY_TYPE> and constructible_from<VALUE_TYPE>)
         = default;
         KeyValuePair (const KeyValuePair& src)
-            requires (is_copy_constructible_v<KEY_TYPE> and is_copy_constructible_v<VALUE_TYPE>)
+            requires (copy_constructible<KEY_TYPE> and copy_constructible<VALUE_TYPE>)
         = default;
         KeyValuePair (KeyValuePair&& src)
             requires (is_move_constructible_v<KEY_TYPE> and is_move_constructible_v<VALUE_TYPE>)
         = default;
         constexpr KeyValuePair (const KeyType& key, const ValueType& value)
-            requires (is_copy_constructible_v<KEY_TYPE> and is_copy_constructible_v<VALUE_TYPE>);
+            requires (copy_constructible<KEY_TYPE> and copy_constructible<VALUE_TYPE>);
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
         constexpr KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
             requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>);
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Common {
             requires (constructible_from<KEY_TYPE>)
         = default;
         KeyValuePair (const KeyValuePair& src)
-            requires (is_copy_constructible_v<KEY_TYPE>)
+            requires (copy_constructible<KEY_TYPE>)
         = default;
         KeyValuePair (KeyValuePair&& src)
             requires (is_move_constructible_v<KEY_TYPE>)

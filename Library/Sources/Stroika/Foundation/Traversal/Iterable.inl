@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Traversal {
         using DECAYED_CONTAINER = remove_cvref_t<CONTAINER_OF_T>;
         // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
         using USE_CONTAINER_TYPE =
-            conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not same_as<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
+            conditional_t<copy_constructible<DECAYED_CONTAINER> and not same_as<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
         auto sharedCopyOfContainer = make_shared<USE_CONTAINER_TYPE> (forward<CONTAINER_OF_T> (from));
         // shared copy so if/when getNext copied, the container itself isn't (so not invalidating any iterators)
         function<optional<T> ()> getNext = [sharedCopyOfContainer, i = sharedCopyOfContainer->begin ()] () mutable -> optional<T> {
