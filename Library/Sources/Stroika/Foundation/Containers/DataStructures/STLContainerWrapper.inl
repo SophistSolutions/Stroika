@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         AssertNotNull (fData_);
-        return fStdIterator_ - fData_->begin ();
+        return static_cast<size_t> (std::distance (fData_->begin (), fStdIterator_));
     }
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fStdIterator_ = l;
     }
     template <typename STL_CONTAINER_OF_T>
-    constexpr void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::AssertDataMatches (const STLContainerWrapper* data) const
+    constexpr void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const STLContainerWrapper* data) const
     {
 #if qDebug
         Require (data == fData_);

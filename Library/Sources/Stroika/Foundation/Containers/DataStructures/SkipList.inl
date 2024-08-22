@@ -853,7 +853,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrent_ = l;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches (const SkipList* data) const
+    constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const SkipList* data) const
     {
 #if qDebug
         Require (data == fData_);

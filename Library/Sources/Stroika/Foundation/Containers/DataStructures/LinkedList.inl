@@ -552,7 +552,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrent_ = l;
     }
     template <typename T>
-    constexpr void LinkedList<T>::ForwardIterator::AssertDataMatches (const LinkedList* data) const
+    constexpr void LinkedList<T>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const LinkedList* data) const
     {
 #if qDebug
         Require (data == fData_);

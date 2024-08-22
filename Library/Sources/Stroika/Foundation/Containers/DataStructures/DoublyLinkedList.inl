@@ -667,14 +667,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void DoublyLinkedList<T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
     {
 #if qDebug
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*fData_};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_}; // read lock on data, though writing to this iterator
 #endif
         // MUST COME FROM THIS LIST
         // CAN be nullptr
         fCurrent_ = l;
     }
     template <typename T>
-    constexpr void DoublyLinkedList<T>::ForwardIterator::AssertDataMatches (const DoublyLinkedList* data) const
+    constexpr void DoublyLinkedList<T>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const DoublyLinkedList* data) const
     {
 #if qDebug
         Require (data == fData_);

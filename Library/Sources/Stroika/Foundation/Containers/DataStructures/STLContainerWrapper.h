@@ -177,7 +177,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         * Only legal to call if underlying iterator is random_access
          */
         nonvirtual size_t CurrentIndex () const;
 
