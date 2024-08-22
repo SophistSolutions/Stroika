@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  This is typically NOT void, but may be void (NYI).
+         *  This is typically NOT void, but may be void
          */
         using mapped_type = MAPPED_TYPE;
 

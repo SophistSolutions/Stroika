@@ -150,10 +150,10 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
 - [SortedMultiSet\<T>](SortedMultiSet.h)
   - See MultiSet; but adds parameter saying how T items sorted
-  - Supported backends: [std::map](Concrete/SortedMultiSet_stdmap_.h)
+  - Supported backends: [std::map](Concrete/SortedMultiSet_stdmap.h)
 - [SortedSet\<T>](SortedSet.h)
   - See Set; but adds parameter saying how T items sorted
-  - Supported backends: [std::set](Concrete/SorteSet_stdset_.h)
+  - Supported backends: [std::set](Concrete/SortedSet_stdset.h)
 - [SparseDataHyperRectangle\< T, ... INDEXES>](SparseDataHyperRectangle.h)
   - A DataHyperRectangle where you specify a special 'default' value, which will appear in any cell you 'get' without first setting (as if the hyper-rectangle was pre-initialized to that value).
   - Supported backends: std::map
