@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Set_stdset.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -32,7 +32,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::Set_Array;
 using Concrete::Set_LinkedList;
-using Concrete::Set_stdset;
+using Concrete::SortedSet_stdset;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -143,10 +143,10 @@ namespace {
         DoTestForConcreteContainer_<Set_Array<SimpleClassWithoutComparisonOperators>> (
             [] () { return Set_Array<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
 
-        DoTestForConcreteContainer_<Set_stdset<size_t>> ();
-        DoTestForConcreteContainer_<Set_stdset<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators>> (
-            [] () { return Set_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
+        DoTestForConcreteContainer_<SortedSet_stdset<size_t>> ();
+        DoTestForConcreteContainer_<SortedSet_stdset<SimpleClass>> ();
+        DoTestForConcreteContainer_<SortedSet_stdset<SimpleClassWithoutComparisonOperators>> (
+            [] () { return SortedSet_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
 
         ExampleCTORS_Test_2_::DoTest ();
 

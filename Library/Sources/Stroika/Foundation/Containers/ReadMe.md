@@ -95,28 +95,27 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [Association\<KEY_TYPE, VALUE_TYPE>](Association.h)
   - Allows for the association of two elements: a key and one or more associated values
   - Similar to Mapping<> - except multi-valued (like std::multimap)
-  - Supported backends: Array, LinkedList, std::multimap
+  - Supported backends: [Array](Concrete/Association_Array.h), [LinkedList](Concrete/Association_LinkedList.h), [std::multimap](Concrete/SortedAssociation_stdmultimap.h)
 - [Bijection\<DOMAIN_TYPE, RANGE_TYPE>](Bijection.h)
   - Bijection allows for the bijective (1-1) association of two elements
-  - Supported backends: LinkedList
+  - Supported backends: [LinkedList](Concrete/Bijection_LinkedList.h)
 - [Collection\<T>](Collection.h)
   - a container to manage an un-ordered collection of items, without equality defined for T
-  - Supported backends: Array, LinkedList, std::forward_list, std::multiset
-- [DataHyperRectange\< T, ... INDEXES>](DataHyperRectange.h)
+  - Supported backends: [Array](Concrete/Collection_Array.h), [LinkedList](Concrete/Collection_LinkedList.h), [std::forward_list](Concrete/Collection_stdforwardlist.h), [std::multiset](Concrete/SortedCollection_stdmultiset.h)
+- [DataHyperRectangle\< T, ... INDEXES>](DataHyperRectangle.h)
   - a multi-dimensional Sequence\<T>
   - Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
-- [DenseDataHyperRectange\< T, ... INDEXES>](DenseDataHyperRectange.h)
+- [DenseDataHyperRectangle\< T, ... INDEXES>](DenseDataHyperRectangle.h)
   - Supported backends: Vector
 - [Deque\<T>](Deque.h)
   - A Deque is a Queue that allows additions and removals at either end
-  - Supported backends: DoublyLinkedList
+  - Supported backends: [DoublyLinkedList](Concrete/Deque_DoublyLinkedList.h)
 - [KeyedCollection\<T, KEY_TYPE, TRAITS>](KeyedCollection.h)
-  - KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single object. It takes a parameter
-  - Supported backends: LinkedList, std::set
+  - KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single object. It takes a parameter saying how to 'extract' the key from the collected value 'T'.
+  - Supported backends: [Array](Concrete/KeyedCollection_Array_.h),[LinkedList](Concrete/KeyedCollection_LinkedList_.h),[std::hashset](Concrete/KeyedCollection_stdhashset_.h), [std::set](Concrete/SortedKeyedCollection_stdset_.h)
 - [Mapping\<KEY_TYPE, VALUE_TYPE>](Mapping.h)
   - Allows for the association of two elements: a key and a value. The key UNIQUELY specifies its associated value
-  - Supported backends: Array, LinkedList, std::map
-- [MultiSet\<T>](MultiSet.h)
+  - Supported backends: [Array](Concrete/Mapping_Array_.h), [LinkedList](Concrete/Mapping_LinkedList_.h), [std::hash_map](Concrete/Mapping_stdhashmap_.h), [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
   - A collection of elements where each time you add something, the MultiSet tallies the number of times that thing has been entered. This is not a commonly used class, but handy when you want to count things
   - Supported backends: Array, LinkedList, std::map
 - [PriorityQueue\<T>](PriorityQueue.h)
@@ -124,13 +123,13 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - NYI
 - [Queue\<T>](Queue.h)
   - Queue is a first-in-first-out (FIFO) data structure, where elements are arranged in well-ordered fashion, from HEAD to TAIL
-  - Supported backends: Array, DoublyLinkedList
+  - Supported backends:  [Array](Concrete/Queue_Array.h),  [DoublyLinkedList](Concrete/Queue_DoublyLinkedList.h)
 - [Sequence\<T>](Sequence.h)
   - A generalization of a vector: a container whose elements are keyed by the natural numbers.
-  - Supported backends: Array, DoublyLinkedList, LinkedList, std::vector
+  - Supported backends: [Array](Concrete/Sequence_Array.h), [DoublyLinkedList](Concrete/Sequence_DoublyLinkedList.h), [LinkedList](Concrete/Sequence_LinkedList.h), [std::vector](Concrete/Sequence_stdvector.h)
 - [Set\<T>](Set.h)
-  - a container of T, where once an item is added, additionally adds () do nothing.
-  - Supported backends: LinkedList, std::set
+  - a container of T, where once an item is added, additionally adds () do nothing (so items added at most once).
+  - Supported backends: [Array](Concrete/Set_Array.h), [LinkedList](Concrete/Set_LinkedList.h), [std::set](Concrete/SorteSet_stdset_.h)
   - Set vs std::set<T>:
     Stroika's Set<T> is like std::set<T>, except that
     - you can separately select different algorithms (besides red-black tree) and not change the API used (Set<T>).
@@ -139,29 +138,28 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
     - Sets can also be implemented by hash-tables, etc.
 - [SortedAssociation\<KEY_TYPE, VALUE_TYPE>](SortedAssociation.h)
   - see Association; but adds parameter saying how KEY items sorted
-  - Supported backends: std::multimap
+  - Supported backends: [std::multimap](Concrete/SortedAssociation_stdmultimap.h)
 - [SortedCollection\<T>](SortedCollection.h)
   - See Collection; but adds parameter saying how T items sorted
-  - Supported backends: LinkedList. std::multiset
+  - Supported backends: [LinkedList](Concrete/SortedCollection_LinkedList.h),[std::multiset](Concrete/SortedCollection_stdmultiset.h)
 - [SortedKeyedCollection\<T, KEY_TYPE, TRAITS>](SortedKeyedCollection.h)
   - See KeyedCollection; but adds parameter saying how T items sorted (by key)
-  - Supported backends: std::set
+  - Supported backends: [std::set](Concrete/SortedKeyedCollection_stdset_.h)
 - [SortedMapping\<KEY_TYPE, VALUE_TYPE>](SortedMapping.h)
   - See Mapping; but adds parameter saying how KEY_TYPE items sorted
-  - Supported backends: std::map
+  - Supported backends: [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
 - [SortedMultiSet\<T>](SortedMultiSet.h)
   - See MultiSet; but adds parameter saying how T items sorted
-  - Supported backends: std::map
+  - Supported backends: [std::map](Concrete/SortedMultiSet_stdmap_.h)
 - [SortedSet\<T>](SortedSet.h)
   - See Set; but adds parameter saying how T items sorted
-  - Supported backends: std::set
-
-- [SparseDataHyperRectange\< T, ... INDEXES>](SparseDataHyperRectangle.h)
+  - Supported backends: [std::set](Concrete/SorteSet_stdset_.h)
+- [SparseDataHyperRectangle\< T, ... INDEXES>](SparseDataHyperRectangle.h)
   - A DataHyperRectangle where you specify a special 'default' value, which will appear in any cell you 'get' without first setting (as if the hyper-rectangle was pre-initialized to that value).
   - Supported backends: std::map
 - [Stack\<T>](Stack.h)
   - Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31. Iteration proceeds from the top to the bottom of the stack. Top is the FIRST IN (also first out).
-  - Supported backends: LinkedList
+  - Supported backends: [LinkedList](Concrete/Stack_LinkedList.h)
 
 ## Container Constructors
 

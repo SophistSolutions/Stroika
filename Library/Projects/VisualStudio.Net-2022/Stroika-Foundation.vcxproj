@@ -829,7 +829,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_LinkedList.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_stdmultimap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_stdmultiset.inl" />

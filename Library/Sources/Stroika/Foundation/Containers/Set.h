@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \em Concrete Implementations:
      *      o   @see Concrete::Set_LinkedList<>
-     *      o   @see Concrete::Set_stdset<>
+     *      o   @see Concrete::SortedSet_stdset<>
      * 
      *  \note   See also: KeyedCollection<> - like Set<>, but for case where object has extra attributes to be preserved (Add)
      *

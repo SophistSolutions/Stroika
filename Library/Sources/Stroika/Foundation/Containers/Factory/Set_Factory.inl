@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include "Stroika/Foundation/Containers/Concrete/Set_Array.h"
-#include "Stroika/Foundation/Containers/Concrete/Set_stdset.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 
@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         if (this->fFactory_ == nullptr) [[likely]] {
             if constexpr (same_as<EQUALS_COMPARER, equal_to<T>> and totally_ordered<T>) {
-                static const auto kDefault_ = Concrete::Set_stdset<T>{};
+                static const auto kDefault_ = Concrete::SortedSet_stdset<T>{};
                 return kDefault_;
             }
             else {
