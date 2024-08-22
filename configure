@@ -412,7 +412,7 @@ sub	DoHelp_
 		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
 		print("	    --all-available-third-party-components          /* equivilent to --Xerces (etc) use - for all that are available on this platform   */\n");
 		print("	    --default-third-party-components                /* reset third party settings to their default value (maybe less than all-available-third-party-components) */\n");
-		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no --boost no --OpenSSL no --WinHTTP no --ATLMFC no --Xerces no --limxml2 no --sqlite no --ZLib no --WIX no --lzma no  */\n");
+		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no ...  */\n");
 		print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
 		print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
 		print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
@@ -3096,6 +3096,10 @@ if ($onlyGenerateIfCompilerExists) {
 			$generate = false;
 			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 11 (v=" . $itsVersion . ") doesn't support chrono::month, etc";
 		}
+	}
+	if (defined $FEATUREFLAG_fmtlib && $FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_No && NeedsFmtLib_ ()) {
+		$generate = false;
+		$generateBecause = "This compiler requires fmt-lib, and configure arguments disabled fmtlib use.";
 	}
 	my $ubuntuVersion = getUbuntuVersion();
 	# if flag to use libc++ - check if right version is available (but not on XCode)
