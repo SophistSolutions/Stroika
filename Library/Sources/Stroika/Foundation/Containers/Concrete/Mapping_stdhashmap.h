@@ -91,11 +91,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (
 #if qCompilerAndStdLib_default_initializable_broken_Buggy
                 is_default_constructible_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>
-                #else
+#else
                 default_initializable<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>
-                #endif
-                 and
-                      not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
+#endif
+                and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Mapping_stdhashmap{}
