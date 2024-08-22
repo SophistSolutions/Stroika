@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (totally_ordered<KEY_TYPE>);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer);
-        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedMapping_stdmap (STDMAP<KEY_INORDER_COMPARER>&& src);
         SortedMapping_stdmap (SortedMapping_stdmap&& src) noexcept      = default;
         SortedMapping_stdmap (const SortedMapping_stdmap& src) noexcept = default;

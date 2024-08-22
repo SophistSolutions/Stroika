@@ -1,14 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_h_
-#define _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_h_
 
+// Moved #includes outside #include guard to avoid deadly embrace
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <map>
 
 #include "Stroika/Foundation/Containers/SortedAssociation.h"
+
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_h_
+#define _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_h_
 
 /**
  *  \file
@@ -57,6 +59,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedAssociation_stdmultimap ();
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer);
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+        explicit SortedAssociation_stdmultimap (STDMULTIMAP<KEY_INORDER_COMPARER>&& src);
         SortedAssociation_stdmultimap (SortedAssociation_stdmultimap&& src) noexcept      = default;
         SortedAssociation_stdmultimap (const SortedAssociation_stdmultimap& src) noexcept = default;
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>

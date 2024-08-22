@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/Containers/Concrete/Association_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Association_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Association_stdmultimap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 
@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers::Factory {
             if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and totally_ordered<KEY_TYPE>) {
                 // OK to ignore hints, cuz this is the best choice regardless of hints
                 return [] (const KEY_EQUALS_COMPARER&) {
-                    return Concrete::Association_stdmultimap<KEY_TYPE, VALUE_TYPE>{}; // OK to omit comparer, because we have less-than defined and using default equal_to<>
+                    return Concrete::SortedAssociation_stdmultimap<KEY_TYPE, VALUE_TYPE>{}; // OK to omit comparer, because we have less-than defined and using default equal_to<>
                 };
             }
             else {

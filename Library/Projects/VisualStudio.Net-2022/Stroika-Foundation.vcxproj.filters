@@ -2784,9 +2784,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl">
       <Filter>Sources\Characters</Filter>
     </None>

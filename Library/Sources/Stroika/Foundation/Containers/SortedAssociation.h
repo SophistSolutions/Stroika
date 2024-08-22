@@ -1,13 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_SortedAssociation_h_
-#define _Stroika_Foundation_Containers_SortedAssociation_h_ 1
 
+// Moved #includes outside #include guard to avoid deadly embrace
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Containers/Association.h"
+
+#ifndef _Stroika_Foundation_Containers_SortedAssociation_h_
+#define _Stroika_Foundation_Containers_SortedAssociation_h_ 1
 
 /**
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>

@@ -805,7 +805,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_LinkedList.inl" />

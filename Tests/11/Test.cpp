@@ -13,7 +13,6 @@
 #include "Stroika/Foundation/Containers/Association.h"
 #include "Stroika/Foundation/Containers/Concrete/Association_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Association_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Association_stdmultimap.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -34,7 +33,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::Association_Array;
 using Concrete::Association_LinkedList;
-using Concrete::Association_stdmultimap;
+using Concrete::SortedAssociation_stdmultimap;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -59,7 +58,7 @@ namespace {
     {
         Debug::TraceContextBumper     ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
         SortedAssociation<int, float> xxxyy  = Concrete::SortedAssociation_stdmultimap<int, float> ();
-        Association<int, float>       xxxyy1 = Concrete::Association_stdmultimap<int, float> ();
+        Association<int, float>       xxxyy1 = Concrete::SortedAssociation_stdmultimap<int, float> ();
     }
 }
 
@@ -272,8 +271,8 @@ namespace {
             },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
-        DoTestForConcreteContainer_<Association_stdmultimap<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Association_stdmultimap<SimpleClass, SimpleClass>> ();
+        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<SimpleClass, SimpleClass>> ();
         {
             struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
                 : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
@@ -283,9 +282,9 @@ namespace {
                     return v1.GetValue () < v2.GetValue ();
                 }
             };
-            DoTestForConcreteContainer_<Association_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            DoTestForConcreteContainer_<SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
                 [] () {
-                    return Association_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    return SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
                         MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
                 },
                 //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})
