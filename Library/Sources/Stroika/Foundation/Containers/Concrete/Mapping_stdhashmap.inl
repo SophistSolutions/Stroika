@@ -258,7 +258,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-        requires (default_initializable<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
+        requires (
+            #if qCompilerAndStdLib_default_initializable_broken_Buggy
+            is_default_constructible_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> 
+#else
+            default_initializable<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> 
+#endif
+            and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
         : Mapping_stdhashmap{}

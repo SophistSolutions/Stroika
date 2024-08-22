@@ -631,6 +631,17 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
+#ifndef qCompilerAndStdLib_default_initializable_broken_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_default_initializable_broken_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#else
+#define qCompilerAndStdLib_default_initializable_broken_Buggy 0
+#endif
+
+#endif
+
 /*
  ile included from Statistics.cpp:6:
 In file included from ./../Characters/Format.h:30:
