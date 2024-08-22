@@ -112,9 +112,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void SortedCollection<T>::Remove (ArgByValueType<T> item)
     {
-        _SafeReadRepAccessor<_IRep>{this}._GetRep ().Remove (item);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item);
     }
-
     template <typename T>
     template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
     inline RESULT_CONTAINER SortedCollection<T>::Map (ELEMENT_MAPPER&& elementMapper) const

@@ -1,97 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
+
+// Moved #includes outside #include guard to avoid deadly embrace
+#include "Stroika/Foundation/Containers/Concrete/SortedCollection_stdmultiset.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
+#include <set>
+
 #ifndef _Stroika_Foundation_Containers_Concrete_Collection_stdmultiset_h_
 #define _Stroika_Foundation_Containers_Concrete_Collection_stdmultiset_h_
 
-#include "Stroika/Foundation/StroikaPreComp.h"
-
-#include <set>
-
-#include "Stroika/Foundation/Containers/Collection.h"
-
-/**
- *  \file
- *
- *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
- */
+// THIS FILE IS DEPRECATED SINCE STROIKA v3.0d10 - use SortedCollection_stdmultiset
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    using Common::IInOrderComparer;
-
-    /**
-     *  \brief Collection_stdmultiset<T> is an std::multiset-based concrete implementation of the Collection<T> container pattern.
-     *
-     * \note Performance Notes:
-     *      Collection_stdmultiset<T> is a good implementation of Collections, so long as you have an in-order comparison function to provide
-     *
-     *      o   Uses Memory::UseBlockAllocationIfAppropriate
-     *      o   Additions and Removals are O(log size())
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     */
     template <typename T>
-    class Collection_stdmultiset : public Collection<T> {
-    private:
-        using inherited = Collection<T>;
+    class SortedCollection_stdmultiset; // avoid issue with #include deadly embrace
 
-    public:
-        using value_type = typename inherited::value_type;
-
-    public:
-        /**
-         */
-        template <IInOrderComparer<T> INORDER_COMPARER>
-        using STDMULTISET =
-            multiset<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
-
-    public:
-        /**
-         *  \see docs on Collection<T> constructor
-         */
-        Collection_stdmultiset ();
-        template <IInOrderComparer<T> INORDER_COMPARER>
-        explicit Collection_stdmultiset (INORDER_COMPARER&& inorderComparer);
-        Collection_stdmultiset (Collection_stdmultiset&& src) noexcept      = default;
-        Collection_stdmultiset (const Collection_stdmultiset& src) noexcept = default;
-        Collection_stdmultiset (const initializer_list<value_type>& src);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
-            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_stdmultiset<T>>)
-        Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src)
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            : Collection_stdmultiset{}
-        {
-            this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
-            AssertRepValidType_ ();
-        }
-#endif
-        ;
-        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        Collection_stdmultiset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-
-    public:
-        /**
-         */
-        nonvirtual Collection_stdmultiset& operator= (Collection_stdmultiset&& rhs) noexcept = default;
-        nonvirtual Collection_stdmultiset& operator= (const Collection_stdmultiset& rhs)     = default;
-
-    private:
-        class IImplRepBase_;
-        template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<T>) INORDER_COMPARER>
-        class Rep_;
-
-    private:
-        nonvirtual void AssertRepValidType_ () const;
-    };
+    template <typename T>
+    using Collection_stdmultiset [[deprecated ("Since Stroika v3.0d10 - use SortedCollection_stdmultiset")]] = SortedCollection_stdmultiset<T>;
 
 }
-
-/*
- ********************************************************************************
- ******************************* Implementation Details *************************
- ********************************************************************************
- */
-#include "Collection_stdmultiset.inl"
 
 #endif /*_Stroika_Foundation_Containers_Concrete_Collection_stdmultiset_h_ */

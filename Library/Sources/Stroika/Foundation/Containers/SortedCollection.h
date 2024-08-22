@@ -1,13 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_SortedCollection_h_
-#define _Stroika_Foundation_Containers_SortedCollection_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
-
+// Moved #includes outside #include guard to avoid deadly embrace
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
+
+#ifndef _Stroika_Foundation_Containers_SortedCollection_h_
+#define _Stroika_Foundation_Containers_SortedCollection_h_ 1
 
 /**
  *  \file
@@ -15,16 +16,12 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- *
  *  TODO:
  *      @todo   Add Equals(), Contains, Remove(T) methods (we have the virtuals in rep already)
  *
  *      @todo   Improve test cases, and notice that sorting doesn't actually work for sorted-linked-list.
  *
  *      @todo   Implement using redblback trees.
- *
- *      @todo   See if there is a good STL backend to use to implement this? std::multimap<T,void> is the closest
- *              I can see.
  *
  */
 

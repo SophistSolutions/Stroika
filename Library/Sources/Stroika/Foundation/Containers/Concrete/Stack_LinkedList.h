@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *      Very good low overhead implementation
      *
      *      o   push/pop and top () are all constant complexity
-     *      o   size () is O(N)
+     *      o   size () is O(N), but empty () is O(1)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

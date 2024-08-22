@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Containers//DenseDataHyperRectangle.h"
+#include "Stroika/Foundation/Containers/DenseDataHyperRectangle.h"
 
 /**
  *  \file

@@ -809,7 +809,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdmultiset.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DenseDataHyperRectangle_Vector.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_Array.inl" />

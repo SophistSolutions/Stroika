@@ -19,7 +19,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
-#include "Stroika/Foundation/Containers/Concrete/Collection_stdmultiset.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedCollection_stdmultiset.h"
 
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"
 
@@ -34,7 +34,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 using Concrete::Collection_Array;
 using Concrete::Collection_LinkedList;
 using Concrete::Collection_stdforward_list;
-using Concrete::Collection_stdmultiset;
+using Concrete::SortedCollection_stdmultiset;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -169,11 +169,11 @@ namespace {
         RunTests_<Collection_stdforward_list<SimpleClass>> ();
         RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
 
-        RunTests_<Collection_stdmultiset<size_t>> ();
-        RunTestsWithEquals_<Collection_stdmultiset<size_t>, equal_to<size_t>> ();
-        RunTests_<Collection_stdmultiset<SimpleClass>> ();
-        RunTests_<Collection_stdmultiset<SimpleClassWithoutComparisonOperators>> ([] () {
-            return Collection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ());
+        RunTests_<SortedCollection_stdmultiset<size_t>> ();
+        RunTestsWithEquals_<SortedCollection_stdmultiset<size_t>, equal_to<size_t>> ();
+        RunTests_<SortedCollection_stdmultiset<SimpleClass>> ();
+        RunTests_<SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators>> ([] () {
+            return SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ());
         });
 
         ExampleCTORS_Test_2_::DoTest ();

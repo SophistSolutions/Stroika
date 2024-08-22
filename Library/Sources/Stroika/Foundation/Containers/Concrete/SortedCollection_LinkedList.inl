@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            AddWithoutLocks_ (item);
+            Add_ (item);
             fChangeCounts_.PerformedChange ();
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             else {
                 fData_.Remove (mir.fIterator);
-                AddWithoutLocks_ (newValue);
+                Add_ (newValue);
             }
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        nonvirtual void AddWithoutLocks_ (ArgByValueType<value_type> item)
+        nonvirtual void Add_ (ArgByValueType<value_type> item)
         {
             typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
             // skip the smaller items

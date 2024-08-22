@@ -27,6 +27,8 @@ namespace Stroika::Foundation::Containers::Concrete {
      *
      *      o   size () is constant complexity
      *      o   Uses Memory::BlockAllocatorOrStdAllocatorAsAppropriate
+     * 
+     *  \note This implementation doesn't store multiple copies of 'T' objects - it just counts those that compare equal.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *

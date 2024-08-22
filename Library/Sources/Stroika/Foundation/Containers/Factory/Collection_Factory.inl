@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Collection_stdmultiset.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedCollection_stdmultiset.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Factory {
         if (this->fFactory_ == nullptr) [[likely]] {
             if constexpr (totally_ordered<T>) {
                 // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
-                static const auto kDefault_ = Concrete::Collection_stdmultiset<T>{};
+                static const auto kDefault_ = Concrete::SortedCollection_stdmultiset<T>{};
                 return kDefault_;
             }
             else {

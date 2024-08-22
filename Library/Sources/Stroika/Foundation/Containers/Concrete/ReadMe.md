@@ -7,5 +7,5 @@ This folder contains all the Stroika Library Foundation::Containers::Concrete so
 	Think of these a bit like factories. If you want to use a particular underlying data structure
 	for a container, just select it here ,and assign. E.g.
 
-		Sequence<int> s = Concrete::Sequence_DoublyLinkedList<int> ();
+		Sequence<int> s = Concrete::Sequence_DoublyLinkedList<int>{};
 

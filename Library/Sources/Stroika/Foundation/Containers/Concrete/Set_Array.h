@@ -23,7 +23,6 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      Set_stdset<T> is a compact representation, but ONLY reasonable for very small sets. Performance is O(N) as set grows.
      *
-     *      o   size () is O(N)
      *      o   Additions and Removals are generally O(N)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_stdmultiset_h_
-#define _Stroika_Foundation_Containers_Concrete_SortedCollection_stdmultiset_h_
 
+// Moved #includes outside #include guard to avoid deadly embrace
+#include "Stroika/Foundation/Containers/SortedCollection.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
-
 #include <set>
 
-#include "Stroika/Foundation/Containers/SortedCollection.h"
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_stdmultiset_h_
+#define _Stroika_Foundation_Containers_Concrete_SortedCollection_stdmultiset_h_
 
 /**
  *  \file
@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \brief SortedCollection_stdmultiset<T> is an stdmultiset-based concrete implementation of the SortedCollection<T> container pattern.
      *
      * \note Performance Notes:
-     *      o   size () is O(log N)
+     *      o   size () is O(1)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *      o   Additions and Removals are O(log N)
      *
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        template <Common::IInOrderComparer<T> INORDER_COMPARER>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER = less<T>>
         using STDMULTISET =
             multiset<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
