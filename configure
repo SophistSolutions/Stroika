@@ -3099,7 +3099,7 @@ if ($onlyGenerateIfCompilerExists) {
 	}
 	if (defined $FEATUREFLAG_fmtlib && $FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_No && NeedsFmtLib_ ()) {
 		$generate = false;
-		$generateBecause = "This compiler requires fmt-lib, and configure arguments disabled fmtlib use.";
+		$generateBecause = "This compiler requires fmtlib, and configure arguments disabled fmtlib use.";
 	}
 	my $ubuntuVersion = getUbuntuVersion();
 	# if flag to use libc++ - check if right version is available (but not on XCode)
