@@ -3,9 +3,11 @@
  */
 
 // Moved #includes outside #include guard to avoid deadly embrace
-#include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
+
 #include <set>
+
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdset_h_
 #define _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdset_h_

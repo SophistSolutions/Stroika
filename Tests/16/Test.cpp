@@ -51,7 +51,7 @@ namespace {
             using namespace Private_;
             {
                 Concrete::SortedKeyedCollection_stdset<Obj_, type_index, My_Traits_> s1;
-                KeyedCollection<Obj_, type_index, My_Traits_>                  s2;
+                KeyedCollection<Obj_, type_index, My_Traits_>                        s2;
                 s2.Add (Obj_{typeid (int)});
                 s2.Add (Obj_{typeid (long int)});
             }

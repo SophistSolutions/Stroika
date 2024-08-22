@@ -1,14 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_SortedMultiSet_h_
-#define _Stroika_Foundation_Containers_SortedMultiSet_h_ 1
 
+// Moved #includes outside #include guard to avoid deadly embrace with SortedMapping/Mapping/SortedMapping_std
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Containers/DefaultTraits/MultiSet.h"
 #include "Stroika/Foundation/Containers/MultiSet.h"
+
+#ifndef _Stroika_Foundation_Containers_SortedMultiSet_h_
+#define _Stroika_Foundation_Containers_SortedMultiSet_h_ 1
 
 /**
  *  \file

@@ -3,8 +3,9 @@
  */
 
 // Moved #includes outside #include guard to avoid deadly embrace with SortedMapping/Mapping/SortedMapping_std
-#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
+
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_h_
 #define _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_h_

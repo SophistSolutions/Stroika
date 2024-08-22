@@ -2661,9 +2661,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_LinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_stdmap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMultiSet_stdmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>

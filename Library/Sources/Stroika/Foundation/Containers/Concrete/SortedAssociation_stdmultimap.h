@@ -3,9 +3,11 @@
  */
 
 // Moved #includes outside #include guard to avoid deadly embrace
-#include "Stroika/Foundation/Containers/SortedAssociation.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
+
 #include <map>
+
+#include "Stroika/Foundation/Containers/SortedAssociation.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_h_
 #define _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_h_

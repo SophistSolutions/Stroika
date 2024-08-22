@@ -12,7 +12,7 @@
 
 #include "Stroika/Foundation/Containers/Concrete/MultiSet_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/MultiSet_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/MultiSet_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_stdmap.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -33,7 +33,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::MultiSet_Array;
 using Concrete::MultiSet_LinkedList;
-using Concrete::MultiSet_stdmap;
+using Concrete::SortedMultiSet_stdmap;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -136,13 +136,13 @@ namespace {
         }
 
         {
-            DoTestForConcreteContainer_<MultiSet_stdmap<size_t>> ();
-            DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClass>> ();
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClass>> ();
             auto msFactory = [] () {
-                return MultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}};
+                return SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}};
             };
-            DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
                                                                    decltype (msFactory)> (msFactory));
         }
 

@@ -1,13 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_SortedKeyedCollection_h_
-#define _Stroika_Foundation_Containers_SortedKeyedCollection_h_ 1
+
+// Moved #includes outside #include guard to avoid deadly embrace with SortedMapping/Mapping/SortedMapping_std
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
+
+#ifndef _Stroika_Foundation_Containers_SortedKeyedCollection_h_
+#define _Stroika_Foundation_Containers_SortedKeyedCollection_h_ 1
 
 /**
  *  \file
@@ -93,6 +96,8 @@ namespace Stroika::Foundation::Containers {
          *  If TRAITS (TraitsType) has a valid default extractor, enable certain constructors.
          *
          * \req IInOrderComparer<KEY_INORDER_COMPARER,KEY_TYPE> - for constructors with that type parameter
+         * 
+         *  \note sort order specified/determined at construction time, and cannot be reset (without creating a new SortedKeyCollection)
          *
          *  \par Example Usage
          *      \code
