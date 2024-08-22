@@ -499,6 +499,74 @@ basic-unix-test-configurations:
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_valgrind_configs_
 
 
+basic-NEW-UNIX-test-configurations:
+	@# Note as of 2023-12-02, it appears memory sanitizer only works with clang++ (not gcc), and even that major
+	@# PITA to use - see https://github.com/google/sanitizers/wiki/MemorySanitizerLibcxxHowTo - must rebuild own libc++ specailly.
+	@# Note they do provide a dockerfile with all this setup, but still ... Not worth the trouble... --LGP 2023-12-02
+
+	@if [[ `lsb_release -rs 2>/dev/null` == '22.04' ]]; then \
+		#Ubuntu 22.04\
+		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
+		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system; \
+		# g++-11\
+		./configure g++-11-debug --config-tag Unix --compiler-driver g++-11 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-11-release++2b --config-tag Unix --compiler-driver g++-11 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# g++-12; \
+		./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# g++-13; \
+		./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# clang-15; \
+		./configure clang++-15-debug-libc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-15-release-libstdc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# - ASAN appears to work very sporadically (crashing about 1/2 the time) \
+		# 		Builds/g++-debug-sanitize_undefined_leak/Tests/Test44 --gtest_brief -- Segmentation fault (core dumped)\
+		./configure g++-debug-sanitize_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# VALGRIND\
+		./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+	elif [[ `lsb_release -rs 2>/dev/null` == '24.04' ]]; then \
+		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
+		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system; \
+		# g++-12; \
+		./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# g++-13; \
+		./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# g++-14; \
+		./configure g++-14-debug --config-tag Unix --compiler-driver g++-14 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-14-release++23 --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# clang-16; \
+		./configure clang++-16-debug-libc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-16-release-libstdc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-16-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-16-release-libc++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# clang-17; \
+		./configure clang++-17-debug-libc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-17-release-libstdc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-17-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-17-release-libc++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# clang-18; \
+		./configure clang++-18-debug-libc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-18-release-libstdc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-18-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure clang++-18-release-libc++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# Sanitizers\
+		./configure g++-debug-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL};  \
+		# VALGRIND\
+		./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+	else \
+		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
+		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system; \
+		./configure g++-debug --config-tag Unix --compiler-driver g++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-release++2b --config-tag Unix --compiler-driver g++ --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
+	fi
+
 # Currently not used, but maybe test occasionally
 private_compiler_versions_:
 	# ./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a
@@ -590,7 +658,7 @@ regression-test-configurations:
 	if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
 		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) default-configurations;\
 	else\
-		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations;\
+		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-NEW-UNIX-test-configurations;\
 		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) raspberrypi-cross-compile-test-configurations;\
 	fi
 	@# Currently not used, but maybe test occasionally
