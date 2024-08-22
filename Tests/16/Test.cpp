@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_stdhashset.h"
-#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_stdset.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_stdset.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -50,7 +50,7 @@ namespace {
         {
             using namespace Private_;
             {
-                Concrete::KeyedCollection_stdset<Obj_, type_index, My_Traits_> s1;
+                Concrete::SortedKeyedCollection_stdset<Obj_, type_index, My_Traits_> s1;
                 KeyedCollection<Obj_, type_index, My_Traits_>                  s2;
                 s2.Add (Obj_{typeid (int)});
                 s2.Add (Obj_{typeid (long int)});
@@ -83,7 +83,7 @@ namespace {
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return Concrete::KeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+                [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return Concrete::KeyedCollection_stdhashset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
         }

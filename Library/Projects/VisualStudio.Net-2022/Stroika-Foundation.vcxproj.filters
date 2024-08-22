@@ -3522,9 +3522,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedKeyedCollection_stdset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_stdset.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Cast.inl">
       <Filter>Sources\Debug</Filter>
     </None>

@@ -814,7 +814,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_stdhashset.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_stdset.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_SkipList.inl" />
