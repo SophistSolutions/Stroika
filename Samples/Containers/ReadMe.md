@@ -2,7 +2,7 @@
 
    Containers are classes that manage a homogenous collection of objects, in some well defined organization.
    
-   Stroika's container classes are well documented, and examples are provided in the headers/class declarations.
+   Stroika's [container classes](../../Library/Sources/Stroika/Foundation/Containers/ReadMe.md) are well documented, and examples are provided in the headers/class declarations.
 
    The 'containers' sample application walks you through a few helpful examples of how to use the Container
    classes. It illustrates:
