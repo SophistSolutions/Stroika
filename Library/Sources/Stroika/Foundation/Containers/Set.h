@@ -70,10 +70,10 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::Set_LinkedList<>
      *      o   @see Concrete::SortedSet_stdset<>
      * 
-     *  \note   See also: KeyedCollection<> - like Set<>, but for case where object has extra attributes to be preserved (Add)
-     *
      *  \em Factory:
-     *      @see Factory::Set_Factory<> to see default implementations.
+     *      @see Set_Factory<> to see default implementations.
+     *
+     *  \note   See also: KeyedCollection<> - like Set<>, but for case where object has extra attributes to be preserved (Add)
      *
      *  \em Design Note:
      *      Included <set> and have explicit CTOR for set<> so that Stroika Set can be used more interoperably

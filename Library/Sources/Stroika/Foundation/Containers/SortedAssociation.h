@@ -41,6 +41,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::SortedAssociation_stdmultimap<>
      * 
+     *  \em Factory:
+     *      @see SortedAssociation_Factory<> to see default implementations.
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Associations (base class) are already intrinsically equals-comparable.
      *

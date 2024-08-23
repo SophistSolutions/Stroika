@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::Bijection_LinkedList<>
      *
      *  \em Factory:
-     *      @see Concrete::Bijection_Factory<> to see default implementations.
+     *      @see Bijection_Factory<> to see default implementations.
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)

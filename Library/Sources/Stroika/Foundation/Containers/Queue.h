@@ -60,6 +60,13 @@ namespace Stroika::Foundation::Containers {
      *  @see PriorityQueues<T, TRAITS> - which allow removal based on the priority
      *          assigned to an item.
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::Queue_Array<>
+     *      o   @see Concrete::Queue_DoublyLinkedList<>
+     *
+     *  \em Factory:
+     *      @see Queue_Factory<> to see default implementations.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially

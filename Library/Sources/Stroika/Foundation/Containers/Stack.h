@@ -50,6 +50,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::Stack_LinkedList<>
      *
+     *  \em Factory:
+     *      @see Stack_Factory<> to see default implementations.
+     * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially

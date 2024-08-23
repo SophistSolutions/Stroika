@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   SortedSet_stdset<T> is an std::set-based concrete implementation of the SortedSet<T> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      Very good low overhead implementation
      *
      *      o   size () is constant complexity

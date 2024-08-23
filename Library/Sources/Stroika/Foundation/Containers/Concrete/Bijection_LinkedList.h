@@ -21,8 +21,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE> is an LinkedList-based concrete implementation of the Bijection<DOMAIN_TYPE, RANGE_TYPE> container pattern.
      *
-     * \note Performance Notes:
-     *      o   size () is O(N), but empty () is O(1)
+     * \note Runtime performance/complexity:
+     *      o   size () is O(N), but empty () is constant
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

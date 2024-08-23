@@ -37,6 +37,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::SortedSet_stdset<>
      *
+     *  \em Factory:
+     *      @see SortedSet_Factory<> to see default implementations.
+     * 
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *

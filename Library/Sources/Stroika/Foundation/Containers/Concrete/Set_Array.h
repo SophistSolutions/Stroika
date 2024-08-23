@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Set_Array<T> is an Array-based concrete implementation of the Set<T> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      Set_stdset<T> is a compact representation, but ONLY reasonable for very small sets. Performance is O(N) as set grows.
      *
      *      o   Additions and Removals are generally O(N)

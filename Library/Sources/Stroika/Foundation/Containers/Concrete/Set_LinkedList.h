@@ -20,10 +20,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Set_LinkedList<T> is an LinkedList-based concrete implementation of the Set<T> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      Set_stdset<T> is a compact representation, but ONLY reasonable for very small sets. Performance is O(N) as set grows.
      *
-     *      o   size () is O(N), but empty () is O(1)
+     *      o   size () is O(N), but empty () is constant
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *      o   Additions and Removals are generally O(N)
      *

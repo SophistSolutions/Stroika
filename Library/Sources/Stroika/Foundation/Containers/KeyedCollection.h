@@ -121,6 +121,9 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::KeyedCollection_stdhashset<>
      *      o   @see Concrete::SortedKeyedCollection_stdset<>
      *
+     *  \em Factory:
+     *      @see Concrete::KeyedCollection_Factory<> to see default implementations.
+     *
      *  \note Design Choice:
      *          Could either embed the 'extractor' function in the container type TRAITS or passed in as a
      *          constructor argument to the container. 

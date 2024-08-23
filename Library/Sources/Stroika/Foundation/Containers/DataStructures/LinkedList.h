@@ -86,14 +86,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual bool empty () const;
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: O(N)
          */
         nonvirtual size_t size () const;
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: O(N)
          *  @todo add function concept
          */
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          * 
@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
          * 
          *  \req data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_

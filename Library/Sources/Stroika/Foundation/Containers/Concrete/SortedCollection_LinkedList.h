@@ -20,11 +20,11 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief SortedCollection_LinkedList<T> is an LinkedList-based concrete implementation of the SortedCollection<T> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      SortedCollection_LinkedList<T> is a compact, and reasonable implementation of Collections, so long as the Collection remains quite small
      *      (empty or just a few entires).
      *
-     *      o   size () is O(N), but empty () is O(1)
+     *      o   size () is O(N), but empty () is constant
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *      o   Additions and Removals are O(N)
      *

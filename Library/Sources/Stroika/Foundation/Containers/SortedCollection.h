@@ -54,6 +54,9 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::SortedCollection_LinkedList<>
      *      o   @see Concrete::SortedCollection_stdmultiset<>
      * 
+     *  \em Factory:
+     *      @see SortedCollection_Factory<> to see default implementations.
+     * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially

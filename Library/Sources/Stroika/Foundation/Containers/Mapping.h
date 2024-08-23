@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::SortedMapping_stdmap<>
      *
      *  \em Factory:
-     *      @see Concrete::Mapping_Factory<> to see default implementations.
+     *      @see Mapping_Factory<> to see default implementations.
      *
      *  \em Design Note:
      *      Included <map> and have explicit CTOR for map<> so that Stroika Mapping can be used more interoperably

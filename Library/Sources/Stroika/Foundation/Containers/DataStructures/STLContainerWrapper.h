@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: O(N)
          */
         template <invocable<typename STL_CONTAINER_OF_T::value_type> FUNCTION>
@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */

@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual T GetAt (size_t i) const;
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Not a great API, since cannot check it very well. However, its more efficient when storing a larger object and you need
          *  to update just part of it.
          *
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual T*       PeekAt (size_t i);
@@ -136,14 +136,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual T& operator[] (size_t i);
@@ -151,21 +151,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual size_t size () const;
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual bool empty () const;
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Typical Case: ?? for small changes often constant, but if enuf change of size O(N) growing. Less shrinking.
          */
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \note index may == size() - in which case, we are appending.
          *
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Typical: depends on i, and Capacity - if need to change capacity O(N), and if near start of array O(N), and if near end of the array (append) can be cheap
          */
@@ -187,15 +187,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \alias Append
          * 
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
-         *      Typical: O(1)
+         *      Typical: constant
          */
         nonvirtual void push_back (ArgByValueType<T> item);
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Typical: depends on index but typically O(N) (can be less if removing from end of Array)
          */
@@ -203,24 +203,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N) - if !trivial_type
-         *      Typical: O(1)
+         *      Typical: constant
          */
         nonvirtual void RemoveAll ();
 
     public:
         /**
-         *  \note Complexity:
-         *      Worst Case: O(N)
-         *      Typical: O(N), but can be less if systematically finding entries near start of array
+         *  \note Runtime performance/complexity:
+         *      Worst Case/Typical: O(N) ; O(N), but can be less if systematically finding entries near start of array
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const;
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: O(N)
          */
         template <invocable<T> FUNCTION>
@@ -247,7 +246,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  Return index of first place in the array matching, or nullopt if not found
          * 
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of array
          * 

@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief KeyedCollection_Array<T> is an Array-based concrete implementation of the KeyedCollection<T> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

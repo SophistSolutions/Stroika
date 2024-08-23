@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      Very good low overhead implementation
      *
      *      o   size () is constant complexity

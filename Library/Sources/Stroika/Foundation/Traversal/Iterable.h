@@ -360,8 +360,8 @@ namespace Stroika::Foundation::Traversal {
          *      We chose to allow the empty () method to allow exceptions, since an Iterable<T>
          *      is general enough (say externally network data sourced) - it could be temporarily or otherwise unavailable.
          * 
-         *  \em Performance:
-         *      The performance of empty() may vary wildly (@see size) but will nearly always be O(1).
+         *  \note Runtime performance/complexity:
+         *      The performance of empty() may vary wildly (@see size) but will nearly always be constant complexity.
          */
         nonvirtual bool empty () const;
 

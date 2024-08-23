@@ -51,9 +51,6 @@
  *                  so no virtual references to operator== - so can always create Sequence<T> even if no operator== defined
  *                  for T.
  *
- *      @todo       Assure well documetned that Stroika 1.0 mutators are replaced with modifocations directly on the container,
- *                  taking the iterator as argument!
- *
  *      @todo       Document and Consider that though iterator compares with CONTAINER.end () work fine with Stroika iterators,
  *                  other comparisons fail. For example, i < it.end (); and more importantly, constructs like i-s.begin() fail.
  *
@@ -119,7 +116,7 @@ namespace Stroika::Foundation::Containers {
      *      requires more thought though. That functionality is probably not too
      *      important in light of being able to compute the current index easily
      *      in an iteration. Also, it requires more thought how to fit in with
-     *      the sequenceDirection. Do we have a seperate constructor speciing
+     *      the sequenceDirection. Do we have a separate constructor speciing
      *      two start and endpoints and use their relative order to decide a
      *      direction? Do we just add the two start and end values to the end of
      *      the param list? How hard is this todo with Sequence_DLL?? If this
@@ -143,22 +140,22 @@ namespace Stroika::Foundation::Containers {
      *
      * Notes:
      *
-     *      Note: the decsion on arguments to a Sort() function was difficult.
+     *      Note: the decision on arguments to a Sort() function was difficult.
      *  Making the arg default to op <= would not work since for type int it
-     *  wouldnt be defined, and sometimes people define it as a member function,
+     *  wouldn't be defined, and sometimes people define it as a member function,
      *  or taking const T& args. Thus the function pointer type would not match.
      *  The other alternative is to overload, and have the no arg function just
      *  have a static private CompareFunction that calls op<=. This does work
      *  pretty well, BUT it fails in cases like Sequence(Picture) where there
      *  is no op<= defined. Here, we could force the definition of this function,
-     *  but that would be genrally awkward and was jugdged not worth the trouble.
-     *  Just define your own little compare function that does op <=. Thats simple.
+     *  but that would be generally awkward and was judged not worth the trouble.
+     *  Just define your own little compare function that does op <=. That simple.
      *
      *      The other approach sterl's been pushing is that of functional objects
      *  described in Coplain, and the latest Stroustrup book (Nov 91). I haven't
      *  looked closely enuf to decide.
      *
-     *      Another imporant addition was the CurrentIndex method. This was
+     *      Another important addition was the CurrentIndex method. This was
      *  decided since it allowed for easy filtering (like only third thru eight
      *  elements, or only odd elements) without keeping an extra index variable
      *  which was often very awkward. This feature will probably be seldom used,
@@ -173,11 +170,15 @@ namespace Stroika::Foundation::Containers {
      *      be encountered, and items inserted after the current index will be encountered.
      *      Items inserted at the current index remain undefined if they will
      *      be encountered or not.
+     *
      *  \em Concrete Implementations:
      *      o   @see Concrete::Sequence_Array<>
      *      o   @see Concrete::Sequence_DoublyLinkedList<>
      *      o   @see Concrete::Sequence_LinkedList<>
      *      o   @see Concrete::Sequence_stdvector<>
+     * 
+     *  \em Factory:
+     *      @see Sequence_Factory<> to see default implementations.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -194,7 +195,7 @@ namespace Stroika::Foundation::Containers {
      *
      *      Plus - making it a template param just added to the syntactic garbage in the template
      *      names (like in the debugger how the names printed out). This is no biggie, but
-     *      it wasnt a plus.
+     *      it wasn't a plus.
      *
      *      So now (as of v2.0a20) - we just have the EQUALS_COMPARER be a templated param to the
      *      methods that need it.

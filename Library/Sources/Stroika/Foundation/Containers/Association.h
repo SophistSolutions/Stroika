@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::SortedAssociation_stdmap<>
      *
      *  \em Factory:
-     *      @see Concrete::Association_Factory<> to see default implementations.
+     *      @see <> to see default implementations.
      *
      *  \em Design Note:
      *      Included <map> and have explicit CTOR for multimap<> so that Stroika Association can be used more interoperably

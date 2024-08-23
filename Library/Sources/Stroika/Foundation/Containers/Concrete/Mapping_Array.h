@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      o   Add/Lookup () are O(N)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

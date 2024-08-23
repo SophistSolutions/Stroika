@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   SortedMapping_stdmap<KEY_TYPE,MAPPED_VALUE_TYPE> is an std::map-based concrete implementation of the SortedMapping<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      Very good low overhead implementation
      *
      *      o   size () is constant complexity

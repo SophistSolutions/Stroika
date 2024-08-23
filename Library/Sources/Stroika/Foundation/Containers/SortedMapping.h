@@ -44,6 +44,9 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::SortedMapping_SkipList<>
      *      o   @see Concrete::SortedMapping_stdset<>
      * 
+     *  \em Factory:
+     *      @see SortedMapping_Factory<> to see default implementations.
+     * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Mappings (base class) are already intrinsically equals-comparable.
      *

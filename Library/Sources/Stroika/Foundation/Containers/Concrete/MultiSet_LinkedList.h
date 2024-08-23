@@ -18,8 +18,8 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
-     * \note Performance Notes:
-     *      o   size () is O(N), but empty () is O(1)
+     * \note Runtime performance/complexity:
+     *      o   size () is O(N), but empty () is constant
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

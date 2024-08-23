@@ -73,6 +73,14 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::MultiSet_Array<>
+     *      o   @see Concrete::MultiSet_LinkedList<>
+     *      o   @see Concrete::SortedMultiSet_stdmap<>
+     *
+     *  \em Factory:
+     *      @see MultiSet_Factory<> to see default implementations.
+     *
      *  \note   Though the name (and function) is quite similar to the std::multiset<>, this version is generally MUCH
      *          more convenient to use, in that when you iterate over it, you get the items with their counts, not
      *          each element repeated that many times (in some arbitrary order). To get the std::multiset behavior, use

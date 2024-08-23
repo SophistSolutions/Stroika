@@ -42,6 +42,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::SortedKeyedCollection_stdset<>
      * 
+     *  \em Factory:
+     *      @see SortedKeyedCollection_Factory<> to see default implementations.
+     * 
      *  @see Collection<T, TRAITS>
      *  @see SortedMapping<Key,T>
      *  @see SortedSet<T, TRAITS>

@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /**
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

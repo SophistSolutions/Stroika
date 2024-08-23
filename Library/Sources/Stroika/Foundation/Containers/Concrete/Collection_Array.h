@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      * \brief   Collection_Array<T> is an Array-based concrete implementation of the Collection<T> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      A good low overhead, fast implementation. Adds and removes by iterator from the middle of the collection are slow.
      *      And adds are generally fast, but occasionally (on realloc) very slow once.
      *

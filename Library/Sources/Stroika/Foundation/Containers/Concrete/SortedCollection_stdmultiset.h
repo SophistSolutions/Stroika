@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief SortedCollection_stdmultiset<T> is an stdmultiset-based concrete implementation of the SortedCollection<T> container pattern.
      *
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *      o   size () is O(1)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *      o   Additions and Removals are O(log N)

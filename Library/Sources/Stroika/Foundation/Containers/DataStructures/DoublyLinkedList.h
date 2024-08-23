@@ -17,9 +17,8 @@
  *
  *  Description:
  *
- *      DoublyLinkedList<T,TRAITS> is a backend implementation. It is not intended to be directly
+ *      DoublyLinkedList<T> is a backend implementation. It is not intended to be directly
  *  used by programmers, except in implementing concrete container reps.
- *
  *
  * TODO:
  *
@@ -71,28 +70,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual bool empty () const;
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: O(N)
          */
         nonvirtual size_t size () const;
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual optional<T> GetFirst () const;
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual optional<T> GetLast () const;
@@ -101,7 +100,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \alias Prepend
          * 
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual void push_front (ArgByValueType<T> item);
@@ -110,14 +109,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \alias Append
          * 
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual void push_back (ArgByValueType<T> item);
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          *
          *  \req not empty ()
@@ -126,7 +125,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          *
          *  \req not empty ()
@@ -135,7 +134,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *
@@ -146,7 +145,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: O(N)
          */
         template <invocable<T> FUNCTION>
@@ -154,7 +153,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
@@ -163,14 +162,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *
          *  Note - does nothing if item not found.
 
          ForwardIterator OVERLOAD:
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          * 
          *  returns the next link
@@ -181,7 +180,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -189,7 +188,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -197,7 +196,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -224,14 +223,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          *
          *  \req not i.Done ()
@@ -240,7 +239,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
@@ -330,7 +329,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator  operator++ (int) noexcept;
 
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
          * 
          *  \req data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_

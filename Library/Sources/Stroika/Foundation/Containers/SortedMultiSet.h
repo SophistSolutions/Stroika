@@ -42,6 +42,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::SortedMultiSet_stdmap<>
      *
+     *  \em Factory:
+     *      @see SortedMultiSet_Factory<> to see default implementations.
+     * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o MultiSet (base class) are already intrinsically equals-comparable.
      *

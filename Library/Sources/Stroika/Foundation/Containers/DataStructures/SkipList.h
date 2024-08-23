@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *
          *  Returns true if the list was changed (if eAddReplaces, and key found, return true even if val same as value already there because we cannot generically compare values)
          * 
-         *  \note Complexity:   ??
+         *  \note Runtime performance/complexity:   ??
          *      Average:    log(N)
          *      Worst:      N
          */
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \note same as Verify (RemoveIf (key))
          * 
-         *  \note Complexity:   ??
+         *  \note Runtime performance/complexity:   ??
          *      Average:    log(N)
          *      Worst:      N
          */
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          * \brief Remove the first item with the given key, if any. Return true if a value found and removed.
          * 
-         *  \note Complexity:   ??
+         *  \note Runtime performance/complexity:   ??
          *      Average:    log(N)
          *      Worst:      N
          */
@@ -272,14 +272,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual size_t size () const;
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: constant
          */
         nonvirtual bool empty () const;
@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \see https://en.cppreference.com/w/cpp/container/map/contains
          *
-         *  \note Complexity:   ??
+         *  \note Runtime performance/complexity:   ??
          *      Average:    log(N)
          *      Worst:      N
          */
@@ -315,10 +315,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity (key_type):   ??
-         *      Average:    log(N)
-         *      Worst:      N
-         *  \note Complexity (FUNCTION&& f overload):
+         *  \note Runtime performance/complexity:
+         *      overload: (key_type)
+         *      Average/Worst:    log(N) ; N
+         *  \note Runtime performance/complexity:
+         *      overload: (FUNCTION&& f overload)
          *      Average/Worst:    O(N)
          */
         nonvirtual ForwardIterator Find (ArgByValueType<key_type> key) const;
@@ -394,7 +395,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \note alias: Could be called 'Optimize'
          * 
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Average/WorseCase???
          */
         nonvirtual void ReBalance ();
@@ -403,14 +404,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          * make the node faster on finds, possibly slowing other node searches down
          * 
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Average/WorseCase???
          */
         nonvirtual void Prioritize (ArgByValueType<key_type> key);
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Always: O(N)
          */
 
@@ -582,7 +583,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Complexity:
+         *  \note Runtime performance/complexity:
          *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
          * 
          *  \req data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_

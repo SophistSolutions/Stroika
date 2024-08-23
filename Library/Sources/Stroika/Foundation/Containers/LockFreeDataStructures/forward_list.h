@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
      * similar to std::forward_list, but thread safe and (partially) lock free
      * 
      *      o   all methods are thread safe, baring the destructor
-     *      o   push, insert, emplace, pop, erase, and iterator increment/dereference are O(1)
+     *      o   push, insert, emplace, pop, erase, and iterator increment/dereference are constant
      *      o   locks that do occur are per-element spin_ locks
      *      o   push, insert, emplace, clear, and separate operations are lock free.
      *      o   pop and erase are not lock free.

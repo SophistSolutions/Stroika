@@ -20,12 +20,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Sequence_LinkedList<T> is a LinkedList-based concrete implementation of the Sequence<T> container pattern.
      * 
-     * \note Performance Notes:
+     * \note Runtime performance/complexity:
      *       
      *      Suitable for short lists, low memory overhead, where you can new entries, and remove from the start
      *      (or if array indexing is rare). To keep the order, but not use it much.
      * 
-     *      o   size () is O(N), but empty () is O(1)
+     *      o   size () is O(N), but empty () is constant
      *      o   Append () is O(N)
      *      o   Prepend () is constant complexity
      *      o   Indexing (GetAt/SetAt,operator[]) are O(N)
