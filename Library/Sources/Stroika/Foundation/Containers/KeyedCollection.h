@@ -115,6 +115,12 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   Important that KeyedCollection<>::Add () will REPLACE the value, unlike with set.
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::KeyedCollection_Array<>
+     *      o   @see Concrete::KeyedCollection_LinkedList<>
+     *      o   @see Concrete::KeyedCollection_stdhashset<>
+     *      o   @see Concrete::SortedKeyedCollection_stdset<>
+     *
      *  \note Design Choice:
      *          Could either embed the 'extractor' function in the container type TRAITS or passed in as a
      *          constructor argument to the container. 

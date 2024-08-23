@@ -39,6 +39,9 @@ namespace Stroika::Foundation::Containers {
      *      Items inserted at the current index remain undefined if they will
      *      be encountered or not.
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::SortedKeyedCollection_stdset<>
+     * 
      *  @see Collection<T, TRAITS>
      *  @see SortedMapping<Key,T>
      *  @see SortedSet<T, TRAITS>

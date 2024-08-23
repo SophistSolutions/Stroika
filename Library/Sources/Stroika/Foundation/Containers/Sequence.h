@@ -173,6 +173,11 @@ namespace Stroika::Foundation::Containers {
      *      be encountered, and items inserted after the current index will be encountered.
      *      Items inserted at the current index remain undefined if they will
      *      be encountered or not.
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::Sequence_Array<>
+     *      o   @see Concrete::Sequence_DoublyLinkedList<>
+     *      o   @see Concrete::Sequence_LinkedList<>
+     *      o   @see Concrete::Sequence_stdvector<>
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *

@@ -40,6 +40,10 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::SortedMapping_SkipList<>
+     *      o   @see Concrete::SortedMapping_stdset<>
+     * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Mappings (base class) are already intrinsically equals-comparable.
      *

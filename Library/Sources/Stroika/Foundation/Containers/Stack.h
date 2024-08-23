@@ -18,7 +18,6 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- *
  *  TODO:
  *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.
  *
@@ -47,6 +46,9 @@ namespace Stroika::Foundation::Containers {
      *      a stack intrinsically more costly, as you had to copy, and then pop items to see them,
      *      and put them into a new stack. A special copy API (private to stack) would have limited
      *      the ease of interoperating the Stack<T> container with other sorts of containers.
+     *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::Stack_LinkedList<>
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -92,8 +94,6 @@ namespace Stroika::Foundation::Containers {
          *        of argument and copied stack.
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
-         *
-         *  \todo   @todo http://stroika-bugs.sophists.com/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Stack ();
         Stack (Stack&& src) noexcept      = default;

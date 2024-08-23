@@ -39,6 +39,9 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::SortedMultiSet_stdmap<>
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o MultiSet (base class) are already intrinsically equals-comparable.
      *

@@ -66,6 +66,7 @@ namespace Stroika::Foundation::Containers {
      *          o   Sets can also be implemented by hash-tables, etc.
      *
      *  \em Concrete Implementations:
+     *      o   @see Concrete::Set_Array<>
      *      o   @see Concrete::Set_LinkedList<>
      *      o   @see Concrete::SortedSet_stdset<>
      * 

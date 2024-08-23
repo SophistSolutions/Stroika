@@ -71,6 +71,12 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::Collection_Array<>
+     *      o   @see Concrete::Collection_LinkedList<>
+     *      o   @see Concrete::Collection_stdforward_list<>
+     *      o   @see Concrete::SortedCollection_stdmultiset<>
+     *
      *  \note   Shake
      *      Considered adding a Shake() method (when this was called Bag<T>), but that would restrict
      *      the use to backends capable of this randomizing of order (eg. not hashtables

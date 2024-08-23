@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::Association_Array<>
      *      o   @see Concrete::Association_LinkedList<>
-     *      o   @see Concrete::Association_stdmap<>
+     *      o   @see Concrete::SortedAssociation_stdmap<>
      *
      *  \em Factory:
      *      @see Concrete::Association_Factory<> to see default implementations.

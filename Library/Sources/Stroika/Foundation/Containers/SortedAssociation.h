@@ -38,6 +38,9 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::SortedAssociation_stdmultimap<>
+     * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Associations (base class) are already intrinsically equals-comparable.
      *

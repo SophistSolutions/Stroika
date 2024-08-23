@@ -34,6 +34,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     *  \em Concrete Implementations:
+     *      o   @see Concrete::SortedSet_stdset<>
+     *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *

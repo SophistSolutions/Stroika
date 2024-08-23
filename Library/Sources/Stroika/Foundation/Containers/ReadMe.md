@@ -112,12 +112,11 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: [DoublyLinkedList](Concrete/Deque_DoublyLinkedList.h)
 - [KeyedCollection\<T, KEY_TYPE, TRAITS>](KeyedCollection.h)
   - KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single object. It takes a parameter saying how to 'extract' the key from the collected value 'T'.
-  - Supported backends: [Array](Concrete/KeyedCollection_Array_.h),[LinkedList](Concrete/KeyedCollection_LinkedList_.h),[std::hashset](Concrete/KeyedCollection_stdhashset_.h), [std::set](Concrete/SortedKeyedCollection_stdset_.h)
+  - Supported backends: [Array](Concrete/KeyedCollection_Array_.h),[LinkedList](Concrete/KeyedCollection_LinkedList_.h),[std::hashset](Concrete/KeyedCollection_stdhashset.h), [std::set](Concrete/SortedKeyedCollection_stdset.h)
 - [Mapping\<KEY_TYPE, VALUE_TYPE>](Mapping.h)
   - Allows for the association of two elements: a key and a value. The key UNIQUELY specifies its associated value
   - Supported backends: [Array](Concrete/Mapping_Array_.h), [LinkedList](Concrete/Mapping_LinkedList_.h), [std::hash_map](Concrete/Mapping_stdhashmap_.h), [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
   - A collection of elements where each time you add something, the MultiSet tallies the number of times that thing has been entered. This is not a commonly used class, but handy when you want to count things
-  - Supported backends: Array, LinkedList, std::map
 - [PriorityQueue\<T>](PriorityQueue.h)
   - PriorityQueues are a like a Queue that allows retrieval based the priority assigned an item
   - NYI

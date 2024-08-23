@@ -7,7 +7,7 @@ TODO (Foundation::Containers::Concrete)
 			 If (Sequence_Array<int>* s = myS.Dyamic_Cast<Sequence_Array<int>>) {
 				 s->SetSlotsAlloced (40);
 			}
-			BUT  trick is finding right target type. Maybe have generic private name in “ContainerOf” – and have all the ContainerOf’s have a generic ‘extended friend’ for Iterable<>::Dynamic_cast<>??
+			BUT  trick is finding right target type. Maybe have generic private name in ï¿½ContainerOfï¿½ ï¿½ and have all the ContainerOfï¿½s have a generic ï¿½extended friendï¿½ for Iterable<>::Dynamic_cast<>??
 			Template <typename ContainerOfT>
 						ContaienrOfT* Iterable<T>::Dynamic_Cast () {
 							  If (dynamic_cast<T::Rep*> (GetRep()) {
@@ -19,20 +19,7 @@ TODO (Foundation::Containers::Concrete)
 		Regular conversion cast would make a COPY. We need some way to return the sequence iff its already of the right type
 		so you can tweak a known type (like setcapacity).
 
-
 	o	MAJOR and most important thing todo is copy forward Stroika 1.0 Archive concrete
 		implementations and update them for Stroika 2.0
 
 	o	Careful, precise documentation of semantics.
-
-	o	Perhaps use something like Concepts ('ElementTraits') to capture requirements on type "T" our
-		containers impose (mostly doc purposes).
-			IF for doc purposes, I COULD just iNSTANTIATE one of those classes in a REQUIRE statment in the
-			CTOR??? Maybe have a REQUIRE_TRAITS() define of some sort? Key is to asure no code size imposition,
-			but clarity of docs...
-
-	o	Probably add (using template aliases) 
-		stuff like Mapping_stdmap (we just deleted it) - but clearly as just an alias to the 
-		SortedMapping_stdmap code. Do for each sensible combo, so someone COULD hardwire (and not use
-		factory) they wanted a mapping used stdmap!!!
-
