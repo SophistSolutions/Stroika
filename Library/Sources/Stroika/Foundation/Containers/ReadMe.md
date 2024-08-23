@@ -83,11 +83,11 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - A sensible taxonmy of containers (Archetypes) based on access pattern, and for each, multiple backend data structures to implement them.
 
 - <a name="Alternate-Backends-Feature"></a>Each Archetype container (access pattern) comes with multiple data structure backends, and you can start with the default (generally good), but when optimizing, transparently switch backends (data structure implementations) to easily adjust your performance characteristics
-- Linq-like rich variety of functional accessors, like Apply (), Find (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
+- Linq-like rich variety of functional accessors, like Apply (), Find (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from [Iterable\<T>](../Traversal/Iterable.h)
 
-- Block-Allocation by default - even for STL-based containers. This helps make use of Set_stdset\<T> (much) faster than std::set\<T>, for example.
+- Block-Allocation by default - even for STL-based containers. This helps make use of SortedSet_stdset\<T> often faster than std::set\<T>, for example.
 
-- Internal thread safety checks, (generally) assure threadsafe access (see Debug::AssertExternallySyncrhonized)
+- Internal thread safety checks, (generally) assure threadsafe access (see [Debug::AssertExternallySynchronizedMutex](../Debug/AssertExternallySynchronizedMutex.h))
 
 ## Supported Containers Archetypes
 ---
@@ -131,10 +131,10 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - a container of T, where once an item is added, additionally adds () do nothing (so items added at most once).
   - Supported backends: [Array](Concrete/Set_Array.h), [LinkedList](Concrete/Set_LinkedList.h), [std::set](Concrete/SorteSet_stdset_.h)
   - Set vs std::set<T>:
-    Stroika's Set<T> is like std::set<T>, except that
+    Stroika's Set\<T> is like std::set\<T>, except that
     - you can separately select different algorithms (besides red-black tree) and not change the API used (Set<T>).
-    - You don't need to have a less<T> method defined. You just need to provide some mechanism (either operator== or argument to constructor)  saying how to compare elements for equality
-    - If you have a less<T> already defined, like std::set<T>, this will be used by default to construct a tree-based set.
+    - You don't need to have a less\<T> method defined. You just need to provide some mechanism (either operator== or argument to constructor)  saying how to compare elements for equality
+    - If you have a less\<T> already defined, like std::set<T>, this will be used by default to construct a tree-based set.
     - Sets can also be implemented by hash-tables, etc.
 - [SortedAssociation\<KEY_TYPE, VALUE_TYPE>](SortedAssociation.h)
   - see Association; but adds parameter saying how KEY items sorted
