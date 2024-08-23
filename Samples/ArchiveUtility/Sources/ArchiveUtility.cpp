@@ -132,12 +132,12 @@ namespace {
     {
 // @todo - must support other formats, have a registry, and autodetect
 #if qHasFeature_LZMA
-        if (IO::FileSystem::FromPath (archiveName).EndsWith (".7z"sv, Characters::CompareOptions::eCaseInsensitive)) {
+        if (IO::FileSystem::FromPath (archiveName).EndsWith (".7z"sv, Characters::eCaseInsensitive)) {
             return move (Archive::_7z::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
 #if qHasFeature_ZLib
-        if (IO::FileSystem::FromPath (archiveName).EndsWith (".zip"sv, Characters::CompareOptions::eCaseInsensitive)) {
+        if (IO::FileSystem::FromPath (archiveName).EndsWith (".zip"sv, Characters::eCaseInsensitive)) {
             return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
