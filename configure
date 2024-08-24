@@ -3171,7 +3171,7 @@ if ($onlyGenerateIfCompilerExists) {
 		if (defined $TargettingValgrind && $TargettingValgrind == true) {
 			# not worth debugging issues.....
 			$generate = false;
-			$generateBecause = "valgrind build failed - on ubuntu 23.10, not worth debugging right now for this target";
+			$generateBecause = "valgrind build issue - on ubuntu 23.10, not worth debugging right now for this target";
 		}
 	}
 	if ($generate && defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {

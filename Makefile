@@ -481,22 +481,22 @@ endif
 # Use occasionally to generate quick debug builds etc...
 TEST_CONFIGURATIONS_ADD2ALL?=	--all-available-third-party-components
 
-basic-unix-test-configurations:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making basic-unix-test-configurations:"
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_g++_versions_
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_clang++_versions_
-	@#
-	@#32-bit not working now - asm bug - must debug...
-	@#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;
-	@#
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_sanitizer_configs_;
-	@#
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure g++-optimized --only-if-has-compiler --config-tag Unix --apply-default-release-flags ${TEST_CONFIGURATIONS_ADD2ALL}
-	@#
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_valgrind_configs_
+# basic-unix-test-configurations:
+# 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making basic-unix-test-configurations:"
+# 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components
+# 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system
+# 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_g++_versions_
+# 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_clang++_versions_
+# 	@#
+# 	@#32-bit not working now - asm bug - must debug...
+# 	@#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;
+# 	@#
+# 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_sanitizer_configs_;
+# 	@#
+# 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure g++-optimized --only-if-has-compiler --config-tag Unix --apply-default-release-flags ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	@#
+# 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_valgrind_configs_
 
 
 basic-NEW-UNIX-test-configurations:
@@ -524,8 +524,8 @@ basic-NEW-UNIX-test-configurations:
 		# - ASAN appears to work very sporadically (crashing about 1/2 the time) \
 		# 		Builds/g++-debug-sanitize_undefined_leak/Tests/Test44 --gtest_brief -- Segmentation fault (core dumped)\
 		./configure g++-debug-sanitize_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# VALGRIND\
-		./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# VALGRIND - some tests fail inside valgrind code - looks like bug there - don't bother for now...LGP 2024-08-24\
+		#       ./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 	elif [[ `lsb_release -rs 2>/dev/null` == '24.04' ]]; then \
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
@@ -571,65 +571,65 @@ basic-NEW-UNIX-test-configurations:
 private_compiler_versions_:
 	# ./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a
 
-basic-unix-test-configurations_g++_versions_:
-	# g++-11
-	./configure g++-11-debug --config-tag Unix --compiler-driver g++-11 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure g++-11-release++2b --config-tag Unix --compiler-driver g++-11 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
-	# g++-12
-	./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
-	# g++-13
-	./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
-	# g++-14
-	./configure g++-14-debug --config-tag Unix --compiler-driver g++-14 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure g++-14-release++23 --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+# basic-unix-test-configurations_g++_versions_:
+# 	# g++-11
+# 	./configure g++-11-debug --config-tag Unix --compiler-driver g++-11 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure g++-11-release++2b --config-tag Unix --compiler-driver g++-11 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	# g++-12
+# 	./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	# g++-13
+# 	./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	# g++-14
+# 	./configure g++-14-debug --config-tag Unix --compiler-driver g++-14 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure g++-14-release++23 --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
 
-basic-unix-test-configurations_clang++_versions_:
-	# clang-15
-	./configure clang++-15-debug-libc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-15-release-libstdc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
-	# clang-16
-	./configure clang++-16-debug-libc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-16-release-libstdc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-16-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-16-release-libc++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
-	# clang-17
-	./configure clang++-17-debug-libc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-17-release-libstdc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-17-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-17-release-libc++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
-	# clang-18
-	./configure clang++-18-debug-libc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-18-release-libstdc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-18-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure clang++-18-release-libc++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+# basic-unix-test-configurations_clang++_versions_:
+# 	# clang-15
+# 	./configure clang++-15-debug-libc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-15-release-libstdc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	# clang-16
+# 	./configure clang++-16-debug-libc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-16-release-libstdc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-16-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-16-release-libc++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	# clang-17
+# 	./configure clang++-17-debug-libc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-17-release-libstdc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-17-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-17-release-libc++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	# clang-18
+# 	./configure clang++-18-debug-libc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-18-release-libstdc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-18-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure clang++-18-release-libc++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}
 
-basic-unix-test-configurations_sanitizer_configs_:
-	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
-	# https://stackoverflow.com/questions/62109255/what-is-a-good-way-to-apply-multiple-sanitizers-in-cmake-with-gcc
-	#
-	# Note as of 2023-12-02, it appears memory sanitizer only works with clang++ (not gcc), and even that major
-	# PITA to use - see https://github.com/google/sanitizers/wiki/MemorySanitizerLibcxxHowTo - must rebuild own libc++ specailly.
-	# Note they do provide a dockerfile with all this setup, but still ... Not worth the trouble... --LGP 2023-12-02
-	if [[  `lsb_release -rs 2>/dev/null` == '22.04' || `lsb_release -rs 2>/dev/null` == '24.04' ]] ; then ./configure g++-debug-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; fi;
-	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread --compiler-driver g++ ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL}
-	#https://stroika.atlassian.net/browse/STK-761
-	if [[ `lsb_release -rs 2>/dev/null` == '20.04' || `lsb_release -rs 2>/dev/null` == '21.10' || `lsb_release -rs 2>/dev/null` == '22.04' || `lsb_release -rs 2>/dev/null` == '23.10' ]] ; then ./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak --lto disable ${TEST_CONFIGURATIONS_ADD2ALL}; fi;
-	if [[ `lsb_release -rs 2>/dev/null` == '23.10' ]] ; then rm -f ConfigurationFiles/g++-release-sanitize_address_undefined_leak.xml; fi;
-	./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL}
+# basic-unix-test-configurations_sanitizer_configs_:
+# 	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
+# 	# https://stackoverflow.com/questions/62109255/what-is-a-good-way-to-apply-multiple-sanitizers-in-cmake-with-gcc
+# 	#
+# 	# Note as of 2023-12-02, it appears memory sanitizer only works with clang++ (not gcc), and even that major
+# 	# PITA to use - see https://github.com/google/sanitizers/wiki/MemorySanitizerLibcxxHowTo - must rebuild own libc++ specailly.
+# 	# Note they do provide a dockerfile with all this setup, but still ... Not worth the trouble... --LGP 2023-12-02
+# 	if [[  `lsb_release -rs 2>/dev/null` == '22.04' || `lsb_release -rs 2>/dev/null` == '24.04' ]] ; then ./configure g++-debug-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; fi;
+# 	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread --compiler-driver g++ ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	#https://stroika.atlassian.net/browse/STK-761
+# 	if [[ `lsb_release -rs 2>/dev/null` == '20.04' || `lsb_release -rs 2>/dev/null` == '21.10' || `lsb_release -rs 2>/dev/null` == '22.04' || `lsb_release -rs 2>/dev/null` == '23.10' ]] ; then ./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak --lto disable ${TEST_CONFIGURATIONS_ADD2ALL}; fi;
+# 	if [[ `lsb_release -rs 2>/dev/null` == '23.10' ]] ; then rm -f ConfigurationFiles/g++-release-sanitize_address_undefined_leak.xml; fi;
+# 	./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL}
 
-basic-unix-test-configurations_valgrind_configs_:
-	# Builds with a few special flags to make valgrind work better
-	# nb: using default installed C++ compiler cuz of matching installed libraries on host computer
-	# Since Stroika v3.0d5 - disabling valgrind-debug-SSLPurify because it runs EXTREMELY SLOWLY, and has nearly no value (does work - eventually)
-	# And Stroika v3.0d5 disables valgrind-debug-SSLPurify-NoBlockAlloc for the same speed reasons. Given sanitizers, very little value in memcheck and its so slow not worth it.
-	#./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none ${TEST_CONFIGURATIONS_ADD2ALL}
-	#./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none ${TEST_CONFIGURATIONS_ADD2ALL}
-	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}
+# basic-unix-test-configurations_valgrind_configs_:
+# 	# Builds with a few special flags to make valgrind work better
+# 	# nb: using default installed C++ compiler cuz of matching installed libraries on host computer
+# 	# Since Stroika v3.0d5 - disabling valgrind-debug-SSLPurify because it runs EXTREMELY SLOWLY, and has nearly no value (does work - eventually)
+# 	# And Stroika v3.0d5 disables valgrind-debug-SSLPurify-NoBlockAlloc for the same speed reasons. Given sanitizers, very little value in memcheck and its so slow not worth it.
+# 	#./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	#./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none ${TEST_CONFIGURATIONS_ADD2ALL}
+# 	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}
 
 raspberrypi-cross-compile-test-configurations:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making raspberrypi-cross-compile-test-configurations:"
