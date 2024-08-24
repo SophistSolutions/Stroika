@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *
      *      Array<T> also provides a dynamic sizing capability. It reallocs its
      *  underlying storage is such a ways as to keep a buffer of n(currently 5)%
-     *  extra, so that reallocs on resizes only occur logn times on n appends.
+     *  extra, so that reallocs on resizes only occur log(n) times on n appends.
      *  To save even this space, you can call shrink_to_fit().
      *
      *      Unlike other dynamic array implementations, when an item is removed,
