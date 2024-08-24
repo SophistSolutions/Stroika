@@ -10,6 +10,10 @@
 #include <optional>
 
 /**
+ *  \file
+ *
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
+ *
  *  Initial implementation copied from (so full credit for algorithms)
  *      https://codereview.stackexchange.com/questions/167252/c11-lock-free-collection-similar-to-stdforward-list-follow-up-2
  *      APPENTLY written by https://codereview.stackexchange.com/users/62314/brent
