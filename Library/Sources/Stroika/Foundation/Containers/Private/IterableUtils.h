@@ -29,6 +29,7 @@ namespace Stroika::Foundation::Containers::Private {
 
     template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
     optional<size_t> IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer = {});
+
 }
 
 /*
