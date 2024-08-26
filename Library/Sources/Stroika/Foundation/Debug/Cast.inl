@@ -28,7 +28,6 @@ namespace Stroika::Foundation::Debug {
             else {
                 Require (static_cast<T> (arg) == dynamic_cast<T> (arg));
                 AssertMember (arg, DECAYED_T);
-                Ensure (arg != nullptr);
             }
         }
         return static_cast<T> (arg);
