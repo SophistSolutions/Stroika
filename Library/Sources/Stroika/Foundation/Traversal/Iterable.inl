@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
-        : fConstRef_{static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
+        : fConstRef_{Debug::UncheckedDynamicCast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
         , fIterableEnvelope_{it}
 #if qDebug
         , fAssertReadLock_{it->_fThisAssertExternallySynchronized}
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
-        : fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.rwget ())}
+        : fRepReference_{Debug::UncheckedDynamicCast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.rwget ())}
 #if qDebug
         , fAssertWriteLock_{iterableEnvelope->_fThisAssertExternallySynchronized}
         , fIterableEnvelope_{iterableEnvelope}
