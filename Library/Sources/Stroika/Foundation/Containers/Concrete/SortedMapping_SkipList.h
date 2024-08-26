@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
+#include "Stroika/Foundation/Containers/Private/SkipListSupport.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 
 /**
@@ -26,9 +27,11 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class SortedMapping_SkipList : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    class SortedMapping_SkipList
+        : public Private::SkipListBasedContainer<SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>, SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>, true> {
     private:
-        using inherited = SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
+        using inherited =
+            Private::SkipListBasedContainer<SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>, SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
 
     public:
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
@@ -95,12 +98,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedMapping_SkipList& operator= (const SortedMapping_SkipList&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = Private::SkipListBasedContainerIRep<typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
         class Rep_;
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend inherited;
     };
 
 }

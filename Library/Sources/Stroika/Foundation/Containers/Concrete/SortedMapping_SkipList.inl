@@ -10,26 +10,22 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     **** SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ ********
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {};
-
-    /*
-     ********************************************************************************
      ******** SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ *************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
-    class SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
-                                                                      public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_THREEWAY_COMPARER>> {
+    class SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
+        : public Private::SkipListBasedContainerRepImpl<typename SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_<KEY_THREEWAY_COMPARER>,
+                                                        typename SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_>,
+          public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_THREEWAY_COMPARER>> {
     public:
         static_assert (not is_reference_v<KEY_THREEWAY_COMPARER>);
 
     private:
-        using inherited = IImplRepBase_;
+        using inherited =
+            Private::SkipListBasedContainerRepImpl<typename SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_<KEY_THREEWAY_COMPARER>,
+                                                   typename SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_>;
 
     public:
         Rep_ (const KEY_THREEWAY_COMPARER& inorderComparer)
@@ -199,6 +195,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend inherited;
     };
 
     /*

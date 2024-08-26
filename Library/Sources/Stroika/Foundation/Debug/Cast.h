@@ -49,13 +49,13 @@ namespace Stroika::Foundation::Debug {
      *              
      *  \see https://stackoverflow.com/questions/28002/regular-cast-vs-static-cast-vs-dynamic-cast
      * 
-     *  \note this does NOT work (should be checked somemhow/assert/type info @todo) - with virtual inheritance.
+     *  \note this does NOT work (should be checked somehow/assert/type info @todo) - with virtual inheritance.
      */
     template <typename T, typename T1>
     T UncheckedDynamicCast (T1&& arg) noexcept;
 
     /**
-     *  \brief Produce the same result as dynamic_pointer_cast if the successul case (non-null) - with better performance.
+     *  \brief Produce the same result as dynamic_pointer_cast if the successful case (non-null) - with better performance.
      * 
      *  \req arg != nullptr
      *  \req dynamic_pointer_cast<T> (arg) != nullptr

@@ -6,7 +6,7 @@ namespace Stroika::Foundation::Debug {
 
     /*
      ********************************************************************************
-     **************************** Debug::UncheckedDynamicCast ***********************
+     ************************** Debug::UncheckedDynamicCast *************************
      ********************************************************************************
      */
     template <typename T, typename T1>
@@ -28,6 +28,7 @@ namespace Stroika::Foundation::Debug {
             else {
                 Require (static_cast<T> (arg) == dynamic_cast<T> (arg));
                 AssertMember (arg, DECAYED_T);
+                Ensure (arg != nullptr);
             }
         }
         return static_cast<T> (arg);
