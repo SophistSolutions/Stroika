@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     using Common::IThreeWayComparer;
 
     /**
-     *  \brief   SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
+     *  \brief   SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an SkipList-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
