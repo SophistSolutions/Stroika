@@ -81,6 +81,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend inherited;
     };
 
 }

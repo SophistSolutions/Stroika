@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : Association_Array{}
         {
             if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
-                reserve (src.size ());
+                this->reserve (src.size ());
             }
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual void AssertRepValidType_ () const;
 
     private:
-        friend class Private::ArrayBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
+        friend inherited;
     };
 
 }
