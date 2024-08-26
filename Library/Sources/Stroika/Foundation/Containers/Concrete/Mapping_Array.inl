@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include "Stroika/Foundation/Containers/DataStructures/Array.h"
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 #include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -10,28 +11,18 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     *********** Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ **********
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
-    public:
-        virtual void   shrink_to_fit ()              = 0;
-        virtual size_t capacity () const             = 0;
-        virtual void   reserve (size_t slotsAlloced) = 0;
-    };
-
-    /*
-     ********************************************************************************
      ************ Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ******************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
-    class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
-                                                             public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
+    class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
+        : public Private::ArrayBasedContainerRepImpl<Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_<KEY_EQUALS_COMPARER>,
+                                                     typename Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_>,
+          public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
     private:
-        using inherited = IImplRepBase_;
+        using inherited = Private::ArrayBasedContainerRepImpl<Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_<KEY_EQUALS_COMPARER>,
+                                                              typename Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_>;
 
     public:
         static_assert (not is_reference_v<KEY_EQUALS_COMPARER>);
@@ -182,31 +173,16 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
         }
 
-        // IImplRepBase_ overrides
-    public:
-        virtual void shrink_to_fit () override
-        {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.shrink_to_fit ();
-        }
-        virtual size_t capacity () const override
-        {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.capacity ();
-        }
-        virtual void reserve (size_t slotsAlloced) override
-        {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.reserve (slotsAlloced);
-        }
-
     private:
         using DataStructureImplType_ = DataStructures::Array<value_type>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend inherited;
     };
 
     /*
@@ -231,7 +207,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Mapping_Array{}
     {
-        reserve (src.size ());
+        this->reserve (src.size ());
         this->AddAll (src);
         AssertRepValidType_ ();
     }
@@ -241,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                                                                       const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
-        reserve (src.size ());
+        this->reserve (src.size ());
         this->AddAll (src);
         AssertRepValidType_ ();
     }
@@ -253,7 +229,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         : Mapping_Array{}
     {
         if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
-            reserve (src.size ());
+            this->reserve (src.size ());
         }
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -264,7 +240,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
-        reserve (src.size ());
+        this->reserve (src.size ());
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
@@ -275,7 +251,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         if constexpr (random_access_iterator<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                reserve (end - start);
+                this->reserve (end - start);
             }
         }
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -289,29 +265,11 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         if constexpr (random_access_iterator<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                reserve (end - start);
+                this->reserve (end - start);
             }
         }
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::shrink_to_fit ()
-    {
-        using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<IImplRepBase_>;
-        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().shrink_to_fit ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline size_t Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::capacity () const
-    {
-        using _SafeReadRepAccessor = typename Iterable<value_type>::template _SafeReadRepAccessor<IImplRepBase_>;
-        return _SafeReadRepAccessor{this}._ConstGetRep ().capacity ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::reserve (size_t slotsAlloced)
-    {
-        using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<IImplRepBase_>;
-        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().reserve (slotsAlloced);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const

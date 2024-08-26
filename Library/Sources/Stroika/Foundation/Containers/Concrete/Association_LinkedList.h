@@ -43,8 +43,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Association_LinkedList ();
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Association_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer);
-        Association_LinkedList (Association_LinkedList&& src) noexcept      = default;
-        Association_LinkedList (const Association_LinkedList& src) noexcept = default;
+        Association_LinkedList (Association_LinkedList&&) noexcept      = default;
+        Association_LinkedList (const Association_LinkedList&) noexcept = default;
         Association_LinkedList (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Association_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
@@ -67,8 +67,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Association_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Association_LinkedList& operator= (Association_LinkedList&& rhs) noexcept = default;
-        nonvirtual Association_LinkedList& operator= (const Association_LinkedList& rhs)     = default;
+        nonvirtual Association_LinkedList& operator= (Association_LinkedList&&) noexcept = default;
+        nonvirtual Association_LinkedList& operator= (const Association_LinkedList&)     = default;
 
     private:
         class IImplRepBase_;

@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 
 /**
@@ -21,16 +22,16 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \brief   Sequence_Array<T> is an Array-based concrete implementation of the Sequence<T> container pattern.
      *
      * \note Runtime performance/complexity:
-     *      o   Append/Prepend should perform well (typically constant time, but occasionally O(N))
+     *      o   Append should perform well (typically constant time, but occasionally O(N))
      *      o   it is FAST to array index a Sequence_Array.
      *      o   size () is constant complexity
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
-    class Sequence_Array : public Sequence<T> {
+    class Sequence_Array : public Private::ArrayBasedContainer<Sequence_Array<T>, Sequence<T>, false> {
     private:
-        using inherited = Sequence<T>;
+        using inherited = Private::ArrayBasedContainer<Sequence_Array<T>, Sequence<T>, false>;
 
     public:
         using value_type = typename inherited::value_type;
@@ -40,8 +41,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Sequence<> constructor
          */
         Sequence_Array ();
-        Sequence_Array (Sequence_Array&& src) noexcept      = default;
-        Sequence_Array (const Sequence_Array& src) noexcept = default;
+        Sequence_Array (Sequence_Array&&) noexcept      = default;
+        Sequence_Array (const Sequence_Array&) noexcept = default;
         Sequence_Array (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_Array<T>>)
@@ -50,7 +51,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : Sequence_Array{}
         {
             if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
-                reserve (src.size ());
+                this->reserve (src.size ());
             }
             this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();
@@ -63,46 +64,17 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Sequence_Array& operator= (Sequence_Array&& rhs) noexcept = default;
-        nonvirtual Sequence_Array& operator= (const Sequence_Array& rhs)     = default;
-
-    public:
-        /*
-         *  \brief Return the number of allocated vector/array elements.
-         * 
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note alias GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note Alias SetCapacity ();
-         * 
-         *  \note Note that this does not affect the semantics of the Sequence.
-         * 
-         *  \req slotsAllocated >= size ()
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
-
-    public:
-        /**
-         *  \brief  Reduce the space used to store the Sequence<T> contents.
-         *
-         *  This has no semantics, no observable behavior. But depending on the representation of
-         *  the concrete sequence, calling this may save memory.
-         */
-        nonvirtual void shrink_to_fit ();
+        nonvirtual Sequence_Array& operator= (Sequence_Array&&) noexcept = default;
+        nonvirtual Sequence_Array& operator= (const Sequence_Array&)     = default;
 
     private:
-        class IImplRep_;
         class Rep_;
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend class Private::ArrayBasedContainer<Sequence_Array, Sequence<T>, false>;
     };
 
 }

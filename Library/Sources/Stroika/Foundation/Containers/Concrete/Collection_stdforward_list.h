@@ -46,8 +46,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Collection<T> constructor
          */
         Collection_stdforward_list ();
-        Collection_stdforward_list (Collection_stdforward_list&& src) noexcept      = default;
-        Collection_stdforward_list (const Collection_stdforward_list& src) noexcept = default;
+        Collection_stdforward_list (Collection_stdforward_list&&) noexcept      = default;
+        Collection_stdforward_list (const Collection_stdforward_list&) noexcept = default;
         Collection_stdforward_list (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_stdforward_list<T>>)
@@ -64,8 +64,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_stdforward_list (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Collection_stdforward_list& operator= (Collection_stdforward_list&& rhs) noexcept = default;
-        nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list& rhs)     = default;
+        nonvirtual Collection_stdforward_list& operator= (Collection_stdforward_list&&) noexcept = default;
+        nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list&)     = default;
 
     private:
         class Rep_;

@@ -45,8 +45,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Set_LinkedList ();
         template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit Set_LinkedList (EQUALS_COMPARER&& equalsComparer);
-        Set_LinkedList (Set_LinkedList&& src) noexcept      = default;
-        Set_LinkedList (const Set_LinkedList& src) noexcept = default;
+        Set_LinkedList (Set_LinkedList&&) noexcept      = default;
+        Set_LinkedList (const Set_LinkedList&) noexcept = default;
         Set_LinkedList (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
@@ -71,8 +71,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Set_LinkedList& operator= (Set_LinkedList&& rhs) noexcept = default;
-        nonvirtual Set_LinkedList& operator= (const Set_LinkedList& rhs)     = default;
+        nonvirtual Set_LinkedList& operator= (Set_LinkedList&&) noexcept = default;
+        nonvirtual Set_LinkedList& operator= (const Set_LinkedList&)     = default;
 
     private:
         class IImplRepBase_;

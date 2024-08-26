@@ -38,8 +38,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Deque<T> constructor
          */
         Deque_DoublyLinkedList ();
-        Deque_DoublyLinkedList (Deque_DoublyLinkedList&& src) noexcept      = default;
-        Deque_DoublyLinkedList (const Deque_DoublyLinkedList& src) noexcept = default;
+        Deque_DoublyLinkedList (Deque_DoublyLinkedList&&) noexcept      = default;
+        Deque_DoublyLinkedList (const Deque_DoublyLinkedList&) noexcept = default;
         Deque_DoublyLinkedList (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Deque_DoublyLinkedList<T>>)
@@ -56,8 +56,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Deque_DoublyLinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Deque_DoublyLinkedList<T>& operator= (Deque_DoublyLinkedList<T>&& rhs) noexcept = default;
-        nonvirtual Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList<T>& rhs)     = default;
+        nonvirtual Deque_DoublyLinkedList<T>& operator= (Deque_DoublyLinkedList&&) noexcept = default;
+        nonvirtual Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList&)     = default;
 
     private:
         class Rep_;

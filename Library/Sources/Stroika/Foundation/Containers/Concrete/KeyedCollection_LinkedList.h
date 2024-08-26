@@ -51,8 +51,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
-        KeyedCollection_LinkedList (KeyedCollection_LinkedList&& src) noexcept      = default;
-        KeyedCollection_LinkedList (const KeyedCollection_LinkedList& src) noexcept = default;
+        KeyedCollection_LinkedList (KeyedCollection_LinkedList&&) noexcept      = default;
+        KeyedCollection_LinkedList (const KeyedCollection_LinkedList&) noexcept = default;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
@@ -83,8 +83,8 @@ namespace Stroika::Foundation::Containers::Concrete {
                                     ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual KeyedCollection_LinkedList& operator= (KeyedCollection_LinkedList&& rhs) noexcept = default;
-        nonvirtual KeyedCollection_LinkedList& operator= (const KeyedCollection_LinkedList& rhs)     = default;
+        nonvirtual KeyedCollection_LinkedList& operator= (KeyedCollection_LinkedList&&) noexcept = default;
+        nonvirtual KeyedCollection_LinkedList& operator= (const KeyedCollection_LinkedList&)     = default;
 
     private:
         class IImplRep_;

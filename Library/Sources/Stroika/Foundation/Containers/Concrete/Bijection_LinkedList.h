@@ -46,8 +46,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
         explicit Bijection_LinkedList (DataExchange::ValidationStrategy injectivityCheckPolicy,
                                        DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
-        Bijection_LinkedList (Bijection_LinkedList&& src) noexcept      = default;
-        Bijection_LinkedList (const Bijection_LinkedList& src) noexcept = default;
+        Bijection_LinkedList (Bijection_LinkedList&&) noexcept      = default;
+        Bijection_LinkedList (const Bijection_LinkedList&) noexcept = default;
         Bijection_LinkedList (const initializer_list<value_type>& src);
         template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
         Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer,
@@ -72,8 +72,8 @@ namespace Stroika::Foundation::Containers::Concrete {
                               ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Bijection_LinkedList& operator= (Bijection_LinkedList&& rhs) noexcept = default;
-        nonvirtual Bijection_LinkedList& operator= (const Bijection_LinkedList& rhs)     = default;
+        nonvirtual Bijection_LinkedList& operator= (Bijection_LinkedList&&) noexcept = default;
+        nonvirtual Bijection_LinkedList& operator= (const Bijection_LinkedList&)     = default;
 
     private:
         class IImplRepBase_;

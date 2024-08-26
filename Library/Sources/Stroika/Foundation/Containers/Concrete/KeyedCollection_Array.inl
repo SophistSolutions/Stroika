@@ -11,16 +11,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     /*
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    class KeyedCollection_Array<T, KEY_TYPE, TRAITS>::IImplRep_ : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {};
-
-    /*
-     */
-    template <typename T, typename KEY_TYPE, typename TRAITS>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
-    class KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRep_,
-                                                             public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
+    class KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_
+        : public Private::ArrayBasedContainerRepImpl<KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_<KEY_EQUALS_COMPARER>,
+                                                     typename KeyedCollection_Array<T, KEY_TYPE, TRAITS>::IImplRepBase_>,
+          public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
     private:
-        using inherited = IImplRep_;
+        using inherited = Private::ArrayBasedContainerRepImpl<KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_<KEY_EQUALS_COMPARER>,
+                                                              typename KeyedCollection_Array<T, KEY_TYPE, TRAITS>::IImplRepBase_>;
         [[no_unique_address]] const KeyExtractorType    fKeyExtractor_;
         [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyComparer_;
 
@@ -160,6 +158,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend inherited;
     };
 
     /*
@@ -244,7 +245,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline void KeyedCollection_Array<T, KEY_TYPE, TRAITS>::AssertRepValidType_ () const
     {
         if constexpr (qDebug) {
-            typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMemeber
+            typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
         }
     }
 

@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include "Stroika/Foundation/Containers/DataStructures/Array.h"
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 #include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -116,7 +117,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = DataStructures::Array<value_type>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_                                     fData_;
@@ -167,24 +168,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
 #endif
-    template <typename T>
-    inline void Collection_Array<T>::shrink_to_fit ()
-    {
-        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.shrink_to_fit ();
-    }
-    template <typename T>
-    inline size_t Collection_Array<T>::capacity () const
-    {
-        using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
-        return _SafeReadRepAccessor{this}._ConstGetRep ().fData_.capacity ();
-    }
-    template <typename T>
-    inline void Collection_Array<T>::reserve (size_t slotsAlloced)
-    {
-        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.reserve (slotsAlloced);
-    }
     template <typename T>
     inline void Collection_Array<T>::AssertRepValidType_ () const
     {

@@ -37,8 +37,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Collection<T> constructor
          */
         Collection_LinkedList ();
-        Collection_LinkedList (Collection_LinkedList&& src) noexcept      = default;
-        Collection_LinkedList (const Collection_LinkedList& src) noexcept = default;
+        Collection_LinkedList (Collection_LinkedList&&) noexcept      = default;
+        Collection_LinkedList (const Collection_LinkedList&) noexcept = default;
         Collection_LinkedList (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_LinkedList<T>>)
@@ -55,8 +55,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Collection_LinkedList& operator= (Collection_LinkedList&& rhs) noexcept = default;
-        nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList& rhs)     = default;
+        nonvirtual Collection_LinkedList& operator= (Collection_LinkedList&&) noexcept = default;
+        nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList&)     = default;
 
     private:
         class IImplRep_;

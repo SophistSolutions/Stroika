@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = DataStructures::DoublyLinkedList<value_type>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_                                     fData_;

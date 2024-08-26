@@ -64,8 +64,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedSet_stdset ();
         template <IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedSet_stdset (INORDER_COMPARER&& inorderComparer);
-        SortedSet_stdset (SortedSet_stdset&& src) noexcept      = default;
-        SortedSet_stdset (const SortedSet_stdset& src) noexcept = default;
+        SortedSet_stdset (SortedSet_stdset&&) noexcept      = default;
+        SortedSet_stdset (const SortedSet_stdset&) noexcept = default;
         SortedSet_stdset (const initializer_list<T>& src);
         template <IInOrderComparer<T> INORDER_COMPARER>
         SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
@@ -90,8 +90,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedSet_stdset& operator= (SortedSet_stdset&& rhs) noexcept = default;
-        nonvirtual SortedSet_stdset& operator= (const SortedSet_stdset& rhs)     = default;
+        nonvirtual SortedSet_stdset& operator= (SortedSet_stdset&&) noexcept = default;
+        nonvirtual SortedSet_stdset& operator= (const SortedSet_stdset&)     = default;
 
     private:
         class IImplRepBase_;

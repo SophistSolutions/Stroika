@@ -906,6 +906,15 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+
+GTEST_TEST (Foundation_Containers_Sequence, Sequence_Array_ArrayAPITests_)
+{
+    Sequence_Array<int> a;
+    a.reserve (3);
+    EXPECT_EQ (a.capacity (), 3u);
+    a.shrink_to_fit ();
+    EXPECT_EQ (a.capacity (), 0u);
+}
 #endif
 
 int main (int argc, const char* argv[])

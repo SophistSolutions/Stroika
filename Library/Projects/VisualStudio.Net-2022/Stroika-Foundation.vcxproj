@@ -424,6 +424,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\ArraySupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
@@ -875,6 +876,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\ArraySupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />

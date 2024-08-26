@@ -48,8 +48,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *       (plus a move constructor for vector<T>)
          */
         Sequence_stdvector ();
-        Sequence_stdvector (Sequence_stdvector&& src) noexcept      = default;
-        Sequence_stdvector (const Sequence_stdvector& src) noexcept = default;
+        Sequence_stdvector (Sequence_stdvector&&) noexcept      = default;
+        Sequence_stdvector (const Sequence_stdvector&) noexcept = default;
         Sequence_stdvector (std::vector<T>&& src);
         Sequence_stdvector (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
@@ -72,8 +72,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Sequence_stdvector& operator= (Sequence_stdvector&& rhs) noexcept = default;
-        nonvirtual Sequence_stdvector& operator= (const Sequence_stdvector& rhs)     = default;
+        nonvirtual Sequence_stdvector& operator= (Sequence_stdvector&&) noexcept = default;
+        nonvirtual Sequence_stdvector& operator= (const Sequence_stdvector&)     = default;
 
     public:
         /*

@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 
 /**
  *  \file
@@ -28,9 +29,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
-    class Collection_Array : public Collection<T> {
+    class Collection_Array : public Private::ArrayBasedContainer<Collection_Array<T>, Collection<T>, false> {
     private:
-        using inherited = Collection<T>;
+        using inherited = Private::ArrayBasedContainer<Collection_Array<T>, Collection<T>, false>;
 
     public:
         using value_type = typename inherited::value_type;
@@ -40,8 +41,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Collection<T> constructor
          */
         Collection_Array ();
-        Collection_Array (Collection_Array&& src) noexcept      = default;
-        Collection_Array (const Collection_Array& src) noexcept = default;
+        Collection_Array (Collection_Array&&) noexcept      = default;
+        Collection_Array (const Collection_Array&) noexcept = default;
         Collection_Array (const initializer_list<value_type>& src);
 
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
@@ -50,7 +51,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Collection_Array{}
         {
-            reserve (src.size ());
+            this->reserve (src.size ());
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();
         }
@@ -60,39 +61,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Collection_Array& operator= (Collection_Array&& rhs) noexcept = default;
-        nonvirtual Collection_Array& operator= (const Collection_Array& rhs)     = default;
-
-    public:
-        /*
-         *  \brief Return the number of allocated vector/array elements.
-         * 
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note alias GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note Alias SetCapacity ();
-         * 
-         *  \note Note that this does not affect the semantics of the Collection.
-         * 
-         *  \req slotsAllocated >= size ()
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
-
-    public:
-        /**
-         *  \brief  Reduce the space used to store the Collection<T> contents.
-         *
-         *  This has no semantics, no observable behavior. But depending on the representation of
-         *  the concrete collection, calling this may save memory.
-         */
-        nonvirtual void shrink_to_fit ();
+        nonvirtual Collection_Array& operator= (Collection_Array&&) noexcept = default;
+        nonvirtual Collection_Array& operator= (const Collection_Array&)     = default;
 
     private:
         class Rep_;

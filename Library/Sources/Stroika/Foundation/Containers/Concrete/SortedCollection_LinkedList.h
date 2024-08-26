@@ -46,8 +46,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedCollection_LinkedList ();
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedCollection_LinkedList (INORDER_COMPARER&& inorderComparer);
-        SortedCollection_LinkedList (SortedCollection_LinkedList&& src) noexcept      = default;
-        SortedCollection_LinkedList (const SortedCollection_LinkedList& src) noexcept = default;
+        SortedCollection_LinkedList (SortedCollection_LinkedList&&) noexcept      = default;
+        SortedCollection_LinkedList (const SortedCollection_LinkedList&) noexcept = default;
         SortedCollection_LinkedList (const initializer_list<T>& src);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
@@ -72,8 +72,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedCollection_LinkedList& operator= (SortedCollection_LinkedList&& rhs) noexcept = default;
-        nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList& rhs)     = default;
+        nonvirtual SortedCollection_LinkedList& operator= (SortedCollection_LinkedList&&) noexcept = default;
+        nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList&)     = default;
 
     private:
         class IImplRepBase_;

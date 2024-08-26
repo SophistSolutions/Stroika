@@ -40,8 +40,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_LinkedList ();
         template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer);
-        MultiSet_LinkedList (MultiSet_LinkedList&& src) noexcept      = default;
-        MultiSet_LinkedList (const MultiSet_LinkedList& src) noexcept = default;
+        MultiSet_LinkedList (MultiSet_LinkedList&&) noexcept      = default;
+        MultiSet_LinkedList (const MultiSet_LinkedList&) noexcept = default;
         MultiSet_LinkedList (const initializer_list<T>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
@@ -67,8 +67,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual MultiSet_LinkedList& operator= (MultiSet_LinkedList&& rhs) noexcept = default;
-        nonvirtual MultiSet_LinkedList& operator= (const MultiSet_LinkedList& rhs)     = default;
+        nonvirtual MultiSet_LinkedList& operator= (MultiSet_LinkedList&&) noexcept = default;
+        nonvirtual MultiSet_LinkedList& operator= (const MultiSet_LinkedList&)     = default;
 
     private:
         class IImplRepBase_;

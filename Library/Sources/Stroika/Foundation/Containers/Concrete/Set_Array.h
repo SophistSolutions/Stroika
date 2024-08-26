@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 #include "Stroika/Foundation/Containers/Set.h"
 
 /**
@@ -28,9 +29,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
-    class Set_Array : public Set<T> {
+    class Set_Array : public Private::ArrayBasedContainer<Set_Array<T>, Set<T>, true> {
     private:
-        using inherited = Set<T>;
+        using inherited = Private::ArrayBasedContainer<Set_Array<T>, Set<T>, true>;
 
     public:
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
@@ -43,8 +44,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Set_Array ();
         template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit Set_Array (EQUALS_COMPARER&& equalsComparer);
-        Set_Array (Set_Array&& src) noexcept      = default;
-        Set_Array (const Set_Array& src) noexcept = default;
+        Set_Array (Set_Array&&) noexcept      = default;
+        Set_Array (const Set_Array&) noexcept = default;
         Set_Array (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set_Array (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
@@ -69,42 +70,11 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Set_Array& operator= (Set_Array&& rhs) noexcept = default;
-        nonvirtual Set_Array& operator= (const Set_Array& rhs)     = default;
-
-    public:
-        /*
-         *  \brief Return the number of allocated vector/array elements.
-         * 
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note alias GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note Alias SetCapacity ();
-         * 
-         *  \note Note that this does not affect the semantics of the MultiSet.
-         * 
-         *  \req slotsAllocated >= size ()
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
-
-    public:
-        /**
-         *  \brief  Reduce the space used to store the Set<T> contents.
-         *
-         *  This has no semantics, no observable behavior. But depending on the representation of
-         *  the concrete sequence, calling this may save memory.
-         */
-        nonvirtual void shrink_to_fit ();
+        nonvirtual Set_Array& operator= (Set_Array&&) noexcept = default;
+        nonvirtual Set_Array& operator= (const Set_Array&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = Containers::Private::ArrayBasedContainerIRep<typename Set<T>::_IRep>;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<T>) EQUALS_COMPARER>
         class Rep_;
 

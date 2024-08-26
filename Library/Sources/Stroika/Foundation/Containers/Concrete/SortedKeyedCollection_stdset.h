@@ -87,8 +87,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{})
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
-        SortedKeyedCollection_stdset (SortedKeyedCollection_stdset&& src) noexcept      = default;
-        SortedKeyedCollection_stdset (const SortedKeyedCollection_stdset& src) noexcept = default;
+        SortedKeyedCollection_stdset (SortedKeyedCollection_stdset&&) noexcept      = default;
+        SortedKeyedCollection_stdset (const SortedKeyedCollection_stdset&) noexcept = default;
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
         template <IIterableOf<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = equal_to<KEY_TYPE>>
@@ -121,8 +121,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedKeyedCollection_stdset& operator= (SortedKeyedCollection_stdset&& rhs) noexcept = default;
-        nonvirtual SortedKeyedCollection_stdset& operator= (const SortedKeyedCollection_stdset& rhs)     = default;
+        nonvirtual SortedKeyedCollection_stdset& operator= (SortedKeyedCollection_stdset&&) noexcept = default;
+        nonvirtual SortedKeyedCollection_stdset& operator= (const SortedKeyedCollection_stdset&)     = default;
 
     private:
         class IImplRepBase_;

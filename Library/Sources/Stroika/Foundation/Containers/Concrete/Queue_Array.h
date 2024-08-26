@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 #include "Stroika/Foundation/Containers/Queue.h"
 
 /**
@@ -32,9 +33,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
-    class Queue_Array : public Queue<T> {
+    class Queue_Array : public Private::ArrayBasedContainer<Queue_Array<T>, Queue<T>, false> {
     private:
-        using inherited = Queue<T>;
+        using inherited = Private::ArrayBasedContainer<Queue_Array<T>, Queue<T>, false>;
 
     public:
         using value_type = typename inherited::value_type;
@@ -44,8 +45,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Queue<T> constructor
          */
         Queue_Array ();
-        Queue_Array (Queue_Array&& src) noexcept      = default;
-        Queue_Array (const Queue_Array& src) noexcept = default;
+        Queue_Array (Queue_Array&&) noexcept      = default;
+        Queue_Array (const Queue_Array&) noexcept = default;
         Queue_Array (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_Array<T>>)
@@ -54,7 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : Queue_Array{}
         {
             if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
-                reserve (src.size ());
+                this->reserve (src.size ());
             }
             AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();
@@ -67,39 +68,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Queue_Array& operator= (Queue_Array&& rhs) noexcept = default;
-        nonvirtual Queue_Array& operator= (const Queue_Array& rhs)     = default;
-
-    public:
-        /*
-         *  \brief Return the number of allocated vector/array elements.
-         * 
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note alias GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note Alias SetCapacity ();
-         * 
-         *  \note Note that this does not affect the semantics of the Queue.
-         * 
-         *  \req slotsAllocated >= size ()
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
-
-    public:
-        /**
-         *  \brief  Reduce the space used to store the Queue<T> contents.
-         *
-         *  This has no semantics, no observable behavior. But depending on the representation of
-         *  the concrete sequence, calling this may save memory.
-         */
-        nonvirtual void shrink_to_fit ();
+        nonvirtual Queue_Array& operator= (Queue_Array&&) noexcept = default;
+        nonvirtual Queue_Array& operator= (const Queue_Array&)     = default;
 
     private:
         class Rep_;

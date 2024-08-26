@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/DataStructures/Array.h"
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 #include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/Cast.h"
@@ -13,19 +14,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T>
-    class Sequence_Array<T>::IImplRep_ : public Sequence<T>::_IRep {
-    public:
-        virtual void   shrink_to_fit ()              = 0;
-        virtual size_t capacity () const             = 0;
-        virtual void   reserve (size_t slotsAlloced) = 0;
-    };
-
-    /**
-     */
-    template <typename T>
-    class Sequence_Array<T>::Rep_ : public Sequence_Array<T>::IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+    class Sequence_Array<T>::Rep_ : public Sequence<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     private:
-        using inherited = typename Sequence_Array<T>::IImplRep_;
+        using inherited = typename Sequence<T>::_IRep;
 
     protected:
         static constexpr size_t _kSentinelLastItemIndex = inherited::_kSentinelLastItemIndex;
@@ -163,25 +154,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             fChangeCounts_.PerformedChange ();
         }
 
-        // Sequence_Array<T>::IImplRep_
-    public:
-        virtual void shrink_to_fit () override
-        {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.shrink_to_fit ();
-            fChangeCounts_.PerformedChange ();
-        }
-        virtual size_t capacity () const override
-        {
-            return fData_.capacity ();
-        }
-        virtual void reserve (size_t slotsAlloced) override
-        {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.reserve (slotsAlloced);
-            fChangeCounts_.PerformedChange ();
-        }
-
     private:
         using DataStructureImplType_ = DataStructures::Array<value_type>;
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
@@ -189,6 +161,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend class Private::ArrayBasedContainer<Sequence_Array, Sequence<T>, false>;
     };
 
     /*
@@ -206,7 +181,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Sequence_Array<T>::Sequence_Array (const initializer_list<value_type>& src)
         : Sequence_Array{}
     {
-        reserve (src.size ());
+        this->reserve (src.size ());
         this->AppendAll (src);
         AssertRepValidType_ ();
     }
@@ -218,7 +193,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         : Sequence_Array{}
     {
         if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
-            reserve (src.size ());
+            this->reserve (src.size ());
         }
         this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -231,32 +206,17 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         if constexpr (random_access_iterator<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                reserve (end - start);
+                this->reserve (end - start);
             }
         }
         this->AppendAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline void Sequence_Array<T>::shrink_to_fit ()
-    {
-        typename inherited::template _SafeReadWriteRepAccessor<IImplRep_>{this}._GetWriteableRep ().shrink_to_fit ();
-    }
-    template <typename T>
-    inline size_t Sequence_Array<T>::capacity () const
-    {
-        return typename inherited::template _SafeReadRepAccessor<IImplRep_>{this}._ConstGetRep ().capacity ();
-    }
-    template <typename T>
-    inline void Sequence_Array<T>::reserve (size_t slotsAlloced)
-    {
-        typename inherited::template _SafeReadWriteRepAccessor<IImplRep_>{this}._GetWriteableRep ().reserve (slotsAlloced);
-    }
-    template <typename T>
     inline void Sequence_Array<T>::AssertRepValidType_ () const
     {
         if constexpr (qDebug) {
-            typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMemeber
+            typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
         }
     }
 

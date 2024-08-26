@@ -47,8 +47,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         Stack_LinkedList ();
-        Stack_LinkedList (Stack_LinkedList&& src) noexcept      = default;
-        Stack_LinkedList (const Stack_LinkedList& src) noexcept = default;
+        Stack_LinkedList (Stack_LinkedList&&) noexcept      = default;
+        Stack_LinkedList (const Stack_LinkedList&) noexcept = default;
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack_LinkedList<T>>)
         explicit Stack_LinkedList (ITERABLE_OF_ADDABLE&& src)
@@ -60,8 +60,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Stack_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Stack_LinkedList& operator= (Stack_LinkedList&& rhs) noexcept = default;
-        nonvirtual Stack_LinkedList& operator= (const Stack_LinkedList& rhs)     = default;
+        nonvirtual Stack_LinkedList& operator= (Stack_LinkedList&&) noexcept = default;
+        nonvirtual Stack_LinkedList& operator= (const Stack_LinkedList&)     = default;
 
     private:
         class Rep_;

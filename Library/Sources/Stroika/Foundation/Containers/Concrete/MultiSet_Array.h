@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/MultiSet.h"
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 
 /**
  *  \file
@@ -24,9 +25,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-    class MultiSet_Array : public MultiSet<T, TRAITS> {
+    class MultiSet_Array : public Private::ArrayBasedContainer<MultiSet_Array<T, TRAITS>, MultiSet<T, TRAITS>, true> {
     private:
-        using inherited = MultiSet<T, TRAITS>;
+        using inherited = Private::ArrayBasedContainer<MultiSet_Array<T, TRAITS>, MultiSet<T, TRAITS>, true>;
 
     public:
         using CounterType                 = typename inherited::CounterType;
@@ -40,8 +41,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_Array ();
         template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit MultiSet_Array (EQUALS_COMPARER&& equalsComparer);
-        MultiSet_Array (MultiSet_Array&& src) noexcept      = default;
-        MultiSet_Array (const MultiSet_Array& src) noexcept = default;
+        MultiSet_Array (MultiSet_Array&&) noexcept      = default;
+        MultiSet_Array (const MultiSet_Array&) noexcept = default;
         MultiSet_Array (const initializer_list<T>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet_Array (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
@@ -55,7 +56,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : MultiSet_Array{}
         {
             if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
-                reserve (src.size ());
+                this->reserve (src.size ());
             }
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();
@@ -72,47 +73,19 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual MultiSet_Array& operator= (MultiSet_Array&& rhs) noexcept = default;
-        nonvirtual MultiSet_Array& operator= (const MultiSet_Array& rhs)     = default;
-
-    public:
-        /*
-         *  \brief Return the number of allocated vector/array elements.
-         * 
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note alias GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note Alias SetCapacity ();
-         * 
-         *  \note Note that this does not affect the semantics of the MultiSet.
-         * 
-         *  \req slotsAllocated >= size ()
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
-
-    public:
-        /**
-         *  \brief  Reduce the space used to store the Multiset<T> contents.
-         *
-         *  This has no semantics, no observable behavior. But depending on the representation of
-         *  the concrete sequence, calling this may save memory.
-         */
-        nonvirtual void shrink_to_fit ();
+        nonvirtual MultiSet_Array& operator= (MultiSet_Array&&) noexcept = default;
+        nonvirtual MultiSet_Array& operator= (const MultiSet_Array&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = Containers::Private::ArrayBasedContainerIRep<typename MultiSet<T, TRAITS>::_IRep>;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<T>) EQUALS_COMPARER>
         class Rep_;
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend inherited;
     };
 
 }

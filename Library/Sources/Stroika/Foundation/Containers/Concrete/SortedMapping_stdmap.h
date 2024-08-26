@@ -64,8 +64,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedMapping_stdmap (STDMAP<KEY_INORDER_COMPARER>&& src);
-        SortedMapping_stdmap (SortedMapping_stdmap&& src) noexcept      = default;
-        SortedMapping_stdmap (const SortedMapping_stdmap& src) noexcept = default;
+        SortedMapping_stdmap (SortedMapping_stdmap&&) noexcept      = default;
+        SortedMapping_stdmap (const SortedMapping_stdmap&) noexcept = default;
         SortedMapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (totally_ordered<KEY_TYPE>);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
@@ -94,8 +94,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedMapping_stdmap& operator= (SortedMapping_stdmap&& rhs) noexcept = default;
-        nonvirtual SortedMapping_stdmap& operator= (const SortedMapping_stdmap& rhs)     = default;
+        nonvirtual SortedMapping_stdmap& operator= (SortedMapping_stdmap&&) noexcept = default;
+        nonvirtual SortedMapping_stdmap& operator= (const SortedMapping_stdmap&)     = default;
 
     private:
         class IImplRepBase_;

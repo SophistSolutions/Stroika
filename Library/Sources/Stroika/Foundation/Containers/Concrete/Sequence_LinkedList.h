@@ -45,8 +45,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Sequence<> constructor
          */
         Sequence_LinkedList ();
-        Sequence_LinkedList (Sequence_LinkedList&& src) noexcept      = default;
-        Sequence_LinkedList (const Sequence_LinkedList& src) noexcept = default;
+        Sequence_LinkedList (Sequence_LinkedList&&) noexcept      = default;
+        Sequence_LinkedList (const Sequence_LinkedList&) noexcept = default;
         Sequence_LinkedList (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_LinkedList<T>>)
@@ -65,8 +65,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Sequence_LinkedList& operator= (Sequence_LinkedList&& rhs) noexcept = default;
-        nonvirtual Sequence_LinkedList& operator= (const Sequence_LinkedList& rhs)     = default;
+        nonvirtual Sequence_LinkedList& operator= (Sequence_LinkedList&&) noexcept = default;
+        nonvirtual Sequence_LinkedList& operator= (const Sequence_LinkedList&)     = default;
 
     private:
         class Rep_;

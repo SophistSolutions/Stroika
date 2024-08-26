@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 
 /**
  *  \file
@@ -21,13 +22,15 @@ namespace Stroika::Foundation::Containers::Concrete {
      *
      * \note Runtime performance/complexity:
      *      o   Add/Lookup () are O(N)
+     *      o   Suitable for small (apx < 10) sized containers
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping_Array : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    class Mapping_Array
+        : public Private::ArrayBasedContainer<Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, true> {
     private:
-        using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
+        using inherited = Private::ArrayBasedContainer<Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
 
     public:
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
@@ -41,8 +44,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_Array ();
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer);
-        Mapping_Array (Mapping_Array&& src) noexcept      = default;
-        Mapping_Array (const Mapping_Array& src) noexcept = default;
+        Mapping_Array (Mapping_Array&&) noexcept      = default;
+        Mapping_Array (const Mapping_Array&) noexcept = default;
         Mapping_Array (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
@@ -53,7 +56,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : Mapping_Array{}
         {
             if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
-                reserve (src.size ());
+                this->reserve (src.size ());
             }
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();
@@ -68,42 +71,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Mapping_Array& operator= (Mapping_Array&& rhs) noexcept = default;
-        nonvirtual Mapping_Array& operator= (const Mapping_Array& rhs)     = default;
-
-    public:
-        /*
-         *  \brief Return the number of allocated vector/array elements.
-         * 
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note alias GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note Alias SetCapacity ();
-         * 
-         *  \note Note that this does not affect the semantics of the Mapping.
-         * 
-         *  \req slotsAllocated >= size ()
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
-
-    public:
-        /**
-         *  \brief  Reduce the space used to store the Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> contents.
-         *
-         *  This has no semantics, no observable behavior. But depending on the representation of
-         *  the concrete Mapping, calling this may save memory.
-         */
-        nonvirtual void shrink_to_fit ();
+        nonvirtual Mapping_Array& operator= (Mapping_Array&&) noexcept = default;
+        nonvirtual Mapping_Array& operator= (const Mapping_Array&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = Containers::Private::ArrayBasedContainerIRep<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
         class Rep_;
 

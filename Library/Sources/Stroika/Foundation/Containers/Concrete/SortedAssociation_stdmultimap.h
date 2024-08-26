@@ -60,9 +60,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-        explicit SortedAssociation_stdmultimap (STDMULTIMAP<KEY_INORDER_COMPARER>&& src);
-        SortedAssociation_stdmultimap (SortedAssociation_stdmultimap&& src) noexcept      = default;
-        SortedAssociation_stdmultimap (const SortedAssociation_stdmultimap& src) noexcept = default;
+        explicit SortedAssociation_stdmultimap (STDMULTIMAP<KEY_INORDER_COMPARER>&&);
+        SortedAssociation_stdmultimap (SortedAssociation_stdmultimap&& src) noexcept  = default;
+        SortedAssociation_stdmultimap (const SortedAssociation_stdmultimap&) noexcept = default;
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
@@ -87,8 +87,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedAssociation_stdmultimap& operator= (SortedAssociation_stdmultimap&& rhs) noexcept = default;
-        nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap& rhs)     = default;
+        nonvirtual SortedAssociation_stdmultimap& operator= (SortedAssociation_stdmultimap&&) noexcept = default;
+        nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap&)     = default;
 
     private:
         class IImplRepBase_;

@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/Association.h"
+#include "Stroika/Foundation/Containers/Private/ArraySupport.h"
 
 /**
  *  \file
@@ -25,9 +26,11 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Association_Array : public Association<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    class Association_Array
+        : public Private::ArrayBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true> {
     private:
-        using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
+        using inherited =
+            Private::ArrayBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
 
     public:
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
@@ -41,8 +44,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Association_Array ();
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer);
-        Association_Array (Association_Array&& src) noexcept      = default;
-        Association_Array (const Association_Array& src) noexcept = default;
+        Association_Array (Association_Array&&) noexcept      = default;
+        Association_Array (const Association_Array&) noexcept = default;
         Association_Array (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
@@ -68,47 +71,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Association_Array& operator= (Association_Array&& rhs) noexcept = default;
-        nonvirtual Association_Array& operator= (const Association_Array& rhs)     = default;
-
-    public:
-        /*
-         *  \brief Return the number of allocated vector/array elements.
-         * 
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note alias GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note Alias SetCapacity ();
-         * 
-         *  \note Note that this does not affect the semantics of the Association.
-         * 
-         *  \req slotsAllocated >= size ()
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
-
-    public:
-        /**
-         *  \brief  Reduce the space used to store the Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> contents.
-         *
-         *  This has no semantics, no observable behavior. But depending on the representation of
-         *  the concrete Association, calling this may save memory.
-         */
-        nonvirtual void shrink_to_fit ();
+        nonvirtual Association_Array& operator= (Association_Array&&) noexcept = default;
+        nonvirtual Association_Array& operator= (const Association_Array&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = Containers::Private::ArrayBasedContainerIRep<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
         class Rep_;
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend class Private::ArrayBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
     };
 
 }

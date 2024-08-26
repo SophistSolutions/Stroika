@@ -62,8 +62,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedMapping_SkipList (SKIPLIST<KEY_THREEWAY_COMPARER>&& src);
         template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
         explicit SortedMapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer);
-        SortedMapping_SkipList (SortedMapping_SkipList&& src) noexcept      = default;
-        SortedMapping_SkipList (const SortedMapping_SkipList& src) noexcept = default;
+        SortedMapping_SkipList (SortedMapping_SkipList&&) noexcept      = default;
+        SortedMapping_SkipList (const SortedMapping_SkipList&) noexcept = default;
         SortedMapping_SkipList (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (three_way_comparable<KEY_TYPE>);
         template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
@@ -91,8 +91,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedMapping_SkipList& operator= (SortedMapping_SkipList&& rhs) noexcept = default;
-        nonvirtual SortedMapping_SkipList& operator= (const SortedMapping_SkipList& rhs)     = default;
+        nonvirtual SortedMapping_SkipList& operator= (SortedMapping_SkipList&&) noexcept = default;
+        nonvirtual SortedMapping_SkipList& operator= (const SortedMapping_SkipList&)     = default;
 
     private:
         class IImplRepBase_;
