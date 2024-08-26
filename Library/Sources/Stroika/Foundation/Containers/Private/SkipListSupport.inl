@@ -21,14 +21,12 @@ namespace Stroika::Foundation::Containers::Private {
     inline void SkipListBasedContainer<THIS_CONTAINER, BASE_CONTAINER, USING_IREP>::ReBalance ()
     {
         if constexpr (USING_IREP) {
-            using _SafeReadWriteRepAccessor =
-                THIS_CONTAINER::template _SafeReadWriteRepAccessor<SkipListBasedContainerIRep<typename THIS_CONTAINER::IImplRepBase_>>;
+            using _SafeReadWriteRepAccessor = THIS_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
             _SafeReadWriteRepAccessor{this}._GetWriteableRep ().ReBalance ();
         }
         else {
-            using _SafeReadWriteRepAccessor = typename BASE_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::Rep_>;
-            _SafeReadWriteRepAccessor accessor{this};
-            return accessor._GetWriteableRep ().fData_.ReBalance ();
+            using _SafeReadWriteRepAccessor = typename THIS_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::Rep_>;
+            return _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.ReBalance ();
         }
     }
 
