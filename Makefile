@@ -560,10 +560,10 @@ basic-unix-test-configurations:
 		# VALGRIND\
 		./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 	else \
+		$(MAKE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent default-configurations; \
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
 		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system; \
-		./configure g++-debug --config-tag Unix --compiler-driver g++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure g++-release++2b --config-tag Unix --compiler-driver g++ --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
 	fi
 
