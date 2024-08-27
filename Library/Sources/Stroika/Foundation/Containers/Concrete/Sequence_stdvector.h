@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Containers/Private/StdVectorSupport.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 
 /**
@@ -35,9 +36,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *
      */
     template <typename T>
-    class Sequence_stdvector : public Sequence<T> {
+    class Sequence_stdvector : public Private::StdVectorBasedContainer<Sequence_stdvector<T>, Sequence<T>> {
     private:
-        using inherited = Sequence<T>;
+        using inherited = Private::StdVectorBasedContainer<Sequence_stdvector<T>, Sequence<T>>;
 
     public:
         using value_type = typename inherited::value_type;
@@ -59,7 +60,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : Sequence_stdvector{}
         {
             if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
-                reserve (src.size ());
+                this->reserve (src.size ());
             }
             this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();
@@ -74,37 +75,6 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         nonvirtual Sequence_stdvector& operator= (Sequence_stdvector&&) noexcept = default;
         nonvirtual Sequence_stdvector& operator= (const Sequence_stdvector&)     = default;
-
-    public:
-        /*
-         *  \brief Return the number of allocated vector/array elements.
-         * 
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note alias GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         * 
-         *  \note Alias SetCapacity ();
-         * 
-         *  \note Note that this does not affect the semantics of the Sequence.
-         * 
-         *  \req slotsAllocated >= size ()
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
-
-    public:
-        /**
-         *  \brief  Reduce the space used to store the Sequence<T> contents.
-         *
-         *  This has no semantics, no observable behavior. But depending on the representation of
-         *  the concrete sequence, calling this may save memory.
-         */
-        nonvirtual void shrink_to_fit ();
 
     private:
         class Rep_;
