@@ -21,11 +21,11 @@ namespace Stroika::Foundation::Containers::Private {
     inline size_t ArrayBasedContainer<THIS_CONTAINER, BASE_CONTAINER, USING_IREP>::capacity () const
     {
         if constexpr (USING_IREP) {
-            using _SafeReadRepAccessor = THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+            using _SafeReadRepAccessor = THIS_CONTAINER ::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
             return _SafeReadRepAccessor{this}._ConstGetRep ().capacity ();
         }
         else {
-            using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::Rep_>;
+            using _SafeReadRepAccessor = typename THIS_CONTAINER ::template _SafeReadRepAccessor<typename THIS_CONTAINER::Rep_>;
             return _SafeReadRepAccessor{this}._ConstGetRep ().fData_.capacity ();
         }
     }
@@ -33,11 +33,11 @@ namespace Stroika::Foundation::Containers::Private {
     inline void ArrayBasedContainer<THIS_CONTAINER, BASE_CONTAINER, USING_IREP>::reserve (size_t slotsAlloced)
     {
         if constexpr (USING_IREP) {
-            using _SafeReadWriteRepAccessor = THIS_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+            using _SafeReadWriteRepAccessor = THIS_CONTAINER ::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
             _SafeReadWriteRepAccessor{this}._GetWriteableRep ().reserve (slotsAlloced);
         }
         else {
-            using _SafeReadWriteRepAccessor = typename THIS_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::Rep_>;
+            using _SafeReadWriteRepAccessor = typename THIS_CONTAINER ::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::Rep_>;
             return _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.reserve (slotsAlloced);
         }
     }
@@ -45,11 +45,11 @@ namespace Stroika::Foundation::Containers::Private {
     inline void ArrayBasedContainer<THIS_CONTAINER, BASE_CONTAINER, USING_IREP>::shrink_to_fit ()
     {
         if constexpr (USING_IREP) {
-            using _SafeReadWriteRepAccessor = THIS_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+            using _SafeReadWriteRepAccessor = THIS_CONTAINER ::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
             _SafeReadWriteRepAccessor{this}._GetWriteableRep ().shrink_to_fit ();
         }
         else {
-            using _SafeReadWriteRepAccessor = typename THIS_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::Rep_>;
+            using _SafeReadWriteRepAccessor = typename THIS_CONTAINER ::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::Rep_>;
             return _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.shrink_to_fit ();
         }
     }
