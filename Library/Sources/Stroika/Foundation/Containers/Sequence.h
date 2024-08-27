@@ -108,7 +108,6 @@ namespace Stroika::Foundation::Containers {
      *
      *      SmallTalk book page 153
      *
-     *
      * TODO:
      *
      *  ->  At some point in the near future we may add the ability to start at an
@@ -116,7 +115,7 @@ namespace Stroika::Foundation::Containers {
      *      requires more thought though. That functionality is probably not too
      *      important in light of being able to compute the current index easily
      *      in an iteration. Also, it requires more thought how to fit in with
-     *      the sequenceDirection. Do we have a separate constructor speciing
+     *      the sequenceDirection. Do we have a separate constructor specifying
      *      two start and endpoints and use their relative order to decide a
      *      direction? Do we just add the two start and end values to the end of
      *      the param list? How hard is this todo with Sequence_DLL?? If this
@@ -131,7 +130,7 @@ namespace Stroika::Foundation::Containers {
      *      to avoid introducing a virtual function. Probably overload, and 1 arg
      *      version will use T default CTOR. If done nonvirtually with templates
      *      then we only require no arg CTOR when this function called - GOOD.
-     *      Cannot really do with GenClass (would need to compile in seperate .o,
+     *      Cannot really do with GenClass (would need to compile in separate .o,
      *      even that wont work - need to not compile except when called).
      *
      *  ->  Consider patching iterators on insertions??? If not, document more
@@ -251,8 +250,8 @@ namespace Stroika::Foundation::Containers {
          *      \endcode
          */
         Sequence ();
-        Sequence (Sequence&& src) noexcept      = default;
-        Sequence (const Sequence& src) noexcept = default;
+        Sequence (Sequence&&) noexcept      = default;
+        Sequence (const Sequence&) noexcept = default;
         Sequence (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
@@ -275,8 +274,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Sequence& operator= (Sequence&& rhs) noexcept = default;
-        nonvirtual Sequence& operator= (const Sequence& rhs)     = default;
+        nonvirtual Sequence& operator= (Sequence&&) noexcept = default;
+        nonvirtual Sequence& operator= (const Sequence&)     = default;
 
     public:
         /**
@@ -359,14 +358,14 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * simply indirect to @Sequence<>::EqualsComparer (only defined if equal_to<T> is defined)
+         * simply indirect to @Sequence<>::EqualsComparer
          */
         nonvirtual bool operator== (const Sequence& rhs) const
             requires (equality_comparable<T>);
 
     public:
         /**
-         * simply indirect to @Sequence<>::operator (only defined if ???comparethreeway?<T> is defined)
+         * simply indirect to @Sequence<>::operator
          */
         nonvirtual auto operator<=> (const Sequence& rhs) const
             requires (three_way_comparable<T>);
@@ -506,8 +505,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  This is roughly AppendAll (size(), s), except that there is a race after you call size,
-         *  and before Insert, which calling Append () avoids. Also note - if used in a multithreaded enivonment,
-         *  the appended items wont necesarily all get appended at once, since other threads could make
+         *  and before Insert, which calling Append () avoids. Also note - if used in a multithreaded environment,
+         *  the appended items wont necessarily all get appended at once, since other threads could make
          *  changes in between.
          *
          *  \note mutates container
@@ -525,7 +524,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \param nextI - if provided (not null) - will be filled in with a valid iterator pointing where i is pointing - since i is invalidated by changing the container)
          * 
-         *  \note - this differers from Collection::Update() (which adnvances *nextI); since for a sequence, there is no need to ever
+         *  \note - this differs from Collection::Update() (which advances *nextI); since for a sequence, there is no need to ever
          *          invalidate the current item on a removal (order doesnt change on update to a Sequence).
          *
          *  \note mutates container
@@ -683,13 +682,13 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual shared_ptr<_IRep> CloneEmpty () const                                   = 0;
         virtual shared_ptr<_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
-        // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
+        // 'i' argument to GetAt MAYBE kBadSequenceIndex - indicating last element
         virtual value_type GetAt (size_t i) const                                                                                   = 0;
         virtual void       SetAt (size_t i, ArgByValueType<value_type> item)                                                        = 0;
         virtual size_t     IndexOf (const Iterator<value_type>& i) const                                                            = 0;
         virtual void       Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                      = 0;
         virtual void       Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) = 0;
-        // 'at' argument to Insert MAYBE kBadSequenceIndex - indictating append
+        // 'at' argument to Insert MAYBE kBadSequenceIndex - indicating append
         virtual void Insert (size_t at, const value_type* from, const value_type* to) = 0;
         virtual void Remove (size_t from, size_t to)                                  = 0;
 

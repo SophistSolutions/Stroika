@@ -114,8 +114,8 @@ namespace Stroika::Foundation::Containers {
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{})
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
-        SortedKeyedCollection (SortedKeyedCollection&& src) noexcept      = default;
-        SortedKeyedCollection (const SortedKeyedCollection& src) noexcept = default;
+        SortedKeyedCollection (SortedKeyedCollection&&) noexcept      = default;
+        SortedKeyedCollection (const SortedKeyedCollection&) noexcept = default;
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
         template <IIterableOf<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = equal_to<KEY_TYPE>>
@@ -152,8 +152,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual SortedKeyedCollection& operator= (SortedKeyedCollection&& rhs) noexcept = default;
-        nonvirtual SortedKeyedCollection& operator= (const SortedKeyedCollection& rhs)     = default;
+        nonvirtual SortedKeyedCollection& operator= (SortedKeyedCollection&&) noexcept = default;
+        nonvirtual SortedKeyedCollection& operator= (const SortedKeyedCollection&)     = default;
 
     public:
         /**

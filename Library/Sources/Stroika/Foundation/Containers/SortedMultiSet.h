@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Ordering reletion applied to sort a 'SortedMultiSet'. Returned by GetElementInOrderComparer ();
+         *  Ordering relation applied to sort a 'SortedMultiSet'. Returned by GetElementInOrderComparer ();
          */
         using ElementInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
@@ -87,8 +87,8 @@ namespace Stroika::Foundation::Containers {
             requires (Common::IInOrderComparer<less<T>, T>);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedMultiSet (INORDER_COMPARER&& inorderComparer);
-        SortedMultiSet (SortedMultiSet&& src) noexcept      = default;
-        SortedMultiSet (const SortedMultiSet& src) noexcept = default;
+        SortedMultiSet (SortedMultiSet&&) noexcept      = default;
+        SortedMultiSet (const SortedMultiSet&) noexcept = default;
         SortedMultiSet (const initializer_list<T>& src)
             requires (Common::IInOrderComparer<less<T>, T>);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
@@ -123,8 +123,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual SortedMultiSet& operator= (SortedMultiSet&& rhs) noexcept = default;
-        nonvirtual SortedMultiSet& operator= (const SortedMultiSet& rhs)     = default;
+        nonvirtual SortedMultiSet& operator= (SortedMultiSet&&) noexcept = default;
+        nonvirtual SortedMultiSet& operator= (const SortedMultiSet&)     = default;
 
     public:
         /**

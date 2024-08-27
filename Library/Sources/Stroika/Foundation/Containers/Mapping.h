@@ -189,8 +189,8 @@ namespace Stroika::Foundation::Containers {
             requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer);
-        Mapping (Mapping&& src) noexcept      = default;
-        Mapping (const Mapping& src) noexcept = default;
+        Mapping (Mapping&&) noexcept      = default;
+        Mapping (const Mapping&) noexcept = default;
         Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
@@ -222,8 +222,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Mapping& operator= (Mapping&& rhs) noexcept = default;
-        nonvirtual Mapping& operator= (const Mapping& rhs)     = default;
+        nonvirtual Mapping& operator= (Mapping&&) noexcept = default;
+        nonvirtual Mapping& operator= (const Mapping&)     = default;
 
     public:
         /**

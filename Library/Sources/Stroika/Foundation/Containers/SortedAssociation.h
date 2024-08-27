@@ -97,8 +97,8 @@ namespace Stroika::Foundation::Containers {
             requires (IInOrderComparer<less<KEY_TYPE>, KEY_TYPE>);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer);
-        SortedAssociation (SortedAssociation&& src) noexcept      = default;
-        SortedAssociation (const SortedAssociation& src) noexcept = default;
+        SortedAssociation (SortedAssociation&&) noexcept      = default;
+        SortedAssociation (const SortedAssociation&) noexcept = default;
         SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (IInOrderComparer<less<KEY_TYPE>, KEY_TYPE>);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
@@ -131,8 +131,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual SortedAssociation& operator= (SortedAssociation&& rhs) noexcept = default;
-        nonvirtual SortedAssociation& operator= (const SortedAssociation& rhs)     = default;
+        nonvirtual SortedAssociation& operator= (SortedAssociation&&) noexcept = default;
+        nonvirtual SortedAssociation& operator= (const SortedAssociation&)     = default;
 
     public:
         /**

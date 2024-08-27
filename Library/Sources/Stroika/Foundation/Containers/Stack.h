@@ -99,8 +99,8 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Stack ();
-        Stack (Stack&& src) noexcept      = default;
-        Stack (const Stack& src) noexcept = default;
+        Stack (Stack&&) noexcept      = default;
+        Stack (const Stack&) noexcept = default;
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename ITERABLE_OF_ADDABLE,
                   enable_if_t<IIterableOf<ITERABLE_OF_ADDABLE, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>>* = nullptr>
@@ -120,8 +120,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Stack& operator= (Stack&& rhs) noexcept = default;
-        nonvirtual Stack& operator= (const Stack& rhs)     = default;
+        nonvirtual Stack& operator= (Stack&&) noexcept = default;
+        nonvirtual Stack& operator= (const Stack&)     = default;
 
     public:
         /**

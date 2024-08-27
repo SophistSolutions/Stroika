@@ -102,8 +102,8 @@ namespace Stroika::Foundation::Containers {
             requires (IInOrderComparer<less<T>, T>);
         template <IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedCollection (INORDER_COMPARER&& inorderComparer);
-        SortedCollection (SortedCollection&& src) noexcept      = default;
-        SortedCollection (const SortedCollection& src) noexcept = default;
+        SortedCollection (SortedCollection&&) noexcept      = default;
+        SortedCollection (const SortedCollection&) noexcept = default;
         SortedCollection (const initializer_list<T>& src)
             requires (IInOrderComparer<less<T>, T>);
         template <IInOrderComparer<T> INORDER_COMPARER>
@@ -134,8 +134,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual SortedCollection& operator= (SortedCollection&& rhs) noexcept = default;
-        nonvirtual SortedCollection& operator= (const SortedCollection& rhs)     = default;
+        nonvirtual SortedCollection& operator= (SortedCollection&&) noexcept = default;
+        nonvirtual SortedCollection& operator= (const SortedCollection&)     = default;
 
     public:
         /**

@@ -142,8 +142,8 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Collection ();
-        Collection (Collection&& src) noexcept      = default;
-        Collection (const Collection& src) noexcept = default;
+        Collection (Collection&&) noexcept      = default;
+        Collection (const Collection&) noexcept = default;
         Collection (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
@@ -165,8 +165,8 @@ namespace Stroika::Foundation::Containers {
         explicit Collection (const shared_ptr<_IRep>& src) noexcept;
 
     public:
-        nonvirtual Collection& operator= (Collection&& rhs) noexcept = default;
-        nonvirtual Collection& operator= (const Collection& rhs)     = default;
+        nonvirtual Collection& operator= (Collection&&) noexcept = default;
+        nonvirtual Collection& operator= (const Collection&)     = default;
 
     public:
         /**

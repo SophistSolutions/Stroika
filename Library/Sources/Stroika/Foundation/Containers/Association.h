@@ -54,10 +54,10 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  \brief An Assocation pairs key values with (possibly multiple or none) mapped_type values. Like Mapping<>, but allowing multiple items associated with 'key'
+     *  \brief An Association pairs key values with (possibly multiple or none) mapped_type values. Like Mapping<>, but allowing multiple items associated with 'key'
      * 
      *      Association which allows for the association of two elements: a key and
-     *  a value. Unlike a Mapping<>, this assocation may not be unique..
+     *  a value. Unlike a Mapping<>, this association may not be unique..
      *
      *  @see    SortedAssociation<Key,T>
      *

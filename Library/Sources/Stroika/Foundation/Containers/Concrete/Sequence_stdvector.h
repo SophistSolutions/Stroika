@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * 
      *      A good default implementation, except that empirically, this appears slower than Sequence_Array<>.
      *
-     *      o   Append/Prepend should perform well (typically constant time, but occasionally O(N))
+     *      o   push_back should perform well (typically constant time, but occasionally O(N))
      *      o   it is FAST to array index a Sequence_stdvector.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
@@ -81,6 +81,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend inherited;
     };
 
 }

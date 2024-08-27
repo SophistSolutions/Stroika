@@ -110,8 +110,8 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Queue ();
-        Queue (Queue&& src) noexcept      = default;
-        Queue (const Queue& src) noexcept = default;
+        Queue (Queue&&) noexcept      = default;
+        Queue (const Queue&) noexcept = default;
         Queue (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
@@ -134,8 +134,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Queue& operator= (Queue&& rhs) noexcept = default;
-        nonvirtual Queue& operator= (const Queue& rhs)     = default;
+        nonvirtual Queue& operator= (Queue&&) noexcept = default;
+        nonvirtual Queue& operator= (const Queue&)     = default;
 
     public:
         /**

@@ -162,8 +162,8 @@ namespace Stroika::Foundation::Containers {
         template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
         explicit Bijection (DataExchange::ValidationStrategy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,
                             RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
-        Bijection (Bijection&& src) noexcept      = default;
-        Bijection (const Bijection& src) noexcept = default;
+        Bijection (Bijection&&) noexcept      = default;
+        Bijection (const Bijection&) noexcept = default;
         Bijection (const initializer_list<value_type>& src)
             requires (IEqualsComparer<equal_to<DOMAIN_TYPE>, DOMAIN_TYPE> and IEqualsComparer<equal_to<RANGE_TYPE>, RANGE_TYPE>);
         template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
@@ -195,8 +195,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Bijection& operator= (Bijection&& rhs) noexcept = default;
-        nonvirtual Bijection& operator= (const Bijection& rhs)     = default;
+        nonvirtual Bijection& operator= (Bijection&&) noexcept = default;
+        nonvirtual Bijection& operator= (const Bijection&)     = default;
 
     public:
         /**

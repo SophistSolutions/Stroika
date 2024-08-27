@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *      \brief  MultiSetOfElementType is just a handly copy of the *T* template type which this
+         *      \brief  MultiSetOfElementType is just a handy copy of the *T* template type which this
          *              MultiSet<T, TRAITS> parameterizes counting.
          */
         using MultiSetOfElementType = T;
@@ -187,8 +187,8 @@ namespace Stroika::Foundation::Containers {
             requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit MultiSet (EQUALS_COMPARER&& equalsComparer);
-        MultiSet (MultiSet&& src) noexcept      = default;
-        MultiSet (const MultiSet& src) noexcept = default;
+        MultiSet (MultiSet&&) noexcept      = default;
+        MultiSet (const MultiSet&) noexcept = default;
         MultiSet (const initializer_list<T>& src)
             requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
@@ -220,8 +220,8 @@ namespace Stroika::Foundation::Containers {
         explicit MultiSet (const shared_ptr<_IRep>& rep) noexcept;
 
     public:
-        nonvirtual MultiSet& operator= (MultiSet&& rhs) noexcept = default;
-        nonvirtual MultiSet& operator= (const MultiSet& rhs)     = default;
+        nonvirtual MultiSet& operator= (MultiSet&&) noexcept = default;
+        nonvirtual MultiSet& operator= (const MultiSet&)     = default;
 
     public:
         /**

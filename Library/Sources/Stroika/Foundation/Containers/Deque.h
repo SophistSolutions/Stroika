@@ -81,8 +81,8 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Deque ();
-        Deque (Deque&& src) noexcept      = default;
-        Deque (const Deque& src) noexcept = default;
+        Deque (Deque&&) noexcept      = default;
+        Deque (const Deque&) noexcept = default;
         Deque (const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         explicit Deque (ITERABLE_OF_ADDABLE&& src)
@@ -107,8 +107,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Deque& operator= (Deque&& rhs) noexcept = default;
-        nonvirtual Deque& operator= (const Deque& rhs)     = default;
+        nonvirtual Deque& operator= (Deque&&) noexcept = default;
+        nonvirtual Deque& operator= (const Deque&)     = default;
 
     public:
         /**

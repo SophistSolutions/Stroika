@@ -170,8 +170,8 @@ namespace Stroika::Foundation::Containers {
             requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit Set (EQUALS_COMPARER&& equalsComparer);
-        Set (Set&& src) noexcept      = default;
-        Set (const Set& src) noexcept = default;
+        Set (Set&&) noexcept      = default;
+        Set (const Set&) noexcept = default;
         Set (const initializer_list<value_type>& src)
             requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
@@ -202,8 +202,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Set& operator= (Set&& rhs) noexcept = default;
-        nonvirtual Set& operator= (const Set& rhs)     = default;
+        nonvirtual Set& operator= (Set&&) noexcept = default;
+        nonvirtual Set& operator= (const Set&)     = default;
 
     public:
         /**
