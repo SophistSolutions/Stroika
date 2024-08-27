@@ -499,7 +499,7 @@ TEST_CONFIGURATIONS_ADD2ALL?=	--all-available-third-party-components
 # 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_valgrind_configs_
 
 
-basic-NEW-UNIX-test-configurations:
+basic-unix-test-configurations:
 	@# Note as of 2023-12-02, it appears memory sanitizer only works with clang++ (not gcc), and even that major
 	@# PITA to use - see https://github.com/google/sanitizers/wiki/MemorySanitizerLibcxxHowTo - must rebuild own libc++ specailly.
 	@# Note they do provide a dockerfile with all this setup, but still ... Not worth the trouble... --LGP 2023-12-02
@@ -658,7 +658,7 @@ regression-test-configurations:
 	if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
 		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) default-configurations;\
 	else\
-		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-NEW-UNIX-test-configurations;\
+		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations;\
 		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) raspberrypi-cross-compile-test-configurations;\
 	fi
 	@# Currently not used, but maybe test occasionally
