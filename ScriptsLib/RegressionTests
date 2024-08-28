@@ -480,7 +480,7 @@ X1=`cat $TEST_OUT_FILE | grep -F "[  PASSED  ]" | wc -l`
 XF=`cat $TEST_OUT_FILE | grep -i FAILED | grep -v TEST_FAILURES_CAUSE_FAILED_MAKE | grep -v fFailConnectionIfSSLCertificateInvalid | wc -l`
 XE=`cat $TEST_OUT_FILE | grep -v fFailConnectionIfSSLCertificateInvalid | grep -E -i "error[ \t]*:" | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
-VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep == | wc -l`
+VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep "^==" | wc -l`
 XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`
 
 if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
