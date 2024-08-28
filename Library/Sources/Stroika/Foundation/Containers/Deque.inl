@@ -62,15 +62,29 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().AddHead (item);
     }
+    inline void Deque<T>::push_front (ArgByValueType<value_type> item)
+    {
+        AddHead (item);
+    }
     template <typename T>
     inline auto Deque<T>::RemoveTail () -> value_type
     {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveTail ();
     }
     template <typename T>
+    inline T Deque<T>::pop_back ()
+    {
+        return RemoveTail ();
+    }
+    template <typename T>
     inline auto Deque<T>::Tail () const -> value_type
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Tail ();
+    }
+    template <typename T>
+    inline T Deque<T>::back () const
+    {
+        return Tail ();
     }
     template <typename T>
     inline void Deque<T>::_AssertRepValidType () const

@@ -55,7 +55,16 @@ namespace Stroika::Foundation::Containers {
      *  Related classes include Deques, which allow addition and removal at
      *  either end, and PriorityQueues, which allow removal based on the priority
      *  assigned to an item.
-     *
+     * 
+     *  \note Diagram:
+     * 
+     *            |   |     |   |     |   |     |   |
+     *     FRONT=>| - |     | - |     | - |     | - |<= BACK
+     *     (HEAD) | 0 |     | 1 |     | 2 |     | 3 | (TAIL)
+     *            |   |     |   |     |   |     |   |
+     *   items removed from this end                 new items added here
+     *                       ^^dont access middle^^
+     * 
      *  @see Deque<T> - which allow addition and removal at either end
      *  @see PriorityQueues<T, TRAITS> - which allow removal based on the priority
      *          assigned to an item.
@@ -142,8 +151,16 @@ namespace Stroika::Foundation::Containers {
          *  Add the given item to the end of the Q, so it will be removed last of all the items currently in the Q.
          *
          *  \note mutates container
+         *
+         *  \alias Enqueue, push_back
          */
         nonvirtual void AddTail (ArgByValueType<value_type> item);
+
+    public:
+        /**
+         *  \brief Add the given item to the end of the Q, so it will be removed last of all the items currently in the Q (stlish alias)
+         */
+        nonvirtual void push_back (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -151,6 +168,13 @@ namespace Stroika::Foundation::Containers {
          *  @see HeadIf ()
          */
         nonvirtual value_type Head () const;
+
+    public:
+        /**
+         *  \brief stlish alias for Head
+         *  \req not empty ()
+         */
+        nonvirtual T front () const;
 
     public:
         /**
@@ -163,6 +187,13 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual value_type RemoveHead ();
+
+    public:
+        /**
+         *  \req not empty ()
+         *  \note mutates container
+         */
+        nonvirtual value_type pop_back ();
 
     public:
         /**
@@ -195,7 +226,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \req  IIterableOf<ITERABLE_OF_ADDABLE, T>  or IInputIterator<T>
          * 
-         *  \note This works efficiently because a Queue<> iterates from head to tail, and thats the order in which you would want to
+         *  \note This works efficiently because a Queue<> iterates from head to tail, and that's the order in which you would want to
          *        add them to copy the Queue (unlike with Stack).
          *
          *  \note mutates container

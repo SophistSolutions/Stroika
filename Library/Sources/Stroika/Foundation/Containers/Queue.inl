@@ -65,9 +65,19 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().AddTail (item);
     }
     template <typename T>
+    inline void Queue<T>::push_back (ArgByValueType<value_type> item)
+    {
+        AddTail (item);
+    }
+    template <typename T>
     inline auto Queue<T>::Head () const -> value_type
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Head ();
+    }
+    template <typename T>
+    nonvirtual T Queue<T>::front () const
+    {
+        return Head ();
     }
     template <typename T>
     inline auto Queue<T>::HeadIf () const -> optional<value_type>
@@ -79,6 +89,11 @@ namespace Stroika::Foundation::Containers {
     {
         Require (not this->empty ());
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
+    }
+    template <typename T>
+    inline auto Queue<T>::pop_back () -> value_type
+    {
+        return RemoveHead ();
     }
     template <typename T>
     inline auto Queue<T>::RemoveHeadIf () -> optional<value_type>

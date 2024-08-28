@@ -12,11 +12,6 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- *
- *  TODO:
- *
- *      @todo   Consider  using the words front/back and push_front/pop_back etc - like with STL
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -118,14 +113,32 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief stlish alias for AddHead
+         */
+        nonvirtual void push_front (ArgByValueType<value_type> item);
+
+    public:
+        /**
          *  \note mutates container
          */
         nonvirtual value_type RemoveTail ();
 
     public:
         /**
+         *  \brief stlish alias for AddHead
+         */
+        nonvirtual T pop_back ();
+
+    public:
+        /**
          */
         nonvirtual value_type Tail () const;
+
+        /**
+         *  \brief stlish alias for Tail
+         *  \req not empty ()
+         */
+        nonvirtual T back () const;
 
     protected:
         /**
