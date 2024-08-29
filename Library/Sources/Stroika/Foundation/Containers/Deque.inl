@@ -62,6 +62,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().AddHead (item);
     }
+    template <typename T>
     inline void Deque<T>::push_front (ArgByValueType<value_type> item)
     {
         AddHead (item);
