@@ -16,97 +16,21 @@ using namespace Stroika::Frameworks::Test::ArchtypeClasses;
 
 /*
  ********************************************************************************
- ********************************** SimpleClass *********************************
+ ******************** OnlyCopyableMoveableAndTotallyOrdered *********************
  ********************************************************************************
  */
 namespace {
     constexpr int kKnownGoodBitPatternValue_ = 0x0BADBEEF;
 }
 
-size_t SimpleClass::sTotalLiveObjects_ = 0;
-
-SimpleClass::SimpleClass (size_t v)
-    : fValue_ (v)
-    , fConstructed_{kKnownGoodBitPatternValue_}
-{
-    ++sTotalLiveObjects_;
-}
-
-SimpleClass::SimpleClass (SimpleClass&& src) noexcept
-    : fValue_ (src.fValue_)
-    , fConstructed_{kKnownGoodBitPatternValue_}
-{
-    ++sTotalLiveObjects_;
-    VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
-}
-
-SimpleClass::SimpleClass (const SimpleClass& src) noexcept
-    : fValue_ (src.fValue_)
-    , fConstructed_{kKnownGoodBitPatternValue_}
-{
-    ++sTotalLiveObjects_;
-    VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
-}
-
-SimpleClass::~SimpleClass ()
-{
-    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
-    VerifyTestResult (sTotalLiveObjects_ != 0);
-    --sTotalLiveObjects_;
-    fConstructed_ = ~kKnownGoodBitPatternValue_;
-    VerifyTestResult (fConstructed_ != kKnownGoodBitPatternValue_);
-}
-
-size_t SimpleClass::GetValue () const
-{
-    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
-    return (fValue_);
-}
-
-size_t SimpleClass::GetTotalLiveCount ()
-{
-    return sTotalLiveObjects_;
-}
-
-SimpleClass SimpleClass::operator+ (const SimpleClass& rhs) const
-{
-    return SimpleClass (fValue_ + rhs.fValue_);
-}
-
-SimpleClass::operator size_t () const
-{
-    return fValue_;
-}
-
-bool SimpleClass::operator== (const SimpleClass& rhs) const
-{
-    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
-    VerifyTestResult (rhs.fConstructed_ == kKnownGoodBitPatternValue_);
-    return fValue_ == rhs.fValue_;
-}
-
-bool SimpleClass::operator< (const SimpleClass& rhs) const
-{
-    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
-    VerifyTestResult (rhs.fConstructed_ == kKnownGoodBitPatternValue_);
-    return fValue_ < rhs.fValue_;
-}
-
-/*
- ********************************************************************************
- ******************* SimpleClassWithoutComparisonOperators **********************
- ********************************************************************************
- */
-size_t SimpleClassWithoutComparisonOperators::sTotalLiveObjects_ = 0;
-
-SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (size_t v)
+OnlyCopyableMoveableAndTotallyOrdered::OnlyCopyableMoveableAndTotallyOrdered (size_t v)
     : fValue_{v}
     , fConstructed_{kKnownGoodBitPatternValue_}
 {
     ++sTotalLiveObjects_;
 }
 
-SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (SimpleClassWithoutComparisonOperators&& src) noexcept
+OnlyCopyableMoveableAndTotallyOrdered::OnlyCopyableMoveableAndTotallyOrdered (OnlyCopyableMoveableAndTotallyOrdered&& src) noexcept
     : fValue_{src.fValue_}
     , fConstructed_{kKnownGoodBitPatternValue_}
 {
@@ -114,7 +38,7 @@ SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (Si
     VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
 }
 
-SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (const SimpleClassWithoutComparisonOperators& src) noexcept
+OnlyCopyableMoveableAndTotallyOrdered::OnlyCopyableMoveableAndTotallyOrdered (const OnlyCopyableMoveableAndTotallyOrdered& src) noexcept
     : fValue_{src.fValue_}
     , fConstructed_{kKnownGoodBitPatternValue_}
 {
@@ -122,7 +46,7 @@ SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (co
     VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
 }
 
-SimpleClassWithoutComparisonOperators::~SimpleClassWithoutComparisonOperators ()
+OnlyCopyableMoveableAndTotallyOrdered::~OnlyCopyableMoveableAndTotallyOrdered ()
 {
     VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
     VerifyTestResult (sTotalLiveObjects_ != 0);
@@ -131,18 +55,85 @@ SimpleClassWithoutComparisonOperators::~SimpleClassWithoutComparisonOperators ()
     VerifyTestResult (fConstructed_ != kKnownGoodBitPatternValue_);
 }
 
-size_t SimpleClassWithoutComparisonOperators::GetValue () const
+size_t OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount ()
+{
+    return sTotalLiveObjects_;
+}
+
+OnlyCopyableMoveableAndTotallyOrdered OnlyCopyableMoveableAndTotallyOrdered::operator+ (const OnlyCopyableMoveableAndTotallyOrdered& rhs) const
+{
+    return OnlyCopyableMoveableAndTotallyOrdered (fValue_ + rhs.fValue_);
+}
+
+OnlyCopyableMoveableAndTotallyOrdered::operator size_t () const
 {
     VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
     return fValue_;
 }
 
-size_t SimpleClassWithoutComparisonOperators::GetTotalLiveCount ()
+bool OnlyCopyableMoveableAndTotallyOrdered::operator== (const OnlyCopyableMoveableAndTotallyOrdered& rhs) const
+{
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    VerifyTestResult (rhs.fConstructed_ == kKnownGoodBitPatternValue_);
+    return fValue_ == rhs.fValue_;
+}
+
+auto OnlyCopyableMoveableAndTotallyOrdered::operator<=> (const OnlyCopyableMoveableAndTotallyOrdered& rhs) const -> strong_ordering
+{
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    VerifyTestResult (rhs.fConstructed_ == kKnownGoodBitPatternValue_);
+    return fValue_ <=> rhs.fValue_;
+}
+
+/*
+ ********************************************************************************
+ ************************* OnlyCopyableMoveable *********************************
+ ********************************************************************************
+ */
+OnlyCopyableMoveable::OnlyCopyableMoveable (size_t v)
+    : fValue_{v}
+    , fConstructed_{kKnownGoodBitPatternValue_}
+{
+    ++sTotalLiveObjects_;
+}
+
+OnlyCopyableMoveable::OnlyCopyableMoveable (OnlyCopyableMoveable&& src) noexcept
+    : fValue_{src.fValue_}
+    , fConstructed_{kKnownGoodBitPatternValue_}
+{
+    ++sTotalLiveObjects_;
+    VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
+}
+
+OnlyCopyableMoveable::OnlyCopyableMoveable (const OnlyCopyableMoveable& src) noexcept
+    : fValue_{src.fValue_}
+    , fConstructed_{kKnownGoodBitPatternValue_}
+{
+    ++sTotalLiveObjects_;
+    VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
+}
+
+OnlyCopyableMoveable::~OnlyCopyableMoveable ()
+{
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    VerifyTestResult (sTotalLiveObjects_ != 0);
+    --sTotalLiveObjects_;
+    fConstructed_ = ~kKnownGoodBitPatternValue_;
+    VerifyTestResult (fConstructed_ != kKnownGoodBitPatternValue_);
+}
+
+OnlyCopyableMoveable::operator size_t () const
+{
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    return fValue_;
+}
+
+size_t OnlyCopyableMoveable::GetTotalLiveCount ()
 {
     return sTotalLiveObjects_;
 }
 
-SimpleClassWithoutComparisonOperators SimpleClassWithoutComparisonOperators::operator+ (const SimpleClassWithoutComparisonOperators& rhs) const
+OnlyCopyableMoveable OnlyCopyableMoveable::operator+ (const OnlyCopyableMoveable& rhs) const
 {
-    return SimpleClassWithoutComparisonOperators{fValue_ + rhs.fValue_};
+    return OnlyCopyableMoveable{fValue_ + rhs.fValue_};
 }

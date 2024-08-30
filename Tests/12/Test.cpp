@@ -22,8 +22,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Bijection_LinkedList;
 
@@ -47,30 +47,27 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Bijection, all)
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        struct MyComparerWithEquals_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            using value_type = OnlyCopyableMoveable;
             bool operator() (value_type v1, value_type v2) const
             {
-                return v1.GetValue () == v2.GetValue ();
+                return static_cast<size_t> (v1) == static_cast<size_t> (v2);
             }
         };
 
         RunTests_<Bijection<size_t, size_t>> ();
-        RunTests_<Bijection<SimpleClass, SimpleClass>> ();
-        RunTests_<Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ([] () {
-            return Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
-                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
+        RunTests_<Bijection<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<Bijection<OnlyCopyableMoveable, OnlyCopyableMoveable>> ([] () {
+            return Bijection<OnlyCopyableMoveable, OnlyCopyableMoveable>{MyComparerWithEquals_{}, MyComparerWithEquals_{}};
         });
 
         RunTests_<Bijection_LinkedList<size_t, size_t>> ();
-        RunTests_<Bijection_LinkedList<SimpleClass, SimpleClass>> ();
-        RunTests_<Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ([] () {
-            return Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
-                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
+        RunTests_<Bijection_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<Bijection_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>> ([] () {
+            return Bijection_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>{MyComparerWithEquals_{}, MyComparerWithEquals_{}};
         });
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

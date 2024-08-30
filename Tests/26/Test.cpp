@@ -24,8 +24,10 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::SortedMapping_stdmap;
 
@@ -82,8 +84,8 @@ namespace {
         {
             Mapping<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
             SortedMapping<int, int> ms{m};
-            EXPECT_TRUE (ms.size () == 2);
-            EXPECT_TRUE ((*ms.begin () == pair<int, int>{1, 2}));
+            EXPECT_EQ (ms.size () , 2u);
+            EXPECT_EQ (*ms.begin (), (pair<int, int>{1, 2}));
         }
     }
 }
@@ -91,44 +93,24 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedMapping, all)
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
-        };
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () < v2.GetValue ();
-            }
-        };
+        using ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
+        using ComparerWithLess_   = AsIntsLessComparer<OnlyCopyableMoveable>;
 
         DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (ComparerWithLess_{}); },
+            ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (ComparerWithLess_{}); },
+            ComparerWithEquals_{});
 
         Test3_ConvertMapping2SortedMapping::TestAll ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

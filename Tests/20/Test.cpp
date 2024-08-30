@@ -25,8 +25,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Queue_Array;
 using Concrete::Queue_DoublyLinkedList;
@@ -50,31 +50,31 @@ namespace {
     GTEST_TEST (Foundation_Containers_Queue, all)
     {
         using COMPARE_SIZET       = std::equal_to<size_t>;
-        using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
-        struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        using COMPARE_SimpleClass = std::equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
+        struct COMPARE_OnlyCopyableMoveable : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            using value_type = OnlyCopyableMoveable;
             bool operator() (value_type v1, value_type v2) const
             {
-                return v1.GetValue () == v2.GetValue ();
+                return static_cast<size_t> (v1) == static_cast<size_t> (v2);
             }
         };
 
         SimpleQueueTest_All_For_Type<Queue<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Queue<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleQueueTest_All_For_Type<Queue<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleQueueTest_All_For_Type<Queue<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
         SimpleQueueTest_All_For_Type<Queue_Array<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Queue_Array<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_Array<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleQueueTest_All_For_Type<Queue_Array<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue_Array<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleQueueTest_All_For_Type<Queue_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
         SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

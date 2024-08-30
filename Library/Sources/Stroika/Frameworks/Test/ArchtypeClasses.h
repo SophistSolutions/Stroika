@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Configuration/Common.h"
 
 /**
@@ -14,15 +15,17 @@
  */
 namespace Stroika::Frameworks::Test::ArchtypeClasses {
 
-    // CONSTRUCIBLE_FROM_INT, and convertible to size_t int as well
-    // Handy in regtests...
+    using Foundation::Common::ComparisonRelationDeclaration;
+    using Foundation::Common::ComparisonRelationDeclarationBase;
+    using Foundation::Common::ComparisonRelationType;
+
+    /**
+     * \brief IINTeroperable = constructible, and convertible to size_t int as well; for simple use in regression tests
+     */
     template <typename T>
     concept IINTeroperable = requires (T t) {
         {
             static_cast<size_t> (T{1u})
-        } -> convertible_to<size_t>;
-        {
-            T{1u}.GetValue ()
         } -> convertible_to<size_t>;
         {
             T{1u} + T{1u}
@@ -37,8 +40,8 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         OnlyDefaultConstructibleAndMoveable (const OnlyDefaultConstructibleAndMoveable&) = delete;
         OnlyDefaultConstructibleAndMoveable (OnlyDefaultConstructibleAndMoveable&&)      = default;
 
-        nonvirtual OnlyDefaultConstructibleAndMoveable& operator= (const OnlyDefaultConstructibleAndMoveable&) = delete;
-        nonvirtual OnlyDefaultConstructibleAndMoveable& operator= (OnlyDefaultConstructibleAndMoveable&&)      = default;
+        OnlyDefaultConstructibleAndMoveable& operator= (const OnlyDefaultConstructibleAndMoveable&)     = delete;
+        OnlyDefaultConstructibleAndMoveable& operator= (OnlyDefaultConstructibleAndMoveable&&) noexcept = default;
 
         void method (){};
         void const_method () const {};
@@ -51,76 +54,120 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     static_assert (not semiregular<OnlyDefaultConstructibleAndMoveable>);
     static_assert (not regular<OnlyDefaultConstructibleAndMoveable>);
 
+    using NotCopyable [[deprecated ("Since Stroika v3.0d10 use OnlyDefaultConstructibleAndMoveable")]] = OnlyDefaultConstructibleAndMoveable;
+
     /**
-     *  Object NOT default constructible, is copyable, assignable; supports operator+ and operator==, and operator<
+     *  Object NOT default constructible, is copyable (and assignable); supports operator+ and operator==, and operator<, operator <=>, etc
+     * 
+     *  \note before Stroika v3.0d10 this was called 'SimpleClass'
      */
-    class SimpleClass {
+    class OnlyCopyableMoveableAndTotallyOrdered {
     public:
-        SimpleClass () noexcept = delete;
-        SimpleClass (SimpleClass&& src) noexcept;
-        SimpleClass (const SimpleClass&) noexcept;
-        SimpleClass (size_t v);
-        ~SimpleClass ();
+        OnlyCopyableMoveableAndTotallyOrdered () noexcept = delete;
+        OnlyCopyableMoveableAndTotallyOrdered (OnlyCopyableMoveableAndTotallyOrdered&& src) noexcept;
+        OnlyCopyableMoveableAndTotallyOrdered (const OnlyCopyableMoveableAndTotallyOrdered&) noexcept;
+        OnlyCopyableMoveableAndTotallyOrdered (size_t v);
+        ~OnlyCopyableMoveableAndTotallyOrdered ();
 
-        SimpleClass& operator= (SimpleClass&& rhs)  = default;
-        SimpleClass& operator= (const SimpleClass&) = default;
+        OnlyCopyableMoveableAndTotallyOrdered& operator= (OnlyCopyableMoveableAndTotallyOrdered&& rhs)  = default;
+        OnlyCopyableMoveableAndTotallyOrdered& operator= (const OnlyCopyableMoveableAndTotallyOrdered&) = default;
 
-        nonvirtual size_t GetValue () const;
-        static size_t     GetTotalLiveCount ();
+        [[deprecated ("Since Stroika v3.0d10 use static_cast<size_t>")]] size_t GetValue () const
+        {
+            return fValue_;
+        }
+        static size_t GetTotalLiveCount ();
 
-        SimpleClass operator+ (const SimpleClass& rhs) const;
-        explicit    operator size_t () const;
+        OnlyCopyableMoveableAndTotallyOrdered operator+ (const OnlyCopyableMoveableAndTotallyOrdered& rhs) const;
+        explicit                              operator size_t () const;
 
-        bool operator== (const SimpleClass& rhs) const;
-        bool operator< (const SimpleClass& rhs) const;
+        bool            operator== (const OnlyCopyableMoveableAndTotallyOrdered& rhs) const;
+        strong_ordering operator<=> (const OnlyCopyableMoveableAndTotallyOrdered& rhs) const;
 
     private:
-        size_t        fValue_;
-        int           fConstructed_;
-        static size_t sTotalLiveObjects_;
+        size_t               fValue_;
+        int                  fConstructed_;
+        static inline size_t sTotalLiveObjects_{0};
     };
-    static_assert (not default_initializable<SimpleClass>);
-    static_assert (copyable<SimpleClass>);
-    static_assert (move_constructible<SimpleClass>);
-    static_assert (equality_comparable<SimpleClass>);
-    static_assert (not totally_ordered<SimpleClass>); // @todo allow this to be totally ordered...
-    static_assert (not semiregular<SimpleClass>);
-    static_assert (not regular<SimpleClass>);
-    static_assert (IINTeroperable<SimpleClass>);
+    static_assert (not default_initializable<OnlyCopyableMoveableAndTotallyOrdered>);
+    static_assert (copyable<OnlyCopyableMoveableAndTotallyOrdered>);
+    static_assert (move_constructible<OnlyCopyableMoveableAndTotallyOrdered>);
+    static_assert (equality_comparable<OnlyCopyableMoveableAndTotallyOrdered>);
+    static_assert (totally_ordered<OnlyCopyableMoveableAndTotallyOrdered>); // @todo allow this to be totally ordered...
+    static_assert (not semiregular<OnlyCopyableMoveableAndTotallyOrdered>);
+    static_assert (not regular<OnlyCopyableMoveableAndTotallyOrdered>);
+    static_assert (IINTeroperable<OnlyCopyableMoveableAndTotallyOrdered>);
+
+    using SimpleClass [[deprecated ("Since Stroika v3.0d10 use OnlyCopyableMoveableAndTotallyOrdered")]] = OnlyCopyableMoveableAndTotallyOrdered;
 
     /**
      *  Object NOT default constructible, is copyable, assignable; supports operator+, but NO COMPARISON operators
+     *   \note before Stroika v3.0d10 this was called 'SimpleClassWithoutComparisonOperators'
      */
-    class SimpleClassWithoutComparisonOperators {
+    class OnlyCopyableMoveable {
     public:
-        SimpleClassWithoutComparisonOperators () noexcept = delete;
-        SimpleClassWithoutComparisonOperators (SimpleClassWithoutComparisonOperators&& src) noexcept;
-        SimpleClassWithoutComparisonOperators (const SimpleClassWithoutComparisonOperators&) noexcept;
-        SimpleClassWithoutComparisonOperators (size_t v);
-        ~SimpleClassWithoutComparisonOperators ();
+        OnlyCopyableMoveable () noexcept = delete;
+        OnlyCopyableMoveable (OnlyCopyableMoveable&& src) noexcept;
+        OnlyCopyableMoveable (const OnlyCopyableMoveable&) noexcept;
+        OnlyCopyableMoveable (size_t v);
+        ~OnlyCopyableMoveable ();
 
-        SimpleClassWithoutComparisonOperators& operator= (SimpleClassWithoutComparisonOperators&& rhs)  = default;
-        SimpleClassWithoutComparisonOperators& operator= (const SimpleClassWithoutComparisonOperators&) = default;
+        OnlyCopyableMoveable& operator= (OnlyCopyableMoveable&& rhs)  = default;
+        OnlyCopyableMoveable& operator= (const OnlyCopyableMoveable&) = default;
 
-        nonvirtual size_t GetValue () const;
-        static size_t     GetTotalLiveCount ();
+        [[deprecated ("Since Stroika v3.0d10 use static_cast<size_t>")]] size_t GetValue () const
+        {
+            return fValue_;
+        }
+        static size_t GetTotalLiveCount ();
 
-        explicit                              operator size_t () const;
-        SimpleClassWithoutComparisonOperators operator+ (const SimpleClassWithoutComparisonOperators& rhs) const;
+        explicit             operator size_t () const;
+        OnlyCopyableMoveable operator+ (const OnlyCopyableMoveable& rhs) const;
 
     private:
-        size_t        fValue_;
-        int           fConstructed_;
-        static size_t sTotalLiveObjects_;
+        size_t               fValue_;
+        int                  fConstructed_;
+        static inline size_t sTotalLiveObjects_{0};
     };
-    static_assert (not default_initializable<SimpleClassWithoutComparisonOperators>);
-    static_assert (copyable<SimpleClassWithoutComparisonOperators>);
-    static_assert (move_constructible<SimpleClassWithoutComparisonOperators>);
-    static_assert (not equality_comparable<SimpleClassWithoutComparisonOperators>);
-    static_assert (not totally_ordered<SimpleClassWithoutComparisonOperators>); // @todo allow this to be totally ordered...
-    static_assert (not semiregular<SimpleClassWithoutComparisonOperators>);
-    static_assert (not regular<SimpleClassWithoutComparisonOperators>);
-    static_assert (IINTeroperable<SimpleClassWithoutComparisonOperators>);
+    static_assert (not default_initializable<OnlyCopyableMoveable>);
+    static_assert (copyable<OnlyCopyableMoveable>);
+    static_assert (move_constructible<OnlyCopyableMoveable>);
+    static_assert (not equality_comparable<OnlyCopyableMoveable>);
+    static_assert (not totally_ordered<OnlyCopyableMoveable>); // @todo allow this to be totally ordered...
+    static_assert (not semiregular<OnlyCopyableMoveable>);
+    static_assert (not regular<OnlyCopyableMoveable>);
+    static_assert (IINTeroperable<OnlyCopyableMoveable>);
+
+    using SimpleClassWithoutComparisonOperators [[deprecated ("Since Stroika v3.0d10 use OnlyCopyableMoveable")]] = OnlyCopyableMoveable;
+
+    /**
+     * \brief alias for 'regular' type (copyable, default constructible, etc)
+     */
+    using Regular = size_t;
+    static_assert (regular<Regular>);
+    static_assert (IINTeroperable<Regular>);
+
+    /**
+     *  For types that don't have operator== bulletin, this saves a bit of typing producing a generic comparer
+     */
+    template <IINTeroperable T>
+    struct AsIntsEqualsComparer : ComparisonRelationDeclarationBase<ComparisonRelationType::eEquals> {
+        bool operator() (T v1, T v2) const
+        {
+            return static_cast<size_t> (v1) == static_cast<size_t> (v2);
+        }
+    };
+
+    /**
+     *  For types that don't have operator== bulletin, this saves a bit of typing producing a generic comparer
+     */
+    template <IINTeroperable T>
+    struct AsIntsLessComparer : ComparisonRelationDeclarationBase<ComparisonRelationType::eStrictInOrder> {
+        bool operator() (T v1, T v2) const
+        {
+            return static_cast<size_t> (v1) < static_cast<size_t> (v2);
+        }
+    };
 
 }
 

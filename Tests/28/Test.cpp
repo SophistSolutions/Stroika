@@ -27,8 +27,8 @@ using namespace Stroika::Foundation::Common;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::SortedSet_SkipList;
 using Concrete::SortedSet_stdset;
@@ -97,7 +97,7 @@ namespace {
         {
             {
                 using Characters::String;
-                SortedSet<String> tmp{L"a", L"b", L"A"};
+                SortedSet<String> tmp{"a", "b", "A"};
                 EXPECT_TRUE (tmp.size () == 3);
                 EXPECT_TRUE (tmp.Contains (L"A"));
                 EXPECT_TRUE (not tmp.Contains (L"B"));
@@ -118,28 +118,26 @@ namespace {
     {
         using namespace CommonTests::SetTests;
 
-        struct MySimpleClassWithoutComparisonOperators_LESS_ : ComparisonRelationDeclarationBase<ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
+        struct MyOnlyCopyableMoveable_LESS_ : ComparisonRelationDeclarationBase<ComparisonRelationType::eStrictInOrder> {
+            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
             {
-                return lhs.GetValue () < rhs.GetValue ();
+                return static_cast<size_t> (lhs) < static_cast<size_t> (rhs);
             }
         };
         RunTests_<SortedSet<size_t>> ();
-        RunTests_<SortedSet<SimpleClass>> ();
-        RunTests_<SortedSet<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () {
-            return SortedSet<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{});
-        });
+        RunTests_<SortedSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<SortedSet<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{},
+                                                    [] () { return SortedSet<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
 
         RunTests_<SortedSet_stdset<size_t>> ();
-        RunTests_<SortedSet_stdset<SimpleClass>> ();
-        RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () {
-            return SortedSet_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{});
-        });
+        RunTests_<SortedSet_stdset<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<SortedSet_stdset<OnlyCopyableMoveable>> (
+            MyOnlyCopyableMoveable_LESS_{}, [] () { return SortedSet_stdset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
 
         Test2_InitalizeCTORs_::DoRun ();
         Test3_ExplicitSortFunction_::DoRun ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

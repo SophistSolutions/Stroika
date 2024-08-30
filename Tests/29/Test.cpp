@@ -22,8 +22,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Stack_LinkedList;
 
@@ -156,28 +156,28 @@ namespace {
     GTEST_TEST (Foundation_Containers_Stack, all)
     {
         using COMPARE_SIZET       = equal_to<size_t>;
-        using COMPARE_SimpleClass = equal_to<SimpleClass>;
-        struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        using COMPARE_SimpleClass = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
+        struct COMPARE_EQ_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            using value_type = OnlyCopyableMoveable;
             bool operator() (value_type v1, value_type v2) const
             {
-                return v1.GetValue () == v2.GetValue ();
+                return static_cast<size_t> (v1) == static_cast<size_t> (v2);
             }
         };
 
         Tests_All_For_Type_<Stack<size_t>, COMPARE_SIZET> ();
-        Tests_All_For_Type_<Stack<SimpleClass>, COMPARE_SimpleClass> ();
-        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        Tests_All_For_Type_<Stack<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        Tests_All_For_Type_<Stack<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack<OnlyCopyableMoveable>, COMPARE_EQ_> ();
+        Tests_All_For_Type_<Stack<OnlyCopyableMoveable>, COMPARE_EQ_> ();
 
         Tests_All_For_Type_<Stack_LinkedList<size_t>, COMPARE_SIZET> ();
-        Tests_All_For_Type_<Stack_LinkedList<SimpleClass>, COMPARE_SimpleClass> ();
-        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        Tests_All_For_Type_<Stack_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        Tests_All_For_Type_<Stack_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack_LinkedList<OnlyCopyableMoveable>, COMPARE_EQ_> ();
+        Tests_All_For_Type_<Stack_LinkedList<OnlyCopyableMoveable>, COMPARE_EQ_> ();
 
         Test3_StackContructionByValue_::Test ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

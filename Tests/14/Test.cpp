@@ -25,7 +25,7 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 #if qHasFeature_GoogleTest
@@ -122,7 +122,8 @@ namespace {
         Test3_BasicSparseHCTest_::RunTests<Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>> ();
         Test4_BasicDenseHCTest_::RunTests<Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>> ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and
+                     SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

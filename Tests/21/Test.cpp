@@ -29,8 +29,9 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Sequence_Array;
 using Concrete::Sequence_DoublyLinkedList;
@@ -40,7 +41,7 @@ using Concrete::Sequence_stdvector;
 /**
  *
  *  @todo   Move more tests into SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ... so
- *          that case gets more testing. Even if we have to breakup exsiting tests into parts.
+ *          that case gets more testing. Even if we have to breakup existing tests into parts.
  *
  *  @todo   Fix COMPARE (test case 3) support
  *
@@ -718,7 +719,7 @@ namespace SequenceIndexing_Test_16_ {
         {
             using Characters::String;
             Sequence<String> a;
-            a += L"1";
+            a += "1";
             String a0 = a[0];
             // Should fail to compile
             //a[0]   = 3; --- @todo - @see and maybe use http://stroika-bugs.sophists.com/browse/STK-583 AssertDoesntCompile
@@ -853,40 +854,34 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Sequence, all)
     {
-        using COMPARE_SIZET       = equal_to<size_t>;
-        using COMPARE_SimpleClass = equal_to<SimpleClass>;
-        struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (value_type v1, value_type v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
-        };
+        using COMPARE_SIZET                = equal_to<size_t>;
+        using COMPARE_SimpleClass          = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
+        using COMPARE_OnlyCopyableMoveable = AsIntsEqualsComparer<OnlyCopyableMoveable>;
 
         SimpleSequenceTest_All_For_Type_<Sequence<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
         SimpleSequenceTest_All_For_Type_<Sequence_Array<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_Array<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_Array<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_Array<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
         SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
         SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_LinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
         SimpleSequenceTest_All_For_Type_<Sequence_stdvector<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_stdvector<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_stdvector<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
         SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ();
 
@@ -903,7 +898,7 @@ namespace {
         ExampleOrderBy_Test19_::DoTest ();
         BugWithWhereCallingAdd_Test20_::DoTest ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

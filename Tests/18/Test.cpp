@@ -28,8 +28,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::MultiSet_Array;
 using Concrete::MultiSet_LinkedList;
@@ -87,69 +87,59 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_MultiSet, all)
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
+        struct MyOnlyCopyableMoveable_ComparerWithEquals_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
             {
-                return lhs.GetValue () == rhs.GetValue ();
+                return static_cast<size_t> (lhs) == static_cast<size_t> (rhs);
             }
         };
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
+        struct MyOnlyCopyableMoveable_ComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
+            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
             {
-                return lhs.GetValue () < rhs.GetValue ();
+                return static_cast<size_t> (lhs) < static_cast<size_t> (rhs);
             }
         };
 
         {
             DoTestForConcreteContainer_<MultiSet<size_t>> ();
-            DoTestForConcreteContainer_<MultiSet<SimpleClass>> ();
-            auto msFactory = [] () {
-                return MultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
-            };
-            DoTestForConcreteContainer_<MultiSet<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-                                                                   decltype (msFactory)> (msFactory));
+            DoTestForConcreteContainer_<MultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
+            auto msFactory = [] () { return MultiSet<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
+            DoTestForConcreteContainer_<MultiSet<OnlyCopyableMoveable>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
+                    msFactory));
         }
 
         {
             DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
-            DoTestForConcreteContainer_<MultiSet_Array<SimpleClass>> ();
-            auto msFactory = [] () {
-                return MultiSet_Array<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
-            };
-            DoTestForConcreteContainer_<MultiSet_Array<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-                                                                   decltype (msFactory)> (msFactory));
+            DoTestForConcreteContainer_<MultiSet_Array<OnlyCopyableMoveableAndTotallyOrdered>> ();
+            auto msFactory = [] () { return MultiSet_Array<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
+            DoTestForConcreteContainer_<MultiSet_Array<OnlyCopyableMoveable>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
+                    msFactory));
         }
 
         {
             DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
-            DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClass>> ();
-            auto msFactory = [] () {
-                return MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
-            };
-            DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-                                                                   decltype (msFactory)> (msFactory));
+            DoTestForConcreteContainer_<MultiSet_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>> ();
+            auto msFactory = [] () { return MultiSet_LinkedList<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
+            DoTestForConcreteContainer_<MultiSet_LinkedList<OnlyCopyableMoveable>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
+                    msFactory));
         }
 
         {
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClass>> ();
-            auto msFactory = [] () {
-                return SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}};
-            };
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-                                                                   decltype (msFactory)> (msFactory));
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
+            auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithLess_{}}; };
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_stdmap<OnlyCopyableMoveable>,
+                                                                   MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (msFactory));
         }
 
         ExampleCTORS_Test_2_::DoTest ();
         Top_Test_3_::DoTest ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

@@ -19,8 +19,7 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using DataStructures::Array;
 
@@ -61,7 +60,7 @@ namespace {
     static void Test2 ()
     {
         {
-            Array<SimpleClass> someArray;
+            Array<OnlyCopyableMoveableAndTotallyOrdered> someArray;
             someArray.InsertAt (0, 100);
             // for (size_t i = 0; i < someArray.size (); ++i) { cerr << "someArray[" << i << "] = " << someArray[i].GetValue () << endl; }
             someArray.RemoveAt (0);
@@ -73,7 +72,7 @@ namespace {
             someArray.RemoveAt (1);
         }
 
-        Array<SimpleClass> someArray;
+        Array<OnlyCopyableMoveableAndTotallyOrdered> someArray;
 
         const size_t kBigSize = 1001;
 
@@ -101,9 +100,9 @@ namespace {
         someArray.InsertAt (100, 1);
         EXPECT_TRUE (someArray.size () == kBigSize + 1);
         EXPECT_TRUE (someArray[100] == 1);
-        someArray[101] = 1 + someArray[100].GetValue ();
+        someArray[101] = 1 + static_cast<size_t> (someArray[100]);
         someArray.RemoveAt (1);
-        EXPECT_TRUE (someArray[100].GetValue () == 2);
+        EXPECT_EQ (static_cast<size_t> (someArray[100]), 2u);
     }
 }
 

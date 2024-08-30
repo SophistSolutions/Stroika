@@ -24,8 +24,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Deque_DoublyLinkedList;
 
@@ -58,9 +58,9 @@ namespace {
     GTEST_TEST (Foundation_Deque, all)
     {
         using COMPARE_SIZET       = equal_to<size_t>;
-        using COMPARE_SimpleClass = equal_to<SimpleClass>;
-        struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        using COMPARE_SimpleClass = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
+        struct COMPARE_OnlyCopyableMoveable : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            using value_type = OnlyCopyableMoveable;
             bool operator() (value_type v1, value_type v2) const
             {
                 return v1.GetValue () == v2.GetValue ();
@@ -68,16 +68,16 @@ namespace {
         };
 
         SimpleQueueTest_All_For_Type<Deque<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Deque<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleQueueTest_All_For_Type<Deque<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Deque<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleQueueTest_All_For_Type<Deque<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
         SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

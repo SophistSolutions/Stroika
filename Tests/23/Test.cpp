@@ -24,8 +24,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::SortedAssociation_stdmultimap;
 
@@ -89,17 +89,15 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedAssociation, all)
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        struct MyOnlyCopyableMoveable_ComparerWithEquals_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            using value_type = OnlyCopyableMoveable;
             bool operator() (const value_type& v1, const value_type& v2) const
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        struct MyOnlyCopyableMoveable_ComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
+            using value_type = OnlyCopyableMoveable;
             bool operator() (const value_type& v1, const value_type& v2) const
             {
                 return v1.GetValue () < v2.GetValue ();
@@ -107,26 +105,22 @@ namespace {
         };
 
         DoTestForConcreteContainer_<SortedAssociation<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedAssociation<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedAssociation<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return SortedAssociation<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{}); },
+            MyOnlyCopyableMoveable_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedAssociation_stdmultimap<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
             [] () {
-                return SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
+                return SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{});
             },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            MyOnlyCopyableMoveable_ComparerWithEquals_{});
 
         Test3_ConvertAssociation2SortedAssociation::TestAll ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

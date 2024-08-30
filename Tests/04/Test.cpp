@@ -26,8 +26,8 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -167,22 +167,22 @@ namespace {
             {
                 static_assert (totally_ordered<int>);
                 static_assert (totally_ordered<pair<int, int>>);
-                //@todo - NOT SURE WHY FAILING - LGP 2024-01-28 - static_assert (totally_ordered<SimpleClass>);
-                static_assert (totally_ordered<pair<SimpleClass, SimpleClass>>);
-                static_assert (not totally_ordered<SimpleClassWithoutComparisonOperators>);
-                static_assert (not totally_ordered<SimpleClassWithoutComparisonOperators>);
-                static_assert (not totally_ordered<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
+                //@todo - NOT SURE WHY FAILING - LGP 2024-01-28 - static_assert (totally_ordered<OnlyCopyableMoveableAndTotallyOrdered>);
+                static_assert (totally_ordered<pair<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>>);
+                static_assert (not totally_ordered<OnlyCopyableMoveable>);
+                static_assert (not totally_ordered<OnlyCopyableMoveable>);
+                static_assert (not totally_ordered<pair<OnlyCopyableMoveable, OnlyCopyableMoveable>>);
             }
             {
                 static_assert (IEqualToOptimizable<int>);
                 static_assert (IEqualToOptimizable<pair<int, int>>);
-                static_assert (IEqualToOptimizable<SimpleClass>);
-                static_assert (IEqualToOptimizable<pair<SimpleClass, SimpleClass>>);
-                static_assert (not IEqualToOptimizable<SimpleClassWithoutComparisonOperators>);
-                static_assert (not equality_comparable<SimpleClassWithoutComparisonOperators>);
-                //@todo - NOT SURE WHY FAILING - LGP 2024-01-28 - static_assert (not equality_comparable<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
+                static_assert (IEqualToOptimizable<OnlyCopyableMoveableAndTotallyOrdered>);
+                static_assert (IEqualToOptimizable<pair<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>>);
+                static_assert (not IEqualToOptimizable<OnlyCopyableMoveable>);
+                static_assert (not equality_comparable<OnlyCopyableMoveable>);
+                //@todo - NOT SURE WHY FAILING - LGP 2024-01-28 - static_assert (not equality_comparable<pair<OnlyCopyableMoveable, OnlyCopyableMoveable>>);
 
-                //tmphack static_assert (not IEqualToOptimizable<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
+                //tmphack static_assert (not IEqualToOptimizable<pair<OnlyCopyableMoveable, OnlyCopyableMoveable>>);
                 {
                     using namespace Stroika::Foundation::Database::SQL::ORM;
                     static_assert (not equality_comparable<TableProvisioner>);

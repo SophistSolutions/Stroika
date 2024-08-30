@@ -28,8 +28,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Association_Array;
 using Concrete::Association_LinkedList;
@@ -234,61 +234,44 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Association, all)
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        struct MyComparerWithEquals_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            using value_type = OnlyCopyableMoveable;
             bool operator() (const value_type& v1, const value_type& v2) const
             {
-                return v1.GetValue () == v2.GetValue ();
+                return static_cast<size_t> (v1) == static_cast<size_t> (v2);
             }
         };
 
         DoTestForConcreteContainer_<Association<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Association<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<Association<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return Association<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<Association<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Association<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Association<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyComparerWithEquals_{}); }, MyComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Association_Array<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Association_Array<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<Association_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return Association_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<Association_Array<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Association_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Association_Array<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyComparerWithEquals_{}); }, MyComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Association_LinkedList<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Association_LinkedList<SimpleClass, SimpleClass>> ();
+        DoTestForConcreteContainer_<Association_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Association_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_AssociationTRAITS>> ();
-        DoTestForConcreteContainer_<Association_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return Association_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<Association_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Association_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyComparerWithEquals_{}); }, MyComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedAssociation_stdmultimap<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<SimpleClass, SimpleClass>> ();
+        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         {
-            struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
-                : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-                using value_type = SimpleClassWithoutComparisonOperators;
+            struct MyComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
+                using value_type = OnlyCopyableMoveable;
                 bool operator() (const value_type& v1, const value_type& v2) const
                 {
-                    return v1.GetValue () < v2.GetValue ();
+                    return static_cast<size_t> (v1) < static_cast<size_t> (v2);
                 }
             };
-            DoTestForConcreteContainer_<SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-                [] () {
-                    return SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                        MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
-                },
+            DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+                [] () { return SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyComparerWithLess_{}); },
                 //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})
-                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+                MyComparerWithEquals_{});
         }
 
         Test2_SimpleBaseClassConversionTraitsConfusion_ ();
@@ -305,7 +288,7 @@ namespace {
         BasicNewAssociationRules_Test_9_::DoAll ();
         CTORWithComparerAndContainer_Test_10_::DoAll ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

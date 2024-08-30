@@ -30,8 +30,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Mapping_Array;
 using Concrete::Mapping_LinkedList;
@@ -222,71 +222,58 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, all)
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        struct MyOnlyCopyableMoveable_ComparerWithEquals_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            using value_type = OnlyCopyableMoveable;
             bool operator() (const value_type& v1, const value_type& v2) const
             {
-                return v1.GetValue () == v2.GetValue ();
+                return static_cast<size_t> (v1) == static_cast<size_t> (v2);
             }
         };
 
         DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Mapping<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
-                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; },
+            MyOnlyCopyableMoveable_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Mapping_Array<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
-                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<Mapping_Array<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; },
+            MyOnlyCopyableMoveable_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedMapping_SkipList<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping_SkipList<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedMapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+        DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
             [] () {
-                return SortedMapping_SkipList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
-                    [] (SimpleClassWithoutComparisonOperators l, SimpleClassWithoutComparisonOperators r) -> strong_ordering {
-                        return l.GetValue () <=> r.GetValue ();
-                    }};
+                return SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>{[] (OnlyCopyableMoveable l, OnlyCopyableMoveable r) -> strong_ordering {
+                    return static_cast<size_t> (l) <=> static_cast<size_t> (r);
+                }};
             },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            MyOnlyCopyableMoveable_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () {
-                return Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
-            },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        DoTestForConcreteContainer_<Mapping_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Mapping_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Mapping_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithEquals_{}); },
+            MyOnlyCopyableMoveable_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         {
-            struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
-                : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-                using value_type = SimpleClassWithoutComparisonOperators;
+            struct MyOnlyCopyableMoveable_ComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
+                using value_type = OnlyCopyableMoveable;
                 bool operator() (const value_type& v1, const value_type& v2) const
                 {
-                    return v1.GetValue () < v2.GetValue ();
+                    return static_cast<size_t> (v1) < static_cast<size_t> (v2);
                 }
             };
-            DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
                 [] () {
-                    return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
-                        MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
+                    return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{});
                 },
-                //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})
-                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+                //Common::mkEqualsComparerAdapter (MyOnlyCopyableMoveable_ComparerWithLess_{})
+                MyOnlyCopyableMoveable_ComparerWithEquals_{});
         }
 
         {
@@ -321,11 +308,11 @@ namespace {
             }
 
             DoTestForConcreteContainer_<Mapping_stdhashmap<size_t, size_t>> ();
-            //DoTestForConcreteContainer_<Mapping_stdhashmap<SimpleClass, SimpleClass>> (); // -- wont work cuz not hashable
+            //DoTestForConcreteContainer_<Mapping_stdhashmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> (); // -- wont work cuz not hashable
 #if 0
-            DoTestForConcreteContainer_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-                [] () { return Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
-                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+                [] () { return Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithEquals_{}); },
+                MyOnlyCopyableMoveable_ComparerWithEquals_{});
 #endif
         }
 
@@ -337,7 +324,7 @@ namespace {
         AddVsAddIf_Test_9_::DoAll ();
         CTORWithComparerAndContainer_Test_10_::DoAll ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

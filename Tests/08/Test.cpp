@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::Containers::DataStructures;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -82,8 +82,8 @@ namespace {
 
     GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, Test2)
     {
-        DataStructures::DoublyLinkedList<SimpleClass> someLL;
-        const size_t                                  kBigSize = 1000;
+        DataStructures::DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered> someLL;
+        const size_t                                                            kBigSize = 1000;
 
         EXPECT_TRUE (someLL.size () == 0);
 

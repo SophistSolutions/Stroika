@@ -28,8 +28,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Collection_Array;
 using Concrete::Collection_LinkedList;
@@ -136,51 +136,50 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Collection, all)
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            using value_type = SimpleClassWithoutComparisonOperators;
+        struct MyOnlyCopyableMoveable_ComparerWithEquals_ {
+            using value_type = OnlyCopyableMoveable;
             static bool Equals (value_type v1, value_type v2)
             {
-                return v1.GetValue () == v2.GetValue ();
+                return static_cast<size_t> (v1) == static_cast<size_t> (v2);
             }
         };
-        struct MySimpleClassWithoutComparisonOperators_LESS_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
+        struct MyOnlyCopyableMoveable_LESS_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
+            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
             {
-                return lhs.GetValue () < rhs.GetValue ();
+                return static_cast<size_t> (lhs) < static_cast<size_t> (rhs);
             }
         };
         RunTests_<Collection<size_t>> ();
         RunTestsWithEquals_<Collection<size_t>, equal_to<size_t>> ();
-        RunTests_<Collection<SimpleClass>> ();
-        RunTests_<Collection<SimpleClassWithoutComparisonOperators>> ();
+        RunTests_<Collection<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<Collection<OnlyCopyableMoveable>> ();
 
         RunTests_<Collection_LinkedList<size_t>> ();
         RunTestsWithEquals_<Collection_LinkedList<size_t>, equal_to<size_t>> ();
-        RunTests_<Collection_LinkedList<SimpleClass>> ();
-        RunTests_<Collection_LinkedList<SimpleClassWithoutComparisonOperators>> ();
+        RunTests_<Collection_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<Collection_LinkedList<OnlyCopyableMoveable>> ();
 
         RunTests_<Collection_Array<size_t>> ();
         RunTestsWithEquals_<Collection_Array<size_t>, equal_to<size_t>> ();
-        RunTests_<Collection_Array<SimpleClass>> ();
-        RunTests_<Collection_Array<SimpleClassWithoutComparisonOperators>> ();
+        RunTests_<Collection_Array<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<Collection_Array<OnlyCopyableMoveable>> ();
 
         RunTests_<Collection_stdforward_list<size_t>> ();
         RunTestsWithEquals_<Collection_stdforward_list<size_t>, equal_to<size_t>> ();
-        RunTests_<Collection_stdforward_list<SimpleClass>> ();
-        RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
+        RunTests_<Collection_stdforward_list<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<Collection_stdforward_list<OnlyCopyableMoveable>> ();
 
         RunTests_<SortedCollection_stdmultiset<size_t>> ();
         RunTestsWithEquals_<SortedCollection_stdmultiset<size_t>, equal_to<size_t>> ();
-        RunTests_<SortedCollection_stdmultiset<SimpleClass>> ();
-        RunTests_<SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators>> ([] () {
-            return SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ());
-        });
+        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveable>> (
+            [] () { return SortedCollection_stdmultiset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_ ()); });
 
         ExampleCTORS_Test_2_::DoTest ();
         RemoveAndUpdateIteratorUpdate_Test3::DoTest ();
         ExampleUsingWhere::DoTest ();
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

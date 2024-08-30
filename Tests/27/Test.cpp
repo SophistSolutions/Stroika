@@ -23,8 +23,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::SimpleClass;
-using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::SortedMultiSet_stdmap;
 
@@ -58,37 +58,32 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedMultiSet, all)
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
-            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
+        struct MyOnlyCopyableMoveable_ComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
+            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
             {
-                return lhs.GetValue () < rhs.GetValue ();
+                return static_cast<size_t> (lhs) < static_cast<size_t> (rhs);
             }
         };
 
         {
             DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
-            DoTestForConcreteContainer_<SortedMultiSet<SimpleClass>> ();
-            auto msFactory = [] () {
-                return SortedMultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}};
-            };
-            DoTestForConcreteContainer_<SortedMultiSet<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_,
-                                                                   decltype (msFactory)> (msFactory));
+            DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
+            auto msFactory = [] () { return SortedMultiSet<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithLess_{}}; };
+            DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithLess_, decltype (msFactory)> (
+                    msFactory));
         }
 
         {
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClass>> ();
-            auto msFactory = [] () {
-                return SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}};
-            };
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_,
-                                                                   decltype (msFactory)> (msFactory));
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
+            auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithLess_{}}; };
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithLess_, decltype (msFactory)> (
+                    msFactory));
         }
 
-        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif
