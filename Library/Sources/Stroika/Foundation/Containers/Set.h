@@ -69,6 +69,7 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::Set_Array<>
      *      o   @see Concrete::Set_LinkedList<>
      *      o   @see Concrete::SortedSet_stdset<>
+     *      o   @see Concrete::SortedSet_SkipList<>
      * 
      *  \em Factory:
      *      @see Set_Factory<> to see default implementations.

@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedSet_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -32,6 +33,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::Set_Array;
 using Concrete::Set_LinkedList;
+using Concrete::SortedSet_SkipList;
 using Concrete::SortedSet_stdset;
 
 #if qHasFeature_GoogleTest

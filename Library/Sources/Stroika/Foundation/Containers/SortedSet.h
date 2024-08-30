@@ -16,6 +16,7 @@
  *
  *  TODO:
  *      @todo   Support Iterable<>::Where overload?
+ *      @todo   Could optimize Equals() test for if both sorted, faster way to compare.
  */
 
 namespace Stroika::Foundation::Containers {
@@ -36,6 +37,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \em Concrete Implementations:
      *      o   @see Concrete::SortedSet_stdset<>
+     *      o   @see Concrete::SortedSet_SkipList<>
      *
      *  \em Factory:
      *      @see SortedSet_Factory<> to see default implementations.

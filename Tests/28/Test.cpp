@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedSet_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -29,6 +30,7 @@ using namespace Stroika::Frameworks;
 using Test::ArchtypeClasses::SimpleClass;
 using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
+using Concrete::SortedSet_SkipList;
 using Concrete::SortedSet_stdset;
 
 #if qHasFeature_GoogleTest

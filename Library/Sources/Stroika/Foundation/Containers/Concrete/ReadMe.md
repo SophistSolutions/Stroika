@@ -43,4 +43,5 @@ This folder contains all the Stroika Library Foundation::Containers::Concrete so
   - [SortedMapping_stdmap](SortedMapping_stdmap.h)
   - [SortedMultiSet_stdmap](SortedMultiSet_stdmap.h)
   - [SortedSet_stdset](SortedSet_stdset.h)
+  - [SortedSet_SkipList](SortedSet_SkipList.h)
   - [Stack_LinkedList](Stack_LinkedList.h)

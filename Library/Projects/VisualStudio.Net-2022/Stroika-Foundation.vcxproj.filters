@@ -2244,6 +2244,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\StdVectorSupport.h">
       <Filter>Sources\Containers\Private</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_SkipList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3687,6 +3690,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\StdVectorSupport.inl">
       <Filter>Sources\Containers\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_SkipList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
