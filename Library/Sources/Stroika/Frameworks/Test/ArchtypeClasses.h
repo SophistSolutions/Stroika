@@ -9,22 +9,47 @@
 #include "Stroika/Foundation/Configuration/Common.h"
 
 /**
- *  This module needs alot of work. Need a set of basic archtype classes for things that are not copyable, copyable, default constuctible etc
- *  to use in regtest (especially container) test cases...
+ *  This module needs a lot of work. Need a set of basic archetype classes for things that are not copyable, copyable, default constructible etc
+ *  to use in regression test (especially container) test cases...
  */
 namespace Stroika::Frameworks::Test::ArchtypeClasses {
 
-    struct NotCopyable {
-        NotCopyable ()                   = default;
-        NotCopyable (const NotCopyable&) = delete;
-        NotCopyable (NotCopyable&&)      = default;
+    // CONSTRUCIBLE_FROM_INT, and convertible to size_t int as well
+    // Handy in regtests...
+    template <typename T>
+    concept IINTeroperable = requires (T t) {
+        {
+            static_cast<size_t> (T{1u})
+        } -> convertible_to<size_t>;
+        {
+            T{1u}.GetValue ()
+        } -> convertible_to<size_t>;
+        {
+            T{1u} + T{1u}
+        } -> convertible_to<T>;
+    };
 
-        nonvirtual NotCopyable& operator= (const NotCopyable&) = delete;
-        nonvirtual NotCopyable& operator= (NotCopyable&&)      = default;
+    /**
+     *  \note Until Stroika v3.0d10 - this was called 'NotCopyable'
+     */
+    struct OnlyDefaultConstructibleAndMoveable {
+        OnlyDefaultConstructibleAndMoveable ()                                           = default;
+        OnlyDefaultConstructibleAndMoveable (const OnlyDefaultConstructibleAndMoveable&) = delete;
+        OnlyDefaultConstructibleAndMoveable (OnlyDefaultConstructibleAndMoveable&&)      = default;
+
+        nonvirtual OnlyDefaultConstructibleAndMoveable& operator= (const OnlyDefaultConstructibleAndMoveable&) = delete;
+        nonvirtual OnlyDefaultConstructibleAndMoveable& operator= (OnlyDefaultConstructibleAndMoveable&&)      = default;
 
         void method (){};
         void const_method () const {};
     };
+    static_assert (default_initializable<OnlyDefaultConstructibleAndMoveable>);
+    static_assert (not copyable<OnlyDefaultConstructibleAndMoveable>);
+    static_assert (move_constructible<OnlyDefaultConstructibleAndMoveable>);
+    static_assert (not equality_comparable<OnlyDefaultConstructibleAndMoveable>);
+    static_assert (not totally_ordered<OnlyDefaultConstructibleAndMoveable>);
+    static_assert (not semiregular<OnlyDefaultConstructibleAndMoveable>);
+    static_assert (not regular<OnlyDefaultConstructibleAndMoveable>);
 
     /**
      *  Object NOT default constructible, is copyable, assignable; supports operator+ and operator==, and operator<
@@ -54,6 +79,14 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         int           fConstructed_;
         static size_t sTotalLiveObjects_;
     };
+    static_assert (not default_initializable<SimpleClass>);
+    static_assert (copyable<SimpleClass>);
+    static_assert (move_constructible<SimpleClass>);
+    static_assert (equality_comparable<SimpleClass>);
+    static_assert (not totally_ordered<SimpleClass>); // @todo allow this to be totally ordered...
+    static_assert (not semiregular<SimpleClass>);
+    static_assert (not regular<SimpleClass>);
+    static_assert (IINTeroperable<SimpleClass>);
 
     /**
      *  Object NOT default constructible, is copyable, assignable; supports operator+, but NO COMPARISON operators
@@ -79,6 +112,14 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         int           fConstructed_;
         static size_t sTotalLiveObjects_;
     };
+    static_assert (not default_initializable<SimpleClassWithoutComparisonOperators>);
+    static_assert (copyable<SimpleClassWithoutComparisonOperators>);
+    static_assert (move_constructible<SimpleClassWithoutComparisonOperators>);
+    // static_assert (equality_comparable<SimpleClassWithoutComparisonOperators>);
+    static_assert (not totally_ordered<SimpleClassWithoutComparisonOperators>); // @todo allow this to be totally ordered...
+    static_assert (not semiregular<SimpleClassWithoutComparisonOperators>);
+    static_assert (not regular<SimpleClassWithoutComparisonOperators>);
+   // static_assert (IINTeroperable<SimpleClassWithoutComparisonOperators>);
 
 }
 

@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::NotCopyable;
+using Test::ArchtypeClasses::OnlyDefaultConstructibleAndMoveable;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -57,15 +57,15 @@ namespace {
         }
         auto testOptionalOfThingNotCopyable = [] () {
             {
-                optional<NotCopyable> n1;
+                optional<OnlyDefaultConstructibleAndMoveable> n1;
                 EXPECT_TRUE (not n1.has_value ());
-                optional<NotCopyable> n2{NotCopyable ()}; // use r-value reference to move
+                optional<OnlyDefaultConstructibleAndMoveable> n2{OnlyDefaultConstructibleAndMoveable ()}; // use r-value reference to move
                 EXPECT_TRUE (n2.has_value ());
             }
             {
-                [[maybe_unused]] optional<NotCopyable> a;
-                optional<NotCopyable>                  a1{NotCopyable ()};
-                a1 = NotCopyable ();
+                [[maybe_unused]] optional<OnlyDefaultConstructibleAndMoveable> a;
+                optional<OnlyDefaultConstructibleAndMoveable>                  a1{OnlyDefaultConstructibleAndMoveable ()};
+                a1 = OnlyDefaultConstructibleAndMoveable ();
             }
         };
         testOptionalOfThingNotCopyable ();

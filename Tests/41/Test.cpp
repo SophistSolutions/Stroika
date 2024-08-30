@@ -41,7 +41,7 @@ using namespace Execution;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::NotCopyable;
+using Test::ArchtypeClasses::OnlyDefaultConstructibleAndMoveable;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -410,26 +410,26 @@ namespace {
             void TestSynchronizedNotCopyable_ ()
             {
                 {
-                    Synchronized<NotCopyable> x;
-                    x.store (NotCopyable{});
+                    Synchronized<OnlyDefaultConstructibleAndMoveable> x;
+                    x.store (OnlyDefaultConstructibleAndMoveable{});
                     x.rwget ().rwref ().method ();
                     x.cget ().cref ().const_method ();
                 }
                 {
-                    Synchronized<unique_ptr<NotCopyable>> x;
-                    x.store (make_unique<NotCopyable> ());
+                    Synchronized<unique_ptr<OnlyDefaultConstructibleAndMoveable>> x;
+                    x.store (make_unique<OnlyDefaultConstructibleAndMoveable> ());
                     x.rwget ().rwref ()->method ();
                     x.cget ().cref ()->const_method ();
                 }
                 {
-                    Synchronized<optional<NotCopyable>> x;
-                    x.store (optional<NotCopyable>{NotCopyable{}});
+                    Synchronized<optional<OnlyDefaultConstructibleAndMoveable>> x;
+                    x.store (optional<OnlyDefaultConstructibleAndMoveable>{OnlyDefaultConstructibleAndMoveable{}});
                     x.rwget ().rwref ()->method ();
                     x.cget ().cref ()->const_method ();
                 }
                 {
-                    Synchronized<optional<NotCopyable>> x;
-                    auto                                l = x.rwget ();
+                    Synchronized<optional<OnlyDefaultConstructibleAndMoveable>> x;
+                    auto                                                        l = x.rwget ();
                     l.store ({});
                 }
             }
