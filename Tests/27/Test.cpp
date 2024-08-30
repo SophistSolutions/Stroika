@@ -23,6 +23,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
@@ -58,29 +60,22 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedMultiSet, all)
     {
-        struct MyOnlyCopyableMoveable_ComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
-            {
-                return static_cast<size_t> (lhs) < static_cast<size_t> (rhs);
-            }
-        };
+        using ComparerWithLess_ = AsIntsLessComparer<OnlyCopyableMoveable>;
 
         {
             DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
             DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-            auto msFactory = [] () { return SortedMultiSet<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithLess_{}}; };
+            auto msFactory = [] () { return SortedMultiSet<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
             DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithLess_, decltype (msFactory)> (
-                    msFactory));
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
         }
 
         {
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
-            auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithLess_{}}; };
+            auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithLess_, decltype (msFactory)> (
-                    msFactory));
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
         }
 
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check

@@ -224,13 +224,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, all)
     {
-        struct MyOnlyCopyableMoveable_ComparerWithEquals_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = OnlyCopyableMoveable;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return static_cast<size_t> (v1) == static_cast<size_t> (v2);
-            }
-        };
+        using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
 
         DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();

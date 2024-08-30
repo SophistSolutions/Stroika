@@ -24,6 +24,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
@@ -89,20 +91,8 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedAssociation, all)
     {
-        struct MyOnlyCopyableMoveable_ComparerWithEquals_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = OnlyCopyableMoveable;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
-        };
-        struct MyOnlyCopyableMoveable_ComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            using value_type = OnlyCopyableMoveable;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () < v2.GetValue ();
-            }
-        };
+        using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
+        using MyOnlyCopyableMoveable_ComparerWithLess_   = AsIntsLessComparer<OnlyCopyableMoveable>;
 
         DoTestForConcreteContainer_<SortedAssociation<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();

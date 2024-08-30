@@ -24,6 +24,7 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
@@ -59,13 +60,8 @@ namespace {
     {
         using COMPARE_SIZET       = equal_to<size_t>;
         using COMPARE_SimpleClass = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
-        struct COMPARE_OnlyCopyableMoveable : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = OnlyCopyableMoveable;
-            bool operator() (value_type v1, value_type v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
-        };
+
+        using COMPARE_OnlyCopyableMoveable = AsIntsEqualsComparer<OnlyCopyableMoveable>;
 
         SimpleQueueTest_All_For_Type<Deque<size_t>, COMPARE_SIZET> ();
         SimpleQueueTest_All_For_Type<Deque<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();

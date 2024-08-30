@@ -148,7 +148,7 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     static_assert (IINTeroperable<Regular>);
 
     /**
-     *  For types that don't have operator== bulletin, this saves a bit of typing producing a generic comparer
+     *  For types that don't have operator== bulletin, this saves a bit of typing producing a generic comparer (using IINTeroperable)
      */
     template <IINTeroperable T>
     struct AsIntsEqualsComparer : ComparisonRelationDeclarationBase<ComparisonRelationType::eEquals> {
@@ -159,7 +159,7 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     };
 
     /**
-     *  For types that don't have operator== bulletin, this saves a bit of typing producing a generic comparer
+     *  For types that don't have operator< bulletin, this saves a bit of typing producing a generic comparer (using IINTeroperable)
      */
     template <IINTeroperable T>
     struct AsIntsLessComparer : ComparisonRelationDeclarationBase<ComparisonRelationType::eStrictInOrder> {
@@ -168,7 +168,5 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
             return static_cast<size_t> (v1) < static_cast<size_t> (v2);
         }
     };
-
-}
 
 #endif /* _Stroika_Frameworks_Test_ArchtypeClasses_h_ */

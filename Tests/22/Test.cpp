@@ -28,6 +28,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
@@ -117,18 +119,8 @@ namespace {
     {
         using namespace CommonTests::SetTests;
 
-        struct MyOnlyCopyableMoveable_EQUAL_TO_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
-            {
-                return static_cast<size_t> (lhs) == static_cast<size_t> (rhs);
-            }
-        };
-        struct MyOnlyCopyableMoveable_LESS_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
-            {
-                return static_cast<size_t> (lhs) < static_cast<size_t> (rhs);
-            }
-        };
+        using MyOnlyCopyableMoveable_EQUAL_TO_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
+        using MyOnlyCopyableMoveable_LESS_     = AsIntsLessComparer<OnlyCopyableMoveable>;
 
         DoTestForConcreteContainer_<Set<size_t>> ();
         DoTestForConcreteContainer_<Set<OnlyCopyableMoveableAndTotallyOrdered>> ();

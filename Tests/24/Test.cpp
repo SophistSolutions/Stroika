@@ -25,6 +25,8 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
@@ -78,23 +80,14 @@ namespace {
             String       fName;
             unsigned int fPriority{};
 
-            bool operator== (const PrioritizedName& rhs) const
-            {
-                if (fName != rhs.fName) {
-                    return false;
-                }
-                if (fPriority != rhs.fPriority) {
-                    return false;
-                }
-                return true;
-            }
+            bool   operator== (const PrioritizedName& rhs) const = default;
             String ToString () const
             {
                 Characters::StringBuilder sb;
-                sb << L"{";
-                sb << L"Name: " << fName << L",";
-                sb << L"Priority: " << fPriority;
-                sb << L"}";
+                sb << "{"sv;
+                sb << "Name: "sv << fName << ","sv;
+                sb << "Priority: "sv << fPriority;
+                sb << "}"sv;
                 return sb;
             }
         };
@@ -153,12 +146,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedCollection, all)
     {
-        struct MyOnlyCopyableMoveable_LESS_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
-            {
-                return lhs.GetValue () < rhs.GetValue ();
-            }
-        };
+        using MyOnlyCopyableMoveable_LESS_ = AsIntsLessComparer<OnlyCopyableMoveable>;
 
         RunTests_<SortedCollection<size_t>> ();
         RunTests_<SortedCollection<OnlyCopyableMoveableAndTotallyOrdered>> ();

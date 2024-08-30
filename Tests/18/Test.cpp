@@ -31,6 +31,7 @@ using namespace Stroika::Frameworks;
 using Concrete::MultiSet_Array;
 using Concrete::MultiSet_LinkedList;
 using Concrete::SortedMultiSet_stdmap;
+
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
