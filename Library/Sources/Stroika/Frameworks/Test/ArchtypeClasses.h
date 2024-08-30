@@ -141,7 +141,8 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     using SimpleClassWithoutComparisonOperators [[deprecated ("Since Stroika v3.0d10 use OnlyCopyableMoveable")]] = OnlyCopyableMoveable;
 
     /**
-     * \brief alias for 'regular' type (copyable, default constructible, etc)
+     * \brief alias for 'regular' type (copyable, default constructible, equality_comparable, etc)
+     *      @todo maybe do explicit class cuz Regular should NOT be totally_ordered, but int is...
      */
     using Regular = size_t;
     static_assert (regular<Regular>);
@@ -169,4 +170,5 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         }
     };
 
+}
 #endif /* _Stroika_Frameworks_Test_ArchtypeClasses_h_ */

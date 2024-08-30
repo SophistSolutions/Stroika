@@ -146,9 +146,9 @@ namespace {
             a.Push (2);
             vector<int> aa (a.begin (), a.end ());
             Stack<int>  b{aa};
-            EXPECT_EQ (b.size (), 2u);
-            EXPECT_EQ (b.Pop (), 2u);
-            EXPECT_EQ (b.Pop (), 1u);
+            EXPECT_EQ (b.size (), 2);
+            EXPECT_EQ (b.Pop (), 2);
+            EXPECT_EQ (b.Pop (), 1);
         }
     }
 }
