@@ -17,9 +17,6 @@
  *  \file
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
- *
- *  TODO:
- *      @todo   Could optimize Equals() test for if both sorted, faster way to compare.
  */
 
 namespace Stroika::Foundation::Containers::Concrete {
@@ -61,12 +58,14 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on SortedSet<> constructor
          *  \req IInOrderComparer<INORDER_COMPARER,T> ()
          */
-        SortedSet_stdset ();
+        SortedSet_stdset ()
+            requires (totally_ordered<T>);
         template <IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedSet_stdset (INORDER_COMPARER&& inorderComparer);
         SortedSet_stdset (SortedSet_stdset&&) noexcept      = default;
         SortedSet_stdset (const SortedSet_stdset&) noexcept = default;
-        SortedSet_stdset (const initializer_list<T>& src);
+        SortedSet_stdset (const initializer_list<T>& src)
+            requires (totally_ordered<T>);
         template <IInOrderComparer<T> INORDER_COMPARER>
         SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
@@ -94,7 +93,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedSet_stdset& operator= (const SortedSet_stdset&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename SortedSet<T>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<T>) INORDER_COMPARER>
         class Rep_;
 

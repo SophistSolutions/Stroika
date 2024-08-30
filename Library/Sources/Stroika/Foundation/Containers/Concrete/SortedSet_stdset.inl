@@ -10,14 +10,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     *********************** SortedSet_stdset<T>::IImplRepBase_ *********************
-     ********************************************************************************
-     */
-    template <typename T>
-    class SortedSet_stdset<T>::IImplRepBase_ : public SortedSet<T>::_IRep {};
-
-    /*
-     ********************************************************************************
      *************************** SortedSet_stdset<T>::Rep_ **************************
      ********************************************************************************
      */
@@ -179,6 +171,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline SortedSet_stdset<T>::SortedSet_stdset ()
+        requires (totally_ordered<T>)
         : SortedSet_stdset{less<T>{}}
     {
         AssertRepValidType_ ();
@@ -188,6 +181,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inorderComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    inline SortedSet_stdset<T>::SortedSet_stdset ( const initializer_list<T>& src)
+        requires (totally_ordered<T>)
+        : SortedSet_stdset{}
+    {
+        this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T>
