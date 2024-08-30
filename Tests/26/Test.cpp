@@ -84,7 +84,7 @@ namespace {
         {
             Mapping<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
             SortedMapping<int, int> ms{m};
-            EXPECT_EQ (ms.size () , 2u);
+            EXPECT_EQ (ms.size (), 2u);
             EXPECT_EQ (*ms.begin (), (pair<int, int>{1, 2}));
         }
     }
@@ -99,14 +99,12 @@ namespace {
         DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (ComparerWithLess_{}); },
-            ComparerWithEquals_{});
+            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (ComparerWithLess_{}); }, ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (ComparerWithLess_{}); },
-            ComparerWithEquals_{});
+            [] () { return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (ComparerWithLess_{}); }, ComparerWithEquals_{});
 
         Test3_ConvertMapping2SortedMapping::TestAll ();
 

@@ -22,6 +22,7 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
@@ -145,9 +146,9 @@ namespace {
             a.Push (2);
             vector<int> aa (a.begin (), a.end ());
             Stack<int>  b{aa};
-            EXPECT_TRUE (b.size () == 2);
-            EXPECT_TRUE (b.Pop () == 2);
-            EXPECT_TRUE (b.Pop () == 1);
+            EXPECT_EQ (b.size (), 2u);
+            EXPECT_EQ (b.Pop (), 2u);
+            EXPECT_EQ (b.Pop (), 1u);
         }
     }
 }
@@ -157,13 +158,7 @@ namespace {
     {
         using COMPARE_SIZET       = equal_to<size_t>;
         using COMPARE_SimpleClass = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
-        struct COMPARE_EQ_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            using value_type = OnlyCopyableMoveable;
-            bool operator() (value_type v1, value_type v2) const
-            {
-                return static_cast<size_t> (v1) == static_cast<size_t> (v2);
-            }
-        };
+        using COMPARE_EQ_         = AsIntsEqualsComparer<OnlyCopyableMoveable>;
 
         Tests_All_For_Type_<Stack<size_t>, COMPARE_SIZET> ();
         Tests_All_For_Type_<Stack<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
