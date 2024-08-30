@@ -105,6 +105,7 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         nonvirtual size_t GetValue () const;
         static size_t     GetTotalLiveCount ();
 
+        explicit                              operator size_t () const;
         SimpleClassWithoutComparisonOperators operator+ (const SimpleClassWithoutComparisonOperators& rhs) const;
 
     private:
@@ -115,11 +116,11 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     static_assert (not default_initializable<SimpleClassWithoutComparisonOperators>);
     static_assert (copyable<SimpleClassWithoutComparisonOperators>);
     static_assert (move_constructible<SimpleClassWithoutComparisonOperators>);
-    // static_assert (equality_comparable<SimpleClassWithoutComparisonOperators>);
+    static_assert (not equality_comparable<SimpleClassWithoutComparisonOperators>);
     static_assert (not totally_ordered<SimpleClassWithoutComparisonOperators>); // @todo allow this to be totally ordered...
     static_assert (not semiregular<SimpleClassWithoutComparisonOperators>);
     static_assert (not regular<SimpleClassWithoutComparisonOperators>);
-   // static_assert (IINTeroperable<SimpleClassWithoutComparisonOperators>);
+    static_assert (IINTeroperable<SimpleClassWithoutComparisonOperators>);
 
 }
 
