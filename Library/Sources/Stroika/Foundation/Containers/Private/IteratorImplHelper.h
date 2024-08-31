@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers::Private {
     /**
      *  \brief helper to wrap a low level 'DataStructure Container Iterator' into a 'Stroika' Iterator::IRep iterator.
      * 
-     *  There is no requirement that Stroika contcrete containers use this class. However, it
+     *  There is no requirement that Stroika concrete containers use this class. However, it
      *  so far has appeared a handy code sharing utility.
      *
      *  Plus, its details are intimately tied to how the Stroika containers manage lifetime, so
