@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline SortedSet_stdset<T>::SortedSet_stdset ( const initializer_list<T>& src)
+    inline SortedSet_stdset<T>::SortedSet_stdset (const initializer_list<T>& src)
         requires (totally_ordered<T>)
         : SortedSet_stdset{}
     {
