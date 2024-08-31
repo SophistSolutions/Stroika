@@ -383,7 +383,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     public:
-        nonvirtual void Update (const ForwardIterator& it, ArgByValueType<mapped_type> newValue);
+        nonvirtual void Update (const ForwardIterator& it, ArgByValueType<MAPPED_TYPE> newValue)
+            requires (not same_as<MAPPED_TYPE, void>);
 
     public:
         /**

@@ -656,7 +656,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Update (const ForwardIterator& it, ArgByValueType<mapped_type> newValue)
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Update (const ForwardIterator& it, ArgByValueType<MAPPED_TYPE> newValue)
+        requires (not same_as<MAPPED_TYPE, void>)
     {
         const_cast<ForwardIterator&> (it).UpdateValue (newValue);
     }
