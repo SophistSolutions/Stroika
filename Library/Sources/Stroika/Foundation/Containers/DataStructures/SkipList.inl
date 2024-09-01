@@ -31,14 +31,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_::Link_ (ArgByValueType<key_type> key, ArgByValueType<mapped_type> val)
-        requires (not same_as<mapped_type, void>)
+    template <typename MAPPED_TYPE2>
+    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_::Link_ (ArgByValueType<key_type> key, ArgByValueType<MAPPED_TYPE2> val)
+        requires (not same_as<MAPPED_TYPE2, void>)
         : fEntry{key, val}
     {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_::Link_ (ArgByValueType<key_type> key)
-        requires (same_as<mapped_type, void>)
+        requires (same_as<MAPPED_TYPE, void>)
         : fEntry{key}
     {
     }
@@ -656,7 +657,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Update (const ForwardIterator& it, ArgByValueType<MAPPED_TYPE> newValue)
+    template <typename CHECKED_T>
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Update (const ForwardIterator& it, ArgByValueType<CHECKED_T> newValue)
         requires (not same_as<MAPPED_TYPE, void>)
     {
         const_cast<ForwardIterator&> (it).UpdateValue (newValue);

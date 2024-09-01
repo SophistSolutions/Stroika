@@ -218,6 +218,18 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, VoidMappedType)
+    {
+        Debug::TraceContextBumper ctx{"VoidMappedType"};
+        SkipList<int, void>        t;
+        t.Invariant ();
+        EXPECT_EQ (t.size (), 0);
+        t.Add (1);
+        EXPECT_EQ (t.size (), 1);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, ToString)
     {
         Debug::TraceContextBumper ctx{"ToString"};

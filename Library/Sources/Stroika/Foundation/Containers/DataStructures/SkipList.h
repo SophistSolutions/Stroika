@@ -383,7 +383,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     public:
-        nonvirtual void Update (const ForwardIterator& it, ArgByValueType<MAPPED_TYPE> newValue)
+        template <typename CHECKED_T = MAPPED_TYPE>
+        nonvirtual void Update (const ForwardIterator& it, ArgByValueType<CHECKED_T> newValue)
             requires (not same_as<MAPPED_TYPE, void>);
 
     public:
@@ -467,16 +468,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         // Fundamentally a linked-list, but with a quirky 'next' pointer(s)
-        struct Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (value_type) <= 1024> {
-            constexpr Link_ (ArgByValueType<key_type> key, ArgByValueType<mapped_type> val)
-                requires (not same_as<mapped_type, void>)
+        struct Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_ /*, sizeof (value_type) <= 1024*/> {
+            template <typename MAPPED_TYPE2 = MAPPED_TYPE>
+            constexpr Link_ (ArgByValueType<key_type> key, ArgByValueType<MAPPED_TYPE2> val)
+                requires (not same_as<MAPPED_TYPE2, void>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
                 : fEntry{key, val} {}
 #else
             ;
 #endif
                 constexpr Link_ (ArgByValueType<key_type> key)
-                    requires (same_as<mapped_type, void>)
+                    requires (same_as<MAPPED_TYPE, void>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
                 : fEntry{key} {}
 #else
