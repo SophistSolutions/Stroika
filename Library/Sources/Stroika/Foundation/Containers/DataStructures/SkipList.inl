@@ -876,7 +876,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return result;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::UpdateValue (ArgByValueType<mapped_type> newValue)
+    template <typename CHECKED_T>
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::UpdateValue (ArgByValueType<CHECKED_T> newValue)
+        requires (not same_as<MAPPED_TYPE, void>)
     {
         Link_* link2Update = const_cast<Link_*> (fCurrent_); // logically we could walk from the head of the list without a const_cast, but this is obviously safe and more efficient
         link2Update->fEntry.fValue = newValue;

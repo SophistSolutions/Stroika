@@ -221,13 +221,16 @@ namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, VoidMappedType)
     {
         Debug::TraceContextBumper ctx{"VoidMappedType"};
-#if 0
-        SkipList<int, void>        t;
+        SkipList<int, void>       t;
         t.Invariant ();
         EXPECT_EQ (t.size (), 0);
+        {
+            auto b = t.begin ();
+        }
         t.Add (1);
         EXPECT_EQ (t.size (), 1);
-#endif
+        t.Remove (1);
+        EXPECT_EQ (t.size (), 0);
     }
 }
 

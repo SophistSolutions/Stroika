@@ -611,7 +611,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         // safe to update in place since doesn't change order of list (since not updating key)
-        nonvirtual void UpdateValue (ArgByValueType<mapped_type> newValue);
+        template <typename CHECKED_T = MAPPED_TYPE>
+        nonvirtual void UpdateValue (ArgByValueType<CHECKED_T> newValue)
+            requires (not same_as<MAPPED_TYPE, void>);
 
     public:
         /**
