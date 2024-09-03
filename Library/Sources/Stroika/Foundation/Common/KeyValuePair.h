@@ -123,6 +123,8 @@ namespace Stroika::Foundation::Common {
         KeyValuePair (KeyValuePair&& src)
             requires (is_move_constructible_v<KEY_TYPE>)
         = default;
+        constexpr KeyValuePair (const KeyType& key)
+            requires (copy_constructible<KEY_TYPE>);
         template <typename KEY_TYPE2>
         constexpr KeyValuePair (const pair<KEY_TYPE2, void>& src)
             requires (constructible_from<KEY_TYPE, const KEY_TYPE2&>);

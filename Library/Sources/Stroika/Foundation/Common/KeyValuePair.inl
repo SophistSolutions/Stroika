@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Common {
         : fKey (key)
         , fValue (value)
     {
-        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+        // NB: use non-uniform initialization since we allow for conversions of type - constructible_from above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2>
@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Common {
         : fKey (src.first)
         , fValue (src.second)
     {
-        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+        // NB: use non-uniform initialization since we allow for conversions of type - constructible_from above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2>
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Common {
         : fKey (src.fKey)
         , fValue (src.fValue)
     {
-        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+        // NB: use non-uniform initialization since we allow for conversions of type - constructible_from above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2>
@@ -91,12 +91,18 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename KEY_TYPE>
+    constexpr KeyValuePair<KEY_TYPE, void>::KeyValuePair (const KeyType& key)
+        requires (copy_constructible<KEY_TYPE>)
+        : fKey{key}
+    {
+    }
+    template <typename KEY_TYPE>
     template <typename KEY_TYPE2>
     constexpr KeyValuePair<KEY_TYPE, void>::KeyValuePair (const pair<KEY_TYPE2, void>& src)
         requires (constructible_from<KEY_TYPE, const KEY_TYPE2&>)
         : fKey (src.first)
     {
-        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+        // NB: use non-uniform initialization since we allow for conversions of type - constructible_from above
     }
     template <typename KEY_TYPE>
     template <typename KEY_TYPE2>
@@ -104,7 +110,7 @@ namespace Stroika::Foundation::Common {
         requires (constructible_from<KEY_TYPE, const KEY_TYPE2&>)
         : fKey (src.fKey)
     {
-        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+        // NB: use non-uniform initialization since we allow for conversions of type - constructible_from above
     }
     template <typename KEY_TYPE>
     template <typename KEY_TYPE2>
