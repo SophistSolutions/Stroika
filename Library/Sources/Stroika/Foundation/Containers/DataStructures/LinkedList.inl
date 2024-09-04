@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Assert (prevLink == nullptr or prevLink->fNext == victim);
         if (prevLink == nullptr) {
             Require (this->fHead_ == victim); // If this ever happened, it would mean the argument link to be removed from
-                                              // this list was not actually in this list! Caller erorr - serious bug (corruption?)
+                                              // this list was not actually in this list! Caller error - serious bug (corruption?)
             this->fHead_ = victim->fNext;
         }
         else {

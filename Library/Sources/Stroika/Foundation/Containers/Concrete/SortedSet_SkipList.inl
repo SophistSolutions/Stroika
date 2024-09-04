@@ -103,8 +103,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             i++;
             return nullptr;
 #else
-            auto  result = Memory::MakeSharedPtr<Rep_> (*this);
-            auto& mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            auto result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             iResult++;
             return false;
 #else
-            auto i       = fData_.find (item);
+            auto i = fData_.find (item);
             bool notDone = i != fData_.end ();
             if (oResult != nullptr and notDone) {
                 *oResult = *i;

@@ -131,14 +131,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            optional<size_t>                                       savedUnderlyingIndex;
-            static_assert (same_as<size_t, typename DataStructureImplType_::UnderlyingIteratorRep>); // else must do slightly differently
-            if (nextI != nullptr) {
-                savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
+            if (nextI == nullptr) {
+                fData_.Remove (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+                fChangeCounts_.PerformedChange ();
             }
-            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
-            if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+            else {
+                auto retI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+                fChangeCounts_.PerformedChange ();
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, retI)};
             }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override

@@ -281,8 +281,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void MoveIteratorHereAfterClone (IteratorBase* pi, const Array* movedFrom) const;
 
     public:
-        nonvirtual void RemoveAt (const ForwardIterator& i);
-        nonvirtual void RemoveAt (const BackwardIterator& i);
+        nonvirtual void Remove (const ForwardIterator& i);
+        nonvirtual void Remove (const BackwardIterator& i);
+
+    public:
+        /**
+         *  \brief remove the element at i, and return valid iterator to the element that was following it (which can be empty iterator)
+         * 
+         *  \req i != end ()
+         * 
+         *  \brief see https://en.cppreference.com/w/cpp/container/vector/erase
+         */
+        nonvirtual ForwardIterator erase (const ForwardIterator& i);
 
     public:
         nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);

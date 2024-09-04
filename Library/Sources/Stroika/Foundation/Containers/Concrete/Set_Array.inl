@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fEqualsComparer_ (*it, item)) {
-                    fData_.RemoveAt (it);
+                    fData_.Remove (it);
                     fChangeCounts_.PerformedChange ();
                     return true;
                 }
@@ -140,12 +140,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             optional<size_t> savedUnderlyingIndex;
             static_assert (same_as<size_t, typename DataStructureImplType_::UnderlyingIteratorRep>); // else must do slightly differently
-            if (nextI != nullptr) {
-                savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
+            if (nextI == nullptr) {
+                fData_.Remove (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+                fChangeCounts_.PerformedChange ();
             }
-            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
-            if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+            else {
+                auto retI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+                fChangeCounts_.PerformedChange ();
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, retI)};
             }
         }
 

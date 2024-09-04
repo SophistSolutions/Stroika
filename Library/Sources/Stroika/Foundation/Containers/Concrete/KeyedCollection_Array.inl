@@ -129,15 +129,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            if (nextI != nullptr) {
-                *nextI = i;
-                ++(*nextI);
+            if (nextI == nullptr) {
+                fData_.Remove (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+                fChangeCounts_.PerformedChange ();
             }
-            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
-            fChangeCounts_.PerformedChange ();
-            if (nextI != nullptr) {
-                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
-                nextI->Refresh (); // update to reflect changes made to rep
+            else {
+                auto retI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+                fChangeCounts_.PerformedChange ();
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, retI)};
             }
         }
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override

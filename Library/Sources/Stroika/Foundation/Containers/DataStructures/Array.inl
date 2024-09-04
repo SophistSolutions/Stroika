@@ -428,7 +428,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         reserve (size ());
     }
     template <typename T>
-    inline void Array<T>::RemoveAt (const ForwardIterator& i)
+    inline void Array<T>::Remove (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
@@ -436,7 +436,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
         this->RemoveAt (i.CurrentIndex ());
     }
     template <typename T>
-    inline void Array<T>::RemoveAt (const BackwardIterator& i)
+    inline auto Array<T>::erase (const ForwardIterator& i) -> ForwardIterator
+    {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (not i.Done ());
+        Require (i._fData == this); // assure iterator not stale
+        size_t idx = i.CurrentIndex ();
+        this->RemoveAt (idx);
+        if (idx == this->fLength_) {
+            return ForwardIterator{};
+        }
+        else {
+            return ForwardIterator{this, idx};
+        }
+    }
+    template <typename T>
+    inline void Array<T>::Remove (const BackwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());

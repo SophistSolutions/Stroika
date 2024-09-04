@@ -143,8 +143,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average Case: O(N)
          *
          *   EQUALS_COMPARER OVERLOAD : Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
-         * 
-         * @TODO - rename to Find () - I THINK - but slight change to using iterator??? - maybe also do First() overloads like this as well
          */
         template <predicate<T> FUNCTION>
         nonvirtual UnderlyingIteratorRep Find (FUNCTION&& firstThat) const;
