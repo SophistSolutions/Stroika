@@ -142,6 +142,13 @@ namespace {
         DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveable>> (
             [] () { return SortedSet_stdset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
 
+        DataStructures::SkipList<size_t, void> xx;
+        SortedSet_SkipList<size_t>             tmp;
+        //DoTestForConcreteContainer_<SortedSet_SkipList<size_t>> ();
+        //DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        //DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveable>> (
+        //    [] () { return SortedSet_stdset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
+
         ExampleCTORS_Test_2_::DoTest ();
 
         Where_Test_3_::DoAll ();

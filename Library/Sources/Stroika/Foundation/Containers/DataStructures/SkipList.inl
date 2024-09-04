@@ -44,6 +44,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
     }
 #endif
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_::Link_ (ArgByValueType<value_type> v)
+        : fEntry{v}
+    {
+    }
 
     /*
      ********************************************************************************
@@ -64,7 +69,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_* prev = nullptr;
         Link_* n    = src.fHead_[0];
         while (n != nullptr) {
-            Link_* newNode = new Link_{n->fEntry.fKey, n->fEntry.fValue};
+            Link_* newNode = new Link_{n->fEntry};
             if (prev == nullptr) {
                 Assert (fHead_.size () == 1);
                 Assert (fHead_[0] == nullptr);
@@ -84,7 +89,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fLength_ = src.fLength_;
         ReBalance (); // this will give us a proper link structure
     }
-#if 1
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (SkipList&& src)
         : fKeyThreeWayComparer_{src.fKeyThreeWayComparer_}
@@ -95,7 +99,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         src.fHead_[0] = 0;
         src.fLength_  = 0;
     }
-#endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>& SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::operator= (const SkipList& t)
     {
@@ -104,7 +107,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Link_* prev = nullptr;
             Link_* n    = t.fHead_[0];
             while (n != nullptr) {
-                Link_* newNode = new Link_{n->fEntry.fKey, n->fEntry.fValue};
+                Link_* newNode = new Link_{n->fEntry};
                 if (prev == nullptr) {
                     Assert (fHead_.size () == 1);
                     Assert (fHead_[0] == nullptr);

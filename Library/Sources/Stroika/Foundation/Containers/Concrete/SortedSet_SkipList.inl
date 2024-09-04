@@ -42,7 +42,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+#if 1
+            AssertNotImplemented ();
+            return nullptr;
+#else
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
+#endif
         }
         virtual size_t size () const override
         {
@@ -59,7 +64,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+#if 1
+            AssertNotImplemented ();
+            &doToElement;
+#else
             fData_.Apply (doToElement);
+#endif
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
         {
@@ -68,12 +78,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
-            // if doing a find by 'equals-to' - we already have this indexed
+// if doing a find by 'equals-to' - we already have this indexed
+#if 1
+            AssertNotImplemented ();
+            &v;
+            return nullptr;
+#else
             auto found = fData_.find (v);
             Ensure ((found == fData_.end () and this->inherited::Find_equal_to (v, seq) == Iterator<value_type>{nullptr}) or
                     (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ())
                                   .fIterator.GetUnderlyingIteratorRep ()));
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, found)};
+#endif
         }
 
         // Set<T>::_IRep overrides
@@ -92,11 +108,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
-            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+#if 1
+            AssertNotImplemented ();
+            i++;
+            return nullptr;
+#else
+            auto  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto& mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
+#endif
         }
         virtual bool Equals (const typename Iterable<value_type>::_IRep& rhs) const override
         {
@@ -106,8 +128,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  i       = fData_.find (item);
-            bool                                                  notDone = i != fData_.end ();
+#if 1
+            AssertNotImplemented ();
+            &item;
+            oResult++;
+            iResult++;
+            return false;
+#else
+            auto i       = fData_.find (item);
+            bool notDone = i != fData_.end ();
             if (oResult != nullptr and notDone) {
                 *oResult = *i;
             }
@@ -115,28 +144,39 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *iResult = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, i)};
             }
             return notDone;
+#endif
         }
         virtual void Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.insert (item);
+            fData_.Add (item);
             fChangeCounts_.PerformedChange ();
         }
         virtual bool RemoveIf (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Invariant ();
+#if 1
+            AssertNotImplemented ();
+            &item;
+#else
             auto i = fData_.find (item);
             if (i != fData_.end ()) [[likely]] {
                 fData_.erase (i);
                 fChangeCounts_.PerformedChange ();
                 return true;
             }
+#endif
             return false;
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Require (not i.Done ());
+#if 1
+            AssertNotImplemented ();
+            &i;
+            &nextI;
+#else
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             mir.fIterator.AssertDataMatches (&fData_);
@@ -145,6 +185,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, nextIResult)};
             }
+#endif
         }
 
         // SortedSet<T>::_IRep overrides
@@ -152,12 +193,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual ElementInOrderComparerType GetInOrderComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return ElementInOrderComparerType{fData_.key_comp ()};
+            return ElementInOrderComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
         }
 
     private:
         using DataStructureImplType_ = SKIPLIST<COMPARER>;
-        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        DataStructureImplType_ test;
+        using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_                                     fData_;
@@ -171,7 +213,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline SortedSet_SkipList<T>::SortedSet_SkipList ()
-        : SortedSet_SkipList{less<T>{}}
+        : SortedSet_SkipList{compare_three_way{}}
     {
         AssertRepValidType_ ();
     }

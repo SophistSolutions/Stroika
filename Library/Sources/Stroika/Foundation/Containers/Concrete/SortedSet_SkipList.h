@@ -20,7 +20,6 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     using Common::IThreeWayComparer;
-    ;
 
     /**
      *  \brief   SortedSet_SkipList<T> is an std::set-based concrete implementation of the SortedSet<T> container pattern.

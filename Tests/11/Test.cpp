@@ -256,7 +256,7 @@ namespace {
 
         DoTestForConcreteContainer_<Association_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Association_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-        // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Association_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_AssociationTRAITS>> ();
+        // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Association_LinkedList<OnlyCopyableMoveable, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_AssociationTRAITS>> ();
         DoTestForConcreteContainer_<Association_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
             [] () { return Association_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyComparerWithEquals_{}); }, MyComparerWithEquals_{});
 

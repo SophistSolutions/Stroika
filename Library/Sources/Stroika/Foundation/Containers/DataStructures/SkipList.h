@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *              @todo   https://stroika.atlassian.net/browse/STK-1016 - ranges/sentinel support
      * 
     // OLD DOCS to lift from (from SSW impl)
-    In principle you can use different probabilies for having more than one link. The optimal probability for finds is 1/4, and that also produces a list
+    In principle you can use different probabilities for having more than one link. The optimal probability for finds is 1/4, and that also produces a list
     that is more space efficient than a traditional binary tree, as it has only 1.33 nodes per entry, compared with a binary tree using 2.
 
     Testing SkipList of 100000 entries, sorted add, link creation probability of 0.25
@@ -468,7 +468,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         // Fundamentally a linked-list, but with a quirky 'next' pointer(s)
-        struct Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_ /*, sizeof (value_type) <= 1024*/> {
+        struct Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (value_type) <= 128> {
             template <typename MAPPED_TYPE2 = MAPPED_TYPE>
             constexpr Link_ (ArgByValueType<key_type> key, ArgByValueType<MAPPED_TYPE2> val)
                 requires (not same_as<MAPPED_TYPE2, void>)
@@ -484,8 +484,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #else
             ;
 #endif
+                constexpr Link_ (ArgByValueType<value_type> v);
 
-                value_type fEntry;
+            value_type  fEntry;
             LinkVector_ fNext; // for a SkipList, you have an array of next pointers, rather than just one
         };
         LinkVector_ fHead_{};
