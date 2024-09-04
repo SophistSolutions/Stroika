@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     private:
         bool Add1_ (ArgByValueType<key_type> key);
-        template <typename CHECK_T= MAPPED_TYPE>
+        template <typename CHECK_T = MAPPED_TYPE>
         bool Add2_ (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val);
 #endif
 

@@ -231,6 +231,7 @@ namespace {
         EXPECT_EQ (t.size (), 1);
         t.Remove (1);
         EXPECT_EQ (t.size (), 0);
+        t.Apply ([] (auto) {});
     }
 }
 
