@@ -424,6 +424,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::erase (const ForwardIterator& i)->ForwardIterator
+    {
+        LinkVector_ links;
+        // we need the links to reset, so have to refind
+        // Link_*      n = const_cast<Link_*> (it.fCurrent_);
+        Link_* n = FindNearest_ (i, links);
+        RequireNotNull (n);
+        Link_* after = n->fNext[0];     // result returned
+        RemoveNode_ (n, links);
+        if constexpr (TRAITS::kCostlyInvariants) {
+            Invariant ();
+        }
+        return after == nullptr ? return end () : ForwardIterator{this, after};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveIf (ArgByValueType<key_type> key)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};

@@ -251,9 +251,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:   ??
          *      Average:    log(N)
          *      Worst:      N
+         * 
+         *  \see also erase()
          */
         nonvirtual void Remove (ArgByValueType<key_type> key);
         nonvirtual void Remove (const ForwardIterator& it);
+
+    public:
+        /**
+         *  \brief remove the element at i, and return valid iterator to the element that was following it (which can be empty iterator)
+         * 
+         *  \req i != end ()
+         * 
+         *  \brief see https://en.cppreference.com/w/cpp/container/vector/erase
+         * 
+         *  \see also Remove()
+         */
+        nonvirtual ForwardIterator erase (const ForwardIterator& i);
 
     public:
         /**
