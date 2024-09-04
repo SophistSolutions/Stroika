@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers::Private {
 
     public:
         /**
-         * rarely used but in special cases when returning new dervied/pathed iterator*
+         * rarely used but in special cases when returning new derived/pathed iterator*
          */
         nonvirtual void UpdateChangeCount ();
 

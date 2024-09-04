@@ -88,18 +88,23 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::More (optional<T>* result, bool advance)
     {
-        RequireNotNull (result); // API says result ptr required
-        ValidateChangeCount ();
-        // Typically calls have advance = true
-        if (advance) [[likely]] {
-            Require (not fIterator.Done ());
-            ++fIterator;
-        }
-        if (fIterator.Done ()) [[unlikely]] {
-            *result = nullopt;
+        if constexpr (convertible_to<decltype (*fIterator), T>) {
+            RequireNotNull (result); // API says result ptr required
+            ValidateChangeCount ();
+            // Typically calls have advance = true
+            if (advance) [[likely]] {
+                Require (not fIterator.Done ());
+                ++fIterator;
+            }
+            if (fIterator.Done ()) [[unlikely]] {
+                *result = nullopt;
+            }
+            else {
+                *result = *fIterator;
+            }
         }
         else {
-            *result = *fIterator;
+            RequireNotReached (); // "If this fails, you must override ::More, and provide it yourself";
         }
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>

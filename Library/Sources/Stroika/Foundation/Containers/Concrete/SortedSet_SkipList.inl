@@ -42,12 +42,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-#if 1
-            AssertNotImplemented ();
-            return nullptr;
-#else
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
-#endif
         }
         virtual size_t size () const override
         {
@@ -188,8 +183,27 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = SKIPLIST<COMPARER>;
-        DataStructureImplType_ test;
-        using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        //  DataStructureImplType_ test;
+        struct IteratorRep_ : Private::IteratorImplHelper_<value_type, DataStructureImplType_> {
+            using inherited = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+            using inherited::inherited; // forward base class constructors
+
+            virtual void More (optional<T>* result, bool advance) override
+            {
+                RequireNotNull (result);
+                this->ValidateChangeCount ();
+                if (advance) [[likely]] {
+                    Require (not this->fIterator.Done ());
+                    ++this->fIterator;
+                }
+                if (this->fIterator.Done ()) [[unlikely]] {
+                    *result = nullopt;
+                }
+                else {
+                    *result = this->fIterator->fKey;
+                }
+            }
+        };
 
     private:
         DataStructureImplType_                                     fData_;
