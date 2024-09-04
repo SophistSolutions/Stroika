@@ -64,12 +64,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-#if 1
-            AssertNotImplemented ();
-            &doToElement;
-#else
-            fData_.Apply (doToElement);
-#endif
+            fData_.Apply ([&] (const auto& k) { doToElement (k.fKey); });
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
         {
