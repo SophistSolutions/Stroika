@@ -111,6 +111,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  Complexity:
          *      Always: constant
+         * 
+         *  \see push_back
          */
         nonvirtual void push_front (ArgByValueType<T> item);
 
@@ -207,6 +209,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: O(N)
          *
          *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
+         *
+         *  \see push_front
          */
         nonvirtual void push_back (ArgByValueType<T> item);
 
