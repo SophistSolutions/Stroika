@@ -151,17 +151,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Invariant ();
-#if 1
-            AssertNotImplemented ();
-            &item;
-#else
-            auto i = fData_.find (item);
+            auto i = fData_.Find (item);
             if (i != fData_.end ()) [[likely]] {
-                fData_.erase (i);
+                fData_.Remove (i);
                 fChangeCounts_.PerformedChange ();
                 return true;
             }
-#endif
             return false;
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
