@@ -424,7 +424,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::erase (const ForwardIterator& i)->ForwardIterator
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::erase (const ForwardIterator& i) -> ForwardIterator
     {
         LinkVector_ links;
         // we need the links to reset, so have to refind
@@ -436,7 +436,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        return after == nullptr ? return end () : ForwardIterator{this, after};
+        return after == nullptr ?  end () : ForwardIterator{this, after};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveIf (ArgByValueType<key_type> key)
