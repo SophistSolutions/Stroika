@@ -225,7 +225,7 @@ namespace {
         t.Invariant ();
         EXPECT_EQ (t.size (), 0);
         {
-            auto b = t.begin ();
+            [[maybe_unused]]auto b = t.begin ();
         }
         t.Add (1);
         EXPECT_EQ (t.size (), 1);
