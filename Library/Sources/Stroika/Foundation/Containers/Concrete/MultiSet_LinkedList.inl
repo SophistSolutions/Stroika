@@ -10,14 +10,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ******************** MultiSet_LinkedList<T, TRAITS>::IImplRepBase_ *************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    class MultiSet_LinkedList<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {};
-
-    /*
-     ********************************************************************************
      ********************** MultiSet_LinkedList<T, TRAITS>::Rep_ ********************
      ********************************************************************************
      */
