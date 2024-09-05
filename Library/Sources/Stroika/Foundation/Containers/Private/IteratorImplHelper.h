@@ -60,6 +60,10 @@ namespace Stroika::Foundation::Containers::Private {
      *
      *  Plus, its details are intimately tied to how the Stroika containers manage lifetime, so
      *  its not likely well suited for use elsewhere.
+     * 
+     *  \todo   This class is a bit kludgy/fragile. (e.g. the cases where you have to override More needing to also override Clone). Maybe use CRTP? And not
+     *          good compiler error messages - maybe use more/better concepts usage; low priority since private impl helper method;
+     *          -- LGP 2024-09-05
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR = typename DATASTRUCTURE_CONTAINER::ForwardIterator, typename DATASTRUCTURE_CONTAINER_VALUE = T>
     class IteratorImplHelper_
@@ -72,9 +76,9 @@ namespace Stroika::Foundation::Containers::Private {
         using DataStructureImplValueType_ = DATASTRUCTURE_CONTAINER_VALUE;
 
     public:
-        IteratorImplHelper_ ()                           = delete;
-        IteratorImplHelper_ (IteratorImplHelper_&&)      = default;
-        IteratorImplHelper_ (const IteratorImplHelper_&) = default;
+        IteratorImplHelper_ ()                               = delete;
+        IteratorImplHelper_ (IteratorImplHelper_&&) noexcept = default;
+        IteratorImplHelper_ (const IteratorImplHelper_&)     = default;
         template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
         explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr,
                                       ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
@@ -103,6 +107,8 @@ namespace Stroika::Foundation::Containers::Private {
 
     public:
         /**
+         *  This is used internally by Stroika to assure iterators are not used after the container they iterate over
+         *  has been changed.
          */
         nonvirtual void ValidateChangeCount () const;
 

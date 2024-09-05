@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Containers::Private {
             }
         }
         else {
-            RequireNotReached (); // "If this fails, you must override ::More, and provide it yourself";
+            RequireNotReached (); // "If this fails, you must override ::More, and provide it yourself"; and remember to override Clone() too!!!
         }
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
