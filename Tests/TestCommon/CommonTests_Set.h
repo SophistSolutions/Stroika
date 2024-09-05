@@ -167,6 +167,22 @@ namespace CommonTests {
             }
         }
 
+        namespace Test6_AddABunch_ {
+            template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
+            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
+            {
+                USING_SET_CONTAINER s1       = factory ();
+                constexpr size_t    kABunch_ = qDebug ? 128 : 2 * 1024;
+                for (size_t i = 0; i < kABunch_; ++i) {
+                    s1.Add (i);
+                }
+                for (size_t i = 0; i < kABunch_; ++i) {
+                    EXPECT_TRUE (s1.Lookup (i));
+                    EXPECT_FALSE (s1.Lookup (i + kABunch_));
+                }
+            }
+        }
+
         template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
         void Test_All_For_Type (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
         {
@@ -175,6 +191,7 @@ namespace CommonTests {
             Test3_AddRemove_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (factory, applyToContainer);
             Test4_Equals_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (factory, applyToContainer);
             Test5_UnionDifferenceIntersectionEtc_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (factory, applyToContainer);
+            Test6_AddABunch_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (factory, applyToContainer);
         }
 #endif
 

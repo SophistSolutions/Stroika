@@ -170,5 +170,16 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         }
     };
 
+    /**
+     *  For types that don't have operator< bulletin, this saves a bit of typing producing a generic comparer (using IINTeroperable)
+     */
+    template <IINTeroperable T>
+    struct AsIntsThreeWayComparer : ComparisonRelationDeclarationBase<ComparisonRelationType::eThreeWayCompare> {
+        strong_ordering operator() (T v1, T v2) const
+        {
+            return static_cast<size_t> (v1) <=> static_cast<size_t> (v2);
+        }
+    };
+
 }
 #endif /* _Stroika_Frameworks_Test_ArchtypeClasses_h_ */

@@ -27,11 +27,19 @@ using namespace Stroika::Foundation::Common;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::SortedSet_SkipList;
 using Concrete::SortedSet_stdset;
+
+using namespace CommonTests::SetTests;
+
+using MyOnlyCopyableMoveable_LESS_     = AsIntsLessComparer<OnlyCopyableMoveable>;
+using MyOnlyCopyableMoveable_THREEWAY_ = AsIntsThreeWayComparer<OnlyCopyableMoveable>;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -59,84 +67,92 @@ namespace {
 }
 
 namespace {
-    namespace Test2_InitalizeCTORs_ {
-        void DoRun ()
-        {
-            {
-                SortedSet<int> tmp{1, 3};
-                EXPECT_TRUE (tmp.size () == 2);
-                EXPECT_TRUE (tmp.Contains (1));
-                EXPECT_TRUE (not tmp.Contains (2));
-                EXPECT_TRUE (tmp.Contains (3));
-            }
-            {
-                SortedSet<int> tmp{1, 3, 4, 5, 7};
-                EXPECT_TRUE (tmp.size () == 5);
-                EXPECT_TRUE (tmp.Contains (1));
-                EXPECT_TRUE (not tmp.Contains (2));
-                EXPECT_TRUE (tmp.Contains (3));
-                EXPECT_TRUE (tmp.Contains (7));
-            }
-            {
-                Set<int>       t1{1, 3, 4, 5, 7};
-                SortedSet<int> tmp = SortedSet<int>{t1.begin (), t1.end ()};
-                //SortedSet<int> tmp  {t1.begin (), t1.end () };
-                EXPECT_TRUE (tmp.size () == 5);
-                EXPECT_TRUE (tmp.Contains (1));
-                EXPECT_TRUE (not tmp.Contains (2));
-                EXPECT_TRUE (tmp.Contains (3));
-                EXPECT_TRUE (tmp.Contains (7));
-            }
-        }
-    }
-}
-
-namespace {
-    namespace Test3_ExplicitSortFunction_ {
-        void DoRun ()
-        {
-            {
-                using Characters::String;
-                SortedSet<String> tmp{"a", "b", "A"};
-                EXPECT_TRUE (tmp.size () == 3);
-                EXPECT_TRUE (tmp.Contains (L"A"));
-                EXPECT_TRUE (not tmp.Contains (L"B"));
-            }
-            {
-                using Characters::String;
-                SortedSet<String> tmp{String::LessComparer{Characters::eCaseInsensitive}, {"a", L"b", "A"sv}};
-                EXPECT_TRUE (tmp.size () == 2);
-                EXPECT_TRUE (tmp.Contains (L"A"));
-                EXPECT_TRUE (tmp.Contains (L"B"));
-            }
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_SortedSet, all)
+    GTEST_TEST (Foundation_Containers_SortedSet, DEFAULT_FACTORY)
     {
-        using namespace CommonTests::SetTests;
-
-        struct MyOnlyCopyableMoveable_LESS_ : ComparisonRelationDeclarationBase<ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
-            {
-                return static_cast<size_t> (lhs) < static_cast<size_t> (rhs);
-            }
-        };
+        Debug::TraceContextBumper ctx{"DEFAULT_FACTORY"};
         RunTests_<SortedSet<size_t>> ();
         RunTests_<SortedSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
         RunTests_<SortedSet<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{},
                                                     [] () { return SortedSet<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedSet, SortedSet_stdset)
+    {
+        Debug::TraceContextBumper ctx{"SortedSet_stdset"};
         RunTests_<SortedSet_stdset<size_t>> ();
         RunTests_<SortedSet_stdset<OnlyCopyableMoveableAndTotallyOrdered>> ();
         RunTests_<SortedSet_stdset<OnlyCopyableMoveable>> (
             MyOnlyCopyableMoveable_LESS_{}, [] () { return SortedSet_stdset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
+    }
+}
 
-        Test2_InitalizeCTORs_::DoRun ();
-        Test3_ExplicitSortFunction_::DoRun ();
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedSet, SortedSet_SkipList)
+    {
+        Debug::TraceContextBumper ctx{"SortedSet_SkipList"};
+        RunTests_<SortedSet_SkipList<size_t>> ();
+        RunTests_<SortedSet_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<SortedSet_SkipList<OnlyCopyableMoveable>> (
+            MyOnlyCopyableMoveable_LESS_{}, [] () { return SortedSet_SkipList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_THREEWAY_{}); });
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedSet, Test2_InitalizeCTORs_)
+    {
+        {
+            SortedSet<int> tmp{1, 3};
+            EXPECT_EQ (tmp.size (), 2u);
+            EXPECT_TRUE (tmp.Contains (1));
+            EXPECT_TRUE (not tmp.Contains (2));
+            EXPECT_TRUE (tmp.Contains (3));
+        }
+        {
+            SortedSet<int> tmp{1, 3, 4, 5, 7};
+            EXPECT_EQ (tmp.size (), 5u);
+            EXPECT_TRUE (tmp.Contains (1));
+            EXPECT_TRUE (not tmp.Contains (2));
+            EXPECT_TRUE (tmp.Contains (3));
+            EXPECT_TRUE (tmp.Contains (7));
+        }
+        {
+            Set<int>       t1{1, 3, 4, 5, 7};
+            SortedSet<int> tmp = SortedSet<int>{t1.begin (), t1.end ()};
+            //SortedSet<int> tmp  {t1.begin (), t1.end () };
+            EXPECT_EQ (tmp.size (), 5u);
+            EXPECT_TRUE (tmp.Contains (1));
+            EXPECT_TRUE (not tmp.Contains (2));
+            EXPECT_TRUE (tmp.Contains (3));
+            EXPECT_TRUE (tmp.Contains (7));
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedSet, Test3_ExplicitSortFunction_)
+    {
+        {
+            using Characters::String;
+            SortedSet<String> tmp{"a", "b", "A"};
+            EXPECT_EQ (tmp.size (), 3u);
+            EXPECT_TRUE (tmp.Contains ("A"));
+            EXPECT_TRUE (not tmp.Contains ("B"));
+        }
+        {
+            using Characters::String;
+            SortedSet<String> tmp{String::LessComparer{Characters::eCaseInsensitive}, {"a", L"b", "A"sv}};
+            EXPECT_EQ (tmp.size (), 2u);
+            EXPECT_TRUE (tmp.Contains ("A"));
+            EXPECT_TRUE (tmp.Contains ("B"));
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedSet, CLEANUP)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
