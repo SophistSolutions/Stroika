@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         , fHead_{move (src.fHead_)}
         , fLength_{src.fLength_}
     {
-        src.fHead_.resize (1);  // cannot throw cuz always shrinking or no change
+        src.fHead_.resize (1); // cannot throw cuz always shrinking or no change
         src.fHead_[0] = 0;
         src.fLength_  = 0;
     }
