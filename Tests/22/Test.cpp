@@ -5,7 +5,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
-#include <sstream>
+//#include <sstream>
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
@@ -45,7 +45,6 @@ namespace {
     {
         using T                  = typename CONCRETE_CONTAINER::value_type;
         auto extraChecksFunction = [] ([[maybe_unused]] const Set<T>& s) {
-            // only work todo on sorted sets
         };
         CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<T>> (factory, extraChecksFunction);
     }
@@ -142,9 +141,8 @@ namespace {
         DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveable>> (
             [] () { return SortedSet_stdset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
 
-        SortedSet_SkipList<size_t> tmp;
-        //DoTestForConcreteContainer_<SortedSet_SkipList<size_t>> ();
-        //DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedSet_SkipList<size_t>> ();
+        DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveableAndTotallyOrdered>> ();
         //DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveable>> (
         //    [] () { return SortedSet_stdset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
 

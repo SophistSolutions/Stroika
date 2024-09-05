@@ -69,9 +69,9 @@ namespace CommonTests {
                     USING_SET_CONTAINER     s1 = mk_ (factory, initializer_list<int>{1});
                     USING_SET_CONTAINER     s2 = mk_ (factory, initializer_list<int>{1});
                     USING_BASESET_CONTAINER s3 = mk_ (factory, initializer_list<int>{1});
-                    EXPECT_TRUE (s1.length () == 1);
-                    EXPECT_TRUE (s2.length () == 1);
-                    EXPECT_TRUE (s3.length () == 1);
+                    EXPECT_EQ (s1.length (), 1u);
+                    EXPECT_EQ (s2.length (), 1u);
+                    EXPECT_EQ (s3.length (), 1u);
                 }
             }
         }
@@ -83,18 +83,18 @@ namespace CommonTests {
                 USING_SET_CONTAINER s = factory ();
                 s.Add (1);
                 applyToContainer (s);
-                EXPECT_TRUE (s.size () == 1);
+                EXPECT_EQ (s.size (), 1u);
                 EXPECT_TRUE (s.Contains (1));
                 EXPECT_TRUE (not s.Contains (2));
                 applyToContainer (s);
                 s.Add (1);
                 applyToContainer (s);
-                EXPECT_TRUE (s.size () == 1);
+                EXPECT_EQ (s.size (), 1u);
                 applyToContainer (s);
                 IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
                 s.Remove (1);
                 applyToContainer (s);
-                EXPECT_TRUE (s.size () == 0);
+                EXPECT_EQ (s.size (), 0u);
                 applyToContainer (s);
 
                 {
@@ -103,12 +103,12 @@ namespace CommonTests {
                     size_t oldLength = s.size ();
                     s += s;
                     applyToContainer (s);
-                    EXPECT_TRUE (s.size () == oldLength);
+                    EXPECT_EQ (s.size (), oldLength);
                 }
 
                 s.RemoveAll ();
                 applyToContainer (s);
-                EXPECT_TRUE (s.size () == 0);
+                EXPECT_EQ (s.size (), 0u);
             }
         }
 
@@ -120,12 +120,12 @@ namespace CommonTests {
                 USING_SET_CONTAINER s2 = s;
                 s.Add (1);
                 s.Add (2);
-                EXPECT_TRUE (s.size () == 2);
+                EXPECT_EQ (s.size (), 2u);
                 USING_SET_CONTAINER s3 = s;
                 applyToContainer (s);
                 applyToContainer (s2);
                 applyToContainer (s3);
-                EXPECT_TRUE (s == s3);
+                EXPECT_EQ (s, s3);
                 EXPECT_TRUE (typename USING_SET_CONTAINER::EqualsComparer{}(s, s3));
                 EXPECT_TRUE (not(s != s3));
 

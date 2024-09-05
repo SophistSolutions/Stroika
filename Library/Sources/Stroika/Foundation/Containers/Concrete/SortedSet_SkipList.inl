@@ -68,18 +68,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
-// if doing a find by 'equals-to' - we already have this indexed
-#if 1
-            AssertNotImplemented ();
-            &v;
-            return nullptr;
-#else
-            auto found = fData_.find (v);
+            // if doing a find by 'equals-to' - we already have this indexed
+            auto found = fData_.Find (v);
+#if 0
             Ensure ((found == fData_.end () and this->inherited::Find_equal_to (v, seq) == Iterator<value_type>{nullptr}) or
                     (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ())
                                   .fIterator.GetUnderlyingIteratorRep ()));
-            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, found)};
 #endif
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, found)};
         }
 
         // Set<T>::_IRep overrides
@@ -98,17 +94,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-#if 1
-            AssertNotImplemented ();
-            i++;
-            return nullptr;
-#else
-            auto result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
-#endif
         }
         virtual bool Equals (const typename Iterable<value_type>::_IRep& rhs) const override
         {
@@ -118,23 +108,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-#if 1
-            AssertNotImplemented ();
-            &item;
-            oResult++;
-            iResult++;
-            return false;
-#else
-            auto i = fData_.find (item);
-            bool notDone = i != fData_.end ();
+            auto                                                  i       = fData_.Find (item);
+            bool                                                  notDone = i != fData_.end ();
             if (oResult != nullptr and notDone) {
-                *oResult = *i;
+                *oResult = i->fKey;
             }
             if (iResult != nullptr and notDone) {
-                *iResult = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, i)};
+                *iResult = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, i)};
             }
             return notDone;
-#endif
         }
         virtual void Add (ArgByValueType<value_type> item) override
         {
@@ -180,11 +162,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = SKIPLIST<COMPARER>;
-        //  DataStructureImplType_ test;
         struct IteratorRep_ : Private::IteratorImplHelper_<value_type, DataStructureImplType_> {
             using inherited = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
             using inherited::inherited; // forward base class constructors
-
+            // override to map just the key part to 'T'
             virtual void More (optional<T>* result, bool advance) override
             {
                 RequireNotNull (result);
@@ -199,6 +180,11 @@ namespace Stroika::Foundation::Containers::Concrete {
                 else {
                     *result = this->fIterator->fKey;
                 }
+            }
+            virtual auto Clone () const -> unique_ptr<typename Iterator<T>::IRep> override
+            {
+                this->ValidateChangeCount ();
+                return make_unique<IteratorRep_> (*this);
             }
         };
 
