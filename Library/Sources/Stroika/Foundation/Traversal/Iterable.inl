@@ -809,6 +809,21 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
+    template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
+    bool Iterable<T>::IsOrderedBy (INORDER_COMPARER_TYPE&& inorderComparer) const
+    {
+        optional<T> last;
+        for (const T& i : *this) {
+            if (last.has_value ()) {
+                if (not inorderComparer (*last, i)) {
+                    return false;
+                }
+            }
+            last = i;
+        }
+        return true;
+    }
+    template <typename T>
     inline optional<T> Iterable<T>::First () const
     {
         auto i = begin ();

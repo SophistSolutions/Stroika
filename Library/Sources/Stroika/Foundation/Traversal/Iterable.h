@@ -1052,10 +1052,23 @@ namespace Stroika::Foundation::Traversal {
          *
          *  See:
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
+         *      @see IsOrderedBy ()
+         * 
+         *  \ens result.IsOrderedBy (inorderComparer);
          */
         template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
         nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&&   inorderComparer = INORDER_COMPARER_TYPE{},
                                         Execution::SequencePolicy seq             = Execution::SequencePolicy::ePar) const;
+
+    public:
+        /**
+         *  \note alias for IsSorted ()
+         * 
+         *  \see
+         *      OrderBy ()
+         */
+        template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
+        nonvirtual bool IsOrderedBy (INORDER_COMPARER_TYPE&& inorderComparer = INORDER_COMPARER_TYPE{}) const;
 
     public:
         /**
