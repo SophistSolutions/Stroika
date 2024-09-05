@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         SkipList (KeyComparerType keyComparer = {});
-        SkipList (SkipList&& src);
+        SkipList (SkipList&& src) noexcept;
         SkipList (const SkipList& src);
         ~SkipList ();
 

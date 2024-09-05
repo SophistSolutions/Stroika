@@ -90,12 +90,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ReBalance (); // this will give us a proper link structure
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (SkipList&& src)
+    inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (SkipList&& src) noexcept
         : fKeyThreeWayComparer_{src.fKeyThreeWayComparer_}
         , fHead_{move (src.fHead_)}
         , fLength_{src.fLength_}
     {
-        src.fHead_.resize (1);
+        src.fHead_.resize (1);  // cannot throw cuz always shrinking or no change
         src.fHead_[0] = 0;
         src.fLength_  = 0;
     }
