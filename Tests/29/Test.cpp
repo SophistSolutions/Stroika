@@ -43,13 +43,13 @@ namespace {
     void SimpleTest_2_ (StackOfT s)
     {
         s.Push (1);
-        EXPECT_TRUE (s.size () == 1);
+        EXPECT_EQ (s.size (), 1u);
         s.Push (2);
-        EXPECT_TRUE (s.size () == 2);
+        EXPECT_EQ (s.size (), 2u);
         s.Pop ();
-        EXPECT_TRUE (s.size () == 1);
+        EXPECT_EQ (s.size (), 1u);
         s.RemoveAll ();
-        EXPECT_TRUE (s.size () == 0);
+        EXPECT_EQ (s.size (), 0u);
     }
 }
 

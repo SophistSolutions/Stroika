@@ -49,13 +49,7 @@ namespace {
         typedef typename CONCRETE_CONTAINER::value_type T;
         auto                                            testFunc = [&] (const SortedSet<T>& s) {
             // verify in sorted order
-            optional<T> last;
-            for (T i : s) {
-                if (last.has_value ()) {
-                    EXPECT_TRUE (inorderComparer (*last, i));
-                }
-                last = i;
-            }
+            EXPECT_TRUE (s.IsOrderedBy (inorderComparer));
         };
         CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, SortedSet<T>> (factory, testFunc);
     }

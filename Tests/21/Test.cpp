@@ -60,7 +60,6 @@ using Concrete::Sequence_stdvector;
 
 #if qHasFeature_GoogleTest
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_1_ ()
     {
@@ -68,7 +67,7 @@ namespace {
         static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
         {
             CONCRETE_SEQUENCE_T s;
-            EXPECT_TRUE (s.size () == 0);
+            EXPECT_EQ (s.size (), 0u);
             s.Append (1);
             EXPECT_TRUE (s.size () == 1);
             EXPECT_TRUE (EQUALS_COMPARER{}(s.GetAt (0), 1));
@@ -100,7 +99,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_2_Contains_ ()
     {
@@ -132,7 +130,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename WELL_ORDER_COMPARER>
     void SimpleSequenceTest_3_Compare_ ()
     {
@@ -316,7 +313,7 @@ namespace {
         }
 
         {
-            // primitive, but at least somthing - test of Insert() of sequence (cuz Prepend/Append call Insert internally)
+            // primitive, but at least something - test of Insert() of sequence (cuz Prepend/Append call Insert internally)
             Sequence<T> x;
             x.Append (10);
             x.Append (11);
@@ -565,14 +562,14 @@ namespace {
             type_index fTypeInfo;
             String     fSerializedFieldName;
 
-            StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid (void), const String& serializedFieldName = String ())
+            StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid (void), const String& serializedFieldName = {})
                 : fOffset{fieldOffset}
                 , fTypeInfo{typeInfo}
                 , fSerializedFieldName{serializedFieldName}
             {
             }
         };
-        Sequence<StructureFieldInfo_> t  = {StructureFieldInfo_ (0, typeid (int), L"fred")};
+        Sequence<StructureFieldInfo_> t  = {StructureFieldInfo_{0, typeid (int), "fred"}};
         Sequence<StructureFieldInfo_> tt = t;
     }
 }
@@ -831,11 +828,14 @@ namespace {
             // From Sequence<> CTOR docs
             {
                 Sequence<int> c{3, 5, 9, 38, 3, 5};
-                EXPECT_TRUE ((c.OrderBy () == Sequence<int>{3, 3, 5, 5, 9, 38}));
+                EXPECT_EQ (c.OrderBy (), (Sequence<int>{3, 3, 5, 5, 9, 38}));
+                EXPECT_TRUE (c.OrderBy ().IsOrderedBy ());
             }
             {
                 Sequence<int> c{3, 5, 9, 38, 3, 5};
-                EXPECT_TRUE ((c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }) == Sequence<int>{3, 3, 5, 5, 9, 38}));
+                auto          cmp = [] (int lhs, int rhs) -> bool { return lhs < rhs; };
+                EXPECT_EQ (c.OrderBy (cmp), (Sequence<int>{3, 3, 5, 5, 9, 38}));
+                EXPECT_TRUE (c.OrderBy (cmp).IsOrderedBy (cmp));
             }
         }
     }
@@ -848,6 +848,7 @@ namespace {
             using IO::Network::InternetAddress;
             Sequence<InternetAddress> s1;
             auto s2 = s1.Where ([] (InternetAddress i) { return i.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
+            EXPECT_EQ (s2.size (), 0u);
         }
     }
 }
@@ -855,32 +856,31 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Sequence, all)
     {
-        using COMPARE_SIZET                = equal_to<size_t>;
-        using COMPARE_SimpleClass          = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
-        using COMPARE_OnlyCopyableMoveable = AsIntsEqualsComparer<OnlyCopyableMoveable>;
+        using COMPARE_OnlyCopyableMoveableAndTotallyOrdered = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
+        using COMPARE_OnlyCopyableMoveable                  = AsIntsEqualsComparer<OnlyCopyableMoveable>;
 
-        SimpleSequenceTest_All_For_Type_<Sequence<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_All_For_Type_<Sequence<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
         SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
-        SimpleSequenceTest_All_For_Type_<Sequence_Array<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_Array<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
         SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
-        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
         SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
-        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_LinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
         SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
-        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<size_t>, COMPARE_SIZET> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_stdvector<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
         SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 

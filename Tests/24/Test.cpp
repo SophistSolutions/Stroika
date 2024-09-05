@@ -45,13 +45,7 @@ namespace {
         typedef typename CONCRETE_CONTAINER::value_type T;
         auto                                            testFunc = [&] (const SortedCollection<T>& s) {
             // verify in sorted order
-            optional<T> last;
-            for (T i : s) {
-                if (last.has_value ()) {
-                    EXPECT_TRUE (inorderComparer (*last, i));
-                }
-                last = i;
-            }
+            EXPECT_TRUE (s.IsOrderedBy (inorderComparer));
         };
         CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (factory, testFunc);
     }

@@ -868,6 +868,7 @@ namespace {
         {
             Iterable<int> c{3, 5, 9, 38, 3, 5};
             EXPECT_TRUE (c.OrderBy ().SequentialEquals ({3, 3, 5, 5, 9, 38}));
+            EXPECT_TRUE (c.OrderBy ().IsOrderedBy ());
             EXPECT_TRUE (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({3, 3, 5, 5, 9, 38}));
             EXPECT_TRUE (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs > rhs; }).SequentialEquals ({38, 9, 5, 5, 3, 3}));
         }

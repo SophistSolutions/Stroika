@@ -41,16 +41,7 @@ namespace {
             auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
             testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
                 // verify in sorted order
-                using key_type         = typename CONCRETE_CONTAINER::key_type;
-                using value_type       = typename CONCRETE_CONTAINER::value_type;
-                using INORDER_COMPARER = decltype (m.GetInOrderKeyComparer ());
-                optional<value_type> last;
-                for (value_type i : m) {
-                    if (last.has_value ()) {
-                        EXPECT_TRUE ((Common::ThreeWayComparerAdapter<key_type, INORDER_COMPARER>{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0));
-                    }
-                    last = i;
-                }
+                EXPECT_TRUE (m.IsOrderedBy ([&] (auto l, auto r) { return m.GetInOrderKeyComparer () (l.fKey, r.fKey); }));
             };
             SimpleMappingTest_All_ (testSchema);
             SimpleMappingTest_WithDefaultEqCompaerer_ (testSchema);

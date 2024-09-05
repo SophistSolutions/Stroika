@@ -38,6 +38,9 @@ namespace {
         {
             using MultiSetOfElementType = typename CONCRETE_CONTAINER::MultiSetOfElementType;
             // verify in sorted order
+
+            //            EXPECT_TRUE (t.IsOrderedBy (m.GetInOrderKeyComparer ())); @todo something more like this... but only compare values..
+
             optional<MultiSetOfElementType> last;
             using COMPARER_TYPE = less<MultiSetOfElementType>;
             for (CountedValue<MultiSetOfElementType> i : t) {

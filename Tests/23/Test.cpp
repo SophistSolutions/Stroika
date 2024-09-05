@@ -40,16 +40,7 @@ namespace {
         auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
         testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
-            using value_type       = typename CONCRETE_CONTAINER::value_type;
-            using key_type         = typename CONCRETE_CONTAINER::key_type;
-            using INORDER_COMPARER = decltype (m.GetInOrderKeyComparer ());
-            optional<value_type> last;
-            for (value_type i : m) {
-                if (last.has_value ()) {
-                    EXPECT_TRUE ((Common::ThreeWayComparerAdapter<key_type, INORDER_COMPARER>{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0));
-                }
-                last = i;
-            }
+            EXPECT_TRUE (m.IsOrderedBy ([comparer = m.GetInOrderKeyComparer ()] (auto l, auto r) { return comparer (l.fKey, r.fKey); }));
         };
         SimpleAssociationTest_All_ (testSchema);
         SimpleAssociationTest_WithDefaultEqCompaerer_ (testSchema);
@@ -82,7 +73,7 @@ namespace {
         {
             Association<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
             SortedAssociation<int, int> ms{m};
-            EXPECT_TRUE (ms.size () == 2);
+            EXPECT_EQ (ms.size (), 2u);
             EXPECT_TRUE ((*ms.begin () == pair<int, int>{1, 2}));
         }
     }
