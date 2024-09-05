@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Traversal {
         Require (not Done ());
         RequireNotNull (fRep_);
         fRep_->More (&fCurrentValue_, true);
-        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+        this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
         return *this;
     }
     template <typename T, typename ITERATOR_TRAITS>

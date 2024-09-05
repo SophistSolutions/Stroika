@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Traversal {
      *  \note   Design Note
      *          Until Stroika 2.1d6, Iterator<> used CopyOnWrite (COW) - SharedByValue, instead of unique_ptr.
      *
-     *          SharedByValue costs a bit more when the iterators are never copied. But saves alot of cost when iterators
+     *          SharedByValue costs a bit more when the iterators are never copied. But saves a lot of cost when iterators
      *          are copied (cuz with unique_ptr they need to actually be cloned).
      *
      *          I DID run some simple tests to see how often we even use the Clone method. It turns out - quite rarely.
@@ -376,14 +376,14 @@ namespace Stroika::Foundation::Traversal {
          *  \em Design Note:
          *      I HATE type punning - which this is. And I may want to lose this.
          *
-         *      However, this API works beatifully with Iterable<>::Find - and perhaps other things that
+         *      However, this API works beautifully with Iterable<>::Find - and perhaps other things that
          *      return iterators.
          *
          *      also, it allows
          *          Iterator<T> n = ...;
          *          while (n) {
          *          }
-         *          not sure thats better than while (not n.Done ())???
+         *          not sure that's better than while (not n.Done ())???
          */
         nonvirtual explicit operator bool () const;
 
@@ -503,6 +503,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
          *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
+         * 
+         *  \note this is something like the c++20 ranges sentinel idea, except that we don't use a separate type (perhaps a mistake on my part).
          */
         static constexpr Iterator GetEmptyIterator () noexcept;
 
@@ -514,9 +516,6 @@ namespace Stroika::Foundation::Traversal {
          *
          *  Get a reference to the IRep owned by the iterator.
          *  This is an implementation detail, mainly intended for implementors.
-         *
-         *  \note BACKWARDS COMPATABILITY: the const method ConstGetRep () used to be overloaded with GetRep() (same name), but was
-         *        broken out as a separate name in Stroika v2.1d6
          */
         nonvirtual IRep& GetRep ();
 
