@@ -10,14 +10,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ****************** SortedCollection_LinkedList<T>::IImplRepBase_ ***************
-     ********************************************************************************
-     */
-    template <typename T>
-    class SortedCollection_LinkedList<T>::IImplRepBase_ : public SortedCollection<T>::_IRep {};
-
-    /*
-     ********************************************************************************
      *********************** SortedCollection_LinkedList<T>::Rep_ *******************
      ********************************************************************************
      */

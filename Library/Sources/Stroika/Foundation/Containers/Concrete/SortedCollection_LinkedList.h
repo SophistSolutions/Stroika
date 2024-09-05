@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename SortedCollection<T>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (Common::IInOrderComparer<T>) INORDER_COMPARER>
         class Rep_;
 
