@@ -815,7 +815,8 @@ namespace Stroika::Foundation::Traversal {
         optional<T> last;
         for (const T& i : *this) {
             if (last.has_value ()) {
-                if (not inorderComparer (*last, i)) {
+                // inorderComparer is 'strict inorder' - so case of equals we keep going...
+                if (inorderComparer (i, *last)) {
                     return false;
                 }
             }
