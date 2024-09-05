@@ -190,11 +190,6 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     }
 };
 
-Logger::Logger ()
-    : fRep_{nullptr}
-{
-}
-
 #if qDebug
 Logger::~Logger ()
 {

@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #if 1
                     // do better, but for now at least do something SAFE
                     // USE SFINAE IsTriviallyCopyable to see which way to do it (if can use realloc).
-                    // ALSO - on windoze - use _expand() if avaialble...
+                    // ALSO - on windoze - use _expand() if available...
                     T* newV = (T*)new char[sizeof (T) * slotsAlloced];
                     try {
                         size_t n2Copy = fLength_;

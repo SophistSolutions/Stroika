@@ -154,17 +154,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not i.Done ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            if (nextI != nullptr) {
-                *nextI = i;
-                ++(*nextI); // advance to next item if deleting current one
-            }
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             mir.fIterator.AssertDataMatches (&fData_);
-            fData_.Remove (mir.fIterator);
-            fChangeCounts_.PerformedChange ();
-            if (nextI != nullptr) {
-                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
-                nextI->Refresh (); // update to reflect changes made to rep
+            if (nextI == nullptr) {
+                fData_.Remove (mir.fIterator);
+                fChangeCounts_.PerformedChange ();
+            }
+            else {
+                auto ret = fData_.erase (mir.fIterator);
+                fChangeCounts_.PerformedChange ();
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, ret)};
             }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override

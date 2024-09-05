@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Execution {
         Logger (Logger&&)      = delete;
 
     private:
-        Logger ();
+        Logger () = default;
 
     public:
         Logger& operator= (const Logger&) = delete;
@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Execution {
         struct Rep_;
 
     private:
-        shared_ptr<Rep_> fRep_; // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
+        shared_ptr<Rep_> fRep_{nullptr}; // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
         Priority fMinLogLevel_{Priority::eInfo}; // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
     };
 

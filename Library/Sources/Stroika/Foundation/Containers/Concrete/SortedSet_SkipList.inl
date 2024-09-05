@@ -157,20 +157,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Require (not i.Done ());
-#if 1
-            AssertNotImplemented ();
-            &i;
-            &nextI;
-#else
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             mir.fIterator.AssertDataMatches (&fData_);
-            auto nextIResult = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
-            fChangeCounts_.PerformedChange ();
-            if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, nextIResult)};
+            if (nextI == nullptr) {
+                fData_.Remove (mir.fIterator);
+                fChangeCounts_.PerformedChange ();
             }
-#endif
+            else {
+                auto ret = fData_.erase (mir.fIterator);
+                fChangeCounts_.PerformedChange ();
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, ret)};
+            }
         }
 
         // SortedSet<T>::_IRep overrides
