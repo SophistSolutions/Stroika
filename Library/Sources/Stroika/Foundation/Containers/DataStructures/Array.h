@@ -281,6 +281,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void MoveIteratorHereAfterClone (IteratorBase* pi, const Array* movedFrom) const;
 
     public:
+        /**
+         *  \see erase () - same as Remove(it) but returns iterator of 'next'
+         */
         nonvirtual void Remove (const ForwardIterator& i);
         nonvirtual void Remove (const BackwardIterator& i);
 

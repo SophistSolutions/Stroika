@@ -366,7 +366,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return ForwardIterator{};
     }
     template <typename T>
-    auto DoublyLinkedList<T>::Remove (const ForwardIterator& i) -> ForwardIterator
+    auto DoublyLinkedList<T>::erase (const ForwardIterator& i) -> ForwardIterator
+    {
+        ForwardIterator next = i;
+        ++next;
+        Remove (i);
+        next.Invariant ();
+        return next;
+    }
+    template <typename T>
+    void DoublyLinkedList<T>::Remove (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
@@ -374,8 +383,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         this->Invariant ();
-        ForwardIterator next = i;
-        ++next;
 
         const Link_* victim = i.fCurrent_;
         AssertNotNull (victim); // cuz not done
@@ -422,7 +429,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         delete victim;
         this->Invariant ();
-        return next;
     }
     template <typename T>
     inline void DoublyLinkedList<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)

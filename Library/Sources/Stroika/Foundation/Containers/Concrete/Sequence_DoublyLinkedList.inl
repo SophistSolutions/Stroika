@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (index-- == 0) {
                     while (amountToRemove-- != 0) {
-                        it = fData_.Remove (it);
+                        it = fData_.erase (it);
                     }
                     break;
                 }

@@ -191,14 +191,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  Complexity (ForwardIterator overload):
          *      Always: constant
+         */
+        template <typename EQUALS_COMPARER>
+        nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer);
+        nonvirtual void Remove (const ForwardIterator& i);
+
+    public:
+        /**
+         *  Complexity:
+         *      Always: constant
          * 
          *  Returns iterator pointing at next item.
          */
-        template <typename EQUALS_COMPARER>
-        nonvirtual void            Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer);
-        nonvirtual ForwardIterator Remove (const ForwardIterator& i);
+        nonvirtual ForwardIterator erase (const ForwardIterator& i);
 
     public:
+        /**
+         *  Complexity:
+         *      Always: O(N) - but generally quite quick cuz uses block (de-)allocation
+         * 
+         */
         nonvirtual void RemoveAll ();
 
     public:
@@ -226,7 +238,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /*
          *  Complexity:
-         *      Always: O(N)
+         *      Always: O(i)
          *
          *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
          */
@@ -251,7 +263,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  dont use block allocation for link sizes too large
      */
     template <typename T>
-    class LinkedList<T>::Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (T) <= 1024> {
+    class LinkedList<T>::Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (T) <= 256> {
     public:
         Link_ () = delete;
         constexpr Link_ (ArgByValueType<T> item, Link_* next);

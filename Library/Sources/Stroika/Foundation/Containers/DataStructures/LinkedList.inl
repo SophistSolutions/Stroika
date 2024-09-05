@@ -281,7 +281,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const_cast<Link_*> (i.fCurrent_)->fNext = new Link_{newValue, i.fCurrent_->fNext};
     }
     template <typename T>
-    auto LinkedList<T>::Remove (const ForwardIterator& i) -> ForwardIterator
+    inline auto LinkedList<T>::erase (const ForwardIterator& i) -> ForwardIterator
+    {
+        ForwardIterator next = i;
+        ++next;
+        Remove (i);
+        next.Invariant ();
+        return next;
+    }
+    template <typename T>
+    void LinkedList<T>::Remove (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if qDebug
@@ -290,9 +299,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
-
-        ForwardIterator next = i;
-        ++next;
 
         const Link_* victim = i.fCurrent_;
 
@@ -322,10 +328,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
 
         delete victim;
-
-        i.Invariant ();
         Invariant ();
-        return next;
     }
     template <typename T>
     template <typename EQUALS_COMPARER>

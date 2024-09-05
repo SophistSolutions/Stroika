@@ -175,8 +175,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  returns the next link
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void            Remove (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {});
-        nonvirtual ForwardIterator Remove (const ForwardIterator& i);
+        nonvirtual void Remove (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {});
+        nonvirtual void Remove (const ForwardIterator& i);
+
+    public:
+        /**
+         *  Complexity:
+         *      Always: constant
+         * 
+         *  Returns iterator pointing at next item.
+         */
+        nonvirtual ForwardIterator erase (const ForwardIterator& i);
 
     public:
         /**
