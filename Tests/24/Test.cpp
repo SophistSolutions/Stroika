@@ -27,8 +27,12 @@ using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
+
+using MyOnlyCopyableMoveable_LESS_     = AsIntsLessComparer<OnlyCopyableMoveable>;
+using MyOnlyCopyableMoveable_THREEWAY_ = AsIntsThreeWayComparer<OnlyCopyableMoveable>;
 
 using Concrete::SortedCollection_LinkedList;
 using Concrete::SortedCollection_stdmultiset;
@@ -55,20 +59,6 @@ namespace {
     void RunTests_ ()
     {
         RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, [] () { return CONCRETE_CONTAINER{}; });
-    }
-}
-
-namespace {
-    void TestOverwriteContainerWhileIteratorRunning_ ()
-    {
-        SortedCollection<int>    a = {1, 2, 3};
-        Traversal::Iterator<int> i = a.begin ();
-        // overwrite OK, but
-        a = SortedCollection<int>{3, 4, 5};
-// cannot access i any longer
-#if qDebug && 0
-        i++; // assert failure
-#endif
     }
 }
 
@@ -108,10 +98,10 @@ namespace {
                 : SortedCollection<PrioritizedName>{kDefaultPrioritizedName_OrderByDefault_Less}
             {
             }
-            PrioritizedNames (const PrioritizedNames& src) = default;
+            PrioritizedNames (const PrioritizedNames&) = default;
 
-            PrioritizedNames& operator= (PrioritizedNames&& rhs) noexcept = default;
-            PrioritizedNames& operator= (const PrioritizedNames& rhs)     = default;
+            PrioritizedNames& operator= (PrioritizedNames&&) noexcept = default;
+            PrioritizedNames& operator= (const PrioritizedNames&)     = default;
 
             String GetName () const
             {
@@ -144,30 +134,66 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedCollection, all)
+    GTEST_TEST (Foundation_Containers_SortedCollection, DEFAULT_FACTORY)
     {
-        using MyOnlyCopyableMoveable_LESS_ = AsIntsLessComparer<OnlyCopyableMoveable>;
-
+        Debug::TraceContextBumper ctx{"{}::DEFAULT_FACTORY"};
         RunTests_<SortedCollection<size_t>> ();
         RunTests_<SortedCollection<OnlyCopyableMoveableAndTotallyOrdered>> ();
         RunTests_<SortedCollection<OnlyCopyableMoveable>> (
             MyOnlyCopyableMoveable_LESS_{}, [] () { return SortedCollection<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedCollection, SortedCollection_LinkedList)
+    {
+        Debug::TraceContextBumper ctx{"{}::SortedCollection_LinkedList"};
         RunTests_<SortedCollection_LinkedList<size_t>> ();
         RunTests_<SortedCollection_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>> ();
         RunTests_<SortedCollection_LinkedList<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{}, [] () {
             return SortedCollection_LinkedList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{});
         });
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedCollection, SortedCollection_stdmultiset)
+    {
+        Debug::TraceContextBumper ctx{"{}::SortedCollection_stdmultiset"};
         RunTests_<SortedCollection_stdmultiset<size_t>> ();
         RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveableAndTotallyOrdered>> ();
         RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{}, [] () {
             return SortedCollection_stdmultiset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{});
         });
+    }
+}
 
-        TestOverwriteContainerWhileIteratorRunning_ ();
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedCollection, TestOverwriteContainerWhileIteratorRunning_)
+    {
+        Debug::TraceContextBumper ctx{"{}::TestOverwriteContainerWhileIteratorRunning_"};
+        SortedCollection<int>     a = {1, 2, 3};
+        Traversal::Iterator<int>  i = a.begin ();
+        // overwrite OK, but
+        a = SortedCollection<int>{3, 4, 5};
+// cannot access i any longer
+#if qDebug && 0
+        i++; // assert failure
+#endif
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedCollection, Test6_SortedCollection_NoDefaultSortFunctionExplicitOne_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test6_SortedCollection_NoDefaultSortFunctionExplicitOne_"};
         Test6_SortedCollection_NoDefaultSortFunctionExplicitOne_::DoIt ();
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedCollection, CLEANUPS)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
