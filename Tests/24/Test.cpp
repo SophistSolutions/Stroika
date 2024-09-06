@@ -156,11 +156,11 @@ namespace {
     GTEST_TEST (Foundation_Containers_SortedCollection, SortedCollection_SkipList)
     {
         Debug::TraceContextBumper ctx{"{}::SortedCollection_SkipList"};
-        /*RunTests_<SortedCollection_stdmultiset<size_t>> ();
-        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{}, [] () {
-            return SortedCollection_stdmultiset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{});
-        });*/
+        RunTests_<SortedCollection_SkipList<size_t>> ();
+        RunTests_<SortedCollection_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<SortedCollection_SkipList<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{}, [] () {
+            return SortedCollection_SkipList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_THREEWAY_{});
+        });
     }
 }
 
