@@ -65,6 +65,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Collection_Array& operator= (const Collection_Array&)     = default;
 
     private:
+        using IImplRep_ = typename Collection<T>::_IRep;
         class Rep_;
 
     private:

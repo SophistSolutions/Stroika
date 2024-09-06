@@ -38,6 +38,7 @@ using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 using Concrete::Collection_Array;
 using Concrete::Collection_LinkedList;
 using Concrete::Collection_stdforward_list;
+using Concrete::SortedCollection_SkipList;
 using Concrete::SortedCollection_stdmultiset;
 
 using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
@@ -119,6 +120,19 @@ namespace {
         RunTestsWithEquals_<Collection_stdforward_list<size_t>, equal_to<size_t>> ();
         RunTests_<Collection_stdforward_list<OnlyCopyableMoveableAndTotallyOrdered>> ();
         RunTests_<Collection_stdforward_list<OnlyCopyableMoveable>> ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Collection, SortedCollection_SkipList)
+    {
+        Debug::TraceContextBumper         ctx{"{}::SortedCollection_SkipList"};
+        SortedCollection_SkipList<size_t> a;
+        /*RunTests_<SortedCollection_stdmultiset<size_t>> ();
+        RunTestsWithEquals_<SortedCollection_stdmultiset<size_t>, equal_to<size_t>> ();
+        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveable>> (
+            [] () { return SortedCollection_stdmultiset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });*/
     }
 }
 

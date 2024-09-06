@@ -57,14 +57,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            fData_.Apply (doToElement);
+            fData_.Apply ([&] (auto arg) { doToElement (arg.fKey); });
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
                                            [[maybe_unused]] Execution::SequencePolicy              seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (auto iLink = fData_.Find (that)) {
-                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
+            if (auto iLink = fData_.Find ([&] (auto arg) { return that (arg.fKey); })) {
+                return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, iLink)};
             }
             return nullptr;
         }
@@ -89,34 +89,35 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            Add_ (item);
+            fData_.Add (item);
             fChangeCounts_.PerformedChange ();
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
-#if 1
-            AssertNotImplemented ();
-#else
             Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
             optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
             if (nextI != nullptr) {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
             }
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+#if 1
+            AssertNotImplemented ();
+#else
             // equals might examine a subset of the object and we still want to update the whole object, but
             // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-            if (Common::EqualsComparerAdapter<value_type, COMPARER>{fInorderComparer_}(*mir.fIterator, newValue)) {
+            if (fData_.key_comp () (*mir.fIterator, newValue) == strong_ordering::equal) {
                 fData_.SetAt (mir.fIterator, newValue);
             }
             else {
                 fData_.Remove (mir.fIterator);
-                Add_ (newValue);
-            }
-            fChangeCounts_.PerformedChange ();
-            if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+                fData_.Add (newValue);
             }
 #endif
+            fChangeCounts_.PerformedChange ();
+            if (nextI != nullptr) {
+                AssertNotImplemented (); // wrong - savedUnderlyingIndex wrong if != case above... --LGP 2024-09-05
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+            }
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
@@ -140,43 +141,21 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return InOrderComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
         }
-        virtual bool Equals ([[maybe_unused]] const typename Collection<T>::_IRep& rhs) const override
+        virtual bool Equals ([[maybe_unused]] const typename SortedCollection<T>::_IRep& rhs) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            AssertNotImplemented ();
-            return false;
-            //return this->_Equals_Reference_Implementation (rhs);
+            return this->_Equals_Reference_Implementation (rhs);
         }
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
-#if 1
-            AssertNotImplemented ();
-            return true;
-#else
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.Find (item, Common::EqualsComparerAdapter<value_type, COMPARER>{fInorderComparer_}) != nullptr;
-#endif
+            return not fData_.Find (item).Done ();
         }
         virtual void Remove (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Remove (item);
             fChangeCounts_.PerformedChange ();
-        }
-
-    private:
-        nonvirtual void Add_ (ArgByValueType<value_type> item)
-        {
-#if 1
-            AssertNotImplemented ();
-#else
-            typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
-            // skip the smaller items
-            for (; not it.Done () and fInorderComparer_ (*it, item); ++it)
-                ;
-            // at this point - we are pointing at the first link >= item, so insert before it
-            fData_.AddBefore (it, item);
-#endif
         }
 
     private:
@@ -214,12 +193,12 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ********************* SortedCollection_SkipList<T> ***************************
+     ********************* SortedCollection_SkipList<T> *****************************
      ********************************************************************************
      */
     template <typename T>
     inline SortedCollection_SkipList<T>::SortedCollection_SkipList ()
-        : SortedCollection_SkipList{less<T>{}}
+        : SortedCollection_SkipList{compare_three_way{}}
     {
         AssertRepValidType_ ();
     }

@@ -1531,9 +1531,9 @@ namespace Stroika::Foundation::Traversal {
      *        do/revisit - LGP 2023-07-07).
      * 
      *        Containers internally use fChangeCounts - in DEBUG builds - to try to assure the underlying container is not modified during iteration, and
-     *        and there are serveral modifying APIs that take an Iterator and return an updated Iterator to avoid this issue.
+     *        and there are several modifying APIs that take an Iterator and return an updated Iterator to avoid this issue.
      * 
-     *        But the main takeway, is that Iterator<> objects must be short lived, and not used after any modification to the underlying Iterable being
+     *        But the main takeaway, is that Iterator<> objects must be short lived, and not used after any modification to the underlying Iterable being
      *        iterated over.
      */
     template <typename T>

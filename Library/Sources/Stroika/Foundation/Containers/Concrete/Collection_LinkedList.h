@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList&)     = default;
 
     private:
-        class IImplRep_;
+        using IImplRep_ = typename Collection<T>::_IRep;
         class Rep_;
 
     private:

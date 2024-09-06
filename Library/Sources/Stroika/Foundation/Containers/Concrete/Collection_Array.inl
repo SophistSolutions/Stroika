@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T>
-    class Collection_Array<T>::Rep_ : public Collection<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+    class Collection_Array<T>::Rep_ : public Collection_Array<T>::IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     private:
         using inherited = typename Collection<T>::_IRep;
 

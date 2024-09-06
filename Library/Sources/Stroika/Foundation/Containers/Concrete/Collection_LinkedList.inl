@@ -9,11 +9,6 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /*
-    */
-    template <typename T>
-    class Collection_LinkedList<T>::IImplRep_ : public Collection<T>::_IRep {};
-
-    /*
      */
     template <typename T>
     class Collection_LinkedList<T>::Rep_ : public IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
