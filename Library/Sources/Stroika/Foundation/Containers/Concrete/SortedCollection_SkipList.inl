@@ -94,32 +94,27 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fChangeCounts_.PerformedChange ();
             }
             else {
-#if 1
-                AssertNotImplemented ();
-#else
-                auto newI = fData_.AddI (item);
+                typename DataStructureImplType_::ForwardIterator retIt;
+                fData_.Add (item, &retIt);
                 fChangeCounts_.PerformedChange ();
-                *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, newI)};
-#endif
+                *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, retIt)};
             }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareWriteContext{fData_};
-#if 1
-            &i;
-            &newValue;
-            &nextI;
-            AssertNotImplemented ();
-#else
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             fData_.Remove (mir.fIterator);
-            auto newI = fData_.AddI (newValue);
-            fChangeCounts_.PerformedChange ();
-            if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, newI)};
+            if (nextI == nullptr) {
+                fData_.Add (newValue);
+                fChangeCounts_.PerformedChange ();
             }
-#endif
+            else {
+                typename DataStructureImplType_::ForwardIterator retIt;
+                fData_.Add (newValue, &retIt);
+                fChangeCounts_.PerformedChange ();
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, retIt)};
+            }
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
@@ -190,7 +185,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ********************* SortedCollection_SkipList<T> *****************************
+     *********************** SortedCollection_SkipList<T> ***************************
      ********************************************************************************
      */
     template <typename T>

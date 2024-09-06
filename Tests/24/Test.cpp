@@ -164,7 +164,6 @@ namespace {
     }
 }
 
-
 namespace {
     GTEST_TEST (Foundation_Containers_SortedCollection, SortedCollection_stdmultiset)
     {
