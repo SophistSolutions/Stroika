@@ -143,13 +143,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return InOrderComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
         }
-#if 0
-        virtual bool Equals ([[maybe_unused]] const typename SortedCollection<T>::_IRep& rhs) const override
-        {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Equals_Reference_Implementation (rhs);
-        }
-#endif
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

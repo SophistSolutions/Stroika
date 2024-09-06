@@ -208,24 +208,10 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     class SortedCollection<T>::_IRep : public Collection<T>::_IRep {
     public:
-        virtual InOrderComparerType GetInOrderComparer () const = 0;
-        //  virtual bool                Equals (const typename SortedCollection<T>::_IRep& rhs) const = 0;
-        virtual bool Contains (ArgByValueType<T> item) const = 0;
+        virtual InOrderComparerType GetInOrderComparer () const             = 0;
+        virtual bool                Contains (ArgByValueType<T> item) const = 0;
         using Collection<T>::_IRep::Remove;
         virtual void Remove (ArgByValueType<T> item) = 0;
-
-        /*
-         *  Reference Implementations (often not used except for ensures, but can be used for
-         *  quickie backends).
-         *
-         *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
-         *  the subclass refers to the method in a subclass virtual override.
-         */
-    protected:
-        /**
-         *  \note - this doesn't require a Compare function argument because it indirects to 'Contains'
-         */
-        nonvirtual bool _Equals_Reference_Implementation (const typename SortedCollection<T>::_IRep& rhs) const;
     };
 
 }

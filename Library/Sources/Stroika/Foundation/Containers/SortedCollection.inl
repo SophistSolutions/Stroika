@@ -157,40 +157,4 @@ namespace Stroika::Foundation::Containers {
         return typename Iterable<T>::template SequentialThreeWayComparer<decltype (elementThreeWayComparer)>{elementThreeWayComparer}(*this, rhs);
     }
 
-    /*
-     ********************************************************************************
-     ************************ SortedCollection<T>::_IRep ****************************
-     ********************************************************************************
-     */
-    template <typename T>
-    bool SortedCollection<T>::_IRep::_Equals_Reference_Implementation (const typename SortedCollection<T>::_IRep& rhs) const
-    {
-        auto eqComparer = Common::EqualsComparerAdapter<T, InOrderComparerType>{this->GetInOrderComparer ()};
-#if qDebug
-        auto checkEqComparer = Common::EqualsComparerAdapter<T, InOrderComparerType>{rhs.GetInOrderComparer ()};
-#endif
-        // to be equal, the collections must enumerate out in the same order
-
-        constexpr bool kUseSizeSpeedTweak_ = false; // often slight speed tweak
-        if constexpr (kUseSizeSpeedTweak_) {
-            if (this->size () != rhs->size ()) {
-                return false;
-            }
-        }
-        Iterator<T> lit = this->MakeIterator ();
-        Iterator<T> rit = rhs.MakeIterator ();
-        while (lit and rit) {
-            bool eq = eqComparer (*lit, *rit);
-#if qDebug
-            Assert (checkEqComparer (*lit, *rit) == eq); // comparers must agree for 'eq' comparison to make sense
-#endif
-            if (not eq) {
-                return false;
-            }
-            ++lit;
-            ++rit;
-        }
-        return lit.Done () and rit.Done (); // if both ended at the same time, we compared equal
-    }
-
 }
