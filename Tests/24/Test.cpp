@@ -18,6 +18,7 @@
 #include "../TestCommon/CommonTests_Collection.h"
 
 #include "Stroika/Foundation/Containers/Concrete/SortedCollection_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedCollection_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedCollection_stdmultiset.h"
 
 using namespace Stroika::Foundation;
@@ -35,6 +36,7 @@ using MyOnlyCopyableMoveable_LESS_     = AsIntsLessComparer<OnlyCopyableMoveable
 using MyOnlyCopyableMoveable_THREEWAY_ = AsIntsThreeWayComparer<OnlyCopyableMoveable>;
 
 using Concrete::SortedCollection_LinkedList;
+using Concrete::SortedCollection_SkipList;
 using Concrete::SortedCollection_stdmultiset;
 
 #if qHasFeature_GoogleTest
@@ -149,6 +151,19 @@ namespace {
         });
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedCollection, SortedCollection_SkipList)
+    {
+        Debug::TraceContextBumper ctx{"{}::SortedCollection_SkipList"};
+        /*RunTests_<SortedCollection_stdmultiset<size_t>> ();
+        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{}, [] () {
+            return SortedCollection_stdmultiset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{});
+        });*/
+    }
+}
+
 
 namespace {
     GTEST_TEST (Foundation_Containers_SortedCollection, SortedCollection_stdmultiset)
