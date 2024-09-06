@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedCollection_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedCollection_stdmultiset.h"
 
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"

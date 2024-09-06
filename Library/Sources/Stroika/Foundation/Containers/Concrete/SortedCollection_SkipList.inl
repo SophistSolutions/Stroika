@@ -10,30 +10,27 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     *********************** SortedCollection_SkipList<T>::Rep_ *******************
+     *********************** SortedCollection_SkipList<T>::Rep_ *********************
      ********************************************************************************
      */
     template <typename T>
-    template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (Common::IInOrderComparer<T>) INORDER_COMPARER>
-    class SortedCollection_SkipList<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
+    template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (Common::IThreeWayComparer<T>) COMPARER>
+    class SortedCollection_SkipList<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<COMPARER>> {
     private:
         using inherited = IImplRepBase_;
 
     public:
-        static_assert (not is_reference_v<INORDER_COMPARER>);
+        static_assert (not is_reference_v<COMPARER>);
 
     public:
-        Rep_ (const INORDER_COMPARER& inorderComparer)
-            : fInorderComparer_{inorderComparer}
+        Rep_ (const COMPARER& comparer)
+            : fData_{comparer}
         {
         }
         Rep_ (const Rep_& from) = default;
 
     public:
         nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-    private:
-        [[no_unique_address]] const INORDER_COMPARER fInorderComparer_;
 
         // Iterable<T>::_IRep overrides
     public:
@@ -76,7 +73,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual shared_ptr<typename Collection<T>::_IRep> CloneEmpty () const override
         {
-            return Memory::MakeSharedPtr<Rep_> (fInorderComparer_); // keep comparer, but lose data in clone
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return Memory::MakeSharedPtr<Rep_> (fData_.key_comp ()); // keep comparer, but lose data in clone
         }
         virtual shared_ptr<typename Collection<T>::_IRep> CloneAndPatchIterator (Iterator<T>* i) const override
         {
@@ -96,6 +94,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
+#if 1
+            AssertNotImplemented ();
+#else
             Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
             optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
             if (nextI != nullptr) {
@@ -104,7 +105,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             // equals might examine a subset of the object and we still want to update the whole object, but
             // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-            if (Common::EqualsComparerAdapter<value_type, INORDER_COMPARER>{fInorderComparer_}(*mir.fIterator, newValue)) {
+            if (Common::EqualsComparerAdapter<value_type, COMPARER>{fInorderComparer_}(*mir.fIterator, newValue)) {
                 fData_.SetAt (mir.fIterator, newValue);
             }
             else {
@@ -115,6 +116,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }
+#endif
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
@@ -136,7 +138,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual InOrderComparerType GetInOrderComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return InOrderComparerType{fInorderComparer_};
+            return InOrderComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
         }
         virtual bool Equals ([[maybe_unused]] const typename Collection<T>::_IRep& rhs) const override
         {
@@ -147,30 +149,63 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
+#if 1
+            AssertNotImplemented ();
+            return true;
+#else
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.Find (item, Common::EqualsComparerAdapter<value_type, INORDER_COMPARER>{fInorderComparer_}) != nullptr;
+            return fData_.Find (item, Common::EqualsComparerAdapter<value_type, COMPARER>{fInorderComparer_}) != nullptr;
+#endif
         }
         virtual void Remove (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.Remove (item, Common::EqualsComparerAdapter<value_type, INORDER_COMPARER>{fInorderComparer_});
+            fData_.Remove (item);
             fChangeCounts_.PerformedChange ();
         }
 
     private:
         nonvirtual void Add_ (ArgByValueType<value_type> item)
         {
+#if 1
+            AssertNotImplemented ();
+#else
             typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
             // skip the smaller items
             for (; not it.Done () and fInorderComparer_ (*it, item); ++it)
                 ;
             // at this point - we are pointing at the first link >= item, so insert before it
             fData_.AddBefore (it, item);
+#endif
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::SkipList<value_type>;
-        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        using DataStructureImplType_ = SKIPLIST<COMPARER>;
+        struct IteratorRep_ : Private::IteratorImplHelper_<value_type, DataStructureImplType_> {
+            using inherited = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+            using inherited::inherited; // forward base class constructors
+            // override to map just the key part to 'T'
+            virtual void More (optional<T>* result, bool advance) override
+            {
+                RequireNotNull (result);
+                this->ValidateChangeCount ();
+                if (advance) [[likely]] {
+                    Require (not this->fIterator.Done ());
+                    ++this->fIterator;
+                }
+                if (this->fIterator.Done ()) [[unlikely]] {
+                    *result = nullopt;
+                }
+                else {
+                    *result = this->fIterator->fKey;
+                }
+            }
+            virtual auto Clone () const -> unique_ptr<typename Iterator<T>::IRep> override
+            {
+                this->ValidateChangeCount ();
+                return make_unique<IteratorRep_> (*this);
+            }
+        };
 
     private:
         DataStructureImplType_                                     fData_;
@@ -189,9 +224,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER>
-    inline SortedCollection_SkipList<T>::SortedCollection_SkipList (INORDER_COMPARER&& inorderComparer)
-        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<INORDER_COMPARER>>> (inorderComparer)}
+    template <IThreeWayComparer<T> COMPARER>
+    inline SortedCollection_SkipList<T>::SortedCollection_SkipList (COMPARER&& inorderComparer)
+        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<COMPARER>>> (inorderComparer)}
     {
         AssertRepValidType_ ();
     }
@@ -203,9 +238,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER>
-    inline SortedCollection_SkipList<T>::SortedCollection_SkipList (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
-        : SortedCollection_SkipList{forward<INORDER_COMPARER> (inOrderComparer)}
+    template <IThreeWayComparer<T> COMPARER>
+    inline SortedCollection_SkipList<T>::SortedCollection_SkipList (COMPARER&& inOrderComparer, const initializer_list<T>& src)
+        : SortedCollection_SkipList{forward<COMPARER> (inOrderComparer)}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -222,9 +257,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename T>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
-    inline SortedCollection_SkipList<T>::SortedCollection_SkipList (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
-        : SortedCollection_SkipList{forward<INORDER_COMPARER> (inOrderComparer)}
+    template <IThreeWayComparer<T> COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+    inline SortedCollection_SkipList<T>::SortedCollection_SkipList (COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedCollection_SkipList{forward<COMPARER> (inOrderComparer)}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -238,10 +273,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline SortedCollection_SkipList<T>::SortedCollection_SkipList (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start,
-                                                                    ITERATOR_OF_ADDABLE&& end)
-        : SortedCollection_SkipList{forward<INORDER_COMPARER> (inOrderComparer)}
+    template <IThreeWayComparer<T> COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
+    inline SortedCollection_SkipList<T>::SortedCollection_SkipList (COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        : SortedCollection_SkipList{forward<COMPARER> (inOrderComparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
