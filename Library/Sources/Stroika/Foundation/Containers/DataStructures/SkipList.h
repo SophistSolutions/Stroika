@@ -204,9 +204,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     private:
-        bool Add1_ (ArgByValueType<key_type> key);
+        bool Add1_ (ArgByValueType<key_type> key, ForwardIterator* oAddedI);
         template <typename CHECK_T = MAPPED_TYPE>
-        bool Add2_ (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val);
+        bool Add2_ (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val, ForwardIterator* oAddedI);
 #endif
 
     public:
@@ -219,26 +219,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average:    log(N)
          *      Worst:      N
          */
-        nonvirtual bool Add (ArgByValueType<key_type> key)
+        nonvirtual bool Add (ArgByValueType<key_type> key, ForwardIterator* oAddedI = nullptr)
             requires (same_as<mapped_type, void>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
-            return Add1_ (key);
+            return Add1_ (key, oAddedI);
         }
 #else
         ;
 #endif
         template <typename CHECK_T = MAPPED_TYPE>
-        nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val)
+        nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val, ForwardIterator* oAddedI = nullptr)
             requires (not same_as<mapped_type, void>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
-            return Add2_ (key, val);
+            return Add2_ (key, val, oAddedI);
         }
 #else
         ;
 #endif
-        nonvirtual bool Add (const value_type& v);
+        nonvirtual bool Add (const value_type& v, ForwardIterator* oAddedI = nullptr);
 
     public:
         /**

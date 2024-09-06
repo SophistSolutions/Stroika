@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
-            tmp._GetWriteableRep ().Add (*i);
+            tmp._GetWriteableRep ().Add (*i, nullptr);
         }
     }
     template <typename T>
@@ -95,8 +95,16 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Collection<T>::Add (ArgByValueType<value_type> item)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, nullptr);
         Ensure (not this->empty ());
+    }
+    template <typename T>
+    inline void Collection<T>::Add (ArgByValueType<value_type> item, Iterator<T>* addedAt)
+    {
+        RequireNotNull (addedAt);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, addedAt);
+        Ensure (not this->empty ());
+        Ensure (not addedAt->Done ());
     }
     template <typename T>
     inline void Collection<T>::Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI)

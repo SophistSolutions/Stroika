@@ -177,6 +177,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  NB: Can be called if done
          */
         nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
+        nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item, ForwardIterator* newLinkCreatedAt);
 
     public:
         /**

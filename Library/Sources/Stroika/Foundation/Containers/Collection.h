@@ -180,9 +180,12 @@ namespace Stroika::Foundation::Containers {
          * Add the given item(s) to this Collection<T>. Note - if the given items are already present, another
          * copy will be added. No promises are made about where the added value will appear in iteration.
          *
+         *  \note overload taking Iterator<T>* addedAt returns an iterator pointing at the added item.
+         *
          *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<value_type> item);
+        nonvirtual void Add (ArgByValueType<value_type> item, Iterator<T>* addedAt);
 
     public:
         /**
@@ -378,11 +381,12 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual shared_ptr<_IRep> CloneEmpty () const                                                                             = 0;
-        virtual shared_ptr<_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const                                           = 0;
-        virtual void              Add (ArgByValueType<value_type> item)                                                           = 0;
-        virtual void              Update (const Iterator<value_type>& i, ArgByValueType<T> newValue, Iterator<value_type>* nextI) = 0;
-        virtual void              Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                             = 0;
+        virtual shared_ptr<_IRep> CloneEmpty () const                                   = 0;
+        virtual shared_ptr<_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
+        // if oAddedI != nullptr, on output, its filled in with iterator pointing to added item
+        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI)                            = 0;
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<T> newValue, Iterator<value_type>* nextI) = 0;
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                             = 0;
     };
 
     /**

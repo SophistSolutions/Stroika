@@ -86,44 +86,46 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<value_type> item) override
+        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.Add (item);
-            fChangeCounts_.PerformedChange ();
+            if (oAddedI == nullptr) [[likely]] {
+                fData_.Add (item);
+                fChangeCounts_.PerformedChange ();
+            }
+            else {
+#if 1
+                AssertNotImplemented ();
+#else
+                auto newI = fData_.AddI (item);
+                fChangeCounts_.PerformedChange ();
+                *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, newI)};
+#endif
+            }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
-            optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
-            if (nextI != nullptr) {
-                savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
-            }
-            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareWriteContext{fData_};
 #if 1
+            &i;
+            &newValue;
+            &nextI;
             AssertNotImplemented ();
 #else
-            // equals might examine a subset of the object and we still want to update the whole object, but
-            // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-            if (fData_.key_comp () (*mir.fIterator, newValue) == strong_ordering::equal) {
-                fData_.SetAt (mir.fIterator, newValue);
-            }
-            else {
-                fData_.Remove (mir.fIterator);
-                fData_.Add (newValue);
-            }
-#endif
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            fData_.Remove (mir.fIterator);
+            auto newI = fData_.AddI (newValue);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                AssertNotImplemented (); // wrong - savedUnderlyingIndex wrong if != case above... --LGP 2024-09-05
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, newI)};
             }
+#endif
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            if (nextI == nullptr) {
+            if (nextI == nullptr) [[likely]] {
                 fData_.Remove (mir.fIterator);
                 fChangeCounts_.PerformedChange ();
             }
@@ -141,11 +143,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return InOrderComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
         }
+#if 0
         virtual bool Equals ([[maybe_unused]] const typename SortedCollection<T>::_IRep& rhs) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return this->_Equals_Reference_Implementation (rhs);
         }
+#endif
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

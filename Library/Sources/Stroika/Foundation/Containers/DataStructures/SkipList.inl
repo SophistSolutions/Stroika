@@ -281,9 +281,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add1_ (ArgByValueType<key_type> key)
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add1_ (ArgByValueType<key_type> key, ForwardIterator* oAddedI)
 #else
-    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key)
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key, ForwardIterator* oAddedI)
         requires (same_as<mapped_type, void>)
 #endif
     {
@@ -294,9 +294,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         LinkVector_ links;
         Link_*      n = FindNearest_ (key, links);
         if (n == nullptr) {
-            AddNode_ (new Link_{key}, links);
+            Link_* newLink = new Link_{key};
+            AddNode_ (newLink, links);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
+            }
+            if (oAddedI != nullptr) [[unlikely]] {
+                *oAddedI = ForwardIterator{this, newLink};
             }
             return true;
         }
@@ -309,13 +313,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
+                    if (oAddedI != nullptr) [[unlikely]] {
+                        *oAddedI = ForwardIterator{this, n};
+                    }
                     return true;
-                case AddOrExtendOrReplaceMode::eAddExtras:
-                    AddNode_ (new Link_{key}, links);
+                case AddOrExtendOrReplaceMode::eAddExtras: {
+                    Link_* newLink = new Link_{key};
+                    AddNode_ (newLink, links);
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
+                    if (oAddedI != nullptr) [[unlikely]] {
+                        *oAddedI = ForwardIterator{this, newLink};
+                    }
                     return true;
+                }
                 case AddOrExtendOrReplaceMode::eDuplicatesRejected:
                     static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
                     Execution::Throw (kExcept_);
@@ -327,10 +339,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename CHECK_T>
-    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add2_ (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val)
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add2_ (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val, ForwardIterator* oAddedI)
 #else
     template <typename CHECK_T>
-    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val)
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val, ForwardIterator* oAddedI)
         requires (not same_as<mapped_type, void>)
 #endif
     {
@@ -341,9 +353,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         LinkVector_ links;
         Link_*      n = FindNearest_ (key, links);
         if (n == nullptr) {
-            AddNode_ (new Link_{key, val}, links);
+            Link_* newLink = new Link_{key, val};
+            AddNode_ (newLink, links);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
+            }
+            if (oAddedI != nullptr) [[unlikely]] {
+                *oAddedI = ForwardIterator{this, newLink};
             }
             return true;
         }
@@ -357,13 +373,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
+                    if (oAddedI != nullptr) [[unlikely]] {
+                        *oAddedI = ForwardIterator{this, n};
+                    }
                     return true;
-                case AddOrExtendOrReplaceMode::eAddExtras:
-                    AddNode_ (new Link_{key, val}, links);
+                case AddOrExtendOrReplaceMode::eAddExtras: {
+
+                    Link_* newLink = new Link_{key, val};
+                    AddNode_ (newLink, links);
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
+                    if (oAddedI != nullptr) [[unlikely]] {
+                        *oAddedI = ForwardIterator{this, newLink};
+                    }
                     return true;
+                }
                 case AddOrExtendOrReplaceMode::eDuplicatesRejected:
                     static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
                     Execution::Throw (kExcept_);
@@ -373,9 +398,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v)
+    inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v, ForwardIterator* oAddedI)
     {
-        return Add (v.fKey, v.fValue);
+        return Add (v.fKey, v.fValue, oAddedI);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddNode_ (Link_* node, const LinkVector_& links)

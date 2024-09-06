@@ -18,11 +18,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Add Equals(), Contains, Remove(T) methods (we have the virtuals in rep already)
- *
- *      @todo   Improve test cases, and notice that sorting doesn't actually work for sorted-linked-list.
- *
- *      @todo   Implement using redblback trees.
+ *      @todo   Implement using redblback trees (kind of done via STL, but do with explicit RedBlackTree class)
  *
  */
 
@@ -67,7 +63,6 @@ namespace Stroika::Foundation::Containers {
      *          does imply a comparison operator, so a SortedCollection<T> fully supports the c++ standard operator<=> strong comparison
      *          feature.
      *      o   Compare sequentially using the associated GetInOrderComparer ()
-     *      o   Only supported if C++20 comparison supported (easy for C++17, but no need since close to abandoing C++17 support and not regression)
      */
     template <typename T>
     class [[nodiscard]] SortedCollection : public Collection<T> {
@@ -213,18 +208,18 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     class SortedCollection<T>::_IRep : public Collection<T>::_IRep {
     public:
-        virtual InOrderComparerType GetInOrderComparer () const                                   = 0;
-        virtual bool                Equals (const typename SortedCollection<T>::_IRep& rhs) const = 0;
-        virtual bool                Contains (ArgByValueType<T> item) const                       = 0;
+        virtual InOrderComparerType GetInOrderComparer () const = 0;
+        //  virtual bool                Equals (const typename SortedCollection<T>::_IRep& rhs) const = 0;
+        virtual bool Contains (ArgByValueType<T> item) const = 0;
         using Collection<T>::_IRep::Remove;
         virtual void Remove (ArgByValueType<T> item) = 0;
 
         /*
-         *  Reference Implementations (often not used except for ensure's, but can be used for
+         *  Reference Implementations (often not used except for ensures, but can be used for
          *  quickie backends).
          *
          *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
-         *  the sucblass refers to the method in a subclass virtual override.
+         *  the subclass refers to the method in a subclass virtual override.
          */
     protected:
         /**

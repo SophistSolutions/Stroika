@@ -88,11 +88,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<value_type> item) override
+        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            Add_ (item);
+            auto                                                   addedI = Add_ (item);
             fChangeCounts_.PerformedChange ();
+            if (oAddedI != nullptr) [[unlikely]] {
+                *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, addedI)};
+            }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
@@ -138,11 +141,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return InOrderComparerType{fInorderComparer_};
         }
+#if 0
         virtual bool Equals ([[maybe_unused]] const typename SortedCollection<T>::_IRep& rhs) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return this->_Equals_Reference_Implementation (rhs);
         }
+#endif
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
@@ -156,19 +161,22 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        nonvirtual void Add_ (ArgByValueType<value_type> item)
+        using DataStructureImplType_ = DataStructures::LinkedList<value_type>;
+        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+
+    private:
+        nonvirtual auto Add_ (ArgByValueType<value_type> item) -> DataStructureImplType_::ForwardIterator
         {
-            typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
+            using ForwardIterator = DataStructureImplType_::ForwardIterator;
+            ForwardIterator it{&fData_};
             // skip the smaller items
             for (; not it.Done () and fInorderComparer_ (*it, item); ++it)
                 ;
             // at this point - we are pointing at the first link >= item, so insert before it
-            fData_.AddBefore (it, item);
+            ForwardIterator addedAt;
+            fData_.AddBefore (it, item, &addedAt);
+            return addedAt;
         }
-
-    private:
-        using DataStructureImplType_ = DataStructures::LinkedList<value_type>;
-        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_                                     fData_;

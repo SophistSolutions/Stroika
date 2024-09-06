@@ -80,12 +80,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<value_type> item) override
+        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             // Appending is fastest
             fData_.push_back (item);
             fChangeCounts_.PerformedChange ();
+            if (oAddedI != nullptr) [[unlikely]] {
+                *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, fData_.size () - 1)};
+            }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {

@@ -98,11 +98,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<value_type> item) override
+        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.insert (item);
+            auto                                                   addedAtI = fData_.insert (item);
             fChangeCounts_.PerformedChange ();
+            if (oAddedI != nullptr) [[unlikely]] {
+                *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, addedAtI)};
+            }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
@@ -133,11 +136,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return InOrderComparerType{fData_.key_comp ()};
         }
+#if 0
         virtual bool Equals ([[maybe_unused]] const typename SortedCollection<T>::_IRep& rhs) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return this->_Equals_Reference_Implementation (rhs);
         }
+#endif
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

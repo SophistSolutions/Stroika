@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
+    void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if qDebug
@@ -259,11 +259,45 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         if (prev == nullptr) {
             Assert (this->fHead_ == i.fCurrent_); // could be nullptr, or not...
-            this->fHead_ = new Link_{newValue, this->fHead_};
+            this->fHead_ = new Link_{item, this->fHead_};
         }
         else {
             Assert (prev->fNext == i.fCurrent_);
-            prev->fNext = new Link_ (newValue, prev->fNext);
+            prev->fNext = new Link_{item, prev->fNext};
+        }
+
+        Invariant ();
+    }
+    template <typename T>
+    void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> item, ForwardIterator* newLinkCreatedAt)
+    {
+        RequireNotNull (newLinkCreatedAt);
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+#if qDebug
+        Require (i.fData_ == this); // assure iterator not stale
+#endif
+        /*
+         * NB: This code works fine, even if 'i' is Done ()
+         */
+        Invariant ();
+        i.Invariant ();
+
+        Link_* prev = nullptr;
+        if ((this->fHead_ != nullptr) and (this->fHead_ != i.fCurrent_)) {
+            for (prev = this->fHead_; prev->fNext != i.fCurrent_; prev = prev->fNext) {
+                AssertNotNull (prev); // cuz that would mean fCurrent_ not in LinkedList!!!
+            }
+        }
+
+        if (prev == nullptr) {
+            Assert (this->fHead_ == i.fCurrent_); // could be nullptr, or not...
+            this->fHead_      = new Link_{item, this->fHead_};
+            *newLinkCreatedAt = ForwardIterator{this, this->fHead_};
+        }
+        else {
+            Assert (prev->fNext == i.fCurrent_);
+            prev->fNext       = new Link_{item, prev->fNext};
+            *newLinkCreatedAt = ForwardIterator{this, prev->fNext};
         }
 
         Invariant ();
