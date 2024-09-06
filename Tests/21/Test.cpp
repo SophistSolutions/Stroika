@@ -39,6 +39,9 @@ using Concrete::Sequence_DoublyLinkedList;
 using Concrete::Sequence_LinkedList;
 using Concrete::Sequence_stdvector;
 
+using COMPARE_OnlyCopyableMoveableAndTotallyOrdered = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
+using COMPARE_OnlyCopyableMoveable                  = AsIntsEqualsComparer<OnlyCopyableMoveable>;
+
 /**
  *
  *  @todo   Move more tests into SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ... so
@@ -63,7 +66,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_1_ ()
     {
-        Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_1_ ()"};
+        Debug::TraceContextBumper ctx{"{}::SimpleSequenceTest_1_ ()"};
         static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
         {
             CONCRETE_SEQUENCE_T s;
@@ -105,7 +108,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_2_Contains_ ()"};
         {
             CONCRETE_SEQUENCE_T s;
-            EXPECT_TRUE (s.size () == 0);
+            EXPECT_EQ (s.size (), 0u);
             EXPECT_TRUE (not s.template Contains<EQUALS_COMPARER> (1));
             s.Append (1);
             EXPECT_TRUE (s.template Contains<EQUALS_COMPARER> (1));
@@ -553,28 +556,6 @@ namespace {
 }
 
 namespace {
-    void SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()
-    {
-        Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()"};
-        using Characters::String;
-        struct StructureFieldInfo_ {
-            size_t     fOffset;
-            type_index fTypeInfo;
-            String     fSerializedFieldName;
-
-            StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid (void), const String& serializedFieldName = {})
-                : fOffset{fieldOffset}
-                , fTypeInfo{typeInfo}
-                , fSerializedFieldName{serializedFieldName}
-            {
-            }
-        };
-        Sequence<StructureFieldInfo_> t  = {StructureFieldInfo_{0, typeid (int), "fred"}};
-        Sequence<StructureFieldInfo_> tt = t;
-    }
-}
-
-namespace {
     template <typename CONCRETE_SEQUENCE_T>
     void SimpleSequenceTest_15_CompareForTypesWithCompare_ ()
     {
@@ -588,7 +569,7 @@ namespace {
         EXPECT_TRUE (not(tmp > tmp2));
         EXPECT_TRUE (tmp <= tmp2);
         EXPECT_TRUE (tmp >= tmp2);
-        EXPECT_TRUE (tmp == tmp2);
+        EXPECT_EQ (tmp, tmp2);
         tmp.Append (3);
         EXPECT_TRUE (tmp > tmp2);
         tmp2.Append (4);
@@ -655,7 +636,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
     void SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
@@ -684,9 +664,91 @@ namespace {
     }
 }
 
-namespace SequenceIndexing_Test_16_ {
-    void DoTest ()
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, DEFAULT_FACTORY)
     {
+        Debug::TraceContextBumper ctx{"{}::DEFAULT_FACTORY"};
+        SimpleSequenceTest_All_For_Type_<Sequence<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence<size_t>> ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, Sequence_Array)
+    {
+        Debug::TraceContextBumper ctx{"{}::Sequence_Array"};
+        SimpleSequenceTest_All_For_Type_<Sequence_Array<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_Array<size_t>> ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, Sequence_DoublyLinkedList)
+    {
+        Debug::TraceContextBumper ctx{"{}::Sequence_DoublyLinkedList"};
+        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_DoublyLinkedList<size_t>> ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, Sequence_LinkedList)
+    {
+        Debug::TraceContextBumper ctx{"{}::Sequence_LinkedList"};
+        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_LinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_LinkedList<size_t>> ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, Sequence_stdvector)
+    {
+        Debug::TraceContextBumper ctx{"{}::Sequence_stdvector"};
+        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<size_t>, equal_to<size_t>> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
+        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_stdvector<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_stdvector<size_t>> ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, SimpleSequenceTest_stdinitializer_complexType_)
+    {
+        Debug::TraceContextBumper ctx{"{}::SimpleSequenceTest_stdinitializer_complexType_"};
+        using Characters::String;
+        struct StructureFieldInfo_ {
+            size_t     fOffset;
+            type_index fTypeInfo;
+            String     fSerializedFieldName;
+            StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid (void), const String& serializedFieldName = {})
+                : fOffset{fieldOffset}
+                , fTypeInfo{typeInfo}
+                , fSerializedFieldName{serializedFieldName}
+            {
+            }
+        };
+        Sequence<StructureFieldInfo_> t  = {StructureFieldInfo_{0, typeid (int), "fred"}};
+        Sequence<StructureFieldInfo_> tt = t;
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, SequenceIndexing_)
+    {
+        Debug::TraceContextBumper ctx{"{}::SequenceIndexing_"};
         {
             Sequence<int> a;
             a += 1;
@@ -759,157 +821,113 @@ namespace SequenceIndexing_Test_16_ {
             a[0]      = L"3";
             EXPECT_TRUE (a[0].Contains (L"3")); // can call '.' methods on result of a(n)
         }
-#endif
+#endif }
     }
 }
 
 namespace {
-    namespace ExampleCTORS_Test_17_ {
-        void DoTest ()
-        {
-            // From Sequence<> CTOR docs
-            Collection<int> c;
-            vector<int>     v;
+    GTEST_TEST (Foundation_Containers_Sequence, ExampleCTORS_Tests_)
+    {
+        Debug::TraceContextBumper ctx{"{}::ExampleCompare_Tests_"};
+        // From Sequence<> CTOR docs
+        Collection<int> c;
+        vector<int>     v;
 
+        Sequence<int> s1 = {1, 2, 3};
+        Sequence<int> s2 = s1;
+        Sequence<int> s3{s1};
+        Sequence<int> s4{s1.begin (), s1.end ()};
+        Sequence<int> s5{c};
+        Sequence<int> s6{v};
+        Sequence<int> s7{v.begin (), v.end ()};
+        Sequence<int> s8{move (s1)};
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, ExampleCompare_Tests_)
+    {
+        Debug::TraceContextBumper ctx{"{}::ExampleCompare_Tests_"};
+        // From Sequence<> CTOR docs
+        {
             Sequence<int> s1 = {1, 2, 3};
             Sequence<int> s2 = s1;
-            Sequence<int> s3{s1};
-            Sequence<int> s4{s1.begin (), s1.end ()};
-            Sequence<int> s5{c};
-            Sequence<int> s6{v};
-            Sequence<int> s7{v.begin (), v.end ()};
-            Sequence<int> s8{move (s1)};
-        }
-    }
-}
-
-namespace {
-    namespace ExampleCompare_Test_18_ {
-        void DoTest ()
-        {
-            // From Sequence<> CTOR docs
-            {
-                Sequence<int> s1 = {1, 2, 3};
-                Sequence<int> s2 = s1;
-                if (s1 == s2) {
-                }
-                if (s1 != s2) {
-                }
-                if (s1 < s2) {
-                }
-                if (s1 <= s2) {
-                }
+            if (s1 == s2) {
             }
-            {
-                Sequence<int> s1 = {1, 2, 3};
-                Sequence<int> s2 = {4, 5, 6};
-                if (s1 == s2) {
-                    EXPECT_TRUE (false);
-                }
+            if (s1 != s2) {
+            }
+            if (s1 < s2) {
+            }
+            if (s1 <= s2) {
+            }
+        }
+        {
+            Sequence<int> s1 = {1, 2, 3};
+            Sequence<int> s2 = {4, 5, 6};
+            if (s1 == s2) {
+                EXPECT_TRUE (false);
+            }
 // todo get this type deduction working
 #if 0
                 if (not Sequence<int>::EqualsComparer{[](int l, int r) { return l % 3 == r % 3; }}(s1, s2)) {
                     EXPECT_TRUE (false);
                 }
 #endif
-                auto cmp = Common::DeclareEqualsComparer ([] (int l, int r) { return l % 3 == r % 3; });
-                if (not Sequence<int>::EqualsComparer<decltype (cmp)>{cmp}(s1, s2)) {
-                    EXPECT_TRUE (false);
-                }
+            auto cmp = Common::DeclareEqualsComparer ([] (int l, int r) { return l % 3 == r % 3; });
+            if (not Sequence<int>::EqualsComparer<decltype (cmp)>{cmp}(s1, s2)) {
+                EXPECT_TRUE (false);
             }
         }
     }
 }
 
 namespace {
-    namespace ExampleOrderBy_Test19_ {
-        void DoTest ()
-        {
-            // From Sequence<> CTOR docs
-            {
-                Sequence<int> c{3, 5, 9, 38, 3, 5};
-                EXPECT_EQ (c.OrderBy (), (Sequence<int>{3, 3, 5, 5, 9, 38}));
-                EXPECT_TRUE (c.OrderBy ().IsOrderedBy ());
-            }
-            {
-                Sequence<int> c{3, 5, 9, 38, 3, 5};
-                auto          cmp = [] (int lhs, int rhs) -> bool { return lhs < rhs; };
-                EXPECT_EQ (c.OrderBy (cmp), (Sequence<int>{3, 3, 5, 5, 9, 38}));
-                EXPECT_TRUE (c.OrderBy (cmp).IsOrderedBy (cmp));
-            }
-        }
-    }
-}
-
-namespace {
-    namespace BugWithWhereCallingAdd_Test20_ {
-        void DoTest ()
-        {
-            using IO::Network::InternetAddress;
-            Sequence<InternetAddress> s1;
-            auto s2 = s1.Where ([] (InternetAddress i) { return i.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
-            EXPECT_EQ (s2.size (), 0u);
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_Sequence, all)
+    GTEST_TEST (Foundation_Containers_Sequence, ExampleOrderBy_)
     {
-        using COMPARE_OnlyCopyableMoveableAndTotallyOrdered = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
-        using COMPARE_OnlyCopyableMoveable                  = AsIntsEqualsComparer<OnlyCopyableMoveable>;
+        Debug::TraceContextBumper ctx{"{}::ExampleOrderBy_"};
+        // From Sequence<> CTOR docs
+        {
+            Sequence<int> c{3, 5, 9, 38, 3, 5};
+            EXPECT_EQ (c.OrderBy (), (Sequence<int>{3, 3, 5, 5, 9, 38}));
+            EXPECT_TRUE (c.OrderBy ().IsOrderedBy ());
+        }
+        {
+            Sequence<int> c{3, 5, 9, 38, 3, 5};
+            auto          cmp = [] (int lhs, int rhs) -> bool { return lhs < rhs; };
+            EXPECT_EQ (c.OrderBy (cmp), (Sequence<int>{3, 3, 5, 5, 9, 38}));
+            EXPECT_TRUE (c.OrderBy (cmp).IsOrderedBy (cmp));
+        }
+    }
+}
 
-        SimpleSequenceTest_All_For_Type_<Sequence<size_t>, equal_to<size_t>> ();
-        SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-        SimpleSequenceTest_All_For_Type_<Sequence<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, BugWithWhereCallingAdd_)
+    {
+        Debug::TraceContextBumper ctx{"{}::BugWithWhereCallingAdd_"};
+        using IO::Network::InternetAddress;
+        Sequence<InternetAddress> s1;
+        auto s2 = s1.Where ([] (InternetAddress i) { return i.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
+        EXPECT_EQ (s2.size (), 0u);
+    }
+}
 
-        SimpleSequenceTest_All_For_Type_<Sequence_Array<size_t>, equal_to<size_t>> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_Array<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, Sequence_Array_ArrayAPITests_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Sequence_Array_ArrayAPITests_"};
+        Sequence_Array<int>       a;
+        a.reserve (3);
+        EXPECT_EQ (a.capacity (), 3u);
+        a.shrink_to_fit ();
+        EXPECT_EQ (a.capacity (), 0u);
+    }
+}
 
-        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<size_t>, equal_to<size_t>> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-
-        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<size_t>, equal_to<size_t>> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_LinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-
-        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<size_t>, equal_to<size_t>> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_OnlyCopyableMoveableAndTotallyOrdered> ();
-        SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_stdvector<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-
-        SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ();
-
-        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence<size_t>> ();
-        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_Array<size_t>> ();
-        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_DoublyLinkedList<size_t>> ();
-        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_LinkedList<size_t>> ();
-        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_stdvector<size_t>> ();
-
-        SequenceIndexing_Test_16_::DoTest ();
-
-        ExampleCTORS_Test_17_::DoTest ();
-        ExampleCompare_Test_18_::DoTest ();
-        ExampleOrderBy_Test19_::DoTest ();
-        BugWithWhereCallingAdd_Test20_::DoTest ();
-
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, CLEANUPS)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
-}
-
-GTEST_TEST (Foundation_Containers_Sequence, Sequence_Array_ArrayAPITests_)
-{
-    Sequence_Array<int> a;
-    a.reserve (3);
-    EXPECT_EQ (a.capacity (), 3u);
-    a.shrink_to_fit ();
-    EXPECT_EQ (a.capacity (), 0u);
 }
 #endif
 
