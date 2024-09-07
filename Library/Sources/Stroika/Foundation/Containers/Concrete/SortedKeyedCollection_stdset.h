@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedKeyedCollection_stdset& operator= (const SortedKeyedCollection_stdset&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<KEY_TYPE>) KEY_INORDER_COMPARER>
         class Rep_;
 

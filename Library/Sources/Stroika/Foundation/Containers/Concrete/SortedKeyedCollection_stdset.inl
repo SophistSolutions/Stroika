@@ -11,14 +11,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     *** SortedKeyedCollection_stdset<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ ***
-     ********************************************************************************
-     */
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    class SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::IImplRepBase_ : public SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {};
-
-    /*
-     ********************************************************************************
      ********** SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::Rep_ *************
      ********************************************************************************
      */
