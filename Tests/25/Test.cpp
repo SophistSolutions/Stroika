@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_SkipList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_stdset.h"
 #include "Stroika/Foundation/Containers/SortedKeyedCollection.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -29,19 +30,36 @@ using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
+using namespace CommonTests::KeyedCollectionTests::Test1_Basics_;
+
 #if qHasFeature_GoogleTest
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedKeyedCollection, all)
+    GTEST_TEST (Foundation_Containers_SortedKeyedCollection, FACTORY_DEFAULT)
     {
-        using T1               = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
-        using T1_Traits        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
-        using T1_Key_Extractor = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Key_Extractor;
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return SortedKeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return SortedKeyedCollection<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return SortedKeyedCollection<T1, int, T1_Traits>{}; }, [] (auto) {});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedKeyedCollection, SortedKeyedCollection_stdset)
+    {
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int, T1_Traits>{}; }, [] (auto) {});
+    }
+}
+
+namespace{
+    GTEST_TEST (Foundation_Containers_SortedKeyedCollection, CLEANUP)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }

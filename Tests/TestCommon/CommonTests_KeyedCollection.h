@@ -20,7 +20,6 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
-#if qHasFeature_GoogleTest
         namespace Test1_Basics_ {
             struct T1 {
                 int key;
@@ -33,6 +32,7 @@ namespace CommonTests {
                 };
             };
             using T1_Traits = KeyedCollection_DefaultTraits<T1, int, T1_Key_Extractor>;
+#if qHasFeature_GoogleTest
             template <typename CONTAINER, typename TEST_FUNCTION>
             void RunTest (CONTAINER coll, TEST_FUNCTION testFunction)
             {
@@ -59,8 +59,10 @@ namespace CommonTests {
                 EXPECT_EQ (coll.size (), 1u);
                 testFunction (coll);
             };
+#endif
         }
 
+#if qHasFeature_GoogleTest
         /**
          */
         template <typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>

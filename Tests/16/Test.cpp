@@ -33,61 +33,80 @@ using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
+using namespace CommonTests::KeyedCollectionTests::Test1_Basics_;
+
+//using T1               = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
+//using T1_Traits        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
+//using T1_Key_Extractor = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Key_Extractor;
+
 #if qHasFeature_GoogleTest
 namespace {
     namespace Test_KeyedCollectionTypeIndexUsesStdSet_ {
-        namespace Private_ {
-            struct Obj_ {
-                type_index fTypeIndex;  // KEY
-                int        otherData{}; //
-            };
-            using My_Extractor_ = decltype ([] (const Obj_& t) -> type_index { return t.fTypeIndex; });
-            using My_Traits_    = Containers::KeyedCollection_DefaultTraits<Obj_, type_index, My_Extractor_>;
-        }
-        void RunAll ()
+        struct Obj_ {
+            type_index fTypeIndex;  // KEY
+            int        otherData{}; //
+        };
+        using My_Extractor_ = decltype ([] (const Obj_& t) -> type_index { return t.fTypeIndex; });
+        using My_Traits_    = Containers::KeyedCollection_DefaultTraits<Obj_, type_index, My_Extractor_>;
+    }
+    GTEST_TEST (Foundation_Containers_KeyedCollection, Test_KeyedCollectionTypeIndexUsesStdSet_)
+    {
+        using namespace Test_KeyedCollectionTypeIndexUsesStdSet_;
         {
-            using namespace Private_;
-            {
-                Concrete::SortedKeyedCollection_stdset<Obj_, type_index, My_Traits_> s1;
-                KeyedCollection<Obj_, type_index, My_Traits_>                        s2;
-                s2.Add (Obj_{typeid (int)});
-                s2.Add (Obj_{typeid (long int)});
-            }
-            {
-                // Or slightly more flexibility, but less efficiently (cuz extractor stored in std::function and invoked through that wrapper)
-                KeyedCollection<Obj_, type_index> s2{My_Extractor_{}};
-                s2.Add (Obj_{typeid (int)});
-                s2.Add (Obj_{typeid (long int)});
-            }
+            Concrete::SortedKeyedCollection_stdset<Obj_, type_index, My_Traits_> s1;
+            KeyedCollection<Obj_, type_index, My_Traits_>                        s2;
+            s2.Add (Obj_{typeid (int)});
+            s2.Add (Obj_{typeid (long int)});
+        }
+        {
+            // Or slightly more flexibility, but less efficiently (cuz extractor stored in std::function and invoked through that wrapper)
+            KeyedCollection<Obj_, type_index> s2{My_Extractor_{}};
+            s2.Add (Obj_{typeid (int)});
+            s2.Add (Obj_{typeid (long int)});
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, original)
+    GTEST_TEST (Foundation_Containers_KeyedCollection, FACTORY_DEFAULT)
     {
-        {
-            using T1               = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
-            using T1_Traits        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
-            using T1_Key_Extractor = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Key_Extractor;
-            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return KeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return KeyedCollection<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
-            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics ([] () { return KeyedCollection<T1, int, T1_Traits>{}; },
-                                                                                     [] (auto) {});
-            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return Concrete::KeyedCollection_Array<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return Concrete::KeyedCollection_stdhashset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-        }
-        Test_KeyedCollectionTypeIndexUsesStdSet_::RunAll ();
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return KeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return KeyedCollection<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics ([] () { return KeyedCollection<T1, int, T1_Traits>{}; },
+                                                                                 [] (auto) {});
+    }
+}
+namespace {
+    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_Array)
+    {
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::KeyedCollection_Array<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+    }
+}
+namespace {
+    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_LinkedList)
+    {
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+    }
+}
 
-        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
+namespace {
+    GTEST_TEST (Foundation_Containers_KeyedCollection, SortedKeyedCollection_stdset)
+    {
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_stdhashset)
+    {
+
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::KeyedCollection_stdhashset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
     }
 }
 
@@ -103,6 +122,13 @@ namespace {
         auto objCopy = obj;
         obj.Add (A{.f = 4});
         obj = objCopy;
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_KeyedCollection, CLEANUP)
+    {
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif
