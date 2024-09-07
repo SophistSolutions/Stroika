@@ -74,14 +74,14 @@ namespace Stroika::Foundation::Memory {
      *  SharedByValue is a utility class to implement Copy-On-Write (aka Copy on Write, or COW).
      *
      *  This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
-     *  to facilitiate implementing the copy-on-write semantics which are often handy in providing
+     *  to facilitate implementing the copy-on-write semantics which are often handy in providing
      *  high-performance data structures.
      *
-     *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
+     *  This class should allow SHARED_IMLP to be std::shared_ptr (or another shared_ptr implementation).
      *
      *  This class template was originally called CopyOnWrite.
      * 
-     *  \note Though there IS a fCopier, this is only the default copier, and calls to rwget() can always prodide
+     *  \note Though there IS a fCopier, this is only the default copier, and calls to rwget() can always provide
      *        an alternative copier.
      *
      *  \par Example Usage
@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Memory {
      *      Better to let the caller use opeartor<=> on cget() or *cget() to make clear their intentions.
      * 
      *  TODO:
-     *      @todo http://stroika-bugs.sophists.com/browse/STK-798 - review docs and threadsafety
+     *      @todo http://stroika-bugs.sophists.com/browse/STK-798 - review docs and thread safety
      */
     template <typename T, typename TRAITS = SharedByValue_Traits<T>>
     class SharedByValue {
@@ -162,10 +162,10 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  \brief access te underlying shared_ptr stored in the SharedByValue. This shouldbe treated as readonly and
+         *  \brief access te underlying shared_ptr stored in the SharedByValue. This should be treated as readonly and
          *         only used to make calls that don't change / mutate the underlying object.
          * 
-         *  \todo @todo Consider if using const somehow can help make this safer - returing a shared_ptr<const T>?? somehow
+         *  \todo @todo Consider if using const somehow can help make this safer - returning a shared_ptr<const T>?? somehow
          */
         nonvirtual shared_ptr_type cget_ptr () const;
 
@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         * rwget () returns the real underlying (modifyable) ptr we store. It can be nullptr.
+         * rwget () returns the real underlying (modifiable) ptr we store. It can be nullptr.
          * 
          * Importantly, it makes sure that there is at most one reference to the 'shared_ptr' value
          * before returing that pointer, so the caller is the only one modifying the object.
