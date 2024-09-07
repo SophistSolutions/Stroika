@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_stdhashset.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_stdset.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Debug/Assertions.h"

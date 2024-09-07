@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_SkipList.h"
 #include "Stroika/Foundation/Containers/SortedKeyedCollection.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
