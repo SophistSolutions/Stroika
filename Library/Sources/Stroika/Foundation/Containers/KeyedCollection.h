@@ -44,9 +44,7 @@ namespace Stroika::Foundation::Containers {
      *                  type_index fTypeIndex;  // KEY
      *                  int otherData{};        // 
      *              };
-     *              struct My_Extractor_ {
-     *                  auto operator() (const Obj_& t) const -> type_index { return t.fTypeIndex; };
-     *              };
+     *              using My_Extractor_ = decltype ([] (const Obj_& t) -> type_index { return t.fTypeIndex; });
      *              using My_Traits_ = Containers::KeyedCollection_DefaultTraits<Obj_, type_index, My_Extractor_>;
      *          }
      *          void RunAll ()
