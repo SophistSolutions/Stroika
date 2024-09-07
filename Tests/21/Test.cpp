@@ -788,11 +788,11 @@ namespace {
         {
             using Characters::String;
             Sequence<String> a;
-            a += L"1";
-            EXPECT_TRUE (a (0) == L"1");
+            a += "1";
+            EXPECT_TRUE (a (0) == "1");
             String a0 = a[0];
-            a (0)     = L"3";
-            EXPECT_TRUE (a (0) == L"3");
+            a (0)     = "3";
+            EXPECT_TRUE (a (0) == "3");
         }
         {
             using Characters::String;
@@ -808,20 +808,20 @@ namespace {
             using Characters::String;
             Sequence<String> a;
             a += L"1";
-            EXPECT_TRUE (a[0] == L"1");
+            EXPECT_TRUE (a[0] == "1");
             String a0 = a[0];
             a[0]      = L"3";
-            EXPECT_TRUE (a[0] == L"3");
+            EXPECT_TRUE (a[0] == "3");
         }
         {
             using Characters::String;
             Sequence<String> a;
-            a += L"1";
+            a += "1";
             String a0 = a[0];
-            a[0]      = L"3";
-            EXPECT_TRUE (a[0].Contains (L"3")); // can call '.' methods on result of a(n)
+            a[0]      = "3";
+            EXPECT_TRUE (a[0].Contains ("3")); // can call '.' methods on result of a(n)
         }
-#endif }
+#endif
     }
 }
 
