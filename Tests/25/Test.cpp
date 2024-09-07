@@ -57,7 +57,21 @@ namespace {
     }
 }
 
-namespace{
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedKeyedCollection, SortedKeyedCollection_SkipList)
+    {
+        //Concrete::SortedKeyedCollection_SkipList<T1, int> x{[] (T1 e) { return e.key; }};
+
+        /* CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int, T1_Traits>{}; }, [] (auto) {});*/
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Containers_SortedKeyedCollection, CLEANUP)
     {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
