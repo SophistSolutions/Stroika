@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        nonvirtual auto Add_ (ArgByValueType<value_type> item) -> DataStructureImplType_::ForwardIterator
+        nonvirtual auto Add_ (ArgByValueType<value_type> item) -> typename DataStructureImplType_::ForwardIterator
         {
             using ForwardIterator = DataStructureImplType_::ForwardIterator;
             ForwardIterator it{&fData_};
