@@ -343,10 +343,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      overload: (FUNCTION&& f overload)
          *      Average/Worst:    O(N)
+         * 
+         *  \note this is kind of like set<T>::find () - but not exactly, and find() doesn't really have a uniform API across the various stl containers...
+         *        which is why we use Find(), instead of find() as a name
          */
         nonvirtual ForwardIterator Find (ArgByValueType<key_type> key) const;
         template <typename ARG_T = typename TRAITS::AlternateFindType>
-
         nonvirtual ForwardIterator Find (ARG_T key) const
             requires (not same_as<typename TRAITS::AlternateFindType, void>);
         template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
