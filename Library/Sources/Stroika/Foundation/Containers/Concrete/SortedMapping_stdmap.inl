@@ -161,6 +161,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_
                 .remove_constness (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ())
                 ->second = newValue;
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }

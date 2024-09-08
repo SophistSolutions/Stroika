@@ -12,8 +12,6 @@
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
 
-//// NOT YET IMPELEMTNED - DRAFT ----
-
 /**
  *  \file
  *
@@ -24,8 +22,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   KeyedCollection_stdhashset<KEY_TYPE,MAPPED_VALUE_TYPE> is an std::map-based concrete implementation of the KeyedCollection<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
      *
-     * \see DeclareInOrderComparer
-     * 
      * \note Runtime performance/complexity:
      *      @todo
      *
@@ -141,7 +137,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual KeyedCollection_stdhashset& operator= (const KeyedCollection_stdhashset& rhs)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
         template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
         class Rep_;
 

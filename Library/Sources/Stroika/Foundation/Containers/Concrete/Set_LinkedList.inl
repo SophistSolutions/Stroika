@@ -11,11 +11,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T>
-    class Set_LinkedList<T>::IImplRepBase_ : public Set<T>::_IRep {};
-
-    /**
-     */
-    template <typename T>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<T>) EQUALS_COMPARER>
     class Set_LinkedList<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
     private:
@@ -117,6 +112,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fEqualsComparer_ (*it, item)) {
+                    fChangeCounts_.PerformedChange ();
                     return;
                 }
             }

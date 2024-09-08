@@ -18,12 +18,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
     class Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
-        : public Private::ArrayBasedContainerRepImpl<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_<KEY_EQUALS_COMPARER>,
-                                                     typename Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_>,
+        : public Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>,
           public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
     private:
-        using inherited = Private::ArrayBasedContainerRepImpl<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_<KEY_EQUALS_COMPARER>,
-                                                              typename Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_>;
+        using inherited = Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>;
 
     public:
         static_assert (not is_reference_v<KEY_EQUALS_COMPARER>);
@@ -123,6 +121,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it->fKey, key)) {
                     fData_.RemoveAt (it.CurrentIndex ());
+                    fChangeCounts_.PerformedChange ();
                     return true;
                 }
             }
@@ -150,6 +149,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
             }
             fData_.PeekAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.CurrentIndex ())->fValue = newValue;
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }

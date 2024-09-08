@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedMultiSet_stdmap& operator= (const SortedMultiSet_stdmap&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename SortedMultiSet<T, TRAITS>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<T>) INORDER_COMPARER>
         class Rep_;
 

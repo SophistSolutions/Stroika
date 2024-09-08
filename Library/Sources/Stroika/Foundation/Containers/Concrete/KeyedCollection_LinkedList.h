@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual KeyedCollection_LinkedList& operator= (const KeyedCollection_LinkedList&)     = default;
 
     private:
-        class IImplRep_;
+        using IImplRep_ = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
         class Rep_;
 

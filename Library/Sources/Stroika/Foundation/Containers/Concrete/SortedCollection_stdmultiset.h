@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedCollection_stdmultiset& operator= (const SortedCollection_stdmultiset&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename SortedCollection<T>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (Common::IInOrderComparer<T>) INORDER_COMPARER>
         class Rep_;
 

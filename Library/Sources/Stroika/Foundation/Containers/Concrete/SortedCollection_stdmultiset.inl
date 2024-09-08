@@ -10,14 +10,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ******************* SortedCollection_stdmultiset<T>::IImplRepBase_ *************
-     ********************************************************************************
-     */
-    template <typename T>
-    class SortedCollection_stdmultiset<T>::IImplRepBase_ : public SortedCollection<T>::_IRep {};
-
-    /*
-     ********************************************************************************
      ******************** SortedCollection_stdmultiset<T>::Rep_ *********************
      ********************************************************************************
      */

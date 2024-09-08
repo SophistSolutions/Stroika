@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Mapping_LinkedList& operator= (const Mapping_LinkedList&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
         class Rep_;
 

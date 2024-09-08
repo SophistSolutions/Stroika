@@ -10,14 +10,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ***** Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ *******
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {};
-
-    /*
-     ********************************************************************************
      ********* Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_*************
      ********************************************************************************
      */
@@ -151,6 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             auto dataStructureIterator                    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator;
             fData_.PeekAt (dataStructureIterator)->fValue = newValue;
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, dataStructureIterator.GetUnderlyingIteratorRep ())};
             }

@@ -16,12 +16,10 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename TRAITS>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<T>) EQUALS_COMPARER>
-    class MultiSet_Array<T, TRAITS>::Rep_
-        : public Private::ArrayBasedContainerRepImpl<MultiSet_Array<T, TRAITS>::Rep_<EQUALS_COMPARER>, typename MultiSet_Array<T, TRAITS>::IImplRepBase_>,
-          public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
+    class MultiSet_Array<T, TRAITS>::Rep_ : public Private::ArrayBasedContainerRepImpl<Rep_<EQUALS_COMPARER>, IImplRepBase_>,
+                                            public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
     private:
-        using inherited =
-            Private::ArrayBasedContainerRepImpl<MultiSet_Array<T, TRAITS>::Rep_<EQUALS_COMPARER>, typename MultiSet_Array<T, TRAITS>::IImplRepBase_>;
+        using inherited = Private::ArrayBasedContainerRepImpl<Rep_<EQUALS_COMPARER>, IImplRepBase_>;
 
     public:
         static_assert (not is_reference_v<EQUALS_COMPARER>);

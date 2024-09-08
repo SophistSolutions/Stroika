@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/Containers/DataStructures/STLContainerWrapper.h"
 #include "Stroika/Foundation/Containers/Private/IteratorImplHelper.h"
 #include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
@@ -16,16 +17,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
     class SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
-        : public Private::SkipListBasedContainerRepImpl<typename SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_<KEY_THREEWAY_COMPARER>,
-                                                        typename SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_>,
+        : public Private::SkipListBasedContainerRepImpl<Rep_<KEY_THREEWAY_COMPARER>, IImplRepBase_>,
           public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_THREEWAY_COMPARER>> {
     public:
         static_assert (not is_reference_v<KEY_THREEWAY_COMPARER>);
 
     private:
-        using inherited =
-            Private::SkipListBasedContainerRepImpl<typename SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_<KEY_THREEWAY_COMPARER>,
-                                                   typename SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_>;
+        using inherited = Private::SkipListBasedContainerRepImpl<Rep_<KEY_THREEWAY_COMPARER>, IImplRepBase_>;
 
     public:
         Rep_ (const KEY_THREEWAY_COMPARER& inorderComparer)
@@ -119,23 +117,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Invariant ();
-            bool result{};
+            bool   result{};
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { fChangeCounts_.PerformedChange (); });
             switch (addReplaceMode) {
                 case AddReplaceMode::eAddReplaces:
                     static_assert (DataStructureImplType_::TraitsType::kAddOrExtendOrReplaceMode == AddOrExtendOrReplaceMode::eAddReplaces);
                     result = fData_.Add (key, newElt);
                     break;
-                case AddReplaceMode::eAddIfMissing:
+                case AddReplaceMode::eAddIfMissing: {
                     result = fData_.Add (key, newElt);
                     // not ideally most efficient - maybe add AddIfMissing (variation) to SkipList API (if not compiled that way) - as I used to have
                     if (fData_.Find (key)) {
                         return false;
                     }
-                    return fData_.Add (key, newElt);
+                    auto r = fData_.Add (key, newElt);
+                    return r;
+                }
                 default:
                     AssertNotReached ();
             }
-            fChangeCounts_.PerformedChange ();
             fData_.Invariant ();
             return result;
         }
@@ -174,6 +174,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
             }
             fData_.Update (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }

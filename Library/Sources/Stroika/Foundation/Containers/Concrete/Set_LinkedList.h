@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Set_LinkedList& operator= (const Set_LinkedList&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename Set<T>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<T>) EQUALS_COMPARER>
         class Rep_;
 

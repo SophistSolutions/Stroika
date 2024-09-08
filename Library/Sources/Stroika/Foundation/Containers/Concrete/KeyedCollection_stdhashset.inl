@@ -11,14 +11,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     *** KeyedCollection_stdhashset<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ *****
-     ********************************************************************************
-     */
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    class KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>::IImplRepBase_ : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {};
-
-    /*
-     ********************************************************************************
      ********** KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>::Rep_ ***************
      ********************************************************************************
      */
@@ -154,6 +146,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++hint;
                 fData_.erase (flagAndI.first);
                 fData_.insert (hint, item);
+                fChangeCounts_.PerformedChange ();
                 return false;
             }
         }

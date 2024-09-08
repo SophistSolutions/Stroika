@@ -12,13 +12,12 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
-    class KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_
-        : public Private::ArrayBasedContainerRepImpl<KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_<KEY_EQUALS_COMPARER>,
-                                                     typename KeyedCollection_Array<T, KEY_TYPE, TRAITS>::IImplRepBase_>,
-          public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
+    class KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_ : public Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>,
+                                                             public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
     private:
-        using inherited = Private::ArrayBasedContainerRepImpl<KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_<KEY_EQUALS_COMPARER>,
-                                                              typename KeyedCollection_Array<T, KEY_TYPE, TRAITS>::IImplRepBase_>;
+        using inherited = Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>;
+
+    private:
         [[no_unique_address]] const KeyExtractorType    fKeyExtractor_;
         [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyComparer_;
 

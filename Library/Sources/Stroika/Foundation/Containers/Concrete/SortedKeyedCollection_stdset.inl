@@ -140,6 +140,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             pair<typename DataStructureImplType_::iterator, bool>  flagAndI = fData_.insert (item);
             if (flagAndI.second) {
+                fChangeCounts_.PerformedChange ();
                 return true;
             }
             else {
@@ -149,6 +150,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++hint;
                 fData_.erase (flagAndI.first);
                 fData_.insert (hint, item);
+                fChangeCounts_.PerformedChange ();
                 return false;
             }
         }

@@ -10,14 +10,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ********** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::IImplRepBase_*********
-     ********************************************************************************
-     */
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::IImplRepBase_ : public Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep {};
-
-    /*
-     ********************************************************************************
      *********** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Rep_*****************
      ********************************************************************************
      */
@@ -175,6 +167,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fDomainEqualsComparer_ (it->first, key)) {
                     fData_.SetAt (it, value_type{key, newElt});
+                    fChangeCounts_.PerformedChange ();
                     return;
                 }
             }

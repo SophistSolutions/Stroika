@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap&)     = default;
 
     private:
-        class IImplRepBase_;
+        using IImplRepBase_ = typename SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<KEY_TYPE>) KEY_INORDER_COMPARER>
         class Rep_;
 

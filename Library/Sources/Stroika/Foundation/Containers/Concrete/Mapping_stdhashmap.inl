@@ -16,14 +16,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ****** Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ **********
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {};
-
-    /*
-     ********************************************************************************
      ********** Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ***************
      ********************************************************************************
      */
@@ -185,6 +177,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_
                 .remove_constness (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ())
                 ->second = newValue;
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }
