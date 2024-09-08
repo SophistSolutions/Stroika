@@ -60,19 +60,12 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedKeyedCollection, SortedKeyedCollection_SkipList)
     {
-        Concrete::SortedKeyedCollection_SkipList<T1, int> x{[] (T1 e) { return e.key; }, compare_three_way{}};
-
-#if 0
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-#endif
-
-        /* CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+            [] () { return Concrete::SortedKeyedCollection_SkipList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
+            [] () { return Concrete::SortedKeyedCollection_SkipList<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int, T1_Traits>{}; }, [] (auto) {});*/
+            [] () { return Concrete::SortedKeyedCollection_SkipList<T1, int, T1_Traits>{}; }, [] (auto) {});
     }
 }
 
