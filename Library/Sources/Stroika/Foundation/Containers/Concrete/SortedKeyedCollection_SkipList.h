@@ -58,13 +58,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         using SKIPLIST = DataStructures::SkipList<T, void, SKIPLISTTRAITS<KEY_COMPARER>>;
 
     public:
-        template <IThreeWayComparer<T> COMPARER = compare_three_way>
-        SortedKeyedCollection_SkipList (COMPARER&& keyComparer = COMPARER{})
+        SortedKeyedCollection_SkipList ()
+            requires (three_way_comparable<KEY_TYPE> and IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
+        template <IThreeWayComparer<T> COMPARER>
+        SortedKeyedCollection_SkipList (COMPARER&& keyComparer)
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         SortedKeyedCollection_SkipList (SortedKeyedCollection_SkipList&&) noexcept      = default;
         SortedKeyedCollection_SkipList (const SortedKeyedCollection_SkipList&) noexcept = default;
-        template <IThreeWayComparer<T> COMPARER = compare_three_way>
-        SortedKeyedCollection_SkipList (const KeyExtractorType& keyExtractor, COMPARER&& keyComparer = COMPARER{});
+        SortedKeyedCollection_SkipList (const KeyExtractorType& keyExtractor)
+            requires (three_way_comparable<KEY_TYPE>);
+        template <IThreeWayComparer<T> COMPARER>
+        SortedKeyedCollection_SkipList (const KeyExtractorType& keyExtractor, COMPARER&& keyComparer);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<T> COMPARER = equal_to<KEY_TYPE>>
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>>)

@@ -62,12 +62,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            fData_.Apply (doToElement);
+            fData_.Apply ([&] (auto arg) { doToElement (arg.fKey); });
         }
         virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->inherited::Find (that, seq); // @todo rewrite to use fData
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, fData_.Find (that))};
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Ensure ((found == fData_.end () and this->inherited::Find_equal_to (v, seq) == Iterator<value_type>{nullptr}) or
                     (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ())
                                   .fIterator.GetUnderlyingIteratorRep ()));
-            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, found)};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, found)};
         }
 
         // KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep overrides
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto nextIResult = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, nextIResult)};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, nextIResult)};
             }
         }
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             auto                                                   i = fData_.find (key);
             if (i != fData_.end ()) {
-                fData_.erase (i);
+                fData_.Remove (i);
                 fChangeCounts_.PerformedChange ();
                 return true;
             }
@@ -207,16 +207,27 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ************ SortedKeyedCollection_SkipList<KEY_TYPE,MAPPED_VALUE_TYPE> **********
+     ********** SortedKeyedCollection_SkipList<KEY_TYPE,MAPPED_VALUE_TYPE> **********
      ********************************************************************************
      */
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList ()
+        requires (three_way_comparable<KEY_TYPE> and IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
+        : SortedKeyedCollection_SkipList{KeyExtractorType{}, compare_three_way}
+    {
+    }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IThreeWayComparer<T> COMPARER>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (COMPARER&& keyComparer)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
         : SortedKeyedCollection_SkipList{KeyExtractorType{}, forward<COMPARER> (keyComparer)}
     {
-        AssertRepValidType_ ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (const KeyExtractorType& keyExtractor)
+        requires (three_way_comparable<KEY_TYPE>)
+        : SortedKeyedCollection_SkipList{keyExtractor, compare_three_way{}}
+    {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IThreeWayComparer<T> COMPARER>
