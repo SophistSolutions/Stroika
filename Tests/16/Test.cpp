@@ -104,9 +104,16 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_stdhashset)
     {
-
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_stdhashset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_SkipList)
+    {
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_SkipList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
     }
 }
 
