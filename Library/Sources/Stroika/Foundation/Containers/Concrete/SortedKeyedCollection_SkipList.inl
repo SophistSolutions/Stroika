@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         Rep_ (const KeyExtractorType& keyExtractor, const COMPARER& comparer)
             : fKeyExtractor_{keyExtractor}
-            , fData_{comparer}
+            , fData_{SKIPLIST_ELT_COMPARER<COMPARER>{keyExtractor, comparer}}
         {
         }
         Rep_ (const Rep_& from) = default;
@@ -89,12 +89,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyEqualityComparerType GetKeyEqualityComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return KeyEqualityComparerType{Common::EqualsComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
+            return KeyEqualityComparerType{Common::EqualsComparerAdapter<T, COMPARER>{fData_.key_comp ().fKeyComparer}};
         }
         virtual shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Memory::MakeSharedPtr<Rep_> (this->fKeyExtractor_, fData_.key_comp ()); // keep extractor/comparer but lose data in clone
+            return Memory::MakeSharedPtr<Rep_> (this->fKeyExtractor_, fData_.key_comp ().fKeyComparer); // keep extractor/comparer but lose data in clone
         }
         virtual shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto                                                   i = fData_.find (key);
+            auto                                                   i = fData_.Find (key);
             if (i != fData_.end ()) {
                 fData_.Remove (i);
                 fChangeCounts_.PerformedChange ();
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return KeyInOrderKeyComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
+            return KeyInOrderKeyComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ().fKeyComparer}};
         }
 
     private:

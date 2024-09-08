@@ -52,19 +52,32 @@ namespace Stroika::Foundation::Containers::Concrete {
                 , fKeyComparer{keyComparer}
             {
             }
-            auto operator() (const T& l, const T& r)
+            auto operator() (const T& l, const T& r) const
             {
                 return fKeyComparer (fKeyExtractor (l), fKeyExtractor (r));
             }
-            KeyExtractorType fKeyExtractor;
-            KEY_COMPARER     fKeyComparer;
+            auto operator() (const KEY_TYPE& l, const T& r) const
+            {
+                return fKeyComparer (l, fKeyExtractor (r));
+            }
+            auto operator() (const T& l, const KEY_TYPE& r) const
+            {
+                return fKeyComparer (fKeyExtractor (l), r);
+            }
+            auto operator() (const KEY_TYPE& l, const KEY_TYPE& r) const
+            {
+                return fKeyComparer (l, r);
+            }
+            [[no_unique_address]] KeyExtractorType fKeyExtractor;
+            [[no_unique_address]] KEY_COMPARER     fKeyComparer;
         };
 
         /**
          *  AddOrExtendOrReplaceMode::eAddReplaces makes sense cuz KeyedCollection<>::Add () will REPLACE the value.
          */
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way>
-        using SKIPLISTTRAITS = DataStructures::SkipList_Support::DefaultTraits<T, KEY_COMPARER, AddOrExtendOrReplaceMode::eAddReplaces>;
+        using SKIPLISTTRAITS =
+            DataStructures::SkipList_Support::DefaultTraits<T, SKIPLIST_ELT_COMPARER<KEY_COMPARER>, AddOrExtendOrReplaceMode::eAddReplaces, KEY_TYPE>;
 
         /**
          *  \brief SKIPLIST is SkipList that can be used inside SortedMapping_SkipList
