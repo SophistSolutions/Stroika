@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, fData_.Find (that))};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, fData_.Find ([&] (auto arg) { return that (arg.fKey); }))};
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {

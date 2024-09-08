@@ -47,24 +47,24 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way>
         struct SKIPLIST_ELT_COMPARER {
-            SKIPLIST_ELT_COMPARER (const KeyExtractorType& keyExtractor, KEY_COMPARER&& keyComparer = KEY_COMPARER{})
+            SKIPLIST_ELT_COMPARER (const KeyExtractorType& keyExtractor, const KEY_COMPARER& keyComparer = KEY_COMPARER{})
                 : fKeyExtractor{keyExtractor}
                 , fKeyComparer{keyComparer}
             {
             }
-            auto operator() (const T& l, const T& r) const
+            constexpr auto operator() (const T& l, const T& r) const
             {
                 return fKeyComparer (fKeyExtractor (l), fKeyExtractor (r));
             }
-            auto operator() (const KEY_TYPE& l, const T& r) const
+            constexpr auto operator() (const KEY_TYPE& l, const T& r) const
             {
                 return fKeyComparer (l, fKeyExtractor (r));
             }
-            auto operator() (const T& l, const KEY_TYPE& r) const
+            constexpr auto operator() (const T& l, const KEY_TYPE& r) const
             {
                 return fKeyComparer (fKeyExtractor (l), r);
             }
-            auto operator() (const KEY_TYPE& l, const KEY_TYPE& r) const
+            constexpr auto operator() (const KEY_TYPE& l, const KEY_TYPE& r) const
             {
                 return fKeyComparer (l, r);
             }

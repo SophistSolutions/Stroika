@@ -243,7 +243,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     template <typename ARG_T>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ARG_T key) const -> ForwardIterator
-        requires (not same_as<typename TRAITS::AlternateFindType, void>)
+        requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>)
     {
         return ForwardIterator{this, FindNode_ (key)};
     }

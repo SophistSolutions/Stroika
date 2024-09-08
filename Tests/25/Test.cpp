@@ -60,7 +60,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedKeyedCollection, SortedKeyedCollection_SkipList)
     {
-        // Concrete::SortedKeyedCollection_SkipList<T1, int> x{[] (T1 e) { return e.key; }, compare_three_way{}};
+        Concrete::SortedKeyedCollection_SkipList<T1, int> x{[] (T1 e) { return e.key; }, compare_three_way{}};
 
 #if 0
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (

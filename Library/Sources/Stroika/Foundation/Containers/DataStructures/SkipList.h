@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator Find (ArgByValueType<key_type> key) const;
         template <typename ARG_T = typename TRAITS::AlternateFindType>
         nonvirtual ForwardIterator Find (ARG_T key) const
-            requires (not same_as<typename TRAITS::AlternateFindType, void>);
+            requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>);
         template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
         nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
