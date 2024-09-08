@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         nonvirtual auto Add_ (ArgByValueType<value_type> item) -> typename DataStructureImplType_::ForwardIterator
         {
-            using ForwardIterator = DataStructureImplType_::ForwardIterator;
+            using ForwardIterator = typename DataStructureImplType_::ForwardIterator;
             ForwardIterator it{&fData_};
             // skip the smaller items
             for (; not it.Done () and fInorderComparer_ (*it, item); ++it)
