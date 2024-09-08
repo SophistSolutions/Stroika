@@ -60,10 +60,8 @@ namespace Stroika::Foundation::Common {
     {
         return reinterpret_cast<const uint8_t*> (this);
     }
-    template <typename T>
+    template <Configuration::IAnyOf<Characters::String, std::string, Memory::BLOB, array<byte, 16>, array<uint8_t, 16>> T>
     inline T Common::GUID::As () const
-        requires (same_as<T, Characters::String> or same_as<T, std::string> or same_as<T, Memory::BLOB> or same_as<T, array<byte, 16>> or
-                  same_as<T, array<uint8_t, 16>>)
     {
         if constexpr (same_as<T, Characters::String>) {
             char buf[1024];

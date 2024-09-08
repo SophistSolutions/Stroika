@@ -33,6 +33,7 @@ namespace Stroika::Foundation::Common {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct GUID {
+    private:
         static GUID mk_ (const string& src);
 
     public:
@@ -111,10 +112,8 @@ namespace Stroika::Foundation::Common {
          *      o   BLOB
          *      o   array<uint8_t, 16> or array<byte, 16>
          */
-        template <typename T>
-        nonvirtual T As () const
-            requires (same_as<T, Characters::String> or same_as<T, std::string> or same_as<T, Memory::BLOB> or
-                      same_as<T, array<byte, 16>> or same_as<T, array<uint8_t, 16>>);
+        template <Configuration::IAnyOf<Characters::String, std::string, Memory::BLOB, array<byte, 16>, array<uint8_t, 16>> T>
+        nonvirtual T As () const;
 
     public:
         /**
