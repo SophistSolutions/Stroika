@@ -240,6 +240,14 @@ namespace Stroika::Foundation::Common {
                                 ExtractComparisonTraits_v<ARG_T, remove_cvref_t<COMPARER>> == ComparisonRelationType::eThreeWayCompare;
 
     /**
+     *  Checks that the argument comparer can be converted (via ThreeWayComparerAdapter) to three_way comparer (on type T).
+     * 
+     *  \see IInOrderComparer, IThreeWayComparer, and ThreeWayComparerAdapter
+     */
+    template <typename COMPARER, typename ARG_T>
+    concept IThreeWayAdaptableComparer = IInOrderComparer<COMPARER, ARG_T> or IThreeWayComparer<COMPARER, ARG_T>;
+
+    /**
      *  Utility class to serve as base class when constructing a comparison 'function' object comparer so ExtractComparisonTraits<> knows
      *  the type, or (with just one argument) as base for class that itself provides the operator() method.
      *         
@@ -377,9 +385,7 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief Use this to wrap a basic comparer, and produce a Three-Way comparer
      */
-    template <typename T, IComparer<T> BASE_COMPARER>
-        requires (ExtractComparisonTraits_v<T, BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
-                  ExtractComparisonTraits_v<T, BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
+    template <typename T, IThreeWayAdaptableComparer<T> BASE_COMPARER>
     struct ThreeWayComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eThreeWayCompare> {
         /**
          */

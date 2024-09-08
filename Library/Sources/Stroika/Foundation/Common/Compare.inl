@@ -153,23 +153,17 @@ namespace Stroika::Foundation::Common {
      ********************* ThreeWayComparerAdapter<BASE_COMPARER> *******************
      ********************************************************************************
      */
-    template <typename ARG_T, IComparer<ARG_T> BASE_COMPARER>
-        requires (ExtractComparisonTraits_v<ARG_T, BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
-                  ExtractComparisonTraits_v<ARG_T, BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
+    template <typename ARG_T, IThreeWayAdaptableComparer<ARG_T> BASE_COMPARER>
     constexpr ThreeWayComparerAdapter<ARG_T, BASE_COMPARER>::ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
         : fBASE_COMPARER_{baseComparer}
     {
     }
-    template <typename ARG_T, IComparer<ARG_T> BASE_COMPARER>
-        requires (ExtractComparisonTraits_v<ARG_T, BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
-                  ExtractComparisonTraits_v<ARG_T, BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
+    template <typename ARG_T, IThreeWayAdaptableComparer<ARG_T> BASE_COMPARER>
     constexpr ThreeWayComparerAdapter<ARG_T, BASE_COMPARER>::ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer)
         : fBASE_COMPARER_{move (baseComparer)}
     {
     }
-    template <typename ARG_T, IComparer<ARG_T> BASE_COMPARER>
-        requires (ExtractComparisonTraits_v<ARG_T, BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
-                  ExtractComparisonTraits_v<ARG_T, BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
+    template <typename ARG_T, IThreeWayAdaptableComparer<ARG_T> BASE_COMPARER>
     template <typename LT, typename RT>
     constexpr strong_ordering ThreeWayComparerAdapter<ARG_T, BASE_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
     {
