@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IThreeWayComparer<T> COMPARER>
+    template <IThreeWayComparer<KEY_TYPE> COMPARER>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (COMPARER&& keyComparer)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
         : SortedKeyedCollection_SkipList{KeyExtractorType{}, forward<COMPARER> (keyComparer)}
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IThreeWayComparer<T> COMPARER>
+    template <IThreeWayComparer<KEY_TYPE> COMPARER>
     SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (const KeyExtractorType& keyExtractor, COMPARER&& keyComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<COMPARER>>> (keyExtractor, forward<COMPARER> (keyComparer))}
     {
@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<T> COMPARER>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<KEY_TYPE> COMPARER>
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>>)
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (ITERABLE_OF_ADDABLE&& src)
@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<T> COMPARER>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<KEY_TYPE> COMPARER>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
     {
@@ -257,7 +257,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IThreeWayComparer<T> COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IThreeWayComparer<KEY_TYPE> COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (const KeyExtractorType& keyExtractor,
                                                                                                 COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedKeyedCollection_SkipList{keyExtractor, forward<COMPARER> (keyComparer)}
@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE, IThreeWayComparer<T> COMPARER>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, IThreeWayComparer<KEY_TYPE> COMPARER>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
         : SortedKeyedCollection_SkipList{KeyExtractorType{}, COMPARER{}}
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE, IThreeWayComparer<T> COMPARER>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, IThreeWayComparer<KEY_TYPE> COMPARER>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
                                                                                                 ITERATOR_OF_ADDABLE&& end)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IThreeWayComparer<T> COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
+    template <IThreeWayComparer<KEY_TYPE> COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (const KeyExtractorType& keyExtractor,
                                                                                                 COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
                                                                                                 ITERATOR_OF_ADDABLE&& end)
