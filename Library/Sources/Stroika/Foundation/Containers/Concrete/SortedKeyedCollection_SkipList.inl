@@ -15,13 +15,13 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<KEY_TYPE>) COMPARER>
-    class SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRepBase_,
+    class SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::Rep_ : public Private::SkipListBasedContainerRepImpl<Rep_<COMPARER>, IImplRepBase_>,
                                                                       public Memory::UseBlockAllocationIfAppropriate<Rep_<COMPARER>> {
     public:
         static_assert (not is_reference_v<COMPARER>);
 
     private:
-        using inherited = IImplRepBase_;
+        using inherited = Private::SkipListBasedContainerRepImpl<Rep_<COMPARER>, IImplRepBase_>;
 
     private:
         [[no_unique_address]] const KeyExtractorType fKeyExtractor_;
@@ -196,6 +196,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend inherited;
     };
 
     /*

@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
+#include "Stroika/Foundation/Containers/Private/SkipListSupport.h"
 #include "Stroika/Foundation/Containers/SortedKeyedCollection.h"
 
 /**
@@ -31,9 +32,11 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>>
-    class SortedKeyedCollection_SkipList : public SortedKeyedCollection<T, KEY_TYPE, TRAITS> {
+    class SortedKeyedCollection_SkipList
+        : public Private::SkipListBasedContainer<SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>, true> {
     private:
-        using inherited = SortedKeyedCollection<T, KEY_TYPE, TRAITS>;
+        using inherited =
+            Private::SkipListBasedContainer<SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>, true>;
 
     public:
         using TraitsType                = typename inherited::TraitsType;
@@ -127,12 +130,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedKeyedCollection_SkipList& operator= (const SortedKeyedCollection_SkipList&)     = default;
 
     private:
-        using IImplRepBase_ = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
+        using IImplRepBase_ = Private::SkipListBasedContainerIRep<typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep>;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<KEY_TYPE>) COMPARER>
         class Rep_;
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend inherited;
     };
 
 }

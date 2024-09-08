@@ -15,9 +15,10 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (Common::IThreeWayComparer<T>) COMPARER>
-    class SortedCollection_SkipList<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<COMPARER>> {
+    class SortedCollection_SkipList<T>::Rep_ : public Private::SkipListBasedContainerRepImpl<Rep_<COMPARER>, IImplRepBase_>,
+                                               public Memory::UseBlockAllocationIfAppropriate<Rep_<COMPARER>> {
     private:
-        using inherited = IImplRepBase_;
+        using inherited = Private::SkipListBasedContainerRepImpl<Rep_<COMPARER>, IImplRepBase_>;
 
     public:
         static_assert (not is_reference_v<COMPARER>);
@@ -181,6 +182,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend inherited;
     };
 
     /*

@@ -132,6 +132,10 @@ namespace {
         RunTests_<SortedCollection_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
         RunTests_<SortedCollection_SkipList<OnlyCopyableMoveable>> (
             [] () { return SortedCollection_SkipList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_THREEWAY_{}); });
+        {
+            SortedCollection_SkipList<size_t> x;
+            x.ReBalance ();
+        }
     }
 }
 

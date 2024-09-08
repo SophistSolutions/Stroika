@@ -114,6 +114,10 @@ namespace {
     {
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::SortedKeyedCollection_SkipList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        {
+            Concrete::SortedKeyedCollection_SkipList<T1, int> x{[] (T1 e) { return e.key; }};
+            x.ReBalance ();
+        }
     }
 }
 

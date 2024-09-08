@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
+#include "Stroika/Foundation/Containers/Private/SkipListSupport.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
 
 /**
@@ -30,9 +31,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
-    class SortedSet_SkipList : public SortedSet<T> {
+    class SortedSet_SkipList : public Private::SkipListBasedContainer<SortedSet_SkipList<T>, SortedSet<T>, true> {
     private:
-        using inherited = SortedSet<T>;
+        using inherited = Private::SkipListBasedContainer<SortedSet_SkipList<T>, SortedSet<T>, true>;
 
     public:
         /**
@@ -93,12 +94,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedSet_SkipList& operator= (const SortedSet_SkipList&)     = default;
 
     private:
-        using IImplRepBase_ = typename SortedSet<T>::_IRep;
+        using IImplRepBase_ = Private::SkipListBasedContainerIRep<typename SortedSet<T>::_IRep>;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<T>) COMPARER>
         class Rep_;
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend inherited;
     };
 
 }
