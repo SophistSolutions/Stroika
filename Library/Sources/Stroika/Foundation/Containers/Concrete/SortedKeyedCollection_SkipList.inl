@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply ([&] (auto arg) { doToElement (arg.fKey); });
         }
-        virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
+        virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, fData_.Find (that))};
@@ -72,10 +72,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             // if doing a find by 'equals-to' - we already have this indexed
-            auto found = fData_.find (v);
+            auto found = fData_.Find (v);
+#if 0
             Ensure ((found == fData_.end () and this->inherited::Find_equal_to (v, seq) == Iterator<value_type>{nullptr}) or
                     (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ())
                                   .fIterator.GetUnderlyingIteratorRep ()));
+#endif
             return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, found)};
         }
 
@@ -109,7 +111,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (key);
+            auto                                                  i = fData_.Find (key);
             if (i == fData_.end ()) {
                 if (item != nullptr) {
                     *item = nullopt;
@@ -118,7 +120,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             else {
                 if (item != nullptr) {
-                    *item = *i;
+                    *item = i->fKey;
                 }
                 return true;
             }
@@ -126,19 +128,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            pair<typename DataStructureImplType_::iterator, bool>  flagAndI = fData_.insert (item);
-            if (flagAndI.second) {
-                return true;
-            }
-            else {
-                // @todo must patch!!!
-                // in case of update, set<> wont update the value so we must remove and re-add, but todo that, use previous iterator as hint
-                typename DataStructureImplType_::iterator hint = flagAndI.first;
-                ++hint;
-                fData_.erase (flagAndI.first);
-                fData_.insert (hint, item);
-                return false;
-            }
+            size_t                                                 szBefore = fData_.size ();
+            fData_.Add (item); // note return value says if changed, doesn't report if added, so check size for that
+            fChangeCounts_.PerformedChange ();
+            return szBefore != fData_.size ();
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
@@ -146,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             mir.fIterator.AssertDataMatches (&fData_);
-            auto nextIResult = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
+            auto nextIResult = fData_.erase (mir.fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, nextIResult)};
