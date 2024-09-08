@@ -203,7 +203,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNode_ (ArgByValueType<key_type> key) const -> Link_*
+    template <Configuration::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNode_ (const KEYISH_T& key) const -> Link_*
     {
         using Common::ToInt;
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
@@ -236,6 +237,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ArgByValueType<key_type> key) const -> ForwardIterator
+    {
+        return ForwardIterator{this, FindNode_ (key)};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename ARG_T>
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ARG_T key) const -> ForwardIterator
+        requires (not same_as<typename TRAITS::AlternateFindType, void>)
     {
         return ForwardIterator{this, FindNode_ (key)};
     }

@@ -27,7 +27,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace SkipList_Support {
 
-        template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way, AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras>
+        template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way,
+                  AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras, typename ALTERNATE_FIND_TYPE = void>
         struct DefaultTraits {
             /**
              */
@@ -46,6 +47,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
             /**
              */
             static constexpr bool kCostlyInvariants{false};
+
+            /**
+             *  like is_transparent mechanism in C++14, except just adds one type (if not void) to the set of types you can find looking for)
+             *  \note when using AlternateFindType != void, caller must ALSO provide a compare function which accepts combinations of T, and AlternateFindType
+             */
+            using AlternateFindType = ALTERNATE_FIND_TYPE;
         };
 
         /**
@@ -338,6 +345,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average/Worst:    O(N)
          */
         nonvirtual ForwardIterator Find (ArgByValueType<key_type> key) const;
+        template <typename ARG_T = typename TRAITS::AlternateFindType>
+
+        nonvirtual ForwardIterator Find (ARG_T key) const
+            requires (not same_as<typename TRAITS::AlternateFindType, void>);
         template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
         nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -508,9 +519,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         /*
-         * Find node for key in SkipList, else nullptr. In cases of duplicate values, return first found
+         * Find node for key in SkipList, else nullptr. In cases of duplicate values, return first found.
          */
-        nonvirtual Link_* FindNode_ (ArgByValueType<key_type> key) const;
+        template <Configuration::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
+        nonvirtual Link_* FindNode_ (const KEYISH_T& key) const;
 
     private:
         /*
