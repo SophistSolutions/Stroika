@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explciit 'T' comparer for the T in optional<T>
+     *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explicit 'T' comparer for the T in optional<T>
      *
      *  You dont need this when the default comparer for 'T' works as you wish. But for example, ThreeWayComparer<optional<String>> - where you want
      *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
