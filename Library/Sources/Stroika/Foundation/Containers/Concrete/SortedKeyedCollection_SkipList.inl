@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList ()
         requires (three_way_comparable<KEY_TYPE> and IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
-        : SortedKeyedCollection_SkipList{KeyExtractorType{}, compare_three_way}
+        : SortedKeyedCollection_SkipList{KeyExtractorType{}, compare_three_way{}}
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
