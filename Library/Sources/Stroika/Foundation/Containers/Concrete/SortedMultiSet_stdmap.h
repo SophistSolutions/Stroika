@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         template <IInOrderComparer<T> INORDER_COMPARER = less<T>>
         using STDMAP =
-            map<T, CounterType, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const T, CounterType>, sizeof (value_type) <= 1024>>;
+            map<T, CounterType, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const T, CounterType>, sizeof (value_type) <= 256>>;
 
     public:
         /**
