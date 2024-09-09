@@ -74,7 +74,7 @@ jobs:
     container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
     steps:
       - uses: actions/checkout@v4
-      - name: Build System Info
+      - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
         run: |
           lsb_release -d 2>/dev/null || true
           echo "CWD=" `pwd`
@@ -278,7 +278,7 @@ jobs:
         shell: bash
         run: echo "branch=`echo ${GITHUB_REF#refs/heads/}`" >> $GITHUB_OUTPUT
         id: extract_branch
-      - name: Build System Info
+      - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
         shell: "bash"
         run: |
           echo "CWD: `pwd`"
