@@ -31,6 +31,8 @@ using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::SortedMultiSet_stdmap;
 
+using ComparerWithLess_ = AsIntsLessComparer<OnlyCopyableMoveable>;
+
 #if qHasFeature_GoogleTest
 namespace {
     template <typename CONCRETE_CONTAINER>
@@ -62,26 +64,41 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedMultiSet, all)
+    GTEST_TEST (Foundation_Containers_SortedMultiSet, FACTORY_DEFAULT)
     {
-        using ComparerWithLess_ = AsIntsLessComparer<OnlyCopyableMoveable>;
+        DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
+        DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        auto msFactory = [] () { return SortedMultiSet<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
+        DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
+    }
+}
 
-        {
-            DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
-            DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-            auto msFactory = [] () { return SortedMultiSet<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
-            DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
-        }
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedMultiSet, SortedMultiSet_stdmap)
+    {
+        DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
+        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
+        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
+    }
+}
 
-        {
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
-            auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
-        }
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedMultiSet, SortedMultiSet_SkipList)
+    {
+        //DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
+        //DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        //auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
+        //DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
+        //    CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedMultiSet, CLEANUP)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }

@@ -32,11 +32,19 @@ using namespace Stroika::Frameworks;
 using Concrete::MultiSet_Array;
 using Concrete::MultiSet_LinkedList;
 using Concrete::SortedMultiSet_stdmap;
+using Concrete::SortedMultiSet_SkipList;
 
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
+
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::AsIntsThreeWayComparer;
+
+using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
+using MyOnlyCopyableMoveable_ComparerWithLess_   = AsIntsLessComparer<OnlyCopyableMoveable>;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -49,99 +57,105 @@ namespace {
 }
 
 namespace {
-    namespace ExampleCTORS_Test_2_ {
-        void DoTest ()
-        {
-            // From MultiSet<> CTOR docs
-            Collection<int>  c;
-            std::vector<int> v;
-
-            MultiSet<int> s1 = {1, 2, 3};
-            MultiSet<int> s2 = s1;
-            MultiSet<int> s3{s1};
-            MultiSet<int> s4{s1.begin (), s1.end ()};
-            MultiSet<int> s5{c};
-            MultiSet<int> s6{v};
-            MultiSet<int> s7{v.begin (), v.end ()};
-            MultiSet<int> s8{move (s1)};
-            MultiSet<int> s9{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
-        }
-    }
-}
-
-namespace {
-    namespace Top_Test_3_ {
-        void DoTest ()
-        {
-            {
-                MultiSet<int> test{1, 1, 5, 1, 6, 5};
-                EXPECT_TRUE (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
-                EXPECT_TRUE (test.Top (1).SequentialEquals ({{1, 3}}));
-            }
-            {
-                MultiSet<int> test{1, 1, 5, 1, 6, 5};
-                EXPECT_TRUE (test.TopElements ().SequentialEquals ({1, 5, 6}));
-                EXPECT_TRUE (test.TopElements (1).SequentialEquals ({1}));
-            }
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, all)
+    GTEST_TEST (Foundation_Containers_MultiSet, ExampleCTORS)
     {
-        struct MyOnlyCopyableMoveable_ComparerWithEquals_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
-            {
-                return static_cast<size_t> (lhs) == static_cast<size_t> (rhs);
-            }
-        };
-        struct MyOnlyCopyableMoveable_ComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-            bool operator() (const OnlyCopyableMoveable& lhs, const OnlyCopyableMoveable& rhs) const
-            {
-                return static_cast<size_t> (lhs) < static_cast<size_t> (rhs);
-            }
-        };
+        // From MultiSet<> CTOR docs
+        Collection<int>  c;
+        std::vector<int> v;
 
+        MultiSet<int> s1 = {1, 2, 3};
+        MultiSet<int> s2 = s1;
+        MultiSet<int> s3{s1};
+        MultiSet<int> s4{s1.begin (), s1.end ()};
+        MultiSet<int> s5{c};
+        MultiSet<int> s6{v};
+        MultiSet<int> s7{v.begin (), v.end ()};
+        MultiSet<int> s8{move (s1)};
+        MultiSet<int> s9{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_MultiSet, Top_)
+    {
         {
-            DoTestForConcreteContainer_<MultiSet<size_t>> ();
-            DoTestForConcreteContainer_<MultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-            auto msFactory = [] () { return MultiSet<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
-            DoTestForConcreteContainer_<MultiSet<OnlyCopyableMoveable>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
-                    msFactory));
+            MultiSet<int> test{1, 1, 5, 1, 6, 5};
+            EXPECT_TRUE (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
+            EXPECT_TRUE (test.Top (1).SequentialEquals ({{1, 3}}));
         }
-
         {
-            DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
-            DoTestForConcreteContainer_<MultiSet_Array<OnlyCopyableMoveableAndTotallyOrdered>> ();
-            auto msFactory = [] () { return MultiSet_Array<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
-            DoTestForConcreteContainer_<MultiSet_Array<OnlyCopyableMoveable>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
-                    msFactory));
+            MultiSet<int> test{1, 1, 5, 1, 6, 5};
+            EXPECT_TRUE (test.TopElements ().SequentialEquals ({1, 5, 6}));
+            EXPECT_TRUE (test.TopElements (1).SequentialEquals ({1}));
         }
+    }
+}
 
-        {
-            DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
-            DoTestForConcreteContainer_<MultiSet_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-            auto msFactory = [] () { return MultiSet_LinkedList<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
-            DoTestForConcreteContainer_<MultiSet_LinkedList<OnlyCopyableMoveable>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
-                    msFactory));
-        }
+namespace {
+    GTEST_TEST (Foundation_Containers_MultiSet, FACTORY_DEFAULTS)
+    {
+        DoTestForConcreteContainer_<MultiSet<size_t>> ();
+        DoTestForConcreteContainer_<MultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        auto msFactory = [] () { return MultiSet<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
+        DoTestForConcreteContainer_<MultiSet<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
+                msFactory));
+    }
+}
 
-        {
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
-            auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithLess_{}}; };
-            DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_stdmap<OnlyCopyableMoveable>,
-                                                                   MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (msFactory));
-        }
+namespace {
+    GTEST_TEST (Foundation_Containers_MultiSet, MultiSet_Array)
+    {
+        DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
+        DoTestForConcreteContainer_<MultiSet_Array<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        auto msFactory = [] () { return MultiSet_Array<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
+        DoTestForConcreteContainer_<MultiSet_Array<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
+                msFactory));
+    }
+}
 
-        ExampleCTORS_Test_2_::DoTest ();
-        Top_Test_3_::DoTest ();
+namespace {
+    GTEST_TEST (Foundation_Containers_MultiSet, MultiSet_LinkedList)
+    {
+        DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
+        DoTestForConcreteContainer_<MultiSet_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        auto msFactory = [] () { return MultiSet_LinkedList<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; };
+        DoTestForConcreteContainer_<MultiSet_LinkedList<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
+                msFactory));
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_MultiSet, SortedMultiSet_stdmap)
+    {
+        DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
+        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithLess_{}}; };
+        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_stdmap<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
+                msFactory));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedMultiSet, SortedMultiSet_SkipList)
+    {
+       // SortedMultiSet_SkipList<size_t> x;
+
+       /* DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
+        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithLess_{}}; };
+        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_stdmap<OnlyCopyableMoveable>, MyOnlyCopyableMoveable_ComparerWithEquals_, decltype (msFactory)> (
+                msFactory));*/
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_MultiSet, Cleanup)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
