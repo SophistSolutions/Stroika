@@ -12,6 +12,7 @@
 
 #include "Stroika/Foundation/Containers/Concrete/MultiSet_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/MultiSet_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_stdmap.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"

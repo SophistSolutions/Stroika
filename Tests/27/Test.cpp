@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_stdmap.h"
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/Debug/Assertions.h"

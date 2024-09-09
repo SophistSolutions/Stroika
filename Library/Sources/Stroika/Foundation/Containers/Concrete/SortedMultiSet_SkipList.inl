@@ -11,17 +11,17 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T, typename TRAITS>
-    template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<T>) INORDER_COMPARER>
-    class SortedMultiSet_stdmap<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
+    template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<T>) COMPARER>
+    class SortedMultiSet_SkipList<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<COMPARER>> {
     private:
         using inherited = IImplRepBase_;
 
     public:
-        static_assert (not is_reference_v<INORDER_COMPARER>);
+        static_assert (not is_reference_v<COMPARER>);
 
     public:
-        Rep_ (const INORDER_COMPARER& inorderComparer)
-            : fData_{inorderComparer}
+        Rep_ (const COMPARER& comparer)
+            : fData_{comparer}
         {
         }
         Rep_ (const Rep_& from) = default;
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return ElementEqualityComparerType{Common::EqualsComparerAdapter<T, INORDER_COMPARER>{fData_.key_comp ()}};
+            return ElementEqualityComparerType{Common::EqualsComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
         }
         virtual shared_ptr<typename MultiSet<T, TRAITS>::_IRep> CloneEmpty () const override
         {
@@ -92,16 +92,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Add (ArgByValueType<T> item, CounterType count) override
         {
-            if (count == 0) {
+            if (count == 0) [[unlikely]] {
                 return;
             }
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto                                                   i = fData_.find (item);
+            auto                                                   i = fData_.Find (item);
             if (i == fData_.end ()) {
-                fData_.insert ({item, count});
+                fData_.Add ({item, count});
             }
             else {
-                i->second += count;
+                i->fValue += count;
             }
             fChangeCounts_.PerformedChange ();
         }
@@ -109,16 +109,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (count != 0);
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto                                                   i = fData_.find (item);
+            auto                                                   i = fData_.Find (item);
             Require (i != fData_.end ());
             if (i != fData_.end ()) {
                 size_t result; // intentionally uninitialized
-                if (i->second > count) {
-                    i->second -= count;
+                if (i->fValue > count) {
+                    i->fValue -= count;
                     result = count;
                 }
                 else {
-                    result = i->second;
+                    result = i->fValue;
                     fData_.erase (i);
                 }
                 fChangeCounts_.PerformedChange ();
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (item);
+            auto                                                  i = fData_.Find (item);
             if (i == fData_.end ()) {
                 return 0;
             }
@@ -183,13 +183,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual ElementInOrderComparerType GetElementInOrderComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return ElementInOrderComparerType{fData_.key_comp ()};
+            return ElementInOrderComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDMAP<INORDER_COMPARER>>;
-        using IteratorRep_ =
-            Private::IteratorImplHelper_<value_type, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, CounterType>>;
+        using DataStructureImplType_ = SKIPLIST<COMPARER>;
+        using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator>;
 
     private:
         DataStructureImplType_                                     fData_;
@@ -198,48 +197,48 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ************************ SortedMultiSet_stdmap<T, TRAITS> **********************
+     ********************** SortedMultiSet_SkipList<T, TRAITS> **********************
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap ()
-        : SortedMultiSet_stdmap{less<T>{}}
+    inline SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList ()
+        : SortedMultiSet_SkipList{compare_three_way{}}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IInOrderComparer<T> INORDER_COMPARER>
-    inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer)
-        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
+    template <IThreeWayComparer<T> COMPARER>
+    inline SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (COMPARER&& comparer)
+        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<COMPARER>>> (forward<COMPARER> (comparer))}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<T>& src)
-        : SortedMultiSet_stdmap{}
-    {
-        this->AddAll (src);
-        AssertRepValidType_ ();
-    }
-    template <typename T, typename TRAITS>
-    template <IInOrderComparer<T> INORDER_COMPARER>
-    SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src)
-        : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
+    SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (const initializer_list<T>& src)
+        : SortedMultiSet_SkipList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<value_type>& src)
-        : SortedMultiSet_stdmap{}
+    template <IThreeWayComparer<T> COMPARER>
+    SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (COMPARER&& comparer, const initializer_list<T>& src)
+        : SortedMultiSet_SkipList{forward<COMPARER> (comparer)}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IInOrderComparer<T> INORDER_COMPARER>
-    SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src)
-        : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
+    SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (const initializer_list<value_type>& src)
+        : SortedMultiSet_SkipList{}
+    {
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <IThreeWayComparer<T> COMPARER>
+    SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (COMPARER&& comparer, const initializer_list<value_type>& src)
+        : SortedMultiSet_SkipList{forward<COMPARER> (comparer)}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -247,40 +246,40 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
     template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
-        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet_stdmap<T, TRAITS>>)
-    inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
-        : SortedMultiSet_stdmap{}
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet_SkipList<T, TRAITS>>)
+    inline SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (ITERABLE_OF_ADDABLE&& src)
+        : SortedMultiSet_SkipList{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
 #endif
     template <typename T, typename TRAITS>
-    template <IInOrderComparer<T> INORDER_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
-    inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
-        : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
+    template <IThreeWayComparer<T> COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+    inline SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedMultiSet_SkipList{forward<COMPARER> (comparer)}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-    SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        : SortedMultiSet_stdmap{}
+    SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        : SortedMultiSet_SkipList{}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IInOrderComparer<T> INORDER_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-    SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
+    template <IThreeWayComparer<T> COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
+    SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        : SortedMultiSet_SkipList{forward<COMPARER> (comparer)}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    inline void SortedMultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
+    inline void SortedMultiSet_SkipList<T, TRAITS>::AssertRepValidType_ () const
     {
         if constexpr (qDebug) {
             typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
