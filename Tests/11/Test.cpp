@@ -272,7 +272,6 @@ namespace {
             };
             DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
                 [] () { return SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyComparerWithLess_{}); },
-                //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})
                 MyComparerWithEquals_{});
         }
 

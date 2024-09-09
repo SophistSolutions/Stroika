@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Containers {
          *          MultiSet<int> s6{ v };
          *          MultiSet<int> s7{ v.begin (), v.end () };
          *          MultiSet<int> s8{ move (s1) };
-         *          MultiSet<int> s9{ Common::mkEqualsComparer([](int l, int r) { return l == r; }), c};
+         *          MultiSet<int> s9{ Common::DeclareEqualsComparer([](int l, int r) { return l == r; }), c};
          *      \endcode
          */
         MultiSet ()
@@ -318,7 +318,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  OccurrencesOf() returns the number of occurences of 'item' in the tally. The items are compared with operator==.
+         *  OccurrencesOf() returns the number of occurrences of 'item' in the tally. The items are compared with operator==.
          *
          *  If there are no copies of item in the MultiSet, 0 is returned.
          */
@@ -348,17 +348,17 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * This is like the MultiSet was a Collection<T> (or plain Iterable<T>). If something is in there N times,
-         *  it will show up in iteration N times. No guarnatee is made as to order of iteration.
+         *  it will show up in iteration N times. No guarantee is made as to order of iteration.
          *
          *  \par Example Usage
          *      \code
          *          MultiSet<T> t;
          *          for (T i : t.Elements ()) {
-         *              // Like a collection iteration - if item t.OccurancesOf(i) == 3, then this will be encountered 3 times in the iteration
+         *              // Like a collection iteration - if item t.OccurrencesOf(i) == 3, then this will be encountered 3 times in the iteration
          *          }
          *      \endcode
          *
-         *  Elements () makes no guarantess about whether or not modifications to the underlying MultiSet<> will
+         *  Elements () makes no guarantees about whether or not modifications to the underlying MultiSet<> will
          *  appear in the Elements() Iterable<T>.
          *
          *  @see UniqueElements
@@ -371,7 +371,7 @@ namespace Stroika::Foundation::Containers {
          *      \code
          *          MultiSet<T> t;
          *          for (T i : t.UniqueElements ()) {
-         *              // Like a set iteration - if item t.OccurancesOf(i) == 3, then this will be encountered 1 times in the iteration
+         *              // Like a set iteration - if item t.OccurrencesOf(i) == 3, then this will be encountered 1 times in the iteration
          *          }
          *      \endcode
          *

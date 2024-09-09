@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             value_type                                            tmp{item};
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.find (item) != fData_.end ();
+            return fData_.Find (item) != fData_.end ();
         }
         virtual void Add (ArgByValueType<T> item, CounterType count) override
         {
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.Add ({item, count});
             }
             else {
-                i->fValue += count;
+                i.UpdateValue (i->fValue + count);
             }
             fChangeCounts_.PerformedChange ();
         }
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (i != fData_.end ()) {
                 size_t result; // intentionally uninitialized
                 if (i->fValue > count) {
-                    i->fValue -= count;
+                    i.UpdateValue (i->fValue - count);
                     result = count;
                 }
                 else {
@@ -130,19 +130,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not i.Done ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-
-            if (nextI != nullptr) {
-                *nextI = i;
-                ++(*nextI);
-            }
-
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             mir.fIterator.AssertDataMatches (&fData_);
-            (void)fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
+            auto nextIRes = fData_.erase (mir.fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
-                nextI->Refresh (); // update to reflect changes made to rep
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, nextIRes)};
             }
         }
         virtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) override
@@ -150,16 +143,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (newCount == 0) {
-                if (nextI != nullptr) {
-                    *nextI = i;
-                    ++(*nextI);
+                if (nextI == nullptr) {
+                    fData_.Remove (mir.fIterator);
                 }
-                (void)fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
+                else {
+                    auto nextIRes = fData_.erase (mir.fIterator);
+                    *nextI        = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, nextIRes)};
+                }
             }
             else {
-                fData_.remove_constness (mir.fIterator.GetUnderlyingIteratorRep ())->second = newCount;
+                fData_.Update (mir.fIterator, newCount);
                 if (nextI != nullptr) {
-                    *nextI = i;
+                    *nextI = i; // update doesn't affect iterators
                 }
             }
             fChangeCounts_.PerformedChange ();
@@ -175,7 +170,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (i == fData_.end ()) {
                 return 0;
             }
-            return i->second;
+            return i->fValue;
         }
 
         // SortedMultiSet<T,TRAITS>::_IRep overrides
@@ -188,7 +183,31 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = SKIPLIST<COMPARER>;
-        using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator>;
+        struct IteratorRep_ : Private::IteratorImplHelper_<value_type, DataStructureImplType_> {
+            using inherited = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+            using inherited::inherited; // forward base class constructors
+            // override to map just the key part to 'T'
+            virtual void More (optional<value_type>* result, bool advance) override
+            {
+                RequireNotNull (result);
+                this->ValidateChangeCount ();
+                if (advance) [[likely]] {
+                    Require (not this->fIterator.Done ());
+                    ++this->fIterator;
+                }
+                if (this->fIterator.Done ()) [[unlikely]] {
+                    *result = nullopt;
+                }
+                else {
+                    *result = value_type{this->fIterator->fKey, this->fIterator->fValue};
+                }
+            }
+            virtual auto Clone () const -> unique_ptr<typename Iterator<value_type>::IRep> override
+            {
+                this->ValidateChangeCount ();
+                return make_unique<IteratorRep_> (*this);
+            }
+        };
 
     private:
         DataStructureImplType_                                     fData_;

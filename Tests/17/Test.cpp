@@ -268,7 +268,6 @@ namespace {
                 [] () {
                     return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{});
                 },
-                //Common::mkEqualsComparerAdapter (MyOnlyCopyableMoveable_ComparerWithLess_{})
                 MyOnlyCopyableMoveable_ComparerWithEquals_{});
         }
 

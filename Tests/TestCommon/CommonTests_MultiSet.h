@@ -23,8 +23,8 @@ namespace CommonTests {
         struct DefaultFactory {
             CONCRETE_CONTAINER operator() () const
             {
-                return CONCRETE_CONTAINER ();
-            };
+                return CONCRETE_CONTAINER{};
+            }
         };
 
         template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER = std::equal_to<typename CONCRETE_CONTAINER::MultiSetOfElementType>, typename FACTORY = DefaultFactory<CONCRETE_CONTAINER>>
@@ -65,7 +65,7 @@ namespace CommonTests {
                     using T                  = typename CONCRETE_CONTAINER::MultiSetOfElementType;
                     const size_t kTestSize   = 6;
 
-                    EXPECT_TRUE (s.size () == 0);
+                    EXPECT_EQ (s.size (), 0u);
                     applyToContainer (s);
 
                     for ([[maybe_unused]] CountedValue<T> i : s) {
@@ -88,7 +88,7 @@ namespace CommonTests {
                         }
                         applyToContainer (s);
 
-                        EXPECT_TRUE (s.size () == kTestSize);
+                        EXPECT_EQ (s.size (), kTestSize);
 
                         {
                             for ([[maybe_unused]] CountedValue<T> it : s) {
@@ -100,7 +100,7 @@ namespace CommonTests {
                                 EXPECT_TRUE (not s.Contains (i - 1));
                             }
                             EXPECT_TRUE (s.empty ());
-                            EXPECT_TRUE (s.size () == 0);
+                            EXPECT_EQ (s.size (), 0u);
                         }
 
                         for (size_t i = 1; i <= kTestSize; i++) {
@@ -115,7 +115,7 @@ namespace CommonTests {
                                 applyToContainer (s);
                             }
                             EXPECT_TRUE (s.empty ());
-                            EXPECT_TRUE (s.size () == 0);
+                            EXPECT_EQ (s.size (), 0u);
                         }
 
                         for (size_t i = 1; i <= kTestSize; i++) {
@@ -129,7 +129,7 @@ namespace CommonTests {
                             s.Remove (current);
                             it2 = s.begin ();
                         }
-                        EXPECT_TRUE (s.size () == 0);
+                        EXPECT_EQ (s.size (), 0u);
                     }
 
                     /*
@@ -138,12 +138,12 @@ namespace CommonTests {
                     {
                         s.RemoveAll ();
                         applyToContainer (s);
-                        EXPECT_TRUE (s.size () == 0);
+                        EXPECT_EQ (s.size (), 0u);
                         for (size_t i = 1; i <= kTestSize; i++) {
                             s.Add (i);
                             applyToContainer (s);
                         }
-                        EXPECT_TRUE (s.size () == kTestSize);
+                        EXPECT_EQ (s.size (), kTestSize);
                         for (auto it3 = s.begin (); it3 != s.end ();) {
                             if (s.size () != 0) {
                                 applyToContainer (s);
@@ -169,14 +169,14 @@ namespace CommonTests {
 
                     TALLY_ARCHTYPE s1 (s);
 
-                    EXPECT_TRUE (s1 == s);
+                    EXPECT_EQ (s1, s);
                     TALLY_ARCHTYPE s2 = s1;
 
-                    EXPECT_TRUE (s2 == s);
-                    EXPECT_TRUE (s2 == s1);
+                    EXPECT_EQ (s2, s);
+                    EXPECT_EQ (s2, s1);
                     s2.Add (three);
                     applyToContainer (mk_ (testingSchema.Factory, s2));
-                    EXPECT_TRUE (s1 == s);
+                    EXPECT_EQ (s1, s);
                     EXPECT_TRUE (s2 != s1);
 
                     MultiSetIteratorTests_ (testingSchema, s);
@@ -185,16 +185,16 @@ namespace CommonTests {
 
                     EXPECT_TRUE (s.empty ());
                     s.Add (three);
-                    EXPECT_TRUE (s.size () == 1);
+                    EXPECT_EQ (s.size (), 1u);
                     s += three;
-                    EXPECT_TRUE (s.size () == 1);
+                    EXPECT_EQ (s.size (), 1u);
                     EXPECT_TRUE (s.Contains (three));
-                    EXPECT_TRUE (s.OccurrencesOf (three) == 2);
+                    EXPECT_EQ (s.OccurrencesOf (three), 2u);
                     s.Remove (three);
                     applyToContainer (s);
-                    EXPECT_TRUE (s.size () == 1);
+                    EXPECT_EQ (s.size (), 1u);
                     EXPECT_TRUE (s.Contains (three));
-                    EXPECT_TRUE (s.OccurrencesOf (three) == 1);
+                    EXPECT_EQ (s.OccurrencesOf (three), 1u);
                     s.Remove (three);
                     EXPECT_TRUE (s.empty ());
                     s.RemoveAll ();
@@ -302,7 +302,7 @@ namespace CommonTests {
                         }
                     }
                     EXPECT_TRUE (s.empty ());
-                    EXPECT_TRUE (s.size () == 0);
+                    EXPECT_EQ (s.size (), 0u);
 
                     for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
                         for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
@@ -360,7 +360,7 @@ namespace CommonTests {
                     s.Add (1);
                     s.Add (1);
                     s.Add (2);
-                    EXPECT_TRUE (s.size () == 2);
+                    EXPECT_EQ (s.size (), 2u);
                     CONCRETE_CONTAINER s3 = s;
                     EXPECT_TRUE (s == s3);
                     EXPECT_TRUE (not(s != s3));
@@ -382,9 +382,9 @@ namespace CommonTests {
                         EXPECT_TRUE (s.size () == 4);
                         EXPECT_TRUE (s.Elements ().size () == 7);
                         TALLY_ARCHTYPE tmp = mk_ (testingSchema.Factory, s.Elements ());
-                        EXPECT_TRUE (tmp.OccurrencesOf (1) == 1);
-                        EXPECT_TRUE (tmp.OccurrencesOf (0) == 0);
-                        EXPECT_TRUE (tmp.OccurrencesOf (4) == 4);
+                        EXPECT_EQ (tmp.OccurrencesOf (1), 1u);
+                        EXPECT_EQ (tmp.OccurrencesOf (0), 0u);
+                        EXPECT_EQ (tmp.OccurrencesOf (4), 4u);
                     }
                 }
             }
@@ -397,8 +397,8 @@ namespace CommonTests {
                     using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     {
                         CONCRETE_CONTAINER s = mk_ (testingSchema.Factory, initializer_list<int>{1, 2, 3, 4, 4, 4, 4});
-                        EXPECT_TRUE (s.size () == 4);
-                        EXPECT_TRUE (s.UniqueElements ().size () == 4);
+                        EXPECT_EQ (s.size (), 4u);
+                        EXPECT_EQ (s.UniqueElements ().size (), 4u);
                     }
                 }
             }

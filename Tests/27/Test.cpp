@@ -26,12 +26,12 @@ using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
+using Concrete::SortedMultiSet_SkipList;
 using Concrete::SortedMultiSet_stdmap;
-
-using ComparerWithLess_ = AsIntsLessComparer<OnlyCopyableMoveable>;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -68,9 +68,10 @@ namespace {
     {
         DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
         DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return SortedMultiSet<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
+        auto msFactory = [] () { return SortedMultiSet<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; };
         DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsLessComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
+                msFactory));
     }
 }
 
@@ -79,20 +80,22 @@ namespace {
     {
         DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
         DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
+        auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; };
         DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsLessComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
+                msFactory));
     }
 }
 
 namespace {
     GTEST_TEST (Foundation_Containers_SortedMultiSet, SortedMultiSet_SkipList)
     {
-        //DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
-        //DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        //auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{ComparerWithLess_{}}; };
-        //DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
-        //    CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, ComparerWithLess_, decltype (msFactory)> (msFactory));
+        DoTestForConcreteContainer_<SortedMultiSet_SkipList<size_t>> ();
+        DoTestForConcreteContainer_<SortedMultiSet_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
+        auto msFactory = [] () { return SortedMultiSet_SkipList<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}}; };
+        DoTestForConcreteContainer_<SortedMultiSet_SkipList<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsEqualsComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
+                msFactory));
     }
 }
 
