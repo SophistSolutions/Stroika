@@ -640,7 +640,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator  operator++ (int);
 
     public:
-        // safe to update in place since doesn't change order of list (since not updating key)
+        // safe to update in place (doesn't change iterators) since doesn't change order of list (since not updating key)
         template <typename CHECKED_T = MAPPED_TYPE>
         nonvirtual void UpdateValue (ArgByValueType<CHECKED_T> newValue)
             requires (not same_as<MAPPED_TYPE, void>);
