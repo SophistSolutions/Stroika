@@ -73,10 +73,10 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Ordering reletion applied to sort a 'SortedSet'. Returned by GetInOrderComparer ();
+         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetInOrderComparer ();
          */
         using ElementInOrderComparerType =
-            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
 
     public:
         /**

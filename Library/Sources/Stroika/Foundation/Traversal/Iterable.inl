@@ -1157,10 +1157,10 @@ namespace Stroika::Foundation::Traversal {
         return end ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRTOR_ARGS>
-    CONTAINER_OF_T Iterable<T>::As (CONTAINER_OF_T_CONSTRTOR_ARGS... args) const
+    template <typename CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRUCTOR_ARGS>
+    inline CONTAINER_OF_T Iterable<T>::As (CONTAINER_OF_T_CONSTRUCTOR_ARGS... args) const
     {
-        return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRTOR_ARGS> (args)..., begin (),
+        return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (),
                                end ()); // use () instead of {} because we do want to allow coercion here - since use explicitly called As<>
     }
     template <typename T>

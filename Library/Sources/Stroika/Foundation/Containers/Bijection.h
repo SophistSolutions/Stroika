@@ -60,13 +60,13 @@ namespace Stroika::Foundation::Containers {
      *
      *  Bijection allows for the bijective (1-1) association of two elements. This means that one element
      *  of the domain maps to exactly one element of the range, and that one element of the range maps uniquely to
-     *  one element of the domain, and these mappings happen in a way that the mapping is fully invertable.
+     *  one element of the domain, and these mappings happen in a way that the mapping is fully invertible.
      *
      *  @see    http://en.wikipedia.org/wiki/Bijection
      *
      *  Design Notes:
      *      \note   We used Iterable<pair<DOMAIN_TYPE,RANGE_TYPE>> instead of
-     *              Iterable<KeyValuePairType<DOMAIN_TYPE,RANGE_TYPE>> because its completly symetric - both
+     *              Iterable<KeyValuePairType<DOMAIN_TYPE,RANGE_TYPE>> because its completely symmetric - both
      *              directions the values are keys.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers {
          *  we allow any template in the Bijection<> CTOR for an equalityComparer that follows the Common::IEqualsComparer concept.
          */
         using DomainEqualsCompareFunctionType =
-            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (DomainType, DomainType)>>;
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (ArgByValueType<DomainType>, ArgByValueType<DomainType>)>>;
         static_assert (IEqualsComparer<DomainEqualsCompareFunctionType, DomainType>);
 
     public:

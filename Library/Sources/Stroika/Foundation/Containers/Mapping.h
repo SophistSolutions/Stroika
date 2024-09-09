@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Containers {
          *  we allow any template in the Mapping<> CTOR for a keyEqualityComparer that follows the IEqualsComparer concept.
          */
         using KeyEqualsCompareFunctionType =
-            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (key_type, key_type)>>;
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (ArgByValueType<key_type>, ArgByValueType<key_type>)>>;
         static_assert (IEqualsComparer<KeyEqualsCompareFunctionType, key_type>);
 
     public:

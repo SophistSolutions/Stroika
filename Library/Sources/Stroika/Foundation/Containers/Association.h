@@ -96,9 +96,9 @@ namespace Stroika::Foundation::Containers {
      *          Two Associations are considered equal if they contain the same elements (keys) and each key is associated
      *          with the same value. There is no need for the items to appear in the same order for the two Associations to
      *          be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-     *          vers linkedlist).
+     *          vers LinkedList).
      *
-     *          \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
+     *          \req lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
      *
      *          @todo - document computational complexity
      *
@@ -143,14 +143,14 @@ namespace Stroika::Foundation::Containers {
          *  we allow any template in the Association<> CTOR for a keyEqualityComparer that follows the IEqualsComparer<KEY_TYPE> concept.
          */
         using KeyEqualsCompareFunctionType =
-            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (key_type, key_type)>>;
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (ArgByValueType<key_type>, ArgByValueType<key_type>)>>;
 
     public:
         /**
          *  This constructor creates a concrete Association object, either empty, or initialized with any argument
          *  values.
          *
-         *  The underlying data structure (and performance characteristcs) of the Association is
+         *  The underlying data structure (and performance characteristics) of the Association is
          *  defined by @see Factory::Association_Factory<>
          *
          *  \par Example Usage
@@ -178,8 +178,8 @@ namespace Stroika::Foundation::Containers {
             requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Association (KEY_EQUALS_COMPARER&& keyEqualsComparer);
-        Association (Association&& src) noexcept      = default;
-        Association (const Association& src) noexcept = default;
+        Association (Association&&) noexcept      = default;
+        Association (const Association&) noexcept = default;
         Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
@@ -211,8 +211,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Association& operator= (Association&& rhs) noexcept = default;
-        nonvirtual Association& operator= (const Association& rhs)     = default;
+        nonvirtual Association& operator= (Association&&) noexcept = default;
+        nonvirtual Association& operator= (const Association&)     = default;
 
     public:
         /**

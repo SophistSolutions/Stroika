@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Invariant ();
-            bool   result{};
+            bool                    result{};
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { fChangeCounts_.PerformedChange (); });
             switch (addReplaceMode) {
                 case AddReplaceMode::eAddReplaces:

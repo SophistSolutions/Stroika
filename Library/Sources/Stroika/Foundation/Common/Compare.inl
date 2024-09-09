@@ -12,14 +12,9 @@ namespace Stroika::Foundation::Common {
      */
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
         requires (not is_reference_v<ACTUAL_COMPARER>)
-    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
-        : ACTUAL_COMPARER{actualComparer}
-    {
-    }
-    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
-        requires (not is_reference_v<ACTUAL_COMPARER>)
-    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
-        : ACTUAL_COMPARER{move (actualComparer)}
+    template <typename... ARGS>
+    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ARGS... args)
+        : ACTUAL_COMPARER{std::forward<ARGS> (args)...}
     {
     }
 

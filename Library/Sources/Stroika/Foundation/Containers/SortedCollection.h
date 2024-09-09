@@ -18,7 +18,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Implement using redblback trees (kind of done via STL, but do with explicit RedBlackTree class)
+ *      @todo   Implement using red-black trees (kind of done via STL, but do with explicit RedBlackTree class)
  *
  */
 
@@ -83,7 +83,8 @@ namespace Stroika::Foundation::Containers {
          *  This CAN be used as the argument to a SortedSet<> as InOrderComparerType, but
          *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer  concept (need better name).
          */
-        using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
+        using InOrderComparerType =
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
 
     public:
         /**

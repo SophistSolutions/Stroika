@@ -10,7 +10,7 @@ namespace Stroika::Foundation::Configuration {
 
     /**
      *  The assume attribute was introduced in c++23, and Stroika OPTIONALLY supports this, but doesn't require it as of Stroika v3.
-     *  So use _ASSUME_ATTRIBUTE_ () to conditionaly use [[assume(X)]]
+     *  So use _ASSUME_ATTRIBUTE_ () to conditionally use [[assume(X)]]
      */
 #if __has_cpp_attribute(assume)
 #define _ASSUME_ATTRIBUTE_(X) [[assume (X)]];

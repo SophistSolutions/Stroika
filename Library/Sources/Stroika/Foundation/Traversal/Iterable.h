@@ -31,7 +31,7 @@
  *  TODO:
  *      @todo   For methods similar to Iterable<T>::Where() (did for where),
  *              consider a TEMPLATED PARAMETER for the resulting Container type, so you can create a "Set" or whatever by doing
- *              Where... But tricky to unformly add to different container types. Maybe only ones you can say add, or the adder is
+ *              Where... But tricky to uniformly add to different container types. Maybe only ones you can say add, or the adder is
  *              a template paraM?
  *              Eg. Distinct, Take, Skip (maybe those sense logically to be transform operations - so maybe OK now doing others but review
  *              each to see where it makes sense).
@@ -620,8 +620,8 @@ namespace Stroika::Foundation::Traversal {
          *      We chose NOT to include an overload taking iterators because there was no connection between
          *      'this' and the used iterators, so you may as well just directly call CONTAINER_OF_T{it1, it2}.
          */
-        template <typename CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRTOR_ARGS>
-        nonvirtual CONTAINER_OF_T As (CONTAINER_OF_T_CONSTRTOR_ARGS... args) const;
+        template <typename CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRUCTOR_ARGS>
+        nonvirtual CONTAINER_OF_T As (CONTAINER_OF_T_CONSTRUCTOR_ARGS... args) const;
 
     public:
         /**

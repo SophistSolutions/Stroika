@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   Shake
      *      Considered adding a Shake() method (when this was called Bag<T>), but that would restrict
-     *      the use to backends capable of this randomizing of order (eg. not hashtables
+     *      the use to backends capable of this randomizing of order (eg. not hash tables
      *      or trees), and is incompatible with the idea of subtypes like  SortedCollection<T>. Also
      *      since a Collection<> intrinsically has no ordering, I'm not totally sure what it would
      *      mean to Shake/change its ordering?
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'ITERABLE_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
          *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
-         *          acts just like an Iterable<T> (except that its modifyable). So allow this case to be non-explicit.
+         *          acts just like an Iterable<T> (except that its modifiable). So allow this case to be non-explicit.
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */

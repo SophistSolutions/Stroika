@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers {
          *  Ordering relation applied to sort a 'SortedMultiSet'. Returned by GetElementInOrderComparer ();
          */
         using ElementInOrderComparerType =
-            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
 
     public:
         /**

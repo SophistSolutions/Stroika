@@ -284,13 +284,13 @@ namespace Stroika::Foundation::Common {
         /**
          */
         constexpr ComparisonRelationDeclaration () = default;
-        constexpr ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer);
-        constexpr ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer);
-        constexpr ComparisonRelationDeclaration (const ComparisonRelationDeclaration&) = default;
-        constexpr ComparisonRelationDeclaration (ComparisonRelationDeclaration&&)      = default;
+        template <typename... ARGS>
+        constexpr ComparisonRelationDeclaration (ARGS... args);
+        constexpr ComparisonRelationDeclaration (const ComparisonRelationDeclaration&)     = default;
+        constexpr ComparisonRelationDeclaration (ComparisonRelationDeclaration&&) noexcept = default;
 
-        constexpr ComparisonRelationDeclaration& operator= (const ComparisonRelationDeclaration&) = default;
-        constexpr ComparisonRelationDeclaration& operator= (ComparisonRelationDeclaration&&)      = default;
+        constexpr ComparisonRelationDeclaration& operator= (const ComparisonRelationDeclaration&)     = default;
+        constexpr ComparisonRelationDeclaration& operator= (ComparisonRelationDeclaration&&) noexcept = default;
     };
 
     /**
