@@ -14,6 +14,10 @@ on:
         description: "run all"
         required: false
         default: "true"
+      container_version:
+        description: "Container Version"
+        required: false
+        default: "v3"
 
 jobs:
   LinuxMatrixPrep:
@@ -67,7 +71,7 @@ jobs:
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
-    container: ${{ matrix.container_image }}
+    container: ${{ matrix.container_image }}:${{github.event.inputs.container_version}}
     steps:
       - uses: actions/checkout@v4
       - name: Build System Info
@@ -283,16 +287,16 @@ jobs:
           systeminfo
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
       # No actual need todo this step (would be done implicitly/automatically) - but do to track how long the step takes (13min)
-      - name: docker pull ${{ matrix.container_image }}
-        run: docker pull ${{ matrix.container_image }}
+      - name: docker pull ${{ matrix.container_image }}:${{github.event.inputs.container_version}}
+        run: docker pull ${{ matrix.container_image }}:${{github.event.inputs.container_version}}
       - name: Start docker build environment
         shell: "bash"
         ### ash rebaseall nonsense to try and workaround sporadic failure on MSYS
         ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
         ### and with this hack, it hasn't happened in years --LGP 2024-03-03
-        # docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
+        # docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version}} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
         run: |
-          docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }} bash
+          docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version}} bash
       - name: Print Info about docker system
         shell: "bash"
         run: |
