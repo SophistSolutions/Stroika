@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
     class Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
         : public Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>,
           public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {

@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = Private::SkipListBasedContainerIRep<typename SortedSet<T>::_IRep>;
-        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<T>) COMPARER>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) COMPARER>
         class Rep_;
 
     private:

@@ -1196,7 +1196,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
     constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer,
                                                                                                   bool useIterableSize)
         : fElementComparer{elementEqualsComparer}
@@ -1204,7 +1204,7 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
     inline bool Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
     {
         return SequentialEquals (lhs, rhs, fElementComparer, fUseIterableSize);
@@ -1216,14 +1216,14 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
     constexpr Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer)
         : fElementComparer{elementComparer}
     {
     }
     DISABLE_COMPILER_MSC_WARNING_START (4701)
     template <typename T>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
     inline auto Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
     {
         auto li = lhs.begin ();

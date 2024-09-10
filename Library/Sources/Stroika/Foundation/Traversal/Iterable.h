@@ -442,11 +442,11 @@ namespace Stroika::Foundation::Traversal {
                                           bool useIterableSize = false) const;
 
     public:
-        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER = equal_to<T>>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER = equal_to<T>>
         struct SequentialEqualsComparer;
 
     public:
-        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER = compare_three_way>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER = compare_three_way>
         struct SequentialThreeWayComparer;
 
     public:
@@ -1612,7 +1612,7 @@ namespace Stroika::Foundation::Traversal {
      *  Computational Complexity: O(N)
      */
     template <typename T>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
     struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {}, bool useIterableSize = false);
         nonvirtual bool                         operator() (const Iterable& lhs, const Iterable& rhs) const;
@@ -1627,7 +1627,7 @@ namespace Stroika::Foundation::Traversal {
      *  if the right ends first, treat that as >.
      */
     template <typename T>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
     struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
         nonvirtual auto                           operator() (const Iterable& lhs, const Iterable& rhs) const;

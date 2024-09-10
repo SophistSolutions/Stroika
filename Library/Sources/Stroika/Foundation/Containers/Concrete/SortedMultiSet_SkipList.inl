@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T, typename TRAITS>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<T>) COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) COMPARER>
     class SortedMultiSet_SkipList<T, TRAITS>::Rep_ : public Private::SkipListBasedContainerRepImpl<Rep_<COMPARER>, IImplRepBase_>,
                                                      public Memory::UseBlockAllocationIfAppropriate<Rep_<COMPARER>> {
     private:

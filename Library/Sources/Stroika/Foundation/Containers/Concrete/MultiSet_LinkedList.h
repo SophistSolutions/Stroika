@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename MultiSet<T, TRAITS>::_IRep;
-        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) EQUALS_COMPARER>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) EQUALS_COMPARER>
         class Rep_;
 
     private:

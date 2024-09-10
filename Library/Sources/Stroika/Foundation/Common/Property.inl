@@ -13,9 +13,9 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <qCompilerAndStdLib_UseREQ1_BWA (invocable<const ReadOnlyProperty<T>*>) G>
+    template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (invocable<const ReadOnlyProperty<T>*>) G>
     constexpr ReadOnlyProperty<T>::ReadOnlyProperty (G getter)
-        qCompilerAndStdLib_UseREQ2_BWA (requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>))
+        qCompilerAndStdLib_RequiresNotMatchXXXDefined_2_BWA (requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>))
         : fGetter_ (getter) // no uniform initialization because this may involve conversions
     {
     }
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <qCompilerAndStdLib_UseREQ1_BWA (invocable<WriteOnlyProperty<T>*, T>) S>
+    template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (invocable<WriteOnlyProperty<T>*, T>) S>
     constexpr WriteOnlyProperty<T>::WriteOnlyProperty (S setter)
         : fSetter_ (setter) // no uniform initialization because this may involve conversions
     {
@@ -157,10 +157,10 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <qCompilerAndStdLib_UseREQ1_BWA (invocable<const ExtendableProperty<T>*>) G,
-              qCompilerAndStdLib_UseREQ1_BWA (invocable<ExtendableProperty<T>*, remove_cvref_t<T>>) S>
+    template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (invocable<const ExtendableProperty<T>*>) G,
+              qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (invocable<ExtendableProperty<T>*, remove_cvref_t<T>>) S>
     ExtendableProperty<T>::ExtendableProperty (G getter, S setter)
-        qCompilerAndStdLib_UseREQ2_BWA (requires (convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>))
+        qCompilerAndStdLib_RequiresNotMatchXXXDefined_2_BWA (requires (convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>))
         : Property<T>{[getter] ([[maybe_unused]] const auto* property) -> typename Property<T>::base_value_type {
                           // Subtle - but the 'property' here refers to 'this' (ExtendableProperty). The getter itself will want to extract the parent object, but
                           // unlike other getter/setters, here the auto property is already for this object.

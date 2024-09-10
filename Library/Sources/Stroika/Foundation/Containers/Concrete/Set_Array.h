@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = Containers::Private::ArrayBasedContainerIRep<typename Set<T>::_IRep>;
-        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) EQUALS_COMPARER>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) EQUALS_COMPARER>
         class Rep_;
 
     private:

@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = Private::SkipListBasedContainerIRep<typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>;
-        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
         class Rep_;
 
     private:

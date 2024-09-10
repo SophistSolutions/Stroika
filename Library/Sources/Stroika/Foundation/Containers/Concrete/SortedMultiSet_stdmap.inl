@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T, typename TRAITS>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IInOrderComparer<T>) INORDER_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IInOrderComparer<T>) INORDER_COMPARER>
     class SortedMultiSet_stdmap<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
     private:
         using inherited = IImplRepBase_;

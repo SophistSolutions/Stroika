@@ -1760,7 +1760,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
  WITH CLANG++-18:
 n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h:111:
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SortedSet_stdset.inl:17:60: error: type constraint differs in template redeclaration
-   17 |     template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IInOrderComparer<T>) INORDER_COMPARER>
+   17 |     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IInOrderComparer<T>) INORDER_COMPARER>
       |                                                            ^
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h:97:64: note: previous template declaration is here
 
@@ -3081,7 +3081,7 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 
 /**
 * 
-* OR sometimes wtih VS2k22 17.4, when running from command line, just appears to hang from command line 
+* OR sometimes with VS2k22 17.4, when running from command line, just appears to hang from command line 
 *  (but see crash in debugger)
 * 
 * 
@@ -3605,17 +3605,17 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #endif
 
 #if qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
-#define qCompilerAndStdLib_UseConceptOrTypename_BWA(CONSTRAINT) typename
+#define qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA(...) typename
 #else
-#define qCompilerAndStdLib_UseConceptOrTypename_BWA(CONSTRAINT) CONSTRAINT
+#define qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA(...) __VA_ARGS__
 #endif
 
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-#define qCompilerAndStdLib_UseREQ1_BWA(...) typename
-#define qCompilerAndStdLib_UseREQ2_BWA(...)
+#define qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA(...) typename
+#define qCompilerAndStdLib_RequiresNotMatchXXXDefined_2_BWA(...)
 #else
-#define qCompilerAndStdLib_UseREQ1_BWA(...) __VA_ARGS__
-#define qCompilerAndStdLib_UseREQ2_BWA(...) __VA_ARGS__
+#define qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA(...) __VA_ARGS__
+#define qCompilerAndStdLib_RequiresNotMatchXXXDefined_2_BWA(...) __VA_ARGS__
 #endif
 
 /*

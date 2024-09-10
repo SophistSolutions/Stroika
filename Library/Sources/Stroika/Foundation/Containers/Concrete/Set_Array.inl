@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T>
-    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) EQUALS_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) EQUALS_COMPARER>
     class Set_Array<T>::Rep_
         : public Private::ArrayBasedContainerRepImpl<Set_Array<T>::Rep_<EQUALS_COMPARER>, typename Set_Array<T>::IImplRepBase_>,
           public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
