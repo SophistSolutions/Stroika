@@ -84,9 +84,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
-
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
@@ -100,7 +97,7 @@ namespace Stroika::Foundation::Containers {
         PriorityQueue (const PriorityQueue& src) = default;
 
     protected:
-        explicit PriorityQueue (const _IRepSharedPtr& rep);
+        explicit PriorityQueue (const shared_ptr<_IRep>& rep);
 
 #if qDebug
     public:
@@ -161,15 +158,12 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual ~_IRep ();
 
-    protected:
-        using _IRepSharedPtr = typename PriorityQueue<T>::_IRepSharedPtr;
-
     public:
-        virtual _IRepSharedPtr CloneEmpty () const                 = 0;
-        virtual void           Enqueue (T item, Priority priority) = 0;
-        virtual T              Dequeue ()                          = 0;
-        virtual T              Head () const                       = 0;
-        virtual Iterable<T>    Elements () const                   = 0;
+        virtual shared_ptr<_IRep> CloneEmpty () const                 = 0;
+        virtual void              Enqueue (T item, Priority priority) = 0;
+        virtual T                 Dequeue ()                          = 0;
+        virtual T                 Head () const                       = 0;
+        virtual Iterable<T>       Elements () const                   = 0;
     };
 }
 

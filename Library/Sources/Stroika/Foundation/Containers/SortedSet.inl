@@ -26,13 +26,13 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline SortedSet<T>::SortedSet (const _IRepSharedPtr& src) noexcept
+    inline SortedSet<T>::SortedSet (const shared_ptr<_IRep>& src) noexcept
         : inherited{(RequireExpression (src != nullptr), src)}
     {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline SortedSet<T>::SortedSet (_IRepSharedPtr&& src) noexcept
+    inline SortedSet<T>::SortedSet (shared_ptr<_IRep>&& src) noexcept
         : inherited{(RequireExpression (src != nullptr), move (src))}
     {
         _AssertRepValidType ();

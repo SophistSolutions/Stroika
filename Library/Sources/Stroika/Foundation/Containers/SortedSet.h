@@ -68,9 +68,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  Ordering relation applied to sort a 'SortedSet'. Returned by GetInOrderComparer ();
@@ -120,8 +117,8 @@ namespace Stroika::Foundation::Containers {
         SortedSet (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit SortedSet (_IRepSharedPtr&& src) noexcept;
-        explicit SortedSet (const _IRepSharedPtr& src) noexcept;
+        explicit SortedSet (shared_ptr<_IRep>&& src) noexcept;
+        explicit SortedSet (const shared_ptr<_IRep>& src) noexcept;
 
     public:
         /**

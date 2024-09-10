@@ -75,9 +75,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
