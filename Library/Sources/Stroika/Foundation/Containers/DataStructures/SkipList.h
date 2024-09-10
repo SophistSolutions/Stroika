@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      pointers that go (each progressively) further into the linked list. Ideally, these 'jumps' deeper 
      *      into the linked list would be 'well spaced' so that you approach log(N) lookup times trying to find a Node.
      * 
-     *      For each node, the fLinks[0] is always == NEXT link.
+     *      For each link, the fLinks[0] is always == NEXT link.
      * 
      * \see http://en.wikipedia.org/wiki/Skip_list:
      *      A skip list is a data structure for storing a sorted list of items using a hierarchy of linked lists that connect
@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
-        SkipList (KeyComparerType keyComparer = {});
+        SkipList (const KeyComparerType& keyComparer = {});
         SkipList (SkipList&& src) noexcept;
         SkipList (const SkipList& src);
         ~SkipList ();
@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-        * @todo discuss with sterl - if we allow multiple values with same key, add removeall overload taking key_type, and maybe returning count removed? removeallif
+        * @todo discuss with sterl - if we allow multiple values with same key, add RemoveAll overload taking key_type, and maybe returning count removed? RemoveAllIf
          */
         nonvirtual void RemoveAll ();
 
@@ -432,7 +432,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         * make the node faster on finds, possibly slowing other node searches down
+         * make the key faster on finds, possibly slowing other key searches down
          * 
          *  \note Runtime performance/complexity:
          *      Average/WorseCase???
@@ -444,7 +444,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      Always: O(N)
          */
-
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
@@ -521,10 +520,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         /*
-         * Find node for key in SkipList, else nullptr. In cases of duplicate values, return first found.
+         * Find Link for key in SkipList, else nullptr. In cases of duplicate values, return first found.
          */
         template <Configuration::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
-        nonvirtual Link_* FindNode_ (const KEYISH_T& key) const;
+        nonvirtual Link_* FindLink_ (const KEYISH_T& key) const;
 
     private:
         /*
@@ -539,10 +538,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual Link_* FindNearest_ (const ForwardIterator& i, LinkVector_& links) const;
 
     private:
-        nonvirtual void AddNode_ (Link_* n, const LinkVector_& linksToPatch);
+        nonvirtual void AddLink_ (Link_* n, const LinkVector_& linksToPatch);
 
     private:
-        nonvirtual void RemoveNode_ (Link_* n, const LinkVector_& linksToPatch);
+        nonvirtual void RemoveLink_ (Link_* n, const LinkVector_& linksToPatch);
 
 #if qDebug
     private:
@@ -553,7 +552,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void ShrinkHeadLinksIfNeeded_ ();
 
     private:
-        nonvirtual void GrowHeadLinksIfNeeded_ (size_t newSize, Link_* nodeToPointTo);
+        nonvirtual void GrowHeadLinksIfNeeded_ (size_t newSize, Link_* linkToPointTo);
 
     private:
         nonvirtual size_t DetermineLinkHeight_ () const;

@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (KeyComparerType keyComparer)
+    inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (const KeyComparerType& keyComparer)
         : fKeyThreeWayComparer_{keyComparer}
     {
         GrowHeadLinksIfNeeded_ (1, nullptr);
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     template <Configuration::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
-    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNode_ (const KEYISH_T& key) const -> Link_*
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindLink_ (const KEYISH_T& key) const -> Link_*
     {
         using Common::ToInt;
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
@@ -238,14 +238,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ArgByValueType<key_type> key) const -> ForwardIterator
     {
-        return ForwardIterator{this, FindNode_ (key)};
+        return ForwardIterator{this, FindLink_ (key)};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     template <typename ARG_T>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ARG_T key) const -> ForwardIterator
         requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>)
     {
-        return ForwardIterator{this, FindNode_ (key)};
+        return ForwardIterator{this, FindLink_ (key)};
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
@@ -263,7 +263,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (ArgByValueType<key_type> key) const -> optional<mapped_type>
     {
-        if (auto o = FindNode_ (key)) {
+        if (auto o = FindLink_ (key)) {
             return o->fEntry.fValue;
         }
         return nullopt;
@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (ArgByValueType<key_type> key) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        return FindNode_ (key) != nullptr;
+        return FindLink_ (key) != nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -303,7 +303,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_*      n = FindNearest_ (key, links);
         if (n == nullptr) {
             Link_* newLink = new Link_{key};
-            AddNode_ (newLink, links);
+            AddLink_ (newLink, links);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     return true;
                 case AddOrExtendOrReplaceMode::eAddExtras: {
                     Link_* newLink = new Link_{key};
-                    AddNode_ (newLink, links);
+                    AddLink_ (newLink, links);
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
@@ -362,7 +362,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_*      n = FindNearest_ (key, links);
         if (n == nullptr) {
             Link_* newLink = new Link_{key, val};
-            AddNode_ (newLink, links);
+            AddLink_ (newLink, links);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -388,7 +388,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 case AddOrExtendOrReplaceMode::eAddExtras: {
 
                     Link_* newLink = new Link_{key, val};
-                    AddNode_ (newLink, links);
+                    AddLink_ (newLink, links);
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return Add (v.fKey, v.fValue, oAddedI);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddNode_ (Link_* node, const LinkVector_& links)
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddLink_ (Link_* node, const LinkVector_& links)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         RequireNotNull (node);
@@ -451,7 +451,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // Link_*      n = const_cast<Link_*> (it.fCurrent_);
         Link_* n = FindNearest_ (it, links);
         RequireNotNull (n);
-        RemoveNode_ (n, links);
+        RemoveLink_ (n, links);
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -465,7 +465,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_* n = FindNearest_ (i, links);
         RequireNotNull (n);
         Link_* after = n->fNext[0]; // result returned
-        RemoveNode_ (n, links);
+        RemoveLink_ (n, links);
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -481,7 +481,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         LinkVector_ links;
         Link_*      n = FindNearest_ (key, links);
         if (n != nullptr) {
-            RemoveNode_ (n, links);
+            RemoveLink_ (n, links);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -492,7 +492,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveNode_ (Link_* n, const LinkVector_& links)
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveLink_ (Link_* n, const LinkVector_& links)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         for (auto it = links.begin (); it != links.end (); ++it) {
@@ -526,11 +526,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return linkHeight;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GrowHeadLinksIfNeeded_ (size_t newSize, Link_* nodeToPointTo)
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GrowHeadLinksIfNeeded_ (size_t newSize, Link_* linkToPointTo)
     {
         if (newSize > fHead_.size ()) {
-            fHead_.resize (newSize, nodeToPointTo);
-            Assert (fHead_[newSize - 1] == nodeToPointTo);
+            fHead_.resize (newSize, linkToPointTo);
+            Assert (fHead_[newSize - 1] == linkToPointTo);
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
