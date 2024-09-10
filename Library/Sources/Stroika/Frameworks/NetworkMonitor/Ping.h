@@ -116,7 +116,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
 
     private:
         std::uniform_int_distribution<std::mt19937::result_type> fAllUInt16Distribution_{0, numeric_limits<uint16_t>::max ()};
-        std::mt19937                                             fRng_{std::random_device () ()};
+        std::mt19937                                             fRng_{std::random_device{}()};
         InternetAddress                                          fDestination_;
         Options                                                  fOptions_;
         size_t                                                   fICMPPacketSize_;
