@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Common {
      *  A very common 16-byte opaque ID structure.
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   static_assert (three_way_comparable<GUID>);
      */
     struct GUID {
     private:
@@ -123,6 +123,7 @@ namespace Stroika::Foundation::Common {
     };
     static_assert (sizeof (GUID) == 16);
     static_assert (ranges::range<GUID>);
+    static_assert (three_way_comparable<GUID>);
 
 }
 

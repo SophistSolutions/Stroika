@@ -465,25 +465,13 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <
-#if qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-        typename
-#else
-        Common::IEqualsComparer<MAPPED_VALUE_TYPE>
-#endif
-        VALUE_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (Common::IEqualsComparer<MAPPED_VALUE_TYPE>) VALUE_EQUALS_COMPARER>
     constexpr Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer)
         : fValueEqualsComparer{valueEqualsComparer}
     {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <
-#if qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-        typename
-#else
-        Common::IEqualsComparer<MAPPED_VALUE_TYPE>
-#endif
-        VALUE_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (Common::IEqualsComparer<MAPPED_VALUE_TYPE>) VALUE_EQUALS_COMPARER>
     bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::operator() (const Association& lhs, const Association& rhs) const
     {
         /*

@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Common {
      *  \note   Supports KeyValuePair<T,void> - so second type maybe void (sometimes useful as degenerate case - e.g. SkipList)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   static_assert (three_way_comparable<KEY_TYPE> and three_way_comparable<VALUE_TYPE> IMPLIES three_way_comparable<KeyValuePair<...>>)
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
     struct KeyValuePair {

@@ -49,14 +49,14 @@ namespace Stroika::Foundation::Configuration {
      *      VERSION-SubStage (uint8_t)
      *      finalBuild(bool)
      *
-     *  We provide support to automatically map this notion to a 32-bit version# which microsoft uses.
+     *  We provide support to automatically map this notion to a 32-bit version# which Microsoft uses.
      *  Note - this mapping is not totally 1-1, and doesn't correspond to any documented version# strategy defined
      *  by MSFT (as near as I can tell they have none - its just 4 bytes for them).
      *
      *  @see Stroika_Make_FULL_VERSION for the mapping
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   static_assert (three_way_comparable<Version>);
      */
     struct Version {
     public:
@@ -126,6 +126,7 @@ namespace Stroika::Foundation::Configuration {
          */
         constexpr strong_ordering operator<=> (const Version& rhs) const;
     };
+    static_assert (three_way_comparable<Version>);
 
 }
 

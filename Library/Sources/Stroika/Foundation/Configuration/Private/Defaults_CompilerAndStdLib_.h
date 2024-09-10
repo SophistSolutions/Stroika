@@ -1033,42 +1033,6 @@ See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
 
 #endif
 
-/*
-
-./../../Containers/Association.h:647:9: error: type constraint differs in template redeclaration
-
-
-
-    Compiling Tests/11/Test.cpp ...
-PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
-Stack dump:
-0.      Program arguments: clang++-15 --std=c++20 -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/clang++-15-release-libstdc++/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/clang++-15-release-libstdc++/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -O3 -fvisibility=hidden -g -DqDebug=0 -DqHasFeature_LibCurl=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_Xerces=1 -DqHasFeature_ZLib=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqTraceToFile=1 -DqDefaultTracingOn=1 -flto -stdlib=libstdc++ -c Test.cpp -o /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/clang++-15-release-libstdc++/Tests/11/Test.o
-1.      <eof> parser at end of file
-2.      /mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/../Association.h:531:25: instantiating function definition 'Stroika::Foundation::Containers::Association<int, int>::operator=='
-3.      /mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/../Association.h:646:19: instantiating function definition 'Stroika::Foundation::Containers::Association<int, int>::EqualsComparer<>::EqualsComparer'
-Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
-/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys15PrintStackTraceERNS_11raw_ostreamEi+0x31)[0x7f3d1ed9c3b1]
-/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys17RunSignalHandlersEv+0xee)[0x7f3d1ed9a0fe]
-/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys15CleanupOnSignalEm+0x101)[0x7f3d1ed9b771]
-/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(+0xe2767f)[0x7f3d1ecbf67f]
-/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f3d1d978520]
-/usr/lib/llvm-15/bin/../lib/libclang-cpp.so.15(+0xda0b
-*/
-#ifndef qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-// first noticed broken in apply clang 14
-// broken in clang 15
-// appears fixed in clang++16
-// broken in clang++18
-#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy                                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) || (__clang_major__ == 18))
-#else
-#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy 0
-#endif
-
-#endif
-
 /***
  *     Compiling Library/Sources/Stroika/Foundation/Debug/BackTrace.cpp ... 
 In file included from BackTrace.cpp:24:

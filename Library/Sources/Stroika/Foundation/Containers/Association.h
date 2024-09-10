@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Containers {
          *  \note   Keys () will return a an Iterable producing (iterating) elements in
          *          the same order as the collection it is created from.
          *
-         *          It is equivilent to copying the underlying collection and 'projecting' the
+         *          It is equivalent to copying the underlying collection and 'projecting' the
          *          key fields.
          * 
          *          Note the returned Iterable is detached from the original, and doesn't see any changes
@@ -257,7 +257,7 @@ namespace Stroika::Foundation::Containers {
          *  \note   MappedValues () will return a an Iterable producing (iterating) elements in
          *          the same order as the collection it is created from.
          *
-         *          It is equivilent to copying the underlying collection and 'projecting' the
+         *          It is equivalent to copying the underlying collection and 'projecting' the
          *          value fields.
          * 
          *          Note the returned Iterable is detached from the original, and doesn't see any changes
@@ -332,7 +332,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Likely inefficient, but perhaps helpful. Walks entire list of entires
          *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
-         *  true if contained. Perhpas not very useful but symetric to ContainsKey().
+         *  true if contained. Perhaps not very useful but symmetric to ContainsKey().
          */
         template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
@@ -519,13 +519,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual tuple<_IRep*, Iterator<value_type>> _GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i);
 
     public:
-        template <
-#if qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-            typename
-#else
-            Common::IEqualsComparer<MAPPED_VALUE_TYPE>
-#endif
-            VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (Common::IEqualsComparer<MAPPED_VALUE_TYPE>) VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         struct EqualsComparer;
 
     public:
@@ -639,13 +633,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Association for equality.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <
-#if qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-        typename
-#else
-        Common::IEqualsComparer<MAPPED_VALUE_TYPE>
-#endif
-        VALUE_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (Common::IEqualsComparer<MAPPED_VALUE_TYPE>) VALUE_EQUALS_COMPARER>
     struct Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
         : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
