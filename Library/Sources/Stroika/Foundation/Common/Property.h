@@ -135,11 +135,7 @@ namespace Stroika::Foundation::Common {
         ReadOnlyProperty ()                        = delete;
         ReadOnlyProperty (const ReadOnlyProperty&) = delete;
         ReadOnlyProperty (ReadOnlyProperty&&)      = delete;
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <typename G>
-#else
-        template <invocable<const ReadOnlyProperty<T>*> G>
-#endif
+        template <qCompilerAndStdLib_UseREQ1_BWA(invocable<const ReadOnlyProperty<T>*>) G>
         constexpr ReadOnlyProperty (G getter)
         // this part of BWA only needed for clang++
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy

@@ -1784,17 +1784,17 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 
 
  */
-#ifndef qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
+#ifndef qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
 // fixed in clang++16
 // broken in clang++18      error: type constraint differs in template redeclaration
-#define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
+#define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                      \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
 #else
-#define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy 0
+#define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy 0
 #endif
 
 #endif
@@ -3655,7 +3655,7 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #define _Stroika_Foundation_Configuration_Private_DO_PRAGMA_(x) _Pragma (#x)
 #endif
 
-#if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
+#if qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
 #define qCompilerAndStdLib_UseConceptOrTypename_BWA(CONSTRAINT) typename
 #else
 #define qCompilerAndStdLib_UseConceptOrTypename_BWA(CONSTRAINT) CONSTRAINT
@@ -3663,10 +3663,13 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 
 
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-#define qCompilerAndStdLib_UseREQ_BWA(CONSTRAINT) 
+#define qCompilerAndStdLib_UseREQ1_BWA(CONSTRAINT) typename
+#define qCompilerAndStdLib_UseREQ2_BWA(CONSTRAINT) 
 #else
-#define qCompilerAndStdLib_UseREQ_BWA(CONSTRAINT) CONSTRAINT
+#define qCompilerAndStdLib_UseREQ1_BWA(CONSTRAINT) CONSTRAINT
+#define qCompilerAndStdLib_UseREQ2_BWA(CONSTRAINT) CONSTRAINT
 #endif
+
 
 
 /*

@@ -33,13 +33,11 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
 #endif
     template <typename AS_T>
     AS_T Ptr::As ()
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        requires (same_as<AS_T, String>
+        requires (qCompilerAndStdLib_UseREQ_BWA(same_as<AS_T, String>
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
                   or same_as<AS_T, XML::DOM::Document::Ptr>
 #endif
-                  or same_as<AS_T, Memory::BLOB>)
-#endif
+                  or same_as<AS_T, Memory::BLOB>))
     {
         if constexpr (same_as<AS_T, String>) {
             return Streams::TextReader::New (fRep_->GetData ()).ReadAll ();

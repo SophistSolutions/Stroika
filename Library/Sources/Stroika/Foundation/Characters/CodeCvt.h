@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Characters {
             /**
              *  NOTE - do as New not CTOR, so can still construct Options using designated initializers.
              */
-            template <qCompilerAndStdLib_UseREQ_BWA(IUNICODECanAlwaysConvertTo) FROM_CHAR_T_OPTIONS>
+            template <qCompilerAndStdLib_UseConceptOrTypename_BWA(IUNICODECanAlwaysConvertTo) FROM_CHAR_T_OPTIONS>
             static constexpr inline Options New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o);
 
             /**
