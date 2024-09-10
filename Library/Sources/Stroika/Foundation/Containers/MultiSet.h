@@ -443,7 +443,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * @see comparisons section of @MutliSet documentation
+         * @see comparisons section of @MultiSet documentation
          */
         nonvirtual bool operator== (const MultiSet& rhs) const;
 

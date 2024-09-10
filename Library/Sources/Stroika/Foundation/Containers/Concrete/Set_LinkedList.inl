@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return ElementEqualityComparerType{fEqualsComparer_};
+            return fEqualsComparer_;
         }
         virtual shared_ptr<typename Set<T>::_IRep> CloneEmpty () const override
         {
