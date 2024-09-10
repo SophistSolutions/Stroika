@@ -1774,6 +1774,15 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
  1214 |         return SequentialEquals (lhs, rhs, fElementComparer, fUseIterableSiz
 
 
+ WITH CLANG++-18:
+n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h:111:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SortedSet_stdset.inl:17:60: error: type constraint differs in template redeclaration
+   17 |     template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IInOrderComparer<T>) INORDER_COMPARER>
+      |                                                            ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h:97:64: note: previous template declaration is here
+
+
+
  */
 #ifndef qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
 
@@ -1781,7 +1790,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
 // fixed in clang++16
-// broken in clang++16
+// broken in clang++18      error: type constraint differs in template redeclaration
 #define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
 #else
