@@ -1775,12 +1775,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
  */
 #ifndef qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
 
-#if defined(__clang__) && defined(__APPLE__)
-// Noticed broken in crapple-clang++14
-// appears fixed in xcode 15
-#define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
-#elif defined(__clang__) && !defined(__APPLE__)
+#if defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
 // fixed in clang++16
@@ -3650,9 +3645,9 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #endif
 
 #if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
-#define qCompilerAndStdLib_UseConceptOrTypename_BWA(T) typename
+#define qCompilerAndStdLib_UseConceptOrTypename_BWA(CONSTRAINT) typename
 #else
-#define qCompilerAndStdLib_UseConceptOrTypename_BWA(T) T
+#define qCompilerAndStdLib_UseConceptOrTypename_BWA(CONSTRAINT) CONSTRAINT
 #endif
 
 
