@@ -37,9 +37,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-    class SortedMultiSet_SkipList : public SortedMultiSet<T, TRAITS> {
+    class SortedMultiSet_SkipList : public Private::SkipListBasedContainer<SortedMultiSet_SkipList<T, TRAITS>, SortedMultiSet<T, TRAITS>, true> {
     private:
-        using inherited = SortedMultiSet<T, TRAITS>;
+        using inherited = Private::SkipListBasedContainer<SortedMultiSet_SkipList<T, TRAITS>, SortedMultiSet<T, TRAITS>, true>;
 
     public:
         using TraitsType                  = typename inherited::TraitsType;
@@ -100,12 +100,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedMultiSet_SkipList& operator= (const SortedMultiSet_SkipList&)     = default;
 
     private:
-        using IImplRepBase_ = typename SortedMultiSet<T, TRAITS>::_IRep;
+        using IImplRepBase_ = Private::SkipListBasedContainerIRep<typename SortedMultiSet<T, TRAITS>::_IRep>;
         template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<T>) COMPARER>
         class Rep_;
 
     private:
         nonvirtual void AssertRepValidType_ () const;
+
+    private:
+        friend inherited;
     };
 
 }

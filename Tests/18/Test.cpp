@@ -140,13 +140,17 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_MultiSet, SortedMultiSet_SkipList)
     {
-        SortedMultiSet_SkipList<size_t> x;
         DoTestForConcreteContainer_<SortedMultiSet_SkipList<size_t>> ();
         DoTestForConcreteContainer_<SortedMultiSet_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
         auto msFactory = [] () { return SortedMultiSet_SkipList<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}}; };
         DoTestForConcreteContainer_<SortedMultiSet_SkipList<OnlyCopyableMoveable>> (
             CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_SkipList<OnlyCopyableMoveable>,
                                                                AsIntsEqualsComparer<OnlyCopyableMoveable>, decltype (msFactory)> (msFactory));
+        {
+
+            SortedMultiSet_SkipList<size_t> x;
+            x.ReBalance ();
+        }
     }
 }
 
