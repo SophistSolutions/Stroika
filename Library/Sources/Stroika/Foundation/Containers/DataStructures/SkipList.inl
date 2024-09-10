@@ -12,7 +12,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         inline size_t RandomSize_t (size_t first, size_t last)
         {
-            static thread_local std::mt19937 sRng_{std::random_device () ()};
+            static thread_local std::mt19937 sRng_{std::random_device{}()};
             Assert (sRng_.min () <= first);
             //  Assert (eng.max () >= last);    // g++ has 8 byte size_t in 64 bit??
             std::uniform_int_distribution<size_t> unif{first, last};
