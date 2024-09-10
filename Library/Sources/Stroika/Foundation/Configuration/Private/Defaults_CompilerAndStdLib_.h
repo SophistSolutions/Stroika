@@ -1791,14 +1791,13 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 // Noticed broken in -clang++15
 // fixed in clang++16
 // broken in clang++18      error: type constraint differs in template redeclaration
-#define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                      \
+#define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                         \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
 #else
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy 0
 #endif
 
 #endif
-
 
 /*
  file included from /usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:14:
@@ -3661,16 +3660,13 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #define qCompilerAndStdLib_UseConceptOrTypename_BWA(CONSTRAINT) CONSTRAINT
 #endif
 
-
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
 #define qCompilerAndStdLib_UseREQ1_BWA(CONSTRAINT) typename
-#define qCompilerAndStdLib_UseREQ2_BWA(CONSTRAINT) 
+#define qCompilerAndStdLib_UseREQ2_BWA(CONSTRAINT)
 #else
-#define qCompilerAndStdLib_UseREQ1_BWA(CONSTRAINT) CONSTRAINT
-#define qCompilerAndStdLib_UseREQ2_BWA(CONSTRAINT) CONSTRAINT
+#define qCompilerAndStdLib_UseREQ1_BWA(...) __VA_ARGS__
+#define qCompilerAndStdLib_UseREQ2_BWA(...) __VA_ARGS__
 #endif
-
-
 
 /*
  *  Wrap this macro around entire declaration, as in:
