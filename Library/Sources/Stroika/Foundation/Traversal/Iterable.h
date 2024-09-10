@@ -66,6 +66,8 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Traversal {
 
+    using Common::IEqualsComparer;
+    using Common::IThreeWayComparer;
     using Configuration::ArgByValueType;
 
     /**
@@ -401,9 +403,9 @@ namespace Stroika::Foundation::Traversal {
          *                NOTE ALSO - that 'trick' assumes T has a valid less<T>, which it may not!
          *
          */
-        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
+        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         static bool SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
-        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
+        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -415,9 +417,9 @@ namespace Stroika::Foundation::Traversal {
          *  \em Performance:
          *      This algorithm is O(N^^3)
          */
-        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
+        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         static bool MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
-        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
+        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -432,25 +434,19 @@ namespace Stroika::Foundation::Traversal {
          *  \em Performance:
          *      This algorithm is O(N)
          */
-        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
+        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs,
                                       EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
-        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
+        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{},
                                           bool useIterableSize = false) const;
 
     public:
-        template <
-#if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
-            typename
-#else
-            Common::IEqualsComparer<T>
-#endif
-            T_EQUALS_COMPARER = equal_to<T>>
+        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER = equal_to<T>>
         struct SequentialEqualsComparer;
 
     public:
-        template <typename T_THREEWAY_COMPARER = compare_three_way>
+        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER = compare_three_way>
         struct SequentialThreeWayComparer;
 
     public:
@@ -1616,13 +1612,7 @@ namespace Stroika::Foundation::Traversal {
      *  Computational Complexity: O(N)
      */
     template <typename T>
-    template <
-#if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
-        typename
-#else
-        Common::IEqualsComparer<T>
-#endif
-        T_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
     struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {}, bool useIterableSize = false);
         nonvirtual bool                         operator() (const Iterable& lhs, const Iterable& rhs) const;
@@ -1637,11 +1627,11 @@ namespace Stroika::Foundation::Traversal {
      *  if the right ends first, treat that as >.
      */
     template <typename T>
-    template <typename T_THREEWAY_COMPARER>
+    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
     struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
-        nonvirtual auto     operator() (const Iterable& lhs, const Iterable& rhs) const;
-        T_THREEWAY_COMPARER fElementComparer;
+        nonvirtual auto                           operator() (const Iterable& lhs, const Iterable& rhs) const;
+        [[no_unique_address]] T_THREEWAY_COMPARER fElementComparer;
     };
 
     // see Satisfies Concepts

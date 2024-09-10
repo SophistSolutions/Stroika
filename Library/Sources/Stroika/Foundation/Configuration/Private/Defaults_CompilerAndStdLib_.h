@@ -1824,6 +1824,12 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
 
 #endif
 
+#if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
+#define qCompilerAndStdLib_UseConceptOrTypename_BWA(T) typename
+#else
+#define qCompilerAndStdLib_UseConceptOrTypename_BWA(T) T
+#endif
+
 /*
  file included from /usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:14:
 /usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_destructible.h:28:61: error: ambiguous partial specializations of 'formatter<int, wchar_t>'
