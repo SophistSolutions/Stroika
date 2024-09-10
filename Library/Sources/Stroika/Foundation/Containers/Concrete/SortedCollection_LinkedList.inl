@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual InOrderComparerType GetInOrderComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return InOrderComparerType{fInorderComparer_};
+            return fInorderComparer_;
         }
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {

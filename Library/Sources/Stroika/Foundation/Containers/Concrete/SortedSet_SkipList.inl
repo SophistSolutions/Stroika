@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual ElementInOrderComparerType GetInOrderComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return ElementInOrderComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
+            return Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()};
         }
 
     private:

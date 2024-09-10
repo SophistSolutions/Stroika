@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return KeyInOrderKeyComparerType{fKeyComparer_};
+            return fKeyComparer_;
         }
 
     private:
