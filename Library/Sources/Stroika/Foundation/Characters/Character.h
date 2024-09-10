@@ -212,7 +212,7 @@ namespace Stroika::Foundation::Characters {
      *      o   static_assert (regular<Character>);
      * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   static_assert (totally_ordered<Character>)
      *      o   Character::EqualsComparer and Character::ThreeWayComparer provided with construction parameters to allow case insensitive compares 
      */
     class [[nodiscard]] Character {
@@ -530,6 +530,7 @@ namespace Stroika::Foundation::Characters {
     private:
         char32_t fCharacterCode_;
     };
+    static_assert (totally_ordered<Character>);
 
     /**
      *  Like equal_to<Character> but allow optional case insensitive compares
