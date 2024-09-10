@@ -247,9 +247,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         return ForwardIterator{this, FindLink_ (key)};
     }
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
+    template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) const -> ForwardIterator
     {
         for (auto i = begin (); i; ++i) {
@@ -259,7 +258,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return end ();
     }
-#endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (ArgByValueType<key_type> key) const -> optional<mapped_type>
     {
@@ -268,9 +266,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return nullopt;
     }
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
+    template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (FUNCTION&& firstThat) const -> optional<mapped_type>
     {
         for (auto i : *this) {
@@ -280,7 +277,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return nullopt;
     }
-#endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (ArgByValueType<key_type> key) const
     {
@@ -663,11 +659,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return n;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    template <typename FUNCTION>
-#else
-    template <invocable<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
-#endif
+    template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (invocable<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};

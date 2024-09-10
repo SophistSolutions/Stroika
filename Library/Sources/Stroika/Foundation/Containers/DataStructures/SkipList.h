@@ -58,7 +58,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         template <typename TRAITS, typename KEY_TYPE>
-        concept IValidTraits = Common::IThreeWayComparer<typename TRAITS::KeyComparerType, KEY_TYPE> and requires (TRAITS a) {
+        concept IValidTraits = Common::IThreeWayComparer<typename TRAITS::KeyComparerType, KEY_TYPE>and
+            requires (TRAITS)
+        {
             {
                 TRAITS::kKeepStatistics
             } -> std::convertible_to<bool>;
@@ -209,13 +211,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         class ForwardIterator;
 
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    private:
-        bool Add1_ (ArgByValueType<key_type> key, ForwardIterator* oAddedI);
-        template <typename CHECK_T = MAPPED_TYPE>
-        bool Add2_ (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val, ForwardIterator* oAddedI);
-#endif
-
     public:
         /**
          *  You can add more than one item with the same key. If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove calls.
@@ -351,20 +346,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         template <typename ARG_T = typename TRAITS::AlternateFindType>
         nonvirtual ForwardIterator Find (ARG_T key) const
             requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>);
-        template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
-        nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        {
-            for (auto i = begin (); i; ++i) {
-                if (firstThat (*i)) {
-                    return i;
-                }
-            }
-            return end ();
-        }
-#else
-            ;
-#endif
+        template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
+        nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
 
     public:
         /**
@@ -395,20 +378,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Average/Worst:    O(N)
          */
         nonvirtual optional<mapped_type> First (ArgByValueType<key_type> key) const;
-        template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
-        nonvirtual optional<mapped_type> First (FUNCTION&& firstThat) const
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        {
-            for (auto i : *this) {
-                if (firstThat (*i)) {
-                    return i->fValue;
-                }
-            }
-            return nullopt;
-        }
-#else
-            ;
-#endif
+        template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
+        nonvirtual optional<mapped_type> First (FUNCTION&& firstThat) const;
 
     public:
         template <typename CHECKED_T = MAPPED_TYPE>
@@ -444,13 +415,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      Always: O(N)
          */
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <typename FUNCTION>
+        template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (invocable<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;
-#else
-        template <invocable<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
-        nonvirtual void Apply (FUNCTION&& doToElement) const;
-#endif
 
     public:
         constexpr void Invariant () const noexcept;
@@ -556,6 +522,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         nonvirtual size_t DetermineLinkHeight_ () const;
+
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    private:
+        bool Add1_ (ArgByValueType<key_type> key, ForwardIterator* oAddedI);
+        template <typename CHECK_T = MAPPED_TYPE>
+        bool Add2_ (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val, ForwardIterator* oAddedI);
+#endif
 
     private:
         [[no_unique_address]] KeyComparerType   fKeyThreeWayComparer_{};
