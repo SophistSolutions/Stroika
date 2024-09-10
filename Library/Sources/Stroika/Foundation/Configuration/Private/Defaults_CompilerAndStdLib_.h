@@ -657,6 +657,8 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
   201 |     Streams::InputStream::Ptr<byte> BLOB::As () const;
       |                                           ^~
 
+
+    NOTE - though VERY similar to (and probably same underlying bug) - diff from qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher in how we workaround
 */
 #ifndef qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
 
@@ -666,7 +668,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 16
-//  broken in  clang 17
+// broken in  clang 17
 // broken in  clang 18
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
