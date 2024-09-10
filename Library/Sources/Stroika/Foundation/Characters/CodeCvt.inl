@@ -575,19 +575,17 @@ namespace Stroika::Foundation::Characters {
 #endif
     }
 
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     /*
      ********************************************************************************
      ************************* CodeCvt<CHAR_T>::Options *****************************
      ********************************************************************************
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    template <IUNICODECanAlwaysConvertTo FROM_CHAR_T_OPTIONS>
+    template <qCompilerAndStdLib_UseREQ_BWA(IUNICODECanAlwaysConvertTo) FROM_CHAR_T_OPTIONS>
     constexpr inline auto CodeCvt<CHAR_T>::Options::New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o) -> Options
     {
         return Options{.fInvalidCharacterReplacement = o.fInvalidCharacterReplacement};
     }
-#endif
 
     /*
      ********************************************************************************

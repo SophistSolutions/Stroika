@@ -3662,6 +3662,13 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #endif
 
 
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#define qCompilerAndStdLib_UseREQ_BWA(CONSTRAINT) 
+#else
+#define qCompilerAndStdLib_UseREQ_BWA(CONSTRAINT) CONSTRAINT
+#endif
+
+
 /*
  *  Wrap this macro around entire declaration, as in:
  *       _DeprecatedFile_ ("DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator");

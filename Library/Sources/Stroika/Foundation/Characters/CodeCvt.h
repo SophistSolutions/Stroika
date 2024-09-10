@@ -129,15 +129,8 @@ namespace Stroika::Foundation::Characters {
             /**
              *  NOTE - do as New not CTOR, so can still construct Options using designated initializers.
              */
-            template <IUNICODECanAlwaysConvertTo FROM_CHAR_T_OPTIONS>
-            static constexpr inline Options New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o)
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            {
-                return Options{.fInvalidCharacterReplacement = o.fInvalidCharacterReplacement};
-            }
-#else
-                ;
-#endif
+            template <qCompilerAndStdLib_UseREQ_BWA(IUNICODECanAlwaysConvertTo) FROM_CHAR_T_OPTIONS>
+            static constexpr inline Options New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o);
 
             /**
              *  if fInvalidCharacterReplacement is nullopt (the default) - conversion APIs throw on invalid characters, and
