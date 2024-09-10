@@ -46,15 +46,6 @@ static_assert (qHasFeature_Xerces, "Don't compile this file if qHasFeature_Xerce
 
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
 
-#if qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
-namespace {
-    inline std::u16string clang_string_BWA_ (const char16_t* a, const char16_t* b)
-    {
-        return {a, b};
-    }
-}
-#endif
-
 namespace {
     // From https://www.w3.org/TR/xml-names/
     //      In a namespace declaration, the URI reference is the normalized value of the attribute, so replacement of XML
