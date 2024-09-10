@@ -3661,8 +3661,8 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #endif
 
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-#define qCompilerAndStdLib_UseREQ1_BWA(CONSTRAINT) typename
-#define qCompilerAndStdLib_UseREQ2_BWA(CONSTRAINT)
+#define qCompilerAndStdLib_UseREQ1_BWA(...) typename
+#define qCompilerAndStdLib_UseREQ2_BWA(...)
 #else
 #define qCompilerAndStdLib_UseREQ1_BWA(...) __VA_ARGS__
 #define qCompilerAndStdLib_UseREQ2_BWA(...) __VA_ARGS__

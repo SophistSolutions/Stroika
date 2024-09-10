@@ -137,9 +137,7 @@ namespace Stroika::Foundation::Common {
         ReadOnlyProperty (ReadOnlyProperty&&)      = delete;
         template <qCompilerAndStdLib_UseREQ1_BWA (invocable<const ReadOnlyProperty<T>*>) G>
         constexpr ReadOnlyProperty (G getter)
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>)
-#endif
+            qCompilerAndStdLib_UseREQ2_BWA (requires (convertible_to<invoke_result_t<G, const ReadOnlyProperty<T>*>, T>))
         ;
 
     public:
@@ -633,9 +631,7 @@ namespace Stroika::Foundation::Common {
         template <qCompilerAndStdLib_UseREQ1_BWA (invocable<const ExtendableProperty<T>*>) G,
                   qCompilerAndStdLib_UseREQ1_BWA (invocable<ExtendableProperty<T>*, remove_cvref_t<T>>) S>
         ExtendableProperty (G getter, S setter)
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            requires (qCompilerAndStdLib_UseREQ2_BWA(convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>))
-#endif
+            qCompilerAndStdLib_UseREQ2_BWA(requires (convertible_to<invoke_result_t<G, const ExtendableProperty<T>*>, T>))
         ;
 
     public:
