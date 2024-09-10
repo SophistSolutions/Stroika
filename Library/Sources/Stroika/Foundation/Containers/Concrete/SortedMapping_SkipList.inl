@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
+    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IThreeWayComparer<KEY_TYPE>) KEY_THREEWAY_COMPARER>
     class SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
         : public Private::SkipListBasedContainerRepImpl<Rep_<KEY_THREEWAY_COMPARER>, IImplRepBase_>,
           public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_THREEWAY_COMPARER>> {

@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
-        template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<KEY_TYPE>) KEY_INORDER_COMPARER>
+        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IInOrderComparer<KEY_TYPE>) KEY_INORDER_COMPARER>
         class Rep_;
 
     private:

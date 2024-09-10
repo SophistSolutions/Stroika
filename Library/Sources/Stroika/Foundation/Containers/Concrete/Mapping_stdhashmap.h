@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
-        template <typename HASH, BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
+        template <typename HASH, qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
         class Rep_;
 
     private:

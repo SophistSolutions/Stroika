@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /*
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
+    template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
     class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRep_,
                                                                   public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
     private:

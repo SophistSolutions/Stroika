@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename SortedSet<T>::_IRep;
-        template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IInOrderComparer<T>) INORDER_COMPARER>
+        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IInOrderComparer<T>) INORDER_COMPARER>
         class Rep_;
 
     private:

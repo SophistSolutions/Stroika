@@ -641,37 +641,6 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
-/*
- ile included from Statistics.cpp:6:
-In file included from ./../Characters/Format.h:30:
-In file included from ./../Characters/String.h:17:
-In file included from ./../Characters/../Containers/Set.h:629:
-In file included from ./../Characters/../Containers/Set.inl:10:
-In file included from ./../Characters/../Containers/Factory/Set_Factory.h:114:
-In file included from ./../Characters/../Containers/Factory/Set_Factory.inl:14:
-In file included from ./../Characters/../Containers/Factory/../Concrete/Set_Array.h:124:
-./../Characters/../Containers/Factory/../Concrete/Set_Array.inl:36:15: error: type constraint differs in template redeclaration
-   36 |     template <IEqualsComparer<T> EQUALS_COMPARER>
-   
-   */
-
-#ifndef qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-// first noticed broken in apply clang 18
-#define qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 18))
-#else
-#define qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy 0
-#endif
-
-#endif
-
-#if qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-#define BWA_Helper_ContraintInMemberClassSeparateDeclare_(ConstrainedTypeName) typename
-#else
-#define BWA_Helper_ContraintInMemberClassSeparateDeclare_(ConstrainedTypeName) ConstrainedTypeName
-#endif
-
 /**
  *  Library/Sources/Stroika/Foundation/Characters/String.cpp ... 
 In file included from String.cpp:17:
@@ -1824,11 +1793,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Tr
 
 #endif
 
-#if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
-#define qCompilerAndStdLib_UseConceptOrTypename_BWA(T) typename
-#else
-#define qCompilerAndStdLib_UseConceptOrTypename_BWA(T) T
-#endif
 
 /*
  file included from /usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:14:
@@ -3592,7 +3556,7 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 /*
  *******************************************************************
  *******************************************************************
- ********************* REACT TO SOME DEFINES ***********************
+ ****************** REACT TO SOME DEFINES (BWA) ********************
  *******************************************************************
  *******************************************************************
  */
@@ -3684,6 +3648,13 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #ifndef _Stroika_Foundation_Configuration_Private_DO_PRAGMA_
 #define _Stroika_Foundation_Configuration_Private_DO_PRAGMA_(x) _Pragma (#x)
 #endif
+
+#if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
+#define qCompilerAndStdLib_UseConceptOrTypename_BWA(T) typename
+#else
+#define qCompilerAndStdLib_UseConceptOrTypename_BWA(T) T
+#endif
+
 
 /*
  *  Wrap this macro around entire declaration, as in:

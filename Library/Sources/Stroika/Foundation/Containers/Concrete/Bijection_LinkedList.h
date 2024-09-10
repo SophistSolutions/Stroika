@@ -77,8 +77,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep;
-        template <BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<DOMAIN_TYPE>) DOMAIN_EQUALS_COMPARER,
-                  BWA_Helper_ContraintInMemberClassSeparateDeclare_ (IEqualsComparer<RANGE_TYPE>) RANGE_EQUALS_COMPARER>
+        template <qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<DOMAIN_TYPE>) DOMAIN_EQUALS_COMPARER,
+                  qCompilerAndStdLib_UseConceptOrTypename_BWA (IEqualsComparer<RANGE_TYPE>) RANGE_EQUALS_COMPARER>
         class Rep_;
 
     private:
