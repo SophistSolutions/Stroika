@@ -15,10 +15,11 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<KEY_TYPE>) KEY_COMPARER>
-    class SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
-                                                                          public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_COMPARER>> {
+    class SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
+        : public Private::SkipListBasedContainerRepImpl<Rep_<KEY_COMPARER>, IImplRepBase_>,
+          public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_COMPARER>> {
     private:
-        using inherited = IImplRepBase_;
+        using inherited = Private::SkipListBasedContainerRepImpl<Rep_<KEY_COMPARER>, IImplRepBase_>;
 
     public:
         static_assert (not is_reference_v<KEY_COMPARER>);
@@ -125,8 +126,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Invariant ();
             auto i = fData_.Find (key);
             if (i != fData_.end ()) {
+                fData_.Invariant ();
                 fData_.Remove (i);
+                fData_.Invariant ();
                 fChangeCounts_.PerformedChange ();
+                fData_.Invariant ();
                 return true;
             }
             return false;

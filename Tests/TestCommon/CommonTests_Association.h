@@ -284,20 +284,20 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
+                    EXPECT_EQ (m.size (), 1u);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                         EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                     }
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 2);
+                    EXPECT_EQ (m.size (), 2u);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                         EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                     }
                     m.Remove (1);
                     m.Remove (1);
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0u);
                     for ([[maybe_unused]] auto i : m) {
                         EXPECT_TRUE (false);
                     }
@@ -319,7 +319,7 @@ namespace CommonTests {
                         }
                     }
                     m.RemoveAll ();
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0u);
                 }
             }
 

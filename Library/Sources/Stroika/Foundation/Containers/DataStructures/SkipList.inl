@@ -809,6 +809,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     Assert (newN == nullptr or fKeyThreeWayComparer_ (oldKey, newN->fEntry.fKey) != strong_ordering::greater);
                 }
             }
+            Assert (not n->fNext.empty ());
             n = n->fNext[0];
             Assert (n == nullptr or fKeyThreeWayComparer_ (n->fEntry.fKey, oldKey) != strong_ordering::less);
         }

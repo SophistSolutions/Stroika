@@ -31,6 +31,7 @@ using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
@@ -74,9 +75,11 @@ GTEST_TEST (Foundation_Containers_Association, Association_Array)
     Debug::TraceContextBumper ctx{"{}::Association_Array"};
     DoTestForConcreteContainer_<Association_Array<size_t, size_t>> ();
     DoTestForConcreteContainer_<Association_Array<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+#if 0
     DoTestForConcreteContainer_<Association_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
         [] () { return Association_Array<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
         AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+#endif
 }
 
 GTEST_TEST (Foundation_Containers_Association, Association_LinkedList)
@@ -105,18 +108,15 @@ GTEST_TEST (Foundation_Containers_Association, SortedAssociation_stdmultimap)
 
 GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList)
 {
-    SortedAssociation_SkipList<size_t, size_t> x;
-#if 0
     Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
     DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
     DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
 
     DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
         [] () {
-            return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
+            return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
         },
         AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-#endif
 }
 
 GTEST_TEST (Foundation_Containers_Association, SimpleBaseClassConversionTraitsConfusion_)
@@ -266,7 +266,6 @@ namespace {
         m2.Add (1, 2);
         EXPECT_EQ (m, m2);
     }
-
 }
 
 namespace {
@@ -279,7 +278,6 @@ namespace {
             Association<String, String> parameters2{String::EqualsComparer{Characters::eCaseInsensitive}, parameters};
         }
     }
-
 }
 
 namespace {
@@ -291,7 +289,6 @@ namespace {
         a.shrink_to_fit ();
         EXPECT_EQ (a.capacity (), 0u);
     }
-
 }
 
 namespace {

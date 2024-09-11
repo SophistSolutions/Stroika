@@ -30,9 +30,11 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class SortedAssociation_SkipList : public SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    class SortedAssociation_SkipList
+        : public Private::SkipListBasedContainer<SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>, SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>, true> {
     private:
-        using inherited = SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>;
+        using inherited =
+            Private::SkipListBasedContainer<SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>, SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
 
     public:
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
@@ -93,7 +95,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedAssociation_SkipList& operator= (const SortedAssociation_SkipList&)     = default;
 
     private:
-        using IImplRepBase_ = typename SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
+        using IImplRepBase_ = Private::SkipListBasedContainerIRep<typename SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>;
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<KEY_TYPE>) KEY_COMPARER>
         class Rep_;
 
