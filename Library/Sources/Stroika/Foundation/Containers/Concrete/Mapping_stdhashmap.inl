@@ -86,6 +86,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             // @todo fix shouldn't need this cast!!!
+            //return Common::DeclareEqualsComparer (fData_.key_eq ());
             return Common::DeclareEqualsComparer ((function<bool (KEY_TYPE, KEY_TYPE)>)fData_.key_eq ());
         }
         virtual shared_ptr<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> CloneEmpty () const override

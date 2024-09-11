@@ -20,7 +20,7 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
-     *  \brief   SortedAssociation_SkipList<KEY_TYPE,MAPPED_VALUE_TYPE> is an std::map-based concrete implementation of the SortedAssociation<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
+     *  \brief   SortedAssociation_SkipList<KEY_TYPE,MAPPED_VALUE_TYPE> is an SkipList-based concrete implementation of the SortedAssociation<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
      *
      * \note Runtime performance/complexity:
      *      @todo

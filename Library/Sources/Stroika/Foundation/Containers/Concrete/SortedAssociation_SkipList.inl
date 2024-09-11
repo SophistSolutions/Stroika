@@ -15,8 +15,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IInOrderComparer<KEY_TYPE>) KEY_COMPARER>
-    class SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
-        : public IImplRepBase_,
+    class SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
                                                                           public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_COMPARER>> {
     private:
         using inherited = IImplRepBase_;
@@ -78,7 +77,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return KeyEqualsCompareFunctionType{Common::EqualsComparerAdapter<KEY_TYPE, KEY_COMPARER>{fData_.key_comp ()}};
+            return Common::EqualsComparerAdapter<KEY_TYPE, KEY_COMPARER>{fData_.key_comp ()};
         }
         virtual shared_ptr<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> CloneEmpty () const override
         {
@@ -167,8 +166,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
- using DataStructureImplType_ = SKIPLIST<KEY_THREEWAY_COMPARER>;
+        using DataStructureImplType_ = SKIPLIST<KEY_THREEWAY_COMPARER>;
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
@@ -225,8 +225,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-    inline SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer,
-                                                                                                      ITERABLE_OF_ADDABLE&& src)
+    inline SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedAssociation_SkipList{forward<KEY_COMPARER> (inorderComparer)}
     {
         AssertRepValidType_ ();
@@ -244,7 +243,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
     SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer,
-                                                                                               ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+                                                                                         ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedAssociation_SkipList{forward<KEY_COMPARER> (inorderComparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
