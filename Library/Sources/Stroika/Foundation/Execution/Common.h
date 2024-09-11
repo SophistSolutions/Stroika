@@ -13,7 +13,7 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  \brief equivilent which of 4 types being used std::execution::sequenced_policy, parallel_policy, etc...
+     *  \brief equivalent which of 4 types being used std::execution::sequenced_policy, parallel_policy, etc...
      * 
      *  Much simpler to just have a single enum rather than these 4 classes. STL choice based on (probably more historical)
      *  C++ limitations with overloading (no constexpr) - not much point in that anymore, I don't think.
@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief default case - not parallelized
          * 
-         *  Equivilent to std::seq, std::execution::sequenced_policy
+         *  Equivalent to std::seq, std::execution::sequenced_policy
          * 
          *  ..."a parallel algorithm's execution may not be parallelized.
          *  The invocations of element access functions in parallel algorithms invoked with this policy
@@ -31,9 +31,9 @@ namespace Stroika::Foundation::Execution {
         eSeq,
 
         /**
-         *  \brief must syncronize shared data, can use mutex (or atomics), cuz each parallel execution in real thread
+         *  \brief must synchronize shared data, can use mutex (or atomics), cuz each parallel execution in real thread
          * 
-         *  Equivilent to std::par, std::execution::parallel_policy 
+         *  Equivalent to std::par, std::execution::parallel_policy 
          * 
          *  ..."parallel algorithm's execution may be parallelized. The invocations of element access 
          *  functions in parallel algorithms invoked with this policy (usually specified as std::execution::par)
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief Unclear how this differs from eUnseq, but no locks allowed
          * 
-         *  Equivilent to std::par_unseq , std::execution::parallel_unsequenced_policy  
+         *  Equivalent to std::par_unseq , std::execution::parallel_unsequenced_policy  
          * 
          *  ..."a parallel algorithm's execution may be parallelized, vectorized, 
          *  or migrated across threads (such as by a parent-stealing scheduler). The invocations of 
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief SIMD, no locks allowed
          * 
-         *  Equivilent to std::unseq  , std::execution::unsequenced_policy   
+         *  Equivalent to std::unseq  , std::execution::unsequenced_policy   
          * 
          *  ..."a parallel algorithm's execution may be parallelized, vectorized, 
          *  or migrated across threads (such as by a parent-stealing scheduler). The invocations of 
@@ -71,6 +71,8 @@ namespace Stroika::Foundation::Execution {
 
         Stroika_Define_Enum_Bounds (eSeq, eUnseq)
 
+        // consider losing eDEFAULT, cuz probably will lead to more confusion than prosperity...
+        // or define to pull value from some TLS variable??? that maybe BEST... SO LEAVE FOR NOW...
             eDEFAULT = eSeq,
     };
 
