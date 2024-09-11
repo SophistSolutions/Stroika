@@ -136,7 +136,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        constexpr bool operator== (const DataHyperRectangle& rhs) const;
+        constexpr bool operator== (const DataHyperRectangle& rhs) const
+            requires (equality_comparable<T>);
 
     protected:
         /**

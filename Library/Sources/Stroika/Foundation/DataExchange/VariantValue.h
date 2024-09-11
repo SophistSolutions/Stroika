@@ -90,8 +90,8 @@ namespace Stroika::Foundation::DataExchange {
      *  the user users/requests.
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *          o Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *
+     *          o static_assert (totally_ordered<VariantValue>);    // but notice that such comparisons expensive, as they imply normalizing
+     * 
      *          @todo UPDATE DOCS FOR EQUALS COMPARER AND SHARE APPRORIATE DOCS FOR THREEWAY COMPARER AND SAY WHAT PART IS FOR 
      ANY COMPARER...
      *
@@ -479,6 +479,7 @@ namespace Stroika::Foundation::DataExchange {
         static const shared_ptr<IRep_> kFalseRep_; // avoid even cheap needless allocations
         static const shared_ptr<IRep_> kTrueRep_;
     };
+    static_assert (totally_ordered<VariantValue>);
 
     /**
      *  \brief Compares values as if first normalized with Normalize () method

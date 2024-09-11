@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Time {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *        static_assert (totally_ordered<TimeOfDay>);
      */
     class [[nodiscard]] TimeOfDay {
     public:
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Time {
         static optional<TimeOfDay> ParseQuietly (const String& rep, const locale& l, const String& formatPattern);
 
     private:
-        // this rquires rep!= ""
+        // this requires rep!= ""
         static optional<TimeOfDay> ParseQuietly_ (const wstring& rep, const String& formatPattern);
         static optional<TimeOfDay> ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern);
 
@@ -266,6 +266,7 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
+    static_assert (totally_ordered<TimeOfDay>);
 
     inline const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
 

@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Math {
         /**
          *
          *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-         *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+         *      o   static_assert (totally_ordered<Angle>);
          *      o   partial_ordering because floating point admits only partial ordering.
          *      
          */
@@ -81,6 +81,7 @@ namespace Stroika::Foundation::Math {
     private:
         double fAngleInRadians_;
     };
+    static_assert (totally_ordered<Angle>);
 
     /**
      */

@@ -203,7 +203,8 @@ namespace Stroika::Foundation::Containers {
      *          constructors, iterators, etc)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison equality (==, <=> etc) - IFF equal_to (for ==/!=) and three_way_comparer<> (for the rest are defined
+     *        o static_assert (equality_comparable<T> ==> equality_comparable<Sequence<T>>);
+     *        o static_assert (totally_ordered<T> ==> totally_ordered<Sequence<T>>);
      *        o using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
      *        o using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<T_EQUALS_COMPARER>;
      */

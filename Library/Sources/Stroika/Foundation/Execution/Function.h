@@ -42,10 +42,10 @@ namespace Stroika::Foundation::Execution {
      *  IDEA is be SAME AS std::function<> but allow for operator<, a usable operator== etc...,
      *  which is an unfortunate omission from the c++ standard.
      *
-     *  This should be convertable to a normal std::function<>, and fairly if not totally interoprable.
+     *  This should be convertible to a normal std::function<>, and fairly if not totally interoperable.
      *
      *  \note   Alias
-     *      This template could have been called Callback<> - as thats principally what its used for.
+     *      This template could have been called Callback<> - as that's principally what its used for.
      *      Callbacks you need to be able to create, and then later remove (by value) - and this class
      *      lets you create an object (callback/Function) - which can then be added to a Mapping (or Set)
      *      and then later removed by value.
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
      *          until Stroika v2.1d8.
      *
      *  \note   <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *          o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *          static_assert (totally_ordered<Function<...>);
      */
     template <typename FUNCTION_SIGNATURE>
     class Function {
@@ -69,14 +69,14 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \note Implementation note:
-         *        Reason for the not dervied_from<> restriction on CTOR/1(CTOR_FUNC_SIG&&) is to prevent compiler from
+         *        Reason for the not derived_from<> restriction on CTOR/1(CTOR_FUNC_SIG&&) is to prevent compiler from
          *        instantiating that constructor template for argument subclasses of this Function type, and having those take precedence over the
          *        default X(const X&) CTOR.
          * 
          *        And also careful not to apply to non-functions.
          * 
          *  \note Constructor with nullptr or a null function object - will produce a UNIQUE function value (according to operator==).
-         *        ANY other function object - each time you call the constructor - you will get a differnt (according to operator==) Function
+         *        ANY other function object - each time you call the constructor - you will get a different (according to operator==) Function
          *        object. See http://stroika-bugs.sophists.com/browse/STK-960 for some of the reasoning behind this.
          */
         Function () = default;

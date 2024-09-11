@@ -233,8 +233,9 @@ namespace Stroika::Foundation::Execution {
      * 
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *          (but these are ONLY defined if TRAITS::kIsRecursiveReadMutex)
+     *      o   static_assert (equality_comparable<T> and TRAITS::kIsRecursiveReadMutex ==> equality_comparable<Synchronized<T>>);
+     *      o   static_assert (totally_ordered<T> and TRAITS::kIsRecursiveReadMutex ==> totally_ordered<Synchronized<T>>);
+     * 
      */
     template <typename T, typename TRAITS = Synchronized_Traits<>>
     class Synchronized : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {

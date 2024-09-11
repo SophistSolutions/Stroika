@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Configuration {
      *  @see Stroika_Make_FULL_VERSION for the mapping
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   static_assert (three_way_comparable<Version>);
+     *      o   static_assert (totally_ordered<Version>);
      */
     struct Version {
     public:
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Configuration {
          */
         constexpr strong_ordering operator<=> (const Version& rhs) const;
     };
-    static_assert (three_way_comparable<Version>);
+    static_assert (totally_ordered<Version>);
 
 }
 

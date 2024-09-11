@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
      *          constructors, iterators, etc)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o Standard Stroika Comparison equality (==, !=) support (iff <T> parameter has default equal_to<T> implementation)
+     *      o   static_assert (equality_comparable<T> ==> equality_comparable<Stack<T>>);
      *      o   EqualsComparer provided as alias to SequentialEqualsComparer
      *          Two Queues are considered equal if they contain the same elements (by comparing them
      *          with EQUALS_COMPARER (which defaults to equal_to<T>)

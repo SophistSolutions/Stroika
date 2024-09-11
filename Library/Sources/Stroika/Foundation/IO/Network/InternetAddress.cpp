@@ -362,7 +362,7 @@ String InternetAddress::ToString () const
     return As<String> ();
 }
 
-InternetAddress InternetAddress::KeepSignifcantBits (unsigned int significantBits) const
+InternetAddress InternetAddress::KeepSignificantBits (unsigned int significantBits) const
 {
     // Mask address by significant bits
     vector<uint8_t> r;

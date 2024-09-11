@@ -307,6 +307,18 @@ that the string is being parsed into that object type.
 
 Stroika types generally support the c++20 operator== and operator<=> semantics and operators.
 
+Many types declare this with:
+  ~~~
+  static_assert (totally_ordered\<xxx\>)
+  ~~~
+
+Other templated types, the comparability depends on that of the templated types.
+
+For example - for KeyValuePair<>
+  ~~~
+  static_assert (totally_ordered<KEY_TYPE> and totally_ordered<VALUE_TYPE> ==> totally_ordered<KeyValuePair<KEY_TYPE, VALUE_TYPE>>)
+  ~~~
+
 But for many classes, for example, 'set' containers, it matters if the function argument is an equality comparer, or ordering comparer, and the C++ comparison syntax does't make that distinction (less and equal are two functions objects
 that have the same 'signature' but one 'works' in a std::set, but the other fails pretty badly).
 

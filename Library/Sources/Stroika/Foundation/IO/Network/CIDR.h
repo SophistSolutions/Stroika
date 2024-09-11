@@ -26,7 +26,7 @@ namespace Stroika::Foundation::IO::Network {
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      static_assert (totally_ordered<CIDR>);
      *
      *      Compare the significant bits of the CIDR.
      */
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::Network {
          *      \req internetAddress.GetAddressFamily () is V4 or V6 (not unknown).
          *
          *  For CIDR (const String& cidrNotation... CTOR)
-         *      cidrNotation ends with "/NNN" where NNN are digits of an interger where the numberOfBits. This will
+         *      cidrNotation ends with "/NNN" where NNN are digits of an integer where the numberOfBits. This will
          *      throw an exception if the input is ill-formed (e.g. if number of bits too large for the address).
          *      And the internet-address part will be parsed as by InternetAddress{String} CTOR, and will also throw
          *      on bad format (basically must be valid numeric internet address format).
@@ -117,6 +117,7 @@ namespace Stroika::Foundation::IO::Network {
         InternetAddress fBaseAddress_;
         unsigned int    fSignificantBits_{}; // for IPv4 and class C, =24
     };
+    static_assert (totally_ordered<CIDR>);
 
 }
 

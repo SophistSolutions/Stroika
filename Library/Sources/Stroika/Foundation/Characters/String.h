@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Characters {
      *          @todo CONSIDER LOSIING THESE METHODS ABOVE (or deprecating at leats)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   static_assert (totally_ordered<String>);
      *      o   String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
      */
     class [[nodiscard]] String : public Traversal::Iterable<Character> {
@@ -1652,6 +1652,7 @@ namespace Stroika::Foundation::Characters {
     private:
         [[noreturn]] static void ThrowInvalidAsciiException_ (); // avoid include
     };
+    static_assert (totally_ordered<String>);
 
     /**
      *  operator<< ostream adapters work as you would expect and allow writing Stroika strings easily to ostreams such as cout.

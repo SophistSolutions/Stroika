@@ -85,7 +85,8 @@ namespace Stroika::Foundation::Containers {
      *          constructors, iterators, etc)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   operator== and operator!= are supported
+     *      o   static_assert (equality_comparable<Bijection<...>>);
+     * 
      *      o   All Bijections MUST have = comparable DOMAIN_TYPE and RANGE_TYPE, so operator== for the bijection is well-defined.
      *
      *          Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated

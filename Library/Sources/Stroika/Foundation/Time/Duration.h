@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Time {
      *      As<wstring> ().c_str ()
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   comparisons (operator <=>) inherited from chrono::duration
+     *      o   static_assert (totally_ordered<Duration>);
      */
     class [[nodiscard]] Duration final : public chrono::duration<double> {
     private:
@@ -325,6 +325,7 @@ namespace Stroika::Foundation::Time {
         };
         constexpr void destroy_ (); // allow call if already empty
     };
+    static_assert (totally_ordered<Duration>);
 
     class Duration::FormatException : public Execution::RuntimeErrorException<> {
     private:
@@ -341,8 +342,8 @@ namespace Stroika::Foundation::Time {
     inline namespace Literals {
 
         /**
-     *  \brief user defined literal for Duration, specified in ISO8601 format.
-     */
+         *  \brief user defined literal for Duration, specified in ISO8601 format.
+         */
         [[nodiscard]] Duration operator"" _duration (const char* str, size_t len);
         [[nodiscard]] Duration operator"" _duration (const wchar_t* str, size_t len);
         [[nodiscard]] Duration operator"" _duration (const char8_t* str, size_t len);

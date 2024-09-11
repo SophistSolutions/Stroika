@@ -455,6 +455,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator== (const Association& rhs) const
+        requires (equality_comparable<MAPPED_VALUE_TYPE>)
     {
         return EqualsComparer<>{}(*this, rhs);
     }

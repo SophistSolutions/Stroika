@@ -92,7 +92,7 @@ namespace Stroika::Foundation::IO::Network {
      *      in http://www.ietf.org/rfc/rfc3879.txt
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      static_assert (totally_ordered<InternetAddress>);
      */
     class InternetAddress {
     public:
@@ -303,7 +303,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
-        nonvirtual InternetAddress KeepSignifcantBits (unsigned int significantBits) const;
+        nonvirtual InternetAddress KeepSignificantBits (unsigned int significantBits) const;
 
     public:
         /**
@@ -374,6 +374,7 @@ namespace Stroika::Foundation::IO::Network {
             array<byte, 16>    fArray_16_byte_;
         };
     };
+    static_assert (totally_ordered<InternetAddress>);
 
     /**
      *  IN_ADDR_ANY

@@ -81,7 +81,7 @@ namespace Stroika::Foundation::IO::Network {
      *          But its easy enough to avoid by re-constructing the URI from scratch using the URI (individual components) constructor.
      *      
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *        o static_assert (totally_ordered<URI>);
      */
     class [[nodiscard]] URI {
     public:
@@ -398,6 +398,7 @@ namespace Stroika::Foundation::IO::Network {
         optional<String>     fFragment_;  // ditto
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
+    static_assert (totally_ordered<URI>);
 
 }
 

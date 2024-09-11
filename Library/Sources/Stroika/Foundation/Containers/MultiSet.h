@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers {
      *          constructors, iterators, etc)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison equality (==, !=) support
+     *      o   static_assert (equality_comparable<MultiSet<T>>);
      *
      *      o   Multisets intrinsically know how to compare their elements (for equality) - even if equal_to<T> not defined
      *

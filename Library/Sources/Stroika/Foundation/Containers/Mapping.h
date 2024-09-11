@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Containers {
      *          constructors, iterators, etc)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison equality (==, !=) support
+     *      o   static_assert (equality_comparable<VALUE_TYPE> ==> equality_comparable<Mapping<KEY, VALUE_TYPE>>);
      *
      *          Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
      *          with the same value. There is no need for the items to appear in the same order for the two Mappings to

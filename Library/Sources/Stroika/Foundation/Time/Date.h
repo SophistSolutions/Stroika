@@ -322,7 +322,7 @@ namespace Stroika::Foundation::Time {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *        static_assert (totally_ordered<Date>);
      */
     class [[nodiscard]] Date {
     public:
@@ -729,6 +729,7 @@ namespace Stroika::Foundation::Time {
         year_month_day fRep_;
     };
     static_assert (sizeof (Date) == sizeof (year_month_day)); // generally 4 bytes
+    static_assert (totally_ordered<Date>);
 
     template <>
     constexpr ::tm Date::As () const;

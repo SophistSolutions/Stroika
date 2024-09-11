@@ -163,7 +163,7 @@ namespace Stroika::Foundation::IO::Network {
          *  \note inherits from Socket just for inherited type definitions - no methods or data.
          *
          *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-         *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+         *        o static_assert (totally_ordered<Ptr>);
          *        o Socket::Ptr objects are compared (relative or equality) by their underlying 'rep' object.
          *          This USED to be done by calling GetNativeSocket () so two separately attached sockets
          *          would compare equal. Now - we compare the underlying smart pointers. This is nearly always
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::IO::Network {
 
         public:
             /**
-             *  reset () doesn't clear the data in the socket, or close the socket, but unreferences the socket
+             *  reset () doesn't clear the data in the socket, or close the socket, but un-references the socket
              *  smart pointer. Only if this socket smartpointer is the last reference to the underlying stream
              *  data does this reset () close the underlying socket.
              *
@@ -302,7 +302,7 @@ namespace Stroika::Foundation::IO::Network {
 
         public:
             /**
-             *  A socket can be open or closed. Open is roughly analagous to non-null. A socket once closed
+             *  A socket can be open or closed. Open is roughly analogous to non-null. A socket once closed
              *  can never be 'Opened' - but you can assign a new Open socket to the Socket object.
              *
              *  \note - not same as ==nullptr? to be open, must not == nullptr and underlying rep must be open.
@@ -348,7 +348,7 @@ namespace Stroika::Foundation::IO::Network {
              *  \note   this is usually unnecessary, somewhat dangerous (easy to mismatch types), and most common socket options
              *          can be accessed via other methods (e.g. SetMulticastTTL ())
              *
-             *  \note   It maybe advisable to be explicit about the ARG_TYPE in the template, as constants like '3' may get misinterpretted,
+             *  \note   It maybe advisable to be explicit about the ARG_TYPE in the template, as constants like '3' may get misinterpreted,
              *          and you must use the exactly correct type for the low level setsockopt API.
              *
              *  @see getsockopt
@@ -385,6 +385,7 @@ namespace Stroika::Foundation::IO::Network {
         private:
             shared_ptr<_IRep> fRep_;
         };
+        static_assert (totally_ordered<Ptr>);
 
         /**
          */

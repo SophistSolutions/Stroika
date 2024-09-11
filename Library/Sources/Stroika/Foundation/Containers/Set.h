@@ -91,7 +91,8 @@ namespace Stroika::Foundation::Containers {
      *      as Container::Add(). We COULD enhance Add () to take an optional hint parameter in a future version of Stroika.
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison equality (==, <=> etc) - because all sets have an equalsComparer for their elements
+     *        o static_assert (equality_comparable<Set<T>)
+     * 
      *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering between the set elements
      *        o when comparing a Set to any Iterable<> - this is treated as 'set' equality comparison
      *
@@ -582,7 +583,7 @@ namespace Stroika::Foundation::Containers {
      *  Two Sets are considered equal if they contain the same elements (by comparing them with EqualsCompareFunctionType (defaults to operator==)).
      *  Note, if two equalsComparer functions are provided, they must produce the same result comparing elements.
      *
-     *  \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
+     *  \req lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
      *
      *  EqualsComparer is commutative ().
      *

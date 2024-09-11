@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Time {
      *  @see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *          static_assert (totally_ordered<Timezone>);
      *          o   comparison of < not 100% intuitive, but unambiguous, so these can be compared (by numeric value of flags/offsets).
      */
     class [[nodiscard]] Timezone {
@@ -239,6 +239,7 @@ namespace Stroika::Foundation::Time {
     }
     static_assert (sizeof (Timezone) <= sizeof (_HACK_2_TEST_4_static_assert_),
                    "Timezone can/should be packed as much as practical since we could use a single uint16_ probably"); // make sure full struct as small as possible
+    static_assert (totally_ordered<Timezone>);
 
 }
 

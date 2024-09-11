@@ -35,7 +35,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         strong_ordering r = fSignificantBits_ <=> rhs.fSignificantBits_;
         if (r == 0) {
-            return fBaseAddress_.KeepSignifcantBits (fSignificantBits_) <=> rhs.fBaseAddress_.KeepSignifcantBits (fSignificantBits_);
+            return fBaseAddress_.KeepSignificantBits (fSignificantBits_) <=> rhs.fBaseAddress_.KeepSignificantBits (fSignificantBits_);
         }
         else {
             return r;
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::IO::Network {
     inline bool CIDR::operator== (const CIDR& rhs) const
     {
         return fSignificantBits_ == rhs.fSignificantBits_ and
-               fBaseAddress_.KeepSignifcantBits (fSignificantBits_) == rhs.fBaseAddress_.KeepSignifcantBits (fSignificantBits_);
+               fBaseAddress_.KeepSignificantBits (fSignificantBits_) == rhs.fBaseAddress_.KeepSignificantBits (fSignificantBits_);
     }
 
 }

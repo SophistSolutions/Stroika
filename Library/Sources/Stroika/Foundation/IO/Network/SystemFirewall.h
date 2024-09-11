@@ -27,7 +27,7 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   static_assert (totally_ordered<Rule>);
      */
     struct Rule {
         String           fName;
@@ -57,6 +57,7 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
          */
         nonvirtual strong_ordering operator<=> (const Rule&) const = default;
     };
+    static_assert (totally_ordered<Rule>);
 
     /**
      *  Configure the OS/system firewall on the system where the application is being run.

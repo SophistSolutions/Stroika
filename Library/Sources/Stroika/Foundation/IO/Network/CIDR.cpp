@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::IO::Network;
  ********************************************************************************
  */
 CIDR::CIDR (const InternetAddress& internetAddress, unsigned int significantBits)
-    : fBaseAddress_{internetAddress.KeepSignifcantBits (significantBits)}
+    : fBaseAddress_{internetAddress.KeepSignificantBits (significantBits)}
     , fSignificantBits_{significantBits}
 {
 }

@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Memory {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   static_assert (totally_ordered<BLOB>);
      *  
      *      This is like memcmp() - bytewise unsigned comparison
      * 
@@ -422,6 +422,7 @@ namespace Stroika::Foundation::Memory {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         shared_ptr<_IRep>                                              fRep_;
     };
+    static_assert (totally_ordered<BLOB>);
 
     // @todo make this work
     //static_assert (convertible_to<BLOB, span<byte>>);

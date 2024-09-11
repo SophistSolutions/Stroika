@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \em Design Note:
      *      Included <map> and have explicit CTOR for multimap<> so that Stroika Association can be used more interoperably
-     *      with multimap<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
+     *      with multimap<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental conversions. But
      *      if you declare an API with Association<KEY_TYPE,MAPPED_VALUE_TYPE> arguments, its important STL sources passing in multimap<> work transparently.
      *
      *      Similarly for std::initalizer_list.
@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers {
      *          constructors, iterators, etc)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison equality (==, !=) support
+     *      o   operator==(Assocation& rhs) requires (equality_comparable<MAPPED_VALUE_TYPE>);
      *
      *          Two Associations are considered equal if they contain the same elements (keys) and each key is associated
      *          with the same value. There is no need for the items to appear in the same order for the two Associations to
@@ -526,8 +526,11 @@ namespace Stroika::Foundation::Containers {
         /**
          * simply indirect to @Association<>::EqualsComparer;
          * only defined if there is a default equals comparer for mapped_type
+         * 
+         *  \note since the order of iteration for an association is undefined, two assocations maybe equal, but not enumerate out the same way.
          */
-        nonvirtual bool operator== (const Association& rhs) const;
+        nonvirtual bool operator== (const Association& rhs) const
+            requires (equality_comparable<MAPPED_VALUE_TYPE>);
 
     public:
         /**
