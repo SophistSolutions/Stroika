@@ -421,7 +421,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
 					STAGE_STARTAT_INT=$(date +%s)
 					valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
-					cat valgrind-log.tmp >> $TEST_OUT_FILE
+					touch valgrind-log.tmp; cat valgrind-log.tmp >> $TEST_OUT_FILE
 					rm -f valgrind-log.tmp 
 					STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 					echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
