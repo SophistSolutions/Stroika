@@ -394,6 +394,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual optional<mapped_type> First (FUNCTION&& firstThat) const;
 
     public:
+        /**
+         *  \note - unlike modifying operations, this doesn't invalidate any iterators (including the argument iterator).
+         */
         template <typename CHECKED_T = MAPPED_TYPE>
         nonvirtual void Update (const ForwardIterator& it, ArgByValueType<CHECKED_T> newValue)
             requires (not same_as<MAPPED_TYPE, void>);

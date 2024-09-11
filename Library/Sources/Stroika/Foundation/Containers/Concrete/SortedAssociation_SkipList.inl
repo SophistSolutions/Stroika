@@ -10,11 +10,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ****** SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ********
+     ****** SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ***********
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IInOrderComparer<KEY_TYPE>) KEY_COMPARER>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<KEY_TYPE>) KEY_COMPARER>
     class SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
                                                                           public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_COMPARER>> {
     private:
@@ -24,11 +24,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (not is_reference_v<KEY_COMPARER>);
 
     public:
-        Rep_ (const KEY_COMPARER& inorderComparer)
-            : fData_{inorderComparer}
+        Rep_ (const KEY_COMPARER& comparer)
+            : fData_{comparer}
         {
         }
-        Rep_ (SkipList<KEY_COMPARER>&& src)
+        Rep_ (SKIPLIST<KEY_COMPARER>&& src)
             : fData_{move (src)}
         {
         }
@@ -98,16 +98,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             // @todo consider doing custom class here, or using CreateGenerator
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (key);
+            auto                                                  i = fData_.Find (key);    // returns iterator to first matching key
             vector<mapped_type>                                   result;
             if (i != fData_.end ()) {
-                Assert (GetKeyEqualsComparer () (key, i->first));
-                result.push_back (i->second);
+                Assert (GetKeyEqualsComparer () (key, i->fKey));
+                result.push_back (i->fValue);
                 // the items in a multimap are all in order so we know the current i->key is not less
-                Assert (not fData_.key_comp () (key, i->first));
-                Assert (not fData_.key_comp () (i->first, key));
-                for (++i; i != fData_.end () and not fData_.key_comp () (key, i->first); ++i) {
-                    result.push_back (i->second);
+                Assert ( fData_.key_comp () (key, i->fKey) == strong_ordering::equal);
+                for (++i; i != fData_.end () and fData_.key_comp () (key, i->fKey) == strong_ordering::equal; ++i) {
+                    result.push_back (i->fValue);
                 }
             }
             return Iterable<mapped_type>{move (result)};
@@ -116,7 +115,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Invariant ();
-            (void)fData_.insert ({key, newElt});
+            (void)fData_.Add (key, newElt);
             fChangeCounts_.PerformedChange ();
             fData_.Invariant ();
         }
@@ -124,9 +123,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Invariant ();
-            auto i = fData_.find (key);
+            auto i = fData_.Find (key);
             if (i != fData_.end ()) {
-                fData_.erase (i);
+                fData_.Remove (i);
                 fChangeCounts_.PerformedChange ();
                 return true;
             }
@@ -135,7 +134,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto newI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ());
+            auto newI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, newI)};
@@ -144,16 +143,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
-            optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
+            optional < Iterator<value_type>>                        savedNextI;
             if (nextI != nullptr) {
-                savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
+                *nextI = i;
             }
-            fData_
-                .remove_constness (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ())
-                ->second = newValue;
+            fData_.Update (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+                savedNextI->Refresh ();
             }
         }
 
@@ -166,7 +163,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = SKIPLIST<KEY_THREEWAY_COMPARER>;
+        using DataStructureImplType_ = SKIPLIST<KEY_COMPARER>;
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
@@ -179,19 +176,19 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ********* SortedAssociation_SkipList<KEY_TYPE,MAPPED_VALUE_TYPE> ************
+     ********* SortedAssociation_SkipList<KEY_TYPE,MAPPED_VALUE_TYPE> ***************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList ()
-        : SortedAssociation_SkipList{less<KEY_TYPE>{}}
+        : SortedAssociation_SkipList{compare_three_way{}}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER>
-    inline SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer)
-        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<KEY_COMPARER>>> (forward<KEY_COMPARER> (inorderComparer))}
+    inline SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& comparer)
+        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<KEY_COMPARER>>> (forward<KEY_COMPARER> (comparer))}
     {
         AssertRepValidType_ ();
     }
@@ -205,8 +202,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER>
     inline SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (
-        KEY_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : SortedAssociation_SkipList{forward<KEY_COMPARER> (inorderComparer)}
+        KEY_COMPARER&& comparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        : SortedAssociation_SkipList{forward<KEY_COMPARER> (comparer)}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -225,8 +222,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-    inline SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
-        : SortedAssociation_SkipList{forward<KEY_COMPARER> (inorderComparer)}
+    inline SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedAssociation_SkipList{forward<KEY_COMPARER> (comparer)}
     {
         AssertRepValidType_ ();
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -242,9 +239,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-    SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer,
+    SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& comparer,
                                                                                          ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        : SortedAssociation_SkipList{forward<KEY_COMPARER> (inorderComparer)}
+        : SortedAssociation_SkipList{forward<KEY_COMPARER> (comparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();

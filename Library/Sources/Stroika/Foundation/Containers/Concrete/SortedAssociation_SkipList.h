@@ -19,6 +19,8 @@
  */
 namespace Stroika::Foundation::Containers::Concrete {
 
+    using Common::IThreeWayComparer;
+
     /**
      *  \brief   SortedAssociation_SkipList<KEY_TYPE,MAPPED_VALUE_TYPE> is an SkipList-based concrete implementation of the SortedAssociation<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
      *
@@ -58,13 +60,13 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         SortedAssociation_SkipList ();
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER>
-        explicit SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer);
+        explicit SortedAssociation_SkipList (KEY_COMPARER&& comparer);
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER>
         explicit SortedAssociation_SkipList (SKIPLIST<KEY_COMPARER>&&);
         SortedAssociation_SkipList (SortedAssociation_SkipList&& src) noexcept  = default;
         SortedAssociation_SkipList (const SortedAssociation_SkipList&) noexcept = default;
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER>
-        SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        SortedAssociation_SkipList (KEY_COMPARER&& comparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit SortedAssociation_SkipList (ITERABLE_OF_ADDABLE&& src)
@@ -78,11 +80,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
         ;
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-        SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
+        SortedAssociation_SkipList (KEY_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         SortedAssociation_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        SortedAssociation_SkipList (KEY_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        SortedAssociation_SkipList (KEY_COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
         /**
@@ -92,7 +94,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
-        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IInOrderComparer<KEY_TYPE>) KEY_COMPARER>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<KEY_TYPE>) KEY_COMPARER>
         class Rep_;
 
     private:

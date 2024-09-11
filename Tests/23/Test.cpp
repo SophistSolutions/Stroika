@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Containers/Concrete/SortedAssociation_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
 #include "Stroika/Foundation/Containers/SortedAssociation.h"
 #include "Stroika/Foundation/Debug/Assertions.h"

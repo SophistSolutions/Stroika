@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Containers/Association.h"
 #include "Stroika/Foundation/Containers/Concrete/Association_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Association_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedAssociation_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -35,6 +36,7 @@ using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Association_Array;
 using Concrete::Association_LinkedList;
+using Concrete::SortedAssociation_SkipList;
 using Concrete::SortedAssociation_stdmultimap;
 
 #if qHasFeature_GoogleTest
@@ -101,7 +103,23 @@ GTEST_TEST (Foundation_Containers_Association, SortedAssociation_stdmultimap)
         AsIntsEqualsComparer<OnlyCopyableMoveable>{});
 }
 
-GTEST_TEST (Foundation_Containers_Association, Test2_SimpleBaseClassConversionTraitsConfusion_)
+GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList)
+{
+    //SortedAssociation_SkipList<size_t, size_t> x;
+#if 0
+    Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+        [] () {
+            return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
+        },
+        AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+#endif
+}
+
+GTEST_TEST (Foundation_Containers_Association, SimpleBaseClassConversionTraitsConfusion_)
 {
     Debug::TraceContextBumper     ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
     SortedAssociation<int, float> xxxyy  = Concrete::SortedAssociation_stdmultimap<int, float> ();
@@ -132,7 +150,7 @@ namespace {
         using CONTAINER_OF_PAIR_KEY_T = Association<int, A>;
         using T                       = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
     }
-    GTEST_TEST (Foundation_Containers_Association, Test4_AssociationCTOROverloads_)
+    GTEST_TEST (Foundation_Containers_Association, AssociationCTOROverloads_)
     {
         Debug::TraceContextBumper ctx{"{}::Test4_AssociationCTOROverloads_"};
         using namespace Test4_AssociationCTOROverloads_::xPrivate_;
@@ -170,7 +188,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Association, Where_Test_6_)
+    GTEST_TEST (Foundation_Containers_Association, Where)
     {
         {
             Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
@@ -197,7 +215,7 @@ namespace {
                           Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
         }
         {
-            // simular but example has duplicates
+            // similar but example has duplicates
             Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 3}, pair<int, int>{2, 4},
                                     pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
             EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
@@ -210,7 +228,7 @@ namespace {
 
 namespace {
 
-    GTEST_TEST (Foundation_Containers_Association, WithKeys_Test_7_)
+    GTEST_TEST (Foundation_Containers_Association, WithKeys)
     {
         Association<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
         EXPECT_EQ (m.WithKeys ({2, 5}), (Association<int, int>{{2, 4}, {5, 7}}));
@@ -218,7 +236,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Association, ClearBug_Test_8_)
+    GTEST_TEST (Foundation_Containers_Association, ClearBug)
     {
         // http://stroika-bugs.sophists.com/browse/STK-541
         Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
@@ -230,7 +248,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Association, BasicNewAssociationRules_Test_9_)
+    GTEST_TEST (Foundation_Containers_Association, BasicNewAssociationRules)
     {
         Association<int, int> m;
         m.Add (1, 2);
@@ -252,7 +270,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Association, CTORWithComparerAndContainer_Test_10_)
+    GTEST_TEST (Foundation_Containers_Association, CTORWithComparerAndContainer)
     {
         using namespace Characters;
         {
