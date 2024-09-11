@@ -14,6 +14,7 @@ namespace Stroika::Foundation::Common {
         requires (not is_reference_v<ACTUAL_COMPARER>)
     template <typename... ARGS>
     inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ARGS... args)
+        requires (constructible_from<ACTUAL_COMPARER, ARGS...>)
         : ACTUAL_COMPARER{std::forward<ARGS> (args)...}
     {
     }
