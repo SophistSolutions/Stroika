@@ -126,11 +126,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Invariant ();
             auto i = fData_.Find (key);
             if (i != fData_.end ()) {
-                fData_.Invariant ();
                 fData_.Remove (i);
-                fData_.Invariant ();
                 fChangeCounts_.PerformedChange ();
-                fData_.Invariant ();
                 return true;
             }
             return false;
