@@ -362,6 +362,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_stdset.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedKeyedCollection_SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_SkipList.h" />
@@ -823,6 +824,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_stdhashset.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_SkipList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_SkipList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedKeyedCollection_SkipList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_SkipList.inl" />
