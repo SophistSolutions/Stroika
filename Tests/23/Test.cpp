@@ -31,6 +31,9 @@ using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::SortedAssociation_stdmultimap;
 
+using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
+using MyOnlyCopyableMoveable_ComparerWithLess_   = AsIntsLessComparer<OnlyCopyableMoveable>;
+
 #if qHasFeature_GoogleTest
 namespace {
     template <typename CONCRETE_CONTAINER>
@@ -68,29 +71,19 @@ namespace {
 }
 
 namespace {
-    namespace Test3_ConvertAssociation2SortedAssociation {
-        void TestAll ()
-        {
-            Association<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
-            SortedAssociation<int, int> ms{m};
-            EXPECT_EQ (ms.size (), 2u);
-            EXPECT_TRUE ((*ms.begin () == pair<int, int>{1, 2}));
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_SortedAssociation, all)
+    GTEST_TEST (Foundation_Containers_SortedAssociation, FACTORY_DEFAULT)
     {
-        using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
-        using MyOnlyCopyableMoveable_ComparerWithLess_   = AsIntsLessComparer<OnlyCopyableMoveable>;
-
         DoTestForConcreteContainer_<SortedAssociation<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
             [] () { return SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{}); },
             MyOnlyCopyableMoveable_ComparerWithEquals_{});
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedAssociation, SortedAssociation_stdmultimap)
+    {
         DoTestForConcreteContainer_<SortedAssociation_stdmultimap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
@@ -98,9 +91,22 @@ namespace {
                 return SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{});
             },
             MyOnlyCopyableMoveable_ComparerWithEquals_{});
+    }
+}
 
-        Test3_ConvertAssociation2SortedAssociation::TestAll ();
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedAssociation, Test3_ConvertAssociation2SortedAssociation)
+    {
+        Association<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
+        SortedAssociation<int, int> ms{m};
+        EXPECT_EQ (ms.size (), 2u);
+        EXPECT_TRUE ((*ms.begin () == pair<int, int>{1, 2}));
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedAssociation, Cleanup)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
