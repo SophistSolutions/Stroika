@@ -59,6 +59,7 @@ namespace Stroika::Foundation::Containers::Private {
     inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ (
         const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter,
         ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
+        requires (constructible_from<DATASTRUCTURE_CONTAINER_ITERATOR, const DATASTRUCTURE_CONTAINER*, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS...>)
         : fIterator{data, forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
 #if qDebug
         , fChangeCounter{changeCounter}
@@ -71,6 +72,7 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
     inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ (
         [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
+        requires (constructible_from<DATASTRUCTURE_CONTAINER_ITERATOR, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS...>)
         : fIterator{forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
 #if qDebug
         , fChangeCounter{changeCounter}
