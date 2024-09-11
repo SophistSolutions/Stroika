@@ -27,13 +27,12 @@ using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
+using Concrete::SortedAssociation_SkipList;
 using Concrete::SortedAssociation_stdmultimap;
-
-using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
-using MyOnlyCopyableMoveable_ComparerWithLess_   = AsIntsLessComparer<OnlyCopyableMoveable>;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -77,8 +76,8 @@ namespace {
         DoTestForConcreteContainer_<SortedAssociation<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{}); },
-            MyOnlyCopyableMoveable_ComparerWithEquals_{});
+            [] () { return SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
@@ -91,7 +90,20 @@ namespace {
             [] () {
                 return SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{});
             },
-            MyOnlyCopyableMoveable_ComparerWithEquals_{});
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedAssociation, SortedAssociation_SkipList)
+    {
+        DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () {
+                return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
+            },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 

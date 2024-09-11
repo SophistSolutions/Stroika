@@ -75,11 +75,9 @@ GTEST_TEST (Foundation_Containers_Association, Association_Array)
     Debug::TraceContextBumper ctx{"{}::Association_Array"};
     DoTestForConcreteContainer_<Association_Array<size_t, size_t>> ();
     DoTestForConcreteContainer_<Association_Array<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-#if 0
     DoTestForConcreteContainer_<Association_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
         [] () { return Association_Array<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
         AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-#endif
 }
 
 GTEST_TEST (Foundation_Containers_Association, Association_LinkedList)
@@ -111,17 +109,20 @@ GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList)
     Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
     DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
     DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-
     DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
         [] () {
             return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
         },
         AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    {
+        SortedAssociation_SkipList<size_t, size_t>  x;
+        x.ReBalance();  // just to assure compiles - no easy way to test decently...
+    }
 }
 
 GTEST_TEST (Foundation_Containers_Association, SimpleBaseClassConversionTraitsConfusion_)
 {
-    Debug::TraceContextBumper     ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
+    Debug::TraceContextBumper     ctx{"{}::SimpleBaseClassConversionTraitsConfusion_"};
     SortedAssociation<int, float> xxxyy  = Concrete::SortedAssociation_stdmultimap<int, float> ();
     Association<int, float>       xxxyy1 = Concrete::SortedAssociation_stdmultimap<int, float> ();
 }
@@ -152,7 +153,7 @@ namespace {
     }
     GTEST_TEST (Foundation_Containers_Association, AssociationCTOROverloads_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test4_AssociationCTOROverloads_"};
+        Debug::TraceContextBumper ctx{"{}::AssociationCTOROverloads_"};
         using namespace Test4_AssociationCTOROverloads_::xPrivate_;
         Association<int, A> from;
 
@@ -190,6 +191,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Association, Where)
     {
+        Debug::TraceContextBumper ctx{"{}::Where"};
         {
             Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
                                     KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
@@ -227,9 +229,9 @@ namespace {
 }
 
 namespace {
-
     GTEST_TEST (Foundation_Containers_Association, WithKeys)
     {
+        Debug::TraceContextBumper ctx{"{}::WithKeys"};
         Association<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
         EXPECT_EQ (m.WithKeys ({2, 5}), (Association<int, int>{{2, 4}, {5, 7}}));
     }
@@ -238,6 +240,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Association, ClearBug)
     {
+        Debug::TraceContextBumper ctx{"{}::ClearBug"};
         // http://stroika-bugs.sophists.com/browse/STK-541
         Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
                                 KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
@@ -250,6 +253,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Association, BasicNewAssociationRules)
     {
+        Debug::TraceContextBumper ctx{"{}::BasicNewAssociationRules"};
         Association<int, int> m;
         m.Add (1, 2);
         m.Add (1, 2);
@@ -271,6 +275,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Association, CTORWithComparerAndContainer)
     {
+        Debug::TraceContextBumper ctx{"{}::CTORWithComparerAndContainer"};
         using namespace Characters;
         {
             Association<String, String> parameters{String::EqualsComparer{Characters::eCaseInsensitive}};
@@ -283,6 +288,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Association, Association_Array_ArrayAPITests_)
     {
+        Debug::TraceContextBumper ctx{"{}::Association_Array_ArrayAPITests_"};
         Association_Array<int, int> a;
         a.reserve (3);
         EXPECT_EQ (a.capacity (), 3u);
