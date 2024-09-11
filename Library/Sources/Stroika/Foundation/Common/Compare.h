@@ -286,7 +286,10 @@ namespace Stroika::Foundation::Common {
         constexpr ComparisonRelationDeclaration () = default;
         template <typename... ARGS>
         constexpr ComparisonRelationDeclaration (ARGS... args)
-            requires (constructible_from<ACTUAL_COMPARER, ARGS...>);
+#if !qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
+            requires (constructible_from<ACTUAL_COMPARER, ARGS...>)
+#endif
+        ;
         constexpr ComparisonRelationDeclaration (const ComparisonRelationDeclaration&)     = default;
         constexpr ComparisonRelationDeclaration (ComparisonRelationDeclaration&&) noexcept = default;
 
