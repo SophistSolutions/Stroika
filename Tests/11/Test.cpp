@@ -105,7 +105,7 @@ GTEST_TEST (Foundation_Containers_Association, SortedAssociation_stdmultimap)
 
 GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList)
 {
-    //SortedAssociation_SkipList<size_t, size_t> x;
+    SortedAssociation_SkipList<size_t, size_t> x;
 #if 0
     Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
     DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();

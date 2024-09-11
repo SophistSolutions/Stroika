@@ -98,13 +98,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             // @todo consider doing custom class here, or using CreateGenerator
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.Find (key);    // returns iterator to first matching key
+            auto                                                  i = fData_.Find (key); // returns iterator to first matching key
             vector<mapped_type>                                   result;
             if (i != fData_.end ()) {
                 Assert (GetKeyEqualsComparer () (key, i->fKey));
                 result.push_back (i->fValue);
                 // the items in a multimap are all in order so we know the current i->key is not less
-                Assert ( fData_.key_comp () (key, i->fKey) == strong_ordering::equal);
+                Assert (fData_.key_comp () (key, i->fKey) == strong_ordering::equal);
                 for (++i; i != fData_.end () and fData_.key_comp () (key, i->fKey) == strong_ordering::equal; ++i) {
                     result.push_back (i->fValue);
                 }
@@ -137,13 +137,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto newI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, newI)};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, newI)};
             }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
-            optional < Iterator<value_type>>                        savedNextI;
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareWriteContext{fData_};
+            optional<Iterator<value_type>>                         savedNextI;
             if (nextI != nullptr) {
                 *nextI = i;
             }
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fData_.key_comp ();
+            return Common::InOrderComparerAdapter<KEY_TYPE, KEY_COMPARER>{fData_.key_comp ()};
         }
 
     private:
@@ -239,8 +239,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-    SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& comparer,
-                                                                                         ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_SkipList (KEY_COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start,
+                                                                                         ITERATOR_OF_ADDABLE&& end)
         : SortedAssociation_SkipList{forward<KEY_COMPARER> (comparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
