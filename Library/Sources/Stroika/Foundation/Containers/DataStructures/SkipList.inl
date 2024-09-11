@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return ForwardIterator{this, FindLink_ (key)};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
+    template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) const -> ForwardIterator
     {
         for (auto i = begin (); i; ++i) {
