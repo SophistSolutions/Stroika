@@ -77,6 +77,7 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::MultiSet_Array<>
      *      o   @see Concrete::MultiSet_LinkedList<>
      *      o   @see Concrete::SortedMultiSet_stdmap<>
+     *      o   @see Concrete::SortedMultiSet_SkipList<>
      *
      *  \em Factory:
      *      @see MultiSet_Factory<> to see default implementations.

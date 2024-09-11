@@ -40,6 +40,7 @@ namespace Stroika::Foundation::Containers {
      *          constructors, iterators, etc)
      *
      *  \em Concrete Implementations:
+     *      o   @see Concrete::SortedMultiSet_SkipList<>
      *      o   @see Concrete::SortedMultiSet_stdmap<>
      *
      *  \em Factory:

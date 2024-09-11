@@ -118,6 +118,7 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::KeyedCollection_LinkedList<>
      *      o   @see Concrete::KeyedCollection_stdhashset<>
      *      o   @see Concrete::SortedKeyedCollection_stdset<>
+     *      o   @see Concrete::SortedKeyedCollection_SkipList<>
      *
      *  \em Factory:
      *      @see Concrete::KeyedCollection_Factory<> to see default implementations.

@@ -40,6 +40,7 @@ namespace Stroika::Foundation::Containers {
      *      be encountered or not.
      *
      *  \em Concrete Implementations:
+     *      o   @see Concrete::SortedKeyedCollection_SkipList<>
      *      o   @see Concrete::SortedKeyedCollection_stdset<>
      * 
      *  \em Factory:

@@ -49,6 +49,7 @@ namespace Stroika::Foundation::Containers {
      *  \em Concrete Implementations:
      *      o   @see Concrete::SortedCollection_LinkedList<>
      *      o   @see Concrete::SortedCollection_stdmultiset<>
+     *      o   @see Concrete::SortedCollection_SkipList<>
      * 
      *  \em Factory:
      *      @see SortedCollection_Factory<> to see default implementations.

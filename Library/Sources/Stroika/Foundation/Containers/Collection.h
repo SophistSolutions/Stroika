@@ -76,6 +76,7 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::Collection_LinkedList<>
      *      o   @see Concrete::Collection_stdforward_list<>
      *      o   @see Concrete::SortedCollection_stdmultiset<>
+     *      o   @see Concrete::SortedCollection_SkipList<>
      *
      *  \note   Shake
      *      Considered adding a Shake() method (when this was called Bag<T>), but that would restrict

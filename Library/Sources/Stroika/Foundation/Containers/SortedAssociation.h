@@ -40,6 +40,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \em Concrete Implementations:
      *      o   @see Concrete::SortedAssociation_stdmultimap<>
+     *      o   @see Concrete::SortedAssociation_SkipList<>
      * 
      *  \em Factory:
      *      @see SortedAssociation_Factory<> to see default implementations.

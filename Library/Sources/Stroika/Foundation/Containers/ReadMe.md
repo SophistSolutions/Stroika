@@ -95,13 +95,13 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [Association\<KEY_TYPE, VALUE_TYPE>](Association.h)
   - Allows for the association of two elements: a key and one or more associated values
   - Similar to Mapping<> - except multi-valued (like std::multimap)
-  - Supported backends: [Array](Concrete/Association_Array.h), [LinkedList](Concrete/Association_LinkedList.h), [std::multimap](Concrete/SortedAssociation_stdmultimap.h)
+  - Supported backends: [Array](Concrete/Association_Array.h), [LinkedList](Concrete/Association_LinkedList.h), [SkipList](Concrete/SortedAssociation_SkipList.h), [std::multimap](Concrete/SortedAssociation_stdmultimap.h)
 - [Bijection\<DOMAIN_TYPE, RANGE_TYPE>](Bijection.h)
   - Bijection allows for the bijective (1-1) association of two elements
   - Supported backends: [LinkedList](Concrete/Bijection_LinkedList.h)
 - [Collection\<T>](Collection.h)
   - a container to manage an un-ordered collection of items, without equality defined for T
-  - Supported backends: [Array](Concrete/Collection_Array.h), [LinkedList](Concrete/Collection_LinkedList.h), [std::forward_list](Concrete/Collection_stdforwardlist.h), [std::multiset](Concrete/SortedCollection_stdmultiset.h)
+  - Supported backends: [Array](Concrete/Collection_Array.h), [LinkedList](Concrete/Collection_LinkedList.h), [std::forward_list](Concrete/Collection_stdforwardlist.h), [SkipList](Concrete/SortedCollection_SkipList.h), [std::multiset](Concrete/SortedCollection_stdmultiset.h)
 - [DataHyperRectangle\< T, ... INDEXES>](DataHyperRectangle.h)
   - a multi-dimensional Sequence\<T>
   - Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
@@ -112,10 +112,10 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: [DoublyLinkedList](Concrete/Deque_DoublyLinkedList.h)
 - [KeyedCollection\<T, KEY_TYPE, TRAITS>](KeyedCollection.h)
   - KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single object. It takes a parameter saying how to 'extract' the key from the collected value 'T'.
-  - Supported backends: [Array](Concrete/KeyedCollection_Array_.h),[LinkedList](Concrete/KeyedCollection_LinkedList_.h),[std::hashset](Concrete/KeyedCollection_stdhashset.h), [std::set](Concrete/SortedKeyedCollection_stdset.h)
+  - Supported backends: [Array](Concrete/KeyedCollection_Array_.h),[LinkedList](Concrete/KeyedCollection_LinkedList_.h),[std::hashset](Concrete/KeyedCollection_stdhashset.h), [SkipList](Concrete/SortedKeyedCollection_SkipList.h), [std::set](Concrete/SortedKeyedCollection_stdset.h)
 - [Mapping\<KEY_TYPE, VALUE_TYPE>](Mapping.h)
   - Allows for the association of two elements: a key and a value. The key UNIQUELY specifies its associated value
-  - Supported backends: [Array](Concrete/Mapping_Array_.h), [LinkedList](Concrete/Mapping_LinkedList_.h), [std::hash_map](Concrete/Mapping_stdhashmap_.h), [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
+  - Supported backends: [Array](Concrete/Mapping_Array_.h), [LinkedList](Concrete/Mapping_LinkedList_.h), [std::hash_map](Concrete/Mapping_stdhashmap_.h), [SkipList](Concrete/SortedMapping_SkipList.h),  [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
   - A collection of elements where each time you add something, the MultiSet tallies the number of times that thing has been entered. This is not a commonly used class, but handy when you want to count things
 - [PriorityQueue\<T>](PriorityQueue.h)
   - PriorityQueues are a like a Queue that allows retrieval based the priority assigned an item
@@ -128,7 +128,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: [Array](Concrete/Sequence_Array.h), [DoublyLinkedList](Concrete/Sequence_DoublyLinkedList.h), [LinkedList](Concrete/Sequence_LinkedList.h), [std::vector](Concrete/Sequence_stdvector.h)
 - [Set\<T>](Set.h)
   - a container of T, where once an item is added, additionally adds () do nothing (so items added at most once).
-  - Supported backends: [Array](Concrete/Set_Array.h), [LinkedList](Concrete/Set_LinkedList.h), [std::set](Concrete/SorteSet_stdset_.h)
+  - Supported backends: [Array](Concrete/Set_Array.h), [LinkedList](Concrete/Set_LinkedList.h), [SkipList](Concrete/SorteSet_SkipList.h), [std::set](Concrete/SorteSet_stdset.h)
   - Set vs std::set<T>:
     Stroika's Set\<T> is like std::set\<T>, except that
     - you can separately select different algorithms (besides red-black tree) and not change the API used (Set<T>).
@@ -137,22 +137,22 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
     - Sets can also be implemented by hash-tables, etc.
 - [SortedAssociation\<KEY_TYPE, VALUE_TYPE>](SortedAssociation.h)
   - see Association; but adds parameter saying how KEY items sorted
-  - Supported backends: [std::multimap](Concrete/SortedAssociation_stdmultimap.h)
+  - Supported backends: [SkipList](Concrete/SortedAssociation_SkipList.h), [std::multimap](Concrete/SortedAssociation_stdmultimap.h)
 - [SortedCollection\<T>](SortedCollection.h)
   - See Collection; but adds parameter saying how T items sorted
   - Supported backends: [LinkedList](Concrete/SortedCollection_LinkedList.h),[std::multiset](Concrete/SortedCollection_stdmultiset.h)
 - [SortedKeyedCollection\<T, KEY_TYPE, TRAITS>](SortedKeyedCollection.h)
   - See KeyedCollection; but adds parameter saying how T items sorted (by key)
-  - Supported backends: [std::set](Concrete/SortedKeyedCollection_stdset_.h)
+  - Supported backends: [SkipList](Concrete/SortedKeyedCollection_SkipList_.h), [std::set](Concrete/SortedKeyedCollection_stdset_.h)
 - [SortedMapping\<KEY_TYPE, VALUE_TYPE>](SortedMapping.h)
   - See Mapping; but adds parameter saying how KEY_TYPE items sorted
   - Supported backends: [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
 - [SortedMultiSet\<T>](SortedMultiSet.h)
   - See MultiSet; but adds parameter saying how T items sorted
-  - Supported backends: [std::map](Concrete/SortedMultiSet_stdmap.h)
+  - Supported backends: [SkipList](Concrete/SortedMultiSet_SkipList.h), [std::map](Concrete/SortedMultiSet_stdmap.h)
 - [SortedSet\<T>](SortedSet.h)
   - See Set; but adds parameter saying how T items sorted
-  - Supported backends: [std::set](Concrete/SortedSet_stdset.h), [SkipList](Concrete/SortedSet_SkipList.h)
+  - Supported backends: [SkipList](Concrete/SortedSet_SkipList.h), [std::set](Concrete/SortedSet_stdset.h)
 - [SparseDataHyperRectangle\< T, ... INDEXES>](SparseDataHyperRectangle.h)
   - A DataHyperRectangle where you specify a special 'default' value, which will appear in any cell you 'get' without first setting (as if the hyper-rectangle was pre-initialized to that value).
   - Supported backends: std::map
