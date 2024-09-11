@@ -19,6 +19,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
@@ -931,11 +932,7 @@ strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, con
         if (auto cmp = lhs.GetDate () <=> rhs.GetDate (); cmp != strong_ordering::equal) {
             return cmp;
         }
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-        return Common::compare_three_way_BWA{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
-#else
-        return lhs.GetTimeOfDay () <=> rhs.GetTimeOfDay ();
-#endif
+        return StdCompat::compare_three_way{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
     }
     else if (fCoerceToCommonTimezone) {
         return operator() (lhs.AsUTC (), rhs.AsUTC ());
@@ -948,10 +945,10 @@ strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, con
         if (auto cmp = lhs.GetDate () <=> rhs.GetDate (); cmp != strong_ordering::equal) {
             return cmp;
         }
-        if (auto cmp = Configuration::StdCompat::compare_three_way{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != strong_ordering::equal) {
+        if (auto cmp = StdCompat::compare_three_way{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        return Configuration::StdCompat::compare_three_way{}(lhs.GetTimezone (), rhs.GetTimezone ());
+        return StdCompat::compare_three_way{}(lhs.GetTimezone (), rhs.GetTimezone ());
     }
 }
 
