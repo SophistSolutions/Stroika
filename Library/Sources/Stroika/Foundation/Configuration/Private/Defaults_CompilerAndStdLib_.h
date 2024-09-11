@@ -608,6 +608,12 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
   591 |     constexpr inline auto CodeCvt<CHAR_T>::Options::New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o) -> Options
       |                                                     ^~~
 1 e
+
+ file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Containers/DataStructures/SkipList.h:653:
+/Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Containers/DataStructures/SkipList.inl:252:51: error: out-of-line definition of 'Find' does not match any declaration in 'SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>'
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) const -> ForwardIterator
+                                                  ^~~~
+1
 */
 
 #ifndef qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
