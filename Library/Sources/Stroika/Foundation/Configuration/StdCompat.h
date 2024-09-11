@@ -8,6 +8,7 @@
 
 #include <bit>
 #include <cmath>
+#include <compare>
 #include <cstdarg>
 #include <ranges>
 
@@ -171,6 +172,24 @@ namespace Stroika::Foundation::Configuration::StdCompat {
 #endif
             return std::isnan (v);
     }
+
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
+    struct compare_three_way {
+        // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
+        template <typename LT, typename RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            using CT = common_type_t<LT, RT>;
+            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+                return strong_ordering::equal;
+            }
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
+        }
+        using is_transparent = void;
+    };
+#else
+    using compare_three_way = std::compare_three_way;
+#endif
 
 }
 

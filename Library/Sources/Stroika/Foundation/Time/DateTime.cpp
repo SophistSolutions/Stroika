@@ -948,17 +948,10 @@ strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, con
         if (auto cmp = lhs.GetDate () <=> rhs.GetDate (); cmp != strong_ordering::equal) {
             return cmp;
         }
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-        if (auto cmp = Common::compare_three_way_BWA{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != strong_ordering::equal) {
+        if (auto cmp = Configuration::StdCompat::compare_three_way{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        return Common::compare_three_way_BWA{}(lhs.GetTimezone (), rhs.GetTimezone ());
-#else
-        if (auto cmp = lhs.GetTimeOfDay () <=> rhs.GetTimeOfDay (); cmp != strong_ordering::equal) {
-            return cmp;
-        }
-        return lhs.GetTimezone () <=> rhs.GetTimezone ();
-#endif
+        return Configuration::StdCompat::compare_three_way{}(lhs.GetTimezone (), rhs.GetTimezone ());
     }
 }
 

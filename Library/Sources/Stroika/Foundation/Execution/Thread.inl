@@ -3,6 +3,7 @@
  */
 #include <atomic>
 
+#include "Stroika/Foundation/Configuration/StdCompat.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 
@@ -217,17 +218,13 @@ namespace Stroika::Foundation::Execution {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock2{rhs.fThisAssertExternallySynchronized_};
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-        return Common::compare_three_way_BWA{}(fRep_, rhs.fRep_);
-#else
-        return fRep_ <=> rhs.fRep_;
-#endif
+        return Foundation::Configuration::StdCompat::compare_three_way{}(fRep_, rhs.fRep_);
     }
     inline strong_ordering Thread::Ptr::operator<=> (nullptr_t) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-        return Common::compare_three_way_BWA{}(fRep_, nullptr);
+        return Foundation::Configuration::StdCompat::compare_three_way{}(fRep_, nullptr);
 #else
         return fRep_ <=> nullptr;
 #endif

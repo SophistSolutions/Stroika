@@ -103,15 +103,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-        if (strong_ordering cmp = Common::compare_three_way_BWA{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != strong_ordering::equal) {
+        if (strong_ordering cmp = Configuration::StdCompat::compare_three_way{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ());
+            cmp != strong_ordering::equal) {
             return cmp;
         }
-#else
-        if (strong_ordering cmp = (lhs.AsInternetAddress () <=> rhs.AsInternetAddress ()); cmp != strong_ordering::equal) {
-            return cmp;
-        }
-#endif
         return Common::OptionalThreeWayComparer<String, String::ThreeWayComparer>{String::ThreeWayComparer{Characters::eCaseInsensitive}}(
             lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
@@ -212,23 +207,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-        if (auto cmp = Common::compare_three_way_BWA{}(lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {
+        if (auto cmp = Configuration::StdCompat::compare_three_way{}(lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        if (auto cmp = Common::compare_three_way_BWA{}(lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) {
+        if (auto cmp = Configuration::StdCompat::compare_three_way{}(lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        return Common::compare_three_way_BWA{}(lhs.GetPort (), rhs.GetPort ());
-#else
-        if (auto cmp = lhs.GetHost () <=> rhs.GetHost (); cmp != strong_ordering::equal) {
-            return cmp;
-        }
-        if (auto cmp = lhs.GetUserInfo () <=> rhs.GetUserInfo (); cmp != strong_ordering::equal) {
-            return cmp;
-        }
-        return lhs.GetPort () <=> rhs.GetPort ();
-#endif
+        return Configuration::StdCompat::compare_three_way{}(lhs.GetPort (), rhs.GetPort ());
     }
 
     /*

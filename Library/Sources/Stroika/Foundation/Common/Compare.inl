@@ -294,21 +294,6 @@ namespace Stroika::Foundation::Common {
     constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::equal;
     constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
 
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-    struct compare_three_way_BWA {
-        // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
-        template <typename LT, typename RT>
-        constexpr auto operator() (LT&& lhs, RT&& rhs) const
-        {
-            using CT = common_type_t<LT, RT>;
-            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-                return strong_ordering::equal;
-            }
-            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
-        }
-        using is_transparent = void;
-    };
-#endif
     template <typename FUNCTOR, typename FUNCTOR_ARG>
     [[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
     {
