@@ -25,6 +25,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     using Configuration::ArgByValueType;
 
+    /**
+     *  Hack to debug SkipList code
+     */
+#ifndef qStroikaFoundationContainersDataStructuresSkipList_DebugRandomSeed
+#define qStroikaFoundationContainersDataStructuresSkipList_DebugRandomSeed 0
+#endif
+
     namespace SkipList_Support {
 
         template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way,

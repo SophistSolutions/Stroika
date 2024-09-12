@@ -6,13 +6,29 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
+#if qStroikaFoundationContainersDataStructuresSkipList_DebugRandomSeed
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#endif
+
 namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace Private_ {
 
         inline size_t RandomSize_t (size_t first, size_t last)
         {
+            // Sometimes, the random nature of the data structure makes it difficult to debug, so capturing a bad seed
+            // and re-using can occasionally help
+#if qStroikaFoundationContainersDataStructuresSkipList_DebugRandomSeed
+            using namespace Characters::Literals;
+            auto seed = std::random_device{}();
+            //        seed = 2584343778;
+            seed = 2124023890;
+            DbgTrace ("Seed={}"_f, seed);
+            static thread_local std::mt19937 sRng_{seed};
+#else
             static thread_local std::mt19937 sRng_{std::random_device{}()};
+#endif
             Assert (sRng_.min () <= first);
             //  Assert (eng.max () >= last);    // g++ has 8 byte size_t in 64 bit??
             std::uniform_int_distribution<size_t> unif{first, last};
@@ -540,6 +556,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 fHead_.pop_back ();
             }
         }
+        Ensure (fHead_.size () >= 1);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveAll ()
@@ -599,7 +616,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
             if (linkIndex > 0 and links[linkIndex] != nullptr) {
                 links[linkIndex - 1] = links[linkIndex];
             }
-
         } while (linkIndex-- != 0);
 
         Ensure (foundNode == nullptr or fKeyThreeWayComparer_ (foundNode->fEntry.fKey, key) == strong_ordering::equal);
@@ -612,6 +628,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         AssertNotNull (n);
         Assert (fKeyThreeWayComparer_ (n->fEntry.fKey, it.fCurrent_->fEntry.fKey) == strong_ordering::equal);
         if constexpr (TRAITS::kAddOrExtendOrReplaceMode == AddOrExtendOrReplaceMode::eAddExtras) {
+            // @todo ASK STERL WHY??? --LGP 2024-09-12
             // not necessarily the correct node, just one that has the same key
             // however, it should at least be the first in the list, so can scan forwards for correct one
             while (n != it.fCurrent_) {
@@ -796,8 +813,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant_ () const noexcept
     {
+        size_t       sz{0};
         const Link_* n = fHead_[0];
         while (n != nullptr) {
+            ++sz;
             KEY_TYPE oldKey = n->fEntry.fKey;
             for (size_t i = 1; i < n->fNext.size (); ++i) {
                 const Link_* newN = n->fNext[i];
@@ -813,6 +832,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             n = n->fNext[0];
             Assert (n == nullptr or fKeyThreeWayComparer_ (n->fEntry.fKey, oldKey) != strong_ordering::less);
         }
+        Assert (sz == this->fLength_);
     }
 #endif
 
