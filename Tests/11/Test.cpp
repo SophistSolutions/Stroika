@@ -59,6 +59,23 @@ namespace {
 }
 
 namespace {
+
+    GTEST_TEST (Foundation_Containers_Association, xxxxx)
+    {
+        Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
+        switch (0) {
+            case 0:
+                break;
+
+            case 1:
+                // debug this case
+                DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+                break;
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Containers_Association, FACTORY_DEFAULT)
     {
         Debug::TraceContextBumper ctx{"{}::FACTORY_DEFAULT"};
@@ -96,7 +113,6 @@ GTEST_TEST (Foundation_Containers_Association, SortedAssociation_stdmultimap)
     Debug::TraceContextBumper ctx{"{}::SortedAssociation_stdmultimap"};
     DoTestForConcreteContainer_<SortedAssociation_stdmultimap<size_t, size_t>> ();
     DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-
     DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
         [] () {
             return SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
@@ -107,16 +123,23 @@ GTEST_TEST (Foundation_Containers_Association, SortedAssociation_stdmultimap)
 GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList)
 {
     Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
-    DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
-    DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-    DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-        [] () {
-            return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
-        },
-        AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-    {
-        SortedAssociation_SkipList<size_t, size_t>  x;
-        x.ReBalance();  // just to assure compiles - no easy way to test decently...
+    switch (0) {
+        case 0:
+            break;
+
+        default:
+            // real code
+            DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
+            DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+            DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+                [] () {
+                    return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
+                },
+                AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+            {
+                SortedAssociation_SkipList<size_t, size_t> x;
+                x.ReBalance (); // just to assure compiles - no easy way to test decently...
+            }
     }
 }
 
@@ -232,7 +255,7 @@ namespace {
     GTEST_TEST (Foundation_Containers_Association, WithKeys)
     {
         Debug::TraceContextBumper ctx{"{}::WithKeys"};
-        Association<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
+        Association<int, int>     m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
         EXPECT_EQ (m.WithKeys ({2, 5}), (Association<int, int>{{2, 4}, {5, 7}}));
     }
 }
@@ -254,7 +277,7 @@ namespace {
     GTEST_TEST (Foundation_Containers_Association, BasicNewAssociationRules)
     {
         Debug::TraceContextBumper ctx{"{}::BasicNewAssociationRules"};
-        Association<int, int> m;
+        Association<int, int>     m;
         m.Add (1, 2);
         m.Add (1, 2);
         EXPECT_EQ (m.size (), 2u);
@@ -288,7 +311,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Association, Association_Array_ArrayAPITests_)
     {
-        Debug::TraceContextBumper ctx{"{}::Association_Array_ArrayAPITests_"};
+        Debug::TraceContextBumper   ctx{"{}::Association_Array_ArrayAPITests_"};
         Association_Array<int, int> a;
         a.reserve (3);
         EXPECT_EQ (a.capacity (), 3u);

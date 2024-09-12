@@ -25,7 +25,7 @@ namespace CommonTests {
         struct DefaultFactory {
             CONCRETE_CONTAINER operator() () const
             {
-                return CONCRETE_CONTAINER ();
+                return CONCRETE_CONTAINER{};
             };
         };
 
@@ -73,15 +73,15 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
+                    EXPECT_EQ (m.size (), 1u);
                     Verify (m.Lookup (1));
                     Verify (not m.Lookup (2));
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 2);
+                    EXPECT_EQ (m.size (), 2u);
                     IterableTests::SimpleIterableTest_All_For_Type<ConcreteContainerType> (m);
                     m.Remove (1);
                     m.Remove (1);
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0u);
 
                     {
                         m.Add (1, 2);
@@ -89,30 +89,30 @@ namespace CommonTests {
                         size_t oldLength = m.size ();
                         m += m;
                         testingSchema.ApplyToContainerExtraTest (m);
-                        EXPECT_TRUE (m.size () == 2 * oldLength);
+                        EXPECT_EQ (m.size (), 2u * oldLength);
                     }
 
                     {
                         m.RemoveAll ();
                         m.Add (1, 2);
                         m.Add (3, 66);
-                        EXPECT_TRUE (m.size () == 2);
+                        EXPECT_EQ (m.size (), 2u);
                         m.erase (1);
-                        EXPECT_TRUE (m.size () == 1);
+                        EXPECT_EQ (m.size (), 1u);
                         auto i = m.erase (m.begin ());
                         //
-                        EXPECT_TRUE (m.size () == 0);
+                        EXPECT_EQ (m.size (), 0u);
                         m.Add (1, 2);
                         m.Add (3, 66);
                         m.Add (5, 66);
-                        EXPECT_TRUE (m.size () == 3);
+                        EXPECT_EQ (m.size (), 3u);
                         i = m.begin ();
                         i = m.erase (i);
-                        EXPECT_TRUE (m.size () == 2);
+                        EXPECT_EQ (m.size (), 2u);
                     }
 
                     m.RemoveAll ();
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0u);
                 }
             }
 
@@ -125,19 +125,19 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 1);
+                    EXPECT_EQ (m.size (), 1u);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
                     m.Add (1, 2);
-                    EXPECT_TRUE (m.size () == 2);
+                    EXPECT_EQ (m.size (), 2u);
                     for (auto i : m) {
                         EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
-                    EXPECT_TRUE (m.size () == 2);
+                    EXPECT_EQ (m.size (), 2u);
                     m.Remove (1);
                     m.Remove (1);
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0u);
                     for ([[maybe_unused]] auto i : m) {
                         EXPECT_TRUE (false);
                     }
@@ -160,9 +160,9 @@ namespace CommonTests {
                         }
                         ss.push_back (i.fKey);
                     }
-                    EXPECT_TRUE (ss.size () == 3);
+                    EXPECT_EQ (ss.size (), 3u);
                     m.RemoveAll ();
-                    EXPECT_TRUE (m.size () == 0);
+                    EXPECT_EQ (m.size (), 0u);
                 }
             }
 
@@ -179,7 +179,7 @@ namespace CommonTests {
                     ConcreteContainerType m2             = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-                    EXPECT_TRUE (m.size () == 2);
+                    EXPECT_EQ (m.size (), 2u);
                     ConcreteContainerType m3 = m;
                     testingSchema.ApplyToContainerExtraTest (m);
                     testingSchema.ApplyToContainerExtraTest (m2);
@@ -211,11 +211,11 @@ namespace CommonTests {
 
                     {
                         multimap<key_type, mapped_type> n = m.template As<multimap<key_type, mapped_type>> ();
-                        EXPECT_TRUE (n.size () == 2);
+                        EXPECT_EQ (n.size (), 2u);
                         ConcreteContainerType tmp = ConcreteContainerType (n);
                         // NEEDS WORK FOR ASSOCIATION           EXPECT_TRUE (testingSchema.fValueEqualsComparer (*tmp.Lookup (1), 88));
                         multimap<key_type, mapped_type> nn = tmp.template As<multimap<key_type, mapped_type>> ();
-                        EXPECT_TRUE (nn == n);
+                        EXPECT_EQ (nn, n);
                     }
                 }
             }
@@ -232,15 +232,15 @@ namespace CommonTests {
                     ConcreteContainerType m2    = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-                    EXPECT_TRUE (m.size () == 2);
+                    EXPECT_EQ (m.size (), 2u);
 
                     {
                         vector<KeyValuePair<key_type, mapped_type>> n = m.template As<vector<KeyValuePair<key_type, mapped_type>>> ();
-                        EXPECT_TRUE (n.size () == m.size ());
+                        EXPECT_EQ (n.size (), m.size ());
                     }
                     {
                         vector<pair<key_type, mapped_type>> n = m.template As<vector<pair<key_type, mapped_type>>> ();
-                        EXPECT_TRUE (n.size () == m.size ());
+                        EXPECT_EQ (n.size (), m.size ());
                     }
                 }
             }
@@ -256,21 +256,21 @@ namespace CommonTests {
                     for (size_t i = 0; i < K; ++i) {
                         c.Add (i, i);
                     }
-                    EXPECT_TRUE (c.Keys ().length () == K);
+                    EXPECT_EQ (c.Keys ().length (), K);
                     {
-                        // be sure copying and iterating multiple times over the iterable doesnt produce differnt results.
+                        // be sure copying and iterating multiple times over the iterable doesnt produce different results.
                         auto keys = c.Keys ();
-                        EXPECT_TRUE (keys.length () == K);
+                        EXPECT_EQ (keys.length (), K);
                         size_t a = 0;
                         for ([[maybe_unused]] auto i : keys) {
                             a++;
                         }
-                        EXPECT_TRUE (a == K);
+                        EXPECT_EQ (a, K);
                         a = 0;
                         for ([[maybe_unused]] auto i : keys) {
                             a++;
                         }
-                        EXPECT_TRUE (a == K);
+                        EXPECT_EQ (a, K);
                     }
                 }
             }
@@ -333,11 +333,11 @@ namespace CommonTests {
                     for (int i = 0; i < 100; ++i) {
                         c.Add (i, i);
                     }
-                    EXPECT_TRUE (c.Keys ().length () == 100);
+                    EXPECT_EQ (c.Keys ().length (), 100u);
 
                     using KT = typename ConcreteContainerType::key_type;
                     c.RetainAll (initializer_list<KT>{1, 3, 5});
-                    EXPECT_TRUE (c.Keys ().length () == 3);
+                    EXPECT_EQ (c.Keys ().length (), 3u);
                     EXPECT_TRUE (c.Keys ().SetEquals (Iterable<KT>{1, 3, 5}, c.GetKeyEqualsComparer ()));
 
                     c.RetainAll (Iterable<KT>{3});
@@ -355,12 +355,12 @@ namespace CommonTests {
                     headers.Add (1, 2);
                     headers.Add (2, 3);
                     ConcreteContainerType headers2 = headers; // up ref count before change
-                    EXPECT_TRUE (headers.size () == 2);
-                    EXPECT_TRUE (headers2.size () == 2);
+                    EXPECT_EQ (headers.size (), 2u);
+                    EXPECT_EQ (headers2.size (), 2u);
                     for (auto hi = headers.begin (); hi != headers.end ();) {
                         hi = headers.erase (hi);
                     }
-                    EXPECT_TRUE (headers2.size () == 2);
+                    EXPECT_EQ (headers2.size (), 2u);
                     EXPECT_TRUE (headers.empty ());
                 }
             }
@@ -369,7 +369,11 @@ namespace CommonTests {
         void SimpleAssociationTest_All_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
             Debug::TraceContextBumper ctx{
-                L"CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};
+                "CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};
+            if (0) {
+                // to debug removelink issue --LGP 2024-09-12
+                Private_::Test2_AddRemove::DoAllTests_ (testingSchema);
+            }
             Private_::Test1_BasicConstruction::DoAllTests_ (testingSchema);
             Private_::Test2_AddRemove::DoAllTests_ (testingSchema);
             Private_::Test_3_Iteration::DoAllTests_ (testingSchema);
@@ -384,7 +388,7 @@ namespace CommonTests {
         void SimpleAssociationTest_WithDefaultEqCompaerer_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
             Debug::TraceContextBumper ctx{
-                L"CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};
+                "CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};
             Private_::Test5_ToFromSTLMap::DoAllTests_ (testingSchema);
 
             // @todo FIX - RetainAll has no good reason to require operator < etc to work o it but current impl does - LGP 2018-04-14
