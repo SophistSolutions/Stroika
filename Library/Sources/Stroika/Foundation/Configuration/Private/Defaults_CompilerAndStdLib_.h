@@ -635,30 +635,6 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
-/*
-n file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/concepts.h:16:
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__concepts/constructible.h:27:51: error: substitution into constraint expression resulted in a non-constant expression
-concept constructible_from = destructible<_Tp> && is_constructible_v<_Tp, _Args...>;
-                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Common/Compare.h:289:23: note: while checking the satisfaction of concept 'constructible_from<std::function<bool (Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String)>, Stroika::Foundation::Common::ComparisonRelationDeclaration<Stroika::Foundation::Common::ComparisonRelationType::eEquals, std::function<bool (Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String)>>>' requested here
-            requires (constructible_from<ACTUAL_COMPARER, ARGS...>);
-                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Common/Compare.h:289:23: note: while substituting template arguments into constraint expression here
-            requires (constructible_from<ACTUAL_COMPARER, ARGS...>);
-      
-       */
-#ifndef qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-// reproduced on clang 15
-#define qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
-#else
-#define qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy 0
-#endif
-
-#endif
-
 #ifndef qCompilerAndStdLib_default_initializable_broken_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
@@ -1606,6 +1582,18 @@ In file included from ./SignalHandlers.h:15:
                                                                  ^
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_convertible.h:30:66: note: while substituting deduced template arguments into function template 'Function' [with CTOR_FUNC_SIG = Stroika::Foundation::Execution::SignalHandler]
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_convertible.h:103:42: note: in instantiation of template class 'std::is_convertible<Stroika::Foundation::Execution::SignalHandler, std::function<void (int)>>' re
+
+
+
+n file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/concepts.h:16:
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__concepts/constructible.h:27:51: error: substitution into constraint expression resulted in a non-constant expression
+concept constructible_from = destructible<_Tp> && is_constructible_v<_Tp, _Args...>;
+                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Common/Compare.h:289:23: note: while checking the satisfaction of concept 'constructible_from<std::function<bool (Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String)>, Stroika::Foundation::Common::ComparisonRelationDeclaration<Stroika::Foundation::Common::ComparisonRelationType::eEquals, std::function<bool (Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String)>>>' requested here
+            requires (constructible_from<ACTUAL_COMPARER, ARGS...>);
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Common/Compare.h:289:23: note: while substituting template arguments into constraint expression here
+            requires (constructible_from<ACTUAL_COMPARER, ARGS...>);
 
  */
 #ifndef qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
