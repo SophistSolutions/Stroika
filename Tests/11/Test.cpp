@@ -59,23 +59,6 @@ namespace {
 }
 
 namespace {
-
-    GTEST_TEST (Foundation_Containers_Association, xxxxx)
-    {
-        Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
-        switch (0) {
-            case 0:
-                break;
-
-            case 1:
-                // debug this case
-                DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-                break;
-        }
-    }
-}
-
-namespace {
     GTEST_TEST (Foundation_Containers_Association, FACTORY_DEFAULT)
     {
         Debug::TraceContextBumper ctx{"{}::FACTORY_DEFAULT"};
