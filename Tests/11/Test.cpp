@@ -106,23 +106,16 @@ GTEST_TEST (Foundation_Containers_Association, SortedAssociation_stdmultimap)
 GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList)
 {
     Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
-    switch (0) {
-        case 0:
-            break;
-
-        default:
-            // real code
-            DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
-            DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-            DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-                [] () {
-                    return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
-                },
-                AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-            {
-                SortedAssociation_SkipList<size_t, size_t> x;
-                x.ReBalance (); // just to assure compiles - no easy way to test decently...
-            }
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+        [] () {
+            return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
+        },
+        AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    {
+        SortedAssociation_SkipList<size_t, size_t> x;
+        x.ReBalance (); // just to assure compiles - no easy way to test decently...
     }
 }
 

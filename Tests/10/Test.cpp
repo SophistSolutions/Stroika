@@ -59,7 +59,7 @@ GTEST_TEST (Foundation_Containers_DataStructures_SkipList, AddAddRemoveByFindIte
         a.Remove (1);
         a.Invariant ();
     }
-    if constexpr (false) {
+    if constexpr (true) {
         DataStructures::Private_::SetRandomNumberGenerator (std::mt19937{3386707305});
         DataStructures::SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered> a;
         a.Add (1, 2);

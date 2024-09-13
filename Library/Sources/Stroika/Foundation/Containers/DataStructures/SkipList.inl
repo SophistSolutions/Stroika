@@ -12,21 +12,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         static thread_local std::mt19937 sRng_{[] () {
             auto seed = std::random_device{}();
-            //        seed = 2584343778;
-            //seed = 2124023890;
-            //seed = 3386707305;
             //  DbgTrace ("Seed={}"_f, seed);
             return seed;
         }()};
 
-        // Sometimes, the random nature of the data structure makes it difficult to debug, so capturing a bad seed
-        // and re-using can occasionally help
-        // Hack for debugging/some regression tests
-        void SetRandomNumberGenerator (std::mt19937 use)
+        /**
+         * Sometimes, the random nature of the data structure makes it difficult to debug, so capturing a bad seed
+         * and re-using can occasionally help
+         * Hack for debugging/some regression tests
+         */
+        inline void SetRandomNumberGenerator (std::mt19937 use)
         {
             sRng_ = use;
         }
-
         inline size_t RandomSize_t (size_t first, size_t last)
         {
             Assert (sRng_.min () <= first);
@@ -515,7 +513,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 *patchNode = n->fNext[index];
             }
             else {
-                break;
+                break; //? @todo document why we can stop here???
             }
         }
         if (n->fNext.size () == fHead_.size ()) {
@@ -570,9 +568,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Ensure (size () == 0);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (ArgByValueType<key_type> key) const -> LinkAndInfoAboutBackPointers
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const variant<key_type, ForwardIterator>& keyOrI) const -> LinkAndInfoAboutBackPointers
     {
         LinkVector_ linksPointingToReturnedLink;
+        auto key = std::get_if<key_type> (&keyOrI) ? std::get<key_type> (keyOrI) : get<ForwardIterator> (keyOrI).fCurrent_->fEntry.fKey;
         using Common::ToInt;
         Assert (fHead_.size () > 0);
         linksPointingToReturnedLink = fHead_;
@@ -596,9 +595,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 }
                 switch (ToInt (fKeyThreeWayComparer_ (n->fEntry.fKey, key))) {
                     case ToInt (strong_ordering::equal):
-                        foundNode       = n;
-                        newOverShotNode = foundNode;
-                        goto finished;
+                        if (std::get_if<key_type> (&keyOrI) or n == get<ForwardIterator> (keyOrI).fCurrent_) {
+                            foundNode       = n;
+                            newOverShotNode = foundNode;
+                            goto finished;
+                        }
+                        else {
+                            linksPointingToReturnedLink[linkIndex] = n;
+                            n                                      = n->fNext[linkIndex];
+                            newOverShotNode                        = n;
+                        }
+                        break;
                     case ToInt (strong_ordering::less):
                         linksPointingToReturnedLink[linkIndex] = n;
                         n                                      = n->fNext[linkIndex];
@@ -620,34 +627,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // ALL links pointer key, and ONLY links pointing to key?
         //      --LGP 2024-09-12
         return LinkAndInfoAboutBackPointers{foundNode, move (linksPointingToReturnedLink)};
-    }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const ForwardIterator& it) const -> LinkAndInfoAboutBackPointers
-    {
-        LinkAndInfoAboutBackPointers result = FindNearest_ (it.fCurrent_->fEntry.fKey);
-        Link_*                       n      = result.fLink;
-        AssertNotNull (n);
-        Assert (fKeyThreeWayComparer_ (n->fEntry.fKey, it.fCurrent_->fEntry.fKey) == strong_ordering::equal);
-        if constexpr (TRAITS::kAddOrExtendOrReplaceMode == AddOrExtendOrReplaceMode::eAddExtras) {
-            // @todo ASK STERL WHY??? --LGP 2024-09-12
-            // not necessarily the correct node, just one that has the same key
-            // however, it should at least be the first in the list, so can scan forwards for correct one
-            while (n != it.fCurrent_) {
-                Link_* next = n->fNext[0];
-                Assert (fKeyThreeWayComparer_ (next->fEntry.fKey, it->fKey) == strong_ordering::equal); // else we were passed in a node not in the list
-                for (size_t i = 0; i < result.fLinksPointingToReturnedLink.size (); ++i) {
-                    if (result.fLinksPointingToReturnedLink[i] != nullptr and result.fLinksPointingToReturnedLink[i]->fNext[i] == n) {
-                        result.fLinksPointingToReturnedLink[i] = n;
-                    }
-                    else {
-                        break;
-                    }
-                }
-                n = next;
-            }
-        }
-        Assert (n == it.fCurrent_);
-        return LinkAndInfoAboutBackPointers{n, move (result.fLinksPointingToReturnedLink)};
     }
 
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>

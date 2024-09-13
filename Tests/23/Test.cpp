@@ -97,8 +97,6 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_SortedAssociation, SortedAssociation_SkipList)
     {
-//tmphack disable til I debug issue with Remove()...--LGP 2024-09-12
-#if 0
         DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
@@ -106,7 +104,6 @@ namespace {
                 return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
             },
             AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-#endif
     }
 }
 

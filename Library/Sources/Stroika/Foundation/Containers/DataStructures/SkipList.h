@@ -520,10 +520,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         struct LinkAndInfoAboutBackPointers {
             Link_* fLink;
+            /**
+             *  This is a vector, not a set, because it must reproduce the 'heights' of the linked tree structure.
+             *  and nullptr entries in the list are 'sentinel values' indicating start of list (@Sterl why not just inert &fHead directly)
+             */
             LinkVector_ fLinksPointingToReturnedLink; // @todo consider using set, and unclear what nullptr means in this vector, nor duplicates?
         };
-        nonvirtual LinkAndInfoAboutBackPointers FindNearest_ (ArgByValueType<key_type> key) const;
-        nonvirtual LinkAndInfoAboutBackPointers FindNearest_ (const ForwardIterator& i) const;
+        nonvirtual LinkAndInfoAboutBackPointers FindNearest_ (const variant<key_type, ForwardIterator>& keyOrI) const;
 
     private:
         // @todo ASK STERL MEANING OF LinkVector_ argument? Is it links to patch, or a starter on links for 'n'
