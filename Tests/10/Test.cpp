@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 
+#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
@@ -22,6 +23,8 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::DataStructures;
 
 using namespace Stroika::Frameworks;
+
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 namespace {
     // removed from stdc++ but still handy here
@@ -37,6 +40,38 @@ namespace {
 }
 
 #if qHasFeature_GoogleTest
+GTEST_TEST (Foundation_Containers_DataStructures_SkipList, AddAddRemoveByFindIteratorFails)
+{
+    Debug::TraceContextBumper ctx{"{}::AddAddRemoveByFindIteratorFails"};
+    {
+        DataStructures::Private_::SetRandomNumberGenerator (std::mt19937{3386707305});
+        DataStructures::SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered> a;
+        a.Add (1, 2);
+        auto i = a.Find (1);
+        a.Remove (i);
+        a.Invariant ();
+    }
+    {
+        DataStructures::Private_::SetRandomNumberGenerator (std::mt19937{3386707305});
+        DataStructures::SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered> a;
+        a.Add (1, 2);
+        a.Add (1, 2);
+        a.Remove (1); // this would have worked
+        a.Invariant ();
+    }
+    #if 0
+    {
+        DataStructures::Private_::SetRandomNumberGenerator (std::mt19937{3386707305});
+        DataStructures::SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered> a;
+        a.Add (1, 2);
+        a.Add (1, 2);
+        auto i = a.Find (1);
+        a.Remove (i);
+        a.Invariant ();
+    }
+    #endif
+}
+
 namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicSmokeTest)
     {

@@ -25,13 +25,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     using Configuration::ArgByValueType;
 
-    /**
-     *  Hack to debug SkipList code
-     */
-#ifndef qStroikaFoundationContainersDataStructuresSkipList_DebugRandomSeed
-#define qStroikaFoundationContainersDataStructuresSkipList_DebugRandomSeed 0
-#endif
-
     namespace SkipList_Support {
 
         template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way,
@@ -515,20 +508,30 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         /*
-         *  This searches the list for the given key. If found exactly, it is returned.
+         *  This searches the list for the given key. If found exactly, it is returned. If it occurs multiple times a random one is selected.
          *
          * this is specialized for the case of adding or removing elements, as it also returns
          * all links that will need to be updated for the new element or the element to be removed
          *
          *      \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
+         * 
+///??? MAYBE NOT         *  \ens all links in linksPointingToReturnedLink are non-null, and valid Link_* pointers
+                @todo CONSIDER if LinkVector sb replaced with set<Link*>
          */
-        nonvirtual Link_* FindNearest_ (ArgByValueType<key_type> key, LinkVector_& links) const;
-        nonvirtual Link_* FindNearest_ (const ForwardIterator& i, LinkVector_& links) const;
+        struct LinkAndInfoAboutBackPointers {
+            Link_* fLink;
+            LinkVector_ fLinksPointingToReturnedLink; // @todo consider using set, and unclear what nullptr means in this vector, nor duplicates?
+        };
+        nonvirtual LinkAndInfoAboutBackPointers FindNearest_ (ArgByValueType<key_type> key) const;
+        nonvirtual LinkAndInfoAboutBackPointers FindNearest_ (const ForwardIterator& i) const;
 
     private:
+        // @todo ASK STERL MEANING OF LinkVector_ argument? Is it links to patch, or a starter on links for 'n'
+        // and why not have PatchLinks method?
         nonvirtual void AddLink_ (Link_* n, const LinkVector_& linksToPatch);
 
     private:
+        // @todo ask sterl meaning of LinkVector_ argument here? Why not have PatchLinks_ method?
         nonvirtual void RemoveLink_ (Link_* n, const LinkVector_& linksToPatch);
 
 #if qDebug

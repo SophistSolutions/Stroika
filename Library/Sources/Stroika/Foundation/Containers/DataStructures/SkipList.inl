@@ -6,29 +6,29 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
-#if qStroikaFoundationContainersDataStructuresSkipList_DebugRandomSeed
-#include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Debug/Trace.h"
-#endif
-
 namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace Private_ {
 
-        inline size_t RandomSize_t (size_t first, size_t last)
-        {
-            // Sometimes, the random nature of the data structure makes it difficult to debug, so capturing a bad seed
-            // and re-using can occasionally help
-#if qStroikaFoundationContainersDataStructuresSkipList_DebugRandomSeed
-            using namespace Characters::Literals;
+        static thread_local std::mt19937 sRng_{[] () {
             auto seed = std::random_device{}();
             //        seed = 2584343778;
-            seed = 2124023890;
-            DbgTrace ("Seed={}"_f, seed);
-            static thread_local std::mt19937 sRng_{seed};
-#else
-            static thread_local std::mt19937 sRng_{std::random_device{}()};
-#endif
+            //seed = 2124023890;
+            //seed = 3386707305;
+            //  DbgTrace ("Seed={}"_f, seed);
+            return seed;
+        }()};
+
+        // Sometimes, the random nature of the data structure makes it difficult to debug, so capturing a bad seed
+        // and re-using can occasionally help
+        // Hack for debugging/some regression tests
+        void SetRandomNumberGenerator (std::mt19937 use)
+        {
+            sRng_ = use;
+        }
+
+        inline size_t RandomSize_t (size_t first, size_t last)
+        {
             Assert (sRng_.min () <= first);
             //  Assert (eng.max () >= last);    // g++ has 8 byte size_t in 64 bit??
             std::uniform_int_distribution<size_t> unif{first, last};
@@ -313,11 +313,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkVector_ links;
-        Link_*      n = FindNearest_ (key, links);
+        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (key);
+        Link_*                       n           = keyNodeInfo.fLink;
         if (n == nullptr) {
             Link_* newLink = new Link_{key};
-            AddLink_ (newLink, links);
+            AddLink_ (newLink, keyNodeInfo.fLinksPointingToReturnedLink);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -341,7 +341,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     return true;
                 case AddOrExtendOrReplaceMode::eAddExtras: {
                     Link_* newLink = new Link_{key};
-                    AddLink_ (newLink, links);
+                    AddLink_ (newLink, keyNodeInfo.fLinksPointingToReturnedLink);
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
@@ -372,11 +372,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkVector_ links;
-        Link_*      n = FindNearest_ (key, links);
-        if (n == nullptr) {
+        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (key);
+        Link_*                       n           = keyNodeInfo.fLink;
+        if (keyNodeInfo.fLink == nullptr) {
             Link_* newLink = new Link_{key, val};
-            AddLink_ (newLink, links);
+            AddLink_ (newLink, keyNodeInfo.fLinksPointingToReturnedLink);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 case AddOrExtendOrReplaceMode::eAddExtras: {
 
                     Link_* newLink = new Link_{key, val};
-                    AddLink_ (newLink, links);
+                    AddLink_ (newLink, keyNodeInfo.fLinksPointingToReturnedLink);
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
@@ -460,12 +460,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const ForwardIterator& it)
     {
-        LinkVector_ links;
-        // we need the links to reset, so have to refind
-        // Link_*      n = const_cast<Link_*> (it.fCurrent_);
-        Link_* n = FindNearest_ (it, links);
-        RequireNotNull (n);
-        RemoveLink_ (n, links);
+        // we need the links to reset, so have to re-find (cannot Link_* n = const_cast<Link_*> (it.fCurrent_))
+        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (it);
+        RequireNotNull (keyNodeInfo.fLink);
+        RemoveLink_ (keyNodeInfo.fLink, keyNodeInfo.fLinksPointingToReturnedLink);
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -473,13 +471,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::erase (const ForwardIterator& i) -> ForwardIterator
     {
-        LinkVector_ links;
-        // we need the links to reset, so have to refind
+        // we need the links to reset, so have to re-find
         // Link_*      n = const_cast<Link_*> (it.fCurrent_);
-        Link_* n = FindNearest_ (i, links);
-        RequireNotNull (n);
-        Link_* after = n->fNext[0]; // result returned
-        RemoveLink_ (n, links);
+        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (i);
+        RequireNotNull (keyNodeInfo.fLink);
+        Link_* after = keyNodeInfo.fLink->fNext[0]; // result returned
+        RemoveLink_ (keyNodeInfo.fLink, keyNodeInfo.fLinksPointingToReturnedLink);
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -492,10 +489,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkVector_ links;
-        Link_*      n = FindNearest_ (key, links);
-        if (n != nullptr) {
-            RemoveLink_ (n, links);
+        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (key);
+        if (keyNodeInfo.fLink != nullptr) {
+            RemoveLink_ (keyNodeInfo.fLink, keyNodeInfo.fLinksPointingToReturnedLink);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -574,18 +570,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Ensure (size () == 0);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (ArgByValueType<key_type> key, LinkVector_& links) const -> Link_*
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (ArgByValueType<key_type> key) const -> LinkAndInfoAboutBackPointers
     {
+        LinkVector_ linksPointingToReturnedLink;
         using Common::ToInt;
-        Require (links.size () == 0); // we want to be passed in a totally empty vector
         Assert (fHead_.size () > 0);
-        links                  = fHead_;
-        Link_* newOverShotNode = nullptr;
-        Link_* foundNode       = nullptr;
-        Assert (not links.empty ()); // now
-        size_t linkIndex = links.size () - 1;
+        linksPointingToReturnedLink = fHead_;
+        Link_* newOverShotNode      = nullptr;
+        Link_* foundNode            = nullptr;
+        Assert (not linksPointingToReturnedLink.empty ()); // now
+        size_t linkIndex = linksPointingToReturnedLink.size () - 1;
         do {
-            Link_* n = links[linkIndex];
+            Link_* n = linksPointingToReturnedLink[linkIndex];
             // tweak to use pointer comparisons rather than key field compares. We know any link higher than the current link being
             // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
@@ -593,7 +589,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (n == nullptr or overShotNode == nullptr or
                     (fKeyThreeWayComparer_ (n->fEntry.fKey, overShotNode->fEntry.fKey) != strong_ordering::greater));
 
-            links[linkIndex] = nullptr;
+            linksPointingToReturnedLink[linkIndex] = nullptr;
             while (n != overShotNode) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
@@ -604,27 +600,32 @@ namespace Stroika::Foundation::Containers::DataStructures {
                         newOverShotNode = foundNode;
                         goto finished;
                     case ToInt (strong_ordering::less):
-                        links[linkIndex] = n;
-                        n                = n->fNext[linkIndex];
-                        newOverShotNode  = n;
+                        linksPointingToReturnedLink[linkIndex] = n;
+                        n                                      = n->fNext[linkIndex];
+                        newOverShotNode                        = n;
                         break;
                     case ToInt (strong_ordering::greater):
                         goto finished;
                 }
             }
         finished:;
-            if (linkIndex > 0 and links[linkIndex] != nullptr) {
-                links[linkIndex - 1] = links[linkIndex];
+            if (linkIndex > 0 and linksPointingToReturnedLink[linkIndex] != nullptr) {
+                linksPointingToReturnedLink[linkIndex - 1] = linksPointingToReturnedLink[linkIndex];
             }
         } while (linkIndex-- != 0);
 
         Ensure (foundNode == nullptr or fKeyThreeWayComparer_ (foundNode->fEntry.fKey, key) == strong_ordering::equal);
-        return foundNode;
+
+        //@todo ASK STERL - WHAT IS PROMISED HERE ABOUT linksPointingToReturnedLink. What do NULL values mean? Why do we allow them? Does this promise to return
+        // ALL links pointer key, and ONLY links pointing to key?
+        //      --LGP 2024-09-12
+        return LinkAndInfoAboutBackPointers{foundNode, move (linksPointingToReturnedLink)};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const ForwardIterator& it, LinkVector_& links) const -> Link_*
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const ForwardIterator& it) const -> LinkAndInfoAboutBackPointers
     {
-        Link_* n = FindNearest_ (it.fCurrent_->fEntry.fKey, links);
+        LinkAndInfoAboutBackPointers result = FindNearest_ (it.fCurrent_->fEntry.fKey);
+        Link_*                       n      = result.fLink;
         AssertNotNull (n);
         Assert (fKeyThreeWayComparer_ (n->fEntry.fKey, it.fCurrent_->fEntry.fKey) == strong_ordering::equal);
         if constexpr (TRAITS::kAddOrExtendOrReplaceMode == AddOrExtendOrReplaceMode::eAddExtras) {
@@ -634,9 +635,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
             while (n != it.fCurrent_) {
                 Link_* next = n->fNext[0];
                 Assert (fKeyThreeWayComparer_ (next->fEntry.fKey, it->fKey) == strong_ordering::equal); // else we were passed in a node not in the list
-                for (size_t i = 0; i < links.size (); ++i) {
-                    if (links[i] != nullptr and links[i]->fNext[i] == n) {
-                        links[i] = n;
+                for (size_t i = 0; i < result.fLinksPointingToReturnedLink.size (); ++i) {
+                    if (result.fLinksPointingToReturnedLink[i] != nullptr and result.fLinksPointingToReturnedLink[i]->fNext[i] == n) {
+                        result.fLinksPointingToReturnedLink[i] = n;
                     }
                     else {
                         break;
@@ -646,7 +647,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         Assert (n == it.fCurrent_);
-        return n;
+        return LinkAndInfoAboutBackPointers{n, move (result.fLinksPointingToReturnedLink)};
     }
 
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
@@ -687,8 +688,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Prioritize (ArgByValueType<key_type> key)
     {
-        LinkVector_ links;
-        Link_*      node = FindNearest_ (key, links);
+        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (key);
+        LinkVector_                  links       = keyNodeInfo.fLinksPointingToReturnedLink;
+        Link_*                       node        = keyNodeInfo.fLink;
         if (node != nullptr and node->fNext.size () <= fHead_.size ()) {
             if (node->fNext.size () == fHead_.size ()) {
                 GrowHeadLinksIfNeeded_ (fHead_.size () + 1, node);
