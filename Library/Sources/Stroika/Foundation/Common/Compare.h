@@ -345,6 +345,9 @@ namespace Stroika::Foundation::Common {
      *  \brief Use this to wrap any basic comparer, and produce an Equals comparer.
      *
      *  This is done by querying the 'type' of the baseComparer with @see ExtractComparisonTraits_v, and mapping the logic accordingly.
+     * 
+     *  \note attempted deduction guide, but so far doesn't seem to work well, possibly because FunctionTraits may have trouble
+     *        sometimes deducing argument type (like if function overloaded).
      */
     template <typename ARG_T, IComparer<ARG_T> BASE_COMPARER>
     struct EqualsComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eEquals> {
@@ -361,11 +364,17 @@ namespace Stroika::Foundation::Common {
     private:
         [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
     };
+    template <typename BASE_COMPARER>
+    EqualsComparerAdapter (BASE_COMPARER bc)
+        -> EqualsComparerAdapter<remove_cvref_t<typename Configuration::FunctionTraits<BASE_COMPARER>::template arg<0>::type>, remove_cvref_t<BASE_COMPARER>>;
 
     /**
      *  \brief Use this to wrap any basic comparer, and produce a Less comparer
      *
      *  \note this requires the argument comparer is eStrictInOrder, eInOrderOrEquals, or eThreeWayCompare
+     * 
+     *  \note attempted deduction guide, but so far doesn't seem to work well, possibly because FunctionTraits may have trouble
+     *        sometimes deducing argument type (like if function overloaded).
      */
     template <typename T, IComparer<T> BASE_COMPARER>
         requires (ExtractComparisonTraits_v<T, BASE_COMPARER> == ComparisonRelationType::eStrictInOrder or
@@ -385,9 +394,15 @@ namespace Stroika::Foundation::Common {
     private:
         [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
     };
+    template <typename BASE_COMPARER>
+    InOrderComparerAdapter (BASE_COMPARER bc)
+        -> InOrderComparerAdapter<remove_cvref_t<typename Configuration::FunctionTraits<BASE_COMPARER>::template arg<0>::type>, remove_cvref_t<BASE_COMPARER>>;
 
     /**
      *  \brief Use this to wrap a basic comparer, and produce a Three-Way comparer
+     * 
+     *  \note attempted deduction guide, but so far doesn't seem to work well, possibly because FunctionTraits may have trouble
+     *        sometimes deducing argument type (like if function overloaded).
      */
     template <typename T, IThreeWayAdaptableComparer<T> BASE_COMPARER>
     struct ThreeWayComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eThreeWayCompare> {
@@ -404,6 +419,9 @@ namespace Stroika::Foundation::Common {
     private:
         [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
     };
+    template <typename BASE_COMPARER>
+    ThreeWayComparerAdapter (BASE_COMPARER bc)
+        -> ThreeWayComparerAdapter<remove_cvref_t<typename Configuration::FunctionTraits<BASE_COMPARER>::template arg<0>::type>, remove_cvref_t<BASE_COMPARER>>;
 
     /**
      *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explicit 'T' comparer for the T in optional<T>
