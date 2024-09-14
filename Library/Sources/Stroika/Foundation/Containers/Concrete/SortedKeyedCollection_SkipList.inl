@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyEqualityComparerType GetKeyEqualityComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return KeyEqualityComparerType{Common::EqualsComparerAdapter<T, COMPARER>{fData_.key_comp ().fKeyComparer}};
+            return Common::EqualsComparerAdapter<T, COMPARER>{fData_.key_comp ().fKeyComparer};
         }
         virtual shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneEmpty () const override
         {

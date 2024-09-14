@@ -100,8 +100,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             auto                                                  keyComparer = fKeyComparer_;
-            return KeyEqualityComparerType{
-                [keyComparer] (const KEY_TYPE& lhs, const KEY_TYPE& rhs) { return keyComparer (lhs, rhs) and keyComparer (rhs, lhs); }};
+            return [keyComparer] (const KEY_TYPE& lhs, const KEY_TYPE& rhs) { return keyComparer (lhs, rhs) and keyComparer (rhs, lhs); };
         }
         virtual shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneEmpty () const override
         {
