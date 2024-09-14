@@ -61,7 +61,9 @@ namespace Stroika::Foundation::Configuration {
         using result_type = RETURN_TYPE;
 
         /**
-         *  type of the ith 'arg'
+         *  type of the ith 'arg';
+         * 
+         *  \note UNCLEAR if/how this might work if the function is overloaded...
          */
         template <size_t i>
         struct arg {
