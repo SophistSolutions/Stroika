@@ -27,6 +27,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace SkipList_Support {
 
+        /**
+         *  KEY_TYPE the type of the key element stored in the SkipList.
+         *  KEY_COMPARER is nearly always as given
+         *  AddOrExtendOrReplaceMode addOrExtendOrReplace defaults to eAddExtras, but here the caller may not want the default. There is no good default here.
+         *  ALTERNATE_FIND_TYPE can often be omitted (default) - but allows Find () to be overloaded (argument comparer) on a different type (besides just KEY_TYPE).
+         */
         template <typename KEY_TYPE, Common::IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way,
                   AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras, typename ALTERNATE_FIND_TYPE = void>
         struct DefaultTraits {
@@ -35,7 +41,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             using KeyComparerType = KEY_COMPARER;
 
             /**
-             *  no idea what good default is here... Probably isn't one...
+             *  Defines how conflicting / duplicate keys are handled: replace, throw, or just OK - like a multiset.
              */
             static constexpr AddOrExtendOrReplaceMode kAddOrExtendOrReplaceMode{addOrExtendOrReplace};
 
@@ -71,7 +77,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         struct Stats_Basic {
             size_t fCompares{0};
-            // skiplists don't really do rotations, but we treat link patching as same thing
+            // SkipLists don't really do rotations, but we treat link patching as same thing
             // @todo rename so more appropriate - and looking at code - not clear what this is actually counting
             size_t fRotations{0};
 
@@ -201,7 +207,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ~SkipList ();
 
     public:
-        nonvirtual SkipList& operator= (const SkipList& t);
+        nonvirtual SkipList& operator= (const SkipList& rhs);
 
     public:
         /**
@@ -250,7 +256,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \note same as Verify (RemoveIf (key))
          * 
-         *  \note Runtime performance/complexity:   ??
+         *  \note Runtime performance/complexity:
          *      Average:    log(N)
          *      Worst:      N
          * 
@@ -267,15 +273,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \brief see https://en.cppreference.com/w/cpp/container/vector/erase
          * 
+         *  \note Runtime performance/complexity:
+         *      Average:    log(N)
+         *      Worst:      N
+         * 
          *  \see also Remove()
          */
         nonvirtual ForwardIterator erase (const ForwardIterator& i);
 
     public:
         /**
-         * \brief Remove the first item with the given key, if any. Return true if a value found and removed.
+         * \brief Remove the first item with the given key, if any. Return true if a value found and removed, false if no such key found.
          * 
-         *  \note Runtime performance/complexity:   ??
+         *  \note Runtime performance/complexity:
          *      Average:    log(N)
          *      Worst:      N
          */
@@ -313,6 +323,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
+         *  Support for COW (CopyOnWrite):
+         *
          *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
          *  iterator from 'this' - which points at the same logical position. This requires that this container
          *  was just 'copied' from 'movedFrom' - and is used to produce an equivalent iterator (since iterators are tied to
@@ -440,6 +452,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
         * @todo doc api just for debugging? And not generally useful. And maybe have return tuple, not take var param?
         // height is highest link height, also counts total links if pass in non-null totalHeight
+            @todo ask sterl about this?
          */
         nonvirtual size_t CalcHeight (size_t* totalHeight = nullptr) const;
 

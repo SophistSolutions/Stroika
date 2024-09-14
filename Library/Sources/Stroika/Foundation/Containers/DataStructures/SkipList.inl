@@ -12,8 +12,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         static thread_local std::mt19937 sRng_{[] () {
             auto seed = std::random_device{}();
-            //  DbgTrace ("Seed={}"_f, seed);
-            return seed;
+            return std::mt19937{seed};
         }()};
 
         /**
@@ -21,7 +20,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * and re-using can occasionally help
          * Hack for debugging/some regression tests
          */
-        inline void SetRandomNumberGenerator (std::mt19937 use)
+        inline void SetRandomNumberGenerator (const std::mt19937& use)
         {
             sRng_ = use;
         }
@@ -83,16 +82,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_* prev = nullptr;
         Link_* n    = src.fHead_[0];
         while (n != nullptr) {
-            Link_* newNode = new Link_{n->fEntry};
+            Link_* newLink = new Link_{n->fEntry};
             if (prev == nullptr) {
                 Assert (fHead_.size () == 1);
                 Assert (fHead_[0] == nullptr);
-                fHead_[0] = newNode;
+                fHead_[0] = newLink;
             }
             else {
-                prev->fNext.push_back (newNode);
+                prev->fNext.push_back (newLink);
             }
-            prev = newNode;
+            prev = newLink;
             n    = n->fNext[0];
         }
         // AssertNotNull (prev);
@@ -121,16 +120,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Link_* prev = nullptr;
             Link_* n    = t.fHead_[0];
             while (n != nullptr) {
-                Link_* newNode = new Link_{n->fEntry};
+                Link_* newLink = new Link_{n->fEntry};
                 if (prev == nullptr) {
                     Assert (fHead_.size () == 1);
                     Assert (fHead_[0] == nullptr);
-                    fHead_[0] = newNode;
+                    fHead_[0] = newLink;
                 }
                 else {
-                    prev->fNext.push_back (newNode);
+                    prev->fNext.push_back (newLink);
                 }
-                prev = newNode;
+                prev = newLink;
                 n    = n->fNext[0];
             }
             AssertNotNull (prev);
@@ -227,10 +226,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         for (size_t linkHeight = fHead_.size (); linkHeight > 0; --linkHeight) {
             Link_* n = (*startV)[linkHeight - 1];
             // tweak to use pointer comparisons rather than key field compares. We know any link higher than the current link being
-            // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
+            // tested must point past the key we are looking for, so we can compare our current link with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
-            Link_* overShotNode = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
-            while (n != overShotNode) {
+            Link_* overShotLink = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
+            while (n != overShotLink) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
                 }
@@ -311,11 +310,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (key);
-        Link_*                       n           = keyNodeInfo.fLink;
+        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (key);
+        Link_*                       n           = keyLinkInfo.fLink;
         if (n == nullptr) {
             Link_* newLink = new Link_{key};
-            AddLink_ (newLink, keyNodeInfo.fLinksPointingToReturnedLink);
+            AddLink_ (newLink, keyLinkInfo.fLinksPointingToReturnedLink);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -339,7 +338,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     return true;
                 case AddOrExtendOrReplaceMode::eAddExtras: {
                     Link_* newLink = new Link_{key};
-                    AddLink_ (newLink, keyNodeInfo.fLinksPointingToReturnedLink);
+                    AddLink_ (newLink, keyLinkInfo.fLinksPointingToReturnedLink);
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
@@ -370,11 +369,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (key);
-        Link_*                       n           = keyNodeInfo.fLink;
-        if (keyNodeInfo.fLink == nullptr) {
+        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (key);
+        Link_*                       n           = keyLinkInfo.fLink;
+        if (keyLinkInfo.fLink == nullptr) {
             Link_* newLink = new Link_{key, val};
-            AddLink_ (newLink, keyNodeInfo.fLinksPointingToReturnedLink);
+            AddLink_ (newLink, keyLinkInfo.fLinksPointingToReturnedLink);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -400,7 +399,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 case AddOrExtendOrReplaceMode::eAddExtras: {
 
                     Link_* newLink = new Link_{key, val};
-                    AddLink_ (newLink, keyNodeInfo.fLinksPointingToReturnedLink);
+                    AddLink_ (newLink, keyLinkInfo.fLinksPointingToReturnedLink);
                     if constexpr (TRAITS::kCostlyInvariants) {
                         Invariant ();
                     }
@@ -423,18 +422,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return Add (v.fKey, v.fValue, oAddedI);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddLink_ (Link_* node, const LinkVector_& links)
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddLink_ (Link_* link, const LinkVector_& links)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        RequireNotNull (node);
+        RequireNotNull (link);
         size_t newLinkHeight = DetermineLinkHeight_ ();
-        node->fNext.resize (newLinkHeight);
+        link->fNext.resize (newLinkHeight);
         size_t linksToPatch = min (fHead_.size (), newLinkHeight);
         for (size_t i = 0; i < linksToPatch; ++i) {
             Link_* nextL = nullptr;
             if (links[i] == nullptr) {
                 nextL     = fHead_[i];
-                fHead_[i] = node;
+                fHead_[i] = link;
             }
             else {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
@@ -443,11 +442,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 Link_* oldLink = links[i];
                 AssertNotNull (oldLink);
                 nextL             = oldLink->fNext[i];
-                oldLink->fNext[i] = node;
+                oldLink->fNext[i] = link;
             }
-            node->fNext[i] = nextL;
+            link->fNext[i] = nextL;
         }
-        GrowHeadLinksIfNeeded_ (newLinkHeight, node);
+        GrowHeadLinksIfNeeded_ (newLinkHeight, link);
         ++fLength_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
@@ -459,9 +458,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const ForwardIterator& it)
     {
         // we need the links to reset, so have to re-find (cannot Link_* n = const_cast<Link_*> (it.fCurrent_))
-        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (it);
-        RequireNotNull (keyNodeInfo.fLink);
-        RemoveLink_ (keyNodeInfo.fLink, keyNodeInfo.fLinksPointingToReturnedLink);
+        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (it);
+        RequireNotNull (keyLinkInfo.fLink);
+        RemoveLink_ (keyLinkInfo.fLink, keyLinkInfo.fLinksPointingToReturnedLink);
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -471,10 +470,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         // we need the links to reset, so have to re-find
         // Link_*      n = const_cast<Link_*> (it.fCurrent_);
-        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (i);
-        RequireNotNull (keyNodeInfo.fLink);
-        Link_* after = keyNodeInfo.fLink->fNext[0]; // result returned
-        RemoveLink_ (keyNodeInfo.fLink, keyNodeInfo.fLinksPointingToReturnedLink);
+        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (i);
+        RequireNotNull (keyLinkInfo.fLink);
+        Link_* after = keyLinkInfo.fLink->fNext[0]; // result returned
+        RemoveLink_ (keyLinkInfo.fLink, keyLinkInfo.fLinksPointingToReturnedLink);
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -487,9 +486,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (key);
-        if (keyNodeInfo.fLink != nullptr) {
-            RemoveLink_ (keyNodeInfo.fLink, keyNodeInfo.fLinksPointingToReturnedLink);
+        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (key);
+        if (keyLinkInfo.fLink != nullptr) {
+            RemoveLink_ (keyLinkInfo.fLink, keyLinkInfo.fLinksPointingToReturnedLink);
             if constexpr (TRAITS::kCostlyInvariants) {
                 Invariant ();
             }
@@ -505,12 +504,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         for (auto it = links.begin (); it != links.end (); ++it) {
             size_t  index     = it - links.begin ();
-            Link_** patchNode = (*it == nullptr) ? &fHead_[index] : &(*it)->fNext[index];
-            if (*patchNode == n) {
+            Link_** patchLink = (*it == nullptr) ? &fHead_[index] : &(*it)->fNext[index];
+            if (*patchLink == n) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fRotations;
                 }
-                *patchNode = n->fNext[index];
+                *patchLink = n->fNext[index];
             }
             else {
                 break; //? @todo document why we can stop here???
@@ -575,64 +574,64 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using Common::ToInt;
         Assert (fHead_.size () > 0);
         linksPointingToReturnedLink = fHead_;
-        Link_* newOverShotNode      = nullptr;
-        Link_* foundNode            = nullptr;
+        Link_* newOverShotLink      = nullptr;
+        Link_* foundLink            = nullptr;
         Assert (not linksPointingToReturnedLink.empty ()); // now
         size_t linkIndex = linksPointingToReturnedLink.size () - 1;
         do {
             Link_* n = linksPointingToReturnedLink[linkIndex];
             // tweak to use pointer comparisons rather than key field compares. We know any link higher than the current link being
-            // tested must point past the key we are looking for, so we can compare our current node with that one and skip the
+            // tested must point past the key we are looking for, so we can compare our current link with that one and skip the
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
-            Link_* overShotNode = newOverShotNode;
-            Assert (n == nullptr or overShotNode == nullptr or
-                    (fKeyThreeWayComparer_ (n->fEntry.fKey, overShotNode->fEntry.fKey) != strong_ordering::greater));
+            Link_* overShotLink = newOverShotLink;
+            Assert (n == nullptr or overShotLink == nullptr or
+                    (fKeyThreeWayComparer_ (n->fEntry.fKey, overShotLink->fEntry.fKey) != strong_ordering::greater));
 
             linksPointingToReturnedLink[linkIndex] = nullptr;
-            while (n != overShotNode) {
+            while (n != overShotLink) {
                 if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
                 }
                 switch (ToInt (fKeyThreeWayComparer_ (n->fEntry.fKey, key))) {
                     case ToInt (strong_ordering::equal):
                         if (std::get_if<key_type> (&keyOrI) or n == get<ForwardIterator> (keyOrI).fCurrent_) {
-                            foundNode       = n;
-                            newOverShotNode = foundNode;
+                            foundLink       = n;
+                            newOverShotLink = foundLink;
                             goto finished;
                         }
                         else {
                             linksPointingToReturnedLink[linkIndex] = n;
                             n                                      = n->fNext[linkIndex];
-                            newOverShotNode                        = n;
+                            newOverShotLink                        = n;
                         }
                         break;
                     case ToInt (strong_ordering::less):
                         linksPointingToReturnedLink[linkIndex] = n;
                         n                                      = n->fNext[linkIndex];
-                        //newOverShotNode                        = n;
+                        //newOverShotLink                        = n;
                         break;
                     case ToInt (strong_ordering::greater):
-                        newOverShotNode = n;
+                        newOverShotLink = n;
                         // NB: sterl changed this from less case to greater case cuz he thinks will perform better, but untested -- SSW 2024-09-13
                         goto finished;
                 }
             }
         finished:
             /*
-            * Before fixing the next lowest link pointers, reset the start node to the last node linking to our target
-            * This gives us log(n) behavior rather than n^2
+             * Before fixing the next lowest link pointers, reset the start link to the last link linking to our target
+             * This gives us log(n) behavior rather than n^2
              */
             if (linkIndex > 0 and linksPointingToReturnedLink[linkIndex] != nullptr) {
                 linksPointingToReturnedLink[linkIndex - 1] = linksPointingToReturnedLink[linkIndex];
             }
         } while (linkIndex-- != 0);
 
-        Ensure (foundNode == nullptr or fKeyThreeWayComparer_ (foundNode->fEntry.fKey, key) == strong_ordering::equal);
+        Ensure (foundLink == nullptr or fKeyThreeWayComparer_ (foundLink->fEntry.fKey, key) == strong_ordering::equal);
 
         //@todo ASK STERL - WHAT IS PROMISED HERE ABOUT linksPointingToReturnedLink. What do NULL values mean? Why do we allow them? Does this promise to return
         // ALL links pointer key, and ONLY links pointing to key?
         //      --LGP 2024-09-12
-        return LinkAndInfoAboutBackPointers{foundNode, move (linksPointingToReturnedLink)};
+        return LinkAndInfoAboutBackPointers{foundLink, move (linksPointingToReturnedLink)};
     }
 
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
@@ -673,35 +672,33 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Prioritize (ArgByValueType<key_type> key)
     {
-        LinkAndInfoAboutBackPointers keyNodeInfo = FindNearest_ (key);
-        LinkVector_                  links       = keyNodeInfo.fLinksPointingToReturnedLink;
-        Link_*                       node        = keyNodeInfo.fLink;
-        if (node != nullptr and node->fNext.size () <= fHead_.size ()) {
-            if (node->fNext.size () == fHead_.size ()) {
-                GrowHeadLinksIfNeeded_ (fHead_.size () + 1, node);
-                links.resize (fHead_.size (), node);
+        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (key);
+        if (keyLinkInfo.fLink != nullptr and keyLinkInfo.fLink->fNext.size () <= fHead_.size ()) {
+            if (keyLinkInfo.fLink->fNext.size () == fHead_.size ()) {
+                GrowHeadLinksIfNeeded_ (fHead_.size () + 1, keyLinkInfo.fLink);
+                keyLinkInfo.fLinksPointingToReturnedLink.resize (fHead_.size (), keyLinkInfo.fLink);
             }
-            size_t oldLinkHeight = node->fNext.size ();
-            node->fNext.resize (fHead_.size (), nullptr);
-            size_t newLinkHeight = node->fNext.size ();
+            size_t oldLinkHeight = keyLinkInfo.fLink->fNext.size ();
+            keyLinkInfo.fLink->fNext.resize (fHead_.size (), nullptr);
+            size_t newLinkHeight = keyLinkInfo.fLink->fNext.size ();
             Assert (oldLinkHeight < newLinkHeight);
             for (size_t i = oldLinkHeight; i <= newLinkHeight - 1; ++i) {
-                if (links[i] == nullptr) {
-                    fHead_[i] = node;
+                if (keyLinkInfo.fLinksPointingToReturnedLink[i] == nullptr) {
+                    fHead_[i] = keyLinkInfo.fLink;
                 }
-                else if (links[i] == node) {
+                else if (keyLinkInfo.fLinksPointingToReturnedLink[i] == keyLinkInfo.fLink) {
                     break;
                 }
                 else {
                     if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
                         ++fStats_.fRotations;
                     }
-                    Link_* oldLink = links[i];
+                    Link_* oldLink = keyLinkInfo.fLinksPointingToReturnedLink[i];
                     AssertNotNull (oldLink);
                     Assert (oldLink->fNext.size () > i);
-                    Link_* nextL      = oldLink->fNext[i];
-                    oldLink->fNext[i] = node;
-                    node->fNext[i]    = nextL;
+                    Link_* nextL                = oldLink->fNext[i];
+                    oldLink->fNext[i]           = keyLinkInfo.fLink;
+                    keyLinkInfo.fLink->fNext[i] = nextL;
                 }
             }
         }
@@ -734,28 +731,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
             lastValidHeight = i;
         }
         // wipe out everything, keeping only a link to the first item in list
-        Link_* node = fHead_[0];
+        Link_* link = fHead_[0];
         fHead_.clear ();
         fHead_.resize (kMaxLinkHeight_);
 
-        Link_** patchNodes[kMaxLinkHeight_];
-        for (size_t i = 0; i < sizeof (patchNodes) / sizeof (size_t); ++i) {
-            patchNodes[i] = &fHead_[i];
+        Link_** patchLinks[kMaxLinkHeight_];
+        for (size_t i = 0; i < sizeof (patchLinks) / sizeof (size_t); ++i) {
+            patchLinks[i] = &fHead_[i];
         }
 
         size_t index = 1;
-        while (node != nullptr) {
-            Link_* next = node->fNext[0];
-            node->fNext.clear ();
+        while (link != nullptr) {
+            Link_* next = link->fNext[0];
+            link->fNext.clear ();
 #if qDebug
             bool patched = false;
 #endif
             for (size_t hIndex = lastValidHeight + 1; hIndex-- > 0;) {
                 if (index >= height[hIndex] and (index % height[hIndex] == 0)) {
-                    node->fNext.resize (hIndex + 1, nullptr);
-                    for (size_t patchIndex = node->fNext.size (); patchIndex-- > 0;) {
-                        *patchNodes[patchIndex] = node;
-                        patchNodes[patchIndex]  = &node->fNext[patchIndex];
+                    link->fNext.resize (hIndex + 1, nullptr);
+                    for (size_t patchIndex = link->fNext.size (); patchIndex-- > 0;) {
+                        *patchLinks[patchIndex] = link;
+                        patchLinks[patchIndex]  = &link->fNext[patchIndex];
                     }
 #if qDebug
                     patched = true;
@@ -768,7 +765,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
             ++index;
-            node = next;
+            link = next;
         }
         Assert (index == size () + 1);
         ShrinkHeadLinksIfNeeded_ ();
@@ -951,7 +948,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // fData_ not always present - for end () iterators
         Require (Done () or fData_ != nullptr);
         if (fData_ != nullptr) {
-            fData_->Invariant (); // @todo more... fNode from somewhere inside fData_....
+            fData_->Invariant (); // @todo verify fCurrent_ == nullptr or somewhere inside fData_....
         }
     }
 #endif
