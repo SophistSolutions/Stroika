@@ -571,7 +571,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const variant<key_type, ForwardIterator>& keyOrI) const -> LinkAndInfoAboutBackPointers
     {
         LinkVector_ linksPointingToReturnedLink;
-        auto key = std::get_if<key_type> (&keyOrI) ? std::get<key_type> (keyOrI) : get<ForwardIterator> (keyOrI).fCurrent_->fEntry.fKey;
+        key_type key = std::get_if<key_type> (&keyOrI) ? std::get<key_type> (keyOrI) : get<ForwardIterator> (keyOrI).fCurrent_->fEntry.fKey;
         using Common::ToInt;
         Assert (fHead_.size () > 0);
         linksPointingToReturnedLink = fHead_;
@@ -609,13 +609,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     case ToInt (strong_ordering::less):
                         linksPointingToReturnedLink[linkIndex] = n;
                         n                                      = n->fNext[linkIndex];
-                        newOverShotNode                        = n;
+                        //newOverShotNode                        = n;
                         break;
                     case ToInt (strong_ordering::greater):
+                        newOverShotNode = n;
+                        // NB: sterl changed this from less case to greater case cuz he thinks will perform better, but untested -- SSW 2024-09-13
                         goto finished;
                 }
             }
-        finished:;
+        finished:
+            /*
+            * Before fixing the next lowest link pointers, reset the start node to the last node linking to our target
+            * This gives us log(n) behavior rather than n^2
+             */
             if (linkIndex > 0 and linksPointingToReturnedLink[linkIndex] != nullptr) {
                 linksPointingToReturnedLink[linkIndex - 1] = linksPointingToReturnedLink[linkIndex];
             }
