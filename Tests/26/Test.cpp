@@ -8,8 +8,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_SkipList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -31,9 +31,8 @@ using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-using Concrete::SortedMapping_stdmap;
 using Concrete::SortedMapping_SkipList;
-
+using Concrete::SortedMapping_stdmap;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -101,7 +100,9 @@ namespace {
         DoTestForConcreteContainer_<SortedMapping_SkipList<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{}); },
+            [] () {
+                return SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
+            },
             AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
