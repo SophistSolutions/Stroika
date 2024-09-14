@@ -686,7 +686,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
 *  NO IDEA if this is LGP bug or compiler bug.
 
 I don't understand why we need the explicit String version and requires not same_as<> string template versions (want just the template version)
-*          But when I try that, clang and visaul studio barf with ...
+*          But when I try that, clang and visual studio barf with ...
 * 
             1>C:\Sandbox\Stroika\TMPV3\Library\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp(670): error C2666: 'Stroika::Foundation::Characters::String::operator ==': overloaded functions have similar conversions
             1>C:\Sandbox\Stroika\TMPV3\Library\Sources\Stroika\Foundation\Characters\String.inl(1124): note: could be 'bool Stroika::Foundation::Characters::String::operator ==<Stroika::Foundation::Characters::String>(T &&) const'
