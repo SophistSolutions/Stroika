@@ -208,35 +208,19 @@ namespace {
 }
 
 namespace {
-    namespace CTORWithComparerAndContainer_Test_10_ {
-        void DoAll ()
-        {
-            using namespace Characters;
-            {
-                Mapping<String, String> parameters{String::EqualsComparer{Characters::eCaseInsensitive}};
-                // http://stroika-bugs.sophists.com/browse/STK-738 (and see other workarounds in other files)
-                Mapping<String, String> parameters2{String::EqualsComparer{Characters::eCaseInsensitive}, parameters};
-            }
-        }
-    }
-}
-
-namespace {
     GTEST_TEST (Foundation_Containers_Mapping, all)
     {
-        using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
-
         DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; },
-            MyOnlyCopyableMoveable_ComparerWithEquals_{});
+            [] () { return Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
 
         DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_Array<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>{MyOnlyCopyableMoveable_ComparerWithEquals_{}}; },
-            MyOnlyCopyableMoveable_ComparerWithEquals_{});
+            [] () { return Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
 
         DoTestForConcreteContainer_<SortedMapping_SkipList<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
@@ -246,13 +230,13 @@ namespace {
                     return static_cast<size_t> (l) <=> static_cast<size_t> (r);
                 }};
             },
-            MyOnlyCopyableMoveable_ComparerWithEquals_{});
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
 
         DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return Mapping_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithEquals_{}); },
-            MyOnlyCopyableMoveable_ComparerWithEquals_{});
+            [] () { return Mapping_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
 
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
@@ -268,7 +252,7 @@ namespace {
                 [] () {
                     return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{});
                 },
-                MyOnlyCopyableMoveable_ComparerWithEquals_{});
+                AsIntsEqualsComparer<OnlyCopyableMoveable>{});
         }
 
         {
@@ -306,8 +290,8 @@ namespace {
             //DoTestForConcreteContainer_<Mapping_stdhashmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> (); // -- wont work cuz not hashable
 #if 0
             DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-                [] () { return Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithEquals_{}); },
-                MyOnlyCopyableMoveable_ComparerWithEquals_{});
+                [] () { return Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
+                AsIntsEqualsComparer<OnlyCopyableMoveable>{});
 #endif
         }
 
@@ -317,8 +301,24 @@ namespace {
         WithKeys_Test_7_::DoAll ();
         ClearBug_Test_8_::DoAll ();
         AddVsAddIf_Test_9_::DoAll ();
-        CTORWithComparerAndContainer_Test_10_::DoAll ();
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, CTORWithComparerAndContainer_)
+    {
+        using namespace Characters;
+        {
+            Mapping<String, String> parameters{String::EqualsComparer{Characters::eCaseInsensitive}};
+            // http://stroika-bugs.sophists.com/browse/STK-738 (and see other workarounds in other files)
+            Mapping<String, String> parameters2{String::EqualsComparer{Characters::eCaseInsensitive}, parameters};
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, Cleanup)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
