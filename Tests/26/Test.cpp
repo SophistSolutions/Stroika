@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_SkipList.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -26,10 +27,13 @@ using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::SortedMapping_stdmap;
+using Concrete::SortedMapping_SkipList;
+
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -70,35 +74,51 @@ namespace {
 }
 
 namespace {
-    namespace Test3_ConvertMapping2SortedMapping {
-        void TestAll ()
-        {
-            Mapping<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
-            SortedMapping<int, int> ms{m};
-            EXPECT_EQ (ms.size (), 2u);
-            EXPECT_EQ (*ms.begin (), (pair<int, int>{1, 2}));
-        }
+    GTEST_TEST (Foundation_Containers_SortedMapping, FACTORY_DEFAULT)
+    {
+        DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedMapping, all)
+    GTEST_TEST (Foundation_Containers_SortedMapping, SortedMapping_stdmap)
     {
-        using ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
-        using ComparerWithLess_   = AsIntsLessComparer<OnlyCopyableMoveable>;
-
-        DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (ComparerWithLess_{}); }, ComparerWithEquals_{});
-
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (ComparerWithLess_{}); }, ComparerWithEquals_{});
+            [] () { return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    }
+}
 
-        Test3_ConvertMapping2SortedMapping::TestAll ();
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedMapping, SortedMapping_SkipList)
+    {
+        DoTestForConcreteContainer_<SortedMapping_SkipList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    }
+}
 
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedMapping, Test3_ConvertMapping2SortedMapping)
+    {
+        Mapping<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
+        SortedMapping<int, int> ms{m};
+        EXPECT_EQ (ms.size (), 2u);
+        EXPECT_EQ (*ms.begin (), (pair<int, int>{1, 2}));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedMapping, CLEANUP)
+    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
