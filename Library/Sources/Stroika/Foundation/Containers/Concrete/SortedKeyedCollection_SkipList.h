@@ -39,13 +39,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             Private::SkipListBasedContainer<SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>, true>;
 
     public:
-        using TraitsType                = typename inherited::TraitsType;
-        using KeyExtractorType          = typename inherited::KeyExtractorType;
-        using KeyEqualityComparerType   = typename inherited::KeyEqualityComparerType;
-        using KeyInOrderKeyComparerType = typename inherited::KeyInOrderKeyComparerType;
-        using KeyType                   = typename inherited::KeyType;
-        using key_type                  = typename inherited::key_type;
-        using value_type                = typename inherited::value_type;
+        using TraitsType              = typename inherited::TraitsType;
+        using KeyExtractorType        = typename inherited::KeyExtractorType;
+        using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
+        using KeyInOrderComparerType  = typename inherited::KeyInOrderComparerType;
+        using KeyType                 = typename inherited::KeyType;
+        using key_type                = typename inherited::key_type;
+        using value_type              = typename inherited::value_type;
 
     public:
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way>

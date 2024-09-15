@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
-        using KeyInOrderKeyComparerType    = typename inherited::KeyInOrderKeyComparerType;
+        using KeyInOrderComparerType       = typename inherited::KeyInOrderComparerType;
         using value_type                   = typename inherited::value_type;
         using key_type                     = typename inherited::key_type;
         using mapped_type                  = typename inherited::mapped_type;

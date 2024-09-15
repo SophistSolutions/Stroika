@@ -81,10 +81,14 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This CAN be used as the argument to a SortedSet<> as InOrderComparerType, but
-         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer  concept (need better name).
+         *  \brief generic eStrictInOrder comparer (function) object for elements of the collection (value_type).
+         * 
+         *  \note alias - could have been called ValueInOrderComparerType
+         * 
+         *  This CAN be used as the argument to a SortedCollection<> as ElementInOrderComparerType, but
+         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer concept (need better name).
          */
-        using InOrderComparerType =
+        using ElementInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
 
     public:
@@ -138,7 +142,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual InOrderComparerType GetInOrderComparer () const;
+        nonvirtual ElementInOrderComparerType GetInOrderComparer () const;
 
     public:
         /**
@@ -210,8 +214,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     class SortedCollection<T>::_IRep : public Collection<T>::_IRep {
     public:
-        virtual InOrderComparerType GetInOrderComparer () const             = 0;
-        virtual bool                Contains (ArgByValueType<T> item) const = 0;
+        virtual ElementInOrderComparerType GetInOrderComparer () const             = 0;
+        virtual bool                       Contains (ArgByValueType<T> item) const = 0;
         using Collection<T>::_IRep::Remove;
         virtual void Remove (ArgByValueType<T> item) = 0;
     };

@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedCollection<T>::_IRep overrides
     public:
-        virtual InOrderComparerType GetInOrderComparer () const override
+        virtual ElementInOrderComparerType GetInOrderComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.key_comp ();

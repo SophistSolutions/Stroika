@@ -76,10 +76,10 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Just a short-hand for the KeyInOrderKeyComparerType specified through traits. This is often handy to use in
+         *  Just a short-hand for the KeyInOrderComparerType specified through traits. This is often handy to use in
          *  building other templates.
          */
-        using KeyInOrderKeyComparerType =
+        using KeyInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
 
     public:
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const;
+        nonvirtual KeyInOrderComparerType GetInOrderKeyComparer () const;
 
     public:
         /**
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     class SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
     public:
-        virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const = 0;
+        virtual KeyInOrderComparerType GetInOrderKeyComparer () const = 0;
     };
 
 }

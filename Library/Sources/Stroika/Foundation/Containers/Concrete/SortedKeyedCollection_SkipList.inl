@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedKeyedCollection<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
     public:
-        virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const override
+        virtual KeyInOrderComparerType GetInOrderKeyComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ().fKeyComparer};

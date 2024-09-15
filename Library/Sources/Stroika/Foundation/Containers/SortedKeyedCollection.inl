@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline auto SortedKeyedCollection<T, KEY_TYPE, TRAITS>::GetInOrderKeyComparer () const -> KeyInOrderKeyComparerType
+    inline auto SortedKeyedCollection<T, KEY_TYPE, TRAITS>::GetInOrderKeyComparer () const -> KeyInOrderComparerType
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
     }

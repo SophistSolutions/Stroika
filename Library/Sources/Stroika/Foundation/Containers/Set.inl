@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Containers {
     Set<T> Set<T>::Intersection (const Iterable<value_type>& rhs) const
     {
         using namespace Stroika::Foundation::Common;
-        Set<T> result{this->GetElementEqualsComparer ()};
+        Set<T> result{this->GetElementEqualsComparer ()}; // @todo better todo CloneEmpty () API - so retains non-wrapped comparer!
         /*
          * note: TRIED using Apply() - and didn't seem to help performance --LGP 2021-11-08
          */
@@ -373,7 +373,7 @@ namespace Stroika::Foundation::Containers {
     inline Set<T> Set<T>::Union (const Set& lhs, const Set& rhs)
     {
         // Require (lhs.GetElementEqualsComparer () == rhs.GetElementEqualsComparer ());  Not LITERALLY required, but results undefined if these comparers produce diffrent answers
-        // union operation is commutitive; and O(N) in side we iterate over, and < O(N) in side we do lookups
+        // union operation is commutative; and O(N) in side we iterate over, and < O(N) in side we do lookups
         // on, so do iteration on shorter side
         if (lhs.size () < rhs.size ()) {
             return rhs.Union (static_cast<const Iterable<T>&> (lhs));
@@ -386,7 +386,7 @@ namespace Stroika::Foundation::Containers {
     Set<T> Set<T>::Difference (const Set& rhs) const
     {
         using namespace Stroika::Foundation::Common;
-        Set result{this->GetElementEqualsComparer ()};
+        Set result{this->GetElementEqualsComparer ()};  // @todo better to use CloneEmpty API, since then retains unwapped comparer
         /*
          *  whether its better to incrementally create the result set, or better to incrementally remove
          * from the result set (performance wise) (probably) depends on how close *this and rhs are to one another.

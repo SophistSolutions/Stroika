@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  For the CTOR overload with ITERABLE_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
-         *  all the elements, and which has elements (iterated) convertable to T.
+         *  all the elements, and which has elements (iterated) convertible to T.
          *
          *  \par Example Usage
          *      \code

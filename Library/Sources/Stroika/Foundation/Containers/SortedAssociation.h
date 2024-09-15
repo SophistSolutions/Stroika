@@ -73,10 +73,10 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This CAN be used as the argument to a SortedAssociation<> as InOrderComparerType, but
+         *  This CAN be used as the argument to a SortedAssociation<> as KeyInOrderComparerType, but
          *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer concept
          */
-        using KeyInOrderKeyComparerType =
+        using KeyInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
 
     public:
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const;
+        nonvirtual KeyInOrderComparerType GetInOrderKeyComparer () const;
 
     public:
         /**
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Containers {
         using inherited = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
     public:
-        virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const = 0;
+        virtual KeyInOrderComparerType GetInOrderKeyComparer () const = 0;
     };
 
 }

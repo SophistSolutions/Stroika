@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline auto SortedCollection<T>::GetInOrderComparer () const -> InOrderComparerType
+    inline auto SortedCollection<T>::GetInOrderComparer () const -> ElementInOrderComparerType
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderComparer ();
     }
