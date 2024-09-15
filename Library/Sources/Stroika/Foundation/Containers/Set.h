@@ -17,9 +17,6 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
- *              returns something of same underlying data structure  type.
- *
  *      @todo   Implement more backends
  *              >   Set_BitString
  *              >   Set_Array
@@ -33,8 +30,8 @@
  *              default but maybe should use left or right side type?
  * 
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-754 - Add (REP METHOD) should return bool if really added (if size changed) to make a few things 
- *              like addif cheaper. But think through carefully semantics of object - we actually change what is there, but it maybe just pading
- *              soemthing - so DOES have affect but doesnt change if its present or not.
+ *              like addif cheaper. But think through carefully semantics of object - we actually change what is there, but it maybe just padding
+ *              something - so DOES have affect but doesnt change if its present or not.
  */
 
 namespace Stroika::Foundation::Containers {
@@ -430,7 +427,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *      Synonym for Add/AddAll.
          *
-         *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
+         *  Design note  use AddAll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
          *
          *  \note mutates container
          */
@@ -441,7 +438,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *      Synonym for RemoveIf/RemoveAll.
          *
-         *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
+         *  Design note  use AddAll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
          *
          *  \note mutates container
          */
@@ -479,7 +476,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          * 
-         *  \note because of differnt way iteartors handled in Stroika containers, this is more costly than Add () or AddIf, but provided to facilitate
+         *  \note because of different way iterators handled in Stroika containers, this is more costly than Add () or AddIf, but provided to facilitate
          *        converting code that was written for the STL API.
          */
         nonvirtual pair<const_iterator, bool> insert (ArgByValueType<value_type> item);
@@ -496,6 +493,12 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void erase (ArgByValueType<value_type> item);
         nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
+
+    public:
+        /**
+         *  \brief for return Set<T> { s->GetEqualsComparer(); } - except more efficient - clones settings/dynamic subtype but not data for the Set
+         */
+        nonvirtual Set CloneEmpty () const;
 
     protected:
         /**
@@ -558,17 +561,17 @@ namespace Stroika::Foundation::Containers {
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const = 0;
         virtual void Add (ArgByValueType<value_type> item)                                                                        = 0;
         /**
-         *  Return true iff item found. Either way assure it doesn't exsist
+         *  Return true iff item found. Either way assure it doesn't exist
          */
         virtual bool RemoveIf (ArgByValueType<value_type> item)                          = 0;
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
 
         /*
-         *  Reference Implementations (often not used except for ensure's, but can be used for
+         *  Reference Implementations (often not used except for ensures, but can be used for
          *  quickie backends).
          *
          *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
-         *  the sucblass refers to the method in a subclass virtual override.
+         *  the subclass refers to the method in a subclass virtual override.
          */
     protected:
         /**

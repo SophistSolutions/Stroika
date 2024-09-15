@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Containers {
     Set<T> Set<T>::Intersection (const Iterable<value_type>& rhs) const
     {
         using namespace Stroika::Foundation::Common;
-        Set<T> result{this->GetElementEqualsComparer ()}; // @todo better todo CloneEmpty () API - so retains non-wrapped comparer!
+        Set result{this->CloneEmpty ()};
         /*
          * note: TRIED using Apply() - and didn't seem to help performance --LGP 2021-11-08
          */
@@ -335,7 +335,7 @@ namespace Stroika::Foundation::Containers {
     inline Set<T> Set<T>::Intersection (const Set& lhs, const Set& rhs)
     {
         // Require (lhs.GetElementEqualsComparer () == rhs.GetElementEqualsComparer ());  Not LITERALLY required, but results undefined if these comparers produce diffrent answers
-        // union operation is commutitive; and O(N) in side we iterate over, and < O(N) in side we do lookups
+        // union operation is commutative; and O(N) in side we iterate over, and < O(N) in side we do lookups
         // on, so do iteration on shorter side
         if (lhs.size () < rhs.size ()) {
             return rhs.Intersection (static_cast<const Iterable<T>&> (lhs));
@@ -366,7 +366,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline Set<T> Set<T>::Union (const Iterable<value_type>& lhs, const Set& rhs)
     {
-        // union operation is commutitive
+        // union operation is commutative
         return rhs.Union (lhs);
     }
     template <typename T>
@@ -386,7 +386,7 @@ namespace Stroika::Foundation::Containers {
     Set<T> Set<T>::Difference (const Set& rhs) const
     {
         using namespace Stroika::Foundation::Common;
-        Set result{this->GetElementEqualsComparer ()};  // @todo better to use CloneEmpty API, since then retains unwapped comparer
+        Set result{this->CloneEmpty ()};
         /*
          *  whether its better to incrementally create the result set, or better to incrementally remove
          * from the result set (performance wise) (probably) depends on how close *this and rhs are to one another.
@@ -508,6 +508,11 @@ namespace Stroika::Foundation::Containers {
         Iterator<T> nextI{nullptr};
         this->Remove (i, &nextI);
         return nextI;
+    }
+    template <typename T>
+    inline auto Set<T>::CloneEmpty () const -> Set
+    {
+        return Set{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()};
     }
     template <typename T>
     auto Set<T>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
