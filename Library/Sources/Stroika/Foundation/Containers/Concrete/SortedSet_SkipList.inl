@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedSet<T>::_IRep overrides
     public:
-        virtual ElementInOrderComparerType GetInOrderComparer () const override
+        virtual ElementInOrderComparerType GetElementInOrderComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()};
@@ -213,6 +213,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline SortedSet_SkipList<T>::SortedSet_SkipList (COMPARER&& comparer)
         : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<COMPARER>>> (forward<COMPARER> (comparer))}
     {
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    inline SortedSet_SkipList<T>::SortedSet_SkipList (const initializer_list<T>& src)
+        : SortedSet_SkipList{}
+    {
+        this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T>

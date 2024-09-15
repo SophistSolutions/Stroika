@@ -70,10 +70,17 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetInOrderComparer ();
+         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetElementInOrderComparer ();
          */
         using ElementInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
+
+    public:
+        /**
+         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetThreeWayComparer ();
+         */
+        using ElementThreeWayComparerType =
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare, function<strong_ordering (ArgByValueType<T>, ArgByValueType<T>)>>;
 
     public:
         /**
@@ -130,11 +137,17 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual ElementInOrderComparerType GetInOrderComparer () const;
+        nonvirtual ElementInOrderComparerType GetElementInOrderComparer () const;
 
     public:
         /**
-         *  Compare sequentially using the associated GetInOrderComparer ()  
+         *  Return the function used to compare if two elements are in-order (sorted properly)
+         */
+        nonvirtual ElementThreeWayComparerType GetThreeWayComparer () const;
+
+    public:
+        /**
+         *  Compare sequentially using the associated GetElementInOrderComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedSet& rhs) const;
 
@@ -178,7 +191,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     class SortedSet<T>::_IRep : public Set<T>::_IRep {
     public:
-        virtual ElementInOrderComparerType GetInOrderComparer () const = 0;
+        virtual ElementInOrderComparerType GetElementInOrderComparer () const = 0;
     };
 
 }

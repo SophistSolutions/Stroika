@@ -97,14 +97,14 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline auto SortedSet<T>::GetInOrderComparer () const -> ElementInOrderComparerType
+    inline auto SortedSet<T>::GetElementInOrderComparer () const -> ElementInOrderComparerType
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderComparer ();
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementInOrderComparer ();
     }
     template <typename T>
     inline strong_ordering SortedSet<T>::operator<=> (const SortedSet& rhs) const
     {
-        return typename Iterable<T>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter{GetInOrderComparer ()}}(*this, rhs);
+        return typename Iterable<T>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter{GetElementInOrderComparer ()}}(*this, rhs);
     }
     template <typename T>
     template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
