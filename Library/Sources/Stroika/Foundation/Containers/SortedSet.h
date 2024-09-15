@@ -136,12 +136,18 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
+         * 
+         *  \note - this is a function-object wrapper on the underlying comparer, so use will work, but isn't as optimized
+         *          as already directly knowing the function object via 'other means'
          */
         nonvirtual ElementInOrderComparerType GetElementInOrderComparer () const;
 
     public:
         /**
          *  Return the function used to compare if two elements returning strong_ordering (sorted properly)
+         * 
+         *  \note - this is a function-object wrapper on the underlying comparer, so use will work, but isn't as optimized
+         *          as already directly knowing the function object via 'other means'
          */
         nonvirtual ElementThreeWayComparerType GetElementThreeWayComparer () const;
 
@@ -187,11 +193,15 @@ namespace Stroika::Foundation::Containers {
      *
      *  Protected abstract interface to support concrete implementations of
      *  the SortedSet<T> container API.
+     * 
+     *  \note for some scenarios, it might be more efficient to have both a GetElementInOrderComparer and GetElementThreeWayComparer
+     *        method, but at the cost of modest code bloat and additional complexity. Callers who really care about this performance
+     *        difference can count on other application logic to assure an even better compare function is used to compare usages.
+     *        On clang++ on macOS, this was about 50 bytes per class/instantiation. Not much, but for practically zero value added.
      */
     template <typename T>
     class SortedSet<T>::_IRep : public Set<T>::_IRep {
     public:
-        virtual ElementInOrderComparerType  GetElementInOrderComparer () const  = 0;
         virtual ElementThreeWayComparerType GetElementThreeWayComparer () const = 0;
     };
 

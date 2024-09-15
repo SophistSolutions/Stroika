@@ -102,7 +102,13 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline auto SortedCollection<T>::GetInOrderComparer () const -> ElementInOrderComparerType
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderComparer ();
+        return Common::InOrderComparerAdapter<T, ElementThreeWayComparerType>{
+            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementThreeWayComparer ()};
+    }
+    template <typename T>
+    inline auto SortedCollection<T>::GetElementThreeWayComparer () const -> ElementThreeWayComparerType
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementThreeWayComparer ();
     }
     template <typename T>
     inline bool SortedCollection<T>::Contains (ArgByValueType<T> item) const

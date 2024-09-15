@@ -93,6 +93,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetElementThreeWayComparer ();
+         */
+        using ElementThreeWayComparerType =
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare, function<strong_ordering (ArgByValueType<T>, ArgByValueType<T>)>>;
+
+    public:
+        /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER_COMPARER for 'T'.
          *
          * \req IInOrderComparer<INORDER_COMPARER,T>  - for constructors with inorderComparer parameter
@@ -143,6 +150,12 @@ namespace Stroika::Foundation::Containers {
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
         nonvirtual ElementInOrderComparerType GetInOrderComparer () const;
+
+    public:
+        /**
+         *  Return the function used to compare if two elements returning strong_ordering (sorted properly)
+         */
+        nonvirtual ElementThreeWayComparerType GetElementThreeWayComparer () const;
 
     public:
         /**
@@ -210,16 +223,20 @@ namespace Stroika::Foundation::Containers {
      *
      *  Protected abstract interface to support concrete implementations of
      *  the SortedCollection<T> container API.
+     * 
+     *  \note for some scenarios, it might be more efficient to have both a GetElementInOrderComparer and GetElementThreeWayComparer
+     *        method, but at the cost of modest code bloat and additional complexity. Callers who really care about this performance
+     *        difference can count on other application logic to assure an even better compare function is used to compare usages.
+     *        On clang++ on macOS, this was about 50 bytes per class/instantiation. Not much, but for practically zero value added.
      */
     template <typename T>
     class SortedCollection<T>::_IRep : public Collection<T>::_IRep {
     public:
-        virtual ElementInOrderComparerType GetInOrderComparer () const             = 0;
-        virtual bool                       Contains (ArgByValueType<T> item) const = 0;
+        virtual ElementThreeWayComparerType GetElementThreeWayComparer () const     = 0;
+        virtual bool                        Contains (ArgByValueType<T> item) const = 0;
         using Collection<T>::_IRep::Remove;
         virtual void Remove (ArgByValueType<T> item) = 0;
     };
-
 }
 
 /*

@@ -136,10 +136,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedCollection<T>::_IRep overrides
     public:
-        virtual ElementInOrderComparerType GetInOrderComparer () const override
+        virtual ElementThreeWayComparerType GetElementThreeWayComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fInorderComparer_;
+            return Common::ThreeWayComparerAdapter<T, INORDER_COMPARER>{fInorderComparer_};
         }
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {

@@ -36,8 +36,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SortedCollection<T>;
 
     public:
-        using value_type                 = typename inherited::value_type;
-        using ElementInOrderComparerType = typename SortedCollection<T>::ElementInOrderComparerType;
+        using value_type                  = typename inherited::value_type;
+        using ElementThreeWayComparerType = typename SortedCollection<T>::ElementThreeWayComparerType;
 
     public:
         /**
