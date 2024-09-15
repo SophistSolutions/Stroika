@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetThreeWayComparer ();
+         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetElementThreeWayComparer ();
          */
         using ElementThreeWayComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare, function<strong_ordering (ArgByValueType<T>, ArgByValueType<T>)>>;
@@ -141,13 +141,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Return the function used to compare if two elements are in-order (sorted properly)
+         *  Return the function used to compare if two elements returning strong_ordering (sorted properly)
          */
-        nonvirtual ElementThreeWayComparerType GetThreeWayComparer () const;
+        nonvirtual ElementThreeWayComparerType GetElementThreeWayComparer () const;
 
     public:
         /**
-         *  Compare sequentially using the associated GetElementInOrderComparer ()  
+         *  Compare sequentially using the associated GetElementThreeWayComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedSet& rhs) const;
 
@@ -191,7 +191,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     class SortedSet<T>::_IRep : public Set<T>::_IRep {
     public:
-        virtual ElementInOrderComparerType GetElementInOrderComparer () const = 0;
+        virtual ElementInOrderComparerType  GetElementInOrderComparer () const  = 0;
+        virtual ElementThreeWayComparerType GetElementThreeWayComparer () const = 0;
     };
 
 }

@@ -40,6 +40,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;
         using ElementInOrderComparerType  = typename inherited::ElementInOrderComparerType;
+        using ElementThreeWayComparerType = typename inherited::ElementThreeWayComparerType;
         using value_type                  = typename inherited::value_type;
 
     public:

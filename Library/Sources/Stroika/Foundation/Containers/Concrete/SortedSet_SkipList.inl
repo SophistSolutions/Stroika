@@ -160,6 +160,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()};
         }
+        virtual ElementThreeWayComparerType GetElementThreeWayComparer () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return fData_.key_comp ();
+        }
 
     private:
         using DataStructureImplType_ = SKIPLIST<COMPARER>;

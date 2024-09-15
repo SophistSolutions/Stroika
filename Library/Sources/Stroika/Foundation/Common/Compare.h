@@ -243,6 +243,9 @@ namespace Stroika::Foundation::Common {
      *  Checks that the argument comparer can be converted (via ThreeWayComparerAdapter) to three_way comparer (on type T).
      * 
      *  \see IInOrderComparer, IThreeWayComparer, and ThreeWayComparerAdapter
+     * 
+     *  \note as of v3.0d10 - IThreeWayAdaptableComparer = IInOrderComparer or IThreeWayComparer, but this could be extended
+     *        to include other sorts of comparisons (e.g. less_or_equal) - so long as ThreeWayAdaptableComparer is suitably updated.
      */
     template <typename COMPARER, typename ARG_T>
     concept IThreeWayAdaptableComparer = IInOrderComparer<COMPARER, ARG_T> or IThreeWayComparer<COMPARER, ARG_T>;
