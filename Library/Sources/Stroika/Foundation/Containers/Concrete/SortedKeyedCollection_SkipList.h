@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using TraitsType              = typename inherited::TraitsType;
         using KeyExtractorType        = typename inherited::KeyExtractorType;
         using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
-        using KeyInOrderComparerType  = typename inherited::KeyInOrderComparerType;
+        using KeyThreeWayComparerType = typename inherited::KeyThreeWayComparerType;
         using KeyType                 = typename inherited::KeyType;
         using key_type                = typename inherited::key_type;
         using value_type              = typename inherited::value_type;

@@ -86,14 +86,16 @@ namespace Stroika::Foundation::Containers {
          *  \note alias - could have been called ValueInOrderComparerType
          * 
          *  This CAN be used as the argument to a SortedCollection<> as ElementInOrderComparerType, but
-         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer concept (need better name).
+         *  we allow any template in the SortedCollection<> CTOR for an inorderComparer that follows Common::IInOrderComparer concept (need better name).
          */
         using ElementInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
 
     public:
         /**
-         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetElementThreeWayComparer ();
+         *  \brief generic eThreeWayCompare comparer (function) object for elements of the collection (value_type).
+         * 
+         *  \note alias - could have been called ValueThreeWayComparerType
          */
         using ElementThreeWayComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare, function<strong_ordering (ArgByValueType<T>, ArgByValueType<T>)>>;

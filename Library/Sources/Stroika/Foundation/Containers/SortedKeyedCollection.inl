@@ -108,7 +108,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline auto SortedKeyedCollection<T, KEY_TYPE, TRAITS>::GetInOrderKeyComparer () const -> KeyInOrderComparerType
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetThreeWayKeyComparer ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline auto SortedKeyedCollection<T, KEY_TYPE, TRAITS>::GetThreeWayKeyComparer () const -> KeyThreeWayComparerType
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetThreeWayKeyComparer ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>

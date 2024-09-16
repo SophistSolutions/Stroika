@@ -76,11 +76,16 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Just a short-hand for the KeyInOrderComparerType specified through traits. This is often handy to use in
-         *  building other templates.
          */
         using KeyInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
+
+    public:
+        /**
+         */
+        using KeyThreeWayComparerType =
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare,
+                                                  function<strong_ordering (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
 
     public:
         using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
@@ -160,6 +165,11 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         */
+        nonvirtual KeyThreeWayComparerType GetThreeWayKeyComparer () const;
+
+    public:
+        /**
          * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to SortedKeyedCollection, and improve that case to clone properties from this rep (such is rep type, ordering, etc).
          */
         template <typename RESULT_CONTAINER = SortedKeyedCollection<T, KEY_TYPE, TRAITS>, invocable<T> ELEMENT_MAPPER>
@@ -201,7 +211,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     class SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
     public:
-        virtual KeyInOrderComparerType GetInOrderKeyComparer () const = 0;
+        virtual KeyThreeWayComparerType GetThreeWayKeyComparer () const = 0;
     };
 
 }

@@ -73,11 +73,20 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This CAN be used as the argument to a SortedAssociation<> as KeyInOrderComparerType, but
-         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer concept
+         *  \brief generic eStrictInOrder comparer (function) object for KEY_TYPE of the association.
+         * 
+         *  This CAN be used as the argument to a SortedAssociation<> as ElementInOrderComparerType
          */
         using KeyInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
+
+    public:
+        /**
+         *  \brief generic eThreeWayCompare comparer (function) object for KEY_TYPE of the association.
+         */
+        using KeyThreeWayComparerType =
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare,
+                                                  function<strong_ordering (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
 
     public:
         /**
@@ -143,6 +152,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  Return the function used to compare if two elements are in-order (sorted properly)
+         */
+        nonvirtual KeyThreeWayComparerType GetThreeWayKeyComparer () const;
+
+    public:
+        /**
          *  Compare sequentially using the associated GetInOrderKeyComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedAssociation& rhs) const;
@@ -195,7 +210,7 @@ namespace Stroika::Foundation::Containers {
         using inherited = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
     public:
-        virtual KeyInOrderComparerType GetInOrderKeyComparer () const = 0;
+        virtual KeyThreeWayComparerType GetThreeWayKeyComparer () const = 0;
     };
 
 }

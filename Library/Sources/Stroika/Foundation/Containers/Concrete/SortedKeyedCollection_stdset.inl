@@ -143,7 +143,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return true;
             }
             else {
-                // @todo must patch!!!
                 // in case of update, set<> wont update the value so we must remove and re-add, but todo that, use previous iterator as hint
                 typename DataStructureImplType_::iterator hint = flagAndI.first;
                 ++hint;
@@ -179,10 +178,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedKeyedCollection<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
     public:
-        virtual KeyInOrderComparerType GetInOrderKeyComparer () const override
+        virtual KeyThreeWayComparerType GetThreeWayKeyComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return fKeyComparer_;
+            return Common::ThreeWayComparerAdapter<KEY_TYPE, KEY_INORDER_COMPARER>{fKeyComparer_};
         }
 
     private:
