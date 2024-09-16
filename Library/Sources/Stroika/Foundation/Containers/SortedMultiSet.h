@@ -82,6 +82,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         */
+        using ElementThreeWayComparerType =
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare, function<strong_ordering (ArgByValueType<T>, ArgByValueType<T>)>>;
+
+    public:
+        /**
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         SortedMultiSet ()
@@ -135,6 +141,11 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         */
+        nonvirtual ElementThreeWayComparerType GetElementThreeWayComparer () const;
+
+    public:
+        /**
          * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to SortedMultiSet, and improve that case to clone properties from this rep (such is rep type, ordering, etc).
          */
         template <typename RESULT_CONTAINER = SortedMultiSet<T, TRAITS>, invocable<T> ELEMENT_MAPPER>
@@ -151,7 +162,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Compare sequentially using the associated GetElementInOrderComparer ()  
+         *  Compare sequentially using the associated GetElementThreeWayComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedMultiSet& rhs) const;
 
@@ -183,7 +194,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     class SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, TRAITS>::_IRep {
     public:
-        virtual ElementInOrderComparerType GetElementInOrderComparer () const = 0;
+        virtual ElementThreeWayComparerType GetElementThreeWayComparer () const = 0;
     };
 
 }

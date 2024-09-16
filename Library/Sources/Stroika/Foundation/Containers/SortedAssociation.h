@@ -148,17 +148,17 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual KeyInOrderComparerType GetInOrderKeyComparer () const;
+        nonvirtual KeyInOrderComparerType GetKeyInOrderComparer () const;
 
     public:
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual KeyThreeWayComparerType GetThreeWayKeyComparer () const;
+        nonvirtual KeyThreeWayComparerType GetKeyThreeWayComparer () const;
 
     public:
         /**
-         *  Compare sequentially using the associated GetInOrderKeyComparer ()  
+         *  Compare sequentially using the associated GetKeyThreeWayComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedAssociation& rhs) const;
 
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Containers {
         using inherited = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
     public:
-        virtual KeyThreeWayComparerType GetThreeWayKeyComparer () const = 0;
+        virtual KeyThreeWayComparerType GetKeyThreeWayComparer () const = 0;
     };
 
 }

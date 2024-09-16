@@ -43,10 +43,10 @@ namespace {
         auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
         testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
-            EXPECT_TRUE (m.IsOrderedBy ([comparer = m.GetInOrderKeyComparer ()] (auto l, auto r) { return comparer (l.fKey, r.fKey); }));
+            EXPECT_TRUE (m.IsOrderedBy ([comparer = m.GetKeyInOrderComparer ()] (auto l, auto r) { return comparer (l.fKey, r.fKey); }));
         };
         SimpleAssociationTest_All_ (testSchema);
-        SimpleAssociationTest_WithDefaultEqCompaerer_ (testSchema);
+        SimpleAssociationTest_WithDefaultEqComparer_ (testSchema);
     }
     template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
     void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
@@ -57,11 +57,11 @@ namespace {
             // verify in sorted order
             using value_type       = typename CONCRETE_CONTAINER::value_type;
             using key_type         = typename CONCRETE_CONTAINER::key_type;
-            using INORDER_COMPARER = decltype (m.GetInOrderKeyComparer ());
+            using INORDER_COMPARER = decltype (m.GetKeyInOrderComparer ());
             optional<value_type> last;
             for (value_type i : m) {
                 if (last.has_value ()) {
-                    EXPECT_TRUE ((Common::ThreeWayComparerAdapter<key_type, INORDER_COMPARER>{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0));
+                    EXPECT_TRUE ((Common::ThreeWayComparerAdapter<key_type, INORDER_COMPARER>{m.GetKeyInOrderComparer ()}(last->fKey, i.fKey) <= 0));
                 }
                 last = i;
             }

@@ -49,15 +49,15 @@ namespace {
         using namespace CommonTests::MappingTests;
         if constexpr (constructible_from<CONCRETE_CONTAINER>) {
             SimpleMappingTest_All_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
-            SimpleMappingTest_WithDefaultEqCompaerer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+            SimpleMappingTest_WithDefaultEqComparer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
         }
     }
     template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
     void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
     {
         using namespace CommonTests::MappingTests;
-        auto testschema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
-        SimpleMappingTest_All_ (testschema);
+        auto testSchema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
+        SimpleMappingTest_All_ (testSchema);
     }
 }
 

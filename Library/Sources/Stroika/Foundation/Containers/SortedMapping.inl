@@ -104,9 +104,15 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline auto SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::GetInOrderKeyComparer () const -> KeyInOrderComparerType
+    inline auto SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::GetKeyInOrderComparer () const -> KeyInOrderComparerType
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
+        return Common::InOrderComparerAdapter<KEY_TYPE, KeyThreeWayComparerType>{
+            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyThreeWayComparer ()};
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline auto SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::GetKeyThreeWayComparer () const -> KeyThreeWayComparerType
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyThreeWayComparer ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename RESULT_CONTAINER, invocable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ELEMENT_MAPPER>

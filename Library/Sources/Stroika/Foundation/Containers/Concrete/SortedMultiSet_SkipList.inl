@@ -176,10 +176,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedMultiSet<T,TRAITS>::_IRep overrides
     public:
-        virtual ElementInOrderComparerType GetElementInOrderComparer () const override
+        virtual ElementThreeWayComparerType GetElementThreeWayComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return ElementInOrderComparerType{Common::InOrderComparerAdapter<T, COMPARER>{fData_.key_comp ()}};
+            return fData_.key_comp ();
         }
 
     private:

@@ -182,10 +182,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
     public:
-        virtual KeyInOrderComparerType GetInOrderKeyComparer () const override
+        virtual KeyThreeWayComparerType GetKeyThreeWayComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Common::InOrderComparerAdapter<KEY_TYPE, KEY_THREEWAY_COMPARER>{fData_.key_comp ()};
+            return fData_.key_comp ();
         }
 
     private:

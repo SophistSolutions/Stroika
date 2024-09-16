@@ -1758,10 +1758,10 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
 // fixed in clang++16 (but assume broken there too)
-// broken in clang++17      
+// broken in clang++17
 // broken in clang++18      error: type constraint differs in template redeclaration
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ( (__clang_major__ <= 18))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy 0
 #endif

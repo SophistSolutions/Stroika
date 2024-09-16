@@ -83,6 +83,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         */
+        using KeyThreeWayComparerType =
+            Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare,
+                                                  function<strong_ordering (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
+
+    public:
+        /**
          *  This constructor creates a concrete sorted mapping object, either empty,
          *  or initialized with any argument values.
          *
@@ -143,7 +150,13 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual KeyInOrderComparerType GetInOrderKeyComparer () const;
+        nonvirtual KeyInOrderComparerType GetKeyInOrderComparer () const;
+
+    public:
+        /**
+         *  Return the function used to compare if two elements are (sorted properly)
+         */
+        nonvirtual KeyThreeWayComparerType GetKeyThreeWayComparer () const;
 
     public:
         /**
@@ -167,7 +180,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Compare sequentially using the associated GetInOrderKeyComparer ()  
+         *  Compare sequentially using the associated GetKeyThreeWayComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedMapping& rhs) const;
 
@@ -199,7 +212,7 @@ namespace Stroika::Foundation::Containers {
         using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
     public:
-        virtual KeyInOrderComparerType GetInOrderKeyComparer () const = 0;
+        virtual KeyThreeWayComparerType GetKeyThreeWayComparer () const = 0;
     };
 
 }

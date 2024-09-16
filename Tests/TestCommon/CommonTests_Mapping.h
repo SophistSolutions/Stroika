@@ -376,7 +376,7 @@ namespace CommonTests {
         }
 
         template <typename DEFAULT_TESTING_SCHEMA>
-        void SimpleMappingTest_WithDefaultEqCompaerer_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
+        void SimpleMappingTest_WithDefaultEqComparer_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
             Debug::TraceContextBumper ctx{"CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_"};
             Private_::Test5_ToFromSTLMap::DoAllTests_ (testingSchema);

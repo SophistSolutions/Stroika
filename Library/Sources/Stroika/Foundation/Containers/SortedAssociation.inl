@@ -104,15 +104,15 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline auto SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::GetInOrderKeyComparer () const -> KeyInOrderComparerType
+    inline auto SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::GetKeyInOrderComparer () const -> KeyInOrderComparerType
     {
         return Common::InOrderComparerAdapter<KEY_TYPE, KeyThreeWayComparerType>{
-            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetThreeWayKeyComparer ()};
+            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyThreeWayComparer ()};
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline auto SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::GetThreeWayKeyComparer () const -> KeyThreeWayComparerType
+    inline auto SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::GetKeyThreeWayComparer () const -> KeyThreeWayComparerType
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetThreeWayKeyComparer ();
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyThreeWayComparer ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename RESULT_CONTAINER, invocable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ELEMENT_MAPPER>
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers {
     {
         // nb: no need to take into account comparison on values, because total ordering on keys sequences these elements
         return typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::SequentialThreeWayComparer{
-            Common::ThreeWayComparerAdapter{GetInOrderKeyComparer ()}}(*this, rhs);
+            Common::ThreeWayComparerAdapter{GetKeyInOrderComparer ()}}(*this, rhs);
     }
 
 }

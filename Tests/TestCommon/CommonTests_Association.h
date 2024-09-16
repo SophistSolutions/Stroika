@@ -385,7 +385,7 @@ namespace CommonTests {
         }
 
         template <typename DEFAULT_TESTING_SCHEMA>
-        void SimpleAssociationTest_WithDefaultEqCompaerer_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
+        void SimpleAssociationTest_WithDefaultEqComparer_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
             Debug::TraceContextBumper ctx{
                 "CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};

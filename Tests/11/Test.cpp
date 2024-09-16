@@ -47,7 +47,7 @@ namespace {
     {
         using namespace CommonTests::AssociationTests;
         SimpleAssociationTest_All_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
-        SimpleAssociationTest_WithDefaultEqCompaerer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+        SimpleAssociationTest_WithDefaultEqComparer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
     }
     template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
     void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)

@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using TraitsType                  = typename inherited::TraitsType;
         using CounterType                 = typename inherited::CounterType;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
-        using ElementInOrderComparerType  = typename inherited::ElementInOrderComparerType;
+        using ElementThreeWayComparerType = typename inherited::ElementThreeWayComparerType;
         using value_type                  = typename inherited::value_type;
 
     public:

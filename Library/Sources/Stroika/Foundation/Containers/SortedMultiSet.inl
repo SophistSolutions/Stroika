@@ -115,7 +115,13 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline auto SortedMultiSet<T, TRAITS>::GetElementInOrderComparer () const -> ElementInOrderComparerType
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementInOrderComparer ();
+        return Common::InOrderComparerAdapter<T, ElementThreeWayComparerType>{
+            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementThreeWayComparer ()};
+    }
+    template <typename T, typename TRAITS>
+    inline auto SortedMultiSet<T, TRAITS>::GetElementThreeWayComparer () const -> ElementThreeWayComparerType
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementThreeWayComparer ();
     }
     template <typename T, typename TRAITS>
     template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
@@ -148,8 +154,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline strong_ordering SortedMultiSet<T, TRAITS>::operator<=> (const SortedMultiSet& rhs) const
     {
-        return typename Iterable<typename TRAITS::CountedValueType>::SequentialThreeWayComparer{
-            Common::ThreeWayComparerAdapter{GetElementInOrderComparer ()}}(*this, rhs);
+        return typename Iterable<typename TRAITS::CountedValueType>::SequentialThreeWayComparer{GetElementThreeWayComparer ()}(*this, rhs);
     }
 
 }
