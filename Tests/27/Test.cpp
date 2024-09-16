@@ -68,10 +68,14 @@ namespace {
     {
         DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
         DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return SortedMultiSet<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; };
+        auto msFactory1 = [] () { return SortedMultiSet<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; };
         DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsLessComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
-                msFactory));
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsLessComparer<OnlyCopyableMoveable>, decltype (msFactory1)> (
+                msFactory1));
+        auto msFactory2 = [] () { return SortedMultiSet<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}}; };
+        DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
+            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsLessComparer<OnlyCopyableMoveable>, decltype (msFactory2)> (
+                msFactory2));
     }
 }
 

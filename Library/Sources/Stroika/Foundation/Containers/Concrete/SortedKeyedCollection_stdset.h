@@ -20,6 +20,8 @@
  */
 namespace Stroika::Foundation::Containers::Concrete {
 
+    using Common::IInOrderComparer;
+
     /**
      *  \brief   SortedKeyedCollection_stdset<KEY_TYPE,MAPPED_VALUE_TYPE> is an std::map-based concrete implementation of the SortedKeyedCollection<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
      *

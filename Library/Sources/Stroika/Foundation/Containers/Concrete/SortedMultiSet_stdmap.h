@@ -22,6 +22,8 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
+    using Common::IInOrderComparer;
+
     /**
      *
      *

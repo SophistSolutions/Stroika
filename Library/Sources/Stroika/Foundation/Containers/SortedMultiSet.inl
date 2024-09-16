@@ -13,15 +13,15 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet ()
-        requires (Common::IInOrderComparer<less<T>, T>)
+        requires (Common::ITotallyOrderingComparer<less<T>, T>)
         : SortedMultiSet{less<T>{}}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER>
-    inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedMultiSet_Factory<T, TRAITS, remove_cvref_t<INORDER_COMPARER>>::Default () (forward<INORDER_COMPARER> (inorderComparer))}
+    template <Common::ITotallyOrderingComparer<T> COMPARER>
+    inline SortedMultiSet<T, TRAITS>::SortedMultiSet (COMPARER&& comparer)
+        : inherited{Factory::SortedMultiSet_Factory<T, TRAITS, remove_cvref_t<COMPARER>>::Default () (forward<COMPARER> (comparer))}
     {
         _AssertRepValidType ();
     }
@@ -39,32 +39,32 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src)
-        requires (Common::IInOrderComparer<less<T>, T>)
+        requires (Common::ITotallyOrderingComparer<less<T>, T>)
         : SortedMultiSet{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER>
-    SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src)
-        : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
+    template <Common::ITotallyOrderingComparer<T> COMPARER>
+    SortedMultiSet<T, TRAITS>::SortedMultiSet (COMPARER&& comparer, const initializer_list<T>& src)
+        : SortedMultiSet{forward<COMPARER> (comparer)}
     {
         this->AddAll (src);
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<value_type>& src)
-        requires (Common::IInOrderComparer<less<T>, T>)
+        requires (Common::ITotallyOrderingComparer<less<T>, T>)
         : SortedMultiSet{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER>
-    SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src)
-        : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
+    template <Common::ITotallyOrderingComparer<T> COMPARER>
+    SortedMultiSet<T, TRAITS>::SortedMultiSet (COMPARER&& comparer, const initializer_list<value_type>& src)
+        : SortedMultiSet{forward<COMPARER> (comparer)}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERABLE_OF_ADDABLE&& src)
-        requires (Common::IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet<T, TRAITS>>)
+        requires (Common::ITotallyOrderingComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet<T, TRAITS>>)
         : SortedMultiSet{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -81,9 +81,9 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename TRAITS>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
-    inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
-        : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
+    template <Common::ITotallyOrderingComparer<T> COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+    inline SortedMultiSet<T, TRAITS>::SortedMultiSet (COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedMultiSet{forward<COMPARER> (comparer)}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
@@ -91,16 +91,16 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (Common::IInOrderComparer<less<T>, T>)
+        requires (Common::ITotallyOrderingComparer<less<T>, T>)
         : SortedMultiSet{}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <IInputIterator<typename TRAITS::CountedValueType> INORDER_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-    SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
+    template <IInputIterator<typename TRAITS::CountedValueType> COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
+    SortedMultiSet<T, TRAITS>::SortedMultiSet (COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        : SortedMultiSet{forward<COMPARER> (comparer)}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();

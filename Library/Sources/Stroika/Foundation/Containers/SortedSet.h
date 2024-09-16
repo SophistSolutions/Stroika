@@ -21,7 +21,7 @@
 
 namespace Stroika::Foundation::Containers {
 
-    using Common::IInOrderComparer;
+    using Common::ITotallyOrderingComparer;
 
     /**
      *      A SortedSet is a Set<T> which remains sorted (iteration order).
@@ -87,27 +87,27 @@ namespace Stroika::Foundation::Containers {
         /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER comparer for 'T'.
          * 
-         *  The INORDER_COMPARER must be provided (if not explicitly, then implicitly via defaults) at construction time. This
+         *  The (element) COMPARER must be provided (if not explicitly, then implicitly via defaults) at construction time. This
          *  is key to differentiating SortedSet from Set construction (where you specify an IEqualsComparer). Here the IEqualsComparer
-         *  is implicitly defined by the supposed IInOrderComparer.
+         *  is implicitly defined by the supposed ITotallyOrderingComparer.
          *
-         * \req IInOrderComparer<INORDER_COMPARER,T> - for constructors with that type parameter
+         * \req ITotallyOrderingComparer<COMPARER,T> - for constructors with that type parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         SortedSet ()
-            requires (IInOrderComparer<less<T>, T>);
-        template <IInOrderComparer<T> INORDER_COMPARER>
-        explicit SortedSet (INORDER_COMPARER&& inorderComparer);
+            requires (ITotallyOrderingComparer<less<T>, T>);
+        template <ITotallyOrderingComparer<T> COMPARER>
+        explicit SortedSet (COMPARER&& comparer);
         SortedSet (SortedSet&& src) noexcept      = default;
         SortedSet (const SortedSet& src) noexcept = default;
         SortedSet (const initializer_list<T>& src)
-            requires (IInOrderComparer<less<T>, T>);
-        template <IInOrderComparer<T> INORDER_COMPARER>
-        SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
+            requires (ITotallyOrderingComparer<less<T>, T>);
+        template <ITotallyOrderingComparer<T> COMPARER>
+        SortedSet (COMPARER&& comparer, const initializer_list<T>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         explicit SortedSet (ITERABLE_OF_ADDABLE&& src)
-            requires (IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet<T>>)
+            requires (ITotallyOrderingComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedSet{}
         {
@@ -116,13 +116,13 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IInOrderComparer<T> INORDER_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
-        SortedSet (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
+        template <ITotallyOrderingComparer<T> COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+        SortedSet (COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         SortedSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (IInOrderComparer<less<T>, T>);
-        template <IInOrderComparer<T> INORDER_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
-        SortedSet (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+            requires (ITotallyOrderingComparer<less<T>, T>);
+        template <ITotallyOrderingComparer<T> COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
+        SortedSet (COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit SortedSet (shared_ptr<_IRep>&& src) noexcept;

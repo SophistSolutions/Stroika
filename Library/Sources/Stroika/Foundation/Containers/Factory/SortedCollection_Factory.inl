@@ -24,11 +24,11 @@ namespace Stroika::Foundation::Containers::Factory {
     constexpr SortedCollection_Factory<T, COMPARER>::SortedCollection_Factory ([[maybe_unused]] const Hints& hints)
         : SortedCollection_Factory{[] () -> FactoryFunctionType {
             return [] (const COMPARER& comparer) {
-                if constexpr (IInOrderComparer<COMPARER, T>) {
+                if constexpr (Common::IInOrderComparer<COMPARER, T>) {
                     return Concrete::SortedCollection_stdmultiset<T>{comparer};
                 }
                 else {
-                    return Concrete::SortedCollection_stdmultiset<T>{Common::ThreeWayComparerAdapter<T, COMPARER>{comparer}};
+                    return Concrete::SortedCollection_stdmultiset<T>{Common::InOrderComparerAdapter<T, COMPARER>{comparer}};
                 }
             };
         }()}

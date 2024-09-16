@@ -255,6 +255,18 @@ Each container Archetype has its own set of arguments that make sense for its co
       nonvirtual CONTAINER& operator= (const CONTAINER& rhs) = default;
   ~~~
 
+- Container comparer arguments
+
+For archtype containers, ones which require an 'equals' comparer (such as Set, or Mapping), require argument comparer be 'annotated' - becuase
+its too easy for a lambda to be accidentally misinterpretted (at least for the case of == versus <).
+
+For archtype containers taking a total-ordering (such as SortedSet) comparer, here any ITotallyOrderingComparer will do, because
+these can always be converted/adapted to work.
+
+For concrete type containers, even where its unambiguous how to convert, we require the exact type match (e.g. IInorderComparer for Mapping_stdset) - because
+the underlying library requires a 'less' comparer, and though we could map/adapt, the use of a concrete type container suggests an interest in performance, so better
+to force the caller to be explicit and do the cast himself.
+
 ### ArchTypes additional required data
 
 Often ArchTypes will have additional required data, like an Extractor function, or InOrderComparer. Support for these parameters will generally multiply several of the above overloads allowing those parameters to be specified. Those functions will generally be checked with 'concept-like' SFINAE type checkers to avoid constructor ambiguity.

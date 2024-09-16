@@ -14,32 +14,32 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation ()
-        requires (IInOrderComparer<less<KEY_TYPE>, KEY_TYPE>)
+        requires (ITotallyOrderingComparer<less<KEY_TYPE>, KEY_TYPE>)
         : SortedAssociation{less<KEY_TYPE>{}}
     {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedAssociation_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, remove_cvref_t<KEY_INORDER_COMPARER>>::Default () (
-              forward<KEY_INORDER_COMPARER> (inorderComparer))}
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (KEY_COMPARER&& comparer)
+        : inherited{Factory::SortedAssociation_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, remove_cvref_t<KEY_COMPARER>>::Default () (
+              forward<KEY_COMPARER> (comparer))}
     {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        requires (IInOrderComparer<less<KEY_TYPE>, KEY_TYPE>)
+        requires (ITotallyOrderingComparer<less<KEY_TYPE>, KEY_TYPE>)
         : SortedAssociation{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer,
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (KEY_COMPARER&& comparer,
                                                                               const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : SortedAssociation{forward<KEY_INORDER_COMPARER> (inorderComparer)}
+        : SortedAssociation{forward<KEY_COMPARER> (comparer)}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (ITERABLE_OF_ADDABLE&& src)
-        requires (IInOrderComparer<less<KEY_TYPE>, KEY_TYPE> and
+        requires (ITotallyOrderingComparer<less<KEY_TYPE>, KEY_TYPE> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         : SortedAssociation{}
     {
@@ -58,9 +58,9 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
-        : SortedAssociation{forward<KEY_INORDER_COMPARER> (inorderComparer)}
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (KEY_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedAssociation{forward<KEY_COMPARER> (comparer)}
     {
         _AssertRepValidType ();
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -69,17 +69,16 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
     SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (IInOrderComparer<less<KEY_TYPE>, KEY_TYPE>)
+        requires (ITotallyOrderingComparer<less<KEY_TYPE>, KEY_TYPE>)
         : SortedAssociation{}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-    SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start,
-                                                                       ITERATOR_OF_ADDABLE&& end)
-        : SortedAssociation{forward<KEY_INORDER_COMPARER> (inorderComparer)}
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
+    SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (KEY_COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        : SortedAssociation{forward<KEY_COMPARER> (comparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();

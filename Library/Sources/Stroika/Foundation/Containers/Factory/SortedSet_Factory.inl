@@ -26,8 +26,16 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T, ITotallyOrderingComparer<T> COMPARER>
     constexpr SortedSet_Factory<T, COMPARER>::SortedSet_Factory ([[maybe_unused]] const Hints& hints)
-        : SortedSet_Factory{
-              [] () -> FactoryFunctionType { return [] (const COMPARER& comparer) { return Concrete::SortedSet_stdset<T>{comparer}; }; }()}
+        : SortedSet_Factory{[] () -> FactoryFunctionType {
+            return [] (const COMPARER& comparer) {
+                if constexpr (Common::IInOrderComparer<T, COMPARER>) {
+                    return Concrete::SortedSet_stdset<T>{comparer};
+                }
+                else {
+                    return Concrete::SortedSet_stdset<T>{Common::InOrderComparerAdapter<T, COMPARER>{comparer}};
+                }
+            };
+        }()}
     {
     }
     template <typename T, ITotallyOrderingComparer<T> COMPARER>

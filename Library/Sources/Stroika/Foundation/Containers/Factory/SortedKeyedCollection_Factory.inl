@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers::Factory {
     constexpr SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_COMPARER>::SortedKeyedCollection_Factory ([[maybe_unused]] const Hints& hints)
         : SortedKeyedCollection_Factory{[] () -> FactoryFunctionType {
             return [] (const KeyExtractorType& keyExtractor, const KEY_COMPARER& keyComparer) {
-                if constexpr (IInOrderComparer<KEY_TYPE, KEY_COMPARER>) {
+                if constexpr (Common::IInOrderComparer<KEY_TYPE, KEY_COMPARER>) {
                     return Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
                 }
                 else {

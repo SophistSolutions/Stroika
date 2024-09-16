@@ -32,9 +32,6 @@ using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-using MyOnlyCopyableMoveable_LESS_     = AsIntsLessComparer<OnlyCopyableMoveable>;
-using MyOnlyCopyableMoveable_THREEWAY_ = AsIntsThreeWayComparer<OnlyCopyableMoveable>;
-
 using Concrete::SortedCollection_LinkedList;
 using Concrete::SortedCollection_SkipList;
 using Concrete::SortedCollection_stdmultiset;
@@ -135,8 +132,12 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::DEFAULT_FACTORY"};
         RunTests_<SortedCollection<size_t>> ();
         RunTests_<SortedCollection<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedCollection<OnlyCopyableMoveable>> (
-            MyOnlyCopyableMoveable_LESS_{}, [] () { return SortedCollection<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
+        RunTests_<SortedCollection<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedCollection<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}};
+        });
+        RunTests_<SortedCollection<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedCollection<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}};
+        });
     }
 }
 
@@ -146,8 +147,8 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::SortedCollection_LinkedList"};
         RunTests_<SortedCollection_LinkedList<size_t>> ();
         RunTests_<SortedCollection_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedCollection_LinkedList<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{}, [] () {
-            return SortedCollection_LinkedList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{});
+        RunTests_<SortedCollection_LinkedList<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedCollection_LinkedList<OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
         });
     }
 }
@@ -158,8 +159,8 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::SortedCollection_SkipList"};
         RunTests_<SortedCollection_SkipList<size_t>> ();
         RunTests_<SortedCollection_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedCollection_SkipList<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{}, [] () {
-            return SortedCollection_SkipList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_THREEWAY_{});
+        RunTests_<SortedCollection_SkipList<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedCollection_SkipList<OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
         });
     }
 }
@@ -170,8 +171,8 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::SortedCollection_stdmultiset"};
         RunTests_<SortedCollection_stdmultiset<size_t>> ();
         RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{}, [] () {
-            return SortedCollection_stdmultiset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{});
+        RunTests_<SortedCollection_stdmultiset<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedCollection_stdmultiset<OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
         });
     }
 }

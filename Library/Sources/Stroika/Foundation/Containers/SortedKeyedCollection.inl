@@ -13,24 +13,24 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer)
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_COMPARER&& keyComparer)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
-        : SortedKeyedCollection{KeyExtractorType{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
+        : SortedKeyedCollection{KeyExtractorType{}, forward<KEY_COMPARER> (keyComparer)}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer)
-        : inherited (Factory::SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, remove_cvref_t<KEY_INORDER_COMPARER>>::Default () (
-              keyExtractor, forward<KEY_INORDER_COMPARER> (keyComparer)))
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_COMPARER&& keyComparer)
+        : inherited (Factory::SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, remove_cvref_t<KEY_COMPARER>>::Default () (
+              keyExtractor, forward<KEY_COMPARER> (keyComparer)))
     {
         _AssertRepValidType ();
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>>)
@@ -41,46 +41,46 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
     {
         this->AddAll (src);
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const KeyExtractorType& keyExtractor,
-                                                                              KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
-        : SortedKeyedCollection{keyExtractor, forward<KEY_INORDER_COMPARER> (keyComparer)}
+                                                                              KEY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedKeyedCollection{keyExtractor, forward<KEY_COMPARER> (keyComparer)}
     {
         this->AddAll (src);
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
-        : SortedKeyedCollection{KeyExtractorType{}, KEY_INORDER_COMPARER{}}
+        : SortedKeyedCollection{KeyExtractorType{}, KEY_COMPARER{}}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer,
-                                                                              ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
+                                                                              ITERATOR_OF_ADDABLE&& end)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
-        : SortedKeyedCollection{KeyExtractorType{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
+        : SortedKeyedCollection{KeyExtractorType{}, forward<KEY_COMPARER> (keyComparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer,
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
+    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_COMPARER&& keyComparer,
                                                                               ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        : SortedKeyedCollection{keyExtractor, forward<KEY_INORDER_COMPARER> (keyComparer)}
+        : SortedKeyedCollection{keyExtractor, forward<KEY_COMPARER> (keyComparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();

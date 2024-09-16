@@ -24,7 +24,7 @@
 
 namespace Stroika::Foundation::Containers {
 
-    using Common::IInOrderComparer;
+    using Common::ITotallyOrderingComparer;
 
     /**
      *  \brief  A SortedCollection is a Collection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
@@ -96,25 +96,25 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER_COMPARER for 'T'.
+         *  All constructors either copy their source comparer (copy/move CTOR), or use the default COMPARER for 'T'.
          *
-         * \req IInOrderComparer<INORDER_COMPARER,T>  - for constructors with inorderComparer parameter
+         * \req ITotallyOrderingComparer<COMPARER,T>  - for constructors with inorderComparer parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         SortedCollection ()
-            requires (IInOrderComparer<less<T>, T>);
-        template <IInOrderComparer<T> INORDER_COMPARER>
-        explicit SortedCollection (INORDER_COMPARER&& inorderComparer);
+            requires (ITotallyOrderingComparer<less<T>, T>);
+        template <ITotallyOrderingComparer<T> COMPARER>
+        explicit SortedCollection (COMPARER&& inorderComparer);
         SortedCollection (SortedCollection&&) noexcept      = default;
         SortedCollection (const SortedCollection&) noexcept = default;
         SortedCollection (const initializer_list<T>& src)
-            requires (IInOrderComparer<less<T>, T>);
-        template <IInOrderComparer<T> INORDER_COMPARER>
-        SortedCollection (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
+            requires (ITotallyOrderingComparer<less<T>, T>);
+        template <ITotallyOrderingComparer<T> COMPARER>
+        SortedCollection (COMPARER&& inOrderComparer, const initializer_list<T>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         explicit SortedCollection (ITERABLE_OF_ADDABLE&& src)
-            requires (IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
+            requires (ITotallyOrderingComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedCollection{}
         {
@@ -123,13 +123,13 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IInOrderComparer<T> INORDER_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
-        SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
+        template <ITotallyOrderingComparer<T> COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+        SortedCollection (COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         SortedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (IInOrderComparer<less<T>, T>);
-        template <IInOrderComparer<T> INORDER_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
-        SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+            requires (ITotallyOrderingComparer<less<T>, T>);
+        template <ITotallyOrderingComparer<T> COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
+        SortedCollection (COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit SortedCollection (shared_ptr<_IRep>&& src) noexcept;

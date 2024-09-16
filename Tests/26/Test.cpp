@@ -78,7 +78,10 @@ namespace {
         DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{}); },
+            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}}; },
             AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }

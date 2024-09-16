@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers::Factory {
     constexpr SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_COMPARER>::SortedMapping_Factory ([[maybe_unused]] const Hints& hints)
         : SortedMapping_Factory{[] () -> FactoryFunctionType {
             return [] (const KEY_COMPARER& keyComparer) {
-                if constexpr (IInOrderComparer<KEY_TYPE, KEY_COMPARER>) {
+                if constexpr (Common::IInOrderComparer<KEY_TYPE, KEY_COMPARER>) {
                     return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{keyComparer};
                 }
                 else {

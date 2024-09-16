@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers::Factory {
     constexpr SortedMultiSet_Factory<T, TRAITS, COMPARER>::SortedMultiSet_Factory ([[maybe_unused]] const Hints& hints)
         : SortedMultiSet_Factory{[] () -> FactoryFunctionType {
             return [] (const COMPARER& comparer) {
-                if constexpr (IInOrderComparer<T, COMPARER>) {
+                if constexpr (Common::IInOrderComparer<T, COMPARER>) {
                     return Concrete::SortedMultiSet_stdmap<T, TRAITS>{comparer};
                 }
                 else {

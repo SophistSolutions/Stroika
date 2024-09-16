@@ -15,15 +15,15 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline SortedCollection<T>::SortedCollection ()
-        requires (IInOrderComparer<less<T>, T>)
+        requires (ITotallyOrderingComparer<less<T>, T>)
         : SortedCollection{less<T>{}}
     {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInOrderComparer<T> INORDER_COMPARER>
-    inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedCollection_Factory<T, remove_cvref_t<INORDER_COMPARER>> () (forward<INORDER_COMPARER> (inorderComparer))}
+    template <ITotallyOrderingComparer<T> COMPARER>
+    inline SortedCollection<T>::SortedCollection (COMPARER&& comparer)
+        : inherited{Factory::SortedCollection_Factory<T, remove_cvref_t<COMPARER>> () (forward<COMPARER> (comparer))}
     {
         _AssertRepValidType ();
     }
@@ -42,16 +42,16 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline SortedCollection<T>::SortedCollection (const initializer_list<T>& src)
-        requires (IInOrderComparer<less<T>, T>)
+        requires (ITotallyOrderingComparer<less<T>, T>)
         : SortedCollection{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInOrderComparer<T> INORDER_COMPARER>
-    inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
-        : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}
+    template <ITotallyOrderingComparer<T> COMPARER>
+    inline SortedCollection<T>::SortedCollection (COMPARER&& comparer, const initializer_list<T>& src)
+        : SortedCollection{forward<COMPARER> (comparer)}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (ITERABLE_OF_ADDABLE&& src)
-        requires (IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
+        requires (ITotallyOrderingComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
         : SortedCollection{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -68,9 +68,9 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    template <IInOrderComparer<T> INORDER_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
-    inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
-        : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}
+    template <ITotallyOrderingComparer<T> COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+    inline SortedCollection<T>::SortedCollection (COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedCollection{forward<COMPARER> (comparer)}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
@@ -78,16 +78,16 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (IInOrderComparer<less<T>, T>)
+        requires (ITotallyOrderingComparer<less<T>, T>)
         : SortedCollection{}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInOrderComparer<T> INORDER_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}
+    template <ITotallyOrderingComparer<T> COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
+    inline SortedCollection<T>::SortedCollection (COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        : SortedCollection{forward<COMPARER> (comparer)}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();

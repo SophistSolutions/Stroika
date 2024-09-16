@@ -38,9 +38,6 @@ using Concrete::SortedSet_stdset;
 
 using namespace CommonTests::SetTests;
 
-using MyOnlyCopyableMoveable_LESS_     = AsIntsLessComparer<OnlyCopyableMoveable>;
-using MyOnlyCopyableMoveable_THREEWAY_ = AsIntsThreeWayComparer<OnlyCopyableMoveable>;
-
 #if qHasFeature_GoogleTest
 namespace {
     template <typename CONCRETE_CONTAINER, typename INORDER_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
@@ -66,8 +63,12 @@ namespace {
         Debug::TraceContextBumper ctx{"DEFAULT_FACTORY"};
         RunTests_<SortedSet<size_t>> ();
         RunTests_<SortedSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedSet<OnlyCopyableMoveable>> (MyOnlyCopyableMoveable_LESS_{},
-                                                    [] () { return SortedSet<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
+        RunTests_<SortedSet<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedSet<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}};
+        });
+        RunTests_<SortedSet<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedSet<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}};
+        });
     }
 }
 
@@ -77,8 +78,9 @@ namespace {
         Debug::TraceContextBumper ctx{"SortedSet_stdset"};
         RunTests_<SortedSet_stdset<size_t>> ();
         RunTests_<SortedSet_stdset<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedSet_stdset<OnlyCopyableMoveable>> (
-            MyOnlyCopyableMoveable_LESS_{}, [] () { return SortedSet_stdset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
+        RunTests_<SortedSet_stdset<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedSet_stdset<OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
+        });
     }
 }
 
@@ -88,8 +90,9 @@ namespace {
         Debug::TraceContextBumper ctx{"SortedSet_SkipList"};
         RunTests_<SortedSet_SkipList<size_t>> ();
         RunTests_<SortedSet_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedSet_SkipList<OnlyCopyableMoveable>> (
-            MyOnlyCopyableMoveable_LESS_{}, [] () { return SortedSet_SkipList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_THREEWAY_{}); });
+        RunTests_<SortedSet_SkipList<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
+            return SortedSet_SkipList<OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
+        });
     }
 }
 
