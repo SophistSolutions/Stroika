@@ -1747,17 +1747,21 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h:97:64: note: previous template declaration is here
 
 
-
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/CodeCvt.inl:585:53: error: out-of-line definition of 'New' does not match any declaration in 'Stroika::Foundation::Characters::CodeCvt::Options'
+  585 |     constexpr inline auto CodeCvt<CHAR_T>::Options::New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o) -> Options
+      |                                                     ^~~
+^Cmake[5]: *
  */
 #ifndef qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
-// fixed in clang++16
+// fixed in clang++16 (but assume broken there too)
+// broken in clang++17      
 // broken in clang++18      error: type constraint differs in template redeclaration
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ( (__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy 0
 #endif
