@@ -17,6 +17,8 @@ namespace Stroika::Foundation::Containers {
 
 namespace Stroika::Foundation::Containers::Factory {
 
+    using Common::IThreeWayAdaptableComparer;
+
     /**
      *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedAssociation<> container; typically not called directly
      *
