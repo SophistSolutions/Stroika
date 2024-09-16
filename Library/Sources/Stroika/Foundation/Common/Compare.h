@@ -244,6 +244,8 @@ namespace Stroika::Foundation::Common {
      * 
      *  \see IInOrderComparer, IThreeWayComparer, and ThreeWayComparerAdapter
      * 
+     *  \alias Could have been called ITotallyOrderingComparer
+     * 
      *  \note as of v3.0d10 - IThreeWayAdaptableComparer = IInOrderComparer or IThreeWayComparer, but this could be extended
      *        to include other sorts of comparisons (e.g. less_or_equal) - so long as ThreeWayAdaptableComparer is suitably updated.
      */
