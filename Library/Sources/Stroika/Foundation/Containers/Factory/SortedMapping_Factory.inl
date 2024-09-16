@@ -14,43 +14,47 @@ namespace Stroika::Foundation::Containers::Factory {
      ************ SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> ***************
      ********************************************************************************
      */
-    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    constexpr SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory (const FactoryFunctionType& f)
+    template <typename KEY_TYPE, typename VALUE_TYPE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    constexpr SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_COMPARER>::SortedMapping_Factory (const FactoryFunctionType& f)
         : fFactory_{f}
     {
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    constexpr SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory ()
+    template <typename KEY_TYPE, typename VALUE_TYPE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    constexpr SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_COMPARER>::SortedMapping_Factory ()
         : SortedMapping_Factory{AccessDefault_ ()}
     {
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    constexpr SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory ([[maybe_unused]] const Hints& hints)
+    template <typename KEY_TYPE, typename VALUE_TYPE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    constexpr SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_COMPARER>::SortedMapping_Factory ([[maybe_unused]] const Hints& hints)
         : SortedMapping_Factory{[] () -> FactoryFunctionType {
-            return [] (const KEY_INORDER_COMPARER& inOrderComparer) {
-                return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{inOrderComparer};
+            return [] (const KEY_COMPARER& keyComparer) {
+                if constexpr (IInOrderComparer<KEY_TYPE, KEY_COMPARER>) {
+                    return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{keyComparer};
+                }
+                else {
+                    return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{Common::InOrderComparerAdapter<KEY_TYPE, KEY_COMPARER>{keyComparer}};
+                }
             };
         }()}
     {
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    inline auto SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Default () -> const SortedMapping_Factory&
+    template <typename KEY_TYPE, typename VALUE_TYPE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    inline auto SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_COMPARER>::Default () -> const SortedMapping_Factory&
     {
         return AccessDefault_ ();
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    inline auto SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::operator() (const KEY_INORDER_COMPARER& inOrderComparer) const
-        -> ConstructedType
+    template <typename KEY_TYPE, typename VALUE_TYPE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    inline auto SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_COMPARER>::operator() (const KEY_COMPARER& keyComparer) const -> ConstructedType
     {
-        return this->fFactory_ (inOrderComparer);
+        return this->fFactory_ (keyComparer);
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    void SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Register (const optional<SortedMapping_Factory>& f)
+    template <typename KEY_TYPE, typename VALUE_TYPE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    void SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_COMPARER>::Register (const optional<SortedMapping_Factory>& f)
     {
         AccessDefault_ () = f.has_value () ? *f : SortedMapping_Factory{Hints{}};
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
-    inline auto SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::AccessDefault_ () -> SortedMapping_Factory&
+    template <typename KEY_TYPE, typename VALUE_TYPE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    inline auto SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_COMPARER>::AccessDefault_ () -> SortedMapping_Factory&
     {
         static SortedMapping_Factory sDefault_{Hints{}};
         return sDefault_;

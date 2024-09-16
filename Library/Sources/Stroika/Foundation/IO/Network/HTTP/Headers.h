@@ -445,7 +445,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
             eRemove
         };
         // UpdateBuiltin_ returns true iff headerName was a parsed/builtin type, and false for 'extra' headers: to find out # elts changed, use nChanges optional parameter
-        nonvirtual bool UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals = nullptr);
+        nonvirtual bool UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemovals = nullptr);
         nonvirtual void SetExtras_ (const String& headerName, const optional<String>& value);
 
     private:

@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Containers {
 
 namespace Stroika::Foundation::Containers::Factory {
 
-    using Common::IThreeWayAdaptableComparer;
+    using Common::ITotallyOrderingComparer;
 
     /**
      *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedCollection<> container
@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Factory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, IThreeWayAdaptableComparer<T> COMPARER = less<T>>
+    template <typename T, ITotallyOrderingComparer<T> COMPARER = less<T>>
     class SortedCollection_Factory {
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<COMPARER>,

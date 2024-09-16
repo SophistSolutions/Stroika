@@ -440,7 +440,7 @@ optional<String> Headers::LookupOne (const String& name) const
         return fVary_ ? String::Join (*fVary_) : optional<String>{};
     }
     else {
-        // should switch to new non-existent class Assocation here - and use that...more efficient -
+        // should switch to new non-existent class Association here - and use that...more efficient -
         if (auto ri = fExtraHeaders_.Find ([&] (const auto& i) { return kHeaderNameEqualsComparer (name, i.fKey); })) {
             return ri->fValue;
         }
@@ -468,7 +468,7 @@ Collection<String> Headers::LookupAll (const String& name) const
     }
     else {
         Collection<String> result;
-        // should switch to new non-existent class Assocation here - and use that...more efficient -
+        // should switch to new non-existent class Association here - and use that...more efficient -
         if (auto ri = fExtraHeaders_.Find ([&] (const auto& i) { return kHeaderNameEqualsComparer (name, i.fKey); })) {
             result += ri->fValue;
         }
@@ -479,9 +479,9 @@ Collection<String> Headers::LookupAll (const String& name) const
 size_t Headers::Remove (const String& headerName)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    size_t                                          nRemoveals{};
-    if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, nullopt, &nRemoveals)) {
-        return nRemoveals; // could be zero if its builtin, but this doesn't change anything
+    size_t                                          nRemovals{};
+    if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, nullopt, &nRemovals)) {
+        return nRemovals; // could be zero if its builtin, but this doesn't change anything
     }
     // currently removes all, but later add variant that removes one/all (in fact rename this)
     return fExtraHeaders_.RemoveAll ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
@@ -490,9 +490,9 @@ size_t Headers::Remove (const String& headerName)
 size_t Headers::Remove (const String& headerName, const String& value)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    size_t                                          nRemoveals{};
-    if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, value, &nRemoveals)) {
-        return nRemoveals;
+    size_t                                          nRemovals{};
+    if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, value, &nRemovals)) {
+        return nRemovals;
     }
     // currently removes all, but later add variant that removes one/all (in fact rename this)
     return fExtraHeaders_.RemoveAll ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName) and value == i.fValue; });
@@ -552,7 +552,7 @@ void Headers::AddAll (const Headers& headers)
     }
 }
 
-bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals)
+bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemovals)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     if constexpr (qDebug) {
@@ -570,43 +570,43 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         }
     }
     if (kHeaderNameEqualsComparer (headerName, HeaderName::kAcceptEncoding)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fAcceptEncodings_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fAcceptEncodings_ != nullopt) ? 1 : 0;
         }
         fAcceptEncodings_ = value ? ContentEncodings::Parse (*value) : optional<ContentEncodings>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kCacheControl)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fCacheControl_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fCacheControl_ != nullopt) ? 1 : 0;
         }
         fCacheControl_ = value ? CacheControl::Parse (*value) : optional<CacheControl>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentEncoding)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fContentEncoding_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fContentEncoding_ != nullopt) ? 1 : 0;
         }
         this->contentEncoding = value ? ContentEncoding{*value} : optional<ContentEncoding>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentLength)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fContentLength_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fContentLength_ != nullopt) ? 1 : 0;
         }
         this->contentLength = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentType)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fContentType_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fContentType_ != nullopt) ? 1 : 0;
         }
         fContentType_ = value ? InternetMediaType{*value} : optional<InternetMediaType>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kCookie)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fCookieList_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fCookieList_ != nullopt) ? 1 : 0;
         }
         fCookieList_ = value ? CookieList::Parse (*value) : optional<CookieList>{};
     }
@@ -621,36 +621,36 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         catch (...) {
             DbgTrace ("Treating ill-formatted date as missing date header"_f);
         }
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (useDT == nullopt and fDate_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (useDT == nullopt and fDate_ != nullopt) ? 1 : 0;
         }
         fDate_ = useDT ? useDT : optional<Time::DateTime>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kETag)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fETag_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fETag_ != nullopt) ? 1 : 0;
         }
         fETag_ = value ? ETag::Parse (*value) : optional<HTTP::ETag>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kHost)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fHost_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fHost_ != nullopt) ? 1 : 0;
         }
         fHost_ = value;
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kIfNoneMatch)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fIfNoneMatch_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fIfNoneMatch_ != nullopt) ? 1 : 0;
         }
         fIfNoneMatch_ = value ? IfNoneMatch::Parse (*value) : optional<IfNoneMatch>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kSetCookie)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fSetCookieList_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fSetCookieList_ != nullopt) ? 1 : 0;
         }
         switch (flag) {
             case AddOrSet::eRemove: {
@@ -660,8 +660,8 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
                         Collection<Cookie> cookieDetails = fSetCookieList_->cookieDetails ();
                         auto               removeMe      = Cookie::Parse (*value);
                         bool               r             = cookieDetails.RemoveIf (removeMe);
-                        if (nRemoveals != nullptr) {
-                            *nRemoveals = r ? 1 : 0;
+                        if (nRemovals != nullptr) {
+                            *nRemovals = r ? 1 : 0;
                         }
                     }
                     else {
@@ -681,15 +681,15 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kTransferEncoding)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fTransferEncoding_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fTransferEncoding_ != nullopt) ? 1 : 0;
         }
         this->transferEncoding = value ? TransferEncodings::Parse (*value) : optional<TransferEncodings>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kVary)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fVary_ != nullopt) ? 1 : 0;
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fVary_ != nullopt) ? 1 : 0;
         }
         fVary_ = value ? Containers::Set<String>{value->Tokenize ({','})} : optional<Containers::Set<String>>{};
         return true;

@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
          */
-        using ArchetypeContainerType = SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>;
+        using ArchetypeContainerType = SortedAssociation;
 
     public:
         /**
@@ -177,9 +177,9 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief subset of this SortedAssocation matching filter-function
+         *  \brief subset of this SortedAssociation matching filter-function
          * 
-         *  Identical to base class code, but for differnt RESULT_CONTAINER default.
+         *  Identical to base class code, but for different RESULT_CONTAINER default.
          */
         template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER = SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>, typename INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const

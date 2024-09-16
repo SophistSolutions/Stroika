@@ -17,6 +17,8 @@ namespace Stroika::Foundation::Containers {
 
 namespace Stroika::Foundation::Containers::Factory {
 
+    using Common::ITotallyOrderingComparer;
+
     /**
      *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedMapping<> container; typically not called directly
      *
@@ -24,10 +26,10 @@ namespace Stroika::Foundation::Containers::Factory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
+    template <typename KEY_TYPE, typename VALUE_TYPE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>>
     class SortedMapping_Factory {
     public:
-        static_assert (not is_reference_v<KEY_TYPE> and not is_reference_v<VALUE_TYPE> and not is_reference_v<KEY_INORDER_COMPARER>,
+        static_assert (not is_reference_v<KEY_TYPE> and not is_reference_v<VALUE_TYPE> and not is_reference_v<KEY_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
 
     public:
@@ -40,7 +42,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  Function type to create an ConstructedType object.
          */
-        using FactoryFunctionType = function<ConstructedType (const KEY_INORDER_COMPARER& keyInOrderComparer)>;
+        using FactoryFunctionType = function<ConstructedType (const KEY_COMPARER& keyInOrderComparer)>;
 
     public:
         /**
@@ -71,7 +73,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  You can call this directly, but there is no need, as the SortedMapping> CTOR does so automatically.
          */
-        nonvirtual ConstructedType operator() (const KEY_INORDER_COMPARER& keyInOrderComparer = {}) const;
+        nonvirtual ConstructedType operator() (const KEY_COMPARER& keyInOrderComparer = {}) const;
 
     public:
         /**

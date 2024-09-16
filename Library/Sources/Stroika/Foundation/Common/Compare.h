@@ -244,13 +244,17 @@ namespace Stroika::Foundation::Common {
      * 
      *  \see IInOrderComparer, IThreeWayComparer, and ThreeWayComparerAdapter
      * 
-     *  \alias Could have been called ITotallyOrderingComparer
+     *  \see https://en.wikipedia.org/wiki/Total_order#:~:text=A%20set%20equipped%20with%20a,a%20given%20partially%20ordered%20set.
      * 
-     *  \note as of v3.0d10 - IThreeWayAdaptableComparer = IInOrderComparer or IThreeWayComparer, but this could be extended
+     *  \alias Could have been called IThreeWayAdaptableComparer
+     * 
+     *  \note this will NOT work with an equals_to<T> comparer! - as that's not sufficient to generate a total ordering...
+     * 
+     *  \note as of v3.0d10 - ITotallyOrderingComparer = IInOrderComparer or IThreeWayComparer, but this will be extended
      *        to include other sorts of comparisons (e.g. less_or_equal) - so long as ThreeWayAdaptableComparer is suitably updated.
      */
     template <typename COMPARER, typename ARG_T>
-    concept IThreeWayAdaptableComparer = IInOrderComparer<COMPARER, ARG_T> or IThreeWayComparer<COMPARER, ARG_T>;
+    concept ITotallyOrderingComparer = IInOrderComparer<COMPARER, ARG_T> or IThreeWayComparer<COMPARER, ARG_T>;
 
     /**
      *  Utility class to serve as base class when constructing a comparison 'function' object comparer so ExtractComparisonTraits<> knows
@@ -404,12 +408,15 @@ namespace Stroika::Foundation::Common {
         -> InOrderComparerAdapter<remove_cvref_t<typename Configuration::FunctionTraits<BASE_COMPARER>::template arg<0>::type>, remove_cvref_t<BASE_COMPARER>>;
 
     /**
-     *  \brief Use this to wrap a basic comparer, and produce a Three-Way comparer
+     *  \brief Use this to wrap a basic (ITotallyOrderingComparer) comparer, and produce a Three-Way comparer
      * 
      *  \note attempted deduction guide, but so far doesn't seem to work well, possibly because FunctionTraits may have trouble
      *        sometimes deducing argument type (like if function overloaded).
+     * 
+     *  \@todo extend set of comparers ITotallyOrderingComparer - easy - to include less_or_equal, etc...
+     *  \note this will NOT work with an equals_to<T> comparer! - as that's not sufficient to generate a total ordering...
      */
-    template <typename T, IThreeWayAdaptableComparer<T> BASE_COMPARER>
+    template <typename T, ITotallyOrderingComparer<T> BASE_COMPARER>
     struct ThreeWayComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eThreeWayCompare> {
         /**
          */
