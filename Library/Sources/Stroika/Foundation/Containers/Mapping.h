@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Likely inefficient for a map, but perhaps helpful. Walks entire list of entires
          *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
-         *  true if contained. Perhaps not very useful but symetric to ContainsKey().
+         *  true if contained. Perhaps not very useful but symmetric to ContainsKey().
          */
         template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, VALUE_EQUALS_COMPARER&& valueEqualsComparer = {}) const;
