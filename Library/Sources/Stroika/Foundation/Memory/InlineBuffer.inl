@@ -326,27 +326,62 @@ namespace Stroika::Foundation::Memory {
         if (useNewCapacity != oldCapacity) {
             bool oldInPlaceBuffer = oldCapacity <= BUF_SIZE;
             bool newInPlaceBuffer = useNewCapacity <= BUF_SIZE;
-            // Only if we changed if using inplace buffer, or if was and is using ramBuffer, and eltCount changed do we need to do anything
-            if (oldInPlaceBuffer != newInPlaceBuffer or (not newInPlaceBuffer)) {
-                byte* newPtr = newInPlaceBuffer ? std::begin (fInlinePreallocatedBuffer_) : Allocate_ (SizeInBytes_ (useNewCapacity));
-
-                // Initialize new memory from old
-                Assert (this->begin () != reinterpret_cast<T*> (newPtr));
-                Assert (static_cast<size_t> (this->end () - this->begin ()) <= useNewCapacity); // so no possible overflow
-                uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
-
-                // destroy objects in old memory
-                DestroyElts_ (this->begin (), this->end ());
-
-                // free old memory if needed
-                if (not oldInPlaceBuffer) {
-                    Assert (not UsingInlinePreallocatedBuffer_ ());
-                    Deallocate_ (LiveDataAsAllocatedBytes_ ());
-                }
-
-                fLiveData_ = reinterpret_cast<T*> (newPtr);
-                if (not newInPlaceBuffer) {
+            if constexpr (is_trivially_copyable_v<T>) {
+                // we only need to copy if going from oldInPlaceBuffer != newInPlaceBuffer, else just use realloc
+                if (not oldInPlaceBuffer and not newInPlaceBuffer) {
+                    // realloc
+                    fLiveData_ = reinterpret_cast<T*> (Reallocate_ (LiveDataAsAllocatedBytes_ (), SizeInBytes_ (useNewCapacity)));
                     fCapacityOfFreeStoreAllocation_ = useNewCapacity;
+                }
+                else if (oldInPlaceBuffer and newInPlaceBuffer) {
+                    // pretty common case - just do nothing
+                }
+                else if (oldInPlaceBuffer and not newInPlaceBuffer) {
+                    // malloc in this case
+                    byte* newPtr = Allocate_ (SizeInBytes_ (useNewCapacity));
+                    // Initialize new memory from old
+                    Assert (this->begin () != reinterpret_cast<T*> (newPtr));
+                    Assert (static_cast<size_t> (this->end () - this->begin ()) <= useNewCapacity); // so no possible overflow
+                    uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
+                    fLiveData_ = reinterpret_cast<T*> (newPtr);
+                    if (not newInPlaceBuffer) {
+                        fCapacityOfFreeStoreAllocation_ = useNewCapacity;
+                    }
+                }
+                else if (not oldInPlaceBuffer and newInPlaceBuffer) {
+                    // was malloced, but not needed anymore - so free
+                    byte* newPtr = std::begin (fInlinePreallocatedBuffer_);
+                    // Initialize new memory from old
+                    Assert (this->begin () != reinterpret_cast<T*> (newPtr));
+                    Assert (static_cast<size_t> (this->end () - this->begin ()) <= useNewCapacity); // so no possible overflow
+                    uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
+                    Deallocate_ (LiveDataAsAllocatedBytes_ ());
+                    fLiveData_ = reinterpret_cast<T*> (newPtr);
+                }
+            }
+            else {
+                // Only if we changed if using inplace buffer, or if was and is using ramBuffer, and eltCount changed do we need to do anything
+                if (oldInPlaceBuffer != newInPlaceBuffer or (not newInPlaceBuffer)) {
+                    byte* newPtr = newInPlaceBuffer ? std::begin (fInlinePreallocatedBuffer_) : Allocate_ (SizeInBytes_ (useNewCapacity));
+
+                    // Initialize new memory from old
+                    Assert (this->begin () != reinterpret_cast<T*> (newPtr));
+                    Assert (static_cast<size_t> (this->end () - this->begin ()) <= useNewCapacity); // so no possible overflow
+                    uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
+
+                    // destroy objects in old memory
+                    DestroyElts_ (this->begin (), this->end ());
+
+                    // free old memory if needed
+                    if (not oldInPlaceBuffer) {
+                        Assert (not UsingInlinePreallocatedBuffer_ ());
+                        Deallocate_ (LiveDataAsAllocatedBytes_ ());
+                    }
+
+                    fLiveData_ = reinterpret_cast<T*> (newPtr);
+                    if (not newInPlaceBuffer) {
+                        fCapacityOfFreeStoreAllocation_ = useNewCapacity;
+                    }
                 }
             }
         }
@@ -531,6 +566,31 @@ namespace Stroika::Foundation::Memory {
     {
         if (bytes != nullptr) [[likely]] {
             ::free (bytes);
+        }
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline byte* InlineBuffer<T, BUF_SIZE>::Reallocate_ (byte* bytes, size_t n)
+        requires (is_trivially_copyable_v<T>)
+    {
+        if (n == 0) {
+            Deallocate_ (bytes);
+            return nullptr;
+        }
+        else {
+            if (bytes == nullptr) {
+                return Allocate_ (n);
+            }
+            else {
+                byte* p = reinterpret_cast<byte*> (::realloc (bytes, n));
+#if qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
+                if (p == nullptr) {
+                    throw bad_alloc{};
+                }
+#else
+                Execution::ThrowIfNull (p);
+#endif
+                return p;
+            }
         }
     }
     template <typename T, size_t BUF_SIZE>

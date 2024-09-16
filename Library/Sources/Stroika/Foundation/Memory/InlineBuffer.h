@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Memory {
      *  All allocated objects are default initialized, unless they are allocated through a call to resize_uninitialized(), or
      *  the constructor with the argument eUninitialized
      *
-     *  \note Until Stroika 2.1r4, this class was called SmallStackBuffer<>, cuz thats basically the most common
+     *  \note Until Stroika 2.1r4, this class was called SmallStackBuffer<>, cuz that's basically the most common
      *        scenario it was used for up til that point.
      *
      *  \par Example Usage
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      * OR
      *      \code
-     *          Memory::InlineBuffer<byte> useKey{Memory::eUninitiialized, keyLen};
+     *          Memory::InlineBuffer<byte> useKey{Memory::eUninitialized, keyLen};
      *          (void)::memset (useKey.begin (), 0, keyLen);
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
@@ -339,6 +339,10 @@ namespace Stroika::Foundation::Memory {
 
     private:
         static void Deallocate_ (byte* bytes) noexcept;
+
+    private:
+        static byte* Reallocate_ (byte* bytes, size_t n)
+            requires (is_trivially_copyable_v<T>);
 
     private:
         size_t fSize_{};
