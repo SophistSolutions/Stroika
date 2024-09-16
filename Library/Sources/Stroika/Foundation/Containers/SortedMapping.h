@@ -47,6 +47,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Factory:
      *      @see SortedMapping_Factory<> to see default implementations.
      * 
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Mappings (base class) are already intrinsically equals-comparable.
      *
@@ -75,8 +78,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This CAN be used as the argument to a SortedMapping<> as KeyInOrderComparerType, but
-         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer concept
          */
         using KeyInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;

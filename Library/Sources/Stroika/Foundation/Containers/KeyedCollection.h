@@ -123,6 +123,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Factory:
      *      @see Concrete::KeyedCollection_Factory<> to see default implementations.
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note Design Choice:
      *          Could either embed the 'extractor' function in the container type TRAITS or passed in as a
      *          constructor argument to the container. 
@@ -187,9 +190,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a KeyedCollection<> as EqualityComparer, but
-         *  we allow any template in the KeyedCollection<> CTOR for an equalityComparer that follows the IEqualsComparer concept.
-         *
          *  \note   @see also EqualsComparer{} to compare whole KeyedCollection<>s
          */
         using KeyEqualityComparerType =

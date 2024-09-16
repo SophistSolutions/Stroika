@@ -6,8 +6,8 @@ This folder contains all the Stroika Library [Foundation](../)::Containers sourc
 
 ---
 
-Containers are objects that collect together a related (parameterized) set of objects.
-For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
+Containers are objects that collect together a related (parameterized) collection of objects.
+For example, a Stack\<T>, or Set\<T>, or Sequence\<T>. Unlike std c++ container classes (e.g. vector\<T>) Stroika containers are not uniquely tied to a particular data structure (e.g. Sequence\<T> could be implemented as a linked list or vector).
 
 ## Quick Start
 
@@ -52,7 +52,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
       ... all the while, code to operator on mapping same - using Mapping<int,int> interface
       ```
 
-- iterators are much easier to deal with, and typed more sensibly, because their type is the ONLY dependent on the type they iterate over, not the type of the container they iterate over
+- iterators are much easier to deal with, and typed more sensibly, because their type is the ONLY dependent on the type they iterate over, not the type of the container they iterate over (or worse in stdc++ containers the type of data structure used, or even comparison function to sort them).
 
   ```
   Sequence<int> a;
@@ -160,6 +160,36 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31. Iteration proceeds from the top to the bottom of the stack. Top is the FIRST IN (also first out).
   - Supported backends: [LinkedList](Concrete/Stack_LinkedList.h)
 
+## Container Element comparisons
+
+Most containers have no intrinsic comparison required on their elements. Those that do
+require such, use the default comparison automatically (T==T, or T\<=\>T if equals_comparable/totally_ordered) and always allow this to be
+overridden at the time of container construction (this is very unlike STL where the comparison function is baked into the type of the container).
+
+Generally you want comparers to be inlined into the algorithms. But you also want
+to be able to generically refer to them, and copy them as objects.
+	 
+These 'requirements' pull in opposing directions.
+	 
+Stroika manages this with the container class library by:
+	 
+ - have concepts that test if something is an equals/threeway/or strict-inorder comparer
+ - Allow CONSTRUCTORS (and factories) for containers to take explicit comparers
+	 	  as arguments that can be perfectly forwarded (zero cost abstraction) to the container
+	 	  backend implementation, so there is zero cost in using them.
+- Provides std::function based wrappers on all these, so containers generally can respond
+	 	  to GetElementInOrderComparer (), or GetKeyEqualsComparer (), etc, as appporiate.
+	 	
+users may construct a container using the comparers returned from these functions, but
+with the overhad of a function object.
+	
+Mostly - thats fine, and exceedingly rarely needed. But where its a performance issue, simply
+arrange to know via other application logic the exact type of the comparer, and use that
+when instantiating your container.
+	
+In my experience, the Get....Comparer () routines are only needed in testing code,
+and so their performance doesn't matter.
+
 ## Container Constructors
 
 Each container Archetype has its own set of arguments that make sense for its constructor, but here are the general guidelines the apply to all of them.
@@ -169,7 +199,7 @@ Each container Archetype has its own set of arguments that make sense for its co
   CONTAINER ();
   ~~~
 
-- Move and Copy constructors, defaulted/noexcept, since they all just propagate this to their underlying base class (Iterable<>) and this just increments or adjusts reference counts as appopriate.
+- Move and Copy constructors, defaulted/noexcept, since they all just propagate this to their underlying base class (Iterable<>) and this just increments or adjusts reference counts as appropriate.
 
     ~~~
     CONTAINER (CONTAINER&& src) noexcept      = default;

@@ -87,6 +87,9 @@ namespace Stroika::Foundation::Containers {
      *          each element repeated that many times (in some arbitrary order). To get the std::multiset behavior, use
      *          MultiSet<T>::Elements ().
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *

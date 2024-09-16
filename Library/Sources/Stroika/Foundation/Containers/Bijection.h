@@ -84,6 +84,9 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (equality_comparable<Bijection<...>>);
      * 

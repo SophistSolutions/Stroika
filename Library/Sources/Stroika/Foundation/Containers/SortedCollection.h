@@ -59,6 +59,9 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Even though the base class Collection<T> provides no intrinsic comparison operators, to be sorted,
      *          does imply a comparison operator, so a SortedCollection<T> fully supports the c++ standard operator<=> strong comparison
@@ -81,21 +84,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief generic eStrictInOrder comparer (function) object for elements of the collection (value_type).
-         * 
-         *  \note alias - could have been called ValueInOrderComparerType
-         * 
-         *  This CAN be used as the argument to a SortedCollection<> as ElementInOrderComparerType, but
-         *  we allow any template in the SortedCollection<> CTOR for an inorderComparer that follows Common::IInOrderComparer concept (need better name).
          */
         using ElementInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
 
     public:
         /**
-         *  \brief generic eThreeWayCompare comparer (function) object for elements of the collection (value_type).
-         * 
-         *  \note alias - could have been called ValueThreeWayComparerType
          */
         using ElementThreeWayComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare, function<strong_ordering (ArgByValueType<T>, ArgByValueType<T>)>>;

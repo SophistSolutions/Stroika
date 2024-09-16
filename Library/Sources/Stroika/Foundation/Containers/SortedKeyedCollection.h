@@ -50,6 +50,9 @@ namespace Stroika::Foundation::Containers {
      *  @see SortedMapping<Key,T>
      *  @see SortedSet<T, TRAITS>
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
      *
      */

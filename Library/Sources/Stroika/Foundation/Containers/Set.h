@@ -73,6 +73,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   See also: KeyedCollection<> - like Set<>, but for case where object has extra attributes to be preserved (Add)
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \em Design Note:
      *      Included <set> and have explicit CTOR for set<> so that Stroika Set can be used more interoperably
      *      with set<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental conversions. But

@@ -248,7 +248,7 @@ See https://stackoverflow.com/questions/24901/is-there-a-performance-difference-
 
 - VERY UNCERTAIN about this policy - as of 2020-08-07 - just an experimental plan.
 
-### 'Quasi-namespace'
+### Smart Ptr objects dual to Reps, (was 'Quasi-namespace')
 
 Why are Ptr objects &#39;struct&#39; / &#39;class&#39; instead of actual namespaces?
 

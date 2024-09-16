@@ -45,6 +45,9 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Set (base class) are already intrinsically equals-comparable.
      *
@@ -70,14 +73,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetElementInOrderComparer ();
          */
         using ElementInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
 
     public:
         /**
-         *  Ordering relation applied to sort a 'SortedSet'. Returned by GetElementThreeWayComparer ();
          */
         using ElementThreeWayComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare, function<strong_ordering (ArgByValueType<T>, ArgByValueType<T>)>>;

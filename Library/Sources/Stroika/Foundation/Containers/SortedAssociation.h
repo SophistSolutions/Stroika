@@ -45,6 +45,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Factory:
      *      @see SortedAssociation_Factory<> to see default implementations.
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Associations (base class) are already intrinsically equals-comparable.
      *

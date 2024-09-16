@@ -81,6 +81,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Factory:
      *      @see <> to see default implementations.
      *
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \em Design Note:
      *      Included <map> and have explicit CTOR for multimap<> so that Stroika Association can be used more interoperably
      *      with multimap<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental conversions. But
@@ -140,8 +143,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This is the type returned by GetKeyEqualsComparer () and CAN be used as the argument to a Association<> as KeyEqualityComparer, but
-         *  we allow any template in the Association<> CTOR for a keyEqualityComparer that follows the IEqualsComparer<KEY_TYPE> concept.
          */
         using KeyEqualsCompareFunctionType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (ArgByValueType<key_type>, ArgByValueType<key_type>)>>;

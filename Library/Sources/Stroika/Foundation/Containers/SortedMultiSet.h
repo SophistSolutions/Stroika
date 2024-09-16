@@ -46,6 +46,9 @@ namespace Stroika::Foundation::Containers {
      *  \em Factory:
      *      @see SortedMultiSet_Factory<> to see default implementations.
      * 
+     *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
+     *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o MultiSet (base class) are already intrinsically equals-comparable.
      *
@@ -75,7 +78,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Ordering relation applied to sort a 'SortedMultiSet'. Returned by GetElementInOrderComparer ();
          */
         using ElementInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<T>, ArgByValueType<T>)>>;
