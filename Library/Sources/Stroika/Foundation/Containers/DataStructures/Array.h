@@ -74,23 +74,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  below.
      *
      *  TODO:
-     *      @todo   See if there is some way to get the performance of realloc for the cases where we could have
-     *              realloced without moving.
-     *
-     *      @todo   Improve performance/cleanup memory allocation. ALREADY got rid of  realloc().
-     *              but celanup safety/use uninitialized_copy and stl destroy functions.
-     *
-     *              NOTE - CAN USE realloc() if is_trivially_copyable<T>::value, so maybe do SFINAE
-     *              different impls...
-     *
      *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
      *              (IN FACT, Find (function) overload basically same thing - maybe have two find overloads - with function and comparer
      *              but easily confusable, and redundant, but maybe useful for performance?)
-     *
-     *      @todo   Add RVALUE-REF (MOVE) stuff.
-     *
-     *      @todo   (close to rvalue thing above) - fix construction/destruction stuff. More modern C++.
-     *              That crap was written around 1990!!!
      */
     template <typename T>
     class Array : public Debug::AssertExternallySynchronizedMutex {
@@ -319,6 +305,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     private:
         nonvirtual void Invariant_ () const noexcept;
 #endif
+
+    private:
+        // mostly useful cuz allows for use of realloc, which might imply fewer copies
+        static constexpr bool kUseMalloc_{is_trivially_copyable_v<T>};
 
     private:
         size_t fLength_{0};         // #items advertised/constructed

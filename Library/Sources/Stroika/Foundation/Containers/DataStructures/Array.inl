@@ -198,8 +198,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         if (fSlotsAllocated_ != slotsAlloced) {
             if (slotsAlloced == 0) {
-                delete[] (char*)fItems_;
-                fItems_ = nullptr;
+                if constexpr (kUseMalloc_) {
+                    if (fItems_ != nullptr) {
+                        free (fItems_);
+                        fItems_ = nullptr;
+                    }
+                }
+                else {
+                    delete[] (char*)fItems_;
+                    fItems_ = nullptr;
+                }
             }
             else {
                 /*
@@ -207,33 +215,39 @@ namespace Stroika::Foundation::Containers::DataStructures {
                  * internal pointers. For example, we cannot have an array of patchable_arrays.
                  */
                 if (fItems_ == nullptr) {
-                    fItems_ = (T*)new char[sizeof (T) * slotsAlloced];
+                    if constexpr (kUseMalloc_) {
+                        fItems_ = (T*)malloc (sizeof (T) * slotsAlloced);
+                    }
+                    else {
+                        fItems_ = (T*)new char[sizeof (T) * slotsAlloced];
+                    }
                 }
                 else {
-#if 1
-                    // do better, but for now at least do something SAFE
-                    // USE SFINAE IsTriviallyCopyable to see which way to do it (if can use realloc).
-                    // ALSO - on windoze - use _expand() if available...
-                    T* newV = (T*)new char[sizeof (T) * slotsAlloced];
-                    try {
-                        size_t n2Copy = fLength_;
-                        uninitialized_copy_n (&fItems_[0], n2Copy, newV);
+                    if constexpr (kUseMalloc_) {
+                        fItems_ = (T*)realloc (fItems_, sizeof (T) * slotsAlloced);
                     }
-                    catch (...) {
-                        delete[] (char*)newV;
-                        throw;
-                    }
-                    {
-                        T* end = &fItems_[fLength_];
-                        for (T* p = &fItems_[0]; p != end; ++p) {
-                            destroy_at (p);
+                    else {
+                        // do better, but for now at least do something SAFE
+                        // USE SFINAE IsTriviallyCopyable to see which way to do it (if can use realloc).
+                        // ALSO - on windoze - use _expand() if available...
+                        T* newV = (T*)new char[sizeof (T) * slotsAlloced];
+                        try {
+                            size_t n2Copy = fLength_;
+                            uninitialized_copy_n (&fItems_[0], n2Copy, newV);
                         }
+                        catch (...) {
+                            delete[] (char*)newV;
+                            throw;
+                        }
+                        {
+                            T* end = &fItems_[fLength_];
+                            for (T* p = &fItems_[0]; p != end; ++p) {
+                                destroy_at (p);
+                            }
+                        }
+                        delete[] (char*)fItems_;
+                        fItems_ = newV;
                     }
-                    delete[] (char*)fItems_;
-                    fItems_ = newV;
-#else
-                    fItems_ = (T*)realloc (fItems_, sizeof (T) * slotsAlloced);
-#endif
                 }
             }
             fSlotsAllocated_ = slotsAlloced;
@@ -343,7 +357,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::~Array ()
     {
         RemoveAll (); // call destructors on elements
-        delete[] (char*)fItems_;
+        if constexpr (kUseMalloc_) {
+            if (fItems_ != nullptr) {
+                free (fItems_);
+            }
+        }
+        else {
+            delete[] (char*)fItems_;
+        }
     }
     template <typename T>
     inline void Array<T>::MoveIteratorHereAfterClone (IteratorBase* pi, [[maybe_unused]] const Array<T>* movedFrom) const
