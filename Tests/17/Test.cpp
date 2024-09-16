@@ -165,20 +165,9 @@ namespace {
     {
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-        {
-            struct MyOnlyCopyableMoveable_ComparerWithLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-                using value_type = OnlyCopyableMoveable;
-                bool operator() (const value_type& v1, const value_type& v2) const
-                {
-                    return static_cast<size_t> (v1) < static_cast<size_t> (v2);
-                }
-            };
-            DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-                [] () {
-                    return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (MyOnlyCopyableMoveable_ComparerWithLess_{});
-                },
-                AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-        }
+        DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
@@ -190,6 +179,7 @@ namespace {
             fred.Add (1, 2);
             fred.Add (1, 3);
             EXPECT_EQ (fred.size (), 1u);
+            EXPECT_EQ (fred[1], 3u);
         }
         {
             Mapping_stdhashmap<size_t, size_t> fred{};
@@ -207,10 +197,10 @@ namespace {
         {
             using Characters::String;
             Mapping_stdhashmap<String, String> m{};
-            m.Add ("a", "alpha");
-            m.Add ("b", "beta");
-            m.Add ("c", "gamma");
             m.Add ("d", "delta");
+            m.Add ("c", "gamma");
+            m.Add ("b", "beta");
+            m.Add ("a", "alpha");
             EXPECT_EQ (m.size (), 4u);
             EXPECT_EQ (m, (Mapping<String, String>{{"a", "alpha"}, {"b", "beta"}, {"c", "gamma"}, {"d", "delta"}}));
         }
@@ -248,8 +238,8 @@ namespace {
             const auto kReference1a_ = Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}}};
             const auto kReference1b_ =
                 Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}, KeyValuePair<String, String>{"xx", "3"}}};
-            const auto kReference1c_ = Mapping<String, String>{KeyValuePair<String, String>{L"Content-Length", L"3"}};
-            const auto kReference2a_ = Mapping<String, String>{{pair<String, String>{L"Content-Length", "3"}}};
+            const auto kReference1c_ = Mapping<String, String>{KeyValuePair<String, String>{L"Content-Length", "3"}};
+            const auto kReference2a_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}}};
             const auto kReference2b_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}}};
             const auto kReference2c_ = Mapping<String, String>{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}};
             const auto kReference3a_ = Mapping<String, String>{{{"Content-Length", "3"}}};
@@ -264,7 +254,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Mapping, Where_Test_6_)
+    GTEST_TEST (Foundation_Containers_Mapping, Where_)
     {
         Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
         EXPECT_EQ (m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }),
@@ -274,7 +264,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Mapping, WithKeys_Test_7_)
+    GTEST_TEST (Foundation_Containers_Mapping, WithKeys_)
     {
         Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
         EXPECT_EQ (m.WithKeys ({2, 5}), (Mapping<int, int>{{2, 4}, {5, 7}}));
@@ -282,7 +272,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Mapping, ClearBug_Test_8_)
+    GTEST_TEST (Foundation_Containers_Mapping, ClearBug_)
     {
         // http://stroika-bugs.sophists.com/browse/STK-541
         Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
