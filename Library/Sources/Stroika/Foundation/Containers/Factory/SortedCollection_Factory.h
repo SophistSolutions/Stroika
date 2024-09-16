@@ -17,18 +17,20 @@ namespace Stroika::Foundation::Containers {
 
 namespace Stroika::Foundation::Containers::Factory {
 
+    using Common::IThreeWayAdaptableComparer;
+
     /**
      *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedCollection<> container
      *
-     *  Note - you can override the underlying factory dynamically by calling SortedCollection_Factory<T,INORDER_COMPARER>::Register ().
+     *  Note - you can override the underlying factory dynamically by calling SortedCollection_Factory<T,COMPARER>::Register ().
      *
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, IInOrderComparer<T> INORDER_COMPARER = less<T>>
+    template <typename T, IThreeWayAdaptableComparer<T> COMPARER = less<T>>
     class SortedCollection_Factory {
     public:
-        static_assert (not is_reference_v<T> and not is_reference_v<INORDER_COMPARER>,
+        static_assert (not is_reference_v<T> and not is_reference_v<COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
 
     public:
@@ -41,7 +43,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  Function type to create an ConstructedType object.
          */
-        using FactoryFunctionType = function<ConstructedType (const INORDER_COMPARER& inorderComparer)>;
+        using FactoryFunctionType = function<ConstructedType (const COMPARER& comparer)>;
 
     public:
         /**
@@ -72,7 +74,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  You can call this directly, but there is no need, as the SortedCollection<T> CTOR does so automatically.
          */
-        nonvirtual ConstructedType operator() (const INORDER_COMPARER& inorderComparer = {}) const;
+        nonvirtual ConstructedType operator() (const COMPARER& comparer = {}) const;
 
     public:
         /**
