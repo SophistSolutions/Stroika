@@ -92,15 +92,15 @@ namespace {
                         return;
                     }
 #endif
-                    //http://stroika-bugs.sophists.com/browse/STK-679
-                    if (lce.code () == error_code{CURLE_SSL_CONNECT_ERROR, LibCurl::error_category ()} and Debug::IsRunningUnderValgrind ()) {
-                        DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see qCompilerAndStdLib_openssl3_helgrind_Buggy"_f);
-                        return;
-                    }
-                    if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl::error_category ()} and Debug::IsRunningUnderValgrind ()) {
-                        DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see http://stroika-bugs.sophists.com/browse/STK-679"_f);
-                        return;
-                    }
+                    // //http://stroika-bugs.sophists.com/browse/STK-679
+                    // if (lce.code () == error_code{CURLE_SSL_CONNECT_ERROR, LibCurl::error_category ()} and Debug::IsRunningUnderValgrind ()) {
+                    //     DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see qCompilerAndStdLib_openssl3_helgrind_Buggy"_f);
+                    //     return;
+                    // }
+                    // if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl::error_category ()} and Debug::IsRunningUnderValgrind ()) {
+                    //     DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see http://stroika-bugs.sophists.com/browse/STK-679"_f);
+                    //     return;
+                    // }
                     Execution::ReThrow ();
                 }
 #endif

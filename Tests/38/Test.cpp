@@ -89,12 +89,6 @@ namespace {
 
             void SingleProcessLargeDataSend_ ()
             {
-                /*
-                 *  "Valgrind's memory management: out of memory:"
-                 *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
-                 *
-                 *  @see http://stroika-bugs.sophists.com/browse/STK-713 if you see hang here
-                 */
                 Memory::BLOB                     testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
                 Streams::MemoryStream::Ptr<byte> myStdIn  = Streams::MemoryStream::New<byte> (testBLOB);
                 Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
@@ -128,10 +122,6 @@ namespace {
                 ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);
                 EXPECT_TRUE (not myStdOut.AvailableToRead ().has_value ()); // sb no data available, but NOT EOF
-                /*
-                 *  "Valgrind's memory management: out of memory:"
-                 *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
-                 */
                 Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
                 myStdIn.Write (testBLOB);
                 myStdIn.CloseWrite (); // so cat process can finish

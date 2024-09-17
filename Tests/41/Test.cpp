@@ -244,7 +244,7 @@ namespace {
                         if (prevValue == sharedValue.load ()) {
                             repeatCount++;
                             if (repeatCount > 100) {
-                                Execution::Sleep (1ms); // avoid starvation under helgrind (seems to help) -- LGP 2017-12-20.
+                                //Execution::Sleep (1ms); // avoid starvation under helgrind (seems to help) -- LGP 2017-12-20.
                                 repeatCount = 0;
                             }
                         }
