@@ -10,6 +10,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
 
 /**
  *  \file
@@ -187,7 +188,7 @@ namespace Stroika::Foundation::DataExchange {
          *      T == wstring
          *      AtomInternalType
          */
-        template <typename T>
+        template <Configuration::IAnyOf<String, wstring, typename ATOM_MANAGER::AtomInternalType> T>
         nonvirtual T As () const;
 
     public:

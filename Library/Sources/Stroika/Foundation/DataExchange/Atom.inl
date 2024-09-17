@@ -50,7 +50,7 @@ namespace Stroika::Foundation::DataExchange {
         fValue_ = ATOM_MANAGER::kEmpty;
     }
     template <typename ATOM_MANAGER>
-    template <typename T>
+    template <Configuration::IAnyOf<String, wstring, typename ATOM_MANAGER::AtomInternalType> T>
     inline T Atom<ATOM_MANAGER>::As () const
     {
         return As_ (type_<T> ());
