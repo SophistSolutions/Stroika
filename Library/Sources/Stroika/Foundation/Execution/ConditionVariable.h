@@ -20,6 +20,10 @@
 
 namespace Stroika::Foundation::Execution {
 
+#if __cpp_lib_jthread < 201911
+#warning "NOTE __cpp_lib_jthread < 201911: see if we can lose tests"
+#endif
+
     /**
      *  ConditionVariable is a thin abstraction/wrapper on a std::condition_variable, with support for Stroika thread Cancelation, and 
      *  other shortcuts to simplify use. (combines related mutex with condition variable). Since you always use a
@@ -54,7 +58,7 @@ namespace Stroika::Foundation::Execution {
      * (@todo UPDATE DOCS IN LIGHT OF C++20)
      *          >   There are three obvious ways to implement cancelation
      *
-     *              >   Uinsg EINTR (POSIX) and alertable states on windows - this is what we do most other places
+     *              >   Using EINTR (POSIX) and alertable states on windows - this is what we do most other places
      *                  in Stroika for thread cancelability.
      *
      *                  Sadly, the POSIX (gcc/clang) of condition_variable don't appear to support EINTR, the windows
@@ -63,7 +67,7 @@ namespace Stroika::Foundation::Execution {
      *
      *              >   Maintain a list of 'waiting' condition variables, and then have thread-abort notify_all() on each of these
      *                  This significantly adds to the cost of waiting (add/remove safely from linked list with thread safety) - but
-     *                  thats probably still the best approach.
+     *                  that's probably still the best approach.
      *
      *                  Also have to code this very carefully to avoid deadlocks, since the cancelation code needs to lock something to
      *                  allow it to safely signal the condition variable.
@@ -86,7 +90,7 @@ namespace Stroika::Foundation::Execution {
      *              If its set before, condition variable sees that on entry (in its pred check).
      *
      *              If its after, then on the mutex unlock (I DON'T KNOW HOW THIS HAPPENS YET) - the Condition
-     *              var must somehow get 'awkakened' - probably by a TLS list (queue) of waiters to get notififed
+     *              var must somehow get 'awakened - probably by a TLS list (queue) of waiters to get notified
      *              and that gets hooked in the mutex code???? GUESSING.
      *
      *              So anyhow - note - its critical when changing values of underlying 'condition' - to wrap that in mutex
@@ -228,8 +232,8 @@ namespace Stroika::Foundation::Execution {
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_until () - except
          *          for adding support for thread interruption (and a minor point - Time::TimePointSeconds)
          * 
-         *  \note the cv_status returning overload CAN return/wakeup spurriously (not timeout, and not desired condition true)
-         *        The PREDICATE (readyToWake) overload, never returns a spurrious wake (so only returns timeout (false) or true if readyToWake returned true.
+         *  \note the cv_status returning overload CAN return/wakeup spuriously (not timeout, and not desired condition true)
+         *        The PREDICATE (readyToWake) overload, never returns a spurious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
          *  \req (lock.owns_lock ());
          *  \ensure (lock.owns_lock ());
@@ -256,8 +260,8 @@ namespace Stroika::Foundation::Execution {
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_for () - except
          *          for adding support for thread interruption (and a minor point - Time::TimePointSeconds)
          * 
-         *  \note the cv_status returning overload CAN return/wakeup spurriously (not timeout, and not desired condition true)
-         *        The PREDICATE (readyToWake) overload, never returns a spurrious wake (so only returns timeout (false) or true if readyToWake returned true.
+         *  \note the cv_status returning overload CAN return/wakeup spuriously (not timeout, and not desired condition true)
+         *        The PREDICATE (readyToWake) overload, never returns a spurious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
          *  \req (lock.owns_lock ());
          *  \ensure (lock.owns_lock ());
@@ -272,7 +276,7 @@ namespace Stroika::Foundation::Execution {
          *  \par Example Usage
          *      \code
          *          // from BlockingQueue code...
-         *          fCondtionVariable_.MutateDataNotifyAll ([=]() { fEndOfInput_ = true; });
+         *          fConditionVariable_.MutateDataNotifyAll ([=]() { fEndOfInput_ = true; });
          *      \endcode
          *
          *  \note   ***Not Cancelation Point***     -- but perhaps should be???
@@ -286,7 +290,7 @@ namespace Stroika::Foundation::Execution {
          *  \par Example Usage
          *      \code
          *          // from BlockingQueue code...
-         *          fCondtionVariable_.MutateDataNotifyOne ([=]() { fEndOfInput_ = true; });
+         *          fConditionVariable_.MutateDataNotifyOne ([=]() { fEndOfInput_ = true; });
          *      \endcode
          *
          *  \note   ***Not Cancelation Point***     -- but perhaps should be???

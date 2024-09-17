@@ -70,8 +70,8 @@ namespace Stroika::Foundation::Execution {
 #endif
         }
 
-        // Not all threads are interuptible. For example, the 'main' thread cannot be interrupted or aborted
-        // @todo NOTE - this is a defect compared to Stroika v2.1 interupption - where you could interrupted but not usefully abort the main thread)
+        // Not all threads are interruptible. For example, the 'main' thread cannot be interrupted or aborted
+        // @todo NOTE - this is a defect compared to Stroika v2.1 interruption - where you could interrupted but not usefully abort the main thread)
         // But if  kSupportsStopToken, and the current thread supports interruption, we don't get here. So just check the other case
         bool currentThreadIsInterruptible = (not kSupportsStopToken) and Thread::IsCurrentThreadInterruptible ();
         Assert (not kSupportsStopToken or not currentThreadIsInterruptible); // just cuz of tests above
@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Execution {
                     // We are blocking, waiting for a signaled condition. This thread has been asked to stop. But the only reason why we wouldn't throw in the CheckForInterruption is that it
                     // was suppressed by (SuppressInterruptionInContext).
                     //
-                    // This function is NOT permitted to return spurrious interrupts. Just readyToWake return, or timeout.
+                    // This function is NOT permitted to return spurious interrupts. Just readyToWake return, or timeout.
                     //
                     // If you find yourself looping here - consider if you really wanted to SuppressInterruptionInContext around this!
                     //
@@ -141,13 +141,13 @@ namespace Stroika::Foundation::Execution {
             //      o   readyToWake() (variable it looks at) changes, which happens spontaneously (other thread wakes us toggling lock).
             //
             //  We DONT need to tweak timeoutAt with sConditionVariableWaitChunkTime (as is done in called wait_until) because
-            //  if its possible to handle the interuption case, thats done in called wait_until (possibly using sConditionVariableWaitChunkTime).
-            //  if we are woken because of a toggle of lock, we'll get (apparently from point of view of called wait_until) spurrious wakeup and can check
+            //  if its possible to handle the interruption case, that's done in called wait_until (possibly using sConditionVariableWaitChunkTime).
+            //  if we are woken because of a toggle of lock, we'll get (apparently from point of view of called wait_until) spurious wakeup and can check
             //  again.
             //
             if (wait_until (lock, timeoutAt) == cv_status::timeout) {
                 /*
-                 *  Somewhat ambiguous if this should check readyToWake or just return false. Probably best to check, since the condition is met, and thats
+                 *  Somewhat ambiguous if this should check readyToWake or just return false. Probably best to check, since the condition is met, and that's
                  *  probably more important than the timeout.
                  * 
                  *  Also - docs in https://en.cppreference.com/w/cpp/thread/condition_variable/wait_until - make it clear this is the right thing todo.
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Execution {
     inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSeconds timeout)
     {
         Require (lock.owns_lock ());
-        Assert (isinf (timeout.count ()) == isinf ((timeout + Time::GetTickCount ()).time_since_epoch ().count ())); // make sure arithmatic works right with inf
+        Assert (isinf (timeout.count ()) == isinf ((timeout + Time::GetTickCount ()).time_since_epoch ().count ())); // make sure arithmetic works right with inf
         return wait_until (lock, timeout + Time::GetTickCount ());
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
