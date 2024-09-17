@@ -706,12 +706,12 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief functional API which iterates over all members of an Interable, applies a map function to each element, and collects the results in a new Iterable
+         *  \brief functional API which iterates over all members of an Iterable, applies a map function to each element, and collects the results in a new Iterable
          * 
-         *  This is like the map() function in so many other languages, like lisp, JavaScript, etc.
+         *  This is like the map() function in so many other languages, like lisp, JavaScript, etc, **not** like the STL::map class.
          * 
          *  The transformation may be a projection, or complete transformation. If the 'extract' function returns optional<RESULT_COLLECTION::value_type>, then a missing
-         *  value is treated as removeal from the source list (in the resulting generated list).
+         *  value is treated as removal from the source list (in the resulting generated list).
          * 
          *  \note - @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
          *          as it does essentially the same thing. It can be used to completely transform a container of one thing
@@ -771,7 +771,7 @@ namespace Stroika::Foundation::Traversal {
          *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) -> optional<InternetMediaType> { return r.GetAssociatedContentType (suffix); })
          *      \endcode
          * 
-         *  \note This could have been written as one function/overload, but then for the RESULT_CONTAINER=Iterbale<T> case
+         *  \note This could have been written as one function/overload, but then for the RESULT_CONTAINER=Iterable<T> case
          *        we would be forced to uselessly create a bogus Iterable, and then throw it away.
          */
         template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> ELEMENT_MAPPER>
