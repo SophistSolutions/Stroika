@@ -539,9 +539,10 @@ basic-unix-test-configurations:
 		./configure clang++-18-release-libc++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		# Sanitizers\
 	 	# 	nb: TSAN and ASAN don't mix well \
-		./configure g++-debug-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL};  \
-		./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL};  \
+		./configure g++-debug-sanitize_address_undefined_leak   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-debug-sanitize_thread                   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL};  \
+		./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --sanitize none,address,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-release-sanitize_thread                 --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL};  \
 		# VALGRIND\
 		./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 	else \
