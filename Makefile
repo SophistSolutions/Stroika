@@ -510,6 +510,7 @@ basic-unix-test-configurations:
 		./configure g++-debug-sanitize_undefined   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure g++-release-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		# VALGRIND - some tests fail inside valgrind code - looks like bug there - don't bother for now...LGP 2024-08-24\
+		#			verified 2024-09-17 - at least two core dumps not apparently related to my code - two modules when we run tests\
 		#       ./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 	elif [[ `lsb_release -rs 2>/dev/null` == '24.04' ]]; then \
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
