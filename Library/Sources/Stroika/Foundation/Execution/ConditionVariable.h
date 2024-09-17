@@ -20,9 +20,13 @@
 
 namespace Stroika::Foundation::Execution {
 
-#if __cpp_lib_jthread < 201911
-#warning "NOTE __cpp_lib_jthread < 201911: see if we can lose tests"
-#endif
+    /**
+     *  NOTE - XCode 15 still has this limitation
+     *      #if __cpp_lib_jthread < 201911
+     *      #warning "NOTE __cpp_lib_jthread < 201911: see if we can lose tests"
+     *      #endif
+     *      -- LGP 2024-09-17
+     */
 
     /**
      *  ConditionVariable is a thin abstraction/wrapper on a std::condition_variable, with support for Stroika thread Cancelation, and 
