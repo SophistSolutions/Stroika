@@ -787,6 +787,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief Walk the entire list of items, and use the argument 'op' to combine (reduce) items to a resulting single item.
          * 
+         *  \see https://en.wikipedia.org/wiki/Reduction_operator
          *  \see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
          *  \see https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.aggregate?redirectedfrom=MSDN&view=net-7.0#overloads
          * 
