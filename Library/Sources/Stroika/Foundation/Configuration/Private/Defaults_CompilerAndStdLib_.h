@@ -3058,12 +3058,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #endif
 #endif
 
-#if !defined(qCompiler_ValgrindDirectSignalHandler_Buggy)
-
-// Now set in the configure script, because this depends on the OS
-#define qCompiler_ValgrindDirectSignalHandler_Buggy 0
-
-#endif
 
 /**
 * 

@@ -39,14 +39,7 @@ namespace {
             [[maybe_unused]] auto&& cleanup2 =
                 Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
             ::raise (SIGINT);
-            DISABLE_COMPILER_MSC_WARNING_START (4127) // conditional expression is constant - WRONG - CAN be constant - but if qCompiler_ValgrindDirectSignalHandler_Buggy, depends on non constexpr function
-            if (qCompiler_ValgrindDirectSignalHandler_Buggy and Debug::IsRunningUnderValgrind ()) {
-                VerifyTestResultWarning (called);
-            }
-            else {
-                EXPECT_TRUE (called);
-            }
-            DISABLE_COMPILER_MSC_WARNING_END (4127)
+            EXPECT_TRUE (called);
         }
     }
 }

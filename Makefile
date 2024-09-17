@@ -506,7 +506,9 @@ basic-unix-test-configurations:
 		# - ASAN appears to work very sporadically (crashing about 1/2 the time) \
 		# 		Builds/g++-debug-sanitize_undefined_leak/Tests/Test44 --gtest_brief -- Segmentation fault (core dumped)\
 		# - LEAK sanitizer fails to build libcurl under Ubuntu 22.04, so disable that; \
-		./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		# NO TSAN on Ubuntu 22.04 due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+		./configure g++-debug-sanitize_undefined   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-release-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		# VALGRIND - some tests fail inside valgrind code - looks like bug there - don't bother for now...LGP 2024-08-24\
 		#       ./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 	elif [[ `lsb_release -rs 2>/dev/null` == '24.04' ]]; then \
