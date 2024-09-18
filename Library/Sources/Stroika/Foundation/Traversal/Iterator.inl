@@ -68,6 +68,11 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
+    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (const EndSentinel&) noexcept
+        : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
+    {
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t) noexcept
         : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
     {
@@ -229,14 +234,19 @@ namespace Stroika::Foundation::Traversal {
         return lhsRep->Equals (rhsRep);
     }
     template <typename T, typename ITERATOR_TRAITS>
+    inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const EndSentinel&) const
+    {
+        return this->Done ();
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep) -> unique_ptr<IRep>
     {
         return rep.Clone ();
     }
     template <typename T, typename ITERATOR_TRAITS>
-    constexpr inline Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator () noexcept
+    constexpr inline EndSentinel Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator () noexcept
     {
-        return Iterator<T, ITERATOR_TRAITS>{ConstructionFlagForceAtEnd_::ForceAtEnd};
+        return EndSentinel{};
     }
 
     /*

@@ -82,6 +82,26 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
+     *  And EndSentinel is a marker - equivalent to Iterable::GetEnd () -- just a separate type so
+     *  compilers have a chance to do some optimizations. This is analogous to the c++20 ranges sentinel
+     *  concept, and is not really needed for the Stroika model of iterators (it.Done()) - but helps with
+     *  the std c++ model of iteration (it != data.end ()).
+     * 
+     *  \@todo should this be templated on T, or just a blanket sentinel? Not sure it matters.
+     * 
+     *  \note unlike an Iterator, an EndSentinel is not dereferenceable. But it can be assigned to any
+     *        Iterator<T>, which is then syntactically, though not actually, dereferenceable.
+     */
+    class EndSentinel {
+    public:
+        constexpr EndSentinel () noexcept                              = default;
+        constexpr EndSentinel (const EndSentinel&) noexcept            = default;
+        constexpr EndSentinel (EndSentinel&&) noexcept                 = default;
+        constexpr EndSentinel& operator= (const EndSentinel&) noexcept = default;
+        constexpr EndSentinel& operator= (EndSentinel&&) noexcept      = default;
+    };
+
+    /**
      *  \brief
      *      An Iterator<T> is a copyable object which allows traversing the contents of some container. It is like an std::const_iterator.
      *
@@ -120,12 +140,19 @@ namespace Stroika::Foundation::Traversal {
      *        traverse any items added after the current traversal index, and will never traverse items
      *        added with an index before the current traversal index.
      *
-     *      But this is NO LONGER TRUE.
+     *        But this is NO LONGER TRUE.
      *
      *  \par Example Usage
      *      \code
      *          for (Iterator<T> i = container.MakeIterator (); not i.Done (); i.Next ())  {
      *              f (i.Current ());
+     *          }
+     *      \endcode
+     *
+     *  or:
+     *      \code
+     *          for (Iterator<T> i = container.begin (); i; ++i)  {
+     *              f (*i);
      *          }
      *      \endcode
      *
@@ -170,7 +197,7 @@ namespace Stroika::Foundation::Traversal {
      *              place they did before the copy, and the old iterator is unaffected
      *              by iteration in the new iterator.
      *
-     *  Interesting Design Notes:
+     *  Interesting Design (Implementation) Notes:
      *
      *      -   We considered a design for Current() - where it would dynamically
      *          grab the current value, as opposed to being defined to be frozen/copied
@@ -197,6 +224,7 @@ namespace Stroika::Foundation::Traversal {
      *  \note Satisfies Concepts:
      *      o   static_assert (regular<Iterator<T>>);
      *      o   static_assert (input_iterator<Iterator<T>>);
+     *      o   static_assert (sentinel_for<EndSentinel, Iterator<T>>);
      * 
      *  @see Iterable<T>
      *
@@ -287,6 +315,7 @@ namespace Stroika::Foundation::Traversal {
         Iterator (unique_ptr<IRep>&& rep) noexcept;
         Iterator (Iterator&& src) noexcept;
         Iterator (const Iterator& src);
+        constexpr Iterator (const EndSentinel&) noexcept;
         constexpr Iterator (nullptr_t) noexcept;
         constexpr Iterator () noexcept;
 
@@ -424,6 +453,7 @@ namespace Stroika::Foundation::Traversal {
          *  Note that Equals is *commutative*.
          */
         nonvirtual bool operator== (const Iterator& rhs) const;
+        nonvirtual bool operator== (const EndSentinel& rhs) const;
 
     public:
         /**
@@ -506,7 +536,7 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  \note this is something like the c++20 ranges sentinel idea, except that we don't use a separate type (perhaps a mistake on my part).
          */
-        static constexpr Iterator GetEmptyIterator () noexcept;
+        static constexpr EndSentinel GetEmptyIterator () noexcept;
 
     public:
         /**
@@ -673,6 +703,7 @@ namespace Stroika::Foundation::Traversal {
     //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
     static_assert (input_iterator<Iterator<int>>);
     static_assert (regular<Iterator<int>>);
+    static_assert (sentinel_for<EndSentinel, Iterator<int>>);
 
 }
 

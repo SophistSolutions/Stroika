@@ -481,7 +481,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          * \brief Support for ranged for, and STL syntax in general
          * 
-         *  \note in INCOMPATIBLE change in Stroika v3.0d1 - from v2.1 - making this instance method instead of static method (needed for 'std::ranges' concept compatability).
+         *  \note in INCOMPATIBLE change in Stroika v3.0d1 - from v2.1 - making this instance method instead of static method (needed for 'std::ranges' concept compatibility).
          */
         static constexpr Iterator<T> end () noexcept;
 
