@@ -506,7 +506,7 @@ basic-unix-test-configurations:
 		# - ASAN appears to work very sporadically (crashing about 1/2 the time) \
 		# 		Builds/g++-debug-sanitize_undefined_leak/Tests/Test44 --gtest_brief -- Segmentation fault (core dumped)\
 		# - LEAK sanitizer fails to build libcurl under Ubuntu 22.04, so disable that; \
-		# NO TSAN on Ubuntu 22.04 due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+		# NO TSAN on Ubuntu 22.04 due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy \
 		./configure g++-debug-sanitize_undefined   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure g++-release-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		# VALGRIND - some tests fail inside valgrind code - looks like bug there - don't bother for now...LGP 2024-08-24\
