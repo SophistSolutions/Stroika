@@ -48,11 +48,11 @@ namespace Stroika::Foundation::Math {
      * 
      *  \note O(N) time complexity
      */
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
     auto Mean (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type;
     template <ranges::range CONTAINER_OF_T>
     auto Mean (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type;
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE>
     RESULT_TYPE Mean_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end);
 
     /**
@@ -62,13 +62,13 @@ namespace Stroika::Foundation::Math {
      * 
      *  \note O(N) time complexity
      */
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2,
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2,
               Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION = less<typename iterator_traits<ITERATOR_OF_T>::value_type>>
     auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {}) ->
         typename iterator_traits<ITERATOR_OF_T>::value_type;
     template <ranges::range CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
     RESULT_TYPE Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {});
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE,
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE,
               Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
     RESULT_TYPE Median_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {});
 
@@ -80,11 +80,11 @@ namespace Stroika::Foundation::Math {
      *  
      *  \see https://en.wikipedia.org/wiki/Standard_deviation
      */
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
     auto StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type;
     template <ranges::range CONTAINER_OF_T>
     auto StandardDeviation (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type;
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE>
     RESULT_TYPE StandardDeviation_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end);
 
 }

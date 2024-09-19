@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
     InlineBuffer<T, BUF_SIZE>::InlineBuffer (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
         : InlineBuffer{}
     {

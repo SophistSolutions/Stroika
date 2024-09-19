@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Math {
      ************************************ Mean **************************************
      ********************************************************************************
      */
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE>
     auto Mean_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> RESULT_TYPE
     {
         Require (start != end); // the mean of 0 items would be undefined
@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Math {
         }
         return result / cnt;
     }
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
     inline auto Mean (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type
     {
         using RETURN_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type;
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Math {
      ********************************** Median **************************************
      ********************************************************************************
      */
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
     RESULT_TYPE Median_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare)
     {
         Require (start != end);                                                     // the median of no values would be undefined
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Math {
         }
         return result;
     }
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION>
     inline auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare) ->
         typename iterator_traits<ITERATOR_OF_T>::value_type
     {
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Math {
      **************************** StandardDeviation *********************************
      ********************************************************************************
      */
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE>
     RESULT_TYPE StandardDeviation_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
     {
         Require (ranges::distance (start, end) >= 1); // the std-deviation of no values would be undefined
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Math {
         Require (n >= 1); // the std-deviation of no values would be undefined
         return sqrt (accum / (n - 1));
     }
-    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
     auto StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type
     {
         Require (ranges::distance (start, end) >= 1); // the std-deviation of no values would be undefined
