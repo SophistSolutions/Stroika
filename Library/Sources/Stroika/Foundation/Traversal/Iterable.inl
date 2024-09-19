@@ -1026,7 +1026,7 @@ namespace Stroika::Foundation::Traversal {
         if (i == end ()) [[unlikely]] {
             return nullopt;
         }
-        return Math::Median<Iterator<T>, decltype(this->end ()) ,RESULT_TYPE> (i, end (), compare);
+        return Math::Median<RESULT_TYPE> (i, end (), compare);
     }
     template <typename T>
     template <typename RESULT_TYPE>

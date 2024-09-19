@@ -47,12 +47,12 @@ namespace Stroika::Foundation::Math {
      ********************************** Median **************************************
      ********************************************************************************
      */
-    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
+    template <typename RESULT_TYPE, input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
     RESULT_TYPE Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare)
     {
         Require (start != end);                                                     // the median of no values would be undefined
-        Memory::StackBuffer<RESULT_TYPE> tmp{start, forward<ITERATOR_OF_T2> (end)}; // copy cuz data modified
-        size_t                           size = ranges::distance (start, end);
+        Memory::StackBuffer<RESULT_TYPE> tmp{forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end)}; // copy cuz data modified
+        size_t                           size = ranges::distance (forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end));
         nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end (), forward<INORDER_COMPARE_FUNCTION> (compare));
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // warning with gcc cross-compile to raspberrypi - no idea why --LGP 2018-09-13
         RESULT_TYPE result{tmp[size / 2]};
@@ -67,23 +67,17 @@ namespace Stroika::Foundation::Math {
         }
         return result;
     }
-    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2,
-              Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION>
-    inline auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare) ->
-        typename iterator_traits<ITERATOR_OF_T>::value_type
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION>
+    inline auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare) -> typename iterator_traits<ITERATOR_OF_T>::value_type
     {
         using RETURN_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type;
-        return Median<ITERATOR_OF_T, ITERATOR_OF_T2, RETURN_TYPE, INORDER_COMPARE_FUNCTION> (start, forward<ITERATOR_OF_T2> (end),
-                                                                                               forward<INORDER_COMPARE_FUNCTION> (compare));
+        return Median<RETURN_TYPE> (forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end), forward<INORDER_COMPARE_FUNCTION> (compare));
     }
-    template <ranges::range CONTAINER_OF_T, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
-    inline RESULT_TYPE Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare)
+    template <ranges::range CONTAINER_OF_T, Common::IInOrderComparer<typename CONTAINER_OF_T::value_type> INORDER_COMPARE_FUNCTION>
+    inline auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {}) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
-        using ITERATOR_TYPE  = remove_cvref_t<decltype (begin (container))>;
-        using ITERATOR_TYPE2 = remove_cvref_t<decltype (end (container))>;
-        return Median<ITERATOR_TYPE, ITERATOR_TYPE2, RESULT_TYPE, INORDER_COMPARE_FUNCTION> (begin (container), end (container),
-                                                                                               forward<INORDER_COMPARE_FUNCTION> (compare));
+        return Median<RESULT_TYPE> (begin (container), end (container), forward<INORDER_COMPARE_FUNCTION> (compare));
     }
 
     /*

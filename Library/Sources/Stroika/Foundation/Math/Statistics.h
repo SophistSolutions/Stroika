@@ -61,17 +61,18 @@ namespace Stroika::Foundation::Math {
      *  \req not empty
      * 
      *  \note O(N) time complexity
+     * 
+     *  \note template arguments changed significantly in Stroika v3.0d10
      */
-    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE,
+    template <typename RESULT_TYPE, input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2,
               Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
     RESULT_TYPE Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {});
     template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2,
               Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION = less<typename iterator_traits<ITERATOR_OF_T>::value_type>>
     auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {}) ->
         typename iterator_traits<ITERATOR_OF_T>::value_type;
-    template <ranges::range CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
-    RESULT_TYPE Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {});
-
+    template <ranges::range CONTAINER_OF_T, Common::IInOrderComparer<typename CONTAINER_OF_T::value_type> INORDER_COMPARE_FUNCTION = less<typename CONTAINER_OF_T::value_type>>
+    auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {}) -> typename CONTAINER_OF_T::value_type;
 
     /**
      *  SUPER ROUGH DRAFT 
