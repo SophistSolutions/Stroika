@@ -77,6 +77,7 @@ namespace Stroika::Foundation::Math {
     inline auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {}) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
+        using RETURN_TYPE = typename CONTAINER_OF_T::value_type;
         return Median<RESULT_TYPE> (begin (container), end (container), forward<INORDER_COMPARE_FUNCTION> (compare));
     }
 
