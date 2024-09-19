@@ -74,7 +74,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     };
     mutable Synchronized<Data_> fData_;
 
-    // NULL IS allowed - use that to on-dempand construct the backend
+    // NULL IS allowed - use that to on-demand construct the backend
     FrontendRep_ (const shared_ptr<IBackendRep>& backendRep)
         : FrontendRep_{backendRep, kDefaults_}
     {
@@ -555,7 +555,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
      *  Empirically you can usually find:
      *          HKEY_CLASSES_ROOT\MIME\Database
      *              Content Type\CT\Extension
-     *              This layout does not appear to accomodate ever having more than one extension for a given mime type
+     *              This layout does not appear to accommodate ever having more than one extension for a given mime type
      *
      *          HKEY_CLASSES_ROOT\FILE_SUFFIX
      *              {default} pretty name

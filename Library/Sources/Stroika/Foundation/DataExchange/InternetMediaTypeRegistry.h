@@ -108,7 +108,7 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  /usr/share/mime/globs
          *
-         *  This is the prefered backend on UNIX systems
+         *  This is the preferred backend on UNIX systems
          */
         static shared_ptr<IBackendRep> UsrSharedDefaultBackend ();
 
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief - Generally no need to use this - handled automatically.
          *
-         *  Provides a handfull of hardwired values - enough to pass regression tests, but not a good choice.
+         *  Provides a handful of hardwired values - enough to pass regression tests, but not a good choice.
          *
          *  Available everywhere
          *
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \note  \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
-        static  Execution::Synchronized<InternetMediaTypeRegistry> sThe;
+        static Execution::Synchronized<InternetMediaTypeRegistry> sThe;
 
     public:
         /**
@@ -305,14 +305,14 @@ namespace Stroika::Foundation::DataExchange {
                                   const EXCEPTION& throwIfNot = InternetMediaTypeNotSupportedException::kThe) const;
 
     public:
-       [[deprecated("Since Stroika v3.0d10 - just access sThe->")]]  static InternetMediaTypeRegistry Get ()
-       {
-             return sThe.load ();
-       }
-       [[deprecated("Since Stroika v3.0d10 - just set sThe")]] static void Set (const InternetMediaTypeRegistry& newRegistry)
-       {
-             sThe = newRegistry;
-       }
+        [[deprecated ("Since Stroika v3.0d10 - just access sThe->")]] static InternetMediaTypeRegistry Get ()
+        {
+            return sThe.load ();
+        }
+        [[deprecated ("Since Stroika v3.0d10 - just set sThe")]] static void Set (const InternetMediaTypeRegistry& newRegistry)
+        {
+            sThe = newRegistry;
+        }
     };
     inline Execution::Synchronized<InternetMediaTypeRegistry> InternetMediaTypeRegistry::sThe;
 
