@@ -32,7 +32,7 @@ namespace {
     VariantValue rd_ (const Streams::InputStream::Ptr<byte>& b, const optional<DataExchange::InternetMediaType>& mediaType)
     {
         if (mediaType) { // only check if specifed, else assume its right
-            InternetMediaTypeRegistry::Get ().CheckIsA (kMediaType, *mediaType);
+            InternetMediaTypeRegistry::sThe->CheckIsA (kMediaType, *mediaType);
         }
         return DataExchange::Variant::JSON::Reader{}.Read (b);
     }
