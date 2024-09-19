@@ -1029,7 +1029,7 @@ namespace Stroika::Foundation::Traversal {
         return Math::Median<RESULT_TYPE> (i, end (), compare);
     }
     template <typename T>
-    template <typename RESULT_TYPE>
+    template <constructible_from<T> RESULT_TYPE>
     inline RESULT_TYPE Iterable<T>::MedianValue (ArgByValueType<RESULT_TYPE> defaultValue) const
     {
         return Median ().value_or (defaultValue);

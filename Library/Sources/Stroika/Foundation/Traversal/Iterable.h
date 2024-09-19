@@ -1295,6 +1295,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note   returns nullopt if empty list
          *
          *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
+         *  \todo probably TIGHTEN THIS - and require ITotallyOrdering.... - so can use either less compare or strong compare function.
          */
         template <constructible_from<T> RESULT_TYPE = T, Common::IPotentiallyComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
         nonvirtual optional<RESULT_TYPE> Median (const INORDER_COMPARE_FUNCTION& compare = {}) const;
@@ -1303,7 +1304,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  @see @Median
          */
-        template <typename RESULT_TYPE = T>
+        template <constructible_from<T> RESULT_TYPE = T>
         nonvirtual RESULT_TYPE MedianValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
     public:
