@@ -221,13 +221,13 @@ namespace {
         }
         {
             auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
-                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
                 DbgTrace ("SUFFIX({})={}"_f, label.As<wstring> (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)));
                 DbgTrace ("ASSOCFILESUFFIXES({})={}"_f, label.As<wstring> (), Characters::ToString (r.GetAssociatedFileSuffixes (i)));
                 DbgTrace ("GetAssociatedPrettyName({})={}"_f, label, Characters::ToString (r.GetAssociatedPrettyName (i)));
             };
             auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
-                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
                 using namespace Characters;
                 if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
                     Stroika::Frameworks::Test::WarnTestIssue (Format ("File suffix mismatch for {}: got {}, expected {}"_f, i,
@@ -274,12 +274,12 @@ namespace {
         }
         {
             Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry - updating"};
-            InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
+            InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::sThe;
             InternetMediaTypeRegistry updatedRegistry = origRegistry;
             const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
             EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->GetMediaTypes ().Contains (kHFType_));
             updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{".HPHR"}, ".HPHR"});
-            InternetMediaTypeRegistry::Set (updatedRegistry);
+            InternetMediaTypeRegistry::sThe.store (updatedRegistry);
             EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsXMLFormat (kHFType_));
             EXPECT_TRUE (InternetMediaTypeRegistry::sThe->GetMediaTypes ().Contains (kHFType_));
             EXPECT_TRUE (not origRegistry.GetMediaTypes ().Contains (kHFType_));
