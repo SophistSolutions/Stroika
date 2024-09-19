@@ -217,7 +217,7 @@ namespace {
             InternetMediaType ct1{"text/plain; charset=us-ascii (Plain text)"};
             InternetMediaType ct2{"text/plain; charset=\"us-ascii\""};
             EXPECT_EQ (ct1, ct2);
-            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsTextFormat (ct1));
         }
         {
             auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
@@ -252,23 +252,23 @@ namespace {
             dumpCT (L"PNG", InternetMediaTypes::kPNG);
             checkCT (InternetMediaTypes::kPNG, {".png"});
             {
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kPNG));
-                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
-                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kHTML));
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
-                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kPNG));
-                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar"}));
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar+xml"}));
+                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsImageFormat (InternetMediaTypes::kPNG));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsImageFormat (InternetMediaTypes::kJSON));
+                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsXMLFormat (InternetMediaTypes::kXML));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsXMLFormat (InternetMediaTypes::kText_PLAIN));
+                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsTextFormat (InternetMediaTypes::kText_PLAIN));
+                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsTextFormat (InternetMediaTypes::kXML));
+                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsTextFormat (InternetMediaTypes::kHTML));
+                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsTextFormat (InternetMediaTypes::kJSON));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsTextFormat (InternetMediaTypes::kPNG));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsXMLFormat (InternetMediaType{"text/foobar"}));
+                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsXMLFormat (InternetMediaType{"text/foobar+xml"}));
             }
         }
         {
-            Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::Get ().GetMediaTypes()"};
+            Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::sThe->GetMediaTypes()"};
             // enumerate all content types
-            for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
+            for (auto ct : InternetMediaTypeRegistry::sThe->GetMediaTypes ()) {
                 DbgTrace ("i={}"_f, ct);
             }
         }
@@ -277,16 +277,16 @@ namespace {
             InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
             InternetMediaTypeRegistry updatedRegistry = origRegistry;
             const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
-            EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+            EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->GetMediaTypes ().Contains (kHFType_));
             updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{".HPHR"}, ".HPHR"});
             InternetMediaTypeRegistry::Set (updatedRegistry);
-            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
-            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsXMLFormat (kHFType_));
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->GetMediaTypes ().Contains (kHFType_));
             EXPECT_TRUE (not origRegistry.GetMediaTypes ().Contains (kHFType_));
             EXPECT_TRUE (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
         }
         {
-            // Noticed mistake in InternetMediaTypeRegistry::Get ().IsA () -- as=application/x-ccrddd should not match ISA relationship with application/c-ccr
+            // Noticed mistake in InternetMediaTypeRegistry::sThe->IsA () -- as=application/x-ccrddd should not match ISA relationship with application/c-ccr
             const InternetMediaType kCCR{"application/x-ccr"sv};
             const InternetMediaType kCCR_LegitAlt{"application/x-ccr+xml"sv};
             const InternetMediaType kCCR_Typo1{"application/x-ccx"sv};
@@ -295,10 +295,10 @@ namespace {
             const InternetMediaType kCCR_WRONG_CASE2{"APPLICATION/X-CCR"sv};
             EXPECT_EQ (kCCR, kCCR_WRONG_CASE1);
             EXPECT_EQ (kCCR, kCCR_WRONG_CASE2);
-            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsA (kCCR, kCCR));
-            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsA (kCCR, kCCR_LegitAlt));
-            EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsA (kCCR, kCCR_Typo1));
-            EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsA (kCCR, kCCR_Typo2));
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR));
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR_LegitAlt));
+            EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR_Typo1));
+            EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR_Typo2));
         }
     }
 }
