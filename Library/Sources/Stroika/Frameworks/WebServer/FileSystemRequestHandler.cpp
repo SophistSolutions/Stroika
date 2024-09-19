@@ -72,7 +72,7 @@ namespace {
             try {
                 Response&              response = m->rwResponse ();
                 InputStream::Ptr<byte> in{FileInputStream::New (fn)};
-                if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::Get ().GetAssociatedContentType (fn.extension ())) {
+                if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::sThe->GetAssociatedContentType (fn.extension ())) {
                     response.contentType = *oMediaType;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("content-type: {}"_f, oMediaType->ToString ());

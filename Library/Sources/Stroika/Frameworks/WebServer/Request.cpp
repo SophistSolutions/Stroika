@@ -81,7 +81,7 @@ Memory::BLOB Request::GetBody ()
 DataExchange::VariantValue Request::GetBodyVariantValue ()
 {
     if (auto oct = contentType ()) {
-        if (DataExchange::InternetMediaTypeRegistry::Get ().IsA (DataExchange::InternetMediaTypes::kJSON, *oct)) {
+        if (DataExchange::InternetMediaTypeRegistry::sThe->IsA (DataExchange::InternetMediaTypes::kJSON, *oct)) {
             return DataExchange::Variant::JSON::Reader{}.Read (GetBody ());
         }
     }

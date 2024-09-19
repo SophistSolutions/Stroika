@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeNotSupportedException.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 
 /**
@@ -38,29 +39,29 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *          if (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaType {some-string}) {
+     *          if (InternetMediaTypeRegistry::sThe->IsTextFormat (InternetMediaType {some-string}) {
      *              handle_textfiles()
      *          }
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          DbgTrace ("SUFFIX: {}"_f, InternetMediaTypeRegistry::Get ().GetPreferredAssociatedFileSuffix (i));
-     *          DbgTrace ("ASSOCFILESUFFIXES: {}"_f, InternetMediaTypeRegistry::Get ().GetAssociatedFileSuffixes (i));
-     *          DbgTrace ("GetAssociatedPrettyName: {}"_f, InternetMediaTypeRegistry::Get ().GetAssociatedPrettyName (i));
+     *          DbgTrace ("SUFFIX: {}"_f, InternetMediaTypeRegistry::sThe->GetPreferredAssociatedFileSuffix (i));
+     *          DbgTrace ("ASSOCFILESUFFIXES: {}"_f, InternetMediaTypeRegistry::sThe->GetAssociatedFileSuffixes (i));
+     *          DbgTrace ("GetAssociatedPrettyName: {}"_f, InternetMediaTypeRegistry::sThe->GetAssociatedPrettyName (i));
      *      \endcode
      *
      *  \par Example Usage
      *      \code
      *          // updating media type registry, create a new one and call Set
-     *          InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
+     *          InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::sThe.load ();
      *          InternetMediaTypeRegistry updatedRegistry = origRegistry;
      *          const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
-     *          EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+     *          EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->GetMediaTypes ().Contains (kHFType_));
      *          updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Set<String>{".HPHR"}, L".HPHR"});
-     *          InternetMediaTypeRegistry::Set (updatedRegistry);
-     *          Assert (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
-     *          Assert (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+     *          InternetMediaTypeRegistry::sThe.store (updatedRegistry);
+     *          Assert (InternetMediaTypeRegistry::sThe->IsXMLFormat (kHFType_));
+     *          Assert (InternetMediaTypeRegistry::sThe->GetMediaTypes ().Contains (kHFType_));
      *          Assert (not origRegistry.GetMediaTypes ().Contains (kHFType_));
      *          Assert (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
      *      \endcode
@@ -169,24 +170,13 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  Return the current global variable - current internet media type registry. Typically - use this.
-         *
-         *  \see Set ()
-         *
-         *  \note  \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
-         */
-    public:
-        static InternetMediaTypeRegistry Get ();
-
-    public:
-        /**
-         *  Set the current global variable - current internet media type registry. Typically - use this.
-         *
-         *  \see Get ()
+         *  The current global variable - InternetMediaTypeRegistry. Typically - use this.
+         * 
+         *  \note copying InternetMediaTypeRegistry by value is cheap (shared-by-value) to avoiding the lock around sThe is easy - just copy the InternetMediaTypeRegistry::sThe.
          *
          *  \note  \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
-        static void Set (const InternetMediaTypeRegistry& newRegistry);
+        static  Execution::Synchronized<InternetMediaTypeRegistry> sThe;
 
     public:
         /**
@@ -313,7 +303,18 @@ namespace Stroika::Foundation::DataExchange {
         template <typename EXCEPTION = InternetMediaTypeNotSupportedException>
         nonvirtual void CheckIsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType,
                                   const EXCEPTION& throwIfNot = InternetMediaTypeNotSupportedException::kThe) const;
+
+    public:
+       [[deprecated("Since Stroika v3.0d10 - just access sThe->")]]  static InternetMediaTypeRegistry Get ()
+       {
+             return sThe.load ();
+       }
+       [[deprecated("Since Stroika v3.0d10 - just set sThe")]] static void Set (const InternetMediaTypeRegistry& newRegistry)
+       {
+             sThe = newRegistry;
+       }
     };
+    inline Execution::Synchronized<InternetMediaTypeRegistry> InternetMediaTypeRegistry::sThe;
 
     /**
      */

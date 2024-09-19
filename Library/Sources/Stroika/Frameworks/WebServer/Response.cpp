@@ -395,7 +395,7 @@ void Response::WriteChunk_ (span<const byte> rawBytes)
 
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
 {
-    if (InternetMediaTypeRegistry::Get ().IsTextFormat (ct)) {
+    if (InternetMediaTypeRegistry::sThe->IsTextFormat (ct)) {
         using AtomType = InternetMediaType::AtomType;
         // Don't override already specifed characterset
         Containers::Mapping<String, String> params = ct.GetParameters ();

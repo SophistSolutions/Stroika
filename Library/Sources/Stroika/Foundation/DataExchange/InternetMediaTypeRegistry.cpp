@@ -201,28 +201,6 @@ InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendR
 {
 }
 
-namespace {
-    //
-    // function used to wrap sThe value, so we can use from two differnt places in the code, still use
-    // magic inits, and use lazy create (so not get deadly embrace before main)
-    //
-    Execution::Synchronized<InternetMediaTypeRegistry>& sThe_ ()
-    {
-        static Execution::Synchronized<InternetMediaTypeRegistry> sThe_;
-        return sThe_;
-    }
-}
-
-InternetMediaTypeRegistry InternetMediaTypeRegistry::Get ()
-{
-    return sThe_ ().load ();
-}
-
-void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r)
-{
-    sThe_ ().store (r);
-}
-
 auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
 {
     AssertNotNull (fFrontEndRep_);

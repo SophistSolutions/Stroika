@@ -80,7 +80,7 @@ String Response::ToString () const
 DataExchange::VariantValue Response::GetBodyVariantValue ()
 {
     if (auto oct = GetContentType ()) {
-        if (DataExchange::InternetMediaTypeRegistry::Get ().IsA (DataExchange::InternetMediaTypes::kJSON, *oct)) {
+        if (DataExchange::InternetMediaTypeRegistry::sThe->IsA (DataExchange::InternetMediaTypes::kJSON, *oct)) {
             return DataExchange::Variant::JSON::Reader{}.Read (GetData ());
         }
     }
