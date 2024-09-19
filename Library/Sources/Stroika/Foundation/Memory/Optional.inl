@@ -127,18 +127,24 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ******************************** NullCoalescing ********************************
+     ********************************* NullCoalesce *********************************
      ********************************************************************************
      */
-    template <typename T>
-    inline optional<T> NullCoalesce (const optional<T>& l, const optional<T>& r)
+    template <Private_::INullCoalescable OT>
+    inline const OT& NullCoalesce (const OT& l, const OT& r)
     {
-        return l.has_value () ? l : r;
+        if (l) {
+            return l;
+        }
+        return r;
     }
-    template <typename T>
-    inline T NullCoalesce (const optional<T>& l, const T& r)
+    template <Private_::INullCoalescable OT, convertible_to<const Private_::OptionalType2ValueType<OT>&> DEFAULT_TYPE>
+    inline const Private_::OptionalType2ValueType<OT>& NullCoalesce (const OT& l, const DEFAULT_TYPE& r)
     {
-        return l.has_value () ? *l : r;
+        if (l) {
+            return *l;
+        }
+        return r;
     }
 
     /*

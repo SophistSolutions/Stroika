@@ -29,7 +29,7 @@
  *      NOTE TO SUGGEST TO C++ standards - 
  *          Things I miss most about my Optional versus std::optional
  *              >   Value () - what they call value_or - should take T{} as default argument. About 25% of teh time
- *                  thats what I want, and its much more clear/terse.
+ *                  that's what I want, and its much more clear/terse.
  *
  *              >   Accumulate method, and operator +=, operator-= etc overloads calling Accumulate(). Much simpler
  *                  and more elegant code with those methods.
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Memory {
      *  Notes:
      *      \req    lhsOptionalValue != nullptr (for optional*  first argument)
      *      \note   Overloads that take optional* first argument accumulate in place and return nothing, while
-     *              overloads taking optional<T> as the first agument return the computed result.
+     *              overloads taking optional<T> as the first augment return the computed result.
      *              overloads taking optional<CONTAINER> or optional<CONTAINER>* dont take an op as argument, but assume the operation is 'Add' to the container
      *
      *      \note   ITS CONFUSING direction of if-test for this versus CopyToIf
@@ -128,21 +128,37 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename CONVERTABLE_TO_OPTIONAL_OF_TYPE>
     void CopyToIf (optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to, const optional<T>& copyFromIfHasValue);
 
+    namespace Private_ {
+        template <typename T>
+        concept INullCoalescable = requires (T t) {
+            static_cast<bool> (t);
+            *t;
+        };
+        template <typename OT>
+        using OptionalType2ValueType = remove_cvref_t<decltype (*declval<OT> ())>;
+    }
+
     /**
      * \brief return one of l, or r, with first preference for which is engaged, and second preference for left-to-right.
      *
-     *  So Equivilent to l.has_value ()? l : r;
+     *  So Equivalent to (depending on overload)
+     *      static_cast<bool> (l)? l : r;
+     *      or 
+     *      static_cast<bool> (l)? *l : r;
      * 
-     *  This is equivilent to C# ?? operator  (https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-coalescing-operator)
+     *  This is similar to/inspired by C# ?? operator  (https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-coalescing-operator)
      *
      *  \note This is handy because there is no default argument for std::optional<>::value_or () - there should be (like this).
      *  \note a bit like value_or, but RHS arg can be optional or T, and depending returns optional or T and this takes default value
      *  @see Value ()
+     *
+     *  \note NullCoalesce overloads returns a const T& internal pointer: that means the caller
+     *        MAY need to be careful to finish using the result of the function before the end of the full expression calling NullCoalesce ().
      */
-    template <typename T>
-    optional<T> NullCoalesce (const optional<T>& l, const optional<T>& r);
-    template <typename T>
-    T NullCoalesce (const optional<T>& l, const T& r = T{});
+    template <Private_::INullCoalescable OT>
+    const OT& NullCoalesce (const OT& l, const OT& r);
+    template <Private_::INullCoalescable OT, convertible_to<const Private_::OptionalType2ValueType<OT>&> DEFAULT_TYPE = Private_::OptionalType2ValueType<OT>>
+    const Private_::OptionalType2ValueType<OT>& NullCoalesce (const OT& l, const DEFAULT_TYPE& r = {});
 
     /**
      *  \brief Same as *t, but Requires that 't' is engaged.
