@@ -29,10 +29,34 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 
+using Memory::NullCoalesce;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 using FileSuffixType = InternetMediaTypeRegistry::FileSuffixType;
+
+/*
+ ********************************************************************************
+ ****************** InternetMediaTypeRegistry::OverrideRecord *******************
+ ********************************************************************************
+ */
+String InternetMediaTypeRegistry::OverrideRecord::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    if (fTypePrintName) {
+        sb << "TypePrintName: " << fTypePrintName << ", "sv;
+    }
+    if (fFileSuffixes) {
+        sb << "FileSuffixes: " << fFileSuffixes << ", "sv;
+    }
+    if (fPreferredSuffix) {
+        sb << "PreferredSuffix: " << fPreferredSuffix;
+    }
+    sb << "}"sv;
+    return sb;
+}
 
 /*
  ********************************************************************************
@@ -55,7 +79,8 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
 
     // Baked in predefined initial user-overrides.
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
-    static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
+
+    static inline const Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
         {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{".txt"sv}, ".txt"sv}},
         {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{".css"sv}, ".css"sv}},
         {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{".htm"sv, ".html"sv}, ".htm"sv}},
@@ -74,13 +99,13 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     };
     mutable Synchronized<Data_> fData_;
 
-    // NULL IS allowed - use that to on-demand construct the backend
+    // NULL backendRep IS allowed - use that to on-demand construct the backend
     FrontendRep_ (const shared_ptr<IBackendRep>& backendRep)
         : FrontendRep_{backendRep, kDefaults_}
     {
     }
     FrontendRep_ (const shared_ptr<IBackendRep>& backendRep, const Mapping<InternetMediaType, OverrideRecord>& overrides)
-        : fData_{Data_{backendRep == nullptr ? nullptr : backendRep}}
+        : fData_{Data_{.fBackendRep = backendRep}}
     {
         SetOverrides (overrides);
     }
@@ -185,10 +210,11 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         }
     }
 };
+inline InternetMediaTypeRegistry::FrontendRep_ InternetMediaTypeRegistry::kDefaultFrontEndForNoBackend_{nullptr};
 
 /*
  ********************************************************************************
- *************************** InternetMediaTypeRegistry **************************
+ ******************** InternetMediaTypeRegistry::Rep_Cloner_ ********************
  ********************************************************************************
  */
 auto InternetMediaTypeRegistry::Rep_Cloner_::operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
@@ -196,25 +222,36 @@ auto InternetMediaTypeRegistry::Rep_Cloner_::operator() (const IFrontendRep_& t)
     return make_shared<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
 };
 
+/*
+ ********************************************************************************
+ *************************** InternetMediaTypeRegistry **************************
+ ********************************************************************************
+ */
 InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep)
-    : fFrontEndRep_{make_shared<FrontendRep_> (backendRep)}
+    // note because can be constructed before main () - not safe to make_shared<FrontendRep_> - so delay construction and use kDefaultFrontEndForNoBackend_ if needed
+    : fFrontEndRep_{backendRep == nullptr ? nullptr : make_shared<FrontendRep_> (backendRep)}
 {
 }
 
 auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
 {
-    AssertNotNull (fFrontEndRep_);
-    return fFrontEndRep_->GetOverrides ();
+    return NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetOverrides ();
 }
 
 void InternetMediaTypeRegistry::SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides)
 {
+    if (fFrontEndRep_ == nullptr) {
+        fFrontEndRep_ = make_shared<FrontendRep_> (kDefaultFrontEndForNoBackend_);
+    }
     AssertNotNull (fFrontEndRep_);
     fFrontEndRep_->SetOverrides (overrides);
 }
 
 void InternetMediaTypeRegistry::AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec)
 {
+    if (fFrontEndRep_ == nullptr) {
+        fFrontEndRep_ = make_shared<FrontendRep_> (kDefaultFrontEndForNoBackend_);
+    }
     AssertNotNull (fFrontEndRep_);
     fFrontEndRep_->AddOverride (mediaType, overrideRec);
 }
@@ -684,14 +721,12 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
 
 Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes () const
 {
-    AssertNotNull (fFrontEndRep_);
-    return fFrontEndRep_->GetMediaTypes (nullopt);
+    return NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetMediaTypes (nullopt);
 }
 
 Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes (InternetMediaType::AtomType majorType) const
 {
-    AssertNotNull (fFrontEndRep_);
-    return fFrontEndRep_->GetMediaTypes (majorType);
+    return NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetMediaTypes (majorType);
 }
 
 Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable<InternetMediaType>& mediaTypes) const
@@ -711,8 +746,7 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
         return nullopt;
     }
     Assert (fileSuffix[0] == '.');
-    AssertNotNull (fFrontEndRep_);
-    return fFrontEndRep_->GetAssociatedContentType (fileSuffix);
+    return NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetAssociatedContentType (fileSuffix);
 }
 
 bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const

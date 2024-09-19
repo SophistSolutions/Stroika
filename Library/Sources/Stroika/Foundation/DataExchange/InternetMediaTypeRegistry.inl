@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 namespace Stroika::Foundation::DataExchange {
 
@@ -12,18 +13,15 @@ namespace Stroika::Foundation::DataExchange {
      */
     inline optional<InternetMediaTypeRegistry::FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
     {
-        AssertNotNull (fFrontEndRep_);
-        return fFrontEndRep_->GetPreferredAssociatedFileSuffix (ct);
+        return Memory::NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetPreferredAssociatedFileSuffix (ct);
     }
     inline Containers::Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const InternetMediaType& ct) const
     {
-        AssertNotNull (fFrontEndRep_);
-        return fFrontEndRep_->GetAssociatedFileSuffixes (ct);
+        return Memory::NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetAssociatedFileSuffixes (ct);
     }
     inline optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const InternetMediaType& ct) const
     {
-        AssertNotNull (fFrontEndRep_);
-        return fFrontEndRep_->GetAssociatedPrettyName (ct);
+        return Memory::NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetAssociatedPrettyName (ct);
     }
     inline optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const filesystem::path& fileSuffix) const
     {

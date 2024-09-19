@@ -154,6 +154,11 @@ namespace Stroika::Foundation::DataExchange {
             optional<String>                          fTypePrintName;
             optional<Containers::Set<FileSuffixType>> fFileSuffixes;
             optional<FileSuffixType>                  fPreferredSuffix;
+
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
         };
 
     public:
@@ -208,6 +213,8 @@ namespace Stroika::Foundation::DataExchange {
             Memory::SharedByValue<IFrontendRep_, Memory::SharedByValue_Traits<IFrontendRep_, shared_ptr<IFrontendRep_>, Rep_Cloner_>>;
 
         SharedRepByValuePtr_ fFrontEndRep_;
+
+        static FrontendRep_ kDefaultFrontEndForNoBackend_;
 
     public:
         /**
