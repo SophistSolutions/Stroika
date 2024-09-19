@@ -1296,7 +1296,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
          */
-        template <typename RESULT_TYPE = T, Common::IPotentiallyComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
+        template <constructible_from<T> RESULT_TYPE = T, Common::IPotentiallyComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
         nonvirtual optional<RESULT_TYPE> Median (const INORDER_COMPARE_FUNCTION& compare = {}) const;
 
     public:

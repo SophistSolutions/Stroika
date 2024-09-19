@@ -1019,7 +1019,7 @@ namespace Stroika::Foundation::Traversal {
         return Sum ().value_or (defaultValue);
     }
     template <typename T>
-    template <typename RESULT_TYPE, Common::IPotentiallyComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
+    template <constructible_from<T> RESULT_TYPE, Common::IPotentiallyComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
     inline optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
     {
         Iterator<T> i = begin ();

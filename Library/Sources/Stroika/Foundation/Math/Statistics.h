@@ -48,12 +48,12 @@ namespace Stroika::Foundation::Math {
      * 
      *  \note O(N) time complexity
      */
+    template <typename RESULT_TYPE, input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
+    RESULT_TYPE Mean (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end);
     template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
     auto Mean (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type;
     template <ranges::range CONTAINER_OF_T>
     auto Mean (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type;
-    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE>
-    RESULT_TYPE Mean_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end);
 
     /**
      *  \brief Median of a collection of numbers computed
@@ -74,10 +74,10 @@ namespace Stroika::Foundation::Math {
      */
     template <typename RESULT_TYPE, input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2,
               Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
-    RESULT_TYPE Median (ITERATOR_OF_T&& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {});
+    RESULT_TYPE Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {});
     template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2,
               Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION = less<typename iterator_traits<ITERATOR_OF_T>::value_type>>
-    auto Median (ITERATOR_OF_T&& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {}) ->
+    auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {}) ->
         typename iterator_traits<ITERATOR_OF_T>::value_type;
     template <ranges::range CONTAINER_OF_T, Common::IInOrderComparer<typename CONTAINER_OF_T::value_type> INORDER_COMPARE_FUNCTION = less<typename CONTAINER_OF_T::value_type>>
     auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {}) -> typename CONTAINER_OF_T::value_type;
