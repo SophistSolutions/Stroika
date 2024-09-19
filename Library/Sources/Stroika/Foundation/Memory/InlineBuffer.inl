@@ -48,16 +48,16 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    template <input_iterator ITERATOR_OF_T>
-    InlineBuffer<T, BUF_SIZE>::InlineBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end)
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    InlineBuffer<T, BUF_SIZE>::InlineBuffer (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
         : InlineBuffer{}
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, T>);
-        auto sz = static_cast<size_t> (distance (start, end));
+        auto sz = static_cast<size_t> (ranges::distance (start, forward<ITERATOR_OF_T2> (end)));
         if (not this->HasEnoughCapacity_ (sz)) [[unlikely]] {
             reserve (sz, true); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
         }
-        uninitialized_copy (start, end, this->begin ());
+        ranges::uninitialized_copy (start, forward<ITERATOR_OF_T2> (end), this->begin (), this->begin () + sz);
         fSize_ = sz;
         Invariant ();
     }
