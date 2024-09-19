@@ -152,6 +152,13 @@ namespace Stroika::Foundation::Memory {
      *  \note a bit like value_or, but RHS arg can be optional or T, and depending returns optional or T and this takes default value
      *  @see Value ()
      *
+     *  \par Example Usage
+     *      \code
+     *          optional<uint64_t> workingOrResidentSetSize = NullCoalesce (thisProcess.fWorkingSetSize, thisProcess.fResidentMemorySize);
+     *          uint64_t useMemUsageSz = NullCoalesce (workingOrResidentSetSize, 1024);
+     *          uint64_t useMemUsageSz2 = NullCoalesce (workingOrResidentSetSize);
+     *      \endcode
+     *
      *  \note NullCoalesce overloads returns a const T& internal pointer: that means the caller
      *        MAY need to be careful to finish using the result of the function before the end of the full expression calling NullCoalesce ().
      */
