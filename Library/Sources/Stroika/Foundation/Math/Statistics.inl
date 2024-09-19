@@ -14,24 +14,32 @@ namespace Stroika::Foundation::Math {
      ************************************ Mean **************************************
      ********************************************************************************
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE>
-    RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end)
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE>
+    auto Mean_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> RESULT_TYPE
     {
         Require (start != end); // the mean of 0 items would be undefined
         unsigned int cnt{};
         RESULT_TYPE  result{};
-        for (ITERATOR_OF_T i = start; i != end; ++i) {
+        for (ITERATOR_OF_T i = start; i != forward<ITERATOR_OF_T2> (end); ++i) {
             result += *i;
             ++cnt;
         }
         return result / cnt;
     }
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE>
-    inline RESULT_TYPE Mean (const CONTAINER_OF_T& container)
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    inline auto Mean (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type
+    {
+        using RETURN_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type;
+        return Mean_R<ITERATOR_OF_T, ITERATOR_OF_T2, RETURN_TYPE> (start, forward<ITERATOR_OF_T2> (end));
+    }
+    template <ranges::range CONTAINER_OF_T>
+    inline auto Mean (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
-        using ITERATOR_TYPE = decltype (begin (container));
-        return Mean<ITERATOR_TYPE, RESULT_TYPE> (begin (container), end (container));
+        using ITERATOR_TYPE  = remove_cvref_t<decltype (begin (container))>;
+        using ITERATOR_TYPE2 = remove_cvref_t<decltype (end (container))>;
+        using RETURN_TYPE    = typename CONTAINER_OF_T::value_type;
+        return Mean_R<ITERATOR_TYPE, ITERATOR_TYPE2, RETURN_TYPE> (begin (container), end (container));
     }
 
     /*
@@ -39,13 +47,13 @@ namespace Stroika::Foundation::Math {
      ********************************** Median **************************************
      ********************************************************************************
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
-    RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end, const INORDER_COMPARE_FUNCTION& compare)
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
+    RESULT_TYPE Median_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare)
     {
-        Require (start != end);                           // the median of no values would be undefined
-        Memory::StackBuffer<RESULT_TYPE> tmp{start, end}; // copy cuz data modified
-        size_t                           size = distance (start, end);
-        nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end (), compare);
+        Require (start != end);                                                     // the median of no values would be undefined
+        Memory::StackBuffer<RESULT_TYPE> tmp{start, forward<ITERATOR_OF_T2> (end)}; // copy cuz data modified
+        size_t                           size = ranges::distance (start, end);
+        nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end (), forward<INORDER_COMPARE_FUNCTION> (compare));
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // warning with gcc cross-compile to raspberrypi - no idea why --LGP 2018-09-13
         RESULT_TYPE result{tmp[size / 2]};
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"");
@@ -53,18 +61,28 @@ namespace Stroika::Foundation::Math {
             Assert (size >= 2); // cuz require at start >=1 and since even
             // NB: Could use sort instead of nth_element, and some on the web suggest faster, but sort is O(n*log(n)), and nth_element is O(n) (even
             // when you do it twice.
-            nth_element (tmp.begin (), tmp.begin () + size / 2 - 1, tmp.end (), compare);
+            nth_element (tmp.begin (), tmp.begin () + size / 2 - 1, tmp.end (), forward<INORDER_COMPARE_FUNCTION> (compare));
             result += tmp[size / 2 - 1];
             result /= 2;
         }
         return result;
     }
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
-    inline RESULT_TYPE Median (const CONTAINER_OF_T& container, const INORDER_COMPARE_FUNCTION& compare)
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION>
+    inline auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare) ->
+        typename iterator_traits<ITERATOR_OF_T>::value_type
+    {
+        using RETURN_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type;
+        return Median_R<ITERATOR_OF_T, ITERATOR_OF_T2, RETURN_TYPE, INORDER_COMPARE_FUNCTION> (start, forward<ITERATOR_OF_T2> (end),
+                                                                                               forward<INORDER_COMPARE_FUNCTION> (compare));
+    }
+    template <ranges::range CONTAINER_OF_T, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
+    inline RESULT_TYPE Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare)
     {
         Require (not container.empty ());
-        using ITERATOR_TYPE = decltype (begin (container));
-        return Median<ITERATOR_TYPE, RESULT_TYPE, INORDER_COMPARE_FUNCTION> (begin (container), end (container), compare);
+        using ITERATOR_TYPE  = remove_cvref_t<decltype (begin (container))>;
+        using ITERATOR_TYPE2 = remove_cvref_t<decltype (end (container))>;
+        return Median_R<ITERATOR_TYPE, ITERATOR_TYPE2, RESULT_TYPE, INORDER_COMPARE_FUNCTION> (begin (container), end (container),
+                                                                                               forward<INORDER_COMPARE_FUNCTION> (compare));
     }
 
     /*
@@ -72,26 +90,35 @@ namespace Stroika::Foundation::Math {
      **************************** StandardDeviation *********************************
      ********************************************************************************
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE>
-    RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end)
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE>
+    RESULT_TYPE StandardDeviation_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
     {
-        Require (start != end); // the std-deviation of no values would be undefined
-        RESULT_TYPE mean = Mean (start, end);
+        Require (ranges::distance (start, end) >= 1); // the std-deviation of no values would be undefined
+        RESULT_TYPE mean = Mean_R<ITERATOR_OF_T, ITERATOR_OF_T2, RESULT_TYPE> (start, forward<ITERATOR_OF_T2> (end));
         RESULT_TYPE accum{};
         size_t      n{};
         for (auto i = start; i != end; ++i) {
             ++n;
             accum += (*i - mean) * (*i - mean);
         }
-        Require (n >= 2);
+        Require (n >= 1); // the std-deviation of no values would be undefined
         return sqrt (accum / (n - 1));
     }
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE>
-    inline RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container)
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    auto StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type
     {
-        Require (container.size () >= 2);
-        using ITERATOR_TYPE = decltype (begin (container));
-        return StandardDeviation<ITERATOR_TYPE, RESULT_TYPE> (begin (container), end (container));
+        Require (ranges::distance (start, end) >= 1); // the std-deviation of no values would be undefined
+        return StandardDeviation_R<ITERATOR_OF_T, ITERATOR_OF_T2, typename iterator_traits<ITERATOR_OF_T>::value_type> (
+            forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end));
+    }
+    template <ranges::range CONTAINER_OF_T>
+    inline auto StandardDeviation (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type
+    {
+        Require (container.size () >= 1); // the std-deviation of no values would be undefined
+        using ITERATOR_TYPE  = remove_cvref_t<decltype (begin (container))>;
+        using ITERATOR_TYPE2 = remove_cvref_t<decltype (end (container))>;
+        using RETURN_TYPE    = typename CONTAINER_OF_T::value_type;
+        return StandardDeviation_R<ITERATOR_TYPE, ITERATOR_TYPE2, RETURN_TYPE> (begin (container), end (container));
     }
 
 }

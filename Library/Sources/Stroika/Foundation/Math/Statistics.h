@@ -33,7 +33,7 @@
  *
  *      @todo   Add 'quartile' or some other such functions.
  *
- *      @todo   Do template specializaitons that copy to vector<> or some such, when you cannot
+ *      @todo   Do template specializations that copy to vector<> or some such, when you cannot
  *              do random-access
  *
  *      @todo   redo templates so can specify larger accumulator type for Mean()
@@ -44,14 +44,16 @@ namespace Stroika::Foundation::Math {
     /**
      *  \brief Mean (average) of a collection of numbers computed
      * 
-     *  \req not empty
+     *  \req not empty (or start != end)
      * 
      *  \note O(N) time complexity
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
-    RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end);
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
-    RESULT_TYPE Mean (const CONTAINER_OF_T& container);
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    auto Mean (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type;
+    template <ranges::range CONTAINER_OF_T>
+    auto Mean (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type;
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE>
+    RESULT_TYPE Mean_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end);
 
     /**
      *  \brief Median of a collection of numbers computed
@@ -60,22 +62,30 @@ namespace Stroika::Foundation::Math {
      * 
      *  \note O(N) time complexity
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type,
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2,
+              Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION = less<typename iterator_traits<ITERATOR_OF_T>::value_type>>
+    auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {}) ->
+        typename iterator_traits<ITERATOR_OF_T>::value_type;
+    template <ranges::range CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
+    RESULT_TYPE Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {});
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE,
               Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
-    RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end, const INORDER_COMPARE_FUNCTION& compare = {});
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
-    RESULT_TYPE Median (const CONTAINER_OF_T& container, const INORDER_COMPARE_FUNCTION& compare = {});
+    RESULT_TYPE Median_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {});
 
     /**
      *  SUPER ROUGH DRAFT
-     *  \req size of container >= 2
+     *  \req size of container >= 1
      *
      *  \brief Alias: sd, standard-deviation, stddev
+     *  
+     *  \see https://en.wikipedia.org/wiki/Standard_deviation
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
-    RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end);
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
-    RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container);
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    auto StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type;
+    template <ranges::range CONTAINER_OF_T>
+    auto StandardDeviation (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type;
+    template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, typename RESULT_TYPE>
+    RESULT_TYPE StandardDeviation_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end);
 
 }
 
