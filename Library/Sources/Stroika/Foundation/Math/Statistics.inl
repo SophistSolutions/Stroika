@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Math {
         return Median<RETURN_TYPE> (forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end), forward<INORDER_COMPARE_FUNCTION> (compare));
     }
     template <ranges::range CONTAINER_OF_T, Common::IInOrderComparer<typename CONTAINER_OF_T::value_type> INORDER_COMPARE_FUNCTION>
-    inline auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {}) -> typename CONTAINER_OF_T::value_type
+    inline auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare ) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
         return Median<typename CONTAINER_OF_T::value_type> (begin (container), end (container), forward<INORDER_COMPARE_FUNCTION> (compare));
