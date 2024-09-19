@@ -125,7 +125,7 @@ namespace {
     {
         EXPECT_TRUE (Math::Mean (vector<int> ({1, 3, 5})) == 3);
         EXPECT_TRUE (Math::Mean (vector<int> ({5, 3, 1})) == 3);
-        EXPECT_TRUE (Math::Median (vector<int> ({1, 3, 5})) == 3);
+        EXPECT_EQ (Math::Median (vector<int>{1, 3, 5}), 3);
         EXPECT_TRUE (Math::Median (vector<int> ({5, 3, 1})) == 3);
         EXPECT_TRUE (Math::Median (vector<int> ({5, 3, 19, 1})) == 4);
         EXPECT_TRUE (Math::Mean (vector<double> ({5, 3, 19, 1})) == 7);

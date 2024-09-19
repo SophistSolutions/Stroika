@@ -48,9 +48,9 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename RESULT_TYPE, input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
-    RESULT_TYPE Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare)
+    RESULT_TYPE Median (ITERATOR_OF_T&& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare)
     {
-        Require (start != end);                                                     // the median of no values would be undefined
+        Require (start != end); // the median of no values would be undefined
         Memory::StackBuffer<RESULT_TYPE> tmp{forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end)}; // copy cuz data modified
         size_t                           size = ranges::distance (forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end));
         nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end (), forward<INORDER_COMPARE_FUNCTION> (compare));
@@ -67,14 +67,16 @@ namespace Stroika::Foundation::Math {
         }
         return result;
     }
-    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION>
-    inline auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare) -> typename iterator_traits<ITERATOR_OF_T>::value_type
+    template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2,
+              Common::IInOrderComparer<typename iterator_traits<ITERATOR_OF_T>::value_type> INORDER_COMPARE_FUNCTION>
+    inline auto Median (ITERATOR_OF_T&& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare) ->
+        typename iterator_traits<ITERATOR_OF_T>::value_type
     {
-        using RETURN_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type;
-        return Median<RETURN_TYPE> (forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end), forward<INORDER_COMPARE_FUNCTION> (compare));
+        return Median<typename iterator_traits<ITERATOR_OF_T>::value_type> (forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end),
+                                                                            forward<INORDER_COMPARE_FUNCTION> (compare));
     }
     template <ranges::range CONTAINER_OF_T, Common::IInOrderComparer<typename CONTAINER_OF_T::value_type> INORDER_COMPARE_FUNCTION>
-    inline auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare ) -> typename CONTAINER_OF_T::value_type
+    inline auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
         return Median<typename CONTAINER_OF_T::value_type> (begin (container), end (container), forward<INORDER_COMPARE_FUNCTION> (compare));
