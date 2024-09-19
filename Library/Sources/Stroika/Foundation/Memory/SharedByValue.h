@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Memory {
      *      Earlier versions of Stroika (before 2.1a5) supported operator==(SharedByValue) - and this kind of makes sense
      *      but is a little ambiguous if its measuring pointer (shared reference) equality or actual value equality.
      *
-     *      Better to let the caller use opeartor<=> on cget() or *cget() to make clear their intentions.
+     *      Better to let the caller use operator<=> on cget() or *cget() to make clear their intentions.
      * 
      *  TODO:
      *      @todo http://stroika-bugs.sophists.com/browse/STK-798 - review docs and thread safety
@@ -225,13 +225,6 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          * These operators require that the underlying ptr is non-nil.
-         *
-         *  \em note - the non-const overloads of operator-> and operator* only work if you use a COPY function
-         *              that takes no arguments (otherwise there are no arguments to pass to the clone/copy function).
-         *
-         *              You can always safely use the copy overload.
-         * 
-         *  \note This can be confusing, because at the point of call, its unclear if this may invoke BreakReferences or not
          */
         nonvirtual const element_type& operator* () const;
 
@@ -250,7 +243,7 @@ namespace Stroika::Foundation::Memory {
          *  @see SharedByValue_State.
          *
          *  Note that two subsequent calls on an object CAN return different answers, without any calls to 'this' object.
-         *  Thats because another shared copy can lose a reference. So - if this once returns 'shared', it might later return
+         *  That's because another shared copy can lose a reference. So - if this once returns 'shared', it might later return
          *  solo, without any change to THIS object.
          */
         nonvirtual SharedByValue_State GetSharingState () const;
