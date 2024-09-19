@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <input_iterator ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
-    RESULT_TYPE Median_R (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare)
+    RESULT_TYPE Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare)
     {
         Require (start != end);                                                     // the median of no values would be undefined
         Memory::StackBuffer<RESULT_TYPE> tmp{start, forward<ITERATOR_OF_T2> (end)}; // copy cuz data modified
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Math {
         typename iterator_traits<ITERATOR_OF_T>::value_type
     {
         using RETURN_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type;
-        return Median_R<ITERATOR_OF_T, ITERATOR_OF_T2, RETURN_TYPE, INORDER_COMPARE_FUNCTION> (start, forward<ITERATOR_OF_T2> (end),
+        return Median<ITERATOR_OF_T, ITERATOR_OF_T2, RETURN_TYPE, INORDER_COMPARE_FUNCTION> (start, forward<ITERATOR_OF_T2> (end),
                                                                                                forward<INORDER_COMPARE_FUNCTION> (compare));
     }
     template <ranges::range CONTAINER_OF_T, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Math {
         Require (not container.empty ());
         using ITERATOR_TYPE  = remove_cvref_t<decltype (begin (container))>;
         using ITERATOR_TYPE2 = remove_cvref_t<decltype (end (container))>;
-        return Median_R<ITERATOR_TYPE, ITERATOR_TYPE2, RESULT_TYPE, INORDER_COMPARE_FUNCTION> (begin (container), end (container),
+        return Median<ITERATOR_TYPE, ITERATOR_TYPE2, RESULT_TYPE, INORDER_COMPARE_FUNCTION> (begin (container), end (container),
                                                                                                forward<INORDER_COMPARE_FUNCTION> (compare));
     }
 
