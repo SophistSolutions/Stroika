@@ -42,17 +42,17 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  \brief  SharedByValue_Traits is a utilitity struct to provide parameterized support
+     *  \brief  SharedByValue_Traits is a utility struct to provide parameterized support
      *          for SharedByValue<>
      *
-     *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
+     *  This class should allow SHARED_IMLP to be std::shared_ptr (or another shared_ptr implementation).
      */
     template <typename T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
     struct SharedByValue_Traits {
         using element_type = T;
 
         /**
-         *  Note that the COPIER can ASSERT externally synchronized, and doesnt need to syncronize itself.
+         *  Note that the COPIER can ASSERT externally synchronized, and doesnt need to synchronize itself.
          */
         using element_copier_type = COPIER;
         using shared_ptr_type     = SHARED_IMLP;
@@ -162,6 +162,11 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         */
+        nonvirtual explicit operator bool () const noexcept;
+
+    public:
+        /**
          *  \brief access te underlying shared_ptr stored in the SharedByValue. This should be treated as readonly and
          *         only used to make calls that don't change / mutate the underlying object.
          * 
@@ -184,7 +189,7 @@ namespace Stroika::Foundation::Memory {
          * rwget () returns the real underlying (modifiable) ptr we store. It can be nullptr.
          * 
          * Importantly, it makes sure that there is at most one reference to the 'shared_ptr' value
-         * before returing that pointer, so the caller is the only one modifying the object.
+         * before returning that pointer, so the caller is the only one modifying the object.
          *
          * The no-arg overload uses the builtin copier (overwhelmingly most common), but occasionally its helpful
          * to specify an alternate copier (see CONTAINER::_GetWritableRepAndPatchAssociatedIterator for example).

@@ -65,6 +65,11 @@ namespace Stroika::Foundation::Memory {
         return *this;
     }
     template <typename T, typename TRAITS>
+    inline SharedByValue<T, TRAITS>::operator bool () const noexcept
+    {
+        return fSharedImpl_.get () != nullptr;
+    }
+    template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>& SharedByValue<T, TRAITS>::operator= (shared_ptr_type&& from) noexcept
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
