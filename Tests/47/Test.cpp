@@ -80,22 +80,22 @@ namespace {
             double   resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
             for (size_t i = 0; i < Memory::NEltsOf (srcBinData); ++i) {
-                EXPECT_TRUE (srcBinData[i] == resultData[i]);
+                EXPECT_EQ (srcBinData[i], resultData[i]);
             }
         }
         {
             uint32_t srcBinData[] = {3, 5, 19, 2};
             double   resultData[2];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            EXPECT_TRUE (8 == resultData[0]);
-            EXPECT_TRUE (21 == resultData[1]);
+            EXPECT_EQ (8, resultData[0]);
+            EXPECT_EQ (21, resultData[1]);
         }
         {
             uint32_t srcBinData[] = {3, 5, 19, 2, 0, 0, 0};
             double   resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
             EXPECT_TRUE (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
-            EXPECT_TRUE (0 == resultData[3]);
+            EXPECT_EQ (0, resultData[3]);
         }
         {
             uint32_t srcBinData[] = {3, 5, 19, 2};
@@ -111,8 +111,8 @@ namespace {
             double   resultData[4];
             using SRC_DATA_DESCRIPTOR = ReBin::BasicDataDescriptor<double, uint32_t>;
             using TRG_DATA_DESCRIPTOR = ReBin::UpdatableDataDescriptor<double, double>;
-            SRC_DATA_DESCRIPTOR srcData (begin (srcBinData), end (srcBinData), 0, 10);
-            TRG_DATA_DESCRIPTOR trgData (begin (resultData), end (resultData), 1, 11);
+            SRC_DATA_DESCRIPTOR srcData{begin (srcBinData), end (srcBinData), 0, 10};
+            TRG_DATA_DESCRIPTOR trgData{begin (resultData), end (resultData), 1, 11};
             trgData.clear ();
             ReBin (srcData, &trgData);
             EXPECT_TRUE (NearlyEquals (3.8, resultData[0]));
@@ -162,9 +162,9 @@ namespace {
         using namespace LinearAlgebra;
         {
             Matrix<int> m{10, 10};
-            EXPECT_TRUE (m[3][3] == 0);
+            EXPECT_EQ (m[3][3] , 0);
             m.SetAt (3, 3, 5);
-            EXPECT_TRUE (m[3][3] == 5);
+            EXPECT_EQ (m[3][3] , 5);
             // @todo support that sort of assign!!!
             //m[3][3] = 5;
         }
