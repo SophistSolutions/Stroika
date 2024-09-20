@@ -42,10 +42,10 @@ namespace {
             DbgTrace ("GUID={}"_f, guidFromStr);
             Common::GUID guidFromArray{array<uint8_t, 16>{0x9d, 0xd4, 0xe4, 0x61, 0x26, 0x8c, 0x80, 0x34, 0xf5, 0xc8, 0x56, 0x4e, 0x15, 0x5c, 0x67, 0xa6}};
             if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
-                EXPECT_TRUE (::memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0);
+                EXPECT_EQ (::memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) , 0);
             }
             if (::memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0) {
-                EXPECT_TRUE (guidFromStr == guidFromArray); // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
+                EXPECT_EQ (guidFromStr , guidFromArray); // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
             }
         }
     }
@@ -133,32 +133,32 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::Properties_"};
         using namespace Test02_Properties_;
         Private_::Headers h;
-        EXPECT_TRUE (h.contentLength1 == 0);
+        EXPECT_EQ (h.contentLength1 , 0u);
         h.contentLength1 = 2;
-        EXPECT_TRUE (h.contentLength2 == 2);
+        EXPECT_EQ (h.contentLength2 , 2u);
         h.contentLength2 = 4;
-        EXPECT_TRUE (h.contentLength1 == 4);
+        EXPECT_EQ (h.contentLength1, 4u);
         Private_::Headers h2 = h;
-        EXPECT_TRUE (h2.contentLength1 == 4);
+        EXPECT_EQ (h2.contentLength1 , 4u);
         h.contentLength2 = 5;
-        EXPECT_TRUE (h.contentLength1 == 5);
-        EXPECT_TRUE (h2.contentLength1 == 4);
+        EXPECT_EQ (h.contentLength1 , 5u);
+        EXPECT_EQ (h2.contentLength1 , 4u);
 
         {
             // event handlers
-            EXPECT_TRUE (h2.contentLength4 == 4);
+            EXPECT_EQ (h2.contentLength4 , 4u);
             h2.contentLength4 = 5;
-            EXPECT_TRUE (h2.contentLength4 == 5);
-            bool firstEventHanlderCalled{false};
+            EXPECT_EQ (h2.contentLength4 , 5u);
+            bool firstEventHandlerCalled{false};
             h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                 DbgTrace ("first event handler called"_f);
-                firstEventHanlderCalled = true;
+                firstEventHandlerCalled = true;
                 return PropertyCommon::PropertyChangedEventResultType::eContinueProcessing;
             });
             h2.contentLength4 = 6;
-            EXPECT_TRUE (h2.contentLength4 == 6);
+            EXPECT_EQ (h2.contentLength4 , 6u);
             bool secondEventHanlderCalled{false};
-            EXPECT_TRUE (firstEventHanlderCalled);
+            EXPECT_TRUE (firstEventHandlerCalled);
             h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                 DbgTrace ("second event handler called"_f);
                 secondEventHanlderCalled = true;
@@ -166,7 +166,7 @@ namespace {
             });
             h2.contentLength4 = 7;
             EXPECT_TRUE (secondEventHanlderCalled);
-            EXPECT_TRUE (h2.contentLength4 == 6); // because event handler returned PropertyChangedEventResultType::eSilentlyCutOffProcessing, this time NO
+            EXPECT_EQ (h2.contentLength4 , 6u); // because event handler returned PropertyChangedEventResultType::eSilentlyCutOffProcessing, this time NO
         }
     }
 }
@@ -184,9 +184,9 @@ namespace {
         }
         {
             GUID g1 = GUID::GenerateNew ();
-            EXPECT_TRUE (GUID{g1.As<Characters::String> ()} == g1);
-            EXPECT_TRUE (GUID{g1.As<string> ()} == g1);
-            EXPECT_TRUE (GUID{g1.As<Memory::BLOB> ()} == g1);
+            EXPECT_EQ (GUID{g1.As<Characters::String> ()} , g1);
+            EXPECT_EQ (GUID{g1.As<string> ()} , g1);
+            EXPECT_EQ (GUID{g1.As<Memory::BLOB> ()} , g1);
         }
     }
 }
