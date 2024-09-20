@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Traversal {
     {
         RequireNotNull (fRep_);
         fRep_->More (&fCurrentValue_, false);
-        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+        this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (unique_ptr<IRep>&& rep) noexcept
@@ -51,21 +51,21 @@ namespace Stroika::Foundation::Traversal {
     {
         RequireNotNull (fRep_);
         fRep_->More (&fCurrentValue_, false);
-        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+        this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& src)
         : fRep_{src.fRep_ == nullptr ? nullptr : Clone_ (*src.fRep_)}
         , fCurrentValue_{src.fCurrentValue_}
     {
-        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+        this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (Iterator&& src) noexcept
         : fRep_{move (src.fRep_)}
         , fCurrentValue_{move (src.fCurrentValue_)}
     {
-        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+        this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (const EndSentinel&) noexcept
