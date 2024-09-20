@@ -48,10 +48,12 @@ namespace Stroika::Foundation::Traversal {
         DisjointDiscreteRange (const DisjointDiscreteRange&) = default;
         DisjointDiscreteRange (const RangeType& from);
         DisjointDiscreteRange (const initializer_list<RangeType>& from);
-        template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
-        template <IInputIterator<RANGE_TYPE> COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T, sentinel_for<remove_cvref_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>> COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T2>
-        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T2&& end);
+        template <IIterableOf<RANGE_TYPE> RANGES_OF_T>
+        explicit DisjointDiscreteRange (RANGES_OF_T&& from);
+        template <IIterableOf<T> TS>
+        explicit DisjointDiscreteRange (TS&& from);
+        template <IInputIterator<RANGE_TYPE> ITERATOR_OF_RANGE_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_RANGE_OF_T>> ITERATOR_OF_RANGE_OF_T2>
+        explicit DisjointDiscreteRange (ITERATOR_OF_RANGE_OF_T&& start, ITERATOR_OF_RANGE_OF_T2&& end);
         template <IInputIterator<T> ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
         explicit DisjointDiscreteRange (ITERATOR_OF_T&& start, ITERATOR_OF_T2&& end);
 
@@ -88,14 +90,14 @@ namespace Stroika::Foundation::Traversal {
          *          }
          *      \endcode
          *
-         *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
+         *  Elements () makes no guarantees about whether or not modifications to the underlying DisjointDiscreteRange<> will
          *  appear in the Elements() Iterable<T>.
          */
         nonvirtual Iterable<value_type> Elements () const;
 
     public:
         /**
-         *  Not needed, but this provides the ability to performance tweek the search done by Find/FindLastThat
+         *  Not needed, but this provides the ability to performance tweak the search done by Find/FindLastThat
          */
         struct FindHints {
             value_type fSeedPosition;

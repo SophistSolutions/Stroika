@@ -33,18 +33,21 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename RANGE_TYPE>
-    template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
-    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from)
-        : DisjointDiscreteRange{from.begin (), from.end ()}
+    template <IIterableOf<RANGE_TYPE> RANGES_OF_T>
+    inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (RANGES_OF_T&& from)
+        : DisjointDiscreteRange{begin (forward<RANGES_OF_T> (from)), end (forward<RANGES_OF_T> (from))}
     {
-        static_assert (is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, RangeType> or
-                       is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, value_type>);
     }
     template <typename T, typename RANGE_TYPE>
-    template <IInputIterator<RANGE_TYPE> COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T, sentinel_for<remove_cvref_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>> COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T2>
-    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&&  start,
-                                                                 COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T2&& end)
-        : inherited{forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (start), forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T2> (end)}
+    template <IIterableOf<T> TS>
+    inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (TS&& from)
+        : DisjointDiscreteRange{begin (forward<TS> (from)), end (forward<TS> (from))}
+    {
+    }
+    template <typename T, typename RANGE_TYPE>
+    template <IInputIterator<RANGE_TYPE> ITERATOR_OF_RANGE_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_RANGE_OF_T>> ITERATOR_OF_RANGE_OF_T2>
+    inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (ITERATOR_OF_RANGE_OF_T&& start, ITERATOR_OF_RANGE_OF_T2&& end)
+        : inherited{forward<ITERATOR_OF_RANGE_OF_T> (start), forward<ITERATOR_OF_RANGE_OF_T2> (end)}
     {
     }
     template <typename T, typename RANGE_TYPE>
