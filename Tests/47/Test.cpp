@@ -162,9 +162,9 @@ namespace {
         using namespace LinearAlgebra;
         {
             Matrix<int> m{10, 10};
-            EXPECT_EQ (m[3][3] , 0);
+            EXPECT_EQ (m[3][3], 0);
             m.SetAt (3, 3, 5);
-            EXPECT_EQ (m[3][3] , 5);
+            EXPECT_EQ (m[3][3], 5);
             // @todo support that sort of assign!!!
             //m[3][3] = 5;
         }
