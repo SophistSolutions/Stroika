@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include <algorithm>
+#include <ranges>
 
 #include "Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -49,7 +50,11 @@ namespace Stroika::Foundation::Math {
     {
         Require (start != forward<ITERATOR_OF_T2> (end));                           // the median of no values would be undefined
         Memory::StackBuffer<RESULT_TYPE> tmp{start, forward<ITERATOR_OF_T2> (end)}; // copy cuz data modified
+        #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+        size_t                           size = distance (start, ITERATOR_OF_T (end));
+        #else
         size_t                           size = ranges::distance (start, forward<ITERATOR_OF_T2> (end));
+        #endif
         nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end (), forward<INORDER_COMPARE_FUNCTION> (compare));
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // warning with gcc cross-compile to raspberrypi - no idea why --LGP 2018-09-13
         RESULT_TYPE result{tmp[size / 2]};
@@ -86,7 +91,9 @@ namespace Stroika::Foundation::Math {
     template <typename RESULT_TYPE, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
     RESULT_TYPE StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
     {
+        #if !qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
         Require (ranges::distance (start, forward<ITERATOR_OF_T2> (end)) >= 1); // the std-deviation of no values would be undefined
+#endif
         RESULT_TYPE mean = Mean<RESULT_TYPE> (start, forward<ITERATOR_OF_T2> (end));
         RESULT_TYPE accum{};
         size_t      n{};
@@ -101,7 +108,9 @@ namespace Stroika::Foundation::Math {
     inline auto StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) ->
         typename iterator_traits<remove_cvref_t<ITERATOR_OF_T>>::value_type
     {
+        #if !qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
         Require (ranges::distance (start, forward<ITERATOR_OF_T2> (end)) >= 1); // the std-deviation of no values would be undefined
+        #endif
         return StandardDeviation<typename iterator_traits<ITERATOR_OF_T>::value_type> (start, forward<ITERATOR_OF_T2> (end));
     }
     template <ranges::range CONTAINER_OF_T>

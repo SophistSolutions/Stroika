@@ -2247,9 +2247,20 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 ./../Characters/String.inl:345:20: note: in instantiation of function template specialization 'Stroika::Foundation::Characters::String::mk_<Stroika::Foundation::Characters::Latin1>' requested here
             return mk_ (span<const Latin1>{reinterpret_cast<const Latin1*> (s.data ()), s.size ()});
                    ^
+
+
+
+ file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.h:403:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:61:9: error: no member named 'uninitialized_copy' in namespace 'std::ranges'; did you mean simply 'uninitialized_copy'?
+        ranges::uninitialized_copy (start, forward<ITERATOR_OF_T2> (end), this->begin (), this->begin () + sz);
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~
+        uninitialized_copy
+/usr/lib/llvm-15/bin/../include/c++/v1/__memory/uninitialized_algorithms.h:67:18: note: 'uninitialized_copy' declared here
+
  */
 #ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-#if defined(__clang_major__)
+#if defined(__clang_major__) && !defined(__APPLE__)
+// broken on ubuntu clang++-15, but the xcode version of clang++ (uses much newer LIBCPP_VERSION) - seems OK
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 0
