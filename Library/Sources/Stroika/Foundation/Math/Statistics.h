@@ -16,8 +16,6 @@
  *  TODO:
  *      @todo   Look at http://www.informit.com/guides/content.aspx?g=cplusplus&seqNum=290
  *
- *      @todo   Consider something like  typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type for RESULT_TYPE
- *
  *      @todo   Math statistics utilities:
  *              Mean()
  *              Mode()
