@@ -258,7 +258,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
 #else
     AssertNotImplemented ();
 #endif
-    return vector<String> (resultSet.begin (), resultSet.end ());
+    return vector<String>{resultSet.begin (), Iterator<String>{resultSet.end ()}};
 }
 
 #if qPlatform_Windows
@@ -268,12 +268,11 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
  ********************************************************************************
  */
 IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const filesystem::path& directoryName, bool watchSubTree, DWORD notifyFilter)
-    : fDirectory (FromPath (directoryName))
-    , fWatchSubTree (watchSubTree)
-    , fThread ()
-    , fDoneEvent (::CreateEvent (nullptr, false, false, nullptr))
-    , fWatchEvent (::FindFirstChangeNotification (fDirectory.AsSDKString ().c_str (), fWatchSubTree, notifyFilter))
-    , fQuitting (false)
+    : fDirectory{FromPath (directoryName)}
+    , fWatchSubTree{watchSubTree}
+    , fDoneEvent{::CreateEvent (nullptr, false, false, nullptr)}
+    , fWatchEvent{::FindFirstChangeNotification (fDirectory.AsSDKString ().c_str (), fWatchSubTree, notifyFilter)}
+    , fQuitting{false}
 {
     fThread = Execution::Thread::New ([this] () { ThreadProc (this); }, Execution::Thread::eAutoStart, L"DirectoryChangeWatcher");
 }

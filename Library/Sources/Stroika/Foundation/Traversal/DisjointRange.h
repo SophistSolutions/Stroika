@@ -17,10 +17,10 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   better document threadsafety stuff and use AssertExternallyLocked locker crap to assert/assure only used at same time
+ *      @todo   better document thread-safety stuff and use AssertExternallyLocked locker crap to assert/assure only used at same time
  *              from multiple threads.
  *
- *      @todo   Proplery handle edge conditions for open/closed stuff - adding open/closed intervals and doing unions properly.
+ *      @todo   Properly handle edge conditions for open/closed stuff - adding open/closed intervals and doing unions properly.
  *              I think all the bugs in MergeIn_();
  *
  *      @todo   Add overload of Contains() taking RANGETYPE, and ensure it does more than test Contains of the endpoints
@@ -31,7 +31,7 @@
  *              And have Contains() overload that takes DisjointRange(), as alias for Intersects(); I think?
  *              Maybe Contains ALWAYS is just alias for Intersects?
  *
- *              DOCUMENT that Contains() is ContainsOrEquals () - not proper contianment.
+ *              DOCUMENT that Contains() is ContainsOrEquals () - not proper containment.
  */
 
 namespace Stroika::Foundation::Traversal {
@@ -69,8 +69,8 @@ namespace Stroika::Foundation::Traversal {
         DisjointRange (const initializer_list<RangeType>& from);
         template <typename CONTAINER_OF_RANGE_OF_T>
         explicit DisjointRange (const CONTAINER_OF_RANGE_OF_T& from);
-        template <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T>
-        explicit DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T start, COPY_FROM_ITERATOR_OF_RANGE_OF_T end);
+        template <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T, sentinel_for<remove_cvref_t<COPY_FROM_ITERATOR_OF_RANGE_OF_T>> COPY_FROM_ITERATOR_OF_RANGE_OF_T2>
+        explicit DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_RANGE_OF_T2&& end);
 
     public:
         nonvirtual DisjointRange& operator= (const DisjointRange& rhs) = default;

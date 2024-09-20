@@ -112,20 +112,20 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-    MultiSet<T, TRAITS>::MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    MultiSet<T, TRAITS>::MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
         requires (IEqualsComparer<equal_to<T>, T>)
         : MultiSet{}
     {
-        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE2> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-    MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE2> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
@@ -260,10 +260,10 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item.fValue, item.fCount);
     }
     template <typename T, typename TRAITS>
-    template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-    void MultiSet<T, TRAITS>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    void MultiSet<T, TRAITS>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
     {
-        for (ITERATOR_OF_ADDABLE i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
+        for (ITERATOR_OF_ADDABLE i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
             Add (*i);
         }
     }
@@ -275,7 +275,9 @@ namespace Stroika::Foundation::Containers {
         if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 // very rare corner case
-                vector<typename remove_cvref_t<ITERABLE_OF_ADDABLE>::value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                using VEC_ELT_T = typename remove_cvref_t<ITERABLE_OF_ADDABLE>::value_type;
+                using ELTS_IT_T = decltype (items.begin ());
+                vector<VEC_ELT_T> copy{std::begin (items), ELTS_IT_T{std::end (items)}}; // because you can not iterate over a container while modifying it
                 for (const auto& i : copy) {
                     Add (i);
                 }

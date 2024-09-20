@@ -90,21 +90,22 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE>
-    Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
         requires (IEqualsComparer<equal_to<DOMAIN_TYPE>, DOMAIN_TYPE> and IEqualsComparer<equal_to<RANGE_TYPE>, RANGE_TYPE>)
         : Bijection{}
     {
-        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE2> (end));
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE>
+    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER,
+              IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
     Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer,
-                                                   ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+                                                   ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
     {
-        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE2> (end));
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -331,10 +332,10 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> COPY_FROM_ITERATOR_KEYVALUE>
-    void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (COPY_FROM_ITERATOR_KEYVALUE&& start, COPY_FROM_ITERATOR_KEYVALUE&& end)
+    template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> COPY_FROM_ITERATOR_KEYVALUE, sentinel_for<remove_cvref_t<COPY_FROM_ITERATOR_KEYVALUE>> COPY_FROM_ITERATOR_KEYVALUE2>
+    void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (COPY_FROM_ITERATOR_KEYVALUE&& start, COPY_FROM_ITERATOR_KEYVALUE2&& end)
     {
-        for (auto i = forward<COPY_FROM_ITERATOR_KEYVALUE> (start); i != forward<COPY_FROM_ITERATOR_KEYVALUE> (end); ++i) {
+        for (auto i = forward<COPY_FROM_ITERATOR_KEYVALUE> (start); i != forward<COPY_FROM_ITERATOR_KEYVALUE2> (end); ++i) {
             Add (*i);
         }
     }
@@ -405,7 +406,15 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_PAIR_RANGE_DOMAIN>
     inline CONTAINER_PAIR_RANGE_DOMAIN Bijection<DOMAIN_TYPE, RANGE_TYPE>::As () const
     {
-        return CONTAINER_PAIR_RANGE_DOMAIN{this->begin (), this->end ()};
+        // @todo change this to constructible_from....
+        if constexpr (derived_from<CONTAINER_PAIR_RANGE_DOMAIN, Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>>) {
+            return CONTAINER_PAIR_RANGE_DOMAIN{this->begin (), this->end ()};
+        }
+        else {
+            // STL containers may require the two iterator arguments to be of the same type
+            using BIT = decltype (this->begin ());
+            return CONTAINER_PAIR_RANGE_DOMAIN{this->begin (), BIT{this->end ()}};
+        }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::clear ()

@@ -144,7 +144,7 @@ namespace {
             Stack<int> a;
             a.Push (1);
             a.Push (2);
-            vector<int> aa (a.begin (), a.end ());
+            vector<int> aa{a.begin (), Iterator<int>{a.end ()}};
             Stack<int>  b{aa};
             EXPECT_EQ (b.size (), 2);
             EXPECT_EQ (b.Pop (), 2);

@@ -729,7 +729,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::Top (COMPARER&& cmp) const
     {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
-        vector<T> tmp{this->begin (), this->end ()};
+        vector<T> tmp{this->begin (), Iterator<T>{this->end ()}};
 #if __cpp_lib_execution >= 201603L
         sort (std::execution::par, tmp.begin (), tmp.end (), forward<COMPARER> (cmp));
 #else
@@ -751,10 +751,10 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::Top (size_t n, COMPARER&& cmp) const
     {
         if (n >= size ()) {
-            return Top (cmp);
+            return Top (forward<COMPARER> (cmp));
         }
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
-        vector<T> tmp{this->begin (), this->end ()};
+        vector<T> tmp{this->begin (), Iterator<T>{this->end ()}};
 #if __cpp_lib_execution >= 201603L
         partial_sort (std::execution::par, tmp.begin (), tmp.begin () + n, tmp.end (), forward<COMPARER> (cmp));
 #else
@@ -787,7 +787,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
-        vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
+        vector<T> tmp{begin (), Iterator<T>{end ()}}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
 #if __cpp_lib_execution >= 201603L
         if (seq == Execution::SequencePolicy::eSeq) {
             stable_sort (tmp.begin (), tmp.end (), inorderComparer);
@@ -1044,7 +1044,7 @@ namespace Stroika::Foundation::Traversal {
                 return *this;
             default: {
                 // Somewhat simplistic / inefficient implementation
-                vector<T>                origList{begin (), end ()};
+                vector<T>                origList{begin (), Iterator<T>{end ()}};
                 size_t                   repeatCountIndex{1}; // start at one, cuz we don't copy the zeroth time
                 size_t                   innerIndex{0};
                 function<optional<T> ()> getNext = [origList, repeatCountIndex, innerIndex, count] () mutable -> optional<T> {
@@ -1100,7 +1100,7 @@ namespace Stroika::Foundation::Traversal {
         return MakeIterator ();
     }
     template <typename T>
-    constexpr Iterator<T> Iterable<T>::end () noexcept
+    constexpr EndSentinel Iterable<T>::end () noexcept
     {
         return Iterator<T>::GetEmptyIterator ();
     }
@@ -1118,7 +1118,7 @@ namespace Stroika::Foundation::Traversal {
         // NB: This transforms perfectly forwarded 'THAT_FUNCTION' and converts it to std::function<> - preventing further inlining at this point -
         // just so it can be done
         _SafeReadRepAccessor<> accessor{this};
-        return accessor._ConstGetRep ().Find (that, seq);
+        return accessor._ConstGetRep ().Find (forward<THAT_FUNCTION> (that), seq);
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
@@ -1160,8 +1160,15 @@ namespace Stroika::Foundation::Traversal {
     template <typename CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRUCTOR_ARGS>
     inline CONTAINER_OF_T Iterable<T>::As (CONTAINER_OF_T_CONSTRUCTOR_ARGS... args) const
     {
-        return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (),
-                               end ()); // use () instead of {} because we do want to allow coercion here - since use explicitly called As<>
+        // some containers require two iterators as arguments, but Stroika ones work with EndSentinel or iterator
+        if constexpr (derived_from<CONTAINER_OF_T, Iterable<T>>) {
+            return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (),
+                                   end ()); // use () instead of {} because we do want to allow coercion here - since use explicitly called As<>
+        }
+        else {
+            return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (),
+                                   Iterator<T>{end ()}); // use () instead of {} because we do want to allow coercion here - since use explicitly called As<>
+        }
     }
     template <typename T>
     T Iterable<T>::Nth (size_t n) const

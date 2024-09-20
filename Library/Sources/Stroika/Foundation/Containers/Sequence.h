@@ -29,7 +29,7 @@
  *                  sequence. Mention alias 'SubSequence' from older todo.
  *
  *      @todo       Stroika v1 had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
- *                  NOTE - this is NOT a special TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
+ *                  NOTE - this is NOT a special TYPE of iterator (unlike STL). Its just iterator returned from rbegin(), rend().
  *
  *      @todo       Sequence<> must support RandomAccessIterator<>
  *
@@ -39,7 +39,7 @@
  *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
  *
  *      @todo       Must support Iterator<T>::operator-(Iterator<T>) or some-such so that SequenceIterator must work with qsort().
- *                  In other words, must act as random-access iterator so it can be used in algorithjms that use STL
+ *                  In other words, must act as random-access iterator so it can be used in algorithms that use STL
  *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)
  *
  *                  std::iterator<input_iterator_tag, T> versus ?? other iterator tag?
@@ -47,7 +47,7 @@
  *      @todo       Maybe add (back) SequenceIterator - with support for operator- (difference), and UpdateCurrent, and GetIndex()
  *                  Maybe also AdvanceBy(), BackBy() methods. Though All these COULD be methods of the underlying Sequence object.
  *
- *      @todo       Implement stuff like Contains () using ApplyUnti.... and lambdas, so locking works cheaply, and
+ *      @todo       Implement stuff like Contains () using ApplyUntil.... and lambdas, so locking works cheaply, and
  *                  so no virtual references to operator== - so can always create Sequence<T> even if no operator== defined
  *                  for T.
  *
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  ->  Add SetLength() method. Make sure it is optimally efficient, but try
      *      to avoid introducing a virtual function. Probably overload, and 1 arg
-     *      version will use T default CTOR. If done nonvirtually with templates
+     *      version will use T default CTOR. If done non-virtually with templates
      *      then we only require no arg CTOR when this function called - GOOD.
      *      Cannot really do with GenClass (would need to compile in separate .o,
      *      even that wont work - need to not compile except when called).
@@ -265,8 +265,8 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
 
     protected:
         explicit Sequence (shared_ptr<_IRep>&& rep) noexcept;
@@ -472,8 +472,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \req IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterableOf<ITERABLE_OF_ADDABLE, T>
          */
-        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<ITERATOR_OF_ADDABLE> ITERATOR_OF_ADDABLE2>
+        nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         nonvirtual void InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s);
 
@@ -514,8 +514,8 @@ namespace Stroika::Foundation::Containers {
          */
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AppendAll (ITERABLE_OF_ADDABLE&& s);
-        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        nonvirtual void AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        nonvirtual void AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
 
     public:
         /**

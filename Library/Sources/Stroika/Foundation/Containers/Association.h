@@ -23,7 +23,7 @@
  *              Especially HashTable, RedBlackTree, and stlhashmap
  *
  *      @todo   Not sure where this note goes - but eventually add "Database-Based" implementation of mapping
- *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
+ *              and/or external file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
  *              other db module would inherit from mapping).
  *
  *      @todo   Keys() method should probably return Set<key_type> - instead of Iterable<key_type>, but concerned about
@@ -36,7 +36,7 @@
  *                          DbgTrace (L"calling OSSL_PROVIDER_unload");
  *                          Verify (::OSSL_PROVIDER_unload (providerToMaybeRemove) == 1);
  *                      }
- *              Above involves two lookups instead of one. Could have Remove () optinally return iterator pointing to next element?
+ *              Above involves two lookups instead of one. Could have Remove () optionally return iterator pointing to next element?
  *              But that only works for stdmap based impl� Could have optional return count of number of remaining with that key.
  *              Maybe too specific to this situation? But at least no cost (pass nullptr by default � add size_t* = nullptr arg 
  *              to rep code and for stl can find quickly and for others need to hunt).
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers {
      * 
      *  \note   Design Note:
      *      \note   We used Iterable<KeyValuePair<Key,T>> instead of Iterable<pair<Key,T>> because it makes for
-     *              more readable usage (foo.fKey versus foo.first, and foo.fValue verus foo.second).
+     *              more readable usage (foo.fKey versus foo.first, and foo.fValue versus foo.second).
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
      *      with multimap<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental conversions. But
      *      if you declare an API with Association<KEY_TYPE,MAPPED_VALUE_TYPE> arguments, its important STL sources passing in multimap<> work transparently.
      *
-     *      Similarly for std::initalizer_list.
+     *      Similarly for std::initializer_list.
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
@@ -200,11 +200,12 @@ namespace Stroika::Foundation::Containers {
         ;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        Association (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        Association (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
             requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>);
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE,
+                  sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
 
     protected:
         explicit Association (shared_ptr<_IRep>&& rep) noexcept;
@@ -267,7 +268,7 @@ namespace Stroika::Foundation::Containers {
          *          reference.
          *
          *  \em Design Note:
-         *      The analagous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
+         *      The analogous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
          *      (https://msdn.microsoft.com/en-us/library/x8bctb9c%28v=vs.110%29.aspx).aspx) returns a live reference
          *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
          *
@@ -360,8 +361,8 @@ namespace Stroika::Foundation::Containers {
          */
         template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
-        template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
 
     public:
         /**
@@ -437,7 +438,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename ITERABLE_OF_KEY_TYPE>
+        template <IIterableOf<KEY_TYPE> ITERABLE_OF_KEY_TYPE>
         nonvirtual void RetainAll (const ITERABLE_OF_KEY_TYPE& items);
 
     public:

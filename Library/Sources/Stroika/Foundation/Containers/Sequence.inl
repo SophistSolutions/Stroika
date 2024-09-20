@@ -129,11 +129,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline Sequence<T>::Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    inline Sequence<T>::Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
         : Sequence{}
     {
-        AppendAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        AppendAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE2> (end));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Containers {
     template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
     auto Sequence<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer) const -> Sequence
     {
-        vector<T> tmp{this->begin (), this->end ()}; // due to Sequence_stdvector move constructor, a not very expensive implementation (but @todo must implement random-access-iterators for Sequence to avoid)
+        vector<T> tmp{this->begin (), Iterator<T>{this->end ()}}; // due to Sequence_stdvector move constructor, a not very expensive implementation (but @todo must implement random-access-iterators for Sequence to avoid)
         stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
         return Concrete::Sequence_stdvector<T>{move (tmp)};
     }
@@ -269,12 +269,12 @@ namespace Stroika::Foundation::Containers {
         return accessor._GetWriteableRep ().Insert (idx, &item, &item + 1);
     }
     template <typename T>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-    void Sequence<T>::InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<ITERATOR_OF_ADDABLE> ITERATOR_OF_ADDABLE2>
+    void Sequence<T>::InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
     {
         Require (i <= this->size ());
         size_t insertAt = i;
-        for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != end; ++ii) {
+        for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != forward<ITERATOR_OF_ADDABLE2> (end); ++ii) {
             Insert (insertAt++, *ii);
         }
     }
@@ -314,11 +314,11 @@ namespace Stroika::Foundation::Containers {
         AppendAll (s.begin (), s.end ());
     }
     template <typename T>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline void Sequence<T>::AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    inline void Sequence<T>::AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
     {
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
             const T& tmp = *i;
             accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, &tmp, &tmp + 1);
         }
@@ -353,14 +353,27 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE>
     inline CONTAINER_OF_ADDABLE Sequence<T>::As () const
     {
-        return CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
+        // some containers require two iterators as arguments, but Stroika ones work with EndSentinel or iterator
+        if constexpr (derived_from<CONTAINER_OF_ADDABLE, Iterable<T>>) {
+            return CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
+        }
+        else {
+            return CONTAINER_OF_ADDABLE{this->begin (), Iterator<T>{this->end ()}};
+        }
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE>
     inline void Sequence<T>::As (CONTAINER_OF_ADDABLE* into) const
     {
         RequireNotNull (into);
-        *into = CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
+        // @todo change this to constructible_from....
+        if constexpr (derived_from<CONTAINER_OF_ADDABLE, Iterable<T>>) {
+            *into = CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
+        }
+        else {
+            // STL containers may require the two iterator arguments to be of the same type
+            *into = CONTAINER_OF_ADDABLE{this->begin (), Iterator<T>{this->end ()}};
+        }
     }
     template <typename T>
     inline auto Sequence<T>::First () const -> optional<value_type>

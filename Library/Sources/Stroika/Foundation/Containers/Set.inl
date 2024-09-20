@@ -76,20 +76,20 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline Set<T>::Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    inline Set<T>::Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
         requires (IEqualsComparer<equal_to<T>, T>)
         : Set{}
     {
-        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE2> (end));
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE2> (end));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -166,11 +166,11 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-    void Set<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    void Set<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers {
         if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, const Iterable<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
-                vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                vector<value_type> copy{std::begin (items), Iterator<value_type>{std::end (items)}}; // because you can not iterate over a container while modifying it
                 AddAll (std::begin (copy), std::end (copy));
                 return;
             }

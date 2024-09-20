@@ -16,7 +16,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Have Difference/Union/Interesection??? methods/?? Do research....
+ *      @todo   Have Difference/Union/Intersection??? methods/?? Do research....
  *
  *      @todo   Consider adding RetainAll (Set<T>) API - like in Collection.h, and Java. Key diff is was force
  *              use of SET as arg - not another Bag? Or maybe overload with different container types as args?
@@ -30,10 +30,10 @@
  *              Or add Bag<> class that does basically this.
  *
  *      @todo   Document relationship with Java Collection<T> (http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html)
- *              Similar but Stroika container interface/containter connection, Equals handling, and other language specific
+ *              Similar but Stroika container interface/container connection, Equals handling, and other language specific
  *              issues. Java has more 'all' variants (and retainAll - see possible todo above). And java makes this
  *              strictly an interface - used by lots of other subtypes (like set<>) - which we may wish to do as
- *              well (not sure - sterl feels this is a very bad idea, and I'm ambivilent).
+ *              well (not sure - sterl feels this is a very bad idea, and I'm ambivalent).
  */
 
 namespace Stroika::Foundation::Containers {
@@ -160,8 +160,8 @@ namespace Stroika::Foundation::Containers {
 #endif
         ;
 
-        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
 
     protected:
         explicit Collection (shared_ptr<_IRep>&& src) noexcept;
@@ -196,8 +196,8 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 

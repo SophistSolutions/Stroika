@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers {
          *  The underlying data structure of the Bijection is defined by @see Factory::Bijection_Factory<>
          * 
          *  \note The constructor arguments DOMAIN_EQUALS_COMPARER or RANGE_EQUALS_COMPARER must be declared to be equals_comparers, to avoid
-         *        ambiguity/accidental mixups between inorder and equals (or three way) comparers. Consider wrapping lambdas with Common::DeclareEqualsComparer
+         *        ambiguity/accidental mix-ups between inorder and equals (or three way) comparers. Consider wrapping lambdas with Common::DeclareEqualsComparer
          *
          *  \note <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
@@ -185,12 +185,13 @@ namespace Stroika::Foundation::Containers {
         ;
         template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, IIterableOf<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERABLE_OF_ADDABLE>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE>
-        Bijection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        Bijection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
             requires (IEqualsComparer<equal_to<DOMAIN_TYPE>, DOMAIN_TYPE> and IEqualsComparer<equal_to<RANGE_TYPE>, RANGE_TYPE>);
-        template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER,
+                  IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERATOR_OF_ADDABLE&& start,
-                   ITERATOR_OF_ADDABLE&& end);
+                   ITERATOR_OF_ADDABLE2&& end);
 
     protected:
         explicit Bijection (shared_ptr<_IRep>&& src) noexcept;
@@ -400,8 +401,8 @@ namespace Stroika::Foundation::Containers {
          */
         template <IIterableOf<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> CONTAINER_OF_KEYVALUE>
         nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
-        template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> COPY_FROM_ITERATOR_KEYVALUE>
-        nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE&& start, COPY_FROM_ITERATOR_KEYVALUE&& end);
+        template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> COPY_FROM_ITERATOR_KEYVALUE, sentinel_for<remove_cvref_t<COPY_FROM_ITERATOR_KEYVALUE>> COPY_FROM_ITERATOR_KEYVALUE2>
+        nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE&& start, COPY_FROM_ITERATOR_KEYVALUE2&& end);
 
     public:
         /**

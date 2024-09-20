@@ -482,8 +482,9 @@ namespace Stroika::Foundation::Traversal {
          * \brief Support for ranged for, and STL syntax in general
          * 
          *  \note in INCOMPATIBLE change in Stroika v3.0d1 - from v2.1 - making this instance method instead of static method (needed for 'std::ranges' concept compatibility).
+         *  \note in Stroika v3.0d10 - changed return type to EndSentinel (from Iterator<T>).
          */
-        static constexpr Iterator<T> end () noexcept;
+        static constexpr EndSentinel end () noexcept;
 
     public:
         /**

@@ -215,11 +215,11 @@ namespace Stroika::Foundation::Containers {
         ;
         template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-        MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
             requires (IEqualsComparer<equal_to<T>, T>);
-        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-        MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
 
     protected:
         explicit MultiSet (shared_ptr<_IRep>&& rep) noexcept;
@@ -253,8 +253,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
         template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
@@ -330,7 +330,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Returns the sum of all tallys of all contained elements. This is equivalent
+         *  Returns the sum of all this MultiSets contained elements. This is equivalent
          *  to Elements ().size ().
          */
         nonvirtual CounterType TotalOccurrences () const;
@@ -440,8 +440,6 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  Return the function used to compare if two elements are equal (not to be confused with MultiSet<>::EqualsComparer)
-         *
-         *  @todo consider RENAMING this to GetElementEqualsComparer() - similarly for TYPE
          */
         nonvirtual ElementEqualityComparerType GetElementEqualsComparer () const;
 

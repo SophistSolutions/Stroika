@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers {
          *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
          *  we allow any template in the Set<> CTOR for an equalityComparer that follows the IEqualsComparer () concept.
          *
-         *  \note   @see also EqualsComparer{} to compare whole Set<>s
+         *  \note   @see also EqualsComparer{} to compare entire Set<>s
          */
         using ElementEqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
 
@@ -191,11 +191,11 @@ namespace Stroika::Foundation::Containers {
         ;
         template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
         Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
             requires (IEqualsComparer<equal_to<T>, T>);
-        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
-        Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
 
     protected:
         explicit Set (shared_ptr<_IRep>&& rep) noexcept;
@@ -212,8 +212,6 @@ namespace Stroika::Foundation::Containers {
          *  Return the function used to compare if two elements are equal
          *
          *  \note   @see also EqualsComparer{} to compare whole Set<>s
-         *
-         *  @todo rename Set<>::GetElementEqualsComparer() to Set<>::GetElementEqualsComparer
          */
         nonvirtual ElementEqualityComparerType GetElementEqualsComparer () const;
 
@@ -293,8 +291,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 

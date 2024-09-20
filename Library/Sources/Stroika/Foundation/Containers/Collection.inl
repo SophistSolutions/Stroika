@@ -25,11 +25,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline Collection<T>::Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    inline Collection<T>::Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
         : Collection{}
     {
-        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE2> (end));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -70,11 +70,11 @@ namespace Stroika::Foundation::Containers {
         return this->Find (item, forward<EQUALS_COMPARER> (equalsComparer)) != this->end ();
     }
     template <typename T>
-    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-    void Collection<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
+    void Collection<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
             tmp._GetWriteableRep ().Add (*i, nullptr);
         }
     }
@@ -85,7 +85,8 @@ namespace Stroika::Foundation::Containers {
         if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, Collection<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
-                vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                // vector iterator CTOR does't support sentinel for second iterator arg...
+                vector<value_type> copy{std::begin (items), Iterator<value_type>{std::end (items)}}; // because you can not iterate over a container while modifying it
                 AddAll (std::begin (copy), std::end (copy));
                 return;
             }

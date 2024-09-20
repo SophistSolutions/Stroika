@@ -26,10 +26,10 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename RANGE_TYPE>
-    template <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T>
-    DisjointRange<T, RANGE_TYPE>::DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T start, COPY_FROM_ITERATOR_OF_RANGE_OF_T end)
+    template <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T, sentinel_for<remove_cvref_t<COPY_FROM_ITERATOR_OF_RANGE_OF_T>> COPY_FROM_ITERATOR_OF_RANGE_OF_T2>
+    DisjointRange<T, RANGE_TYPE>::DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_RANGE_OF_T2&& end)
     {
-        for (auto i = start; i != end; ++i) {
+        for (auto i = forward<COPY_FROM_ITERATOR_OF_RANGE_OF_T> (start); i != forward<COPY_FROM_ITERATOR_OF_RANGE_OF_T2> (end); ++i) {
             MergeIn_ (*i);
         }
         if constexpr (qDebug) {
