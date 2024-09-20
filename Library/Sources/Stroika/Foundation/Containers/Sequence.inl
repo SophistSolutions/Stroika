@@ -353,7 +353,7 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE>
     inline CONTAINER_OF_ADDABLE Sequence<T>::As () const
     {
-        // some containers require two iterators as arguments, but Stroika ones work with EndSentinel or iterator
+        // some containers require two iterators as arguments, but Stroika ones work with default_sentinel_t or iterator
         if constexpr (derived_from<CONTAINER_OF_ADDABLE, Iterable<T>>) {
             return CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
         }

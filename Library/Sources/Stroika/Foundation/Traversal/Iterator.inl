@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
-    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (const EndSentinel&) noexcept
+    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (const default_sentinel_t&) noexcept
         : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
     {
     }
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Traversal {
         return lhsRep->Equals (rhsRep);
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const EndSentinel&) const
+    inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const default_sentinel_t&) const
     {
         return this->Done ();
     }
@@ -244,9 +244,9 @@ namespace Stroika::Foundation::Traversal {
         return rep.Clone ();
     }
     template <typename T, typename ITERATOR_TRAITS>
-    constexpr inline EndSentinel Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator () noexcept
+    constexpr inline default_sentinel_t Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator () noexcept
     {
-        return EndSentinel{};
+        return default_sentinel;
     }
 
     /*

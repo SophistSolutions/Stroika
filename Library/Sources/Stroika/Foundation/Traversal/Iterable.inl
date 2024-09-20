@@ -1100,7 +1100,7 @@ namespace Stroika::Foundation::Traversal {
         return MakeIterator ();
     }
     template <typename T>
-    constexpr EndSentinel Iterable<T>::end () noexcept
+    constexpr default_sentinel_t Iterable<T>::end () noexcept
     {
         return Iterator<T>::GetEmptyIterator ();
     }
