@@ -25,12 +25,12 @@ using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
 
-static_assert (is_same_v<DifferenceType<int>, int>);
-static_assert (is_same_v<DifferenceType<double>, double>);
+static_assert (same_as<DifferenceType<int>, int>);
+static_assert (same_as<DifferenceType<double>, double>);
 
-static_assert (is_same_v<UnsignedOfIf<int>, unsigned int>);
-static_assert (is_same_v<UnsignedOfIf<double>, double>);
-static_assert (is_same_v<UnsignedOfIf<string>, string>);
+static_assert (same_as<UnsignedOfIf<int>, unsigned int>);
+static_assert (same_as<UnsignedOfIf<double>, double>);
+static_assert (same_as<UnsignedOfIf<string>, string>);
 
 #if qHasFeature_GoogleTest
 namespace {

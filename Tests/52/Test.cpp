@@ -637,14 +637,14 @@ namespace {
             auto checkContains = [] ([[maybe_unused]] const CONTAINER& c) {
                 using ELEMENTTYPE = typename CONTAINER::value_type;
                 for (int i = 0; i < 500; ++i) {
-                    if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
+                    if constexpr (same_as<set<ELEMENTTYPE>, CONTAINER>) {
                         EXPECT_TRUE (c.find (i) != c.end ());
                     }
                     else {
                         EXPECT_TRUE (c.Contains (i));
                     }
                 }
-                if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
+                if constexpr (same_as<set<ELEMENTTYPE>, CONTAINER>) {
                     EXPECT_TRUE (c.find (501) == c.end ());
                 }
                 else {
@@ -664,7 +664,7 @@ namespace {
     {
         CONTAINER c;
         for (int i = 0; i < 500; ++i) {
-            if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
+            if constexpr (same_as<set<ELEMENTTYPE>, CONTAINER>) {
                 c.insert (i);
             }
             else {

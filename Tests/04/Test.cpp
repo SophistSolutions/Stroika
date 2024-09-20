@@ -236,15 +236,15 @@ namespace {
             }
             {
                 // verify Configuration::ExtractValueType_t works right
-                static_assert (is_same_v<Configuration::ExtractValueType_t<vector<int>>, int>);
-                static_assert (is_same_v<Configuration::ExtractValueType_t<int>, void>);
-                static_assert (is_same_v<Configuration::ExtractValueType_t<Containers::Collection<char>>, char>);
-                static_assert (is_same_v<Configuration::ExtractValueType_t<Traversal::Iterator<string>>, string>);
-                static_assert (is_same_v<Configuration::ExtractValueType_t<vector<int>&>, int>);
-                static_assert (is_same_v<Configuration::ExtractValueType_t<const vector<int>&>, int>);
-                static_assert (is_same_v<Configuration::ExtractValueType_t<vector<int>&&>, int>);
-                static_assert (is_same_v<Configuration::ExtractValueType_t<int*>, int>);
-                static_assert (is_same_v<Configuration::ExtractValueType_t<const int*>, int>);
+                static_assert (same_as<Configuration::ExtractValueType_t<vector<int>>, int>);
+                static_assert (same_as<Configuration::ExtractValueType_t<int>, void>);
+                static_assert (same_as<Configuration::ExtractValueType_t<Containers::Collection<char>>, char>);
+                static_assert (same_as<Configuration::ExtractValueType_t<Traversal::Iterator<string>>, string>);
+                static_assert (same_as<Configuration::ExtractValueType_t<vector<int>&>, int>);
+                static_assert (same_as<Configuration::ExtractValueType_t<const vector<int>&>, int>);
+                static_assert (same_as<Configuration::ExtractValueType_t<vector<int>&&>, int>);
+                static_assert (same_as<Configuration::ExtractValueType_t<int*>, int>);
+                static_assert (same_as<Configuration::ExtractValueType_t<const int*>, int>);
             }
         }
     }
