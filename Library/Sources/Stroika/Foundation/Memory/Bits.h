@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <integral INT_TYPE = unsigned int>
     constexpr INT_TYPE Bit (unsigned int bitNumber);
-    template <integral INT_TYPE, unsigned_integral... BIT_ARGS>
+    template <integral INT_TYPE, integral... BIT_ARGS>
     constexpr INT_TYPE Bit (unsigned int bitNumber, const BIT_ARGS&... args);
 
     /**

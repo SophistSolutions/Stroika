@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Memory {
         Require (bitNumber < CHAR_BIT * sizeof (INT_TYPE));
         return static_cast<INT_TYPE> (1) << bitNumber;
     }
-    template <integral INT_TYPE, unsigned_integral... BIT_ARGS>
+    template <integral INT_TYPE, integral... BIT_ARGS>
     inline constexpr INT_TYPE Bit (unsigned int bitNumber, const BIT_ARGS&... args)
     {
         return Bit<INT_TYPE> (bitNumber) | Bit<INT_TYPE> (args...);
