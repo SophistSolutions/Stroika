@@ -12,13 +12,13 @@ namespace Stroika::Foundation::Memory {
      *************************************** Bit ************************************
      ********************************************************************************
      */
-    template <typename INT_TYPE>
+    template <integral INT_TYPE>
     inline constexpr INT_TYPE Bit (unsigned int bitNumber)
     {
         Require (bitNumber < CHAR_BIT * sizeof (INT_TYPE));
-        return (static_cast<INT_TYPE> (1) << bitNumber);
+        return static_cast<INT_TYPE> (1) << bitNumber;
     }
-    template <typename INT_TYPE, typename... BIT_ARGS>
+    template <integral INT_TYPE, unsigned_integral... BIT_ARGS>
     inline constexpr INT_TYPE Bit (unsigned int bitNumber, const BIT_ARGS&... args)
     {
         return Bit<INT_TYPE> (bitNumber) | Bit<INT_TYPE> (args...);
@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Memory {
      ********************************* BitSubstring *********************************
      ********************************************************************************
      */
-    template <typename INT_TYPE>
+    template <integral INT_TYPE>
     inline constexpr INT_TYPE BitSubstring (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset)
     {
         Require (startOffset <= endOffset);
