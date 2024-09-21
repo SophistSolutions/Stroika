@@ -48,6 +48,7 @@ namespace Stroika::Foundation::Math {
     template <typename RESULT_TYPE, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
     RESULT_TYPE Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare)
     {
+        // @todo only do the COPY conditionally - if ITERATOR_OF_T isn't already a random-access iterator...
         Require (start != forward<ITERATOR_OF_T2> (end));                           // the median of no values would be undefined
         Memory::StackBuffer<RESULT_TYPE> tmp{start, forward<ITERATOR_OF_T2> (end)}; // copy cuz data modified
         size_t                           size = tmp.size ();
@@ -87,9 +88,7 @@ namespace Stroika::Foundation::Math {
     template <typename RESULT_TYPE, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
     RESULT_TYPE StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
     {
-#if !qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-        Require (ranges::distance (start, forward<ITERATOR_OF_T2> (end)) >= 1); // the std-deviation of no values would be undefined
-#endif
+        Require (start != forward<ITERATOR_OF_T2> (end)); // the std-deviation of no values would be undefined
         RESULT_TYPE mean = Mean<RESULT_TYPE> (start, forward<ITERATOR_OF_T2> (end));
         RESULT_TYPE accum{};
         size_t      n{};
@@ -104,15 +103,13 @@ namespace Stroika::Foundation::Math {
     inline auto StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) ->
         typename iterator_traits<remove_cvref_t<ITERATOR_OF_T>>::value_type
     {
-#if !qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-        Require (ranges::distance (start, forward<ITERATOR_OF_T2> (end)) >= 1); // the std-deviation of no values would be undefined
-#endif
+        Require (start != forward<ITERATOR_OF_T2> (end)); // the std-deviation of no values would be undefined
         return StandardDeviation<typename iterator_traits<ITERATOR_OF_T>::value_type> (start, forward<ITERATOR_OF_T2> (end));
     }
     template <ranges::range CONTAINER_OF_T>
     inline auto StandardDeviation (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type
     {
-        Require (container.size () >= 1); // the std-deviation of no values would be undefined
+        Require (not container.empty ()); // the std-deviation of no values would be undefined
         return StandardDeviation<typename CONTAINER_OF_T::value_type> (begin (container), end (container));
     }
 
