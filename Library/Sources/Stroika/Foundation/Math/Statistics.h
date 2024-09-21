@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Math {
     template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
     auto Mean (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type;
     template <ranges::range CONTAINER_OF_T>
-    auto Mean (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type;
+    auto Mean (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type;
 
     /**
      *  \brief Median of a collection of numbers computed
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Math {
     auto Median (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end, INORDER_COMPARE_FUNCTION&& compare = {}) ->
         typename iterator_traits<ITERATOR_OF_T>::value_type;
     template <ranges::range CONTAINER_OF_T, Common::IInOrderComparer<typename CONTAINER_OF_T::value_type> INORDER_COMPARE_FUNCTION = less<typename CONTAINER_OF_T::value_type>>
-    auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare = {}) -> typename CONTAINER_OF_T::value_type;
+    auto Median (const CONTAINER_OF_T& container, INORDER_COMPARE_FUNCTION&& compare = {}) -> typename CONTAINER_OF_T::value_type;
 
     /**
      *  \req size of container >= 1
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Math {
     template <input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
     auto StandardDeviation (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end) -> typename iterator_traits<ITERATOR_OF_T>::value_type;
     template <ranges::range CONTAINER_OF_T>
-    auto StandardDeviation (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type;
+    auto StandardDeviation (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type;
 
 }
 

@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Math {
         return Mean<typename iterator_traits<ITERATOR_OF_T>::value_type> (start, forward<ITERATOR_OF_T2> (end));
     }
     template <ranges::range CONTAINER_OF_T>
-    inline auto Mean (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type
+    inline auto Mean (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
         return Mean<typename CONTAINER_OF_T::value_type> (begin (container), end (container));
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Math {
                                                                             forward<INORDER_COMPARE_FUNCTION> (compare));
     }
     template <ranges::range CONTAINER_OF_T, Common::IInOrderComparer<typename CONTAINER_OF_T::value_type> INORDER_COMPARE_FUNCTION>
-    inline auto Median (CONTAINER_OF_T&& container, INORDER_COMPARE_FUNCTION&& compare) -> typename CONTAINER_OF_T::value_type
+    inline auto Median (const CONTAINER_OF_T& container, INORDER_COMPARE_FUNCTION&& compare) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
         return Median<typename CONTAINER_OF_T::value_type> (begin (container), end (container), forward<INORDER_COMPARE_FUNCTION> (compare));
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Math {
         return StandardDeviation<typename iterator_traits<ITERATOR_OF_T>::value_type> (start, forward<ITERATOR_OF_T2> (end));
     }
     template <ranges::range CONTAINER_OF_T>
-    inline auto StandardDeviation (CONTAINER_OF_T&& container) -> typename CONTAINER_OF_T::value_type
+    inline auto StandardDeviation (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type
     {
         Require (container.size () >= 1); // the std-deviation of no values would be undefined
         return StandardDeviation<typename CONTAINER_OF_T::value_type> (begin (container), end (container));

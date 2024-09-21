@@ -33,11 +33,11 @@ namespace {
         // really could use more cases!!!
         EXPECT_EQ (RoundUpTo (2, 10), 10);
         EXPECT_EQ (RoundDownTo (2, 10), 0);
-        EXPECT_TRUE (RoundUpTo (2, 2) == 2);
-        EXPECT_TRUE (RoundDownTo (2, 2) == 2);
-        EXPECT_TRUE (Round<int> (2.2) == 2);
-        EXPECT_TRUE (Round<int> (numeric_limits<double>::max () * 1000) == numeric_limits<int>::max ());
-        EXPECT_TRUE (Round<unsigned int> (numeric_limits<double>::max () * 1000) == numeric_limits<unsigned int>::max ());
+        EXPECT_EQ (RoundUpTo (2, 2), 2);
+        EXPECT_EQ (RoundDownTo (2, 2), 2);
+        EXPECT_EQ (Round<int> (2.2), 2);
+        EXPECT_EQ (Round<int> (numeric_limits<double>::max () * 1000), numeric_limits<int>::max ());
+        EXPECT_EQ (Round<unsigned int> (numeric_limits<double>::max () * 1000), numeric_limits<unsigned int>::max ());
     }
 }
 
@@ -123,13 +123,15 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Math, Test6_Statistics_)
     {
-        EXPECT_TRUE (Math::Mean (vector<int> ({1, 3, 5})) == 3);
-        EXPECT_TRUE (Math::Mean (vector<int> ({5, 3, 1})) == 3);
+        EXPECT_EQ (Math::Mean (vector<int>{1, 3, 5}), 3);
+        EXPECT_EQ (Math::Mean (vector<int>{5, 3, 1}), 3);
         EXPECT_EQ (Math::Median (vector<int>{1, 3, 5}), 3);
-        EXPECT_TRUE (Math::Median (vector<int> ({5, 3, 1})) == 3);
-        EXPECT_TRUE (Math::Median (vector<int> ({5, 3, 19, 1})) == 4);
-        EXPECT_TRUE (Math::Mean (vector<double> ({5, 3, 19, 1})) == 7);
-        EXPECT_TRUE (Math::NearlyEquals (Math::StandardDeviation (vector<double> ({5, 3, 19, 1})), 8.164966, .0001));
+        const auto v = vector<int>{1, 3, 5};
+        EXPECT_EQ (Math::Median (v), 3);
+        EXPECT_EQ (Math::Median (vector<int>{5, 3, 1}), 3);
+        EXPECT_EQ (Math::Median (vector<int>{5, 3, 19, 1}), 4);
+        EXPECT_EQ (Math::Mean (vector<double> ({5, 3, 19, 1})), 7);
+        EXPECT_TRUE (Math::NearlyEquals (Math::StandardDeviation (vector<double>{5, 3, 19, 1}), 8.164966, .0001));
     }
 }
 
@@ -226,12 +228,12 @@ namespace {
                 {
                     using namespace Characters::Literals;
                     Characters::StringBuilder sb;
-                    sb += L"{";
-                    sb += L"k1: " + Characters::Format ("{:.10e}"_f, k1) + ",";
-                    sb += L"k2: " + Characters::Format ("{:.10e}"_f, k2) + ",";
-                    sb += L"tunerInfoD: " + Characters::Format ("{:.10e}"_f, tunerInfoD) + ",";
-                    sb += L"tunerInfoM: " + Characters::Format ("{:.10e}"_f, tunerInfoM);
-                    sb += L"}";
+                    sb << "{"sv;
+                    sb << "k1: "sv << Characters::Format ("{:.10e}"_f, k1) << ","sv;
+                    sb << "k2: "sv << Characters::Format ("{:.10e}"_f, k2) << ","sv;
+                    sb << "tunerInfoD: "sv << Characters::Format ("{:.10e}"_f, tunerInfoD) << ","sv;
+                    sb << "tunerInfoM: "sv << Characters::Format ("{:.10e}"_f, tunerInfoM);
+                    sb << "}"sv;
                     return sb;
                 }
             };
