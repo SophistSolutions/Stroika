@@ -64,7 +64,6 @@ Date:   Tue Aug 6 11:11:58 2024 -0400
 
     draft IThreeWayComparer and new Common::ToInt(strong_ordering) so can be used in switch statement
 
-
 commit 45fe82923de7c7081195d288178bd1692e024221
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Aug 6 11:32:21 2024 -0400
@@ -665,65 +664,11 @@ Date:   Fri Aug 30 10:21:43 2024 -0400
 
     Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
 
-commit e518126b6c1b8c731aebc0cd0cede7fb00be631f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 30 13:32:23 2024 -0400
-
-    cleanups to recent changes
-
-commit 581d4e8dd850f438dd4ffad572f61ccdbe190886
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 30 13:55:37 2024 -0400
-
-    cleanups to recent ArchtypeClasses changes
-
-commit 3ad3b8d29e33777cdc68260e6b6aeddd6ef80c53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 30 14:07:35 2024 -0400
-
-    cosmetic
-
-commit ad466628d69a67fbfe153499959d7c458be534b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 30 14:17:22 2024 -0400
-
-    SortedSet_stdset cleanups
-
-commit 06834aed13e12776748f9d8ac45d5fc32bb8409d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 31 18:47:36 2024 -0400
-
-    minor SkipList cleanup
-
-commit 31643988f2eb434e5b1e023db7c223fdd0ad4cc6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 31 18:48:00 2024 -0400
-
-    Comments
-
-commit 29563357c1d4b0d35dc2492f873f1639f7bee752
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 31 18:48:32 2024 -0400
-
-    Cosmetic
-
 commit bb0da9edefe22c57d074726d00017c960b47cd9f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Aug 31 22:10:16 2024 -0400
 
     tweaks to SkipList<> so works with mapped_type==void (and regtest for that)
-
-commit ce564ed5525b84923f5d025da35b3480c66f1426
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 31 22:19:43 2024 -0400
-
-    maybe not working - try again :
-
-commit 4b99469a8eac686bc2e6b4d33dad93bc76624931
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 3 07:20:19 2024 -0400
-
-    cosmetic
 
 commit 75bc15344bbdf6fbf09e8722f58943428c527a9e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -743,47 +688,11 @@ Date:   Wed Sep 4 10:32:33 2024 -0400
 
     a little progress towards getting SortedSet_SkipList building
 
-commit e8a85ca85711af4c7a8a10df1604d7c91bd14ca6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 10:33:41 2024 -0400
-
-    hopefully fix issue building on clang++ macos
-
-commit 26cc20f88834cb7632edad01ef621981a5a3e507
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 10:40:19 2024 -0400
-
-    more regtests/cleanups/minor
-
-commit 920270746cd23bcfd2270b87c08360f4ff68e64c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 10:54:17 2024 -0400
-
-    Progress on Concrete/SortedSet_SkipList
-
 commit 86f21d41327efa41d9de14846d5536dcccf29354
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 4 11:02:41 2024 -0400
 
     progress on SortedSet_SkipList.
-
-commit c77523952ddc000a7c909d1b27e9e85eb29fb48f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 11:28:03 2024 -0400
-
-    More progress on SortedSet_SkipList
-
-commit d5ccf769d40ed5f11b59904a2e4c49dfbfec21d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 12:18:23 2024 -0400
-
-    Added SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::erase
-
-commit 3a14f8e7d4e967bef4b94d6aa36d23b5aa651b45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 12:24:40 2024 -0400
-
-    fixed typos
 
 commit fa6aa082845227886561edb715be3b88e4f258ad
 Author: Lewis Pringle <lewis@sophists.com>
@@ -791,29 +700,11 @@ Date:   Wed Sep 4 12:43:35 2024 -0400
 
     Array::removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
 
-commit 564f55b4fd5b6bce8f5a2d0ace270ea40e80e9ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 12:51:13 2024 -0400
-
-    Cosmetic
-
 commit 7841a77a16a964b8ff56f5da6083aeec0a156e6d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 4 21:37:26 2024 -0400
 
     LinkedList/DoublyLinkedList - Remove and erase methods (diff is returning itererator)
-
-commit 618323932e24bb1321c29639a725df5749487c7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 21:39:58 2024 -0400
-
-    cleanup warning
-
-commit d0b58a2afc3d3b65289305322ecc9317a89bc664
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 21:41:04 2024 -0400
-
-    cleanup warning
 
 commit 4920e07bad8af382c5b3ca52f72c03cb1f57436d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -826,12 +717,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 5 08:20:20 2024 -0400
 
     Minor cleanup MultiSet_LinkedList
-
-commit 8dfc16a8a1994fa61973cc505cd94ecfa81cc97d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 08:20:57 2024 -0400
-
-    cosmetic
 
 commit dade7b78cb03dc6d38b8ebbe13aea96639e8352f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -863,12 +748,6 @@ Date:   Thu Sep 5 12:14:13 2024 -0400
 
     new Iterable<T>::IsOrderedBy
 
-commit 60d0ed0da4b344a6b3805b7c4bd53f49ecbf4db8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 12:14:31 2024 -0400
-
-    minor SkipList tweak
-
 commit 7a0081f673ff666abe5c2907d56b1922f3b055fe
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 5 17:29:46 2024 -0400
@@ -880,12 +759,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 5 17:30:11 2024 -0400
 
     fixed bug in new IsOrderedBy
-
-commit 5d46e397486abb2739a2fb01dcddbb14216f4d16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 17:30:31 2024 -0400
-
-    cosmetic
 
 commit 356d0db807b1452998011a1752f7a21327d5d8b6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -929,12 +802,6 @@ Date:   Fri Sep 6 13:10:18 2024 -0400
 
     SkipList<>::Add and Collection::Add take optional iterator arg to return 'pointer' to added item, and other docs cleanups
 
-commit 6f1a1d45dd9bcf514b41e2a90cb0000769a3092b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 6 13:17:22 2024 -0400
-
-    Cosmetic
-
 commit 191f743ca96c7346408fe65b4156b9413b54578f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 6 13:17:43 2024 -0400
@@ -953,23 +820,11 @@ Date:   Fri Sep 6 19:57:15 2024 -0400
 
     regtests for SortedCollection_SkipList pass so seems OK
 
-commit 079a3c033051129bce278c8489497c8ac9d5175c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 07:52:20 2024 -0400
-
-    fixed typo
-
 commit 66a45e6ccaedcbaf831c6bc618a7e0ef25d8657b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 7 07:52:49 2024 -0400
 
     SortedKeyedCollection_stdset cleanup
-
-commit fd18779e68f738447a9c665e56e336d5eba85a42
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 07:54:08 2024 -0400
-
-    fixed typo
 
 commit bd9e01b54a915007a5fa40c727e4902f61819de9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -983,35 +838,17 @@ Date:   Sat Sep 7 08:49:16 2024 -0400
 
     changed docs example for KeyedCollection to use lambda
 
-commit aadf5dcceccbd52656e5369242b3bdd164b1524c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 08:52:29 2024 -0400
-
-    cosmetic
-
 commit f7cb83b285dbc7954dc8c08cb8f291256d472111
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 7 09:11:49 2024 -0400
 
     KeyedCollection regtest cleanups
 
-commit 4b228638cb9a643315ca114fd70e919f28658cbc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 09:22:46 2024 -0400
-
-    regtest progress
-
 commit 435a0fc24fba508d5d32c9adc11586cf03f9831f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 7 21:14:33 2024 -0400
 
     progress on SortedKeyedCollection_SkipList
-
-commit b5ab7fb1fbbee3d7293f08d5b8a822da51082b68
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 21:20:16 2024 -0400
-
-    fixed typo
 
 commit c435028124857b375ebbddd45d0107e4679a56bf
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1031,12 +868,6 @@ Date:   Sun Sep 8 08:23:33 2024 -0400
 
     minor/modest progress on SortedKeyedCollection_SkipList
 
-commit bbb0c4e61ee12cb77ee54a1d22a0e585b553494e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 09:39:58 2024 -0400
-
-    Comment
-
 commit 2c5c57cac8d576cfdbb90633ed819a120a013caa
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 8 09:40:39 2024 -0400
@@ -1048,12 +879,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 8 09:41:03 2024 -0400
 
     Progress on SortedKeyedCollection_SkipList
-
-commit f87faf414d6dfbb6ac3d28b541070c6e5921c0d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 11:46:16 2024 -0400
-
-    comments
 
 commit 416ce7213dd63be6bd36262e365d03f836c02a4f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1085,23 +910,11 @@ Date:   Sun Sep 8 16:14:26 2024 -0400
 
     use Private::SkipListBasedContainer on a few skiplist based containers to expose skiplist specific apis
 
-commit b3b61a5c9c554623cb968f3cc47c22c0ba624fa5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 16:20:03 2024 -0400
-
-    Containers cleanup
-
 commit ba246c3c774fe47b275050e30148ff2be7a5959c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 8 18:17:41 2024 -0400
 
     tons of containers cleanups (IImplRepBase_ simplifcaiton, fixed missing fChangeCounts_, and made a few things more terse)
-
-commit 96db4916eda860f5239dc52afbee4fb52500dc2d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 18:18:47 2024 -0400
-
-    Fixed typo
 
 commit aa1ac4420e3b5ce53ca81579cc87258dd8909b7d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1133,23 +946,11 @@ Date:   Mon Sep 9 13:44:43 2024 -0400
 
     experiment on github actions letting you select variable container_image version (defaults to v3)
 
-commit de4cc0797bc9ca5b1d4f542901b979a016875a25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 13:53:56 2024 -0400
-
-    early draft of SortedMultiSet_SkipList
-
 commit a388969d2c5ba4da1db0f679e68c5d3102afab37
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 9 14:29:28 2024 -0400
 
     Cleanup Containers::MultiSet regtests
-
-commit 81b53ba117ad82a465d6aaa6b765ef1f29ef1409
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 14:31:02 2024 -0400
-
-    Comments
 
 commit 5a57d82f4af7ffb009af8b3015138794f0d151af
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1199,24 +1000,6 @@ Date:   Tue Sep 10 10:03:25 2024 -0400
 
     minor cleanusp to GetElementEqualsComparer () return value due to cleanup of ComparisonRelationDeclarationBase CTORs - I think
 
-commit 956a61359f07252be275feabff1a7c1ee91e7341
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 10:16:14 2024 -0400
-
-    Minor SkipList cleanups
-
-commit a1539c03c5d36c6d5d4896f365ff7f0a9fccfac8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 10:19:47 2024 -0400
-
-    cosmetic
-
-commit 9f5240969d9b065fd9f0362062ba634311862b8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 10:20:28 2024 -0400
-
-    Cosmetic
-
 commit b2b36d4c1e537e8e18d0ba82d7029854b2f1361f
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Sep 10 10:29:16 2024 -0400
@@ -1234,18 +1017,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 10 11:18:39 2024 -0400
 
     Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
-
-commit f236be1f754c5066f790b2e547d60997ad249a7f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 12:00:12 2024 -0400
-
-    bug define docs
-
-commit db6e5d102ab18a892ddf4deea1a64ed00ab6b890
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Sep 10 12:01:59 2024 -0400
-
-    bug define docs
 
 commit b410ec93fad0c42e501a142961d8d25595e01a17
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1265,35 +1036,11 @@ Date:   Tue Sep 10 15:11:49 2024 -0400
 
     qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/<qCompilerAndStdLib_UseREQ1_BWA cleanups
 
-commit 04d608895ebc9c3f2e3104e5cebd1da8d128bb4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 15:17:41 2024 -0400
-
-    more tweaks to qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
-commit a6ebba0bbc68f285cfa5520c5e4805e13288eaed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 15:26:48 2024 -0400
-
-    more work on qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA code
-
-commit bfeb6a129a426d7f6f64b375823942934900a0ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 15:58:40 2024 -0400
-
-    more progress on  qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
 commit 2210737c98910efd37aa3c197bc04426339e8825
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 10 16:09:56 2024 -0400
 
     lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
-
-commit 37c894984faf4e1ce1185368db6f5cb714ceb565
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 16:10:47 2024 -0400
-
-    cosmetic
 
 commit c63d3912119f35e1d98101951d490b7bec4cf1e9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1337,29 +1084,11 @@ Date:   Tue Sep 10 23:07:53 2024 -0400
 
     moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
 
-commit 5a5a1b4334c2837c8a0ea1906ef251ce91f34ac7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 23:09:19 2024 -0400
-
-    another qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
-commit 909dea6e5c714ca984f0df50aad31aed56d4676d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 23:12:29 2024 -0400
-
-    cosmetic
-
 commit e70d9120c69319ba207c121b0bdd6ddf3612a72e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 11 08:08:56 2024 -0400
 
     updated docs about new skiplist based containers
-
-commit b4a53578cb9ee11ca82fd95d91cb70d72f11b1ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 08:09:46 2024 -0400
-
-    fixed typo
 
 commit db3d4b4f1124e2bc0868e84c6a9538fc44215ba0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1373,35 +1102,11 @@ Date:   Wed Sep 11 08:41:09 2024 -0400
 
     cleanup association regtests (modernize/gtest)
 
-commit e0ca3dc1a27f0e12abd8acce7829f0c4cdd4689a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 08:41:24 2024 -0400
-
-    Comments
-
-commit 26e9581487ce4fb5eb59bf8d23a6004a9ede6e15
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 08:53:22 2024 -0400
-
-    Comments
-
-commit dbbe0a3acf440c8fd98b3afd916565301b37938c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 08:53:47 2024 -0400
-
-    early draft of SortedAssociation_SkipList
-
 commit fcc4ca9f013ef769558e295ec358f12c2ed2aafd
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 11 10:05:47 2024 -0400
 
     remove a few unneeded KeyEqualsCompareFunctionType casts due to recent fix to DeclareEqualsComparer (ctors)
-
-commit 6faa955abc18b92fbee4e8afa046db021909acdd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 10:35:29 2024 -0400
-
-    progress on SortedAssociation_SkipList
 
 commit b385c16b145de68a41d04e37abdc874036dd9d0f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1445,18 +1150,6 @@ Date:   Wed Sep 11 14:15:33 2024 -0400
 
     SortedAssociation_SkipList regtets - more / done
 
-commit e6f4d5e47a02356e0fe27387f47a9a038875e194
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 14:16:06 2024 -0400
-
-    cosmetic
-
-commit e8fc1c296d05ce59622c961e03af28203529887b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 21:38:23 2024 -0400
-
-    fixed typo
-
 commit a924fbe383642600b5dc2219243092bb25605f12
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 12 07:53:55 2024 -0400
@@ -1468,60 +1161,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Sep 12 14:11:07 2024 -0400
 
     merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
-
-commit 23fa2c41a8f2fc1f485ea2cb769487b86170e9e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 12 14:16:34 2024 -0400
-
-    debugging infratsture for SkipList code to debug issue with Removes
-
-commit 28d3f5119a152708ab9825bdd0dcf9357ee1d6b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 12 15:46:07 2024 -0400
-
-    lose tmphack to test for skiplist remove bug
-
-commit ea60dcc5b35d3bd99d257e6f0f6c3d70c3f15895
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 12 21:37:25 2024 -0400
-
-    minor cleanups to SkipList code - trying to debug issue with Remove(Find(1)) with double 1 entries; and careted AddAddRemoveByFindIteratorFails regtest
-
-commit cb0309b06b6288dffb29897fd3596d26714bff49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 12 21:46:25 2024 -0400
-
-    cosmetic
-
-commit 3ee9b23c4fddd59883b18a666580b3f62f913d6f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 13 13:35:49 2024 -0400
-
-    SkipList cleanups and maybe fixed bug with remove after double add (re-enabled some tests)
-
-commit f1f1688174393e69c76bdee5b05cf8d4852e08fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 13 20:12:24 2024 -0400
-
-    small possible speed tweak from sterl on SkipList code (newOvershotNode)
-
-commit b85f5d8f663d39ff5f90855e929d10279e764f03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 08:27:50 2024 -0400
-
-    cosmetic
-
-commit 01d62b464de2c073b266a41ff7e4c7fd3ead15bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 08:58:52 2024 -0400
-
-    Comments
-
-commit 262fe32d8ed7855ba8b1a4d06478739fc8453c08
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 08:59:50 2024 -0400
-
-    SkipList<> docs, and naming clenaups (use Link over Node)
 
 commit 5d95240e4a52d11cdf139d7eabd66d3059d4f293
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1535,29 +1174,11 @@ Date:   Sat Sep 14 10:38:47 2024 -0400
 
     cleanup Foundation_Containers_SortedMapping regtest
 
-commit ab71bb4b7e8aa037efae4d4d2cc05d916f6039f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 13:25:08 2024 -0400
-
-    cosmetic
-
-commit 0d19d662a28655466912b1b9b86d7d8c794e735e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 14:21:32 2024 -0400
-
-    docs
-
 commit ce12c17dc74d24671c7d13abe4c7871a3d8645d5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 14 16:45:20 2024 -0400
 
     ThreeWayComparerAdapter/InOrderComparerAdapter/EqualsComparerAdapter with attempt at deduction guides but didn't seem to help
-
-commit e7cc4746dd6951a9a6e46357c772a2a011a6e9c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 16:45:42 2024 -0400
-
-    regtest cleanups
 
 commit ce9c7fe74b9c5d00c3f8f9573a7c973c763c30db
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1619,30 +1240,6 @@ Date:   Mon Sep 16 09:12:12 2024 -0400
 
     docs about Container Element comparisons
 
-commit 2b799c4b27b9caa84f5eced0065fb5347c5dbc32
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 10:22:58 2024 -0400
-
-    Regtest cleanup
-
-commit c4ccf41d09b9cf57470ea94e60c6364b0e7c8dfb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 10:23:13 2024 -0400
-
-    Cosmetic
-
-commit 4626de3164c7c78414b5e97bb36e65495c0ccc99
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 10:23:30 2024 -0400
-
-    Minor
-
-commit 99f51badbf84682bd159084f638feaf207d18372
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 10:23:53 2024 -0400
-
-    Comments
-
 commit 07b452f2756bec1c8ebd8d483454a0b5cd615bee
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 16 10:24:18 2024 -0400
@@ -1697,53 +1294,17 @@ Date:   Tue Sep 17 11:44:57 2024 -0400
 
     Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
 
-commit 1bf54be569da3322c949dfd9b803d02c39472bfd
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Sep 17 12:40:36 2024 -0400
-
-    Comments
-
 commit a95ab8d971b42e9659ec1faaf2d2de5be5f4c8b7
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Tue Sep 17 12:53:11 2024 -0400
 
     lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
 
-commit f57f301b852f9e9b95aeb07d6698294a8d8645cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 17 13:08:19 2024 -0400
-
-    Comments
-
-commit 31c1f9b9daa7286dd2604a48fc7e9eb23cabcaaf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 17 13:23:24 2024 -0400
-
-    Comments
-
-commit 1a3e7606dfec34e44e6008c68d6159c3daf40c17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 17 16:38:15 2024 -0400
-
-    docs/comments
-
 commit c905a96bd0bca17460e29fe2b81f26fe40fc7adf
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 17 17:53:11 2024 -0400
 
     concepts on Atom<>::As()
-
-commit 1c01e5c2f726c9560a2cd31c0c832237fc398f4b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 17 17:53:26 2024 -0400
-
-    docs
-
-commit 1c1991136fc71aa39d699939caabb4261fccc0c6
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 17 20:06:36 2024 -0400
-
-    fixed typo
 
 commit 3bbaae68e393ad35d440d4f3d54505f068b0f71d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1787,24 +1348,6 @@ Date:   Wed Sep 18 22:35:44 2024 -0400
 
     InternetMediaTypeRegistry::sThe tweak
 
-commit 0a5ca8056b6b942a06cadc3f85b153c7eae17afd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 08:10:37 2024 -0400
-
-    cosmetic
-
-commit e8cfef210b5968615b2d83b67d4934a81a289af0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 08:11:25 2024 -0400
-
-    cosmetic
-
-commit c456e8e816ba602788d0374af2e67bf0a6430681
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 10:06:02 2024 -0400
-
-    experimental changes to Math::Median again...
-
 commit b04614a3389cddcd030858783e6edccba238cf49
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 11:53:42 2024 -0400
@@ -1829,18 +1372,6 @@ Date:   Thu Sep 19 11:56:48 2024 -0400
 
     lose a few references to newly deprecated functions
 
-commit 181c9c6222272d3acfe6c67f89c63be25440da15
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 12:25:30 2024 -0400
-
-    Comments
-
-commit 901eda2ad95314bc71abdf52d49e404d93b238f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 12:25:53 2024 -0400
-
-    comments
-
 commit 5d8c5e831f4c4cde51f65523e7eda8ff103d2a9b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 12:26:42 2024 -0400
@@ -1853,77 +1384,17 @@ Date:   Thu Sep 19 12:35:30 2024 -0400
 
     more cleanups of API for Math::Median template - I think I have it right now
 
-commit 4ffd3b6c189e63671cd46c17e57e1de44964e946
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 12:36:49 2024 -0400
-
-    Fixed typo
-
-commit bf30ab704c300ba187121d11452fcdff239b3e02
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 12:37:29 2024 -0400
-
-    Fixed typo
-
-commit 1cc33684656fdfa21c769152fdcc863645b519b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 12:37:59 2024 -0400
-
-    Fixed typo
-
 commit 756e053f4ccb898a44805dd0aa35f396850e2bc3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 12:50:35 2024 -0400
 
     docs and more clenaups to Math::Median
 
-commit 23e2c04d3d250defd8dd3bc42ff46693ac8d2f18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 13:21:05 2024 -0400
-
-    more tweaks to Mean/Median/Math templates
-
-commit 415310824e4ba299a6fd36e2a9e5808e56beab86
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 13:37:13 2024 -0400
-
-    Minor progress on Math:: Median/Mean code
-
 commit 7436da02820014f08e8519487a5bf6ece3600ec1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 16:30:45 2024 -0400
 
     more stats code cleanups and regtests
-
-commit 4966401c6565eeb7eed9b37d584e9d53a92d14c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 20:52:42 2024 -0400
-
-    react to clang=specific compiler issues
-
-commit af928cc6aea1ce08391dd1328e503ced9caaba19
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 20:50:10 2024 -0400
-
-    Comments
-
-commit af071fd7dc6d3c910d1278b597d9e5c348afa9fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 20:50:27 2024 -0400
-
-    cosmetic
-
-commit e4ff1ed932e20e5c15f20e9e1807d190fb80c732
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 20:59:22 2024 -0400
-
-    Minor Math/Stats cleanups
-
-commit a78b42b020d2102b1893c2fe896912f118f015c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 22:49:58 2024 -0400
-
-    Comments
 
 commit b9bdc7deb13dcdf0c8bf5f97b4c87a322146a5e4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1949,23 +1420,11 @@ Date:   Fri Sep 20 10:58:54 2024 -0400
 
     more qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA for clang++15
 
-commit 0fde75d62d80baf36d7d84343c942f6e2e430833
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 11:03:49 2024 -0400
-
-    cosmetic
-
 commit 5443e183abfc12e039f9a76a4da58a34ef9ea426
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 20 11:34:15 2024 -0400
 
     lose temporary EndSentinel and just use default_sentinel_t
-
-commit 35b7bab56706fafdd2b3b8d323b81e9f2407c05b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 11:34:30 2024 -0400
-
-    cosmetic
 
 commit 6af514cae5e9870fb4350f86d80e5f4a652ebd26
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1979,29 +1438,11 @@ Date:   Fri Sep 20 11:38:05 2024 -0400
 
     doker container uses VS_17_11_4
 
-commit 730d8d3f6a8ed04959a39a4a337d259a2d9d6df4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 11:50:15 2024 -0400
-
-    cosmetic
-
-commit 4f7f3e631f2a86b396ec264de0fd2b7ef90e0adb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 21 10:22:37 2024 -0400
-
-    silence warnings
-
 commit 52606bc924fb9f0d418eb052538e7e7223867b1b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 21 10:33:14 2024 -0400
 
     fixed issues with Math::Statistics (overloads/templates magic) and regtest cleanups
-
-commit d6a50a9e9615609776e40d8252eeb8035ea5c2e5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Sep 21 10:34:45 2024 -0400
-
-    Cosmetic
 
 commit 45ce1fd89b32eab6dc07bfd3806a95e9a55f2629
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2009,12 +1450,6 @@ Date:   Sat Sep 21 10:39:25 2024 -0400
 
     workaround weired gcc Error: attempt to compute the difference between a singular iterator to a
     dereferenceable (start-of-sequence) iterator ussue
-
-commit 7e08b74a11863120ec0d22f2250a38836537d5e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 21 10:48:55 2024 -0400
-
-    start 3.0d10 release
 
 commit f044e4f939a31cea4fd68940569f7271830fe18d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2027,12 +1462,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 21 11:01:25 2024 -0400
 
     tweak SKEL Makefile rule for latest-submodules
-
-commit da7dd4b894c56283172a78724b1666140c292070
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 21 11:17:05 2024 -0400
-
-    docs
 
 -- NEW openssl repo location FETCHURLDOWNLOADS... = github
 
