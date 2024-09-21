@@ -2267,6 +2267,42 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 #endif
 
+
+
+/*
+       [==========] 2 tests from 1 test suite ran. (46 ms total)         [  PASSED  ] 2 tests.
+    [47] Foundation::Math - ../Builds/Debug/Tests/Test47 --gtest_brief
+/usr/include/c++/11/debug/safe_iterator.h:907:
+In function:
+    __gnu_debug::_Safe_iterator<__gnu_cxx::__normal_iterator<const int*, 
+    std::__cxx1998::vector<int, std::allocator<int> > >, 
+    std::__debug::vector<int>, 
+    std::random_access_iterator_tag>::difference_type 
+    __gnu_debug::operator-(const _Self&, const _Self&)
+
+Error: attempt to compute the difference between a singular iterator to a 
+dereferenceable (start-of-sequence) iterator.
+
+Objects involved in the operation:
+    iterator "__lhs" @ 0x0x7ffeee800d60 {
+      type = __gnu_cxx::__normal_iterator<int const*, std::__cxx1998::vector<int, std::allocator<int> > > (constant iterator);
+      state = singular;
+    }
+    iterator "__rhs" @ 0x0x7ffeee800d30 {
+      type = __gnu_cxx::__normal_iterator<int const*, std::__cxx1998::vector<int, std::allocator<int> > > (constant iterator);
+      state = dereferenceable (start-of-sequence);
+      references sequence with type 'std::__debug::vector<int, std::allocator<int> >' @ 0x0x7ffeee801fd0
+    }
+Aborted (core dumped)
+*/
+#ifndef qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy
+#if defined(__GNUC__)
+#define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 11))
+#else
+#define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy 0
+#endif
+#endif
+
 /*
 e included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.h:1290:
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/ObjectVariantMapper.inl:297:9: error: static assertion failed: to use ToObject<> on this type, you must specialize ObjectVariantMapper::ToObject
