@@ -11,7 +11,7 @@ especially those they need to be aware of when upgrading.
 ### START NOTES v3.0d10
 
 #if 0
-
+minor cleanups to BitSubString/Bits() helper functions (concepts and docs
 
 -    readme
     docs
