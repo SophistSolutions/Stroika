@@ -2267,8 +2267,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 #endif
 
-
-
 /*
        [==========] 2 tests from 1 test suite ran. (46 ms total)         [  PASSED  ] 2 tests.
     [47] Foundation::Math - ../Builds/Debug/Tests/Test47 --gtest_brief
