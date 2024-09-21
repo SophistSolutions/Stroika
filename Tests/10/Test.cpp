@@ -256,14 +256,14 @@ namespace {
         Debug::TraceContextBumper ctx{"VoidMappedType"};
         SkipList<int, void>       t;
         t.Invariant ();
-        EXPECT_EQ (t.size (), 0);
+        EXPECT_EQ (t.size (), 0u);
         {
             [[maybe_unused]] auto b = t.begin ();
         }
         t.Add (1);
-        EXPECT_EQ (t.size (), 1);
+        EXPECT_EQ (t.size (), 1u);
         t.Remove (1);
-        EXPECT_EQ (t.size (), 0);
+        EXPECT_EQ (t.size (), 0u);
         t.Apply ([] (auto) {});
     }
 }
