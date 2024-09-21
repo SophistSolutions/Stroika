@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Memory {
     template <Private_::INullCoalescable OT>
     const OT& NullCoalesce (const OT& l, const OT& r);
     template <Private_::INullCoalescable OT, convertible_to<const Private_::OptionalType2ValueType<OT>&> DEFAULT_TYPE = Private_::OptionalType2ValueType<OT>>
-    const Private_::OptionalType2ValueType<OT>& NullCoalesce (const OT& l, const DEFAULT_TYPE& r = {});
+    const Private_::OptionalType2ValueType<OT>& NullCoalesce (const OT& l, const DEFAULT_TYPE& r = DEFAULT_TYPE{});
 
     /**
      *  \brief Same as *t, but Requires that 't' is engaged.
