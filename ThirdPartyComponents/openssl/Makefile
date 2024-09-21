@@ -46,6 +46,7 @@ endif
 ZIPPEDFILE:=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS:=
+FETCHURLS+=https://github.com/openssl/openssl/releases/download/$(BASENAME)/$(BASENAME).tar.gz
 FETCHURLS+=https://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/old/3.1/$(BASENAME).tar.gz
