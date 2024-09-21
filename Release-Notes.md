@@ -11,7 +11,6 @@ especially those they need to be aware of when upgrading.
 ### START NOTES v3.0d10
 
 #if 0
-minor cleanups to BitSubString/Bits() helper functions (concepts and docs
 
 -    readme
     docs
@@ -50,32 +49,6 @@ minor cleanups to BitSubString/Bits() helper functions (concepts and docs
     DataStructures progress: replace ForwardIterator::Equals with operator==; go back to disabling store of fData_ in several ForwardIterators - instead adding data* arg to CurrentIndex (and assert same as fData if we have); iterators return const& (datastructures iterators); and  static_assert (ranges::input_range<LinkedList<int>>) works now
 
 
-
-ThirdPartyComponents
-- Boost
-    /boost/Makefile tweak
-    boost tweaks to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_
-    boost makefile tweaks; and support VERSION:=1_86_0 (not on yet)
-    better boost makefile fix for issue building cobalt and clang++
-  - Curl
-    libcurl 8.10.1
-  - LibXML2
-    libxml2 2.13.4
- - SQLite
-   sqlite 3.46.1
-- Xerces
-    Xerces makefile tweak
- - openssl
-openssl 3.3.2;
-
-  - googletest:
-      thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
-
-
-Memory::Optional
-    Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
-
-
 BUG DEFINES
     qCompiler    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
     tweaks to qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for skiplists
@@ -94,31 +67,6 @@ AndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWAs
     more qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA for clang++15
    and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
     merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
-
-
-Frameworks::Tests:
-  ArchtypeClasses
-    ArchtypeClasses: renamed NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
-      more tweaks to SimpleClassWithoutComparisonOperators
-  
-    Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
-
-
-Traversal::Iterable:
-    tweak  Iterable<T>::SequentialEqualsComparer
-    make Iterable<T>::end() static - not const method
-    use UncheckedDynamicCast in place of static_cast in Iterable<>
-   +static_assert(copyable<T>); on Iterable
-    Cosmetic, and make Iterable<T>::end() static - not const method
-
-    static_asserts about copyable on Iterator, Iterable, etc
-    new Iterable<T>::IsOrderedBy
-
-    Iterable<>::end () now returns EndSentinel (instead of Iterator<T>); and reacted all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept; and since that wasn't done for STL itself, when we could be constructing an STL container (such as vector) - casting the second iterator to Iterator{} (instead of just leaving it as EndSentinel) - not 100% thats the right answer (could be a flaw in my endSentinel class) - will need to dig more
-   
-    lose temporary EndSentinel and just use default_sentinel_t
-
-    Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
 
 
   Cache:
@@ -150,7 +98,6 @@ Common::GUID
     New IThreeWayAdaptableComparer concept and used in ThreeWayComparerAdapter
 
 
-
 Common::KeyValuePair
     KeyValuePair supports void for mapped_type
 
@@ -177,29 +124,135 @@ Math::Statistics:
     docs and more clenaups to Math::Median
 
 
+Memory:
+  minor cleanups to BitSubString/Bits() helper functions (concepts and docs
+
+  Memory::Optional
+      Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
+  
+    SharedByValue<T, TRAITS>::operator bool () support
+
+Traversal::Iterable:
+    tweak  Iterable<T>::SequentialEqualsComparer
+    make Iterable<T>::end() static - not const method
+    use UncheckedDynamicCast in place of static_cast in Iterable<>
+   +static_assert(copyable<T>); on Iterable
+    Cosmetic, and make Iterable<T>::end() static - not const method
+
+    static_asserts about copyable on Iterator, Iterable, etc
+    new Iterable<T>::IsOrderedBy
+
+    Iterable<>::end () now returns EndSentinel (instead of Iterator<T>); and reacted all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept; and since that wasn't done for STL itself, when we could be constructing an STL container (such as vector) - casting the second iterator to Iterator{} (instead of just leaving it as EndSentinel) - not 100% thats the right answer (could be a flaw in my endSentinel class) - will need to dig more
+   
+    lose temporary EndSentinel and just use default_sentinel_t
+
+    Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
+
+
+
+Frameworks::Tests:
+  ArchtypeClasses
+    ArchtypeClasses: renamed NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
+      more tweaks to SimpleClassWithoutComparisonOperators
+  
+    Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
+
+
+ThirdPartyComponents
+- Boost
+    /boost/Makefile tweak
+    boost tweaks to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_
+    boost makefile tweaks; and support VERSION:=1_86_0 (not on yet)
+    better boost makefile fix for issue building cobalt and clang++
+  - Curl
+    libcurl 8.10.1
+  - LibXML2
+    libxml2 2.13.4
+ - SQLite
+   sqlite 3.46.1
+- Xerces
+    Xerces makefile tweak
+ - openssl
+openssl 3.3.2;
+
+  - googletest:
+      thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
+
+
+
+Containers:
+  MISC:
+    fixed concepts usage in Mapping_stdmap
+
+    cleanup SortedMapping_stdmap
+    Mapping_stdmap: is_default_constructible_v/constructible_from cleanups (to regtests etc); default CTORS (using no explicit comparer) now require totally_ordered so is_default_constructible etc wroks right now; and other clenaups
+    Containers/Concrete/Mapping_stdmap tweak
+    experinemental removeal of Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
+
+  deprecated Mapping_stdmap - force explicit use of SortedMapping_stdmap
+    minor cleanups - and use Concrete::SortedMapping_stdmap over Concrete::Mapping_stdmap; and default_initializable over is_default_constructible_v
+
+    SortedMapping_stdmap supports STDMAP move CTOR and used more appropriatley in ObjectVariantMapper.inl
+
+    deprecated Association_stdmultimap: instead use SortedAssociation_stdmultimap
+
+    Lots of docs cleanups (to performance/data structures code) ; and deprecated Collection_stdmultiset -> SortedCollection_stdmultiset instead
+
+    Big cleanup to Collection regtests
+
+    Minor cleanup to SortedCollection_LinkedList
+
+    cleanup Sequnce regtests
+
+    progress on SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
+
+    draft Foundation_Containers_SortedCollection, SortedCollection_SkipList regtest
+
+    SortedKeyedCollection_stdset cleanup
+
+    changed docs example for KeyedCollection to use lambda
+
+    KeyedCollection regtest cleanups
+
+    tweak to SortedMultiSet_stdmap
+
+    back/front etc aliases for Queue/DeQueue
+
+    Clenaup container remove code to use Remove for erase from datastructure layer depending on need to get updated iterator
+
+    Minor cleanup MultiSet_LinkedList
+
+    cleanup Mapping regtests for googletest
+
+    docs about Container Element comparisons
+
+    SortedCollection_Factory supports (untested) IThreeWayAdaptableComparer
+
+    factored shrink_to_fit/reserve/capacity code out of Sequence_stdvector into helper class StdVectorBasedContainer template (no usage / api changes)
+
+    cosmeitc, and cleanups to Sequence_stdvector
+
+    deprecated KeyedCollection_stdset (in favor of just calling SortedKeyedCollection_stdset)
+
+    deprecated MultiSet_stdmap (use SortedMultiSet_stdmap instead)
+
+    deprecatee Set_stdset replace with SortedSet_stdset; and related docs cleanups
+
+    new Set<>::CloneEmpty method (may want for other containers) - and used to improve sematncis and performance of Union, and a few other apis
+
+    renamed  SortedSet<T>::GetInOrderComparer () ->  SortedSet<T>::GetElementInOrderComparer () ; and start at GetThreeWayComparer support for SortedSet
+
+    SortedSet<> IRep now directly supports GetElementThreeWayComparer (test size implications)
+
+    Changed SortedSet REP and SortedCollection REP classes to use GetElementThreeWayComparer instead of GetElementInOrderComparer
+
+
+
 commit 879c1644001af8c5a6361c71876386e055e1aa6a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 7 13:48:10 2024 -0400
 
     use .empty () instead of .size() == 0 in a bunch of places (can be more performant); IteratorImplHelper_ supports passing low level iterator as arg; ForwardIterator::operator bool () on the various datastructure forwarditerators; SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) method and similar name cleanups on other datastructure classes; and more use of concepts on these function calls; and cleaned up / normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
-
-commit 5de53bc3be4bfe6776cfb7a647fd782b313b8b74
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 12 22:02:44 2024 -0400
-
-    fixed concepts usage in Mapping_stdmap
-
-commit 7d5287dfce8eccd2f66d486152bbddef748a29fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 13 08:26:05 2024 -0400
-
-    cleanup SortedMapping_stdmap
-
-commit dff6896eef9ea7fb4fac9c9c6d7b2285413433c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 13 08:26:56 2024 -0400
-
-    Early draft of Mapping_SkipList<>
 
 commit 5991e488205d992af4932fba086a1c08105a15f3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -212,12 +265,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Aug 16 15:39:32 2024 -0400
 
     Configuration Concepts Select_t utility
-
-commit 4bff1a370420fa276ddf6f7b70df5903c81186e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 16 17:22:16 2024 -0400
-
-    Mapping_stdmap: is_default_constructible_v/constructible_from cleanups (to regtests etc); default CTORS (using no explicit comparer) now require totally_ordered so is_default_constructible etc wroks right now; and other clenaups
 
 commit c55dd4a461bf43d4914495ee8bfc3422641a9f5a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -249,12 +296,6 @@ Date:   Mon Aug 19 10:20:29 2024 -0400
 
     addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
 
-commit fa35d3874aa5955235b589296a7e328de1c763c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 19 13:47:14 2024 -0400
-
-    Containers/Concrete/Mapping_stdmap tweak
-
 commit 6c07ad8967cfc4173ca37b1b5938e527d1fb81e9
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Aug 19 22:03:44 2024 -0400
@@ -266,12 +307,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Aug 20 08:35:00 2024 -0400
 
     use ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build in ubuntu 22.04 container
-
-commit fb532ab02941dbebd64791c01c43a57bcf661d3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 20 11:07:39 2024 -0400
-
-    experinemental removeal of Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
 
 commit 88c6305da88052e05d5878716e76de259022231d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -291,12 +326,6 @@ Date:   Wed Aug 21 09:49:31 2024 -0400
 
     on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
 
-commit 0e857edf83871373c6624c4966b03b6358834281
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 11:10:54 2024 -0400
-
-    document VariantValue regular concept
-
 commit 5c5d873207054bcdfad068cd2b0868c04228e5c2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 21 11:19:22 2024 -0400
@@ -315,42 +344,6 @@ Date:   Wed Aug 21 14:35:52 2024 -0400
 
     docs, static asserts about Satisfies Concepts
 
-commit e49fc0cf6ea762c0aa7e40f8f21d8eac6e959af1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 14:47:24 2024 -0400
-
-    deprecated Mapping_stdmap - force explicit use of SortedMapping_stdmap
-
-commit d18fff49a274c9175200a2f9456674e1d35678e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 14:48:20 2024 -0400
-
-    deprecated Mapping_stdmap - force explicit use of SortedMapping_stdmap
-
-commit cc5e3e4d932a0bb0fe3ed4b6c1f79bb67b3a745e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 15:14:21 2024 -0400
-
-    minor cleanups - and use Concrete::SortedMapping_stdmap over Concrete::Mapping_stdmap; and default_initializable over is_default_constructible_v
-
-commit 89a64fb14c8f68da4b6bfb7127c9d4b7fabef8cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 15:45:46 2024 -0400
-
-    SortedMapping_stdmap supports STDMAP move CTOR and used more appropriatley in ObjectVariantMapper.inl
-
-commit f0f1faa28083994471d6aa687d2e366a58e1976c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 20:00:56 2024 -0400
-
-    deprecated Association_stdmultimap: instead use SortedAssociation_stdmultimap
-
-commit 84a8ee58d71cfaf8925883a92f66c067cf49f071
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 22 08:43:22 2024 -0400
-
-    Lots of docs cleanups (to performance/data structures code) ; and deprecated Collection_stdmultiset -> SortedCollection_stdmultiset instead
-
 commit 76d867a17937152029c6062a25de1805b7ce9482
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Aug 22 09:06:21 2024 -0400
@@ -360,20 +353,6 @@ Date:   Thu Aug 22 09:06:21 2024 -0400
 commit d4287de9b7893b10c2f4fb44c7013cbabc6221b9
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 22 10:32:08 2024 -0400
-
-    deprecated KeyedCollection_stdset (in favor of just calling SortedKeyedCollection_stdset)
-
-commit d294c020144dd06ac7f5993eccb0e1a80d681c19
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 22 11:30:10 2024 -0400
-
-    deprecated MultiSet_stdmap (use SortedMultiSet_stdmap instead)
-
-commit 585d2a373d77670bbf864a6f7698d6a7406f875e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 22 12:09:34 2024 -0400
-
-    deprecatee Set_stdset replace with SortedSet_stdset; and related docs cleanups
 
 commit 791a80df87c019eea71a2b4f31f61e8c7e542b26
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -399,18 +378,6 @@ Date:   Mon Aug 26 22:41:36 2024 -0400
 
     basic-unix-test-configurations tweaks
 
-commit 2af334bcb266d8598da188b85ff52306d0ae7cee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 27 10:06:24 2024 -0400
-
-    factored shrink_to_fit/reserve/capacity code out of Sequence_stdvector into helper class StdVectorBasedContainer template (no usage / api changes)
-
-commit b9a1b36510c95ad63cc04233648ba687375631ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 27 13:57:32 2024 -0400
-
-    cosmeitc, and cleanups to Sequence_stdvector
-
 commit bcf16aa09ae19e3b20a7f6c9b7d541dec9503c45
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Aug 27 13:57:48 2024 -0400
@@ -422,24 +389,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 28 08:58:08 2024 -0400
 
     fixed warnings valgrindline count in regtest(I hope - testing)
-
-commit 199d64e283ae6f28c5e01ece6634ad244658da6f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 28 10:49:15 2024 -0400
-
-    back/front etc aliases for Queue/DeQueue
-
-commit 4920e07bad8af382c5b3ca52f72c03cb1f57436d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 07:37:58 2024 -0400
-
-    Clenaup container remove code to use Remove for erase from datastructure layer depending on need to get updated iterator
-
-commit 6956259f46553e18b52b09730e23b6c7921fa966
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 08:20:20 2024 -0400
-
-    Minor cleanup MultiSet_LinkedList
 
 commit dade7b78cb03dc6d38b8ebbe13aea96639e8352f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -453,54 +402,6 @@ Date:   Thu Sep 5 10:59:58 2024 -0400
 
     more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
 
-commit 27dec61257b8362f28c44e6f4fce544848623c23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 12:13:40 2024 -0400
-
-    Big cleanup to Collection regtests
-
-commit 7a0081f673ff666abe5c2907d56b1922f3b055fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 17:29:46 2024 -0400
-
-    Minor cleanup to SortedCollection_LinkedList
-
-commit 4857d9487bacce38fba9ba8786d6096f4dcd1ef7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 20:20:00 2024 -0400
-
-    cleanup Sequnce regtests
-
-commit 822bbe6b50f53aa9132576377ef65c9e536fc161
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 6 09:46:18 2024 -0400
-
-    progress on SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
-
-commit 191f743ca96c7346408fe65b4156b9413b54578f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 6 13:17:43 2024 -0400
-
-    draft Foundation_Containers_SortedCollection, SortedCollection_SkipList regtest
-
-commit 66a45e6ccaedcbaf831c6bc618a7e0ef25d8657b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 07:52:49 2024 -0400
-
-    SortedKeyedCollection_stdset cleanup
-
-commit 43dbc46cefd0c941e65303c473c732e2e0880acf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 08:49:16 2024 -0400
-
-    changed docs example for KeyedCollection to use lambda
-
-commit f7cb83b285dbc7954dc8c08cb8f291256d472111
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 09:11:49 2024 -0400
-
-    KeyedCollection regtest cleanups
-
 commit ba246c3c774fe47b275050e30148ff2be7a5959c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 8 18:17:41 2024 -0400
@@ -512,12 +413,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 8 23:09:36 2024 -0400
 
     Minor cleanups to ComparisonRelationDeclaration; and Iterable<>::As(); and now many uses of ComparisonRelationDeclaration like ElementInOrderComparerType now also use ArgByValueType
-
-commit 968cc46714ba4abb1ce190a1c97bfb93b0737727
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 08:37:48 2024 -0400
-
-    tweak to SortedMultiSet_stdmap
 
 commit c8e2c683a8f4e44fa63ab485ddea53f4b8f566c5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -667,26 +562,6 @@ commit b45f9a9cc23eb6e85df9e0a267f201fec72a7b7a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 15 10:08:58 2024 -0400
 
-    new Set<>::CloneEmpty method (may want for other containers) - and used to improve sematncis and performance of Union, and a few other apis
-
-commit 61cc29aa60399e2b5ad49a4a8c15fa8a1b5503fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 15 10:46:02 2024 -0400
-
-    renamed  SortedSet<T>::GetInOrderComparer () ->  SortedSet<T>::GetElementInOrderComparer () ; and start at GetThreeWayComparer support for SortedSet
-
-commit 8647db66d1cf5be49927c881509c81a49ff4d4ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 15 11:15:01 2024 -0400
-
-    SortedSet<> IRep now directly supports GetElementThreeWayComparer (test size implications)
-
-commit 72c3524508c34c7a9c26c63e9746b2f987d61ebd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 15 19:51:11 2024 -0400
-
-    Changed SortedSet REP and SortedCollection REP classes to use GetElementThreeWayComparer instead of GetElementInOrderComparer
-
 commit 6d7a7675588b883a563fdda404e124e9f7800867
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sun Sep 15 20:10:44 2024 -0400
@@ -708,20 +583,6 @@ Date:   Mon Sep 16 08:32:12 2024 -0400
 commit 072dce2f0ae47a013e2d5a4e34640730281039cc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 16 09:11:50 2024 -0400
-
-    cleanup Mapping regtests for googletest
-
-commit 7d90e8e5c432f7d45db70318880d54775f58d165
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 09:12:12 2024 -0400
-
-    docs about Container Element comparisons
-
-commit 07b452f2756bec1c8ebd8d483454a0b5cd615bee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 10:24:18 2024 -0400
-
-    SortedCollection_Factory supports (untested) IThreeWayAdaptableComparer
 
 commit 9949fff1038e6c9d55ea19883787600d2f3b4ae5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -799,7 +660,6 @@ commit 00182fe050fe59a579b43efc190655c02f382d22
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 11:54:17 2024 -0400
 
-    SharedByValue<T, TRAITS>::operator bool () support
 
 commit cfcf83ba71e0400d077e3752a2f52c8ca19ad5b1
 Author: Lewis Pringle <lewis@sophists.com>
