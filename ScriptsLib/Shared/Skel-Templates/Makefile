@@ -150,13 +150,10 @@ endif
 update-submodules:
 	git submodule update --init --recursive
 
+STROIKA_COMMIT?=v3-Release
 latest-submodules:
-ifeq ($(BRANCH),)
-	(cd $(StroikaRoot) && git checkout v3-Release && git pull)
-else
-	(cd $(StroikaRoot) && git checkout $(BRANCH) && git pull)
-endif
-
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Checkout Latest Stroika (STROIKA_COMMIT=${STROIKA_COMMIT})"
+	@(cd $(StroikaRoot) && git checkout $(STROIKA_COMMIT) --quiet && git pull --quiet)
 
 format-code:
 	@$(MAKE) --directory=${APP_NAME} --no-print-directory format-code
