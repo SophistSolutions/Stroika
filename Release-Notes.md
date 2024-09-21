@@ -16,47 +16,19 @@ especially those they need to be aware of when upgrading.
 -    readme
     docs
 
-commit c1bcbcdbbf404714e64de2ce632b86c44319e77b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 5 12:56:28 2024 -0400
+- Containers::DataStructures
+  - new SkipList<> implementation
+    - includes regression tests
+    - Concrete::Sorted{Association,Collection,KeyedCollection,Mapping,MultiSet,Set}_SkipList impl, with regtests
+    - Private/SkipListSupport.h
+    - Docs in ReadMe about supported containers/datastructures
 
-    significant progress on SkipList support
-
-commit 759f1c0c72477b70c097d5368199d5543bdf8e1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 5 14:33:34 2024 -0400
-
-    more progress on SkipList code and regtests and stats
-
-commit 8f7a69c9190045c9375ca6858ec2db7e3971a808
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 5 15:01:47 2024 -0400
-
-    Tiny progress on SkipList
-
-commit acb9e72fa0b850b20e82ff9efa5030f2a890d09b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 5 15:12:45 2024 -0400
-
-    Tiny progress on SkipList
 
 commit ecff38eb5bf5b39efad5c075bb88d7673cada5b9
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 5 22:02:41 2024 -0400
 
     Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
-
-commit 4af13be7030f9a08981141df964165eb21efe860
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 5 22:29:51 2024 -0400
-
-    minor cleanups to SkipList code
-
-commit a0730ae4665beeb12ac07b3e4451b3f286b767bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 6 10:08:12 2024 -0400
-
-    got back to using AddOrExtendOrReplaceMode as enum
 
 commit 6e6c1ce4eda0bd7512b67859f662314b8aded235
 Author: Lewis Pringle <lewis@sophists.com>
@@ -142,18 +114,6 @@ Date:   Fri Aug 9 13:38:18 2024 -0400
 
     more progress on data structures; got STLCOntainerWrapper and Array working as ranges
 
-commit 2eb6788437914cc817979dd31c858feff248406d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 10 16:45:27 2024 -0400
-
-     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const ForwardIterator& it); and renamed a few RemoveAt datastructures Remove
-
-commit f19279909672755b058b7e2546ffda9298451b76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 10 20:54:31 2024 -0400
-
-    SkipList<>::UpdateValue method
-
 commit 58126690c430497260affc3c52587092aa0e7953
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Aug 10 21:30:39 2024 -0400
@@ -220,12 +180,6 @@ Date:   Fri Aug 16 17:22:16 2024 -0400
 
     Mapping_stdmap: is_default_constructible_v/constructible_from cleanups (to regtests etc); default CTORS (using no explicit comparer) now require totally_ordered so is_default_constructible etc wroks right now; and other clenaups
 
-commit cc1c359c6ed4d857764aaf06a6a7567b790f2bda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 16 20:14:08 2024 -0400
-
-    Progress on Mapping_SkipList - clsoer to testable
-
 commit 54717dfaa1204c63aa34334da6dbca9971246bd6
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Aug 17 16:27:33 2024 -0400
@@ -267,12 +221,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Aug 18 08:39:21 2024 -0400
 
     Cleanups to IComparer code
-
-commit 0ae14d2035b0741008d6da06516c7ef88dde9fae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 08:53:50 2024 -0400
-
-    Looks like Mapping_Skiplist passing regtests
 
 commit 65999ce75601a70fb7d0354341d124430102bae6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -393,12 +341,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Aug 20 13:23:38 2024 -0400
 
     better boost makefile fix for issue building cobalt and clang++
-
-commit e64c57f9e3ccd5a870ed7b8824f32fb63d43f2e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 20 13:58:46 2024 -0400
-
-    Renamed Mapping_SkipList to SortedMapping_SkipList
 
 commit e706ccb8cecf6f26eb76f0e6da87486581a2b462
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -538,18 +480,6 @@ Date:   Mon Aug 26 00:50:35 2024 -0400
 
     new ArraySupport module, and refactored all the array based container concrete impls to use it, so they all have the same API for array-based concrete extensions
 
-commit 6fd5b422cc436538238478e1c354a7d5bb83c5c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 08:53:22 2024 -0400
-
-    Containers/Private/SkipListSupport.h
-
-commit 785c08a6c528e1c8cfcb9e1b53fab4cb21496c88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 13:29:13 2024 -0400
-
-    lose needless assert
-
 commit e1d8e6a966ee6cb8573752b9a5c8252cbe2f512d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 26 13:29:51 2024 -0400
@@ -562,41 +492,11 @@ Date:   Mon Aug 26 13:30:19 2024 -0400
 
     use UncheckedDynamicCast in place of static_cast in Iterable<>
 
-commit 4b6c6ba43df4ae326b5021004c0f647e47631c21
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 15:05:41 2024 -0400
-
-    Comments
-
 commit 2fb7d6cf5a6f2cb0c77de132663277beabb2ea89
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 26 22:41:36 2024 -0400
 
     basic-unix-test-configurations tweaks
-
-commit a094678133d3b9443b25f0a4d3ded2381167d68b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 22:41:47 2024 -0400
-
-    cosmetic
-
-commit c4732ccef7e9e01d797e0fd7780a1dd2c60bf0bc
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Aug 27 09:21:11 2024 -0400
-
-    fixed typo
-
-commit 1603f586ec9faadf6aa820a46d898c0ca3231804
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Aug 27 09:23:07 2024 -0400
-
-    fixed typo
-
-commit 8084f8477971e097419abd1ae9d9e11beae5ef13
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 27 09:29:49 2024 -0400
-
-    tweak make configuraitons
 
 commit 2af334bcb266d8598da188b85ff52306d0ae7cee
 Author: Lewis Pringle <lewis@sophists.com>
@@ -862,54 +762,6 @@ Date:   Sun Sep 8 08:11:43 2024 -0400
 
     New IThreeWayAdaptableComparer concept and used in ThreeWayComparerAdapter
 
-commit c73d2e4b9a565d8b29ad8961057f946e059f5cef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 08:23:33 2024 -0400
-
-    minor/modest progress on SortedKeyedCollection_SkipList
-
-commit 2c5c57cac8d576cfdbb90633ed819a120a013caa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 09:40:39 2024 -0400
-
-    ALTERNATE_FIND_TYPE mechanism in SkipList<> - like is_transparent mechanism in C++14
-
-commit 009d5570b19836adee2cfef80268dcb966411c6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 09:41:03 2024 -0400
-
-    Progress on SortedKeyedCollection_SkipList
-
-commit 416ce7213dd63be6bd36262e365d03f836c02a4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 11:46:40 2024 -0400
-
-    SortedKeyedCollection_SkipList progress
-
-commit fc685ba96c51c3053ebe669a66da88c45a69384e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 12:58:46 2024 -0400
-
-    more progress on SortedKeyedCollection_SkipList - now compiles
-
-commit 27ad8aca910393a9d3e26969a796e674ba845738
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 13:25:47 2024 -0400
-
-    SortedKeyedCollection_SkipList regtests passing
-
-commit 8c73274e1ea79394388998856683617cd7041d43
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 13:39:19 2024 -0400
-
-    KeyedCollection_SkipList regtest
-
-commit 9c56fdd53f07ea00dffe0c417bd37bab14411b77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 16:14:26 2024 -0400
-
-    use Private::SkipListBasedContainer on a few skiplist based containers to expose skiplist specific apis
-
 commit ba246c3c774fe47b275050e30148ff2be7a5959c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 8 18:17:41 2024 -0400
@@ -1084,12 +936,6 @@ Date:   Tue Sep 10 23:07:53 2024 -0400
 
     moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
 
-commit e70d9120c69319ba207c121b0bdd6ddf3612a72e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 08:08:56 2024 -0400
-
-    updated docs about new skiplist based containers
-
 commit db3d4b4f1124e2bc0868e84c6a9538fc44215ba0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 11 08:10:03 2024 -0400
@@ -1120,35 +966,11 @@ Date:   Wed Sep 11 11:05:27 2024 -0400
 
     more requires () on private IteratorImplHelper_ to try and get better compiler error messages
 
-commit e9d9c03c31df2df6531c34d30906b60b1e072686
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 11:06:22 2024 -0400
-
-    progress on SortedAssociation_SkipList - so compiles
-
-commit 2a7542d88225f3bb657505df083a98383c80d8f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 13:54:09 2024 -0400
-
-    SortedAssociation_SkipList now passing initial regtests
-
 commit 8372eee2141c5cb5544cc2760a05d1a0caaec478
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 11 14:06:35 2024 -0400
 
     new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
-
-commit b9fe75e43568a406939998d0cad8e734fb6cde24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 14:06:56 2024 -0400
-
-    fixed minor bug with Library/Sources/Stroika/Foundation/Containers/Concrete/SortedAssociation_SkipList.inl
-
-commit 0ac1e5911ac64adc5cd7ee16a2effb64420fd154
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 14:15:33 2024 -0400
-
-    SortedAssociation_SkipList regtets - more / done
 
 commit a924fbe383642600b5dc2219243092bb25605f12
 Author: Lewis Pringle <lewis@sophists.com>
