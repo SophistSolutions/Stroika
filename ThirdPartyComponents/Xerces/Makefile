@@ -32,7 +32,6 @@ QUICK_BUILD ?= 1
 VERSION=3.2.5
 #VERSION=3.2.4
 #VERSION=3.2.3
-#VERSION=3.2.2
 ifeq (Unix,$(BuildPlatform))
 ifeq ($(VERSION), 3.2.5)
 # This version of xerces requires more recent copy of cmake
@@ -228,11 +227,6 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 CFLAGS += -DWIN32
 CXXFLAGS += -DWIN32
 endif
-
-# DIDN'T HELP - cuz then when we do the install, we generate all the samples anyhow...
-# ifeq ($(QUICK_BUILD), 1)
-# CMAKE_BUILD_TARGET_SPEC_ = --target xerces-c
-# endif
 
 
 doBuilds_:
