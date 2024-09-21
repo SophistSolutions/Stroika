@@ -41,6 +41,54 @@ ThirdPartyComponents
  - openssl
 openssl 3.3.2;
 
+
+
+Memory::Optional
+    Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
+
+
+BUG DEFINES
+    qCompiler    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+    tweaks to qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for skiplists
+AndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWAs
+    change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
+    new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
+    lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
+ experimental simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA; and lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
+    Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
+    experimental qCompilerAndStdLib_UseREQ_BWA use
+    more tweaks of qCompilerAndStdLib_UseREQ_BWA ETC BWA
+    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/<qCompilerAndStdLib_UseREQ1_BWA cleanups
+    lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
+    qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
+    lots more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA cleanups
+    more qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA for clang++15
+
+
+Frameworks::Tests:
+  ArchtypeClasses
+    ArchtypeClasses: renamed NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
+      more tweaks to SimpleClassWithoutComparisonOperators
+
+
+Traversal::Iterable:
+    tweak  Iterable<T>::SequentialEqualsComparer
+    make Iterable<T>::end() static - not const method
+    use UncheckedDynamicCast in place of static_cast in Iterable<>
+   +static_assert(copyable<T>); on Iterable
+    Cosmetic, and make Iterable<T>::end() static - not const method
+
+    static_asserts about copyable on Iterator, Iterable, etc
+    new Iterable<T>::IsOrderedBy
+
+    Iterable<>::end () now returns EndSentinel (instead of Iterator<T>); and reacted all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept; and since that wasn't done for STL itself, when we could be constructing an STL container (such as vector) - casting the second iterator to Iterator{} (instead of just leaving it as EndSentinel) - not 100% thats the right answer (could be a flaw in my endSentinel class) - will need to dig more
+   
+    lose temporary EndSentinel and just use default_sentinel_t
+
+    Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
+
+    
+
 commit ecff38eb5bf5b39efad5c075bb88d7673cada5b9
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 5 22:02:41 2024 -0400
@@ -95,12 +143,6 @@ Date:   Wed Aug 7 13:48:10 2024 -0400
 
     use .empty () instead of .size() == 0 in a bunch of places (can be more performant); IteratorImplHelper_ supports passing low level iterator as arg; ForwardIterator::operator bool () on the various datastructure forwarditerators; SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) method and similar name cleanups on other datastructure classes; and more use of concepts on these function calls; and cleaned up / normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
 
-commit ae6136296279a902aeb7c7adbad0d639241e3816
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 7 14:10:04 2024 -0400
-
-    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWAs
-
 commit 6c1599e7cacc86f37d273305bba8b1c44618daf7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 7 14:24:07 2024 -0400
@@ -130,18 +172,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Aug 9 13:38:18 2024 -0400
 
     more progress on data structures; got STLCOntainerWrapper and Array working as ranges
-
-commit 58126690c430497260affc3c52587092aa0e7953
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 10 21:30:39 2024 -0400
-
-    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
-commit 3140a32de93dbd3f071d86bef09222f750285877
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 12 09:20:27 2024 -0400
-
-    tweaks to qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for skiplists
 
 commit ab47fcb9a022e874a7d067eec1575ab39be56be7
 Author: Lewis Pringle <lewis@sophists.com>
@@ -226,12 +256,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Aug 18 08:39:21 2024 -0400
 
     Cleanups to IComparer code
-
-commit 65999ce75601a70fb7d0354341d124430102bae6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 11:15:42 2024 -0400
-
-    change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
 
 commit c55dd4a461bf43d4914495ee8bfc3422641a9f5a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -323,29 +347,11 @@ Date:   Wed Aug 21 11:10:54 2024 -0400
 
     document VariantValue regular concept
 
-commit b456051f8f9504d290b799fdb7906db57bb655f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 11:11:56 2024 -0400
-
-    +static_assert(copyable<T>); on Iterable
-
 commit 5c5d873207054bcdfad068cd2b0868c04228e5c2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 21 11:19:22 2024 -0400
 
     use concept copy_constructible instead of is_copy_constructible_v and cosmetic
-
-commit 9b31f1bd7997dd99671912b2792df17fd386ad23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 11:25:27 2024 -0400
-
-    Cosmetic, and make Iterable<T>::end() static - not const method
-
-commit cac196eb1d3dc094dfca637cad3993f8502b80a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 11:42:22 2024 -0400
-
-    static_asserts about copyable on Iterator, Iterable, etc
 
 commit b61fe935290643873009836c47156b6ed5ac8ca9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -382,18 +388,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 21 15:45:46 2024 -0400
 
     SortedMapping_stdmap supports STDMAP move CTOR and used more appropriatley in ObjectVariantMapper.inl
-
-commit d712e7c3d152c0c20726cddc55af74bb6faeeca7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 15:47:23 2024 -0400
-
-    lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
-
-commit e7eb5de6fab934a5a01746bae3f96726e4f24e00
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 15:49:23 2024 -0400
-
-    lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
 
 commit f0f1faa28083994471d6aa687d2e366a58e1976c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -437,12 +431,6 @@ Date:   Thu Aug 22 12:58:05 2024 -0400
 
     experimental makefile +basic-NEW-UNIX-test-configurations
 
-commit c8c20ace500b1bbfa85135e9fb50e89ed8ed3d99
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Aug 22 18:51:32 2024 -0400
-
-    new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
-
 commit 76fcccf1cb0b9414614cade5a44d905fa91dc9ec
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 26 00:50:35 2024 -0400
@@ -454,12 +442,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 26 13:29:51 2024 -0400
 
     fixed bugs with ArraySupport/SkipListSupport new code for containers
-
-commit e364bba4b19a4a80baf4bd7eecff07d285f06166
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 13:30:19 2024 -0400
-
-    use UncheckedDynamicCast in place of static_cast in Iterable<>
 
 commit 2fb7d6cf5a6f2cb0c77de132663277beabb2ea89
 Author: Lewis Pringle <lewis@sophists.com>
@@ -496,18 +478,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 28 10:49:15 2024 -0400
 
     back/front etc aliases for Queue/DeQueue
-
-commit a1ee1ee59bb6a45a1a8130d605424f63f33d2874
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 29 22:29:51 2024 -0400
-
-    ArchtypeClasses: renamed NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
-
-commit 2ff47d5598c98b811dcc055714b50b43bbff56c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 29 22:59:47 2024 -0400
-
-    more tweaks to SimpleClassWithoutComparisonOperators
 
 commit bb31d17a2afdaa5f4c6ee78a2cefa157f1cde094
 Author: Lewis Pringle <lewis@sophists.com>
@@ -563,35 +533,11 @@ Date:   Thu Sep 5 12:13:40 2024 -0400
 
     Big cleanup to Collection regtests
 
-commit c8631639edaf8fc36ff61a61f3741f424b213725
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 12:14:13 2024 -0400
-
-    new Iterable<T>::IsOrderedBy
-
 commit 7a0081f673ff666abe5c2907d56b1922f3b055fe
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 5 17:29:46 2024 -0400
 
     Minor cleanup to SortedCollection_LinkedList
-
-commit 5d2b9220d8ab70ef35537a5c1b9445972ca80bae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 17:30:11 2024 -0400
-
-    fixed bug in new IsOrderedBy
-
-commit 356d0db807b1452998011a1752f7a21327d5d8b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 19:24:18 2024 -0400
-
-    RegTests cleanups, including more tests of IsOrderedBy
-
-commit 26a349543059217edcb355ad9c57e249af1f93d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 19:26:50 2024 -0400
-
-    early draft of SortedCollection_SkipList
 
 commit 4857d9487bacce38fba9ba8786d6096f4dcd1ef7
 Author: Lewis Pringle <lewis@sophists.com>
@@ -599,23 +545,11 @@ Date:   Thu Sep 5 20:20:00 2024 -0400
 
     cleanup Sequnce regtests
 
-commit 5bbbbf440fd0959cc53f7fdcde3c9f70bf5f57e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 21:38:09 2024 -0400
-
-    Progress on SortedCollection_SkipList
-
 commit 822bbe6b50f53aa9132576377ef65c9e536fc161
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 6 09:46:18 2024 -0400
 
     progress on SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
-
-commit 4d388bcae1e51595af107a0b48ab7b8b6a722b61
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 6 13:09:14 2024 -0400
-
-    tweak  Iterable<T>::SequentialEqualsComparer
 
 commit 191f743ca96c7346408fe65b4156b9413b54578f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -717,7 +651,6 @@ commit 2eed67f506f26be8a66ed56bef519f76b0cf0731
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 9 21:05:40 2024 -0400
 
-    Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
 
 commit e0fd75799e7470327cb88e173ed91f996ddb408b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -741,50 +674,7 @@ commit 58cfac8b15de4d1d4cad7cf73c01e42b0375103a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 10 10:49:52 2024 -0400
 
-    experimental simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA; and lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-
-commit bdd94f7807447857d4ef51068a598aa97b8bb320
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 11:18:39 2024 -0400
-
-    Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
-
-commit b410ec93fad0c42e501a142961d8d25595e01a17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 14:20:08 2024 -0400
-
-    experimental qCompilerAndStdLib_UseREQ_BWA use
-
-commit 67976fafb86602c3e1c24f0c861aec66a580a67d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 14:42:43 2024 -0400
-
-    more tweaks of qCompilerAndStdLib_UseREQ_BWA ETC BWA
-
-commit c2057a781beba142d360658136d3d261ff90c701
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 15:11:49 2024 -0400
-
-    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/<qCompilerAndStdLib_UseREQ1_BWA cleanups
-
-commit 2210737c98910efd37aa3c197bc04426339e8825
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 16:09:56 2024 -0400
-
-    lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
-
-commit c63d3912119f35e1d98101951d490b7bec4cf1e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 16:28:11 2024 -0400
-
-    qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
-
-commit b2b85dade94121404771fe4ca331bd8a0541c15b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 16:38:16 2024 -0400
-
-    lots more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA cleanups
-
+   and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
 commit 1c445d626c92f46f3cbe2dbef7e5f25cef14dea0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 10 17:01:49 2024 -0400
@@ -795,7 +685,7 @@ commit 5a7d00200cb8f807b16048d702f561afa3f61fac
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 10 18:24:11 2024 -0400
 
-    Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc); and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
+    Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc); 
 
 commit d2fe1e40f187d44201e26cf49e40df8d9c4cf2d1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1049,12 +939,6 @@ Date:   Wed Sep 18 22:35:44 2024 -0400
 
     InternetMediaTypeRegistry::sThe tweak
 
-commit b04614a3389cddcd030858783e6edccba238cf49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 11:53:42 2024 -0400
-
-    Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
-
 commit 00182fe050fe59a579b43efc190655c02f382d22
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 11:54:17 2024 -0400
@@ -1101,25 +985,11 @@ commit 6dfa3969f7648b8819b3e3a5a18e39ab3cd27b56
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 20 08:51:32 2024 -0400
 
-    Iterable<>::end () now returns EndSentinel (instead of Iterator<T>); and reacted all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept; and since that wasn't done for STL itself, when we could be constructing an STL container (such as vector) - casting the second iterator to Iterator{} (instead of just leaving it as EndSentinel) - not 100% thats the right answer (could be a flaw in my endSentinel class) - will need to dig more
-
 commit cfcf83ba71e0400d077e3752a2f52c8ca19ad5b1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 20 09:58:53 2024 -0400
 
     tweak DisjointDiscreteRange constructors (concepts)
-
-commit 2084f6b0324f2bbe9ab276c1a9d7d2fbc0ac109a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Sep 20 10:58:54 2024 -0400
-
-    more qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA for clang++15
-
-commit 5443e183abfc12e039f9a76a4da58a34ef9ea426
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 11:34:15 2024 -0400
-
-    lose temporary EndSentinel and just use default_sentinel_t
 
 commit 6af514cae5e9870fb4350f86d80e5f4a652ebd26
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1145,12 +1015,6 @@ Date:   Sat Sep 21 10:39:25 2024 -0400
 
     workaround weired gcc Error: attempt to compute the difference between a singular iterator to a
     dereferenceable (start-of-sequence) iterator ussue
-
-commit f044e4f939a31cea4fd68940569f7271830fe18d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 21 10:54:55 2024 -0400
-
-    openssl 3.3.2; libcurl 8.10.1; libxml2 2.13.4
 
 commit 8279ab0136f01dd09e403f40fc63567925666d73
 Author: Lewis Pringle <lewis@sophists.com>
