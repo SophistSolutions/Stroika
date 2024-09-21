@@ -16,6 +16,10 @@ especially those they need to be aware of when upgrading.
     docs
 
 
+
+    - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA
+
+
     Containers::Common
       Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
 
