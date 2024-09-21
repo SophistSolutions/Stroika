@@ -24,6 +24,23 @@ especially those they need to be aware of when upgrading.
     - Docs in ReadMe about supported containers/datastructures
 
 
+ThirdPartyComponents
+- Boost
+    /boost/Makefile tweak
+    boost tweaks to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_
+    boost makefile tweaks; and support VERSION:=1_86_0 (not on yet)
+    better boost makefile fix for issue building cobalt and clang++
+  - Curl
+    libcurl 8.10.1
+  - LibXML2
+    libxml2 2.13.4
+ - SQLite
+   sqlite 3.46.1
+- Xerces
+    Xerces makefile tweak
+ - openssl
+openssl 3.3.2;
+
 commit ecff38eb5bf5b39efad5c075bb88d7673cada5b9
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 5 22:02:41 2024 -0400
@@ -119,18 +136,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Aug 10 21:30:39 2024 -0400
 
     qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
-commit 985ec33671946a8e5349b6d2ceb92b7d0d3d8d55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 11 11:38:18 2024 -0400
-
-    /boost/Makefile tweak
-
-commit fc2ad5f7ece3e3697f7f1a8ddeb613e2ac44cc99
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 11 21:22:32 2024 -0400
-
-    boost tweaks to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_
 
 commit 3140a32de93dbd3f071d86bef09222f750285877
 Author: Lewis Pringle <lewis@sophists.com>
@@ -246,30 +251,6 @@ Date:   Sun Aug 18 20:22:52 2024 -0400
 
     VS_17_11_0 docker
 
-commit be3bfa986032ffe3531df079421e9874aed9a6fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 20:48:01 2024 -0400
-
-    libcurl 8.9.1
-
-commit 9dcff062e07ec8c91d160134aa68697c2b1db298
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 20:48:44 2024 -0400
-
-    libxml2 2.13.3
-
-commit ab2697df684cb5dc244146b730fe2212334eb1e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 20:49:26 2024 -0400
-
-    sqlite 3.46.1
-
-commit f6e97a079232a41951c89664bc3e4782e34777dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 21:02:43 2024 -0400
-
-    boost makefile tweaks; and support VERSION:=1_86_0 (not on yet)
-
 commit 67aab325ddd37cd7bf0120410f6c143e474aa929
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 19 10:02:58 2024 -0400
@@ -324,23 +305,11 @@ Date:   Tue Aug 20 11:08:19 2024 -0400
 
     experinemental removeal of Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
 
-commit 5d42282d8322f9353831201a93fa9ad1408c67e2
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Aug 20 12:51:42 2024 -0400
-
-    Xerces makefile tweak
-
 commit 16aedb9302c57c9b9573123e3ea4af6c1c8897d7
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Aug 20 13:11:12 2024 -0400
 
     Abandon clang++-14 support (latest boost fails to compile there under ubuntu 22.04) - no need to support
-
-commit fd6a3a58b14ebca3eb83d799e71056396607adfe
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Aug 20 13:23:38 2024 -0400
-
-    better boost makefile fix for issue building cobalt and clang++
 
 commit e706ccb8cecf6f26eb76f0e6da87486581a2b462
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -528,24 +497,6 @@ Date:   Wed Aug 28 10:49:15 2024 -0400
 
     back/front etc aliases for Queue/DeQueue
 
-commit 8fa1b3752242e57903ae863da362ecea0baabdef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 29 09:07:27 2024 -0400
-
-    fixed typo
-
-commit 3eb90f90a0bad7f4bdb6be15406576be2ab6d055
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 29 20:00:41 2024 -0400
-
-    Cosmetic
-
-commit 13280738f4dc9935cd3bf5339798b6bf273ab4a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 29 21:04:01 2024 -0400
-
-    early draft of SortedSet_SkipList
-
 commit a1ee1ee59bb6a45a1a8130d605424f63f33d2874
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 29 22:29:51 2024 -0400
@@ -564,35 +515,11 @@ Date:   Fri Aug 30 10:21:43 2024 -0400
 
     Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
 
-commit bb0da9edefe22c57d074726d00017c960b47cd9f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 31 22:10:16 2024 -0400
-
-    tweaks to SkipList<> so works with mapped_type==void (and regtest for that)
-
 commit 75bc15344bbdf6fbf09e8722f58943428c527a9e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 3 07:45:43 2024 -0400
 
      constexpr KeyValuePair (const KeyType& key) CTOR needed for KeyValuePair<T,void> specialization
-
-commit 309e0baf7053913e0f6d39bbca44c7000b1bf5d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 3 07:46:21 2024 -0400
-
-    SkipList<> - more fixes for MAPPED_VALUE==void
-
-commit 061780113420b83828f8ebe12a6da658ec394766
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 10:32:33 2024 -0400
-
-    a little progress towards getting SortedSet_SkipList building
-
-commit 86f21d41327efa41d9de14846d5536dcccf29354
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 11:02:41 2024 -0400
-
-    progress on SortedSet_SkipList.
 
 commit fa6aa082845227886561edb715be3b88e4f258ad
 Author: Lewis Pringle <lewis@sophists.com>
@@ -623,12 +550,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 5 10:04:23 2024 -0400
 
     Minor cleanups to IteratorImplHelper_
-
-commit a397a2eaaee3ee0c8096ea31cd5ffa74a9740930
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 10:04:57 2024 -0400
-
-    mostly fixed SortedSet_SkipList - and regtests for this mostly passing, but a little more todo
 
 commit 4ad2d508980292797ba772cf72ff89e203f6a078
 Author: Lewis Pringle <lewis@sophists.com>
@@ -688,7 +609,7 @@ commit 822bbe6b50f53aa9132576377ef65c9e536fc161
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 6 09:46:18 2024 -0400
 
-    progress on SortedCollection_SkipList;  SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
+    progress on SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
 
 commit 4d388bcae1e51595af107a0b48ab7b8b6a722b61
 Author: Lewis Pringle <lewis@sophists.com>
@@ -696,41 +617,17 @@ Date:   Fri Sep 6 13:09:14 2024 -0400
 
     tweak  Iterable<T>::SequentialEqualsComparer
 
-commit cdcd47ea17b38fb9313378a18afdce6a2f665420
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 6 13:10:18 2024 -0400
-
-    SkipList<>::Add and Collection::Add take optional iterator arg to return 'pointer' to added item, and other docs cleanups
-
 commit 191f743ca96c7346408fe65b4156b9413b54578f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 6 13:17:43 2024 -0400
 
     draft Foundation_Containers_SortedCollection, SortedCollection_SkipList regtest
 
-commit 47b8b0be5cdaa0572b007f4abaecec45dae229fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 6 19:09:21 2024 -0400
-
-    progress on SortedCollection_SkipList
-
-commit 61c5d160d66fe9b5eb8a5d6d3a21592a3ea53ec9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 6 19:57:15 2024 -0400
-
-    regtests for SortedCollection_SkipList pass so seems OK
-
 commit 66a45e6ccaedcbaf831c6bc618a7e0ef25d8657b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 7 07:52:49 2024 -0400
 
     SortedKeyedCollection_stdset cleanup
-
-commit bd9e01b54a915007a5fa40c727e4902f61819de9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 08:30:24 2024 -0400
-
-    early draft of SortedKeyedCollection_SkipList (regtests started)
 
 commit 43dbc46cefd0c941e65303c473c732e2e0880acf
 Author: Lewis Pringle <lewis@sophists.com>
@@ -743,18 +640,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 7 09:11:49 2024 -0400
 
     KeyedCollection regtest cleanups
-
-commit 435a0fc24fba508d5d32c9adc11586cf03f9831f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 21:14:33 2024 -0400
-
-    progress on SortedKeyedCollection_SkipList
-
-commit c435028124857b375ebbddd45d0107e4679a56bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 7 21:23:11 2024 -0400
-
-    progress on SortedKeyedCollection_SkipList.
 
 commit 9143f9246e9ceefe62a2eec3c32cc59a1b722ca3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -803,12 +688,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 9 14:29:28 2024 -0400
 
     Cleanup Containers::MultiSet regtests
-
-commit 5a57d82f4af7ffb009af8b3015138794f0d151af
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 15:59:52 2024 -0400
-
-    SortedMultiSet_SkipList regtests passing
 
 commit fe8855d1971443821a0d8b4c1b385d93861f9800
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1211,12 +1090,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 12:50:35 2024 -0400
 
     docs and more clenaups to Math::Median
-
-commit 7436da02820014f08e8519487a5bf6ece3600ec1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 16:30:45 2024 -0400
-
-    more stats code cleanups and regtests
 
 commit b9bdc7deb13dcdf0c8bf5f97b4c87a322146a5e4
 Author: Lewis Pringle <lewis@sophists.com>
