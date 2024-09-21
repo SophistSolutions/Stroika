@@ -28,6 +28,7 @@ especially those they need to be aware of when upgrading.
     - Docs in ReadMe about supported containers/datastructures
   - Array
     Assertions cleanups to DataStructures Array
+    https://stroika.atlassian.net/browse/STK-757 for DataStructures::Array use malloc/realloc if trivailly_copyable_v
 
 
     Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
@@ -44,6 +45,10 @@ especially those they need to be aware of when upgrading.
 
     LinkedList/DoublyLinkedList - Remove and erase methods (diff is returning itererator)
     Array::removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
+
+  Array AND LinkedList:
+    DataStructures progress: replace ForwardIterator::Equals with operator==; go back to disabling store of fData_ in several ForwardIterators - instead adding data* arg to CurrentIndex (and assert same as fData if we have); iterators return const& (datastructures iterators); and  static_assert (ranges::input_range<LinkedList<int>>) works now
+
 
 
 ThirdPartyComponents
@@ -95,6 +100,8 @@ Frameworks::Tests:
   ArchtypeClasses
     ArchtypeClasses: renamed NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
       more tweaks to SimpleClassWithoutComparisonOperators
+  
+    Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
 
 
 Traversal::Iterable:
@@ -114,6 +121,11 @@ Traversal::Iterable:
     Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
 
 
+  Cache:
+    renamed BloomFilter Contains to ProbablyContains
+
+Common::GUID
+    Minor GUID cleanups (mostly concepts)
 
 - Common::Compare
         draft IThreeWayComparer and new Common::ToInt(strong_ordering) so can be used in switch statement
@@ -133,37 +145,43 @@ Traversal::Iterable:
     ThreeWayComparerAdapter/InOrderComparerAdapter/EqualsComparerAdapter with attempt at deduction guides but didn't seem to help
 
     new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
+    fixed IPotentiallyComparer check for case of compare_three_way better
+
+    New IThreeWayAdaptableComparer concept and used in ThreeWayComparerAdapter
 
 
-commit 970629731755853c498f8302b9e0a9aa06bb93e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 7 10:24:28 2024 -0400
 
+Common::KeyValuePair
     KeyValuePair supports void for mapped_type
+
+
+DataExchange 
+
+  InternetMediaTypeRegistry
+    InternetMediaTypeRegistry::sThe tweak
+    InternetMediaTypeRegistry::Get ();/Set deprecated - use sThe instead (and documented how to avoid any cost - if needed in loop - copy value - sharedbyvalue
+    update regtests for recent InternetMediaTypeRegistry::sThe-> change
+    Move a few InternetMediaTypeRegistry to cpp file cuz FrontEndRep code defined only in CPP file so references illegal
+    
+    workaround deadly-embrace startup issue created by making InternetMediaTypeRegistry sThe static inline - instead have it default internally to a nullptr; and define a kDefaultFrontEndForNoBackend_ and use NullCoalesce to pick between them
+
+    document VariantValue regular concept
+
+
+Math::Statistics:
+    fixed issues with Math::Statistics (overloads/templates magic) and regtest cleanups
+        cleanup Math::Mean/Median/StandardDeviation routines (still not good) - but some concept imporvements
+   
+    more cleanups of API for Math::Median template - I think I have it right now
+
+    docs and more clenaups to Math::Median
+
 
 commit 879c1644001af8c5a6361c71876386e055e1aa6a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 7 13:48:10 2024 -0400
 
     use .empty () instead of .size() == 0 in a bunch of places (can be more performant); IteratorImplHelper_ supports passing low level iterator as arg; ForwardIterator::operator bool () on the various datastructure forwarditerators; SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) method and similar name cleanups on other datastructure classes; and more use of concepts on these function calls; and cleaned up / normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
-
-commit 6c1599e7cacc86f37d273305bba8b1c44618daf7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 7 14:24:07 2024 -0400
-
-    cleanups and static_assert (input_or_output_iterator<SkipList<int, int>::ForwardIterator>);
-
-commit b93524386e9e5823bb5eee8367b6edede6009439
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 14:27:52 2024 -0400
-
-    DataStructures progress: replace ForwardIterator::Equals with operator==; go back to disabling store of fData_ in several ForwardIterators - instead adding data* arg to CurrentIndex (and assert same as fData if we have); iterators return const& (datastructures iterators); and  static_assert (ranges::input_range<LinkedList<int>>) works now
-
-commit ab47fcb9a022e874a7d067eec1575ab39be56be7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 12 13:28:20 2024 -0400
-
-    fixed IPotentiallyComparer check for case of compare_three_way better
 
 commit 5de53bc3be4bfe6776cfb7a647fd782b313b8b74
 Author: Lewis Pringle <lewis@sophists.com>
@@ -230,18 +248,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 19 10:20:29 2024 -0400
 
     addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
-
-commit 6710b6fca0b91e49ff5dae7f6df8ff985d8f8984
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Aug 19 11:02:32 2024 -0400
-
-    renamed BloomFilter Contains to ProbablyContains
-
-commit b8459973f04c5b4e05333bddefa4d47eff56b176
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Aug 19 11:14:39 2024 -0400
-
-    adjust some regtests for recent name change/deprecation
 
 commit fa35d3874aa5955235b589296a7e328de1c763c3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -423,23 +429,6 @@ Date:   Wed Aug 28 10:49:15 2024 -0400
 
     back/front etc aliases for Queue/DeQueue
 
-commit bb31d17a2afdaa5f4c6ee78a2cefa157f1cde094
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 30 10:21:43 2024 -0400
-
-    Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
-
-commit 75bc15344bbdf6fbf09e8722f58943428c527a9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 3 07:45:43 2024 -0400
-
-     constexpr KeyValuePair (const KeyType& key) CTOR needed for KeyValuePair<T,void> specialization
-
-commit fa6aa082845227886561edb715be3b88e4f258ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 12:43:35 2024 -0400
-
-
 commit 4920e07bad8af382c5b3ca52f72c03cb1f57436d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 5 07:37:58 2024 -0400
@@ -512,23 +501,11 @@ Date:   Sat Sep 7 09:11:49 2024 -0400
 
     KeyedCollection regtest cleanups
 
-commit 9143f9246e9ceefe62a2eec3c32cc59a1b722ca3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 08:11:43 2024 -0400
-
-    New IThreeWayAdaptableComparer concept and used in ThreeWayComparerAdapter
-
 commit ba246c3c774fe47b275050e30148ff2be7a5959c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 8 18:17:41 2024 -0400
 
     tons of containers cleanups (IImplRepBase_ simplifcaiton, fixed missing fChangeCounts_, and made a few things more terse)
-
-commit aa1ac4420e3b5ce53ca81579cc87258dd8909b7d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 18:19:01 2024 -0400
-
-    Minor GUID cleanups (mostly concepts)
 
 commit fbc63030b9ada0e4b72928437aa3f81c58ecd86a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -758,12 +735,6 @@ Date:   Mon Sep 16 11:57:30 2024 -0400
 
     Finished converting sorted container archtype CTORs (now that factories done) to accept ITotallyOrderingComparer instead if IInOrderComparer, and updates docs, and regression tests accordingly
 
-commit 9384bb348afb37f1f4c5513b53a34a52eaf8ce93
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 14:15:01 2024 -0400
-
-    https://stroika.atlassian.net/browse/STK-757 for DataStructures::Array use malloc/realloc if trivailly_copyable_v
-
 commit d0dc8d528447d814a28500905239a23a868730ea
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 16 14:15:24 2024 -0400
@@ -812,29 +783,11 @@ Date:   Wed Sep 18 09:51:48 2024 -0400
 
     new Iterator<> EndSentinel support (incomplete but good draft)
 
-commit 7f9cd0664e132981468bbc30152d1804fc636ec9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 18 20:32:42 2024 -0400
-
-    InternetMediaTypeRegistry::Get ();/Set deprecated - use sThe instead (and documented how to avoid any cost - if needed in loop - copy value - sharedbyvalue
-
-commit bf58a6a7b44422c9cfbff74c9f097af4e1809267
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 18 20:48:51 2024 -0400
-
-    update regtests for recent InternetMediaTypeRegistry::sThe-> change
-
 commit 32246365897cbc3c82a41ada448a756093ed1990
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 18 20:49:58 2024 -0400
 
     InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
-
-commit 1717d0a9c02709ebeb01125a984e97ac1d33ba7d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 18 22:30:36 2024 -0400
-
-    cleanup Math::Mean/Median/StandardDeviation routines (still not good) - but some concept imporvements
 
 commit 6f57fe86f88cf0d8c32b01383e179b20aa16dceb
 Author: Lewis Pringle <lewis@sophists.com>
@@ -842,51 +795,11 @@ Date:   Wed Sep 18 22:35:00 2024 -0400
 
     more recent changes to recent sentinal_for concept use
 
-commit 236d7f4d93a3845dd42783f88bb2f8fabd3d8d89
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 18 22:35:44 2024 -0400
-
-    InternetMediaTypeRegistry::sThe tweak
-
 commit 00182fe050fe59a579b43efc190655c02f382d22
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 11:54:17 2024 -0400
 
     SharedByValue<T, TRAITS>::operator bool () support
-
-commit 1b1d37b8755f304d006e125c5d20ea1389718d78
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 11:56:14 2024 -0400
-
-    workaround deadly-embrace startup issue created by making InternetMediaTypeRegistry sThe static inline - instead have it default internally to a nullptr; and define a kDefaultFrontEndForNoBackend_ and use NullCoalesce to pick between them
-
-commit 79f4dce07cf112ef41bb54fe65b428928020c254
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 11:56:48 2024 -0400
-
-    lose a few references to newly deprecated functions
-
-commit 5d8c5e831f4c4cde51f65523e7eda8ff103d2a9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 12:26:42 2024 -0400
-
-    Move a few InternetMediaTypeRegistry to cpp file cuz FrontEndRep code defined only in CPP file so references illegal
-
-commit c129a707e08095b205ab6f27a4516f3559cafdde
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 12:35:30 2024 -0400
-
-    more cleanups of API for Math::Median template - I think I have it right now
-
-commit 756e053f4ccb898a44805dd0aa35f396850e2bc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 12:50:35 2024 -0400
-
-    docs and more clenaups to Math::Median
-
-commit 6dfa3969f7648b8819b3e3a5a18e39ab3cd27b56
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 08:51:32 2024 -0400
 
 commit cfcf83ba71e0400d077e3752a2f52c8ca19ad5b1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -905,12 +818,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 20 11:38:05 2024 -0400
 
     doker container uses VS_17_11_4
-
-commit 52606bc924fb9f0d418eb052538e7e7223867b1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 21 10:33:14 2024 -0400
-
-    fixed issues with Math::Statistics (overloads/templates magic) and regtest cleanups
 
 commit 45ce1fd89b32eab6dc07bfd3806a95e9a55f2629
 Author: Lewis Pringle <lewis@sophists.com>
