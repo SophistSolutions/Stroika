@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Math {
         Require (start != forward<ITERATOR_OF_T2> (end));                           // the median of no values would be undefined
         Memory::StackBuffer<RESULT_TYPE> tmp{start, forward<ITERATOR_OF_T2> (end)}; // copy cuz data modified
 #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-        size_t size = distance (start, ITERATOR_OF_T (end));
+        size_t size = distance (start, ITERATOR_OF_T {end});
 #else
         size_t size = ranges::distance (start, forward<ITERATOR_OF_T2> (end));
 #endif
