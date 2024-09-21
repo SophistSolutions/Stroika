@@ -16,12 +16,34 @@ especially those they need to be aware of when upgrading.
 -    readme
     docs
 
+
+    Containers::Common
+      Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
+
 - Containers::DataStructures
   - new SkipList<> implementation
     - includes regression tests
     - Concrete::Sorted{Association,Collection,KeyedCollection,Mapping,MultiSet,Set}_SkipList impl, with regtests
     - Private/SkipListSupport.h
     - Docs in ReadMe about supported containers/datastructures
+  - Array
+    Assertions cleanups to DataStructures Array
+
+
+    Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
+
+    Container DataStructure classes - replaced a few Prepend/Append method names with push_front / push_back
+
+    make API in Containers::DataStrucutres more STL-ish - operator->, operator* replacing it.Current () and a few other changes to SkipList
+
+    progress towards std::ranges support on LinkedList - but not there yet
+
+    progress on datastructures doublelinkedlist range support (and linked list)
+
+    more progress on data structures; got STLCOntainerWrapper and Array working as ranges
+
+    LinkedList/DoublyLinkedList - Remove and erase methods (diff is returning itererator)
+    Array::removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
 
 
 ThirdPartyComponents
@@ -41,6 +63,8 @@ ThirdPartyComponents
  - openssl
 openssl 3.3.2;
 
+  - googletest:
+      thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
 
 
 Memory::Optional
@@ -63,6 +87,8 @@ AndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWAs
     qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
     lots more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA cleanups
     more qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA for clang++15
+   and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
+    merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
 
 
 Frameworks::Tests:
@@ -87,49 +113,27 @@ Traversal::Iterable:
 
     Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
 
-    
 
-commit ecff38eb5bf5b39efad5c075bb88d7673cada5b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 5 22:02:41 2024 -0400
 
-    Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
-
-commit 6e6c1ce4eda0bd7512b67859f662314b8aded235
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 6 11:11:58 2024 -0400
-
-    draft IThreeWayComparer and new Common::ToInt(strong_ordering) so can be used in switch statement
-
-commit 45fe82923de7c7081195d288178bd1692e024221
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 6 11:32:21 2024 -0400
-
+- Common::Compare
+        draft IThreeWayComparer and new Common::ToInt(strong_ordering) so can be used in switch statement
     maybe fixed IPotentiallyComparer for compare_three_way
+    IPotentiallyComparer fixed to support lamdas returning strong_ordering
 
-commit 98f350f07d67d863bc7f92c276ccd201ef143aee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 6 16:51:53 2024 -0400
+    slightly refactor code for ExtractComparisonTraits_
 
-    Assertions cleanups to DataStructures Array
+    minor fixes to recent regressions and bug fix to InOrderComparerAdapter
 
-commit d4b47801865b7ade38b017293be2ca2ae89f0fe5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 6 16:52:22 2024 -0400
+    progress getting IComparer working with threewaycomparer lambda, but not yet working
 
-    Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
+    Minor cleanups to IComparer code but still not right
 
-commit 07b1d1903de5f0475f252ccfb9add6e197efef12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 6 23:01:01 2024 -0400
+    Cleanups to IComparer code
 
-    Container DataStructure classes - replaced a few Prepend/Append method names with push_front / push_back
+    ThreeWayComparerAdapter/InOrderComparerAdapter/EqualsComparerAdapter with attempt at deduction guides but didn't seem to help
 
-commit 98ad1b0711384830f0bd178d5305b065fa02b23b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 7 08:25:45 2024 -0400
+    new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
 
-    make API in Containers::DataStrucutres more STL-ish - operator->, operator* replacing it.Current () and a few other changes to SkipList
 
 commit 970629731755853c498f8302b9e0a9aa06bb93e2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -149,29 +153,11 @@ Date:   Wed Aug 7 14:24:07 2024 -0400
 
     cleanups and static_assert (input_or_output_iterator<SkipList<int, int>::ForwardIterator>);
 
-commit 72079969cea28adf14bfab4e3ce39b18fc6e7735
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 11:55:18 2024 -0400
-
-    progress towards std::ranges support on LinkedList - but not there yet
-
 commit b93524386e9e5823bb5eee8367b6edede6009439
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 8 14:27:52 2024 -0400
 
     DataStructures progress: replace ForwardIterator::Equals with operator==; go back to disabling store of fData_ in several ForwardIterators - instead adding data* arg to CurrentIndex (and assert same as fData if we have); iterators return const& (datastructures iterators); and  static_assert (ranges::input_range<LinkedList<int>>) works now
-
-commit 2729ebd4e4fa6d44d79a066f245e671d9e280e03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 19:04:57 2024 -0400
-
-    progress on datastructures doublelinkedlist range support (and linked list)
-
-commit b029a9d5df45109ee8d6e5ef7456d5dfb90c6e80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 9 13:38:18 2024 -0400
-
-    more progress on data structures; got STLCOntainerWrapper and Array working as ranges
 
 commit ab47fcb9a022e874a7d067eec1575ab39be56be7
 Author: Lewis Pringle <lewis@sophists.com>
@@ -214,48 +200,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Aug 16 17:22:16 2024 -0400
 
     Mapping_stdmap: is_default_constructible_v/constructible_from cleanups (to regtests etc); default CTORS (using no explicit comparer) now require totally_ordered so is_default_constructible etc wroks right now; and other clenaups
-
-commit 54717dfaa1204c63aa34334da6dbca9971246bd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 17 16:27:33 2024 -0400
-
-    IPotentiallyComparer fixed to support lamdas returning strong_ordering
-
-commit 4a0feaf8b8842a844588ab8ac4add0f51b1fc4a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 17 16:51:40 2024 -0400
-
-    slightly refactor code for ExtractComparisonTraits_
-
-commit 3135765ee0a763caeb2e8e9b17acebd5cca10206
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 17 22:23:05 2024 -0400
-
-    IComparer, EqualsComparerAdapter, ThreeWayComparerAdapter etc now all take extra param (**not backward compat**)
-
-commit e3b47882ce9b430cf6ca33499ddffc3fc08a5a70
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 17 22:52:07 2024 -0400
-
-    minor fixes to recent regressions and bug fix to InOrderComparerAdapter
-
-commit 9116e7806f1b73b695151f4e7767eeb7c5bdb4e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 07:43:11 2024 -0400
-
-    progress getting IComparer working with threewaycomparer lambda, but not yet working
-
-commit 0f5ab98e67a192fcb0c7aa5f8e6c97c8049aad6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 08:16:50 2024 -0400
-
-    Minor cleanups to IComparer code but still not right
-
-commit b146526e518eebf54c531e28b3ac1f4f0098c4fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 08:39:21 2024 -0400
-
-    Cleanups to IComparer code
 
 commit c55dd4a461bf43d4914495ee8bfc3422641a9f5a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -495,13 +439,6 @@ commit fa6aa082845227886561edb715be3b88e4f258ad
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 4 12:43:35 2024 -0400
 
-    Array::removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
-
-commit 7841a77a16a964b8ff56f5da6083aeec0a156e6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 4 21:37:26 2024 -0400
-
-    LinkedList/DoublyLinkedList - Remove and erase methods (diff is returning itererator)
 
 commit 4920e07bad8af382c5b3ca52f72c03cb1f57436d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -647,11 +584,6 @@ Date:   Mon Sep 9 20:35:41 2024 -0400
 
     lose a few legacy uses of _IRepSharedPtr
 
-commit 2eed67f506f26be8a66ed56bef519f76b0cf0731
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 21:05:40 2024 -0400
-
-
 commit e0fd75799e7470327cb88e173ed91f996ddb408b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 9 22:29:08 2024 -0400
@@ -670,11 +602,6 @@ Date:   Tue Sep 10 10:29:16 2024 -0400
 
     cleanups to makefile configuraiton generation/defaults (lose leak san on ubun2u22.04 cuz not building curl)
 
-commit 58cfac8b15de4d1d4cad7cf73c01e42b0375103a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 10:49:52 2024 -0400
-
-   and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
 commit 1c445d626c92f46f3cbe2dbef7e5f25cef14dea0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 10 17:01:49 2024 -0400
@@ -735,23 +662,11 @@ Date:   Wed Sep 11 11:05:27 2024 -0400
 
     more requires () on private IteratorImplHelper_ to try and get better compiler error messages
 
-commit 8372eee2141c5cb5544cc2760a05d1a0caaec478
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 14:06:35 2024 -0400
-
-    new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
-
 commit a924fbe383642600b5dc2219243092bb25605f12
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 12 07:53:55 2024 -0400
 
     cleanup and disable some broken tests til I can debug with assocation_skiplist
-
-commit 83900bddc1027b2d5bb065c9e3a819f181d6a11a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Sep 12 14:11:07 2024 -0400
-
-    merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
 
 commit 5d95240e4a52d11cdf139d7eabd66d3059d4f293
 Author: Lewis Pringle <lewis@sophists.com>
@@ -764,12 +679,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 14 10:38:47 2024 -0400
 
     cleanup Foundation_Containers_SortedMapping regtest
-
-commit ce12c17dc74d24671c7d13abe4c7871a3d8645d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 16:45:20 2024 -0400
-
-    ThreeWayComparerAdapter/InOrderComparerAdapter/EqualsComparerAdapter with attempt at deduction guides but didn't seem to help
 
 commit ce9c7fe74b9c5d00c3f8f9573a7c973c763c30db
 Author: Lewis Pringle <lewis@sophists.com>
@@ -974,12 +883,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 19 12:50:35 2024 -0400
 
     docs and more clenaups to Math::Median
-
-commit b9bdc7deb13dcdf0c8bf5f97b4c87a322146a5e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 08:28:36 2024 -0400
-
-    thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
 
 commit 6dfa3969f7648b8819b3e3a5a18e39ab3cd27b56
 Author: Lewis Pringle <lewis@sophists.com>
