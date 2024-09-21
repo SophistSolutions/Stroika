@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  \par Example Usage
          *      \code
-         *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6"));
+         *          Assert  (BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6");
          *      \endcode
          * 
          *  \see also FromHex ()
