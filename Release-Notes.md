@@ -14,10 +14,13 @@ especially those they need to be aware of when upgrading.
 
 -    readme
     docs
+    start documenting Design Overview.md#Comparisons with static_assert (totally_ordered<Character>);
+    Design Overview.md#Comparisons better docs and static_asserts of equality_comparable and totally_ordered as appropriate
 
   Docker Containers:
    doker container uses VS_17_11_4
 
+    use ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build in ubuntu 22.04 container
 
 All Library Sources:
     use concept copy_constructible instead of is_copy_constructible_v and cosmetic
@@ -90,6 +93,9 @@ Common::GUID
 
     New IThreeWayAdaptableComparer concept and used in ThreeWayComparerAdapter
     ComparisonRelationDeclaration tweak
+    Minor cleanups to ComparisonRelationDeclaration; and  and now many uses of ComparisonRelationDeclaration like ElementInOrderComparerType now also use ArgByValueType
+    more requires constraints on ComparisonRelationDeclaration - for better debug messages
+    Renamed (never released) IThreeWayAdaptableComparer -> ITotallyOrderingComparer; Supported ITotallyOrderingComparer in all remaining sortedxxx factories; and a few other minor/cosmetic cleanups
 
 
 Common::KeyValuePair
@@ -97,6 +103,7 @@ Common::KeyValuePair
 
   Configuration:
     Configuration Concepts Select_t utility
+    moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
 
     BUG DEFINES
         qCompiler    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
@@ -122,6 +129,7 @@ Common::KeyValuePair
           dereferenceable (start-of-sequence) iterator ussue
 
    update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
+    Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
 
 
     Endian:
@@ -133,9 +141,20 @@ Common::KeyValuePair
  Abandon clang++-14 support (latest boost fails to compile there under ubuntu 22.04) - no need to support
 
 Containers:
+
+  Private::
+    IteratorImplHelper_ supports passing low level iterator as arg;
+  DataStructures
+
+    ForwardIterator::operator bool () on the various datastructure forwarditerators; 
+    
+    more use of concepts on these DataStructure::Find... function calls; 
+    and cleaned up / normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
+
   MISC:    
   
     Minor cleanups to IteratorImplHelper_
+    more requires () on private IteratorImplHelper_ to try and get better compiler error messages
 
 
     fixed concepts usage in Mapping_stdmap   
@@ -148,6 +167,8 @@ Containers:
     Mapping_stdmap: is_default_constructible_v/constructible_from cleanups (to regtests etc); default CTORS (using no explicit comparer) now require totally_ordered so is_default_constructible etc wroks right now; and other clenaups
     Containers/Concrete/Mapping_stdmap tweak
     experinemental removeal of Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
+
+  use .empty () instead of .size() == 0 in a bunch of places (can be more performant)
 
   deprecated Mapping_stdmap - force explicit use of SortedMapping_stdmap
     minor cleanups - and use Concrete::SortedMapping_stdmap over Concrete::Mapping_stdmap; and default_initializable over is_default_constructible_v
@@ -212,6 +233,14 @@ Containers:
 
     Finished converting sorted container archtype CTORs (now that factories done) to accept ITotallyOrderingComparer instead if IInOrderComparer, and updates docs, and regression tests accordingly
 
+    tons of containers cleanups (IImplRepBase_ simplifcaiton, fixed missing fChangeCounts_, and made a few things more terse)
+    remove a few unneeded KeyEqualsCompareFunctionType casts due to recent fix to DeclareEqualsComparer (ctors)
+    seem to no longer need ElementInOrderComparerType etc casts on results (probably recent fix to DeclareEqualsComparer)
+    minor cleanusp to GetElementEqualsComparer () return value due to cleanup of ComparisonRelationDeclarationBase CTORs - I think
+
+    tweak names of comparer types (fixing name typos) in containers - not backward compatible, but unlikely ever an issue (e.g. KeyInOrderKeyComparerType -> KeyInOrderComparerType)
+    KeyThreeWayComparerType instead of KeyInOrderComparerType for SortedAssociation SortedCollection SortedKeyedCollection
+
 
 DataExchange 
   Atom:
@@ -246,6 +275,7 @@ Memory:
     SharedByValue<T, TRAITS>::operator bool () support
 
     InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
+    https://stroika.atlassian.net/browse/STK-757 for Memory::InlineBuffer use malloc/realloc if trivailly_copyable_v
 
 Traversal:
   Iterator
@@ -266,6 +296,8 @@ Traversal:
     lose temporary EndSentinel and just use default_sentinel_t
 
     Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
+    cleanup Iterable<>::As();
+
 
   Ranges:
     tweak DisjointDiscreteRange constructors (concepts)
@@ -285,11 +317,15 @@ Frameworks::Tests:
     fixed warnings valgrindline count in regtest(I hope - testing)
     Cleanup Containers::MultiSet regtests
     tewak regression test script
+    cleanup Foundation_Containers_SortedMapping regtest
 
     cleanup association regtests (modernize/gtest)
     REGTEST CONFIGURATIONS:
        Added g++-debug-sanitize_thread config
       Added g++-release-sanitize_address_undefined_leak config for ubuntu 24.04
+    disable targeting valgrind on ubuntu 23.10 (not worht debugging now)
+    more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
+    better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
 
 
 
@@ -322,9 +358,11 @@ openssl 3.3.2;
     experimental makefile +basic-NEW-UNIX-test-configurations
 
     lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
+    cleanups to makefile configuraiton generation/defaults (lose leak san on ubun2u22.04 cuz not building curl)
 
 Github Actions:
     cosmetic github action
+    added github action setting letting you select variable container_image version (defaults to v3)
 
 Scripts
   Skel:
@@ -332,170 +370,6 @@ Scripts
 
   Configure:
    fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
-
-
-
-commit 879c1644001af8c5a6361c71876386e055e1aa6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 7 13:48:10 2024 -0400
-
-    use .empty () instead of .size() == 0 in a bunch of places (can be more performant); IteratorImplHelper_ supports passing low level iterator as arg; ForwardIterator::operator bool () on the various datastructure forwarditerators; SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) method and similar name cleanups on other datastructure classes; and more use of concepts on these function calls; and cleaned up / normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
-
-commit 6c07ad8967cfc4173ca37b1b5938e527d1fb81e9
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Aug 19 22:03:44 2024 -0400
-
-    disable targeting valgrind on ubuntu 23.10 (not worht debugging now)
-
-commit b0e95f2fa6f205c9e40102a34f5632ae4cf17e43
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Aug 20 08:35:00 2024 -0400
-
-    use ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build in ubuntu 22.04 container
-
-commit 4ad2d508980292797ba772cf72ff89e203f6a078
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 10:59:58 2024 -0400
-
-    more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
-
-commit ba246c3c774fe47b275050e30148ff2be7a5959c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 18:17:41 2024 -0400
-
-    tons of containers cleanups (IImplRepBase_ simplifcaiton, fixed missing fChangeCounts_, and made a few things more terse)
-
-commit fbc63030b9ada0e4b72928437aa3f81c58ecd86a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 8 23:09:36 2024 -0400
-
-    Minor cleanups to ComparisonRelationDeclaration; and Iterable<>::As(); and now many uses of ComparisonRelationDeclaration like ElementInOrderComparerType now also use ArgByValueType
-
-commit 5e014ce0f53e6ee4416aa4cecee52bc6a2d3f86f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 13:44:43 2024 -0400
-
-    experiment on github actions letting you select variable container_image version (defaults to v3)
-
-commit fe8855d1971443821a0d8b4c1b385d93861f9800
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 16:12:49 2024 -0400
-
-    maybe workaround issue with github actions and missing github.event.inputs.container_version  by default
-
-commit e0fd75799e7470327cb88e173ed91f996ddb408b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 22:29:08 2024 -0400
-
-    seem to no longer need ElementInOrderComparerType etc casts on results (probably recent fix to DeclareEqualsComparer)
-
-commit f2e796ec7b1eebba8046c908d1303cdec8c24f76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 10:03:25 2024 -0400
-
-    minor cleanusp to GetElementEqualsComparer () return value due to cleanup of ComparisonRelationDeclarationBase CTORs - I think
-
-commit b2b36d4c1e537e8e18d0ba82d7029854b2f1361f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 10 10:29:16 2024 -0400
-
-    cleanups to makefile configuraiton generation/defaults (lose leak san on ubun2u22.04 cuz not building curl)
-
-commit 1c445d626c92f46f3cbe2dbef7e5f25cef14dea0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 17:01:49 2024 -0400
-
-    start documenting Design Overview.md#Comparisons with static_assert (totally_ordered<Character>);
-
-commit d2fe1e40f187d44201e26cf49e40df8d9c4cf2d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 20:51:09 2024 -0400
-
-    Design Overview.md#Comparisons better docs and static_asserts of equality_comparable and totally_ordered as appropriate
-
-commit 16e2a62bc6ca82e176a34e20481408c7d8968ee7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Sep 10 20:57:23 2024 -0400
-
-    lose apparently uneeded qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA in one place
-
-commit 47faf63ec7fbb7ee770ae1616439846787f27269
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 23:07:53 2024 -0400
-
-    moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
-
-commit fcc4ca9f013ef769558e295ec358f12c2ed2aafd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 10:05:47 2024 -0400
-
-    remove a few unneeded KeyEqualsCompareFunctionType casts due to recent fix to DeclareEqualsComparer (ctors)
-
-commit b385c16b145de68a41d04e37abdc874036dd9d0f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 11:04:46 2024 -0400
-
-    more requires constraints on ComparisonRelationDeclaration - for better debug messages
-
-commit 161dfb8a66c8231d0764b602a34c330a7ea308e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 11:05:27 2024 -0400
-
-    more requires () on private IteratorImplHelper_ to try and get better compiler error messages
-
-commit a924fbe383642600b5dc2219243092bb25605f12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 12 07:53:55 2024 -0400
-
-    cleanup and disable some broken tests til I can debug with assocation_skiplist
-
-commit 5d95240e4a52d11cdf139d7eabd66d3059d4f293
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 10:29:25 2024 -0400
-
-    mostly cosmetic cleanup of no-longer needed KeyEqualityComparerType cast
-
-commit 7536c69704ade33292c755333557ef045451b2cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 14 10:38:47 2024 -0400
-
-    cleanup Foundation_Containers_SortedMapping regtest
-
-commit ce9c7fe74b9c5d00c3f8f9573a7c973c763c30db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 15 09:39:43 2024 -0400
-
-    tweak names of comparer types (fixing name typos) in containers - not backward compatible, but unlikely ever an issue (e.g. KeyInOrderKeyComparerType -> KeyInOrderComparerType)
-
-commit 28ac090bb40badf0c57047a1f517c1c1a68dc38e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 15 22:12:58 2024 -0400
-
-    KeyThreeWayComparerType instead of KeyInOrderComparerType for SortedAssociation SortedCollection SortedKeyedCollection
-
-commit 9949fff1038e6c9d55ea19883787600d2f3b4ae5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 11:08:31 2024 -0400
-
-    Renamed (never released) IThreeWayAdaptableComparer -> ITotallyOrderingComparer; Supported ITotallyOrderingComparer in all remaining sortedxxx factories; and a few other minor/cosmetic cleanups
-
-commit d0dc8d528447d814a28500905239a23a868730ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 14:15:24 2024 -0400
-
-    https://stroika.atlassian.net/browse/STK-757 for Memory::InlineBuffer use malloc/realloc if trivailly_copyable_v
-
-commit 57c53894f9add42b25181b23a6b1b82961014dd3
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Sep 17 11:00:20 2024 -0400
-
-    better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
-
-commit 1af6b840ebaffc1a2d5c8b9dddbd5036874f5c55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 17 11:44:57 2024 -0400
-
-    Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
 
 #endif
 
