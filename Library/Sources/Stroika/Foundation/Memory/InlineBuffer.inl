@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Memory {
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, T>);
 #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy || qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy
-        auto sz = static_cast<size_t> (distance (start, ITERATOR_OF_T {end}));
+        auto sz = static_cast<size_t> (distance (start, ITERATOR_OF_T{end}));
 #else
         auto sz = static_cast<size_t> (ranges::distance (start, forward<ITERATOR_OF_T2> (end)));
 #endif
