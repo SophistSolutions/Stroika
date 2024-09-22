@@ -16,15 +16,17 @@ especially those they need to be aware of when upgrading.
     docs
 
   Docker Containers:
-    VS_17_11_0 docker
-    docker VS_17_11_2
+   doker container uses VS_17_11_4
 
 
 All Library Sources:
     use concept copy_constructible instead of is_copy_constructible_v and cosmetic
    use concept constructible_from instead of old name is_constructible_v
+    docs, static asserts about Satisfies Concepts
+    lose a few legacy uses of _IRepSharedPtr
+     Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc); 
+   use concept same_as in place of older is_same_v
 
- 
 
     Containers::Common
       Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
@@ -115,7 +117,10 @@ Common::KeyValuePair
       and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
         merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
 
-   - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA
+   - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
+        workaround weired gcc Error: attempt to compute the difference between a singular iterator to a
+          dereferenceable (start-of-sequence) iterator ussue
+
    update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
 
 
@@ -125,69 +130,19 @@ Common::KeyValuePair
 
   Compilers SUPPORTED:
     prelim support for _MSC_VER_2k22_17Pt11_
-
-
-DataExchange 
-
-  InternetMediaTypeRegistry
-    InternetMediaTypeRegistry::sThe tweak
-    InternetMediaTypeRegistry::Get ();/Set deprecated - use sThe instead (and documented how to avoid any cost - if needed in loop - copy value - sharedbyvalue
-    update regtests for recent InternetMediaTypeRegistry::sThe-> change
-    Move a few InternetMediaTypeRegistry to cpp file cuz FrontEndRep code defined only in CPP file so references illegal
-    
-    workaround deadly-embrace startup issue created by making InternetMediaTypeRegistry sThe static inline - instead have it default internally to a nullptr; and define a kDefaultFrontEndForNoBackend_ and use NullCoalesce to pick between them
-
-    document VariantValue regular concept
-
-
-Math::Statistics:
-    fixed issues with Math::Statistics (overloads/templates magic) and regtest cleanups
-        cleanup Math::Mean/Median/StandardDeviation routines (still not good) - but some concept imporvements
-   
-    more cleanups of API for Math::Median template - I think I have it right now
-
-    docs and more clenaups to Math::Median
-
-
-Memory:
-  minor cleanups to BitSubString/Bits() helper functions (concepts and docs
-
-  Memory::Optional
-      Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
-  
-    SharedByValue<T, TRAITS>::operator bool () support
-
-Traversal::Iterable:
-    tweak  Iterable<T>::SequentialEqualsComparer
-    make Iterable<T>::end() static - not const method
-    use UncheckedDynamicCast in place of static_cast in Iterable<>
-   +static_assert(copyable<T>); on Iterable
-    Cosmetic, and make Iterable<T>::end() static - not const method
-
-    static_asserts about copyable on Iterator, Iterable, etc
-    new Iterable<T>::IsOrderedBy
-
-    Iterable<>::end () now returns EndSentinel (instead of Iterator<T>); and reacted all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept; and since that wasn't done for STL itself, when we could be constructing an STL container (such as vector) - casting the second iterator to Iterator{} (instead of just leaving it as EndSentinel) - not 100% thats the right answer (could be a flaw in my endSentinel class) - will need to dig more
-   
-    lose temporary EndSentinel and just use default_sentinel_t
-
-    Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
-
-
-
-Frameworks::Tests:
-  ArchtypeClasses
-    ArchtypeClasses: renamed NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
-      more tweaks to SimpleClassWithoutComparisonOperators
-  
-    Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
-
-
-
+ Abandon clang++-14 support (latest boost fails to compile there under ubuntu 22.04) - no need to support
 
 Containers:
-  MISC:
-    fixed concepts usage in Mapping_stdmap
+  MISC:    
+  
+    Minor cleanups to IteratorImplHelper_
+
+
+    fixed concepts usage in Mapping_stdmap   
+    
+     removeal of Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
+
+    **Not fully backward compat**; but switched container backends for sorted types to return 'InOrderComparer' - and added accessor overloads so you can GET back either inorder or threeway (via adapter)
 
     cleanup SortedMapping_stdmap
     Mapping_stdmap: is_default_constructible_v/constructible_from cleanups (to regtests etc); default CTORS (using no explicit comparer) now require totally_ordered so is_default_constructible etc wroks right now; and other clenaups
@@ -221,6 +176,8 @@ Containers:
 
     tweak to SortedMultiSet_stdmap
 
+    new ArraySupport module, and refactored all the array based container concrete impls to use it, so they all have the same API for array-based concrete extensions
+
     back/front etc aliases for Queue/DeQueue
 
     Clenaup container remove code to use Remove for erase from datastructure layer depending on need to get updated iterator
@@ -251,6 +208,89 @@ Containers:
 
     Changed SortedSet REP and SortedCollection REP classes to use GetElementThreeWayComparer instead of GetElementInOrderComparer
 
+    fixed bugs with ArraySupport/SkipListSupport new code for containers
+
+    Finished converting sorted container archtype CTORs (now that factories done) to accept ITotallyOrderingComparer instead if IInOrderComparer, and updates docs, and regression tests accordingly
+
+
+DataExchange 
+  Atom:
+    concepts on Atom<>::As()
+
+  InternetMediaTypeRegistry
+    InternetMediaTypeRegistry::sThe tweak
+    InternetMediaTypeRegistry::Get ();/Set deprecated - use sThe instead (and documented how to avoid any cost - if needed in loop - copy value - sharedbyvalue
+    update regtests for recent InternetMediaTypeRegistry::sThe-> change
+    Move a few InternetMediaTypeRegistry to cpp file cuz FrontEndRep code defined only in CPP file so references illegal
+    
+    workaround deadly-embrace startup issue created by making InternetMediaTypeRegistry sThe static inline - instead have it default internally to a nullptr; and define a kDefaultFrontEndForNoBackend_ and use NullCoalesce to pick between them
+
+    document VariantValue regular concept
+
+
+Math::Statistics:
+    fixed issues with Math::Statistics (overloads/templates magic) and regtest cleanups
+        cleanup Math::Mean/Median/StandardDeviation routines (still not good) - but some concept imporvements
+   
+    more cleanups of API for Math::Median template - I think I have it right now
+
+    docs and more clenaups to Math::Median
+
+
+Memory:
+  minor cleanups to BitSubString/Bits() helper functions (concepts and docs
+
+  Memory::Optional
+      Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
+  
+    SharedByValue<T, TRAITS>::operator bool () support
+
+    InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
+
+Traversal:
+  Iterator
+    new Iterator<> EndSentinel support (incomplete but good draft)
+
+  Iterable:
+    tweak  Iterable<T>::SequentialEqualsComparer
+    make Iterable<T>::end() static - not const method
+    use UncheckedDynamicCast in place of static_cast in Iterable<>
+   +static_assert(copyable<T>); on Iterable
+    Cosmetic, and make Iterable<T>::end() static - not const method
+
+    static_asserts about copyable on Iterator, Iterable, etc
+    new Iterable<T>::IsOrderedBy
+
+    Iterable<>::end () now returns EndSentinel (instead of Iterator<T>); and reacted all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept; and since that wasn't done for STL itself, when we could be constructing an STL container (such as vector) - casting the second iterator to Iterator{} (instead of just leaving it as EndSentinel) - not 100% thats the right answer (could be a flaw in my endSentinel class) - will need to dig more
+   
+    lose temporary EndSentinel and just use default_sentinel_t
+
+    Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
+
+  Ranges:
+    tweak DisjointDiscreteRange constructors (concepts)
+
+
+Frameworks::Tests:
+  ArchtypeClasses
+    ArchtypeClasses: renamed NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
+      more tweaks to SimpleClassWithoutComparisonOperators
+  
+    Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
+
+
+  REGTESTS
+    fixed exe used in RunPerformanceRegressionTests
+
+    fixed warnings valgrindline count in regtest(I hope - testing)
+    Cleanup Containers::MultiSet regtests
+    tewak regression test script
+
+    cleanup association regtests (modernize/gtest)
+    REGTEST CONFIGURATIONS:
+       Added g++-debug-sanitize_thread config
+      Added g++-release-sanitize_address_undefined_leak config for ubuntu 24.04
+
 
 
 ThirdPartyComponents
@@ -269,9 +309,30 @@ ThirdPartyComponents
     Xerces makefile tweak
  - openssl
 openssl 3.3.2;
+-- NEW openssl repo location FETCHURLDOWNLOADS... = github
 
   - googletest:
       thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
+
+
+  Scripts - BUILD CONFIG:
+    basic-unix-test-configurations tweaks
+    on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
+
+    experimental makefile +basic-NEW-UNIX-test-configurations
+
+    lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
+
+Github Actions:
+    cosmetic github action
+
+Scripts
+  Skel:
+      tweak SKEL Makefile rule for latest-submodules
+
+  Configure:
+   fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
+
 
 
 commit 879c1644001af8c5a6361c71876386e055e1aa6a
@@ -291,78 +352,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Aug 20 08:35:00 2024 -0400
 
     use ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build in ubuntu 22.04 container
-
-commit 88c6305da88052e05d5878716e76de259022231d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 20 11:08:19 2024 -0400
-
-    experinemental removeal of Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
-
-commit 16aedb9302c57c9b9573123e3ea4af6c1c8897d7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Aug 20 13:11:12 2024 -0400
-
-    Abandon clang++-14 support (latest boost fails to compile there under ubuntu 22.04) - no need to support
-
-commit e706ccb8cecf6f26eb76f0e6da87486581a2b462
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Aug 21 09:49:31 2024 -0400
-
-    on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
-
-commit cfc89f79346ef8dbd682ac6c1e78f35f77b560b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 14:35:52 2024 -0400
-
-    docs, static asserts about Satisfies Concepts
-
-commit 76d867a17937152029c6062a25de1805b7ce9482
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Aug 22 09:06:21 2024 -0400
-
-    fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
-
-commit 791a80df87c019eea71a2b4f31f61e8c7e542b26
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Aug 22 12:58:05 2024 -0400
-
-    experimental makefile +basic-NEW-UNIX-test-configurations
-
-commit 76fcccf1cb0b9414614cade5a44d905fa91dc9ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 00:50:35 2024 -0400
-
-    new ArraySupport module, and refactored all the array based container concrete impls to use it, so they all have the same API for array-based concrete extensions
-
-commit e1d8e6a966ee6cb8573752b9a5c8252cbe2f512d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 13:29:51 2024 -0400
-
-    fixed bugs with ArraySupport/SkipListSupport new code for containers
-
-commit 2fb7d6cf5a6f2cb0c77de132663277beabb2ea89
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 22:41:36 2024 -0400
-
-    basic-unix-test-configurations tweaks
-
-commit bcf16aa09ae19e3b20a7f6c9b7d541dec9503c45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 27 13:57:48 2024 -0400
-
-    fixed exe used in RunPerformanceRegressionTests
-
-commit 8cd36d773f0069f63b4e4142d6c8b37491b538b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 28 08:58:08 2024 -0400
-
-    fixed warnings valgrindline count in regtest(I hope - testing)
-
-commit dade7b78cb03dc6d38b8ebbe13aea96639e8352f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 5 10:04:23 2024 -0400
-
-    Minor cleanups to IteratorImplHelper_
 
 commit 4ad2d508980292797ba772cf72ff89e203f6a078
 Author: Lewis Pringle <lewis@sophists.com>
@@ -388,35 +377,11 @@ Date:   Mon Sep 9 13:44:43 2024 -0400
 
     experiment on github actions letting you select variable container_image version (defaults to v3)
 
-commit a388969d2c5ba4da1db0f679e68c5d3102afab37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 14:29:28 2024 -0400
-
-    Cleanup Containers::MultiSet regtests
-
 commit fe8855d1971443821a0d8b4c1b385d93861f9800
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 9 16:12:49 2024 -0400
 
     maybe workaround issue with github actions and missing github.event.inputs.container_version  by default
-
-commit 56c1fcabde9710286003fbbd1c1826cb65551445
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 16:18:20 2024 -0400
-
-    cosmetic github action
-
-commit 9d0a789ab702daad272ff3c20f74c15bb204c391
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 20:23:28 2024 -0400
-
-    More SortedMultiSet_SkipList (Private::SkipListBasedContainer) support
-
-commit f308f542b6d1bb81f838ef1a3c58eec28221a701
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 20:35:41 2024 -0400
-
-    lose a few legacy uses of _IRepSharedPtr
 
 commit e0fd75799e7470327cb88e173ed91f996ddb408b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -442,12 +407,6 @@ Date:   Tue Sep 10 17:01:49 2024 -0400
 
     start documenting Design Overview.md#Comparisons with static_assert (totally_ordered<Character>);
 
-commit 5a7d00200cb8f807b16048d702f561afa3f61fac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 10 18:24:11 2024 -0400
-
-    Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc); 
-
 commit d2fe1e40f187d44201e26cf49e40df8d9c4cf2d1
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 10 20:51:09 2024 -0400
@@ -465,18 +424,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 10 23:07:53 2024 -0400
 
     moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
-
-commit db3d4b4f1124e2bc0868e84c6a9538fc44215ba0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 08:10:03 2024 -0400
-
-    tewak regression test script
-
-commit d46ed8657cbd0b2b17ae6711d145b83304cb696f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 11 08:41:09 2024 -0400
-
-    cleanup association regtests (modernize/gtest)
 
 commit fcc4ca9f013ef769558e295ec358f12c2ed2aafd
 Author: Lewis Pringle <lewis@sophists.com>
@@ -526,27 +473,11 @@ Date:   Sun Sep 15 22:12:58 2024 -0400
 
     KeyThreeWayComparerType instead of KeyInOrderComparerType for SortedAssociation SortedCollection SortedKeyedCollection
 
-commit f7440fee0e532749995480aca064691207688172
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 08:32:12 2024 -0400
-
-    **Not fully backward compat**; but switched container backends for sorted types to return 'InOrderComparer' - and added accessor overloads so you can GET back either inorder or threeway (via adapter)
-
-commit 072dce2f0ae47a013e2d5a4e34640730281039cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 09:11:50 2024 -0400
-
 commit 9949fff1038e6c9d55ea19883787600d2f3b4ae5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 16 11:08:31 2024 -0400
 
     Renamed (never released) IThreeWayAdaptableComparer -> ITotallyOrderingComparer; Supported ITotallyOrderingComparer in all remaining sortedxxx factories; and a few other minor/cosmetic cleanups
-
-commit 694dac6ac915a645f12681cf1e918d2c46cf018e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 16 11:57:30 2024 -0400
-
-    Finished converting sorted container archtype CTORs (now that factories done) to accept ITotallyOrderingComparer instead if IInOrderComparer, and updates docs, and regression tests accordingly
 
 commit d0dc8d528447d814a28500905239a23a868730ea
 Author: Lewis Pringle <lewis@sophists.com>
@@ -560,87 +491,11 @@ Date:   Tue Sep 17 11:00:20 2024 -0400
 
     better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
 
-commit fad1039028af4d505bd8fa8c21cc41179616d456
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Sep 17 11:03:14 2024 -0400
-
-    Added g++-debug-sanitize_thread config
-
-commit 5581efa9d21915cd36fa69b31283b1d8ec03f862
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Sep 17 11:14:09 2024 -0400
-
-    Added g++-release-sanitize_address_undefined_leak config for ubuntu 24.04
-
 commit 1af6b840ebaffc1a2d5c8b9dddbd5036874f5c55
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 17 11:44:57 2024 -0400
 
     Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
-
-commit a95ab8d971b42e9659ec1faaf2d2de5be5f4c8b7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Sep 17 12:53:11 2024 -0400
-
-    lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
-
-commit c905a96bd0bca17460e29fe2b81f26fe40fc7adf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 17 17:53:11 2024 -0400
-
-    concepts on Atom<>::As()
-
-commit 3bbaae68e393ad35d440d4f3d54505f068b0f71d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 18 09:51:48 2024 -0400
-
-    new Iterator<> EndSentinel support (incomplete but good draft)
-
-commit 32246365897cbc3c82a41ada448a756093ed1990
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 18 20:49:58 2024 -0400
-
-    InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
-
-commit 6f57fe86f88cf0d8c32b01383e179b20aa16dceb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 18 22:35:00 2024 -0400
-
-    more recent changes to recent sentinal_for concept use
-
-commit cfcf83ba71e0400d077e3752a2f52c8ca19ad5b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 09:58:53 2024 -0400
-
-    tweak DisjointDiscreteRange constructors (concepts)
-
-commit 6af514cae5e9870fb4350f86d80e5f4a652ebd26
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 11:35:27 2024 -0400
-
-    use concept same_as in place of older is_same_v
-
-commit 9d684089e6c4bbb7171def6881a4d994b8ba7c07
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 20 11:38:05 2024 -0400
-
-    doker container uses VS_17_11_4
-
-commit 45ce1fd89b32eab6dc07bfd3806a95e9a55f2629
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 21 10:39:25 2024 -0400
-
-    workaround weired gcc Error: attempt to compute the difference between a singular iterator to a
-    dereferenceable (start-of-sequence) iterator ussue
-
-commit 8279ab0136f01dd09e403f40fc63567925666d73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 21 11:01:25 2024 -0400
-
-    tweak SKEL Makefile rule for latest-submodules
-
--- NEW openssl repo location FETCHURLDOWNLOADS... = github
-
 
 #endif
 
