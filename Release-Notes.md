@@ -15,10 +15,16 @@ especially those they need to be aware of when upgrading.
 -    readme
     docs
 
+  Docker Containers:
+    VS_17_11_0 docker
+    docker VS_17_11_2
 
 
-    - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA
+All Library Sources:
+    use concept copy_constructible instead of is_copy_constructible_v and cosmetic
+   use concept constructible_from instead of old name is_constructible_v
 
+ 
 
     Containers::Common
       Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
@@ -53,25 +59,6 @@ especially those they need to be aware of when upgrading.
     DataStructures progress: replace ForwardIterator::Equals with operator==; go back to disabling store of fData_ in several ForwardIterators - instead adding data* arg to CurrentIndex (and assert same as fData if we have); iterators return const& (datastructures iterators); and  static_assert (ranges::input_range<LinkedList<int>>) works now
 
 
-BUG DEFINES
-    qCompiler    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-    tweaks to qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for skiplists
-AndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWAs
-    change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
-    new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
-    lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
- experimental simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA; and lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-    Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
-    experimental qCompilerAndStdLib_UseREQ_BWA use
-    more tweaks of qCompilerAndStdLib_UseREQ_BWA ETC BWA
-    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/<qCompilerAndStdLib_UseREQ1_BWA cleanups
-    lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
-    qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
-    lots more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA cleanups
-    more qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA for clang++15
-   and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-    merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
-
 
   Cache:
     renamed BloomFilter Contains to ProbablyContains
@@ -100,10 +87,44 @@ Common::GUID
     fixed IPotentiallyComparer check for case of compare_three_way better
 
     New IThreeWayAdaptableComparer concept and used in ThreeWayComparerAdapter
+    ComparisonRelationDeclaration tweak
 
 
 Common::KeyValuePair
     KeyValuePair supports void for mapped_type
+
+  Configuration:
+    Configuration Concepts Select_t utility
+
+    BUG DEFINES
+        qCompiler    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+        tweaks to qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for skiplists
+    AndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWAs
+        change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
+        new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
+        lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
+    experimental simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA; and lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
+        Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
+        experimental qCompilerAndStdLib_UseREQ_BWA use
+        more tweaks of qCompilerAndStdLib_UseREQ_BWA ETC BWA
+        qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/<qCompilerAndStdLib_UseREQ1_BWA cleanups
+        lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
+        qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
+        lots more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA cleanups
+        more qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA for clang++15
+      and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
+        merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
+
+   - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA
+   update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
+
+
+    Endian:
+      Minor tweaks to Endian support (docs mostly)
+   addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
+
+  Compilers SUPPORTED:
+    prelim support for _MSC_VER_2k22_17Pt11_
 
 
 DataExchange 
@@ -161,26 +182,6 @@ Frameworks::Tests:
   
     Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
 
-
-ThirdPartyComponents
-- Boost
-    /boost/Makefile tweak
-    boost tweaks to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_
-    boost makefile tweaks; and support VERSION:=1_86_0 (not on yet)
-    better boost makefile fix for issue building cobalt and clang++
-  - Curl
-    libcurl 8.10.1
-  - LibXML2
-    libxml2 2.13.4
- - SQLite
-   sqlite 3.46.1
-- Xerces
-    Xerces makefile tweak
- - openssl
-openssl 3.3.2;
-
-  - googletest:
-      thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
 
 
 
@@ -252,53 +253,32 @@ Containers:
 
 
 
+ThirdPartyComponents
+- Boost
+    /boost/Makefile tweak
+    boost tweaks to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_
+    boost makefile tweaks; and support VERSION:=1_86_0 (not on yet)
+    better boost makefile fix for issue building cobalt and clang++
+  - Curl
+    libcurl 8.10.1
+  - LibXML2
+    libxml2 2.13.4
+ - SQLite
+   sqlite 3.46.1
+- Xerces
+    Xerces makefile tweak
+ - openssl
+openssl 3.3.2;
+
+  - googletest:
+      thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
+
+
 commit 879c1644001af8c5a6361c71876386e055e1aa6a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 7 13:48:10 2024 -0400
 
     use .empty () instead of .size() == 0 in a bunch of places (can be more performant); IteratorImplHelper_ supports passing low level iterator as arg; ForwardIterator::operator bool () on the various datastructure forwarditerators; SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) method and similar name cleanups on other datastructure classes; and more use of concepts on these function calls; and cleaned up / normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
-
-commit 5991e488205d992af4932fba086a1c08105a15f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 16 15:36:04 2024 -0400
-
-    ComparisonRelationDeclaration tweak
-
-commit bc7863407fa76deb49d09a6b75850e6aebb7f01b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 16 15:39:32 2024 -0400
-
-    Configuration Concepts Select_t utility
-
-commit c55dd4a461bf43d4914495ee8bfc3422641a9f5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 12:07:08 2024 -0400
-
-    prelim support for _MSC_VER_2k22_17Pt11_
-
-commit 1d64a3f239d09788739b88121990ce5bd6bafead
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 20:22:16 2024 -0400
-
-    Compile rbug defines for _MSC_VER_2k22_17Pt11_
-
-commit ba8438f5a7f645477a6eebacf777f4fa8e6211ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 18 20:22:52 2024 -0400
-
-    VS_17_11_0 docker
-
-commit 67aab325ddd37cd7bf0120410f6c143e474aa929
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 19 10:02:58 2024 -0400
-
-    Minor tweaks to Endian support (docs mostly)
-
-commit c676074b126a68177acc6b0f3500338608f81770
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 19 10:20:29 2024 -0400
-
-    addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
 
 commit 6c07ad8967cfc4173ca37b1b5938e527d1fb81e9
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -330,18 +310,6 @@ Date:   Wed Aug 21 09:49:31 2024 -0400
 
     on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
 
-commit 5c5d873207054bcdfad068cd2b0868c04228e5c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 11:19:22 2024 -0400
-
-    use concept copy_constructible instead of is_copy_constructible_v and cosmetic
-
-commit b61fe935290643873009836c47156b6ed5ac8ca9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 11:45:38 2024 -0400
-
-    use concept constructible_from instead of old name is_constructible_v
-
 commit cfc89f79346ef8dbd682ac6c1e78f35f77b560b7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 21 14:35:52 2024 -0400
@@ -353,10 +321,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Aug 22 09:06:21 2024 -0400
 
     fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
-
-commit d4287de9b7893b10c2f4fb44c7013cbabc6221b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 22 10:32:08 2024 -0400
 
 commit 791a80df87c019eea71a2b4f31f61e8c7e542b26
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -417,12 +381,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 8 23:09:36 2024 -0400
 
     Minor cleanups to ComparisonRelationDeclaration; and Iterable<>::As(); and now many uses of ComparisonRelationDeclaration like ElementInOrderComparerType now also use ArgByValueType
-
-commit c8e2c683a8f4e44fa63ab485ddea53f4b8f566c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 9 09:48:47 2024 -0400
-
-    docker VS_17_11_2
 
 commit 5e014ce0f53e6ee4416aa4cecee52bc6a2d3f86f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -562,16 +520,6 @@ Date:   Sun Sep 15 09:39:43 2024 -0400
 
     tweak names of comparer types (fixing name typos) in containers - not backward compatible, but unlikely ever an issue (e.g. KeyInOrderKeyComparerType -> KeyInOrderComparerType)
 
-commit b45f9a9cc23eb6e85df9e0a267f201fec72a7b7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 15 10:08:58 2024 -0400
-
-commit 6d7a7675588b883a563fdda404e124e9f7800867
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Sep 15 20:10:44 2024 -0400
-
-    update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
-
 commit 28ac090bb40badf0c57047a1f517c1c1a68dc38e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 15 22:12:58 2024 -0400
@@ -659,11 +607,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 18 22:35:00 2024 -0400
 
     more recent changes to recent sentinal_for concept use
-
-commit 00182fe050fe59a579b43efc190655c02f382d22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 19 11:54:17 2024 -0400
-
 
 commit cfcf83ba71e0400d077e3752a2f52c8ca19ad5b1
 Author: Lewis Pringle <lewis@sophists.com>
