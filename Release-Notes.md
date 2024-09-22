@@ -8,79 +8,57 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### START NOTES v3.0d10
+### 3.0d10 {2024-09-23????} {[diff](../../compare/v3.0d9...v3.0d10)}
 
-#if 0
+#### TLDR
+--draft
+  - skiplist support
+  - generic backend-integration layer in concrete containers (ArraySupport,SkipListSupport etc)
+  - more thorough concept usage
+  - comparison improvements - especially with containers
+  
+#### Upgrade Notes (3.0d9 to 3.0d10)
 
--    readme
-    docs
+#### Change Details
+
+- Various docs/comments cleanups
     start documenting Design Overview.md#Comparisons with static_assert (totally_ordered<Character>);
     Design Overview.md#Comparisons better docs and static_asserts of equality_comparable and totally_ordered as appropriate
 
+- Build System
+  - Compilers Bug Workarounds
+  - configure
+  - Regression Tests
+  - github actions
+    - cosmetic cleanups
+    - added github action setting letting you select variable container_image version (defaults to v3)
+  - Supported Compilers
+
   Docker Containers:
-   doker container uses VS_17_11_4
+   docker container uses VS_17_11_4
 
     use ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build in ubuntu 22.04 container
 
-All Library Sources:
-    use concept copy_constructible instead of is_copy_constructible_v and cosmetic
-   use concept constructible_from instead of old name is_constructible_v
-    docs, static asserts about Satisfies Concepts
-    lose a few legacy uses of _IRepSharedPtr
-     Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc); 
-   use concept same_as in place of older is_same_v
-
-
-    Containers::Common
-      Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
-
-- Containers::DataStructures
-  - new SkipList<> implementation
-    - includes regression tests
-    - Concrete::Sorted{Association,Collection,KeyedCollection,Mapping,MultiSet,Set}_SkipList impl, with regtests
-    - Private/SkipListSupport.h
-    - Docs in ReadMe about supported containers/datastructures
-  - Array
-    Assertions cleanups to DataStructures Array
-    https://stroika.atlassian.net/browse/STK-757 for DataStructures::Array use malloc/realloc if trivailly_copyable_v
-
-
-    Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
-
-    Container DataStructure classes - replaced a few Prepend/Append method names with push_front / push_back
-
-    make API in Containers::DataStrucutres more STL-ish - operator->, operator* replacing it.Current () and a few other changes to SkipList
-
-    progress towards std::ranges support on LinkedList - but not there yet
-
-    progress on datastructures doublelinkedlist range support (and linked list)
-
-    more progress on data structures; got STLCOntainerWrapper and Array working as ranges
-
-    LinkedList/DoublyLinkedList - Remove and erase methods (diff is returning itererator)
-    Array::removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
-
-  Array AND LinkedList:
-    DataStructures progress: replace ForwardIterator::Equals with operator==; go back to disabling store of fData_ in several ForwardIterators - instead adding data* arg to CurrentIndex (and assert same as fData if we have); iterators return const& (datastructures iterators); and  static_assert (ranges::input_range<LinkedList<int>>) works now
-
-
-
-  Cache:
-    renamed BloomFilter Contains to ProbablyContains
-
-Common::GUID
-    Minor GUID cleanups (mostly concepts)
-
-- Common::Compare
-        draft IThreeWayComparer and new Common::ToInt(strong_ordering) so can be used in switch statement
-    maybe fixed IPotentiallyComparer for compare_three_way
-    IPotentiallyComparer fixed to support lamdas returning strong_ordering
-
-    slightly refactor code for ExtractComparisonTraits_
-
-    minor fixes to recent regressions and bug fix to InOrderComparerAdapter
-
-    progress getting IComparer working with threewaycomparer lambda, but not yet working
+- Stroika Library
+  - All Library Sources
+    - use concept copy_constructible instead of is_copy_constructible_v and cosmetic
+    - use concept same_as in place of older is_same_v
+    - use concept constructible_from instead of old name is_constructible_v
+    - docs, static asserts about Satisfies Concepts
+    - lose a few legacy uses of _IRepSharedPtr
+    - Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc); 
+  - Cache
+    - renamed BloomFilter::Contains to ProbablyContains
+  - Common & Configuration
+    - GUID
+      Minor GUID cleanups (mostly concepts)
+    - Compare
+      - draft IThreeWayComparer and new Common::ToInt(strong_ordering) so can be used in switch statement
+      - maybe fixed IPotentiallyComparer for compare_three_way
+      - IPotentiallyComparer fixed to support lamdas returning strong_ordering
+      - slightly refactor code for ExtractComparisonTraits_
+      - minor fixes to recent regressions and bug fix to InOrderComparerAdapter
+      - progress getting IComparer working with threewaycomparer lambda, but not yet working
 
     Minor cleanups to IComparer code but still not right
 
@@ -135,6 +113,40 @@ Common::KeyValuePair
     Endian:
       Minor tweaks to Endian support (docs mostly)
    addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
+
+    Containers::Common
+      Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
+
+- Containers::DataStructures
+  - new SkipList<> implementation
+    - includes regression tests
+    - Concrete::Sorted{Association,Collection,KeyedCollection,Mapping,MultiSet,Set}_SkipList impl, with regtests
+    - Private/SkipListSupport.h
+    - Docs in ReadMe about supported containers/datastructures
+  - Array
+    Assertions cleanups to DataStructures Array
+    https://stroika.atlassian.net/browse/STK-757 for DataStructures::Array use malloc/realloc if trivailly_copyable_v
+
+
+    Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
+
+    Container DataStructure classes - replaced a few Prepend/Append method names with push_front / push_back
+
+    make API in Containers::DataStrucutres more STL-ish - operator->, operator* replacing it.Current () and a few other changes to SkipList
+
+    progress towards std::ranges support on LinkedList - but not there yet
+
+    progress on datastructures doublelinkedlist range support (and linked list)
+
+    more progress on data structures; got STLCOntainerWrapper and Array working as ranges
+
+    LinkedList/DoublyLinkedList - Remove and erase methods (diff is returning itererator)
+    Array::removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
+
+  Array AND LinkedList:
+    DataStructures progress: replace ForwardIterator::Equals with operator==; go back to disabling store of fData_ in several ForwardIterators - instead adding data* arg to CurrentIndex (and assert same as fData if we have); iterators return const& (datastructures iterators); and  static_assert (ranges::input_range<LinkedList<int>>) works now
+
+
 
   Compilers SUPPORTED:
     prelim support for _MSC_VER_2k22_17Pt11_
@@ -241,7 +253,6 @@ Containers:
     tweak names of comparer types (fixing name typos) in containers - not backward compatible, but unlikely ever an issue (e.g. KeyInOrderKeyComparerType -> KeyInOrderComparerType)
     KeyThreeWayComparerType instead of KeyInOrderComparerType for SortedAssociation SortedCollection SortedKeyedCollection
 
-
 DataExchange 
   Atom:
     concepts on Atom<>::As()
@@ -257,25 +268,22 @@ DataExchange
     document VariantValue regular concept
 
 
-Math::Statistics:
+- Math
+  - Statistics:
     fixed issues with Math::Statistics (overloads/templates magic) and regtest cleanups
-        cleanup Math::Mean/Median/StandardDeviation routines (still not good) - but some concept imporvements
-   
+    cleanup Math::Mean/Median/StandardDeviation routines (still not good) - but some concept imporvements
     more cleanups of API for Math::Median template - I think I have it right now
-
     docs and more clenaups to Math::Median
 
-
-Memory:
-  minor cleanups to BitSubString/Bits() helper functions (concepts and docs
-
-  Memory::Optional
-      Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
-  
-    SharedByValue<T, TRAITS>::operator bool () support
-
-    InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
-    https://stroika.atlassian.net/browse/STK-757 for Memory::InlineBuffer use malloc/realloc if trivailly_copyable_v
+- Memory
+  - Bits
+    minor cleanups to BitSubString/Bits() helper functions, concepts and docs
+  - Optional
+    - Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
+  - SharedByValue<T, TRAITS>::operator bool () support
+  - InlineBuffer
+    - InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
+    - https://stroika.atlassian.net/browse/STK-757 for Memory::InlineBuffer use malloc/realloc if trivailly_copyable_v
 
 Traversal:
   Iterator
@@ -328,7 +336,6 @@ Frameworks::Tests:
     better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
 
 
-
 ThirdPartyComponents
 - Boost
     /boost/Makefile tweak
@@ -350,7 +357,6 @@ openssl 3.3.2;
   - googletest:
       thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
 
-
   Scripts - BUILD CONFIG:
     basic-unix-test-configurations tweaks
     on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
@@ -360,10 +366,6 @@ openssl 3.3.2;
     lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
     cleanups to makefile configuraiton generation/defaults (lose leak san on ubun2u22.04 cuz not building curl)
 
-Github Actions:
-    cosmetic github action
-    added github action setting letting you select variable container_image version (defaults to v3)
-
 Scripts
   Skel:
       tweak SKEL Makefile rule for latest-submodules
@@ -371,10 +373,36 @@ Scripts
   Configure:
    fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
 
-#endif
 
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 15, 16, 17, 18; XCode: 15.2, 15.3}
+  - MSVC: { 17.10.5 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 14.4 - arm64/m1 chip
+    - 14.3, 14.4 on github actions
+  - Linux: { Ubuntu: [22.04, 23.10, 24.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
-
+---
 
 ### 3.0d9 {2024-07-31} {[diff](../../compare/v3.0d8...v3.0d9)}
 
