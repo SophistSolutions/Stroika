@@ -181,12 +181,12 @@ namespace {
             }
         };
         {
-            EXPECT_EQ (Bit (0), 0x1);
-            EXPECT_EQ (Bit (1), 0x2);
-            EXPECT_EQ (Bit (3), 0x8);
-            EXPECT_EQ (Bit (15), 0x8000);
+            EXPECT_EQ (Bit (0), 0x1u);
+            EXPECT_EQ (Bit (1), 0x2u);
+            EXPECT_EQ (Bit (3), 0x8u);
+            EXPECT_EQ (Bit (15), 0x8000u);
             EXPECT_EQ (Bit<int> (1, 2), 6);
-            EXPECT_EQ (Bit<int> (1, 2, 15), static_cast<int> (0x8006));
+            EXPECT_EQ (Bit<int> (1, 2, 15), 0x8006);
         }
         {
             EXPECT_EQ (BitSubstring (0x3, 0, 1), 1);
