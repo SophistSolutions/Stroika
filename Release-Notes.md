@@ -30,36 +30,33 @@ especially those they need to be aware of when upgrading.
   - Design Overview.md#Comparisons better docs and static_asserts of equality_comparable and totally_ordered as appropriate
 - Build System
   - Compilers Bug Workarounds
-      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-      - change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
-      - new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
-      - lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
-      - simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA
-      - lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-      - Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
-      - qCompilerAndStdLib_UseREQ_BWA use
-      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/qCompilerAndStdLib_UseREQ1_BWA cleanups
-      - lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
-      - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
-      - lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-      - merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
-      - new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
-      - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
-      - update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
-      - Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
+    - change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
+    - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+    - new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
+    - lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
+    - simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA
+    - lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
+    - Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
+    - lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
+    - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
+    - lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
+    - new bug define BWA qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
+    - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
+    - update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
+    - Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
   - configure
     - fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
   - Regression Tests
     - fixed exe used in RunPerformanceRegressionTests
     - cleanup regtests - and make in style of gtest - one test macro section per logical test, and use _EQ, etc...
-      - Cleanup Containers::MultiSet regtests
-      - cleanup Foundation_Containers_SortedMapping regtest
-      - cleanup association regtests (modernize/gtest)
-      - more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
-      - cleanup Sequnce regtests
-      - Big cleanup to Collection regtests
-      - KeyedCollection regtest cleanups
-      - cleanup Mapping regtests for googletest
+      - MultiSet
+      - SortedMapping
+      - association
+      - Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
+      - Sequence 
+      - Collection
+      - KeyedCollection
+      - Mapping
     - fixed warnings valgrindline count in regtest(I hope - testing)
     - tweak regression test script
     - REGTEST CONFIGURATIONS:
