@@ -28,6 +28,61 @@ especially those they need to be aware of when upgrading.
 - Various docs/comments cleanups
   - start documenting Design Overview.md#Comparisons with static_assert (totally_ordered<Character>);
   - Design Overview.md#Comparisons better docs and static_asserts of equality_comparable and totally_ordered as appropriate
+- Build System
+  - Compilers Bug Workarounds
+      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+      - change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
+      - new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
+      - lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
+      - simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA
+      - lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
+      - Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
+      - qCompilerAndStdLib_UseREQ_BWA use
+      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/qCompilerAndStdLib_UseREQ1_BWA cleanups
+      - lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
+      - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
+      - lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
+      - merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
+      - new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
+      - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
+      - update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
+      - Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
+  - configure
+    - fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
+  - Regression Tests
+    - fixed exe used in RunPerformanceRegressionTests
+    - cleanup regtests - and make in style of gtest - one test macro section per logical test, and use _EQ, etc...
+      - Cleanup Containers::MultiSet regtests
+      - cleanup Foundation_Containers_SortedMapping regtest
+      - cleanup association regtests (modernize/gtest)
+      - more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
+      - cleanup Sequnce regtests
+      - Big cleanup to Collection regtests
+      - KeyedCollection regtest cleanups
+      - cleanup Mapping regtests for googletest
+    - fixed warnings valgrindline count in regtest(I hope - testing)
+    - tweak regression test script
+    - REGTEST CONFIGURATIONS:
+      - Added g++-debug-sanitize_thread config
+      - Added g++-release-sanitize_address_undefined_leak config for ubuntu 24.04
+      - basic-unix-test-configurations tweaks
+      - on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
+      - experimental makefile basic-UNIX-test-configurations
+    - better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
+  - github actions
+    - cosmetic cleanups
+    - added github action setting letting you select variable container_image version (defaults to v3)
+  - Scripts
+    - lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
+      cleanups to makefile configuraiton generation/defaults (lose leak san on ubun2u22.04 cuz not building curl)
+    - Skel:
+      - tweak SKEL Makefile rule for latest-submodules
+  - Supported Compilers
+    - desupport clang++-14 (latest boost fails to compile there under ubuntu 22.04) - no need to support
+    - support for _MSC_VER_2k22_17Pt11_
+  - Docker Containers
+      - visual studio uses VS_17_11_4
+      - Ubuntu 22.04 uses ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build
 - Stroika Library
   - Across Library
     - use concept copy_constructible instead of is_copy_constructible_v and cosmetic
@@ -59,24 +114,6 @@ especially those they need to be aware of when upgrading.
         - KeyValuePair support mapped_type=void
       - StdCompat
         - moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
-      - BUG DEFINES
-        - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-        - change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
-        - new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
-        - lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
-        - simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA
-        - lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-        - Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
-        - qCompilerAndStdLib_UseREQ_BWA use
-        - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/qCompilerAndStdLib_UseREQ1_BWA cleanups
-        - lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
-        - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
-        - lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-        - merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
-        - new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
-        - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
-        - update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
-        - Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
       - Endian
         - Minor tweaks to Endian support (docs mostly)
         - addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
@@ -177,63 +214,24 @@ especially those they need to be aware of when upgrading.
       - Tests
         - ArchtypeClasses
           - Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups ; NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
-- Build System
-  - Compilers Bug Workarounds
-  - configure
-  - Regression Tests
-  - github actions
-    - cosmetic cleanups
-    - added github action setting letting you select variable container_image version (defaults to v3)
-  - Supported Compilers
-    - desupport clang++-14 (latest boost fails to compile there under ubuntu 22.04) - no need to support
-    - support for _MSC_VER_2k22_17Pt11_
-- Docker Containers
-    - visual studio uses VS_17_11_4
-    - Ubuntu 22.04 uses ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build
-- REGTESTS
-  - fixed exe used in RunPerformanceRegressionTests
-  - fixed warnings valgrindline count in regtest(I hope - testing)
-  - Cleanup Containers::MultiSet regtests
-  - tewak regression test script
-  - cleanup Foundation_Containers_SortedMapping regtest
-  - cleanup association regtests (modernize/gtest)
-  - REGTEST CONFIGURATIONS:
-    - Added g++-debug-sanitize_thread config
-    - Added g++-release-sanitize_address_undefined_leak config for ubuntu 24.04
-    - basic-unix-test-configurations tweaks
-    - on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
-    - experimental makefile basic-UNIX-test-configurations
-  - more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
-  - better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
-  - cleanup Sequnce regtests
-  - Big cleanup to Collection regtests
-  - KeyedCollection regtest cleanups
-  - cleanup Mapping regtests for googletest
 - ThirdPartyComponents
   - Boost
     - tweaks
     - support VERSION:=1_86_0
     - better boost makefile fix for issue building cobalt and clang++
   - Curl
-    - libcurl 8.10.1
+    - VERSION 8.10.1
   - LibXML2
-    - libxml2 2.13.4
+    - VERSION 2.13.4
   - SQLite
-    - sqlite 3.46.1
+    - VERSION 3.46.1
   - Xerces
-    - Xerces makefile tweak
+    - makefile tweak
   - openssl
-    - openssl 3.3.2;
+    - VERSION 3.3.2
     - NEW openssl repo location FETCHURLDOWNLOADS... = github
-  - googletest:
-    - thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
-- Scripts
-  - lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
-    cleanups to makefile configuraiton generation/defaults (lose leak san on ubun2u22.04 cuz not building curl)
-  - Skel:
-     - tweak SKEL Makefile rule for latest-submodules
-- Configure:
-  - fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
+  - googletest
+    - makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
 
 #### Release-Validation
 - Compilers Tested/Supported
