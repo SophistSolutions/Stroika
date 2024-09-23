@@ -8,12 +8,12 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### 3.0d10 {2024-09-23????} {[diff](../../compare/v3.0d9...v3.0d10)}
+### 3.0d10 {2024-09-23????} {[diff](../../compare/v3.0d9...v3.0d10)} **DRAFT**
 
 #### TLDR
---draft
-  - [DataStructure::SkipList<>](Library/Sources/Stroika/Foundation/Containers/DataStructures/SkipList.h) support
-  - generic backend-integration layer in concrete containers ([ArraySupport](Library/Sources/Stroika/Foundation/Containers/Private/ArraySupport.h),SkipListSupport etc), so things so for example, Collection_Array and Sequence_Array have the same extension api for 'array stuff' like reserve
+
+  - [DataStructure::SkipList<>](Library/Sources/Stroika/Foundation/Containers/DataStructures/SkipList.h#96) support
+  - generic backend-integration layer in concrete containers ([ArraySupport](Library/Sources/Stroika/Foundation/Containers/Private/ArraySupport.h#L21),SkipListSupport etc), so things so for example, Collection_Array and Sequence_Array have the same extension api for 'array stuff' like reserve
   - more thorough concept usage
   - comparison improvements - especially with containers
   - lose support for clang++-14
@@ -26,9 +26,8 @@ especially those they need to be aware of when upgrading.
 #### Change Details
 
 - Various docs/comments cleanups
-    start documenting Design Overview.md#Comparisons with static_assert (totally_ordered<Character>);
-    Design Overview.md#Comparisons better docs and static_asserts of equality_comparable and totally_ordered as appropriate
-
+  - start documenting Design Overview.md#Comparisons with static_assert (totally_ordered<Character>);
+  - Design Overview.md#Comparisons better docs and static_asserts of equality_comparable and totally_ordered as appropriate
 - Build System
   - Compilers Bug Workarounds
   - configure
@@ -37,7 +36,7 @@ especially those they need to be aware of when upgrading.
     - cosmetic cleanups
     - added github action setting letting you select variable container_image version (defaults to v3)
   - Supported Compilers
-    - desupport clang++-14 (latest boost fails to compile there under ubuntu 22.04) - no need to support)
+    - desupport clang++-14 (latest boost fails to compile there under ubuntu 22.04) - no need to support
     - support for _MSC_VER_2k22_17Pt11_
 - Docker Containers
     - visual studio uses VS_17_11_4
@@ -50,217 +49,169 @@ especially those they need to be aware of when upgrading.
     - use default_initializable over is_default_constructible_v
     - docs, static asserts about Satisfies Concepts
     - lose a few legacy uses of _IRepSharedPtr
-    - Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc); 
-  - Cache
-    - renamed BloomFilter::Contains to ProbablyContains
-  - Common & Configuration (to be merged next release)
-    - Compare
-      - draft IThreeWayComparer and new Common::ToInt(strong_ordering) so can be used in switch statement
-      - maybe fixed IPotentiallyComparer for compare_three_way
-      - IPotentiallyComparer fixed to support lamdas returning strong_ordering
-      - slightly refactor code for ExtractComparisonTraits_
-      - minor fixes to recent regressions and bug fix to InOrderComparerAdapter
-      - progress getting IComparer working with threewaycomparer lambda, but not yet working
-      - Minor cleanups to IComparer code but still not right
-      - Cleanups to IComparer code
-      - ThreeWayComparerAdapter/InOrderComparerAdapter/EqualsComparerAdapter with attempt at deduction guides but didn't seem to help
-      - fixed IPotentiallyComparer check for case of compare_three_way better
-      - New ITotallyOrderingComparer concept and used in ThreeWayComparerAdapter
-      - ComparisonRelationDeclaration tweak
-      - Minor cleanups to ComparisonRelationDeclaration; and  and now many uses of ComparisonRelationDeclaration like ElementInOrderComparerType now also use ArgByValueType
-      - more requires constraints on ComparisonRelationDeclaration - for better debug messages
-    - Concepts 
-      - Select_t utility
-    - GUID
-      - Minor GUID cleanups (mostly concepts)
-    - KeyValuePair
-      - KeyValuePair support mapped_type=void
-    - StdCompat
-      - moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
-    - BUG DEFINES
-      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-      - change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
-      - new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
-      - lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
-      - simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA
-      - lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
-      - Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
-      - qCompilerAndStdLib_UseREQ_BWA use
-      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/qCompilerAndStdLib_UseREQ1_BWA cleanups
-      - lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
-      - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
-      - lots more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA cleanups
-      - lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-      - merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
-      - new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
-      - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
-      - update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
-      - Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
-    - Endian
-      - Minor tweaks to Endian support (docs mostly)
-      - addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
-  - Containers
-    - Nearly all the container classes
-      - improved concepts usage, and got each working as input_range, and totally_ordered, or not, as appropriate, and documented for each
-      - reacted to iterable<>::sentinal change: all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept
-      - use .empty () instead of .size() == 0 in a bunch of places (can be more performant)
-    - Common
-      - Migraded Containers::AddReplaceMode to Common.h; 
-      - added related AddOrExtendOrReplaceMode
-    - DataStructures
-      - all
-        - normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
-        - ForwardIterator::operator bool () on the various datastructure forwarditerators; 
-        - Container DataStructure classes - replaced a few Prepend/Append method names with push_front / push_back
-        - make API in Containers::DataStrucutres more STL-ish - operator->, operator* replacing it.Current () and a few other changes to SkipList
-        - replace ForwardIterator::Equals with operator==; 
-        - static_assert (ranges::input_range<LinkedList<int>>) works now - for all datastructure container classes
-        - **new** SkipList<> implementation
-        - includes regression tests
-        - Private/SkipListSupport.h
-        - Docs in ReadMe about supported containers/datastructures
-        - more use of concepts on these DataStructure::Find... function calls; 
-      - Array
-        - removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
-        - Assertions cleanups to DataStructures Array
-        - https://stroika.atlassian.net/browse/STK-757 for DataStructures::Array use malloc/realloc if trivailly_copyable_v
-      - LinkedList
-        - Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
-        - Remove and erase methods (diff is returning itererator)
-      - DoublyLinkedList
-        - Remove and erase methods (diff is returning itererator)
-    - Factories
-      - Supported ITotallyOrderingComparer in all sortedxxx factories; and a few other minor/cosmetic cleanups
-    - Private::
-      - IteratorImplHelper_ supports passing low level iterator as arg;
-      - more requires () on private IteratorImplHelper_ to try and get better compiler error messages
-    - Concrete classes
-      - lots of misc cleanups / docs / performance docs cleanups across all the concrete classes
-      - deprecated Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
-      - cleanup SortedMapping_stdmap
-      - Concrete::Sorted{Association,Collection,KeyedCollection,Mapping,MultiSet,Set}_SkipList impl, with regtests
-      - SortedMapping_stdmap supports STDMAP move CTOR and used more appropriatley in ObjectVariantMapper.inl
-      - deprecated Association_stdmultimap: instead use SortedAssociation_stdmultimap
-      - deprecated Collection_stdmultiset -> SortedCollection_stdmultiset instead
-    - ArchType classes
-      - progress on SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
-      - SortedXXX containers all support ITotallyOrderingComparer argument
+    - Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc);
+  - Foundation
+    - Cache
+      - renamed BloomFilter::Contains to ProbablyContains
+    - Common & Configuration (to be merged next release)
+      - Compare
+        - draft IThreeWayComparer and new Common::ToInt(strong_ordering) so can be used in switch statement
+        - fixed IPotentiallyComparer for compare_three_way
+        - IPotentiallyComparer fixed to support lamdas returning strong_ordering
+        - slightly refactor code for ExtractComparisonTraits_
+        - get IComparer working with threewaycomparer lambda
+        - ThreeWayComparerAdapter/InOrderComparerAdapter/EqualsComparerAdapter with attempt at deduction guides but didn't seem to help
+        - New ITotallyOrderingComparer concept and used in ThreeWayComparerAdapter
+        - Minor cleanups to ComparisonRelationDeclaration; and now many uses of ComparisonRelationDeclaration like ElementInOrderComparerType now also use ArgByValueType
+        - more requires constraints on ComparisonRelationDeclaration - for better debug messages
+      - Concepts 
+        - Select_t utility
+      - GUID
+        - Minor GUID cleanups (mostly concepts)
+      - KeyValuePair
+        - KeyValuePair support mapped_type=void
+      - StdCompat
+        - moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
+      - BUG DEFINES
+        - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+        - change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
+        - new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
+        - lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
+        - simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA
+        - lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
+        - Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
+        - qCompilerAndStdLib_UseREQ_BWA use
+        - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/qCompilerAndStdLib_UseREQ1_BWA cleanups
+        - lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
+        - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
+        - lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
+        - merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
+        - new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
+        - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
+        - update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
+        - Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
+      - Endian
+        - Minor tweaks to Endian support (docs mostly)
+        - addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
+    - Containers
+      - Nearly all the container classes
+        - improved concepts usage, and got each working as input_range, and totally_ordered, or not, as appropriate, and documented for each
+        - reacted to iterable<>::sentinal change: all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept
+        - use .empty () instead of .size() == 0 in a bunch of places (can be more performant)
+      - Common
+        - Migraded Containers::AddReplaceMode to Common.h; 
+        - added related AddOrExtendOrReplaceMode
+      - DataStructures
+        - all
+          - normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
+          - ForwardIterator::operator bool () on the various datastructure forwarditerators; 
+          - Container DataStructure classes - replaced a few Prepend/Append method names with push_front / push_back
+          - make API in Containers::DataStrucutres more STL-ish - operator->, operator* replacing it.Current () and a few other changes to SkipList
+          - replace ForwardIterator::Equals with operator==; 
+          - static_assert (ranges::input_range<LinkedList<int>>) works now - for all datastructure container classes
+          - **new** SkipList<> implementation
+          - Docs in ReadMe about supported containers/datastructures
+          - more use of concepts on these DataStructure::Find... function calls; 
+        - Array
+          - removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
+          - Assertions cleanups to DataStructures Array
+          - https://stroika.atlassian.net/browse/STK-757 for DataStructures::Array use malloc/realloc if trivailly_copyable_v
+        - LinkedList
+          - Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
+          - Remove and erase methods (diff is returning itererator)
+        - DoublyLinkedList
+          - Remove and erase methods (diff is returning itererator)
+      - Factories
+        - Supported ITotallyOrderingComparer in all sortedxxx factories; and a few other minor/cosmetic cleanups
+      - Private::
+        - IteratorImplHelper_ supports passing low level iterator as arg;
+        - more requires () on private IteratorImplHelper_ to try and get better compiler error messages
+        - tons of containers cleanups (IImplRepBase_ simplifcaiton, fixed missing fChangeCounts_, and made a few things more terse)
+      - Concrete classes
+        - For all Array, std::vector, and SkipList based concrete containers, replace any adapter methods in the concrete container to access capacity etc, with instead generic access via StdVectorSupport/SkipListSupport/ArraySupport.
+        - lots of misc cleanups / docs / performance docs cleanups across all the concrete classes
+        - deprecated Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
+        - cleanup SortedMapping_stdmap
+        - Concrete::Sorted{Association,Collection,KeyedCollection,Mapping,MultiSet,Set}_SkipList impl, with regtests
+        - SortedMapping_stdmap supports STDMAP move CTOR and used more appropriatley in ObjectVariantMapper.inl
+        - deprecated Association_stdmultimap: instead use SortedAssociation_stdmultimap, deprecated Collection_stdmultiset -> SortedCollection_stdmultiset instead, 
+          deprecated KeyedCollection_stdset (in favor of just calling SortedKeyedCollection_stdset), deprecated MultiSet_stdmap (use SortedMultiSet_stdmap instead),
+          deprecated Set_stdset replace with SortedSet_stdset; and related docs cleanups
+        - cleanups to Sequence_stdvector
+      - ArchType classes
+        - progress on SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
+        - SortedXXX containers all support ITotallyOrderingComparer argument
+        - **Not fully backward compat**; but switched container backends for sorted types to return 'InOrderComparer' - and added accessor overloads so you can GET back either inorder or threeway (via adapter)
+        - changed docs example for KeyedCollection to use lambda
+        - new Set<>::CloneEmpty method (may want for other containers) - and used to improve sematncis and performance of Union, and a few other apis
+        - back/front etc aliases for Queue/DeQueue
+        - Major refactor/rename of comparers - especially in SortedXXX classes: SortedSet<T>::GetInOrderComparer () ->  SortedSet<T>::GetElementInOrderComparer (), docs about Container Element comparisons, GetThreeWayComparer support for SortedSet, SortedSet<> IRep now directly supports GetElementThreeWayComparer
+        - converted sorted container archtype CTORs (now that factories done) to accept ITotallyOrderingComparer instead if IInOrderComparer, and updates docs, and regression tests accordingly
+      - Clenaup container remove code to use Remove for erase from datastructure layer depending on need to get updated iterator
+    - DataExchange 
+      - Atom:
+        - concepts on Atom<>::As()
+      - InternetMediaTypeRegistry
+        - InternetMediaTypeRegistry::Get ();/Set deprecated - use sThe instead
+        - documented how to avoid any cost - if needed in loop - copy value - sharedbyvalue
+        - Move a few InternetMediaTypeRegistry to cpp file cuz FrontEndRep code defined only in CPP file so references illegal
+        - workaround deadly-embrace startup issue created by making InternetMediaTypeRegistry sThe static inline - instead have it default internally to a nullptr; and define a kDefaultFrontEndForNoBackend_ and use NullCoalesce to pick between them
+      - VariantValue
+        - document VariantValue regular concept
+    - Math
+      - Statistics
+        - Math::Mean/Median/StandardDeviation template overload cleanups, and docs and requires
+    - Memory
+      - Bits
+        - minor cleanups to BitSubString/Bits() helper functions, concepts and docs
+      - Optional
+        - Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
+      - SharedByValue<T, TRAITS>::operator bool () support
+      - InlineBuffer
+        - InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
+        - https://stroika.atlassian.net/browse/STK-757 for Memory::InlineBuffer use malloc/realloc if trivailly_copyable_v
+      - Traversal
+        - Iterator
+          - new Iterator<> EndSentinel support (incomplete but good draft)
+        - Iterable
+          - tweak  Iterable<T>::SequentialEqualsComparer
+          - Iterable<T>::end()
+            - make Iterable<T>::end() static - not const method
+            - Iterable<>::end () now returns default_sentinel_t (instead of Iterator<T>) - lots of work throughout Stroika reacting to this - **not backward compatible**
+          - use UncheckedDynamicCast in place of static_cast in Iterable<>
+          - static_assert(copyable<T>);
+          - new Iterable<T>::IsOrderedBy
+          - workaround the fact that vector/set etc are not fully 'range-friendly' with their constructors (taking one type iterator not sep type for end iterator)
+          - Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
+          - cleanup Iterable<>::As();
+        - Ranges
+          - tweak DisjointDiscreteRange constructors (concepts)
+    - Frameworks
+      - Tests
+        - ArchtypeClasses
+          - Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups ; NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
 
-    **Not fully backward compat**; but switched container backends for sorted types to return 'InOrderComparer' - and added accessor overloads so you can GET back either inorder or threeway (via adapter)
-
-    changed docs example for KeyedCollection to use lambda
-
-    new ArraySupport module, and refactored all the array based container concrete impls to use it, so they all have the same API for array-based concrete extensions
-
-    back/front etc aliases for Queue/DeQueue
-
-    Clenaup container remove code to use Remove for erase from datastructure layer depending on need to get updated iterator
-
-    docs about Container Element comparisons
-
-    SortedCollection_Factory supports (untested) ITotallyOrderingComparer
-
-    factored shrink_to_fit/reserve/capacity code out of Sequence_stdvector into helper class StdVectorBasedContainer template (no usage / api changes)
-
-    cosmeitc, and cleanups to Sequence_stdvector
-
-    deprecated KeyedCollection_stdset (in favor of just calling SortedKeyedCollection_stdset)
-
-    deprecated MultiSet_stdmap (use SortedMultiSet_stdmap instead)
-
-    deprecatee Set_stdset replace with SortedSet_stdset; and related docs cleanups
-
-    new Set<>::CloneEmpty method (may want for other containers) - and used to improve sematncis and performance of Union, and a few other apis
-
-    renamed  SortedSet<T>::GetInOrderComparer () ->  SortedSet<T>::GetElementInOrderComparer () ; and start at GetThreeWayComparer support for SortedSet
-
-    SortedSet<> IRep now directly supports GetElementThreeWayComparer (test size implications)
-
-    Changed SortedSet REP and SortedCollection REP classes to use GetElementThreeWayComparer instead of GetElementInOrderComparer
-
-    fixed bugs with ArraySupport/SkipListSupport new code for containers
-
-    Finished converting sorted container archtype CTORs (now that factories done) to accept ITotallyOrderingComparer instead if IInOrderComparer, and updates docs, and regression tests accordingly
-
-    tons of containers cleanups (IImplRepBase_ simplifcaiton, fixed missing fChangeCounts_, and made a few things more terse)
-    remove a few unneeded KeyEqualsCompareFunctionType casts due to recent fix to DeclareEqualsComparer (ctors)
-    seem to no longer need ElementInOrderComparerType etc casts on results (probably recent fix to DeclareEqualsComparer)
-    minor cleanusp to GetElementEqualsComparer () return value due to cleanup of ComparisonRelationDeclarationBase CTORs - I think
-
-    tweak names of comparer types (fixing name typos) in containers - not backward compatible, but unlikely ever an issue (e.g. KeyInOrderKeyComparerType -> KeyInOrderComparerType)
-    KeyThreeWayComparerType instead of KeyInOrderComparerType for SortedAssociation SortedCollection SortedKeyedCollection
-
-- DataExchange 
-  - Atom:
-    - concepts on Atom<>::As()
-  - InternetMediaTypeRegistry
-    - InternetMediaTypeRegistry::Get ();/Set deprecated - use sThe instead
-    - documented how to avoid any cost - if needed in loop - copy value - sharedbyvalue
-    - Move a few InternetMediaTypeRegistry to cpp file cuz FrontEndRep code defined only in CPP file so references illegal
-    - workaround deadly-embrace startup issue created by making InternetMediaTypeRegistry sThe static inline - instead have it default internally to a nullptr; and define a kDefaultFrontEndForNoBackend_ and use NullCoalesce to pick between them
-  - VariantValue
-    - document VariantValue regular concept
-
-- Math
-  - Statistics
-    - Math::Mean/Median/StandardDeviation template overload cleanups, and docs and requires
-- Memory
-  - Bits
-    - minor cleanups to BitSubString/Bits() helper functions, concepts and docs
-  - Optional
-    - Generalized NullCoalesce so works with shared_ptr, SharedByValue, etc - using concepts
-  - SharedByValue<T, TRAITS>::operator bool () support
-  - InlineBuffer
-    - InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
-    - https://stroika.atlassian.net/browse/STK-757 for Memory::InlineBuffer use malloc/realloc if trivailly_copyable_v
-  - Traversal
-    - Iterator
-      - new Iterator<> EndSentinel support (incomplete but good draft)
-    - Iterable
-      - tweak  Iterable<T>::SequentialEqualsComparer
-      - Iterable<T>::end()
-        - make Iterable<T>::end() static - not const method
-        - Iterable<>::end () now returns default_sentinel_t (instead of Iterator<T>) - lots of work throughout Stroika reacting to this - **not backward compatible**
-      - use UncheckedDynamicCast in place of static_cast in Iterable<>
-      - static_assert(copyable<T>);
-      - new Iterable<T>::IsOrderedBy
-      - workaround the fact that vector/set etc are not fully 'range-friendly' with their constructors (taking one type iterator not sep type for end iterator)
-      - Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER> now uses qCompilerAndStdLib_UseConceptOrTypename_BWA BWA; and Iterable<T>::SequentialThreeWayComparer now uses IThreeWayComparer<T> concept
-      - cleanup Iterable<>::As();
-    - Ranges
-      - tweak DisjointDiscreteRange constructors (concepts)
-
-Frameworks::Tests:
-  ArchtypeClasses
-    ArchtypeClasses: renamed NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
-      more tweaks to SimpleClassWithoutComparisonOperators
-  
-    Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups
-
-
-  REGTESTS
-    fixed exe used in RunPerformanceRegressionTests
-
-    fixed warnings valgrindline count in regtest(I hope - testing)
-    Cleanup Containers::MultiSet regtests
-    tewak regression test script
-    cleanup Foundation_Containers_SortedMapping regtest
-
-    cleanup association regtests (modernize/gtest)
-    REGTEST CONFIGURATIONS:
-       Added g++-debug-sanitize_thread config
-      Added g++-release-sanitize_address_undefined_leak config for ubuntu 24.04
-    disable targeting valgrind on ubuntu 23.10 (not worht debugging now)
-    more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
-    better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
-    cleanup Sequnce regtests
-    Big cleanup to Collection regtests
-    KeyedCollection regtest cleanups
-    cleanup Mapping regtests for googletest
-
-
-ThirdPartyComponents
-- Boost
+- REGTESTS
+  - fixed exe used in RunPerformanceRegressionTests
+  - fixed warnings valgrindline count in regtest(I hope - testing)
+  - Cleanup Containers::MultiSet regtests
+  - tewak regression test script
+  - cleanup Foundation_Containers_SortedMapping regtest
+  - cleanup association regtests (modernize/gtest)
+  - REGTEST CONFIGURATIONS:
+    - Added g++-debug-sanitize_thread config
+    - Added g++-release-sanitize_address_undefined_leak config for ubuntu 24.04
+    - basic-unix-test-configurations tweaks
+    - on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
+    - experimental makefile basic-UNIX-test-configurations
+  - more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
+  - better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
+  - cleanup Sequnce regtests
+  - Big cleanup to Collection regtests
+  - KeyedCollection regtest cleanups
+  - cleanup Mapping regtests for googletest
+- ThirdPartyComponents
+  - Boost
     /boost/Makefile tweak
     boost tweaks to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_
     boost makefile tweaks; and support VERSION:=1_86_0 (not on yet)
@@ -269,32 +220,23 @@ ThirdPartyComponents
     libcurl 8.10.1
   - LibXML2
     libxml2 2.13.4
- - SQLite
-   sqlite 3.46.1
-- Xerces
+  - SQLite
+    sqlite 3.46.1
+  - Xerces
     Xerces makefile tweak
- - openssl
-openssl 3.3.2;
--- NEW openssl repo location FETCHURLDOWNLOADS... = github
-
+  - openssl
+    - openssl 3.3.2;
+    - NEW openssl repo location FETCHURLDOWNLOADS... = github
   - googletest:
-      thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
+    - thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
 
-  Scripts - BUILD CONFIG:
-    basic-unix-test-configurations tweaks
-    on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
-
-    experimental makefile +basic-NEW-UNIX-test-configurations
-
-    lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
+- Scripts
+  - lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
     cleanups to makefile configuraiton generation/defaults (lose leak san on ubun2u22.04 cuz not building curl)
-
-Scripts
-  Skel:
-      tweak SKEL Makefile rule for latest-submodules
-
-  Configure:
-   fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
+  - Skel:
+     - tweak SKEL Makefile rule for latest-submodules
+- Configure:
+  - fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
 
 #### Release-Validation
 - Compilers Tested/Supported
