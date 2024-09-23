@@ -75,9 +75,9 @@ namespace {
                     int                       dataSize1 = ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
                     Memory::StackBuffer<byte> buf1{static_cast<size_t> (dataSize1)};
                     if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), reinterpret_cast<BYTE*> (buf1.begin ()), &dataSize1)) {
-                        return vector<byte> (buf1.begin (), buf1.begin () + dataSize1);
+                        return vector<byte>{buf1.begin (), buf1.begin () + dataSize1};
                     }
-                    return vector<byte> ();
+                    return vector<byte>{};
                 }
                 string EncodeBase64_ATL_ (const vector<byte>& b, LineBreak lb)
                 {
@@ -90,7 +90,7 @@ namespace {
                                                         relBuf.data (), &relEncodedSize));
                         relBuf[relEncodedSize] = '\0';
                         if (lb == LineBreak::eCRLF_LB) {
-                            return (static_cast<const char*> (relBuf));
+                            return static_cast<const char*> (relBuf);
                         }
                         else {
                             EXPECT_TRUE (lb == LineBreak::eLF_LB);

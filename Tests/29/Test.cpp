@@ -97,7 +97,7 @@ namespace {
         EXPECT_TRUE (cnt == 3);
 #endif
         s.RemoveAll ();
-        EXPECT_TRUE (s.size () == 0);
+        EXPECT_EQ (s.size (), 0u);
     }
 }
 
@@ -146,7 +146,7 @@ namespace {
             a.Push (2);
             vector<int> aa{a.begin (), Iterator<int>{a.end ()}};
             Stack<int>  b{aa};
-            EXPECT_EQ (b.size (), 2);
+            EXPECT_EQ (b.size (), 2u);
             EXPECT_EQ (b.Pop (), 2);
             EXPECT_EQ (b.Pop (), 1);
         }
