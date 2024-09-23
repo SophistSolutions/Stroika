@@ -12,12 +12,16 @@ especially those they need to be aware of when upgrading.
 
 #### TLDR
 --draft
-  - DataStructure::SkipList<> support
-  - generic backend-integration layer in concrete containers (ArraySupport,SkipListSupport etc), so things so for example, Collection_Array and Sequence_Array have the same extension api for 'array stuff' like reserve
+  - [DataStructure::SkipList<>](Library/Sources/Stroika/Foundation/Containers/DataStructures/SkipList.h) support
+  - generic backend-integration layer in concrete containers ([ArraySupport](Library/Sources/Stroika/Foundation/Containers/Private/ArraySupport.h),SkipListSupport etc), so things so for example, Collection_Array and Sequence_Array have the same extension api for 'array stuff' like reserve
   - more thorough concept usage
   - comparison improvements - especially with containers
+  - lose support for clang++-14
+  - Sorted* containers now use ITotallyOrderingComparer, so easier mixing of total ordering and strict in-order ordering functions with sorted containers
   
 #### Upgrade Notes (3.0d9 to 3.0d10)
+
+- maybe watch out for assumptions about the type of the result of Iterable<T>::end(), but mostly this should be transparent
 
 #### Change Details
 
@@ -33,17 +37,17 @@ especially those they need to be aware of when upgrading.
     - cosmetic cleanups
     - added github action setting letting you select variable container_image version (defaults to v3)
   - Supported Compilers
-
-  Docker Containers:
-   docker container uses VS_17_11_4
-
-    use ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build in ubuntu 22.04 container
-
+    - desupport clang++-14 (latest boost fails to compile there under ubuntu 22.04) - no need to support)
+    - support for _MSC_VER_2k22_17Pt11_
+- Docker Containers
+    - visual studio uses VS_17_11_4
+    - Ubuntu 22.04 uses ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build
 - Stroika Library
   - Across Library
     - use concept copy_constructible instead of is_copy_constructible_v and cosmetic
     - use concept same_as in place of older is_same_v
     - use concept constructible_from instead of old name is_constructible_v
+    - use default_initializable over is_default_constructible_v
     - docs, static asserts about Satisfies Concepts
     - lose a few legacy uses of _IRepSharedPtr
     - Standard Stroika Comparison support docs cleanups (static assert totally_ordered etc); 
@@ -75,141 +79,82 @@ especially those they need to be aware of when upgrading.
       - moved compare_three_way_BWA to Configuration::StdCompat::compare_three_way
     - BUG DEFINES
       - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-      - tweaks to qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA for skiplists
       - change check for msvc compiler from _MSVC_LANG >= kStrokia_Foundation_Configuration_cplusplus_23 to _HAS_CXX23
       - new bug define and BWA qCompilerAndStdLib_default_initializable_broken_Buggy
       - lose qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy define cuz no longer support clang++-14
-      - experimental simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA
+      - simplication of BWA defines - BWA_Helper_ContraintInMemberClassSeparateDeclare_ merged to qCompilerAndStdLib_UseConceptOrTypename_BWA
       - lose qCompilerAndStdLib_ContraintInMemberClassSeparateDeclare_Buggy
       - Minor cleanups to qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy - testing on xcode
-      - experimental qCompilerAndStdLib_UseREQ_BWA use
-        qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/<qCompilerAndStdLib_UseREQ1_BWA cleanups
-        lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
-        qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
-        lots more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA cleanups
-        more qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA for clang++15
-      and lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
-        merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
-    new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
-
-   - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
-        workaround weired gcc Error: attempt to compute the difference between a singular iterator to a
-          dereferenceable (start-of-sequence) iterator ussue
-
-   update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
-    Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
-
-
-    Endian:
-      Minor tweaks to Endian support (docs mostly)
-   addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
-
-    Containers::Common
-      Migraded Containers::AddReplaceMode to Common.h; and added related AddOrExtendOrReplaceMode; and used in SkipList codfe
-
-- Containers
-  - DataStructures
-    - **new** SkipList<> implementation
-      - includes regression tests
+      - qCompilerAndStdLib_UseREQ_BWA use
+      - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy/qCompilerAndStdLib_UseREQ1_BWA cleanups
+      - lose qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy and otehr clang++-14 specific bug define support
+      - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA macro BWA name cleanups
+      - lots more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA cleanups
+      - lose unneeded qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
+      - merged qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy => qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
+      - new bug define BWA qCompilerAndStdLib_SubstIntoContraintResultsInNonConstantExpr_Buggy
+      - qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy BWA  
+      - update qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy for clang versions
+      - Comments and warning about __cpp_lib_jthread < 201911 to see if still an issue on any target platform
+    - Endian
+      - Minor tweaks to Endian support (docs mostly)
+      - addressed http://stroika-bugs.sophists.com/browse/STK-850 - std::endian and Configuration::GetEndian support
+  - Containers
+    - Nearly all the container classes
+      - improved concepts usage, and got each working as input_range, and totally_ordered, or not, as appropriate, and documented for each
+      - reacted to iterable<>::sentinal change: all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept
+      - use .empty () instead of .size() == 0 in a bunch of places (can be more performant)
+    - Common
+      - Migraded Containers::AddReplaceMode to Common.h; 
+      - added related AddOrExtendOrReplaceMode
+    - DataStructures
+      - all
+        - normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
+        - ForwardIterator::operator bool () on the various datastructure forwarditerators; 
+        - Container DataStructure classes - replaced a few Prepend/Append method names with push_front / push_back
+        - make API in Containers::DataStrucutres more STL-ish - operator->, operator* replacing it.Current () and a few other changes to SkipList
+        - replace ForwardIterator::Equals with operator==; 
+        - static_assert (ranges::input_range<LinkedList<int>>) works now - for all datastructure container classes
+        - **new** SkipList<> implementation
+        - includes regression tests
+        - Private/SkipListSupport.h
+        - Docs in ReadMe about supported containers/datastructures
+        - more use of concepts on these DataStructure::Find... function calls; 
+      - Array
+        - removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
+        - Assertions cleanups to DataStructures Array
+        - https://stroika.atlassian.net/browse/STK-757 for DataStructures::Array use malloc/realloc if trivailly_copyable_v
+      - LinkedList
+        - Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
+        - Remove and erase methods (diff is returning itererator)
+      - DoublyLinkedList
+        - Remove and erase methods (diff is returning itererator)
+    - Factories
+      - Supported ITotallyOrderingComparer in all sortedxxx factories; and a few other minor/cosmetic cleanups
+    - Private::
+      - IteratorImplHelper_ supports passing low level iterator as arg;
+      - more requires () on private IteratorImplHelper_ to try and get better compiler error messages
+    - Concrete classes
+      - lots of misc cleanups / docs / performance docs cleanups across all the concrete classes
+      - deprecated Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
+      - cleanup SortedMapping_stdmap
       - Concrete::Sorted{Association,Collection,KeyedCollection,Mapping,MultiSet,Set}_SkipList impl, with regtests
-      - Private/SkipListSupport.h
-      - Docs in ReadMe about supported containers/datastructures
-    - Array
-      Assertions cleanups to DataStructures Array
-      https://stroika.atlassian.net/browse/STK-757 for DataStructures::Array use malloc/realloc if trivailly_copyable_v
-    Assertions cleanups to DataStructures LinkedList (dont store fData in debug builds)
-    Container DataStructure classes - replaced a few Prepend/Append method names with push_front / push_back
-
-    make API in Containers::DataStrucutres more STL-ish - operator->, operator* replacing it.Current () and a few other changes to SkipList
-
-    progress towards std::ranges support on LinkedList - but not there yet
-
-    progress on datastructures doublelinkedlist range support (and linked list)
-  - Factories
-    - Supported ITotallyOrderingComparer in all sortedxxx factories; and a few other minor/cosmetic cleanups
-
-
-
-    more progress on data structures; got STLCOntainerWrapper and Array working as ranges
-
-    LinkedList/DoublyLinkedList - Remove and erase methods (diff is returning itererator)
-    Array::removeAt renamed to Array::REmove(NOT BACKWARD COMPAT but not directly used); and new method erase() provided rerning iterator, and that simplified a bunch of uses
-
-  Array AND LinkedList:
-    DataStructures progress: replace ForwardIterator::Equals with operator==; go back to disabling store of fData_ in several ForwardIterators - instead adding data* arg to CurrentIndex (and assert same as fData if we have); iterators return const& (datastructures iterators); and  static_assert (ranges::input_range<LinkedList<int>>) works now
-
-
-
-  Compilers SUPPORTED:
-    prelim support for _MSC_VER_2k22_17Pt11_
- Abandon clang++-14 support (latest boost fails to compile there under ubuntu 22.04) - no need to support
-
-Containers:
- reacted to iterable<>::sentinal change: all over the place by making most Stroika containers /APIs taking two iterators - use sentinel_for in second concept;
-  Private::
-    IteratorImplHelper_ supports passing low level iterator as arg;
-  DataStructures
-
-    ForwardIterator::operator bool () on the various datastructure forwarditerators; 
-    
-    more use of concepts on these DataStructure::Find... function calls; 
-    and cleaned up / normalized CTORs for various ForwardIterator classes on datastructures, documenting better behavior across all
-
-  MISC:    
-  
-    Minor cleanups to IteratorImplHelper_
-    more requires () on private IteratorImplHelper_ to try and get better compiler error messages
-
-
-    fixed concepts usage in Mapping_stdmap   
-    
-     removeal of Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
+      - SortedMapping_stdmap supports STDMAP move CTOR and used more appropriatley in ObjectVariantMapper.inl
+      - deprecated Association_stdmultimap: instead use SortedAssociation_stdmultimap
+      - deprecated Collection_stdmultiset -> SortedCollection_stdmultiset instead
+    - ArchType classes
+      - progress on SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
+      - SortedXXX containers all support ITotallyOrderingComparer argument
 
     **Not fully backward compat**; but switched container backends for sorted types to return 'InOrderComparer' - and added accessor overloads so you can GET back either inorder or threeway (via adapter)
 
-    cleanup SortedMapping_stdmap
-    Mapping_stdmap: is_default_constructible_v/constructible_from cleanups (to regtests etc); default CTORS (using no explicit comparer) now require totally_ordered so is_default_constructible etc wroks right now; and other clenaups
-    Containers/Concrete/Mapping_stdmap tweak
-    experinemental removeal of Mapping_stdmap (use SortedMapping_stdmap); had to jump through #include hoops but if it works, less redundancy
-
-  use .empty () instead of .size() == 0 in a bunch of places (can be more performant)
-
-  deprecated Mapping_stdmap - force explicit use of SortedMapping_stdmap
-    minor cleanups - and use Concrete::SortedMapping_stdmap over Concrete::Mapping_stdmap; and default_initializable over is_default_constructible_v
-
-    SortedMapping_stdmap supports STDMAP move CTOR and used more appropriatley in ObjectVariantMapper.inl
-
-    deprecated Association_stdmultimap: instead use SortedAssociation_stdmultimap
-
-    Lots of docs cleanups (to performance/data structures code) ; and deprecated Collection_stdmultiset -> SortedCollection_stdmultiset instead
-
-    Big cleanup to Collection regtests
-
-    Minor cleanup to SortedCollection_LinkedList
-
-    cleanup Sequnce regtests
-
-    progress on SortedCollection<T>::_IRep::_Equals_Reference_Implementation and use in other impls
-
-    draft Foundation_Containers_SortedCollection, SortedCollection_SkipList regtest
-
-    SortedKeyedCollection_stdset cleanup
-
     changed docs example for KeyedCollection to use lambda
-
-    KeyedCollection regtest cleanups
-
-    tweak to SortedMultiSet_stdmap
 
     new ArraySupport module, and refactored all the array based container concrete impls to use it, so they all have the same API for array-based concrete extensions
 
     back/front etc aliases for Queue/DeQueue
 
     Clenaup container remove code to use Remove for erase from datastructure layer depending on need to get updated iterator
-
-    Minor cleanup MultiSet_LinkedList
-
-    cleanup Mapping regtests for googletest
 
     docs about Container Element comparisons
 
@@ -259,7 +204,6 @@ Containers:
 - Math
   - Statistics
     - Math::Mean/Median/StandardDeviation template overload cleanups, and docs and requires
-
 - Memory
   - Bits
     - minor cleanups to BitSubString/Bits() helper functions, concepts and docs
@@ -269,11 +213,9 @@ Containers:
   - InlineBuffer
     - InlineBuffer experimental support for more ranges code, and sentinel_for<ITERATOR_OF_T>
     - https://stroika.atlassian.net/browse/STK-757 for Memory::InlineBuffer use malloc/realloc if trivailly_copyable_v
-
-  - Traversal:
+  - Traversal
     - Iterator
       - new Iterator<> EndSentinel support (incomplete but good draft)
-
     - Iterable
       - tweak  Iterable<T>::SequentialEqualsComparer
       - Iterable<T>::end()
@@ -311,6 +253,10 @@ Frameworks::Tests:
     disable targeting valgrind on ubuntu 23.10 (not worht debugging now)
     more Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
     better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
+    cleanup Sequnce regtests
+    Big cleanup to Collection regtests
+    KeyedCollection regtest cleanups
+    cleanup Mapping regtests for googletest
 
 
 ThirdPartyComponents
@@ -354,7 +300,7 @@ Scripts
 - Compilers Tested/Supported
   - g++ { 11, 12, 13, 14 }
   - Clang++ { unix: 15, 16, 17, 18; XCode: 15.2, 15.3}
-  - MSVC: { 17.10.5 }
+  - MSVC: { 17.11.4 }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 11 version 23H2
@@ -371,6 +317,7 @@ Scripts
 - Sanitizers and Code Quality Validators
   - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
   - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
 - Build Systems
   - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
