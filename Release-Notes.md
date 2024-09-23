@@ -28,19 +28,6 @@ especially those they need to be aware of when upgrading.
 - Various docs/comments cleanups
   - start documenting Design Overview.md#Comparisons with static_assert (totally_ordered<Character>);
   - Design Overview.md#Comparisons better docs and static_asserts of equality_comparable and totally_ordered as appropriate
-- Build System
-  - Compilers Bug Workarounds
-  - configure
-  - Regression Tests
-  - github actions
-    - cosmetic cleanups
-    - added github action setting letting you select variable container_image version (defaults to v3)
-  - Supported Compilers
-    - desupport clang++-14 (latest boost fails to compile there under ubuntu 22.04) - no need to support
-    - support for _MSC_VER_2k22_17Pt11_
-- Docker Containers
-    - visual studio uses VS_17_11_4
-    - Ubuntu 22.04 uses ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build
 - Stroika Library
   - Across Library
     - use concept copy_constructible instead of is_copy_constructible_v and cosmetic
@@ -190,7 +177,19 @@ especially those they need to be aware of when upgrading.
       - Tests
         - ArchtypeClasses
           - Big changes to Test::ArchtypeClasses: deprecated old names SimpleClass and SimpleClassWithoutComparisonOperators and using new class names OnlyCopyableMoveable OnlyCopyableMoveableAndTotallyOrdered, and Regular, and started using new helper templates AsIntsEqualsComparer etc, and other cleanups ; NotCopyable -> OnlyDefaultConstructibleAndMoveable; added draft concepts / tests for these test classes to be clear what htey are for testing
-
+- Build System
+  - Compilers Bug Workarounds
+  - configure
+  - Regression Tests
+  - github actions
+    - cosmetic cleanups
+    - added github action setting letting you select variable container_image version (defaults to v3)
+  - Supported Compilers
+    - desupport clang++-14 (latest boost fails to compile there under ubuntu 22.04) - no need to support
+    - support for _MSC_VER_2k22_17Pt11_
+- Docker Containers
+    - visual studio uses VS_17_11_4
+    - Ubuntu 22.04 uses ppa:ubuntu-toolchain-r/test version of g++-13 instead of my own build
 - REGTESTS
   - fixed exe used in RunPerformanceRegressionTests
   - fixed warnings valgrindline count in regtest(I hope - testing)
@@ -212,24 +211,22 @@ especially those they need to be aware of when upgrading.
   - cleanup Mapping regtests for googletest
 - ThirdPartyComponents
   - Boost
-    /boost/Makefile tweak
-    boost tweaks to PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_
-    boost makefile tweaks; and support VERSION:=1_86_0 (not on yet)
-    better boost makefile fix for issue building cobalt and clang++
+    - tweaks
+    - support VERSION:=1_86_0
+    - better boost makefile fix for issue building cobalt and clang++
   - Curl
-    libcurl 8.10.1
+    - libcurl 8.10.1
   - LibXML2
-    libxml2 2.13.4
+    - libxml2 2.13.4
   - SQLite
-    sqlite 3.46.1
+    - sqlite 3.46.1
   - Xerces
-    Xerces makefile tweak
+    - Xerces makefile tweak
   - openssl
     - openssl 3.3.2;
     - NEW openssl repo location FETCHURLDOWNLOADS... = github
   - googletest:
     - thirdpartycomponents makefile for googletest: must patch .rc file in 'builds' directory - not with patch in CURRENT directory - because its re-used when we build different targets (e.g. same folder and build for Windows and WSL)
-
 - Scripts
   - lose qCompiler_ValgrindDirectSignalHandler_Buggy bug define and BWA, since no longer supporing valgrind under Ubuntu 22.04 and doesnt seem triggered anyhow (maybe revisit?) and configure tweaks - fewer cases setting piler_ValgrindLTO_Bug - testing; and a few more configs tested in regresisn test configs for ubuntu 22.04
     cleanups to makefile configuraiton generation/defaults (lose leak san on ubun2u22.04 cuz not building curl)
@@ -262,7 +259,7 @@ especially those they need to be aware of when upgrading.
   - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
 - Build Systems
   - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
-  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
 - Known (minor) issues with regression test output
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
