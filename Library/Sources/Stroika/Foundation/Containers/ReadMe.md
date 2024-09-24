@@ -177,7 +177,7 @@ These 'requirements' pull in opposing directions.
    
 Stroika manages this with the container class library by:
    
- - have [comparison concepts](../Library/Sources/Foundation/Common/Compare.h) that test if something is an equals/threeway/or strict-inorder comparer
+ - have [comparison concepts](../Common/Compare.h) that test if something is an equals/threeway/or strict-inorder comparer
  - Allow CONSTRUCTORS (and factories) for containers to take explicit comparers
       as arguments that can be perfectly forwarded (zero cost abstraction) to the container
       backend implementation, so there is zero cost in using them.
