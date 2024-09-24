@@ -48,23 +48,23 @@ especially those they need to be aware of when upgrading.
     - fixed configure script to detect  eq  && NeedsFmtLib_ () if onlyGenerateIfCompilerExists and disable and warn
   - Regression Tests
     - fixed exe used in RunPerformanceRegressionTests
-    - cleanup regtests - and make in style of gtest - one test macro section per logical test, and use _EQ, etc...
+    - cleanup regtests - and make in style of gtest - one test macro section per logical test, added ArchtypeClasses::AsIntsThreeWayComparer, and use _EQ, etc...
       - MultiSet
       - SortedMapping
       - association
-      - Set regtests cleanups and  added ArchtypeClasses::AsIntsThreeWayComparer
+      - Set
       - Sequence 
       - Collection
       - KeyedCollection
       - Mapping
     - fixed warnings valgrindline count in regtest(I hope - testing)
     - tweak regression test script
-    - REGTEST CONFIGURATIONS:
+    - REGTEST CONFIGURATIONS
+      - rewrote/reorganized makefile basic-UNIX-test-configurations
       - Added g++-debug-sanitize_thread config
       - Added g++-release-sanitize_address_undefined_leak config for ubuntu 24.04
       - basic-unix-test-configurations tweaks
       - on ubuntu 22.04 - disable sanitizers (maybe only needed asan) by default with --apply-debug-flags; not worth debugging the issue here/how - probably with asan itself or host os kernel settings
-      - experimental makefile basic-UNIX-test-configurations
     - better document NOT supporting helgrind and why, and lose a few more BWA for old helgrind bug workarounds
   - github actions
     - cosmetic cleanups

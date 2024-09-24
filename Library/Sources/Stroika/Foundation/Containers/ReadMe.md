@@ -65,6 +65,10 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>. Unlike std c++ container 
   ```
   void f(Iterator<T> start, Iterator<T> end) {...}
   ```
+  or even just 
+  ```
+  void f(Iterator<T> start) {...}
+  ```
   instead of 
   ```
   template<typename IT>
@@ -115,8 +119,8 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>. Unlike std c++ container 
   - Supported backends: [Array](Concrete/KeyedCollection_Array_.h),[LinkedList](Concrete/KeyedCollection_LinkedList_.h),[std::hashset](Concrete/KeyedCollection_stdhashset.h), [SkipList](Concrete/SortedKeyedCollection_SkipList.h), [std::set](Concrete/SortedKeyedCollection_stdset.h)
 - [Mapping\<KEY_TYPE, VALUE_TYPE>](Mapping.h)
   - Allows for the association of two elements: a key and a value. The key UNIQUELY specifies its associated value
-  - Supported backends: [Array](Concrete/Mapping_Array_.h), [LinkedList](Concrete/Mapping_LinkedList_.h), [std::hash_map](Concrete/Mapping_stdhashmap_.h), [SkipList](Concrete/SortedMapping_SkipList.h),  [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
   - A collection of elements where each time you add something, the MultiSet tallies the number of times that thing has been entered. This is not a commonly used class, but handy when you want to count things
+  - Supported backends: [Array](Concrete/Mapping_Array_.h), [LinkedList](Concrete/Mapping_LinkedList_.h), [std::hash_map](Concrete/Mapping_stdhashmap_.h), [SkipList](Concrete/SortedMapping_SkipList.h),  [SkipList](Concrete/SortedMapping_SkipList.h),  [std::map](Concrete/SortedMapping_stdmap.h)
 - [PriorityQueue\<T>](PriorityQueue.h)
   - PriorityQueues are a like a Queue that allows retrieval based the priority assigned an item
   - NYI
@@ -128,13 +132,13 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>. Unlike std c++ container 
   - Supported backends: [Array](Concrete/Sequence_Array.h), [DoublyLinkedList](Concrete/Sequence_DoublyLinkedList.h), [LinkedList](Concrete/Sequence_LinkedList.h), [std::vector](Concrete/Sequence_stdvector.h)
 - [Set\<T>](Set.h)
   - a container of T, where once an item is added, additionally adds () do nothing (so items added at most once).
-  - Supported backends: [Array](Concrete/Set_Array.h), [LinkedList](Concrete/Set_LinkedList.h), [SkipList](Concrete/SorteSet_SkipList.h), [std::set](Concrete/SorteSet_stdset.h)
   - Set vs std::set<T>:
     Stroika's Set\<T> is like std::set\<T>, except that
     - you can separately select different algorithms (besides red-black tree) and not change the API used (Set<T>).
     - You don't need to have a less\<T> method defined. You just need to provide some mechanism (either operator== or argument to constructor)  saying how to compare elements for equality
     - If you have a less\<T> already defined, like std::set<T>, this will be used by default to construct a tree-based set.
     - Sets can also be implemented by hash-tables, etc.
+  - Supported backends: [Array](Concrete/Set_Array.h), [LinkedList](Concrete/Set_LinkedList.h), [SkipList](Concrete/SorteSet_SkipList.h), [std::set](Concrete/SorteSet_stdset.h)
 - [SortedAssociation\<KEY_TYPE, VALUE_TYPE>](SortedAssociation.h)
   - see Association; but adds parameter saying how KEY items sorted
   - Supported backends: [SkipList](Concrete/SortedAssociation_SkipList.h), [std::multimap](Concrete/SortedAssociation_stdmultimap.h)
@@ -168,25 +172,25 @@ overridden at the time of container construction (this is very unlike STL where 
 
 Generally you want comparers to be inlined into the algorithms. But you also want
 to be able to generically refer to them, and copy them as objects.
-	 
+   
 These 'requirements' pull in opposing directions.
-	 
+   
 Stroika manages this with the container class library by:
-	 
- - have concepts that test if something is an equals/threeway/or strict-inorder comparer
+   
+ - have [comparison concepts](../Library/Sources/Foundation/Common/Compare.h) that test if something is an equals/threeway/or strict-inorder comparer
  - Allow CONSTRUCTORS (and factories) for containers to take explicit comparers
-	 	  as arguments that can be perfectly forwarded (zero cost abstraction) to the container
-	 	  backend implementation, so there is zero cost in using them.
+      as arguments that can be perfectly forwarded (zero cost abstraction) to the container
+      backend implementation, so there is zero cost in using them.
 - Provides std::function based wrappers on all these, so containers generally can respond
-	 	  to GetElementInOrderComparer (), or GetKeyEqualsComparer (), etc, as appporiate.
-	 	
+      to GetElementInOrderComparer (), or GetKeyEqualsComparer (), etc, as appporiate.
+    
 users may construct a container using the comparers returned from these functions, but
 with the overhad of a function object.
-	
+  
 Mostly - thats fine, and exceedingly rarely needed. But where its a performance issue, simply
 arrange to know via other application logic the exact type of the comparer, and use that
 when instantiating your container.
-	
+  
 In my experience, the Get....Comparer () routines are only needed in testing code,
 and so their performance doesn't matter.
 
