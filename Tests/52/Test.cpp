@@ -12,15 +12,15 @@
 #include <mutex>
 #include <sstream>
 
-#include "Stroika/Foundation/Configuration/StroikaVersion.h"
+#include "Stroika/Foundation/Common/StroikaVersion.h"
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Configuration/StroikaVersion.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
+#include "Stroika/Foundation/Common/StroikaVersion.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
@@ -1015,7 +1015,7 @@ namespace {
             Sample,
             Stroika_Define_Enum_Bounds (Background, Sample)
         };
-        constexpr Configuration::EnumNames<ScanKindType> ScanKindType_NAMES{{{
+        constexpr Common::EnumNames<ScanKindType> ScanKindType_NAMES{{{
             {ScanKindType::Background, L"Background"},
             {ScanKindType::Reference, L"Reference"},
             {ScanKindType::Sample, L"Sample"},
@@ -1109,9 +1109,9 @@ namespace {
 #else
             ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{b}));
 #endif
-            EXPECT_TRUE (sd2.fScanID == sd.fScanID);
-            EXPECT_TRUE (sd2.fAuxData == sd.fAuxData);
-            EXPECT_TRUE (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
+            EXPECT_EQ (sd2.fScanID, sd.fScanID);
+            EXPECT_EQ (sd2.fAuxData, sd.fAuxData);
+            EXPECT_EQ (sd2.fRawSpectrum, sd.fRawSpectrum); // @todo - FIX - this test should pass!
         }
     }
 }

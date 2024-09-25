@@ -17,7 +17,7 @@
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Locale.h"
+#include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/STL/Utilities.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
@@ -316,34 +316,29 @@ namespace {
         t1 += 'e';
         t1 += 'd';
         t1 += " Flintstone";
-        EXPECT_TRUE (t1 == "Fred Flintstone");
-        EXPECT_TRUE (String{"Fred Flintstone"} == t1);
-        EXPECT_TRUE (String{"Fred Flintstone"} == t1);
-        EXPECT_TRUE (t1 == String{"Fred Flintstone"});
+        EXPECT_EQ (t1, "Fred Flintstone");
+        EXPECT_EQ (String{"Fred Flintstone"}, t1);
+        EXPECT_EQ (String{"Fred Flintstone"}, t1);
+        EXPECT_EQ (t1, String{"Fred Flintstone"});
         EXPECT_TRUE (t2 != "Fred Flintstone");
         EXPECT_TRUE (String{"Fred Flintstone"} != t2);
         EXPECT_TRUE (String{"Fred Flintstone"} != t2);
         EXPECT_TRUE (t2 != String{L"Fred Flintstone"});
 
-        EXPECT_TRUE (t1.size () == 15);
+        EXPECT_EQ (t1.size (), 15u);
         t1.erase (4);
-        EXPECT_TRUE (t1.size () == 4);
-        EXPECT_TRUE (t1 == "Fred");
+        EXPECT_EQ (t1.size (), 4u);
+        EXPECT_EQ (t1, "Fred");
 
-        EXPECT_TRUE (t1[0] == 'F');
-        EXPECT_TRUE (t1[1] == 'r');
-        EXPECT_TRUE (t1[2] == 'e');
-        EXPECT_TRUE (t1[3] == 'd');
-
-        EXPECT_TRUE (t1[0] == 'F');
-        EXPECT_TRUE (t1[1] == 'r');
-        EXPECT_TRUE (t1[2] == 'e');
-        EXPECT_TRUE (t1[3] == 'd');
+        EXPECT_EQ (t1[0], 'F');
+        EXPECT_EQ (t1[1], 'r');
+        EXPECT_EQ (t1[2], 'e');
+        EXPECT_EQ (t1[3], 'd');
 
         String a[10];
-        EXPECT_TRUE (a[2] == "");
+        EXPECT_EQ (a[2], "");
         a[3] = "Fred";
-        EXPECT_TRUE (a[3] == "Fred");
+        EXPECT_EQ (a[3], "Fred");
         EXPECT_TRUE (a[2] != "Fred");
     }
 }
@@ -1084,8 +1079,8 @@ namespace {
                         // This test is an ABJECT FAILURE - http://stroika-bugs.sophists.com/browse/STK-747 but LOW PRIORITY
                     };
                     checkJapaneseNumbers ();
-                    if (auto ln = Configuration::FindLocaleNameQuietly (L"ja", L"JP")) {
-                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
+                    if (auto ln = Common::FindLocaleNameQuietly ("ja"sv, "JP"sv)) {
+                        Common::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
                         checkJapaneseNumbers ();
                     }
                 }
@@ -1094,14 +1089,14 @@ namespace {
                     // European comma/period confusion
                     // BROKEN - see http://stroika-bugs.sophists.com/browse/STK-748
                     // See https://docs.oracle.com/cd/E19455-01/806-0169/overview-9/index.html
-                    if (auto ln = Configuration::FindLocaleNameQuietly (L"en", L"US")) {
-                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
+                    if (auto ln = Common::FindLocaleNameQuietly (L"en", L"US")) {
+                        Common::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
                         EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> ("100.1"), 100.1));
                         [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> ("967,295.01");
                         //EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));     -- http://stroika-bugs.sophists.com/browse/STK-748
                     }
-                    if (auto ln = Configuration::FindLocaleNameQuietly (L"es", L"ES")) {
-                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
+                    if (auto ln = Common::FindLocaleNameQuietly (L"es", L"ES")) {
+                        Common::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
                         //DbgTrace ("using locale %s", locale{}.name ().c_str ());
                         //DbgTrace (L"decimal separator: %c", std::use_facet<std::numpunct<char>> (locale{}).decimal_point ());
                         EXPECT_TRUE (std::use_facet<std::numpunct<char>> (locale{}).decimal_point () == ',');
@@ -1152,10 +1147,10 @@ namespace {
         }
         try {
             // Verify change of locale has no effect on results
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en"sv, "us"sv)};
+            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en"sv, "us"sv)};
             runLocaleIndepTest ();
         }
-        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
         {
@@ -1239,10 +1234,10 @@ namespace {
             String x = "123";
             int    i = 0;
             for (auto c : x) {
-                EXPECT_TRUE (c == x[i]);
+                EXPECT_EQ (c, x[i]);
                 ++i;
             }
-            EXPECT_TRUE (i == 3);
+            EXPECT_EQ (i, 3);
         }
     }
 }
@@ -1259,8 +1254,8 @@ namespace {
         {
             String x = "123";
             String r = x.Repeat (3);
-            EXPECT_TRUE (r.length () == 9);
-            EXPECT_TRUE (r.SubString (3, 6) == "123");
+            EXPECT_EQ (r.length (), 9u);
+            EXPECT_EQ (r.SubString (3, 6), "123");
         }
     }
 }
@@ -1282,9 +1277,9 @@ namespace {
         Debug::TraceContextBumper ctx{"StringWithSequenceOfCharacter_"};
         {
             String              initialString = "012345";
-            Sequence<Character> s1            = Sequence<Character> (initialString); // THIS NEEDS TO BE MORE SEEMLESS
+            Sequence<Character> s1            = Sequence<Character>{initialString};
             s1.SetAt (3, 'E');
-            EXPECT_TRUE (String{s1} == "012E45");
+            EXPECT_EQ (String{s1}, "012E45");
         }
     }
 }
@@ -1947,7 +1942,7 @@ namespace {
             }
         };
 
-        using Configuration::StdCompat::format; // only needed while supporting fmtlib/ cuz not std::format not available
+        using Common::StdCompat::format; // only needed while supporting fmtlib/ cuz not std::format not available
 
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);

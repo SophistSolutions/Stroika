@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Configuration/Version.h"
+#include "Stroika/Foundation/Common/Version.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
@@ -172,14 +172,14 @@ namespace {
                 static void InitialSetup_ (Database::SQL::SQLite::Connection::Ptr db)
                 {
                     // @todo rewrite this using Bind()
-                    TraceContextBumper               ctx{"ScanDB_::DB::InitialSetup_"};
-                    bool                             created          = false;
-                    constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+                    TraceContextBumper        ctx{"ScanDB_::DB::InitialSetup_"};
+                    bool                      created          = false;
+                    constexpr Common::Version kCurrentVersion_ = Common::Version{1, 0, Common::VersionStage::Alpha, 0};
                     SQL::ORM::ProvisionForVersion (
                         db, kCurrentVersion_,
                         initializer_list<SQL::ORM::TableProvisioner>{
                             {"ScanTypes"sv,
-                             [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                             [&created] (SQL::Connection::Ptr c, optional<Common::Version> v, [[maybe_unused]] Common::Version targetDBVersion) -> void {
                                  // for now no upgrade support
                                  if (not v) {
                                      created = true;
@@ -194,7 +194,7 @@ namespace {
                                  }
                              }},
                             {"Scans"sv,
-                             [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                             [&created] (SQL::Connection::Ptr c, optional<Common::Version> v, [[maybe_unused]] Common::Version targetDBVersion) -> void {
                                  // for now no upgrade support
                                  if (not v) {
                                      created = true;
@@ -211,7 +211,7 @@ namespace {
                                  }
                              }},
                             {"ScanSet"sv,
-                             [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                             [&created] (SQL::Connection::Ptr c, optional<Common::Version> v, [[maybe_unused]] Common::Version targetDBVersion) -> void {
                                  // for now no upgrade support
                                  if (not v) {
                                      created = true;
@@ -225,7 +225,7 @@ namespace {
                                  }
                              }},
                             {"AuxData"sv,
-                             [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                             [&created] (SQL::Connection::Ptr c, optional<Common::Version> v, [[maybe_unused]] Common::Version targetDBVersion) -> void {
                                  // for now no upgrade support
                                  if (not v) {
                                      created = true;
@@ -308,12 +308,12 @@ namespace {
                 o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
                 auto conn             = Connection::New (o);
                 EXPECT_TRUE (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
-                constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+                constexpr Common::Version kCurrentVersion_ = Common::Version{1, 0, Common::VersionStage::Alpha, 0};
                 SQL::ORM::ProvisionForVersion (
                     conn, kCurrentVersion_,
                     initializer_list<SQL::ORM::TableProvisioner>{
                         {"EMPLOYEES"sv,
-                         [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                         [] (SQL::Connection::Ptr c, optional<Common::Version> v, [[maybe_unused]] Common::Version targetDBVersion) -> void {
                              // for now no upgrade support
                              if (not v) {
                                  c.Exec ("CREATE TABLE EMPLOYEES("
@@ -327,7 +327,7 @@ namespace {
                              }
                          }},
                         {"PAYCHECKS"sv,
-                         [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                         [] (SQL::Connection::Ptr c, optional<Common::Version> v, [[maybe_unused]] Common::Version targetDBVersion) -> void {
                              // for now no upgrade support
                              if (not v) {
                                  c.Exec ("CREATE TABLE PAYCHECKS("
@@ -629,7 +629,7 @@ namespace {
                 o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
                 auto conn             = Connection::New (o);
                 EXPECT_TRUE (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
-                constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+                constexpr Common::Version kCurrentVersion_ = Common::Version{1, 0, Common::VersionStage::Alpha, 0};
                 SQL::ORM::ProvisionForVersion (conn, kCurrentVersion_,
                                                Traversal::Iterable<SQL::ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
                 return conn;

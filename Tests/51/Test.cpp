@@ -9,8 +9,8 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Configuration/Locale.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
+#include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -753,8 +753,8 @@ namespace {
     GTEST_TEST (Foundation_Traversal, Test14_ToString_)
     {
         Debug::TraceContextBumper ctx{"{}::Test14_ToString_"};
-        EXPECT_TRUE ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format ("{}"_f, n); }) == "[3 ... 4]"));
-        EXPECT_TRUE ((Range<int>{3, 4}.ToString () == L"[3 ... 4]"));
+        EXPECT_EQ ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format ("{}"_f, n); })), "[3 ... 4]");
+        EXPECT_EQ ((Range<int>{3, 4}.ToString ()), "[3 ... 4]");
         {
             using namespace Time;
             EXPECT_TRUE (
@@ -762,7 +762,7 @@ namespace {
                  L"[4/4/03 ... 4/5/03]"));
         }
         {
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
+            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
             using namespace Time;
             EXPECT_TRUE (
                 (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () ==

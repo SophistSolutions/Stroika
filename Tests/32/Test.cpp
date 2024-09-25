@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
-#include "Stroika/Foundation/Configuration/Locale.h"
+#include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -814,12 +814,12 @@ namespace {
             }
             try {
                 // Verify change of locale has no effect on results
-                Configuration::ScopedUseLocale   tmpLocale{Configuration::FindNamedLocale ("en"sv, "us"sv)};
+                Common::ScopedUseLocale          tmpLocale{Common::FindNamedLocale ("en"sv, "us"sv)};
                 Streams::MemoryStream::Ptr<byte> tmpStrm = Streams::MemoryStream::New<byte> ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 EXPECT_EQ (jsonExampleWithUpdatedMaxFilesReference, tmpStrm.As<string> ());
             }
-            catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+            catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
                 Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
             }
         }
@@ -847,10 +847,10 @@ namespace {
         };
         f ();
         try {
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
+            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
             f ();
         }
-        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
     }
@@ -927,10 +927,10 @@ namespace {
         };
         try {
             doAll ();
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
+            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en"sv, "us"sv)};
             doAll ();
         }
-        catch ([[maybe_unused]] const Configuration::LocaleNotFoundException& e) {
+        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
     }

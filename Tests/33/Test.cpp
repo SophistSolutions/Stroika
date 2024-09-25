@@ -6,8 +6,8 @@
 
 #include <iostream>
 
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Configuration/Locale.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
+#include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -272,7 +272,7 @@ namespace {
 
             Stroika_Define_Enum_Bounds (a, h)
         };
-        const Configuration::EnumNames<Fred> Fred_NAMES = {
+        const Common::EnumNames<Fred> Fred_NAMES = {
             {Fred::a, L"a"}, {Fred::b, L"b"}, {Fred::c, L"c"}, {Fred::d, L"d"},
             {Fred::e, L"e"}, {Fred::f, L"f"}, {Fred::g, L"g"}, {Fred::h, L"h"},
         };

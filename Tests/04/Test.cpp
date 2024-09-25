@@ -7,12 +7,12 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/Endian.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/Endian.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Configuration/SystemConfiguration.h"
-#include "Stroika/Foundation/Configuration/Version.h"
+#include "Stroika/Foundation/Common/SystemConfiguration.h"
+#include "Stroika/Foundation/Common/Version.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -39,7 +39,7 @@ namespace {
         {
             constexpr Version kTestVersion_ = Version (1, 0, VersionStage::Alpha, 1, false);
             EXPECT_TRUE (kTestVersion_.AsPrettyVersionString () == "1.0a1x");
-            EXPECT_TRUE (kTestVersion_ == Configuration::Version::FromPrettyVersionString ("1.0a1x"));
+            EXPECT_TRUE (kTestVersion_ == Common::Version::FromPrettyVersionString ("1.0a1x"));
         }
         EXPECT_TRUE (Version (1, 0, VersionStage::Release, 0) == Version::FromPrettyVersionString ("1.0"));
         EXPECT_TRUE (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString ("1.0.1"));
@@ -81,7 +81,7 @@ namespace {
 
 namespace {
     namespace Test2_EnumNames_Private_ {
-        using namespace Configuration;
+        using namespace Common;
         enum class fooEnum {
             eOne,
             eTwo,
@@ -124,7 +124,7 @@ namespace {
     void Test3_Endian_ ()
     {
         Debug::TraceContextBumper ctx{"{}::Test3_Endian_"};
-        using namespace Configuration;
+        using namespace Common;
         EXPECT_EQ (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle), 0xBBAA);
         EXPECT_EQ (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle), 0xDDCCBBAA);
     }
@@ -136,7 +136,7 @@ namespace {
         {
             using namespace Characters::Literals;
             Debug::TraceContextBumper ctx{"{}::Test4_SystemConfigruation_"};
-            using namespace Configuration;
+            using namespace Common;
             SystemConfiguration sc = GetSystemConfiguration ();
             DbgTrace ("systemConfig={}"_f, sc);
             DbgTrace ("systemConfig.actualOS={}"_f, sc.fActualOperatingSystem);
@@ -163,7 +163,7 @@ namespace {
         void DoAll ()
         {
             Debug::TraceContextBumper ctx{"{}::Test5_SFINAE_Concepts_"};
-            using namespace Configuration;
+            using namespace Common;
 
             {
                 static_assert (totally_ordered<int>);
@@ -237,15 +237,15 @@ namespace {
             }
             {
                 // verify Configuration::ExtractValueType_t works right
-                static_assert (same_as<Configuration::ExtractValueType_t<vector<int>>, int>);
-                static_assert (same_as<Configuration::ExtractValueType_t<int>, void>);
-                static_assert (same_as<Configuration::ExtractValueType_t<Containers::Collection<char>>, char>);
-                static_assert (same_as<Configuration::ExtractValueType_t<Traversal::Iterator<string>>, string>);
-                static_assert (same_as<Configuration::ExtractValueType_t<vector<int>&>, int>);
-                static_assert (same_as<Configuration::ExtractValueType_t<const vector<int>&>, int>);
-                static_assert (same_as<Configuration::ExtractValueType_t<vector<int>&&>, int>);
-                static_assert (same_as<Configuration::ExtractValueType_t<int*>, int>);
-                static_assert (same_as<Configuration::ExtractValueType_t<const int*>, int>);
+                static_assert (same_as<Common::ExtractValueType_t<vector<int>>, int>);
+                static_assert (same_as<Common::ExtractValueType_t<int>, void>);
+                static_assert (same_as<Common::ExtractValueType_t<Containers::Collection<char>>, char>);
+                static_assert (same_as<Common::ExtractValueType_t<Traversal::Iterator<string>>, string>);
+                static_assert (same_as<Common::ExtractValueType_t<vector<int>&>, int>);
+                static_assert (same_as<Common::ExtractValueType_t<const vector<int>&>, int>);
+                static_assert (same_as<Common::ExtractValueType_t<vector<int>&&>, int>);
+                static_assert (same_as<Common::ExtractValueType_t<int*>, int>);
+                static_assert (same_as<Common::ExtractValueType_t<const int*>, int>);
             }
         }
     }

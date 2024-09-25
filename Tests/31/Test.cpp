@@ -15,8 +15,8 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Endian.h"
 #include "Stroika/Foundation/Common/GUID.h"
-#include "Stroika/Foundation/Configuration/Endian.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/MultiSet.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/CRC32.h"
@@ -57,9 +57,9 @@ using namespace Stroika::Frameworks;
 namespace {
     uint32_t ToLE_ (uint32_t n)
     {
-        using Configuration::Endian;
-        using Configuration::EndianConverter;
-        return EndianConverter<uint32_t> (n, Configuration::GetEndianness (), Endian::eLittle);
+        using Common::Endian;
+        using Common::EndianConverter;
+        return EndianConverter<uint32_t> (n, Common::GetEndianness (), Endian::eLittle);
     }
 }
 
@@ -387,8 +387,8 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Digest_Jenkins_::DoRegressionTests_"};
 
-            using Configuration::Endian;
-            using Configuration::EndianConverter;
+            using Common::Endian;
+            using Common::EndianConverter;
             using USE_DIGESTER_ = Digester<Algorithm::Jenkins>;
             {
                 EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
