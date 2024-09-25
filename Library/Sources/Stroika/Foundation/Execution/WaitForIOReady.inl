@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>
         DefaultNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::k{{{

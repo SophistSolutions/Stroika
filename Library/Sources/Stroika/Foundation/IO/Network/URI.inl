@@ -91,7 +91,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         return URI{GetScheme (), GetAuthority ()};
     }
-    template <Configuration::IAnyOf<String, string, URI> RETURN_TYPE>
+    template <Common::IAnyOf<String, string, URI> RETURN_TYPE>
     RETURN_TYPE URI::GetAuthorityRelativeResource () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -113,7 +113,7 @@ namespace Stroika::Foundation::IO::Network {
             return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
         }
     }
-    template <Configuration::IAnyOf<String, optional<String>> RETURN_VALUE>
+    template <Common::IAnyOf<String, optional<String>> RETURN_VALUE>
     RETURN_VALUE URI::GetAbsPath () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::IO::Network {
             return nullopt;
         }
     }
-    template <Configuration::IAnyOf<String, URI::Query> RETURN_TYPE>
+    template <Common::IAnyOf<String, URI::Query> RETURN_TYPE>
     inline optional<RETURN_TYPE> URI::GetQuery () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         return URI::TWC_ (*this, rhs) == 0;
     }
-    template <Configuration::IAnyOf<String, string> T>
+    template <Common::IAnyOf<String, string> T>
     inline T URI::As (optional<StringPCTEncodedFlag> pctEncode) const
     {
         if constexpr (same_as<T, String>) {
@@ -189,7 +189,7 @@ namespace Stroika::Foundation::IO::Network {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<IO::Network::URI::NormalizationStyle> DefaultNames<IO::Network::URI::NormalizationStyle>::k{{{
         {IO::Network::URI::NormalizationStyle::eRFC3986, L"RFC3986"},

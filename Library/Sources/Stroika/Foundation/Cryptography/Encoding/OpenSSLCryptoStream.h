@@ -10,7 +10,7 @@
 using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/CipherAlgorithm.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/DerivedKey.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/DigestAlgorithm.h"

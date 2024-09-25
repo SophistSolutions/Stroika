@@ -31,7 +31,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
-using namespace Stroika::Foundation::Configuration;
+using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Traversal;
 using namespace IO::FileSystem;
@@ -427,7 +427,7 @@ public:
     void Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_.rwget ()->Write (Characters::Format ("[{:5}][{:16}] {}\n"_f, Configuration::DefaultNames<Logger::Priority>{}.GetName (logLevel),
+        fWriter_.rwget ()->Write (Characters::Format ("[{:5}][{:16}] {}\n"_f, Common::DefaultNames<Logger::Priority>{}.GetName (logLevel),
                                                       Time::DateTime::Now ().Format (), message));
     }
 

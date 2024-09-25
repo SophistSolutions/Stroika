@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 

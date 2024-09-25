@@ -10,9 +10,6 @@
     <Filter Include="Sources\Memory">
       <UniqueIdentifier>{685cf277-cad8-4003-8569-129e87b78377}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Configuration">
-      <UniqueIdentifier>{12b6a747-07e0-4ac8-8b0a-56c27e830f0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Execution">
       <UniqueIdentifier>{10fdccef-36de-4118-9913-a6bbcce6aa34}</UniqueIdentifier>
     </Filter>
@@ -54,9 +51,6 @@
     </Filter>
     <Filter Include="Sources\Streams">
       <UniqueIdentifier>{eba5ee5b-1eff-4a84-b2ad-88df60b433bc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Configuration\Private">
-      <UniqueIdentifier>{27d4da00-63dc-4f7b-be10-46c6afd89e74}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\DataExchange">
       <UniqueIdentifier>{e1bf59e1-abe8-43cc-8855-ba489e000bdf}</UniqueIdentifier>
@@ -199,12 +193,6 @@
     <Filter Include="Sources\IO\Network\InternetProtocol">
       <UniqueIdentifier>{69225b1e-d4ab-4e12-a7d9-c8fa6b7e396d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Configuration\Platform">
-      <UniqueIdentifier>{a1ceda6d-1bda-4b67-bc02-91a69a3f71f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Configuration\Platform\Windows">
-      <UniqueIdentifier>{9ae88586-8d81-45fe-a5f3-d1652094bebe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Database\SQL">
       <UniqueIdentifier>{2b398eed-afd2-44f7-a473-a8986124846b}</UniqueIdentifier>
     </Filter>
@@ -222,6 +210,15 @@
     </Filter>
     <Filter Include="Sources\DataExchange\Compression\Private_">
       <UniqueIdentifier>{2f800298-4b38-4bf4-aeaf-df9dcbf7bc59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Common\Platform">
+      <UniqueIdentifier>{0190988e-9503-4d62-a81f-28eee1e12e15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Common\Platform\Windows">
+      <UniqueIdentifier>{c541a230-0f1c-4aa1-b353-483e920fa7c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Common\Private">
+      <UniqueIdentifier>{2af7d083-410c-43e9-bd89-782acc27acb1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -354,9 +351,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp">
-      <Filter>Sources\Configuration</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
@@ -380,9 +374,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp">
-      <Filter>Sources\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp">
       <Filter>Sources\DataExchange</Filter>
@@ -449,9 +440,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp">
       <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp">
-      <Filter>Sources\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp">
       <Filter>Sources\IO\Network</Filter>
@@ -594,9 +582,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.cpp">
-      <Filter>Sources\Configuration</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClCompile>
@@ -692,9 +677,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.cpp">
       <Filter>Sources\Linguistics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.cpp">
-      <Filter>Sources\Configuration\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.cpp">
       <Filter>Sources\IO\Network</Filter>
@@ -849,6 +831,21 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\GZip.cpp">
       <Filter>Sources\DataExchange\Compression</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Locale.cpp">
+      <Filter>Sources\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\StroikaConfig.cpp">
+      <Filter>Sources\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\SystemConfiguration.cpp">
+      <Filter>Sources\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Version.cpp">
+      <Filter>Sources\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.cpp">
+      <Filter>Sources\Common\Platform\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -866,9 +863,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
@@ -885,9 +879,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Common.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
@@ -902,33 +893,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_TChar_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Configuration_Common_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Assertions_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Trace_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_BlockAllocated_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_Common_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_StringUtils_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Database_ODBCClient_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_CompilerAndStdLib_.h">
-      <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
@@ -948,17 +912,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_DataExchange_XML_Common_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Threads_.h">
-      <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h">
       <Filter>Sources\Characters\Platform\Windows</Filter>
@@ -989,9 +947,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Module_.h">
-      <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -1043,9 +998,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h">
       <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cryptography_SSL_.h">
-      <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
@@ -1107,12 +1059,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h">
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
@@ -1163,9 +1109,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.h">
-      <Filter>Sources\Configuration</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h">
       <Filter>Sources\Common</Filter>
@@ -1230,23 +1173,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Version.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h">
       <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Logging_.h">
-      <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h">
       <Filter>Sources\IO\Network</Filter>
@@ -1401,14 +1332,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h">
       <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h">
-      <Filter>Sources\Configuration</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h">
       <Filter>Sources\IO\Network</Filter>
@@ -1496,9 +1421,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamFromStdOStream.h">
       <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\TypeHints.h">
-      <Filter>Sources\Configuration</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
       <Filter>Sources\Characters</Filter>
@@ -1776,9 +1698,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputSubStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Empty.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Copy.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
@@ -1917,17 +1836,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.h">
       <Filter>Sources\IO</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.h">
-      <Filter>Sources\Configuration\Platform\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.h">
       <Filter>Sources\IO\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\ConceptsBase.h">
-      <Filter>Sources\Configuration</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.h">
       <Filter>Sources\IO\Network</Filter>
@@ -2202,9 +2115,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Resource.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StdCompat.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
@@ -2259,6 +2169,87 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_SkipList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Concepts.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\ConceptsBase.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Empty.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Endian.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Enumeration.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Locale.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\StdCompat.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\StroikaConfig.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\StroikaVersion.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\SystemConfiguration.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\TypeHints.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Version.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\VersionDefs.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.h">
+      <Filter>Sources\Common\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Characters_StringUtils_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Characters_TChar_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_CompilerAndStdLib_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Configuration_Common_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Cryptography_SSL_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Database_ODBCClient_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_DataExchange_XML_Common_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Debug_Assertions_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Execution_Logging_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Execution_Module_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Execution_Threads_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_BlockAllocated_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_Common_.h">
+      <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -2279,9 +2270,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl">
       <Filter>Sources\Memory\Platform\Windows</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\Common.inl">
       <Filter>Sources\Math</Filter>
     </None>
@@ -2299,9 +2287,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl">
       <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.md">
-      <Filter>Sources\Configuration</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
@@ -2403,9 +2388,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.md">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.md">
-      <Filter>Sources\Configuration</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.md">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -2484,12 +2466,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md">
       <Filter>Sources\IO\Network</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl">
       <Filter>Sources\Streams\iostream</Filter>
     </None>
@@ -2534,9 +2510,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.inl">
-      <Filter>Sources\Configuration</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl">
       <Filter>Sources\Common</Filter>
@@ -2609,15 +2582,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl">
       <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Version.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl">
-      <Filter>Sources\Configuration</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl">
       <Filter>Sources\DataExchange</Filter>
@@ -2771,12 +2735,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl">
       <Filter>Sources\IO\Network</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.inl">
-      <Filter>Sources\Configuration</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.inl">
       <Filter>Sources\IO\Network</Filter>
@@ -3035,12 +2993,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\Makefile">
       <Filter>Sources\Common</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\.gitignore">
-      <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Makefile">
-      <Filter>Sources\Configuration</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Makefile">
       <Filter>Sources\Containers</Filter>
@@ -3354,9 +3306,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.inl">
       <Filter>Sources\IO</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.inl">
-      <Filter>Sources\Configuration\Platform\Windows</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
@@ -3661,9 +3610,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StdCompat.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
@@ -3717,6 +3663,51 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_SkipList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Common.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Concepts.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Endian.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Enumeration.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Locale.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\ReadMe.md">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\StdCompat.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\StroikaConfig-ReadMe.md">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\StroikaVersion.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\SystemConfiguration.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Version.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\VersionDefs.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Makefile">
+      <Filter>Sources\Common\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.inl">
+      <Filter>Sources\Common\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Platform\Makefile">
+      <Filter>Sources\Common\Platform</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

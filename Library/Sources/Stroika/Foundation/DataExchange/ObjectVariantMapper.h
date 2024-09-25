@@ -15,9 +15,9 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/GUID.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
@@ -321,13 +321,13 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        template <Configuration::StdCompat::formattable<wchar_t> T>
+        template <Common::StdCompat::formattable<wchar_t> T>
         static const FromObjectMapperType<T> kTraceFromObjectMapper;
 
     public:
         /**
          */
-        template <Configuration::StdCompat::formattable<wchar_t> T>
+        template <Common::StdCompat::formattable<wchar_t> T>
         static const ToObjectMapperType<T> kTraceToObjectMapper;
 
     public:
@@ -678,7 +678,7 @@ namespace Stroika::Foundation::DataExchange {
          *          // register each of your mappable (even private) types
          *          mapper.AddClass<MyConfig_> ({
          *              { "fURL1_", &SharedContactsConfig_::fURL1_ },        // use default parser
-         *              // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
+         *              // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for Common files
          *              { "fURL2_", &SharedContactsConfig_::fURL2_, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
          *          });
          *
@@ -946,8 +946,7 @@ namespace Stroika::Foundation::DataExchange {
         template <typename ENUM_TYPE>
         static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
         template <typename ENUM_TYPE>
-        static TypeMappingDetails
-        MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+        static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::DefaultNames<ENUM_TYPE>::k);
 
     public:
         /**

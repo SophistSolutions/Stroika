@@ -29,9 +29,8 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename... INDEXES>
     constexpr SparseDataHyperRectangle_Factory<T, INDEXES...>::SparseDataHyperRectangle_Factory ([[maybe_unused]] const Hints& hints)
         : SparseDataHyperRectangle_Factory{[] () -> FactoryFunctionType {
-            return [] (Configuration::ArgByValueType<T> defaultItem) {
-                return Concrete::SparseDataHyperRectangle_stdmap<T, INDEXES...>{defaultItem};
-            };
+            return
+                [] (Common::ArgByValueType<T> defaultItem) { return Concrete::SparseDataHyperRectangle_stdmap<T, INDEXES...>{defaultItem}; };
         }()}
     {
     }
@@ -41,7 +40,7 @@ namespace Stroika::Foundation::Containers::Factory {
         return AccessDefault_ ();
     }
     template <typename T, typename... INDEXES>
-    inline auto SparseDataHyperRectangle_Factory<T, INDEXES...>::operator() (Configuration::ArgByValueType<T> defaultItem) const -> ConstructedType
+    inline auto SparseDataHyperRectangle_Factory<T, INDEXES...>::operator() (Common::ArgByValueType<T> defaultItem) const -> ConstructedType
     {
         return this->fFactory_ (defaultItem);
     }

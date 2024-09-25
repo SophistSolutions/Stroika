@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             /// NYI
             return T{};
         }
-        virtual void SetAt ([[maybe_unused]] INDEXES... indexes, [[maybe_unused]] Configuration::ArgByValueType<T> v) override
+        virtual void SetAt ([[maybe_unused]] INDEXES... indexes, [[maybe_unused]] Common::ArgByValueType<T> v) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fChangeCounts_.PerformedChange ();

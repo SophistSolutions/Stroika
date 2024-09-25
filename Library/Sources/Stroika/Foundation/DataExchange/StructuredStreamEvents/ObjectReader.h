@@ -11,8 +11,8 @@
 #include <typeindex>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Adapters/Adder.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         static ReaderFromVoidStarFactory MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
         template <typename ENUM_TYPE>
         static ReaderFromVoidStarFactory
-        MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+        MakeCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::DefaultNames<ENUM_TYPE>::k);
 
     public:
         /**
@@ -338,7 +338,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         template <typename ENUM_TYPE>
         nonvirtual void AddCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
         template <typename ENUM_TYPE>
-        nonvirtual void AddCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+        nonvirtual void AddCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::DefaultNames<ENUM_TYPE>::k);
 
     public:
         /**

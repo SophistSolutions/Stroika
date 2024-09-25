@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Traversal {
     template <IInputIterator<T> ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
     DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (ITERATOR_OF_T&& start, ITERATOR_OF_T2&& end)
     {
-        static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, value_type>);
+        static_assert (is_convertible_v<Common::ExtractValueType_t<ITERATOR_OF_T>, value_type>);
         Containers::Sequence<RangeType>   srs{};
         Containers::SortedSet<value_type> ss{forward<ITERATOR_OF_T> (start), forward<ITERATOR_OF_T2> (end)};
         value_type                        startAt{};

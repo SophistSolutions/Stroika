@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/Adapters/Adder.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
-        return Configuration::StdCompat::compare_three_way{}(fForType_, rhs.fForType_);
+        return Common::StdCompat::compare_three_way{}(fForType_, rhs.fForType_);
     }
     inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
     {
@@ -231,13 +231,13 @@ namespace Stroika::Foundation::DataExchange {
      ******************************** ObjectVariantMapper ***************************
      ********************************************************************************
      */
-    template <Configuration::StdCompat::formattable<wchar_t> T>
+    template <Common::StdCompat::formattable<wchar_t> T>
     inline const ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::kTraceFromObjectMapper =
         [] (const ObjectVariantMapper& mapper, const T* objOfType) -> VariantValue {
         DbgTrace ("FromObject<{}>(mapper, {}) called", typeid (T), objOfType);
         return {};
     };
-    template <Configuration::StdCompat::formattable<wchar_t> T>
+    template <Common::StdCompat::formattable<wchar_t> T>
     inline const ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::kTraceToObjectMapper =
         [] (const ObjectVariantMapper& mapper, const VariantValue& d, T* into) -> void {
         DbgTrace ("ToObject<{}>(mapper, {}, {}) called", typeid (T), d, into);
@@ -972,8 +972,7 @@ namespace Stroika::Foundation::DataExchange {
         return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ENUM_TYPE)};
     }
     template <typename ENUM_TYPE>
-    inline ObjectVariantMapper::TypeMappingDetails
-    ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap)
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap)
     {
         return MakeCommonSerializer_NamedEnumerations (Containers::Bijection<ENUM_TYPE, String>{nameMap});
     }

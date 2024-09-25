@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Cache {
         return result;
     }
     template <typename T>
-    bool BloomFilter<T>::Add (Configuration::ArgByValueType<T> elt)
+    bool BloomFilter<T>::Add (Common::ArgByValueType<T> elt)
     {
         size_t sz{fBits_.size ()};
         bool   apparentlyNewAddition = false;
@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Cache {
         fBits_.clear ();
     }
     template <typename T>
-    bool BloomFilter<T>::ProbablyContains (Configuration::ArgByValueType<T> elt) const
+    bool BloomFilter<T>::ProbablyContains (Common::ArgByValueType<T> elt) const
     {
         size_t sz{fBits_.size ()};
         for (const HashFunctionType& f : fHashFunctions_) {

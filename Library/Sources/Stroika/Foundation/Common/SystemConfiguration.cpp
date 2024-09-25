@@ -28,7 +28,7 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #if qPlatform_Windows
-#include "Stroika/Foundation/Configuration/Platform/Windows/Registry.h"
+#include "Stroika/Foundation/Common/Platform/Windows/Registry.h"
 #endif
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -51,7 +51,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Configuration;
+using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Time;
@@ -193,10 +193,10 @@ unsigned int SystemConfiguration::CPU::GetNumberOfSockets () const
 
 /*
  ********************************************************************************
- ************* Configuration::GetSystemConfiguration_BootInformation ************
+ ************* Common::GetSystemConfiguration_BootInformation ************
  ********************************************************************************
  */
-SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootInformation ()
+SystemConfiguration::BootInformation Common::GetSystemConfiguration_BootInformation ()
 {
     SystemConfiguration::BootInformation result;
 #if qPlatform_Linux
@@ -261,10 +261,10 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
 
 /*
  ********************************************************************************
- *************** Configuration::GetSystemConfiguration_CPU **********************
+ *************** Common::GetSystemConfiguration_CPU **********************
  ********************************************************************************
  */
-SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
+SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
 {
     // @todo - basically all these implementations assume same # logical cores per physical CPU socket
     // @todo - no API to capture (maybe not useful) # physical cores
@@ -510,10 +510,10 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 
 /*
  ********************************************************************************
- ************** Configuration::GetSystemConfiguration_Memory ********************
+ ************** Common::GetSystemConfiguration_Memory ********************
  ********************************************************************************
  */
-SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
+SystemConfiguration::Memory Common::GetSystemConfiguration_Memory ()
 {
     using Memory = SystemConfiguration::Memory;
     Memory result;
@@ -539,10 +539,10 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
 
 /*
  ********************************************************************************
- ******** Configuration::GetSystemConfiguration_OperatingSystem *****************
+ ******** Common::GetSystemConfiguration_OperatingSystem *****************
  ********************************************************************************
  */
-SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ActualOperatingSystem ()
+SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperatingSystem ()
 {
     using OperatingSystem                       = SystemConfiguration::OperatingSystem;
     static const OperatingSystem kCachedResult_ = [] () -> OperatingSystem {
@@ -707,7 +707,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         optional<String> productName;
         optional<String> currentVersion; // windows major-minor version
         try {
-            const Configuration::Platform::Windows::RegistryKey kWinVersionInfo_{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"sv};
+            const Common::Platform::Windows::RegistryKey kWinVersionInfo_{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"sv};
             if (auto o = kWinVersionInfo_.Lookup ("ReleaseId"sv)) {
                 platformVersion = o.As<String> ();
             }
@@ -798,7 +798,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 #if qPlatform_Windows
 #pragma comment(lib, "Mincore.lib") // for stuff like IsWindows10OrGreater
 #endif
-SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ApparentOperatingSystem ()
+SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ApparentOperatingSystem ()
 {
     using OperatingSystem                       = SystemConfiguration::OperatingSystem;
     static const OperatingSystem kCachedResult_ = [] () -> OperatingSystem {
@@ -871,7 +871,7 @@ string  name;
 }
 return String::FromSDKString (name);
 #endif
-SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_ComputerNames ()
+SystemConfiguration::ComputerNames Common::GetSystemConfiguration_ComputerNames ()
 {
     using ComputerNames = SystemConfiguration::ComputerNames;
     ComputerNames result;
@@ -899,14 +899,14 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
 
 /*
  ********************************************************************************
- ******************* Configuration::GetNumberOfLogicalCPUCores ******************
+ ******************* Common::GetNumberOfLogicalCPUCores ******************
  ********************************************************************************
  */
-unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<double>& allowedStaleness)
+unsigned int Common::GetNumberOfLogicalCPUCores (const chrono::duration<double>& allowedStaleness)
 {
     [[maybe_unused]] static auto computeViaStdThreadHardwareConcurrency = [] () { return std::thread::hardware_concurrency (); };
     [[maybe_unused]] static auto computeViaGetSystemConfiguration_CPU   = [] () {
-        return Configuration::GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
+        return Common::GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
     };
 #if qDebug
     static auto compute = [=] () {
@@ -934,7 +934,7 @@ unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<d
  ****************** SystemConfiguration GetSystemConfiguration ******************
  ********************************************************************************
  */
-SystemConfiguration Configuration::GetSystemConfiguration ()
+SystemConfiguration Common::GetSystemConfiguration ()
 {
     return SystemConfiguration{GetSystemConfiguration_BootInformation (),
                                GetSystemConfiguration_CPU (),

@@ -21,7 +21,7 @@ namespace Stroika::Foundation::IO::Network {
 #endif
 
 }
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<IO::Network::Interface::WirelessInfo::State> DefaultNames<IO::Network::Interface::WirelessInfo::State>::k{{{
         {IO::Network::Interface::WirelessInfo::State::eNotReady, L"Not-Ready"},

@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/TextConvert.h"
 #include "Stroika/Foundation/Characters/UTFConvert.h"
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
@@ -218,10 +218,10 @@ namespace Stroika::Foundation::Characters {
             auto r = inherited::Bytes2Characters (from, to);
             for (CHAR_T& i : to) {
                 if constexpr (same_as<CHAR_T, Character>) {
-                    i = Character{Configuration::StdCompat::byteswap (i.template As<char32_t> ())};
+                    i = Character{Common::StdCompat::byteswap (i.template As<char32_t> ())};
                 }
                 else {
-                    i = Configuration::StdCompat::byteswap (i);
+                    i = Common::StdCompat::byteswap (i);
                 }
             }
             return r;
@@ -232,10 +232,10 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<CHAR_T> buf{from};
             for (CHAR_T& i : buf) {
                 if constexpr (same_as<CHAR_T, Character>) {
-                    i = Character{Configuration::StdCompat::byteswap (i.template As<char32_t> ())};
+                    i = Character{Common::StdCompat::byteswap (i.template As<char32_t> ())};
                 }
                 else {
-                    i = Configuration::StdCompat::byteswap (i);
+                    i = Common::StdCompat::byteswap (i);
                 }
             }
             return inherited::Characters2Bytes (span<const CHAR_T>{buf.begin (), buf.size ()}, to);

@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /*
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
@@ -14,7 +14,7 @@
 
 namespace Stroika::Foundation::Containers::Adapters {
 
-    using Configuration::ArgByValueType;
+    using Common::ArgByValueType;
 
     /**
      *  Concept to say if Adder is supported.
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers::Adapters {
     public:
         /**
          */
-        static void Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<value_type> value);
+        static void Add (CONTAINER_TYPE* container, Common::ArgByValueType<value_type> value);
     };
 
 }

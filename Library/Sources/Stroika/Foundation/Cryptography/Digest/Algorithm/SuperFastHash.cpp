@@ -7,7 +7,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Common/Endian.h"
 
 #include "SuperFastHash.h"
 
@@ -22,11 +22,11 @@ namespace {
     {
         RequireNotNull (p);
         uint16_t result;
-        switch (Configuration::GetEndianness ()) {
-            case Configuration::Endian::eLittle:
+        switch (Common::GetEndianness ()) {
+            case Common::Endian::eLittle:
                 (void)::memcpy (&result, p, 2);
                 break;
-            case Configuration::Endian::eBig:
+            case Common::Endian::eBig:
                 result = (to_integer<uint16_t> (p[1]) << 8) + to_integer<uint16_t> (p[0]);
                 break;
             default:

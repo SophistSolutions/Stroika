@@ -8,7 +8,7 @@
 
 #include <execution>
 
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 
 namespace Stroika::Foundation::Execution {
 

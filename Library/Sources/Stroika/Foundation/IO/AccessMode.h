@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 
 namespace Stroika::Foundation::IO {
 
@@ -15,7 +15,7 @@ namespace Stroika::Foundation::IO {
      * But this will do for now...
      *      -- LGP 2009-08-15
      *
-     *  \note   Configuration::DefaultNames<> supported
+     *  \note   Common::DefaultNames<> supported
      */
     enum class AccessMode : uint8_t {
         eNoAccess,

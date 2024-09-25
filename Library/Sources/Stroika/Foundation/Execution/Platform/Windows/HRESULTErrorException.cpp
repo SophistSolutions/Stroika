@@ -12,8 +12,8 @@
 
 #include "Exception.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Time/Realtime.h"

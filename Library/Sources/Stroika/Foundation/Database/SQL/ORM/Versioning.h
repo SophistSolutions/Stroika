@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation//Configuration/Version.h"
+#include "Stroika/Foundation//Common/Version.h"
 #include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 
@@ -39,16 +39,16 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     /**
      */
     struct TableProvisioner {
-        String fTableName;
-        function<void (SQL::Connection::Ptr, optional<Configuration::Version> existingVersion, Configuration::Version targetVersion)> fProvisioner;
+        String                                                                                                          fTableName;
+        function<void (SQL::Connection::Ptr, optional<Common::Version> existingVersion, Common::Version targetVersion)> fProvisioner;
     };
 
     /**
      *  @todo HANDLE THE VERSIONING piece - have hardwired version table, and add support to provisioner to UPGRADE tables
      *  EVENTAULLY even support upgrade by migrating to new DB, but for now in-place is good enuf
      */
-    void ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version targetDBVersion, const Traversal::Iterable<Schema::Table>& tables);
-    void ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version targetDBVersion, const Traversal::Iterable<TableProvisioner>& tables);
+    void ProvisionForVersion (SQL::Connection::Ptr conn, Common::Version targetDBVersion, const Traversal::Iterable<Schema::Table>& tables);
+    void ProvisionForVersion (SQL::Connection::Ptr conn, Common::Version targetDBVersion, const Traversal::Iterable<TableProvisioner>& tables);
 
 }
 

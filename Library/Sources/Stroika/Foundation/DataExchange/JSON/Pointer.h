@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Stack.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::DataExchange::JSON {
     public:
         /**
          */
-        template <Configuration::IAnyOf<String> T>
+        template <Common::IAnyOf<String> T>
         nonvirtual T As () const;
 
     public:

@@ -6,11 +6,11 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     *************************** Configuration::GetEndianness ***********************
+     *************************** Common::GetEndianness ***********************
      ********************************************************************************
      */
 #if !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Configuration {
 
     /*
      ********************************************************************************
-     ************************* Configuration::EndianConverter ***********************
+     ************************* Common::EndianConverter ***********************
      ********************************************************************************
      */
     template <integral T>

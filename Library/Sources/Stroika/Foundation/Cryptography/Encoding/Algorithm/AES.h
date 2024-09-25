@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/DerivedKey.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/InputStream.h"

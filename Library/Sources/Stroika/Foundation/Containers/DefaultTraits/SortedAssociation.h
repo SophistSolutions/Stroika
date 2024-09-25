@@ -7,7 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Common/Compare.h"
-#include "../../Configuration/Concepts.h"
+#include "../../Common/Concepts.h"
 
 /*
  *  \file

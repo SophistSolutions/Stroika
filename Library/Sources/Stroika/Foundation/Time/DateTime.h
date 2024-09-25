@@ -17,8 +17,8 @@
 #endif
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Time/Common.h"
 #include "Stroika/Foundation/Time/Date.h"
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Time {
         explicit DateTime (const ::SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
         explicit DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
 #endif
-        template <Configuration::ITimePoint T>
+        template <Common::ITimePoint T>
         explicit DateTime (T timePoint) noexcept;
 
     public:
@@ -408,7 +408,7 @@ namespace Stroika::Foundation::Time {
          *      SYSTEMTIME                              (WINDOWS ONLY)
          *      Date
          *      String                                  (Format (PrintFormat::eDEFAULT))
-         *      chrono::time_point<CLOCK,DURATION>      (satisfies Configuration::ITimePoint)
+         *      chrono::time_point<CLOCK,DURATION>      (satisfies Common::ITimePoint)
          *
          *  NB: Intentionally NOT defined for TimeOfDay () - cuz it wouldn't make sense. A DateTime IS a Date, but its not a TimeOfDay. Time of day just
          *  logically extends Date with extra (TOD) information.
@@ -427,11 +427,11 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const
         // new bug define for clang/xcode? cannot do requires and tmeplate specailize?
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
-            requires (Configuration::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String> or
+            requires (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String> or
 #if qPlatform_Windows
                       same_as<T, SYSTEMTIME> or
 #endif
-                      Configuration::ITimePoint<T>)
+                      Common::ITimePoint<T>)
 #endif
         ;
 

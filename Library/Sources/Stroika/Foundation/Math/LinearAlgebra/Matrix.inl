@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
             //fData_.SetAt (row * fDimensions_.fColumns + col, value);
             fData_[row * fDimensions_.fColumns + col] = value;
         }
-        void push_back (Configuration::ArgByValueType<T> fillValue)
+        void push_back (Common::ArgByValueType<T> fillValue)
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fData_.push_back (fillValue);
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     {
     }
     template <typename T>
-    Matrix<T>::Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue)
+    Matrix<T>::Matrix (const DimensionType& dimensions, Common::ArgByValueType<T> fillValue)
         : fRep_{make_shared<Rep_> (dimensions)}
     {
         for (size_t r = 0; r < dimensions.fRows; ++r) {
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         }
     }
     template <typename T>
-    inline Matrix<T>::Matrix (size_t rows, size_t columns, Configuration::ArgByValueType<T> fillValue)
+    inline Matrix<T>::Matrix (size_t rows, size_t columns, Common::ArgByValueType<T> fillValue)
         : Matrix{DimensionType{rows, columns}, fillValue}
     {
     }

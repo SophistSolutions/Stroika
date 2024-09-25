@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  Function type to create an ConstructedType object.
          */
-        using FactoryFunctionType = function<ConstructedType (Configuration::ArgByValueType<T> defaultItem)>;
+        using FactoryFunctionType = function<ConstructedType (Common::ArgByValueType<T> defaultItem)>;
 
     public:
         /**
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  You can call this directly, but there is no need, as the SparseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
          */
-        nonvirtual ConstructedType operator() (Configuration::ArgByValueType<T> defaultItem = {}) const;
+        nonvirtual ConstructedType operator() (Common::ArgByValueType<T> defaultItem = {}) const;
 
     public:
         /**

@@ -3,11 +3,11 @@
  */
 #include "Stroika/Foundation/Execution/Throw.h"
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     **************** Configuration::GetPlatformDefaultLocale ***********************
+     *********************** Common::GetPlatformDefaultLocale ***********************
      ********************************************************************************
      */
     inline std::locale GetPlatformDefaultLocale ()
@@ -17,12 +17,12 @@ namespace Stroika::Foundation::Configuration {
         // But https://en.cppreference.com/w/cpp/locale/locale/locale doesn't have similar language. So not clear
         // this is guaranteed to work. But it seems to ...
         //      -- LGP 2018-10-15
-        return std::locale ("");
+        return std::locale{""};
     }
 
     /*
      ********************************************************************************
-     ********************** Configuration::ScopedUseLocale **************************
+     ***************************** Common::ScopedUseLocale **************************
      ********************************************************************************
      */
     inline ScopedUseLocale::ScopedUseLocale (const optional<locale>& l)

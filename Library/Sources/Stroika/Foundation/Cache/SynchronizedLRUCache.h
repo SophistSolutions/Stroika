@@ -113,28 +113,27 @@ namespace Stroika::Foundation::Cache {
          *  @see LRUCache::clear ()
          */
         nonvirtual void clear ();
-        nonvirtual void clear (typename Configuration::ArgByValueType<KEY> key);
-        nonvirtual void clear (function<bool (typename Configuration::ArgByValueType<KEY>)> clearPredicate);
+        nonvirtual void clear (typename Common::ArgByValueType<KEY> key);
+        nonvirtual void clear (function<bool (typename Common::ArgByValueType<KEY>)> clearPredicate);
 
     public:
         /**
          *  \note - though this is not technically 'const' - it acts (from a thread safety point of view) as const, so its marked const
          *  @see LRUCache::Lookup ()
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key) const;
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key) const;
 
     public:
         /**
          *  @see LRUCache::LookupValue ()
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
-                                      const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& valueFetcher);
 
     public:
         /**
          *  Add the given value to the cache. This is rarely directly used.
          */
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> value);
 
     public:
         /**

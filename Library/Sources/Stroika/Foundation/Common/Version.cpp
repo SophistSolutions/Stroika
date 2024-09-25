@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Configuration/StroikaConfig.h"
+#include "Stroika/Foundation/Common/StroikaConfig.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/Bits.h"
 
@@ -12,7 +12,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Configuration;
+using namespace Stroika::Foundation::Common;
 
 /*
  ********************************************************************************

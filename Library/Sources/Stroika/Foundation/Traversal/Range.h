@@ -12,8 +12,8 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Traversal/Common.h"
 
 /**
@@ -123,8 +123,7 @@ namespace Stroika::Foundation::Traversal {
             /**
              *  Compute the difference between two elements of type T for the Range (RHS - LHS)
              */
-            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs,
-                                                              Configuration::ArgByValueType<value_type> rhs);
+            static constexpr SignedDifferenceType Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs);
 
             // Must be able to convert the underlying 'T' difference type to size_t sometimes
             static size_t DifferenceToSizeT (UnsignedDifferenceType s)
@@ -316,16 +315,16 @@ namespace Stroika::Foundation::Traversal {
         constexpr explicit Range ();
         template <typename T2, typename TRAITS2>
         constexpr explicit Range (const Range<T2, TRAITS>& src);
-        constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
+        constexpr explicit Range (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end);
         constexpr explicit Range (const optional<T>& begin, const optional<T>& end);
-        constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen);
+        constexpr explicit Range (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen);
         constexpr explicit Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
     public:
         /**
          *  \brief returns a range centered around center, with the given radius (and optionally argument openness).
          */
-        static constexpr Range Ball (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius,
+        static constexpr Range Ball (Common::ArgByValueType<T> center, Common::ArgByValueType<UnsignedDifferenceType> radius,
                                      Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
 
     public:
@@ -334,7 +333,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  The Range(begin/end) CTOR REQUIRES begin<=end). This does not, and just produces an empty range in that case.
          */
-        static constexpr Range ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
+        static constexpr Range ContainedRange (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end);
 
     public:
         /**
@@ -403,7 +402,7 @@ namespace Stroika::Foundation::Traversal {
          *  This corresponds to the mathematical set containment. When comparing with the edges
          *  of the range, we check <= if the edge is closed, and < if the edge is open.
          */
-        constexpr bool Contains (Configuration::ArgByValueType<T> r) const;
+        constexpr bool Contains (Common::ArgByValueType<T> r) const;
         constexpr bool Contains (const Range& containee) const;
 
     public:
@@ -491,7 +490,7 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  \note See also UnionBounds ();
          */
-        constexpr Range Extend (Configuration::ArgByValueType<T> value) const;
+        constexpr Range Extend (Common::ArgByValueType<T> value) const;
 
     public:
         /**

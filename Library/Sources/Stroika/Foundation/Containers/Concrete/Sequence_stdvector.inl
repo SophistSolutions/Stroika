@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Sequence_stdvector<T>::Sequence_stdvector (ITERABLE_OF_ADDABLE&& src)
         : Sequence_stdvector{}
     {
-        if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
+        if constexpr (Common::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
             this->reserve (src.size ());
         }
         this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));

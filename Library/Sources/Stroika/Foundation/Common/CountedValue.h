@@ -9,16 +9,16 @@
 #include <compare>
 #include <utility>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 
 /**
  * TODO:
  *      @todo   add default CTOR iff VALUE_TYPE has default CTOR, and same for other
  *              ops like assignment.
  *
- *      @todo   Use typename Configuration::ArgByValueType<> more (one missing CTOR and Equals). On VS2k13 generates
+ *      @todo   Use typename Common::ArgByValueType<> more (one missing CTOR and Equals). On VS2k13 generates
  *              compiler errors I don't understand. Low pri...
  */
 
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Common {
          */
         constexpr CountedValue ()
             requires (default_initializable<VALUE_TYPE>);
-        constexpr CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
+        constexpr CountedValue (typename ArgByValueType<ValueType> value, CounterType count = 1);
         template <convertible_to<VALUE_TYPE> VALUE2_TYPE, convertible_to<COUNTER_TYPE> COUNTER2_TYPE>
         constexpr CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src);
         template <convertible_to<VALUE_TYPE> VALUE2_TYPE, convertible_to<COUNTER_TYPE> COUNTER2_TYPE>

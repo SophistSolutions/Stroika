@@ -15,7 +15,7 @@
 #include "Stroika/Foundation/Characters/Character.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
@@ -1939,7 +1939,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
             ++it;
 #if 0
                 if (it == ctx.end()) {
-                    throw Configuration::StdCompat::format_error{"Invalid format args (missing }) for formatter<String,char>."};
+                    throw Common::StdCompat::format_error{"Invalid format args (missing }) for formatter<String,char>."};
                 }
 #endif
             if (*it == '}') {

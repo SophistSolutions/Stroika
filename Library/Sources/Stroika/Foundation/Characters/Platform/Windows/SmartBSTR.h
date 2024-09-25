@@ -15,7 +15,7 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 /**

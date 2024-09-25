@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_StroikaPreComp_h_
 #define _Stroika_Foundation_StroikaPreComp_h_ 1
 
-#include "Stroika/Foundation/Configuration/StroikaConfig.h"
+#include "Stroika/Foundation/Common/StroikaConfig.h"
 
 #if defined(__cplusplus)
 // Declare the namespaces so code early on can freely say stuff like "uses namespace Stroika"

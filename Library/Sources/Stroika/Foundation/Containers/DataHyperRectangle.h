@@ -31,7 +31,7 @@
 
 namespace Stroika::Foundation::Containers {
 
-    using Configuration::ArgByValueType;
+    using Common::ArgByValueType;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note mutates container
          */
-        nonvirtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v);
+        nonvirtual void SetAt (INDEXES... indexes, Common::ArgByValueType<T> v);
 
     private:
         template <typename INDEX, typename... REST_OF_INDEXES>
@@ -173,9 +173,9 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual shared_ptr<_IRep> CloneEmpty () const                                            = 0;
-        virtual T                 GetAt (INDEXES... indexes) const                               = 0;
-        virtual void              SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
+        virtual shared_ptr<_IRep> CloneEmpty () const                                     = 0;
+        virtual T                 GetAt (INDEXES... indexes) const                        = 0;
+        virtual void              SetAt (INDEXES... indexes, Common::ArgByValueType<T> v) = 0;
     };
 
     /**

@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Streams {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Streams::SeekableFlag> DefaultNames<Streams::SeekableFlag>::k{{{
         {Streams::SeekableFlag::eNotSeekable, L"Not-Seekable"},

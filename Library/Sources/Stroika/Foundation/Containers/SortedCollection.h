@@ -5,7 +5,7 @@
 // Moved #includes outside #include guard to avoid deadly embrace
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 
 #ifndef _Stroika_Foundation_Containers_SortedCollection_h_

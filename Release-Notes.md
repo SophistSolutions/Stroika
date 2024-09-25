@@ -7,6 +7,22 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### UPGRADE NOTES FOR 3.0d11
+
+namespace Stroika::Foundation::Configuration {
+    template <typename ENUM_TYPE>
+    class EnumNames;
+    template <>
+    constexpr EnumNames<Characters::CompareOptions> DefaultNames<Characters::CompareOptions>::k{{{
+        {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
+        {Characters::CompareOptions::eWithCase, L"With-Case"},
+    }}};
+}
+- must change namespace to Common...(and maybe more)
+using namespace Configuration => Using namespace Common; etc...
+- 
+
+---
 
 ### 3.0d10 {2024-09-24} {[diff](../../compare/v3.0d9...v3.0d10)}
 

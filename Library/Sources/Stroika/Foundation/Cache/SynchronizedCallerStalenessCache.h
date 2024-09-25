@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void Clear ();
         template <typename K1 = KEY>
-        nonvirtual void Clear (Configuration::ArgByValueType<K1> k)
+        nonvirtual void Clear (Common::ArgByValueType<K1> k)
             requires (IsKeyedCache<K1>);
 
     public:
@@ -99,11 +99,10 @@ namespace Stroika::Foundation::Cache {
         /**
          * @see CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add;
          */
-        nonvirtual void Add (Configuration::ArgByValueType<VALUE> v)
+        nonvirtual void Add (Common::ArgByValueType<VALUE> v)
             requires (not IsKeyedCache<KEY>);
         template <typename K = KEY>
-        nonvirtual void Add (Configuration::ArgByValueType<K> k, Configuration::ArgByValueType<VALUE> v,
-                             AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces)
+        nonvirtual void Add (Common::ArgByValueType<K> k, Common::ArgByValueType<VALUE> v, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces)
             requires (IsKeyedCache<K>);
 
     public:
@@ -113,15 +112,15 @@ namespace Stroika::Foundation::Cache {
         nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const
             requires (not IsKeyedCache<KEY>);
         template <typename K = KEY>
-        nonvirtual optional<VALUE> Lookup (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan) const
+        nonvirtual optional<VALUE> Lookup (Common::ArgByValueType<K> k, TimeStampType staleIfOlderThan) const
             requires (IsKeyedCache<K>);
         nonvirtual VALUE LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
             requires (not IsKeyedCache<KEY>);
         template <typename F, typename K = KEY>
-        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
+        nonvirtual VALUE LookupValue (Common::ArgByValueType<K> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
             requires (IsKeyedCache<KEY> and is_invocable_r_v<VALUE, F, KEY>);
         template <typename K = KEY>
-        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
+        nonvirtual VALUE LookupValue (Common::ArgByValueType<K> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
             requires (IsKeyedCache<KEY>);
 
     public:

@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Execution::Logger::Priority> DefaultNames<Execution::Logger::Priority>::k{{{
         {Execution::Logger::Priority::eDebug, L"Debug"},

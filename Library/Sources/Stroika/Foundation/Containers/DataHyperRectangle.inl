@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Containers/Private/IterableUtils.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (forward<INDEXES> (indexes)...);
     }
     template <typename T, typename... INDEXES>
-    inline void DataHyperRectangle<T, INDEXES...>::SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v)
+    inline void DataHyperRectangle<T, INDEXES...>::SetAt (INDEXES... indexes, Common::ArgByValueType<T> v)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().SetAt (forward<INDEXES> (indexes)..., v);
     }

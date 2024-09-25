@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
-#include "Stroika/Foundation/Configuration/SystemConfiguration.h"
+#include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -437,12 +437,12 @@ namespace {
 #endif
             Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) +
                         NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) <=
-                    GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+                    Common::GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             if (result.fPhysicalMemory.fActive and result.fPhysicalMemory.fInactive and result.fPhysicalMemory.fFree and
                 result.fPhysicalMemory.fOSReserved) {
                 Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) +
                             NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) ==
-                        GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+                        Common::GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             }
             return result;
         }

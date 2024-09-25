@@ -3,7 +3,7 @@
  */
 
 #if defined(__cplusplus)
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
 #endif
 
 #if defined(__cplusplus)

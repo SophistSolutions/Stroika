@@ -9,7 +9,7 @@
 #include <span>
 #include <string>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /**
  */
@@ -53,8 +53,7 @@ namespace Stroika::Foundation::Memory {
      *  \see https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
      */
     template <typename SPAN_T, typename T>
-    concept ISpanOfT =
-        Configuration::IAnyOf<remove_cvref_t<SPAN_T>, span<T>, span<const T>, span<T, SPAN_T::extent>, span<const T, SPAN_T::extent>>;
+    concept ISpanOfT = Common::IAnyOf<remove_cvref_t<SPAN_T>, span<T>, span<const T>, span<T, SPAN_T::extent>, span<const T, SPAN_T::extent>>;
     static_assert (ISpanOfT<span<int>, int> and ISpanOfT<span<const int>, int> and ISpanOfT<span<const int, 3>, int> and not ISpanOfT<span<int>, char>);
 
     namespace Private_ {

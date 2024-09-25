@@ -621,7 +621,7 @@ namespace Stroika::Foundation::Characters {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <typename ENUM_TYPE>
     class EnumNames;
     template <>

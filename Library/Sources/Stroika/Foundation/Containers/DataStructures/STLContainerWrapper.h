@@ -6,9 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         template <typename T>
         using has_erase_t = decltype (declval<T&> ().erase (begin (declval<T&> ()), end (declval<T&> ())));
         template <typename T>
-        constexpr inline bool has_erase_v = Configuration::is_detected_v<has_erase_t, T>;
+        constexpr inline bool has_erase_v = Common::is_detected_v<has_erase_t, T>;
     }
 
     /**
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom) const;
 
     public:
-        nonvirtual bool contains (Configuration::ArgByValueType<value_type> item) const;
+        nonvirtual bool contains (Common::ArgByValueType<value_type> item) const;
 
     public:
         /**

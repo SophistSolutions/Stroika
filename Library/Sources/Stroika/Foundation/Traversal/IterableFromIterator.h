@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Traversal/DelegatedIterator.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Traversal {
             using inherited = typename Iterable<T>::_IRep;
 
         protected:
-            using _ContextObjectType = conditional_t<same_as<CONTEXT_FOR_EACH_ITERATOR, void>, Configuration::Empty, CONTEXT_FOR_EACH_ITERATOR>;
+            using _ContextObjectType = conditional_t<same_as<CONTEXT_FOR_EACH_ITERATOR, void>, Common::Empty, CONTEXT_FOR_EACH_ITERATOR>;
 
         protected:
             [[no_unique_address]] _ContextObjectType _fContextForEachIterator;

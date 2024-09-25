@@ -251,7 +251,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline MultiSet_Array<T, TRAITS>::MultiSet_Array (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_Array{}
     {
-        if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
+        if constexpr (Common::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
             this->reserve (src.size ());
         }
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -306,7 +306,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_Array<T, TRAITS>::MultiSet_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_Array{}
     {
-        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+        if constexpr (Common::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 this->reserve (end - start);
             }

@@ -88,7 +88,7 @@ String OptionsFile::LoggerMessage::FormatMessage () const
  ********************************************************************************
  */
 const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader =
-    [] (const optional<Configuration::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue { return rawVariantValue; };
+    [] (const optional<Common::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue { return rawVariantValue; };
 
 const OptionsFile::LoggerType OptionsFile::kDefaultLogger = [] (const LoggerMessage& message) {
     using Execution::Logger;
@@ -125,8 +125,8 @@ OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const
 }
 
 const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper =
-    [] ([[maybe_unused]] const String& /*moduleName*/) -> optional<Configuration::Version> {
-    return optional<Configuration::Version> (); // default to don't know
+    [] ([[maybe_unused]] const String& /*moduleName*/) -> optional<Common::Version> {
+    return optional<Common::Version> (); // default to don't know
 };
 
 // Consider using XML by default when more mature

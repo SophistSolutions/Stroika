@@ -11,7 +11,7 @@
 #include <optional>
 #include <thread>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Signals.h"
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Execution {
         };
 
         /**
-         *  Configuration::DefaultNames<> is defined for this enumeration.
+         *  Common::DefaultNames<> is defined for this enumeration.
          */
         enum class Status : uint8_t {
             eNotYetRunning, // created, but start not yet called
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Execution {
 
         /**
          *
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          */
         enum class Priority {
             eLowest,

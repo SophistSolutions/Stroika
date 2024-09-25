@@ -13,7 +13,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"

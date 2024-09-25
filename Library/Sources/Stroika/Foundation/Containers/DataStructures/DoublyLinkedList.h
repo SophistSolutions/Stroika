@@ -6,9 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -32,7 +32,7 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    using Configuration::ArgByValueType;
+    using Common::ArgByValueType;
 
     /*
      *      DoublyLinkedList<T> is a generic link (non-intrusive) list implementation.

@@ -11,9 +11,9 @@
 #include <optional>
 
 #include "Stroika/Foundation/Cache/Statistics.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -324,8 +324,8 @@ namespace Stroika::Foundation::Cache {
          *  \note   Before Stroika 3.0d1, this used to support TraitsType::kTrackReadAccess, and if it was true did the same
          *          as the newer Lookup (..., eTreatFoundThroughLookupAsRefreshed)
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
 
     public:
         /**
@@ -341,8 +341,7 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note   This function may update the TimedCache (which is why it is non-const).
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
-                                      const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller,
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
                                       LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed,
                                       PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
@@ -354,15 +353,14 @@ namespace Stroika::Foundation::Cache {
          *  to automatically be purged as it becomes irrelevant (@see PurgeSpoiledData). But for performance sake,
          *  callers may call Add (..., eDontAutomaticallyPurgeSpoiledData)
          */
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
                              PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
-                             Time::TimePointSeconds freshAsOf);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::TimePointSeconds freshAsOf);
 
     public:
         /**
          */
-        nonvirtual void Remove (typename Configuration::ArgByValueType<KEY> key);
+        nonvirtual void Remove (typename Common::ArgByValueType<KEY> key);
 
     public:
         /**

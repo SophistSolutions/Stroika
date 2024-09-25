@@ -6,8 +6,8 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/StroikaVersion.h"
-#include "Stroika/Foundation/Configuration/VersionDefs.h"
+#include "Stroika/Foundation/Common/StroikaVersion.h"
+#include "Stroika/Foundation/Common/VersionDefs.h"
 
 /*
 @MODULE:    LedConfig

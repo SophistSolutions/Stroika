@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Memory::Platform::Windows {

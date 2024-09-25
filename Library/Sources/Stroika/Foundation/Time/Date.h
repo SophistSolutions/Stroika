@@ -12,8 +12,8 @@
 #include <string>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/DataExchange/ValidationStrategy.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Time/Common.h"
@@ -581,7 +581,7 @@ namespace Stroika::Foundation::Time {
          *      stripped, so for example, 03/05/2013 becomes 3/5/2013. This only affects the day/month, and not the
          *      year.
          *
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          */
         enum class NonStandardPrintFormat : uint8_t {
             eCurrentLocale_WithZerosStripped,

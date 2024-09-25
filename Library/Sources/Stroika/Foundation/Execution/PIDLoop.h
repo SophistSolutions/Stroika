@@ -8,7 +8,7 @@
 
 #include <compare>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Time/Realtime.h"

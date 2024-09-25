@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Configuration
+//  TEST    Foundation::Common
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
@@ -34,7 +34,8 @@ namespace {
     void Test1_Version_ ()
     {
         Debug::TraceContextBumper ctx{"{}::Test1_Version_"};
-        using namespace Configuration;
+        using namespace Characters;
+        using namespace Common;
         {
             constexpr Version kTestVersion_ = Version (1, 0, VersionStage::Alpha, 1, false);
             EXPECT_TRUE (kTestVersion_.AsPrettyVersionString () == "1.0a1x");
@@ -88,7 +89,7 @@ namespace {
         };
     }
 }
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k{{{
         {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
@@ -226,8 +227,8 @@ namespace {
                 auto lambda  = [] (int i) { return long (i * 10); };
                 using traits = FunctionTraits<decltype (lambda)>;
                 static_assert (traits::kArity == 1);
-                static_assert (same_as<long, traits::result_type>::value);
-                static_assert (same_as<int, traits::arg<0>::type>::value);
+                static_assert (same_as<long, traits::result_type>);
+                static_assert (same_as<int, traits::arg<0>::type>);
             }
             {
                 static_assert (Traversal::IIterable<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);

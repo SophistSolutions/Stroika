@@ -9,7 +9,7 @@
 #include <compare>
 #include <csignal>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Execution/Function.h"
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  @see SignalHandlerRegistry::SafeSignalsManager.
          *
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          */
         enum class Type {
             eDirect,

@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 
 /*

@@ -33,12 +33,12 @@ using namespace Database::SQL;
 namespace {
     void SetupDB_ (Connection::Ptr conn)
     {
-        constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+        constexpr Common::Version kCurrentVersion_ = Common::Version{1, 0, Common::VersionStage::Alpha, 0};
         SQL::ORM::ProvisionForVersion (
             conn, kCurrentVersion_,
             initializer_list<SQL::ORM::TableProvisioner>{
                 {"EMPLOYEES"sv,
-                 [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                 [] (SQL::Connection::Ptr c, optional<Common::Version> v, [[maybe_unused]] Common::Version targetDBVersion) -> void {
                      // for now no upgrade support
                      if (not v) {
                          c.Exec ("CREATE TABLE EMPLOYEES("
@@ -52,7 +52,7 @@ namespace {
                      }
                  }},
                 {"PAYCHECKS"sv,
-                 [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                 [] (SQL::Connection::Ptr c, optional<Common::Version> v, [[maybe_unused]] Common::Version targetDBVersion) -> void {
                      // for now no upgrade support
                      if (not v) {
                          c.Exec ("CREATE TABLE PAYCHECKS("

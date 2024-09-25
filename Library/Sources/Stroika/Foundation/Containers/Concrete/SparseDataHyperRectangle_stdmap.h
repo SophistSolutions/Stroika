@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem = {});
+        SparseDataHyperRectangle_stdmap (Common::ArgByValueType<T> defaultItem = {});
         SparseDataHyperRectangle_stdmap (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& src);
 
     public:

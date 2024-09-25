@@ -9,32 +9,32 @@ namespace Stroika::Foundation::Characters {
      ***************************** FormatString<CHAR_T> *****************************
      ********************************************************************************
      */
-    template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     constexpr FormatString<CHAR_T>::FormatString (const basic_string_view<CHAR_T>& s)
         : fSV_{s}
     {
     }
-    template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     constexpr wstring_view FormatString<CHAR_T>::get () const
     {
         return fSV_;
     }
-    template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view FormatString<CHAR_T>::getx_ () const
     {
         return qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fSV_.data (), fSV_.size ()};
     }
-    template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
+    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template <Common::StdCompat::formattable<wchar_t>... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (ARGS&&... args) const
     {
-        return Configuration::StdCompat::vformat (getx_ (), Configuration::StdCompat::make_wformat_args (args...));
+        return Common::StdCompat::vformat (getx_ (), Common::StdCompat::make_wformat_args (args...));
     }
-    template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
+    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template <Common::StdCompat::formattable<wchar_t>... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (const locale& loc, ARGS&&... args) const
     {
-        return Configuration::StdCompat::vformat (loc, getx_ (), Configuration::StdCompat::make_wformat_args (args...));
+        return Common::StdCompat::vformat (loc, getx_ (), Common::StdCompat::make_wformat_args (args...));
     }
 #if qCompilerAndStdLib_vector_constexpr_warning_Buggy
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-constexpr\"");
@@ -68,12 +68,12 @@ namespace Stroika::Foundation::Characters {
     {
         return fFmtStr_.getx_ ();
     }
-    template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
+    template <Common::StdCompat::formattable<wchar_t>... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (ARGS&&... args) const
     {
         return fFmtStr_ (args...);
     }
-    template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
+    template <Common::StdCompat::formattable<wchar_t>... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (const locale& loc, ARGS&&... args) const
     {
         return fFmtStr_ (loc, args...);
@@ -110,14 +110,14 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <typename CHAR_T>
-    [[nodiscard]] inline String VFormat (const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args)
+    [[nodiscard]] inline String VFormat (const FormatString<CHAR_T>& f, const Common::StdCompat::wformat_args& args)
     {
-        return Configuration::StdCompat::vformat (f.getx_ (), args);
+        return Common::StdCompat::vformat (f.getx_ (), args);
     }
     template <typename CHAR_T>
-    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args)
+    [[nodiscard]] inline String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Common::StdCompat::wformat_args& args)
     {
-        return Configuration::StdCompat::vformat (loc, f.getx_ (), args);
+        return Common::StdCompat::vformat (loc, f.getx_ (), args);
     }
 
     /*
@@ -128,12 +128,12 @@ namespace Stroika::Foundation::Characters {
     template <typename CHAR_T, typename... ARGS>
     inline String Format (const FormatString<CHAR_T>& f, ARGS&&... args)
     {
-        return VFormat (f, Configuration::StdCompat::make_wformat_args (args...));
+        return VFormat (f, Common::StdCompat::make_wformat_args (args...));
     }
     template <typename CHAR_T, typename... ARGS>
     inline String Format (const locale& loc, const FormatString<CHAR_T>& f, ARGS&&... args)
     {
-        return VFormat (loc, f, Configuration::StdCompat::make_wformat_args (args...));
+        return VFormat (loc, f, Common::StdCompat::make_wformat_args (args...));
     }
 
 }

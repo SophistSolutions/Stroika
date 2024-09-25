@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 
@@ -104,7 +104,7 @@ strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rh
     if (cmp != strong_ordering::equal) {
         return cmp;
     }
-    cmp = Configuration::StdCompat::compare_three_way{}(fSuffix_, rhs.fSuffix_);
+    cmp = Common::StdCompat::compare_three_way{}(fSuffix_, rhs.fSuffix_);
     if (cmp != strong_ordering::equal) {
         return cmp;
     }

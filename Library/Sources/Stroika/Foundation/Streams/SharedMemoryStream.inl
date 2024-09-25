@@ -3,7 +3,7 @@
  */
 #include <mutex>
 
-#include "Stroika/Foundation/Configuration/Empty.h"
+#include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Execution/NullMutex.h"
@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
         private:
             static inline const auto kSeekException_ = range_error{"seek"};
             mutable LOCK_IMPL        fMutex_;
-            [[no_unique_address]] conditional_t<kLocking_, Execution::WaitableEvent, Configuration::Empty> fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
+            [[no_unique_address]] conditional_t<kLocking_, Execution::WaitableEvent, Common::Empty> fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
             vector<ElementType>                          fData_; // Important data comes before cursors cuz of use in CTOR
             typename vector<ElementType>::const_iterator fReadCursor_;
             typename vector<ElementType>::iterator       fWriteCursor_;
@@ -503,7 +503,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
         private:
             [[no_unique_address]] mutable LOCK_IMPL fMutex_;
             size_t                                  fSpaceClearedFromStreamHead_{0};
-            [[no_unique_address]] conditional_t<kLocking_, Execution::WaitableEvent, Configuration::Empty> fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
+            [[no_unique_address]] conditional_t<kLocking_, Execution::WaitableEvent, Common::Empty> fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
             vector<ElementType>                          fData_; // Important data comes before cursors cuz of use in CTOR
             typename vector<ElementType>::const_iterator fReadCursor_;
             typename vector<ElementType>::iterator       fWriteCursor_;
@@ -533,7 +533,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     }
     template <typename ELEMENT_TYPE, typename COPY_FROM>
     inline auto New (const COPY_FROM& copyFrom, Options options) -> Ptr<ELEMENT_TYPE>
-        requires (same_as<ELEMENT_TYPE, byte> and Configuration::IAnyOf<COPY_FROM, Memory::BLOB, span<const ELEMENT_TYPE>>)
+        requires (same_as<ELEMENT_TYPE, byte> and Common::IAnyOf<COPY_FROM, Memory::BLOB, span<const ELEMENT_TYPE>>)
     {
         auto p = New<ELEMENT_TYPE> (options);
         p.Write (copyFrom);
@@ -563,7 +563,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     template <typename ELEMENT_TYPE>
     template <typename T>
     inline T Ptr<ELEMENT_TYPE>::As () const
-        requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and Configuration::IAnyOf<T, Memory::BLOB, string>) or
+        requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and Common::IAnyOf<T, Memory::BLOB, string>) or
                   (same_as<ELEMENT_TYPE, Characters::Character> and same_as<T, Characters::String>))
     {
         using Characters::Character;

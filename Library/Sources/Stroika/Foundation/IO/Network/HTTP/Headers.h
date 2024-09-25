@@ -7,8 +7,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Association.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -423,7 +423,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *      o   Collection<KeyValuePair<String,String>>
          *      o   Iterable<KeyValuePair<String,String>>
          */
-        template <Configuration::IAnyOf<Association<String, String>, Mapping<String, String>, Collection<KeyValuePair<String, String>>, Iterable<KeyValuePair<String, String>>> T =
+        template <Common::IAnyOf<Association<String, String>, Mapping<String, String>, Collection<KeyValuePair<String, String>>, Iterable<KeyValuePair<String, String>>> T =
                       Iterable<KeyValuePair<String, String>>>
         nonvirtual T As () const;
 

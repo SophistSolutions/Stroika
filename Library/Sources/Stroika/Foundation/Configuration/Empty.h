@@ -4,27 +4,10 @@
 #ifndef _Stroika_Foundation_Configuration_Empty_h_
 #define _Stroika_Foundation_Configuration_Empty_h_ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
-
-/**
- *  \file
- *
- *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
- */
+#include "Stroika/Foundation/Common/Empty.h"
 
 namespace Stroika::Foundation::Configuration {
-
-    /**
-     *  Believe it or not, this is often useful in template metaprogramming. Because you cannot declare a data member as 'void'. This amounts to same thing if used with [[no_unique_address]]
-     */
-    struct Empty {};
-
+    using namespace Stroika::Foundation::Common;
 }
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
-#endif /*_Stroika_Foundation_Configuration_Empty_h_*/
+#endif

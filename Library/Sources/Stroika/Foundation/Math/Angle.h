@@ -8,9 +8,9 @@
 
 #include <compare>
 
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 
 /**
  *  \file

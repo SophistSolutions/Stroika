@@ -12,7 +12,7 @@
 #include <tchar.h>
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /**
  *  Each platform SDK has its own policy for representing characters. Some use narrow characters (char),

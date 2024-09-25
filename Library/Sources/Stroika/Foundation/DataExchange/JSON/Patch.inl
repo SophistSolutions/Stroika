@@ -5,7 +5,7 @@
 namespace Stroika::Foundation::DataExchange::JSON {
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Stroika::Foundation::DataExchange::JSON::Patch::OperationType> DefaultNames<Stroika::Foundation::DataExchange::JSON::Patch::OperationType>::k{
         EnumNames<Stroika::Foundation::DataExchange::JSON::Patch::OperationType>::BasicArrayInitializer{{

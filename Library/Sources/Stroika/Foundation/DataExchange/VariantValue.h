@@ -18,8 +18,8 @@ DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\
 #endif
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -44,12 +44,12 @@ namespace Stroika::Foundation::DataExchange {
     class VariantValue;
     namespace Private_ {
         template <typename T>
-        concept IVariantValueAsBasic_ = Configuration::IAnyOf<T, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>,
-                                                              map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>>
+        concept IVariantValueAsBasic_ =
+            Common::IAnyOf<T, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>, map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>>
 #if qHasFeature_boost
-                                        or same_as<T, boost::json::value>
+            or same_as<T, boost::json::value>
 #endif
-                                        or integral<T> or floating_point<T>;
+            or integral<T> or floating_point<T>;
     }
 
     /**
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::DataExchange {
          *              v2 == v1;  // maybe false
          *              T y = v2.As<T> (); // will produce value x == y
          *
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          * 
          *  \note   the Normalize () method can be used to return the limited subset of information that appears in JSON
          *          (but beware, that also sorts the mappings).
@@ -378,7 +378,7 @@ namespace Stroika::Foundation::DataExchange {
         template <typename RETURNTYPE>
         nonvirtual RETURNTYPE As () const
             requires (Private_::IVariantValueAsBasic_<RETURNTYPE> or
-                      (Configuration::IOptional<RETURNTYPE> and Private_::IVariantValueAsBasic_<Configuration::ExtractValueType_t<RETURNTYPE>>));
+                      (Common::IOptional<RETURNTYPE> and Private_::IVariantValueAsBasic_<Common::ExtractValueType_t<RETURNTYPE>>));
 
     public:
         /**

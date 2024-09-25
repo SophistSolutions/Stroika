@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Common/Endian.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Frameworks::Modbus {
@@ -22,7 +22,7 @@ namespace Stroika::Frameworks::Modbus {
         const VT* arr = reinterpret_cast<const VT*> (&s);
         for (size_t i = 0; i < kNElts_; ++i) {
             // high order addressed elements first - big endian (@todo - is there a better way to byte swap if needed - in general case)?
-            update->Add (baseRegister + i, arr[(Configuration::GetEndianness () == Configuration::Endian::eLittle) ? (kNElts_ - i - 1) : i]);
+            update->Add (baseRegister + i, arr[(Common::GetEndianness () == Common::Endian::eLittle) ? (kNElts_ - i - 1) : i]);
         }
     }
 

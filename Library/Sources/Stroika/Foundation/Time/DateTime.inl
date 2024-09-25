@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Time {
         , fTimeOfDay_{timeOfDay}
     {
     }
-    template <Configuration::ITimePoint T>
+    template <Common::ITimePoint T>
     DateTime::DateTime (T timePoint) noexcept
         : DateTime{chrono::system_clock::to_time_t (Time::clock_cast<chrono::system_clock> (timePoint))}
     {
@@ -97,14 +97,14 @@ namespace Stroika::Foundation::Time {
     template <typename T>
     inline T DateTime::As () const
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
-        requires (Configuration::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String> or
+        requires (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String> or
 #if qPlatform_Windows
                   same_as<T, SYSTEMTIME> or
 #endif
-                  Configuration::ITimePoint<T>)
+                  Common::ITimePoint<T>)
 #endif
     {
-        if constexpr (Configuration::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String>) {
+        if constexpr (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String>) {
             return As_Simple_<T> ();
         }
 #if qPlatform_Windows
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Time {
             return AsSYSTEMTIME_ ();
         }
 #endif
-        else if constexpr (Configuration::ITimePoint<T>) {
+        else if constexpr (Common::ITimePoint<T>) {
             return As_TP_<typename T::clock, typename T::duration> ();
         }
     }
@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Time {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat> DefaultNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat>::k{{{
         {Stroika::Foundation::Time::DateTime::LocaleIndependentFormat::eISO8601, L"ISO-8601"},

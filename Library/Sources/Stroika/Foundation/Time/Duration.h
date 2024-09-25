@@ -17,7 +17,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Time/Common.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -155,8 +155,8 @@ namespace Stroika::Foundation::Time {
          *  o   integral<T>
          *  o   floating_point<T>
          *  o   String
-         *  o   Configuration::IDuration<T>
-         *  o   Configuration::ITimePoint<T>
+         *  o   Common::IDuration<T>
+         *  o   Common::ITimePoint<T>
          * 
          *  Note this implies inclusion of:
          *      o   time_t
@@ -171,8 +171,8 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (Configuration::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or
-                      Configuration::IDuration<T> or Configuration::ITimePoint<T>);
+            requires (Common::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or Common::IDuration<T> or
+                      Common::ITimePoint<T>);
 
     public:
         /**
@@ -185,8 +185,8 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T AsPinned () const
-            requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or
-                      Configuration::IDuration<T> or Configuration::ITimePoint<T>);
+            requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or Common::IDuration<T> or
+                      Common::ITimePoint<T>);
 
     public:
         /**

@@ -9,9 +9,9 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/GUID.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::IO::Network {
 
         /**
          *
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          *
          *  Most of these types are obvious, but eDeviceVirtualInternalNetwork is for special internal networks, like for virtualbox, Docker, or other purposes.
          *  They will generally (always) have private IP Addresses distinct from the main real external IP address of the machine in question. It may not always
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::IO::Network {
 
             /**
              *
-             *  \note   Configuration::DefaultNames<> supported
+             *  \note   Common::DefaultNames<> supported
              */
             enum class State {
                 eNotReady,           // WLAN_INTERFACE_STATE::wlan_interface_state_not_ready,
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::IO::Network {
 
             /**
              *
-             *  \note   Configuration::DefaultNames<> supported
+             *  \note   Common::DefaultNames<> supported
              */
             enum class ConnectionMode {
                 eProfile, // _WLAN_CONNECTION_MODE::wlan_connection_mode_profile- A profile is used to make the connection
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::IO::Network {
 
             /**
              *
-             *  \note   Configuration::DefaultNames<> supported
+             *  \note   Common::DefaultNames<> supported
              */
             enum class BSSType {
                 eInfrastructure, // DOT11_BSS_TYPE::dot11_BSS_type_infrastructure
@@ -198,7 +198,7 @@ namespace Stroika::Foundation::IO::Network {
 
             /**
              *
-             *  \note   Configuration::DefaultNames<> supported
+             *  \note   Common::DefaultNames<> supported
              */
             enum class PhysicalConnectionType {
                 eFHSS,       // DOT11_PHY_TYPE::dot11_phy_type_fhss = 1,   Frequency-hopping spread-spectrum
@@ -232,7 +232,7 @@ namespace Stroika::Foundation::IO::Network {
 
             /**
              *
-             *  \note   Configuration::DefaultNames<> supported
+             *  \note   Common::DefaultNames<> supported
              */
             enum class AuthAlgorithm {
                 eOpen,         // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_80211_OPEN = 1,
@@ -297,7 +297,7 @@ namespace Stroika::Foundation::IO::Network {
         optional<Containers::Sequence<InternetAddress>> fDNSServers;
 
         /**
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          */
         enum class Status {
 

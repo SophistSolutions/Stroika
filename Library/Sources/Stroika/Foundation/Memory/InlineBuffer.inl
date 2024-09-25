@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Memory {
     InlineBuffer<T, BUF_SIZE>::InlineBuffer (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
         : InlineBuffer{}
     {
-        static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, T>);
+        static_assert (is_convertible_v<Common::ExtractValueType_t<ITERATOR_OF_T>, T>);
 #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy || qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy
         auto sz = static_cast<size_t> (distance (start, ITERATOR_OF_T{end}));
 #else
@@ -437,7 +437,7 @@ namespace Stroika::Foundation::Memory {
         return at (i);
     }
     template <typename T, size_t BUF_SIZE>
-    inline void InlineBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
+    inline void InlineBuffer<T, BUF_SIZE>::push_back (Common::ArgByValueType<T> e)
     {
         size_t s    = size ();
         size_t newS = s + 1;

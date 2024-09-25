@@ -9,8 +9,8 @@
 #include <type_traits>
 
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Cryptography/Digest/Hash.h"
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Cache {
         /**
          *  return true if this was probably a change, and false if it was probably already present
          */
-        nonvirtual bool Add (Configuration::ArgByValueType<T> elt);
+        nonvirtual bool Add (Common::ArgByValueType<T> elt);
 
     public:
         /**
@@ -122,9 +122,9 @@ namespace Stroika::Foundation::Cache {
          * 
          *  Call GetEffectiveOptions ().ProbabilityOfFalsePositive (nEltsAdded) to an estimate of the probability of false positives.
          */
-        nonvirtual bool ProbablyContains (Configuration::ArgByValueType<T> elt) const;
+        nonvirtual bool ProbablyContains (Common::ArgByValueType<T> elt) const;
 
-        [[deprecated ("Since Stroika v3.0d10 use ProbablyContains")]] bool Contains (Configuration::ArgByValueType<T> elt) const
+        [[deprecated ("Since Stroika v3.0d10 use ProbablyContains")]] bool Contains (Common::ArgByValueType<T> elt) const
         {
             return ProbablyContains (elt);
         }

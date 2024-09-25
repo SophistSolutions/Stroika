@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 
 /**
  *  \file
@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Traversal {
      * 
      *  \note   no support for the concepts of open and closed or neither open nor closed
      *
-     *  \note   Configuration::DefaultNames<> supported
+     *  \note   Common::DefaultNames<> supported
      */
     enum class Openness {
         eOpen,

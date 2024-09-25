@@ -8,8 +8,8 @@
 
 #include <optional>
 
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Common.h"
@@ -20,7 +20,7 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    using Configuration::ArgByValueType;
+    using Common::ArgByValueType;
 
     /**
      *      This class provides an array abstraction, where the size can be set dynamically, and

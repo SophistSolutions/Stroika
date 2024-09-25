@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /**
  * TODO:

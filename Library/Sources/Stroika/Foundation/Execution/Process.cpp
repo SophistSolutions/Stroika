@@ -8,7 +8,7 @@
 #include "Process.h"
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Configuration;
+using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Execution;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module

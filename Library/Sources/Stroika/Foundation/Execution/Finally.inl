@@ -10,12 +10,12 @@ namespace Stroika::Foundation::Execution {
      ****************** Execution::Private_::FinallySentry **************************
      ********************************************************************************
      */
-    template <Configuration::INoThrowInvocable FUNCTION>
+    template <Common::INoThrowInvocable FUNCTION>
     inline Private_::FinallySentry<FUNCTION>::FinallySentry (FUNCTION&& f)
         : fCleanupCodeBlock_{std::forward<FUNCTION> (f)}
     {
     }
-    template <Configuration::INoThrowInvocable FUNCTION>
+    template <Common::INoThrowInvocable FUNCTION>
     inline Private_::FinallySentry<FUNCTION>::~FinallySentry ()
     {
         // No need for IgnoreExceptionsForCall, because we assure its no-throw invocable
@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Execution {
      ******************************* Execution::Finally *****************************
      ********************************************************************************
      */
-    template <Configuration::INoThrowInvocable FUNCTION>
+    template <Common::INoThrowInvocable FUNCTION>
     inline auto Finally (FUNCTION&& f) -> Private_::FinallySentry<FUNCTION>
     {
         return {std::forward<FUNCTION> (f)};

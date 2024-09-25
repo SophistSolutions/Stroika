@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
@@ -52,14 +52,14 @@ namespace Stroika::Foundation::Configuration {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
 
     template <>
-    constexpr EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>
-        DefaultNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::k{{{
-            {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM, L"RPM"},
-            {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
-            {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},
+    constexpr EnumNames<Common::SystemConfiguration::OperatingSystem::InstallerTechnology>
+        DefaultNames<Common::SystemConfiguration::OperatingSystem::InstallerTechnology>::k{{{
+            {Common::SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM, L"RPM"},
+            {Common::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
+            {Common::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},
         }}};
 
 }

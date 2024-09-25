@@ -231,7 +231,7 @@ void Stroika::Samples::SQL::ORMEmployeesDB (const std::function<Connection::Ptr 
     Connection::Ptr conn2 = connectionFactory ();
 
     // setup DB schema (on either connection) before running access threads
-    constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+    constexpr Common::Version kCurrentVersion_ = Common::Version{1, 0, Common::VersionStage::Alpha, 0};
     ORM::ProvisionForVersion (conn1, kCurrentVersion_, Traversal::Iterable<ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
 
     /*

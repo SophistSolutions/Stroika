@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"

@@ -16,7 +16,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/CodePage.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 namespace Stroika::Foundation::Characters::Platform::Windows {
 

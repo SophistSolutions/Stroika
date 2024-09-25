@@ -10,9 +10,9 @@
 #include <optional>
 #include <shared_mutex>
 
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Empty.h"
+#include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Containers/Adapters/Adder.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/NullMutex.h"

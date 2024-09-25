@@ -7,8 +7,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"

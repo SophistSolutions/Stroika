@@ -4,8 +4,8 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Math {
@@ -147,8 +147,8 @@ namespace Stroika::Foundation::Math {
     constexpr bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon)
         requires (is_arithmetic_v<T1> and is_arithmetic_v<T2>)
     {
-        using Configuration::StdCompat::isinf;
-        using Configuration::StdCompat::isnan;
+        using Common::StdCompat::isinf;
+        using Common::StdCompat::isnan;
         if (isnan (l) or isnan (r)) [[unlikely]] {
             return isnan (l) and isnan (r);
         }
@@ -256,14 +256,14 @@ namespace Stroika::Foundation::Math {
     constexpr RESULT_TYPE Abs (T v)
         requires (is_arithmetic_v<T>)
     {
-#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_23
-        if constexpr (Configuration::IAnyOf<T, int, intmax_t>) {
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23
+        if constexpr (Common::IAnyOf<T, int, intmax_t>) {
             return std::abs (v);
         }
-        else if constexpr (Configuration::IAnyOf<T, long>) {
+        else if constexpr (Common::IAnyOf<T, long>) {
             return std::labs (v);
         }
-        else if constexpr (Configuration::IAnyOf<T, long long>) {
+        else if constexpr (Common::IAnyOf<T, long long>) {
             return std::llabs (v);
         }
 #endif

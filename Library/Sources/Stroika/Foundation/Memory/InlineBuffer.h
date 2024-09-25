@@ -8,9 +8,9 @@
 
 #include <span>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
 /**
@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Memory {
          * 
          *  \see also push_back_coerced ()
          */
-        nonvirtual void push_back (Configuration::ArgByValueType<T> e);
+        nonvirtual void push_back (Common::ArgByValueType<T> e);
         template <ISpanOfT<T> SPAN_T>
         nonvirtual void push_back (const SPAN_T& copyFrom);
 

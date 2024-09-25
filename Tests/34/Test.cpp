@@ -672,7 +672,7 @@ namespace {
         };
     }
 }
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
     template <>
     constexpr EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_Support_::TunerNumberType_>
@@ -1093,7 +1093,7 @@ namespace {
         };
     }
 }
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
     // for ToString ()
     template <>

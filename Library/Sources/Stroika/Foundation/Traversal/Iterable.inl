@@ -79,10 +79,10 @@ namespace Stroika::Foundation::Traversal {
     inline auto Iterable<T>::_IRep::Find_equal_to (const ArgByValueType<T>& v, [[maybe_unused]] Execution::SequencePolicy seq) const
         -> Iterator<value_type>
     {
-        if constexpr (Configuration::IEqualToOptimizable<T>) {
+        if constexpr (Common::IEqualToOptimizable<T>) {
             /*
              *  This is the default implementation. It is only ever if there is a valid equal_to<> around, and
-             *  that valid equal_to<> is stateless (verified by Configuration::IEqualToOptimizable).
+             *  that valid equal_to<> is stateless (verified by Common::IEqualToOptimizable).
              */
             if constexpr (true) {
                 // simpler but not sure if faster; better though cuz by default leverages seq, which might
@@ -359,7 +359,7 @@ namespace Stroika::Foundation::Traversal {
     template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer)
     {
-        auto tallyOf = [&equalsComparer] (const auto& c, Configuration::ArgByValueType<T> item) -> size_t {
+        auto tallyOf = [&equalsComparer] (const auto& c, Common::ArgByValueType<T> item) -> size_t {
             size_t total = 0;
             for (const auto& ti : c) {
                 if (equalsComparer (ti, item)) {
@@ -489,7 +489,7 @@ namespace Stroika::Foundation::Traversal {
         else {
             Require (emptyResult.empty ());
             RESULT_CONTAINER result = forward<RESULT_CONTAINER> (emptyResult);
-            this->Apply ([&result, &includeIfTrue] (Configuration::ArgByValueType<T> arg) {
+            this->Apply ([&result, &includeIfTrue] (Common::ArgByValueType<T> arg) {
                 if (includeIfTrue (arg)) {
                     Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&result, arg);
                 }
@@ -617,7 +617,7 @@ namespace Stroika::Foundation::Traversal {
             if constexpr (not kOptionalExtractor_ and requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
                 c.reserve (this->size ());
             }
-            this->Apply ([&c, &elementMapper] (Configuration::ArgByValueType<T> arg) {
+            this->Apply ([&c, &elementMapper] (Common::ArgByValueType<T> arg) {
                 if constexpr (kOptionalExtractor_) {
                     if (auto oarg = elementMapper (arg)) {
                         Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&c, *oarg);
@@ -1122,15 +1122,15 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
-    inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
+    inline Iterator<T> Iterable<T>::Find (Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
     {
-        if constexpr (same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::IEqualToOptimizable<T>) {
+        if constexpr (same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Common::IEqualToOptimizable<T>) {
             // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
             _SafeReadRepAccessor<> accessor{this};
             return accessor._ConstGetRep ().Find_equal_to (v, seq);
         }
         else {
-            return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
+            return Find ([v, equalsComparer] (Common::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
         }
     }
     template <typename T>
@@ -1146,7 +1146,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
-    Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer,
+    Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer,
                                    [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {

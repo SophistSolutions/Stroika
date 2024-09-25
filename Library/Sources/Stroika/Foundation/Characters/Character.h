@@ -11,7 +11,7 @@
 #include <type_traits>
 
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 /**
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Characters {
      *      o   char32_t
      */
     template <typename T>
-    concept IBasicUNICODECodePoint = Configuration::IAnyOf<remove_cv_t<T>, char8_t, char16_t, char32_t>;
+    concept IBasicUNICODECodePoint = Common::IAnyOf<remove_cv_t<T>, char8_t, char16_t, char32_t>;
 
     /**
      *  \brief check if T is IBasicUNICODECodePoint or wchar_t (any basic code-point class)
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Characters {
      *  \note IStdBasicStringCompatibleCharacter<T> => IUNICODECanUnambiguouslyConvertFrom<T>
      */
     template <typename T>
-    concept IStdBasicStringCompatibleCharacter = Configuration::IAnyOf<T, char, char8_t, char16_t, char32_t, wchar_t>;
+    concept IStdBasicStringCompatibleCharacter = Common::IAnyOf<T, char, char8_t, char16_t, char32_t, wchar_t>;
 
     class Character;
 
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Characters {
      *  \see also IUNICODECanUnambiguouslyConvertTo
      */
     template <typename T>
-    concept IUNICODECanUnambiguouslyConvertFrom = IUNICODECodePoint<T> or Configuration::IAnyOf<remove_cv_t<T>, Character, ASCII, Latin1>;
+    concept IUNICODECanUnambiguouslyConvertFrom = IUNICODECodePoint<T> or Common::IAnyOf<remove_cv_t<T>, Character, ASCII, Latin1>;
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char8_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char16_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char32_t>);
@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Characters {
      *  \see also IUNICODECanUnambiguouslyConvertFrom
      */
     template <typename T>
-    concept IUNICODECanUnambiguouslyConvertTo = IUNICODECanUnambiguouslyConvertFrom<T> and not Configuration::IAnyOf<remove_cv_t<T>, ASCII, Latin1>;
+    concept IUNICODECanUnambiguouslyConvertTo = IUNICODECanUnambiguouslyConvertFrom<T> and not Common::IAnyOf<remove_cv_t<T>, ASCII, Latin1>;
     static_assert (IUNICODECanUnambiguouslyConvertTo<char8_t>);
     static_assert (IUNICODECanUnambiguouslyConvertTo<char16_t>);
     static_assert (IUNICODECanUnambiguouslyConvertTo<char32_t>);

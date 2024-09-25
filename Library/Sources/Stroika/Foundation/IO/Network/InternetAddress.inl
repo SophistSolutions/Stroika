@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Common/Endian.h"
 #include "Stroika/Foundation/Memory/Bits.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
@@ -294,8 +294,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         return kLowerBound;
         //return n.Offset (-1); // must fix InternetAddress::Offset to support signed offsets
     }
-    constexpr auto Default<IO::Network::InternetAddress>::Difference (Configuration::ArgByValueType<value_type> lhs,
-                                                                      Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType
+    constexpr auto Default<IO::Network::InternetAddress>::Difference (Common::ArgByValueType<value_type> lhs,
+                                                                      Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType
     {
         using IO::Network::InternetAddress;
         Require (lhs.GetAddressFamily () == InternetAddress::AddressFamily::V4);

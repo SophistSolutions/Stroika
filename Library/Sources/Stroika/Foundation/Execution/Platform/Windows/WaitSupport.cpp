@@ -9,7 +9,7 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Time/Realtime.h"

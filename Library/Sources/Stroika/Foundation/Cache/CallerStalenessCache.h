@@ -185,11 +185,10 @@ namespace Stroika::Foundation::Cache {
         /**
          *  This not only adds the association of KEY k to VALUE v, but updates the timestamp associated with k.
          */
-        nonvirtual void Add (Configuration::ArgByValueType<VALUE> v)
+        nonvirtual void Add (Common::ArgByValueType<VALUE> v)
             requires (not IsKeyedCache<KEY>);
         template <typename K = KEY>
-        nonvirtual void Add (Configuration::ArgByValueType<K> k, Configuration::ArgByValueType<VALUE> v,
-                             AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces)
+        nonvirtual void Add (Common::ArgByValueType<K> k, Common::ArgByValueType<VALUE> v, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces)
             requires (IsKeyedCache<K>);
 
         /**
@@ -210,7 +209,7 @@ namespace Stroika::Foundation::Cache {
         nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const
             requires (not IsKeyedCache<KEY>);
         template <typename K = KEY>
-        nonvirtual optional<VALUE> Lookup (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan) const
+        nonvirtual optional<VALUE> Lookup (Common::ArgByValueType<K> k, TimeStampType staleIfOlderThan) const
             requires (IsKeyedCache<K>);
 
     public:
@@ -221,10 +220,10 @@ namespace Stroika::Foundation::Cache {
         nonvirtual VALUE LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
             requires (not IsKeyedCache<KEY>);
         template <typename F, typename K = KEY>
-        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
+        nonvirtual VALUE LookupValue (Common::ArgByValueType<K> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
             requires (IsKeyedCache<K> and is_invocable_r_v<VALUE, F, K>);
         template <typename K = KEY>
-        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
+        nonvirtual VALUE LookupValue (Common::ArgByValueType<K> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
             requires (IsKeyedCache<K>);
 
     public:

@@ -11,8 +11,8 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -31,7 +31,7 @@
 
 namespace Stroika::Foundation::Execution {
 
-    using namespace Configuration;
+    using namespace Common;
 
     using Characters::String;
 
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Execution {
      *  (because this requires a call to setup a logger).
      *
      *  \note Future Note
-     *      Some future version MIGHT handle this through some static configuration mechanism,
+     *      Some future version MIGHT handle this through some static Common mechanism,
      *  which might then allow this (such as environment variables, linked variables etc).
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  Lower numbers are less interesting (debug) and higher numbers more important (higher priority).
          *
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          */
         enum class Priority : uint8_t {
             eDebug         = 0, // The message is debug info (not a good use of syslog - consider using DbgTrace)

@@ -19,7 +19,7 @@
 
 namespace Stroika::Foundation::Containers {
 
-    using Configuration::ArgByValueType;
+    using Common::ArgByValueType;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        SparseDataHyperRectangle (Configuration::ArgByValueType<T> defaultItem = {});
+        SparseDataHyperRectangle (Common::ArgByValueType<T> defaultItem = {});
         SparseDataHyperRectangle (const SparseDataHyperRectangle<T, INDEXES...>& src);
 
     protected:

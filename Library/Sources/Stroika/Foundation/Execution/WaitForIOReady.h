@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Execution {
             /**
              *  @todo consider adding more params - like out of band flags - but doesn't immediately seem helpful -- LGP 2017-04-16
              *
-             *  \note   Configuration::DefaultNames<> supported
+             *  \note   Common::DefaultNames<> supported
              */
             enum class TypeOfMonitor {
                 /**

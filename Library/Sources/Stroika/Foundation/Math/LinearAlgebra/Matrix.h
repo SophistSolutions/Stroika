@@ -42,8 +42,8 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
          */
         Matrix (const DimensionType& dimensions);
         Matrix (size_t rows, size_t columns);
-        Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue);
-        Matrix (size_t rows, size_t columns, Configuration::ArgByValueType<T> fillValue);
+        Matrix (const DimensionType& dimensions, Common::ArgByValueType<T> fillValue);
+        Matrix (size_t rows, size_t columns, Common::ArgByValueType<T> fillValue);
         Matrix (const DimensionType& dimensions, const function<T ()>& filler);
 
     public:

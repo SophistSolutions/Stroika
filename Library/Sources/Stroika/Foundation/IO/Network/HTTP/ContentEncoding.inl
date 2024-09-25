@@ -20,7 +20,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         : fRep_{forward<STRING_LIKE> (name)}
     {
     }
-    template <Configuration::IAnyOf<String, ContentEncoding::AtomType> T>
+    template <Common::IAnyOf<String, ContentEncoding::AtomType> T>
     inline T ContentEncoding::As () const
     {
         if constexpr (same_as<T, String>) {

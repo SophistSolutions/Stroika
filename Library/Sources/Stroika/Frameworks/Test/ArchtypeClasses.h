@@ -6,8 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
  *  This module needs a lot of work. Need a set of basic archetype classes for things that are not copyable, copyable, default constructible etc

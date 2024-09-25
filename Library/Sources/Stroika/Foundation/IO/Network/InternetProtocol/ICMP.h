@@ -8,8 +8,8 @@
 
 #include <cstdint>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Endian.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Memory/Common.h"
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
          *
          * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
          */
-        Stroika_Foundation_Configuration_STRUCT_PACKED (struct PacketHeader {
+        Stroika_Foundation_Common_STRUCT_PACKED (struct PacketHeader {
             ICMP_PacketTypes type; // ICMP packet type
             uint8_t          code; // Type sub code
             uint16_t         checksum;
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
             uint16_t         seq;
             uint32_t         timestamp; // not part of ICMP, but we need it
         });
-        static_assert (sizeof (PacketHeader) == 12, "Check Stroika_Foundation_Configuration_STRUCT_PACKED: ICMP::PacketHeader size wrong");
+        static_assert (sizeof (PacketHeader) == 12, "Check Stroika_Foundation_Common_STRUCT_PACKED: ICMP::PacketHeader size wrong");
 
         // Minimum ICMP packet size, in bytes
         constexpr size_t ICMP_MIN{8};

@@ -9,7 +9,7 @@
 #include <filesystem>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/IO/FileSystem/Disk.h"

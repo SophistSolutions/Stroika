@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #if qPlatform_Windows
-#include "Stroika/Foundation/Configuration/Platform/Windows/Registry.h"
+#include "Stroika/Foundation/Common/Platform/Windows/Registry.h"
 #endif
 #include "Stroika/Foundation/Debug/Trace.h"
 #if qPlatform_Windows
@@ -633,7 +633,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
             // On Windows, in registry, easiest way appears to be to enumerate ALL registry entries in HKCR that start with .,
             // and look for sub-field 'Content-type'
             //
-            using RegistryKey = Configuration::Platform::Windows::RegistryKey;
+            using RegistryKey = Common::Platform::Windows::RegistryKey;
             for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
                 String name = sk->GetFullPathOfKey ().Tokenize ({'\\'}).LastValue ();
                 if (name.StartsWith ('.')) {
@@ -661,7 +661,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
             return fContentType2FileSuffixCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> optional<FileSuffixType> {
-                if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (
+                if (auto fs = Common::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (
                         Characters::Format ("MIME\\Database\\Content Type\\{}\\Extension"_f, ct))) {
                     return fs.As<String> ();
                 }
@@ -674,7 +674,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
             // compute as needed and cache a few
             return fContentType2FileSuffixesCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> Containers::Set<FileSuffixType> {
                 Containers::Set<FileSuffixType> result;
-                using Configuration::Platform::Windows::RegistryKey;
+                using Common::Platform::Windows::RegistryKey;
                 for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
                     String name = sk->GetFullPathOfKey ().Tokenize ({'\\'}).LastValue ();
                     if (name.StartsWith ("."_k)) {
@@ -701,9 +701,8 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         {
             if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
                 return fFileSuffix2PrettyNameCache_.LookupValue (*fileSuffix, [] (const String& suffix) -> optional<String> {
-                    if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (suffix + "\\"_k)) {
-                        if (auto prettyName =
-                                Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + "\\"_k)) {
+                    if (auto fileTypeID = Common::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (suffix + "\\"_k)) {
+                        if (auto prettyName = Common::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + "\\"_k)) {
                             return prettyName.As<String> ();
                         }
                     }
@@ -717,7 +716,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
             Require (fileSuffix[0] == '.');
             return fSuffix2MediaTypeCache_.LookupValue (fileSuffix, [] (const FileSuffixType& fileSuffix) -> optional<InternetMediaType> {
                 using Characters::Format;
-                using Configuration::Platform::Windows::RegistryKey;
+                using Common::Platform::Windows::RegistryKey;
                 // only do registry lookup if needed, since (probably) more costly than local map lookup
                 if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format ("{}\\Content Type"_f, fileSuffix))) {
                     InternetMediaType mediaType{oct.As<String> ()};

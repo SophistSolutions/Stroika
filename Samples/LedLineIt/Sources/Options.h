@@ -73,10 +73,10 @@ public:
  */
 
 //NB CANNOT CHANGE VALUES LIGHTLY - WRITTEN TO config files
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Options::SyntaxColoringOption> DefaultNames<Options::SyntaxColoringOption>::k{
-        Configuration::EnumNames<Options::SyntaxColoringOption>::BasicArrayInitializer{{
+        Common::EnumNames<Options::SyntaxColoringOption>::BasicArrayInitializer{{
             {Options::SyntaxColoringOption::eSyntaxColoringNone, L"None"},
             {Options::SyntaxColoringOption::eSyntaxColoringCPlusPlus, L"C++"},
             {Options::SyntaxColoringOption::eSyntaxColoringVB, L"Visual-Basic"},

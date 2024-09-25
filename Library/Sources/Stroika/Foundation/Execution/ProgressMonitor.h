@@ -9,7 +9,7 @@
 #include <mutex>
 #include <string>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Execution/Function.h"

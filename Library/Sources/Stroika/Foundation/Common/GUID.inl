@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Common {
             if constexpr (same_as<STRISH_TYPE, Characters::String>) {
                 return src.AsASCII ();
             }
-            if constexpr (Configuration::IAnyOf<STRISH_TYPE, const char*, string_view, string>) {
+            if constexpr (IAnyOf<STRISH_TYPE, const char*, string_view, string>) {
                 return forward<STRISH_TYPE> (src);
             }
             return Characters::String{src}.AsASCII ();
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Common {
     {
         return reinterpret_cast<const uint8_t*> (this);
     }
-    template <Configuration::IAnyOf<Characters::String, std::string, Memory::BLOB, array<byte, 16>, array<uint8_t, 16>> T>
+    template <IAnyOf<Characters::String, std::string, Memory::BLOB, array<byte, 16>, array<uint8_t, 16>> T>
     inline T Common::GUID::As () const
     {
         if constexpr (same_as<T, Characters::String>) {

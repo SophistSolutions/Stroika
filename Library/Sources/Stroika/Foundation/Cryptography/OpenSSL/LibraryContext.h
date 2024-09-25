@@ -14,8 +14,8 @@
 #endif
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Association.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"

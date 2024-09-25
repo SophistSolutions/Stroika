@@ -8,7 +8,7 @@
 
 #include <functional>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 namespace Stroika::Foundation::Common {
 

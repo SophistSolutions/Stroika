@@ -10,7 +10,7 @@
 #include <span>
 #include <thread>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Debug {
         {
         or some such
             try {
-                Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage (fmt.get (), Configuration::StdCompat::make_wformat_args (args...));
+                Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage (fmt.get (), Common::StdCompat::make_wformat_args (args...));
             }
             catch (...) {
             }

@@ -12,7 +12,7 @@
 #include <optional>
 #include <string>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 
 /**

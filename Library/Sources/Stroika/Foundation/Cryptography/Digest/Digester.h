@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/Algorithm.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          EXPECT_TRUE (h2 == 215);
      *          std::array<byte, 40> h3 = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
      *          EXPECT_TRUE (h3[0] == 215_b and h3[1] == 66_b and h3[39] == 0_b);
-     *          if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
+     *          if (Common::GetEndianness () == Common::Endian::eX86) {
      *              EXPECT_TRUE ((ComputeDigest<Digest::Algorithm::SuperFastHash, string>(value2Hash) == "0x2512011991"));
      *          }
      *      \endcode
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          auto                 digesterWithResult_array40 = Digester<Algorithm::SuperFastHash, std::array<byte, 40>>{};
      *          std::array<byte, 40> h3                         = digesterWithResult_array40 (value2Hash);
      *          EXPECT_TRUE (h3[0] == byte{215} and h3[1] == byte{66} and h3[39] == byte{0});
-     *          if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
+     *          if (Common::GetEndianness () == Common::Endian::eX86) {
      *              EXPECT_TRUE ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
      *          }
      *      \endcode

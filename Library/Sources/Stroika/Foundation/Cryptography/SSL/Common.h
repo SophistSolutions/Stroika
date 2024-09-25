@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /*
  * TODO:

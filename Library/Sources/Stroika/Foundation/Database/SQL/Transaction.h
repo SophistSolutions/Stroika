@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Database::SQL {
 
     public:
         /**
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          */
         enum class Disposition {
             eNone,

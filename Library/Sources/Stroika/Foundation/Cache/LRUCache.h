@@ -11,9 +11,9 @@
 
 #include "Stroika/Foundation/Cache/Statistics.h"
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
@@ -188,8 +188,8 @@ namespace Stroika::Foundation::Cache {
          *  Clear all, or just the given elements from the cache.
          */
         nonvirtual void clear ();
-        nonvirtual void clear (typename Configuration::ArgByValueType<KEY> key);
-        nonvirtual void clear (function<bool (typename Configuration::ArgByValueType<KEY>)> clearPredicate);
+        nonvirtual void clear (typename Common::ArgByValueType<KEY> key);
+        nonvirtual void clear (function<bool (typename Common::ArgByValueType<KEY>)> clearPredicate);
 
     public:
         /**
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Cache {
          *
          *  @see LookupValue ()
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key);
 
     public:
         /**
@@ -240,16 +240,15 @@ namespace Stroika::Foundation::Cache {
          *          To negatively cache, be sure you use an optional<X> for the VALUE type, and then you can wrap
          *          the LookupValue function with try/catch and on failure, cache nullopt.
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
-                                      const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& valueFetcher);
 
     public:
         /**
          *  Add the given value to the cache. This is rarely directly used. 
          *  Typically you Lookup with something like LookupValue() which implicitly does the adds.
          */
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> value);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key)
             requires (same_as<KEY, VALUE>);
 
     public:
@@ -286,7 +285,7 @@ namespace Stroika::Foundation::Cache {
 
     private:
         // invoke selected hash function, and return number 0..fHashtableSize_
-        nonvirtual size_t H_ (typename Configuration::ArgByValueType<KEY> k) const;
+        nonvirtual size_t H_ (typename Common::ArgByValueType<KEY> k) const;
 
     private:
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
@@ -310,7 +309,7 @@ namespace Stroika::Foundation::Cache {
          *  up element is first, and because of this re-ordering, its illegal to do a Lookup while
          *  a @'LRUCache_<ELEMENT>::CacheIterator_' exists for this LRUCache_.</p>
          */
-        nonvirtual optional<KeyValuePair_>* AddNew_ (typename Configuration::ArgByValueType<KeyType> item);
+        nonvirtual optional<KeyValuePair_>* AddNew_ (typename Common::ArgByValueType<KeyType> item);
 
         /*
          * Check and see if the given element is in the cache. Return that element if its there, and nullptr otherwise.
@@ -318,7 +317,7 @@ namespace Stroika::Foundation::Cache {
          * of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator_' exists
          *       for this LRUCache_.
          */
-        nonvirtual optional<KeyValuePair_>* LookupElement_ (typename Configuration::ArgByValueType<KeyType> item);
+        nonvirtual optional<KeyValuePair_>* LookupElement_ (typename Common::ArgByValueType<KeyType> item);
 
         /*
          */

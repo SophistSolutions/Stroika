@@ -101,7 +101,7 @@ void Stroika::Samples::SQL::ComputerNetworksModel (const std::function<Connectio
      */
     Connection::Ptr conn = connectionFactory ();
 
-    constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+    constexpr Common::Version kCurrentVersion_ = Common::Version{1, 0, Common::VersionStage::Alpha, 0};
     ORM::ProvisionForVersion (conn, kCurrentVersion_, Traversal::Iterable<ORM::Schema::Table>{kDeviceTableSchema_});
 
     using Model::Device;

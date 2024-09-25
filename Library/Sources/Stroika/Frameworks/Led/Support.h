@@ -26,8 +26,8 @@
 #endif
 
 #include "Stroika/Foundation/Characters/SDKString.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Endian.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 #include "Stroika/Foundation/Execution/Throw.h"

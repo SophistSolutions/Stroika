@@ -9,8 +9,8 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/IO/Network/HTTP/KeepAlive.h"
 #include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "Stroika/Foundation/IO/Network/SocketStream.h"

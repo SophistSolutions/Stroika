@@ -52,7 +52,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          */
-        template <Configuration::IAnyOf<String, ContentEncoding::AtomType> T>
+        template <Common::IAnyOf<String, ContentEncoding::AtomType> T>
         nonvirtual T As () const;
 
     public:

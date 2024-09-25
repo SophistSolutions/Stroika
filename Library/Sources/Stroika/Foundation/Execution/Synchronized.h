@@ -13,9 +13,9 @@
 #include <shared_mutex>
 #include <type_traits>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Empty.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Empty.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/SpinLock.h"
@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Execution {
      * 
      */
     template <typename T, typename TRAITS = Synchronized_Traits<>>
-    class Synchronized : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
+    class Synchronized : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Common::Empty> {
     public:
         using element_type = T;
 
@@ -587,7 +587,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     class Synchronized<T, TRAITS>::ReadableReference
-        : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
+        : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Common::Empty> {
     protected:
         /**
          *  If specified, either subclass, or external lock used for lifetime of this object. So this class

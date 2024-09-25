@@ -116,15 +116,14 @@ namespace Stroika::Foundation::Cache {
         /**
          * @see TimedCache::Lookup
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
 
     public:
         /**
          * @see TimedCache::LookupValue
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
-                                      const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller,
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
                                       LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed,
                                       PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
@@ -132,16 +131,15 @@ namespace Stroika::Foundation::Cache {
         /**
          * @see TimedCache::Add
          */
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
                              TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
-                             Time::Duration freshAsOf);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::Duration freshAsOf);
 
     public:
         /**
           * @see TimedCache::Remove
          */
-        nonvirtual void Remove (typename Configuration::ArgByValueType<KEY> key);
+        nonvirtual void Remove (typename Common::ArgByValueType<KEY> key);
 
     public:
         /**

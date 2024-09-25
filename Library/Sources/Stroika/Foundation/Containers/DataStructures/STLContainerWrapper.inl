@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
     }
     template <typename STL_CONTAINER_OF_T>
-    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::contains (Configuration::ArgByValueType<value_type> item) const
+    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::contains (Common::ArgByValueType<value_type> item) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return this->find (item) != this->end ();

@@ -103,7 +103,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
-        if (strong_ordering cmp = Configuration::StdCompat::compare_three_way{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ());
+        if (strong_ordering cmp = Common::StdCompat::compare_three_way{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ());
             cmp != strong_ordering::equal) {
             return cmp;
         }
@@ -207,13 +207,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
-        if (auto cmp = Configuration::StdCompat::compare_three_way{}(lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {
+        if (auto cmp = Common::StdCompat::compare_three_way{}(lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        if (auto cmp = Configuration::StdCompat::compare_three_way{}(lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) {
+        if (auto cmp = Common::StdCompat::compare_three_way{}(lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        return Configuration::StdCompat::compare_three_way{}(lhs.GetPort (), rhs.GetPort ());
+        return Common::StdCompat::compare_three_way{}(lhs.GetPort (), rhs.GetPort ());
     }
 
     /*

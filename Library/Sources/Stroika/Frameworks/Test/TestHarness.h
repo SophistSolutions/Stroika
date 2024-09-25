@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 namespace Stroika::Frameworks::Test {
 

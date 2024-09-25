@@ -12,8 +12,8 @@
 #include <mutex>
 #include <optional>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 
 /**
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Common {
          *  You can assign a value of the underlying type, but we do NOT support operator=(WriteOnlyProperty) because
          *  we cannot generically read from a write-only property to copy its value.
          */
-        nonvirtual WriteOnlyProperty& operator= (Configuration::ArgByValueType<T> value);
+        nonvirtual WriteOnlyProperty& operator= (ArgByValueType<T> value);
         nonvirtual WriteOnlyProperty& operator= (const WriteOnlyProperty&)  = delete;
         nonvirtual WriteOnlyProperty& operator= (const WriteOnlyProperty&&) = delete;
 
@@ -233,16 +233,16 @@ namespace Stroika::Foundation::Common {
         /**
          *  Alternate syntax for setting the property value.
          */
-        nonvirtual void Set (Configuration::ArgByValueType<T> value);
+        nonvirtual void Set (ArgByValueType<T> value);
 
     public:
         /**
          *  Alternate syntax for setting the property value.
          */
-        nonvirtual void operator() (Configuration::ArgByValueType<T> value);
+        nonvirtual void operator() (ArgByValueType<T> value);
 
     private:
-        const function<void (WriteOnlyProperty*, Configuration::ArgByValueType<T>)> fSetter_;
+        const function<void (WriteOnlyProperty*, ArgByValueType<T>)> fSetter_;
     };
 
     /**
@@ -422,7 +422,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        nonvirtual Property& operator= (Configuration::ArgByValueType<decayed_value_type> value);
+        nonvirtual Property& operator= (ArgByValueType<decayed_value_type> value);
         nonvirtual Property& operator= (const Property& value);
         nonvirtual Property& operator= (const Property&&) = delete;
 
@@ -635,7 +635,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        nonvirtual ExtendableProperty& operator= (Configuration::ArgByValueType<T> value);
+        nonvirtual ExtendableProperty& operator= (ArgByValueType<T> value);
         nonvirtual ExtendableProperty& operator= (const ExtendableProperty& value);
         nonvirtual ExtendableProperty& operator= (const ExtendableProperty&&) = delete;
 

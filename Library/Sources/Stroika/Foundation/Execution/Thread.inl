@@ -3,7 +3,7 @@
  */
 #include <atomic>
 
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 
@@ -218,13 +218,13 @@ namespace Stroika::Foundation::Execution {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock2{rhs.fThisAssertExternallySynchronized_};
-        return Foundation::Configuration::StdCompat::compare_three_way{}(fRep_, rhs.fRep_);
+        return Foundation::Common::StdCompat::compare_three_way{}(fRep_, rhs.fRep_);
     }
     inline strong_ordering Thread::Ptr::operator<=> (nullptr_t) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-        return Foundation::Configuration::StdCompat::compare_three_way{}(fRep_, nullptr);
+        return Foundation::Common::StdCompat::compare_three_way{}(fRep_, nullptr);
 #else
         return fRep_ <=> nullptr;
 #endif
@@ -405,7 +405,7 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k{{{
         {Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running"},

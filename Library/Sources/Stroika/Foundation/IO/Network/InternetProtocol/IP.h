@@ -10,8 +10,8 @@
 #include <netinet/ip.h>
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Endian.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
 /**
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
      *  \par Example Usage
      *      \code
      *          if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
-     *              fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+     *              fSocket_.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, bindFlags);
      *          }
      *      \endcode
      */
@@ -70,29 +70,29 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
     namespace V4 {
 
         /**
-     * The IPv4 packet header
-     *
-     * @see https://tools.ietf.org/html/rfc760
-     *
-     * copied field names to match http://lxr.free-electrons.com/source/include/uapi/linux/ip.h
-     */
+         * The IPv4 packet header
+         *
+         * @see https://tools.ietf.org/html/rfc760
+         *
+         * copied field names to match http://lxr.free-electrons.com/source/include/uapi/linux/ip.h
+         */
 #if qPlatform_Linux
         using PacketHeader = ::iphdr;
 #else
-        Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le_ {
+        Stroika_Foundation_Common_STRUCT_PACKED (struct iphdr_le_ {
             uint8_t ihl : 4,   // Length of the header in dwords
                 version : 4;   // Version of IP
             uint8_t  tos;      // Type of service
             uint16_t tot_len;  // Length of the packet in dwords
             uint16_t id;       // unique identifier
-            uint16_t frag_off; // Flags and Frament Offset
+            uint16_t frag_off; // Flags and Fragment Offset
             uint8_t  ttl;      // Time to live
             uint8_t  protocol; // Protocol number (TCP, UDP etc)
             uint16_t check;    // IP checksum
             uint32_t saddr;
             uint32_t daddr;
         });
-        Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_be_ {
+        Stroika_Foundation_Common_STRUCT_PACKED (struct iphdr_be_ {
             uint8_t version : 4, // Version of IP
                 ihl : 4;         // Length of the header in dwords
             uint8_t  tos;        // Type of service
@@ -105,10 +105,10 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
             uint32_t saddr;
             uint32_t daddr;
         });
-        using PacketHeader = conditional_t<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be_, iphdr_le_>;
+        using PacketHeader = conditional_t<Common::GetEndianness () == Common::Endian::eBig, iphdr_be_, iphdr_le_>;
 #endif
         static_assert (sizeof (PacketHeader) == 20,
-                       "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
+                       "Check Stroika_Foundation_Common_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
     }
 
     /**

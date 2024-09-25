@@ -326,7 +326,7 @@ auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, const
 }
 #endif
 
-auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, wstring_view format, Configuration::StdCompat::wformat_args&& args) noexcept
+auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, wstring_view format, Common::StdCompat::wformat_args&& args) noexcept
     -> TraceLastBufferedWriteTokenType
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
@@ -334,7 +334,7 @@ auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, wstri
     }
     Thread::SuppressInterruptionInContext suppressAborts;
     try {
-        wstring tmp = Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{format}, args);
+        wstring tmp = Common::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{format}, args);
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
@@ -347,7 +347,7 @@ auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, wstri
     }
 }
 
-void Debug::Private_::Emitter::EmitTraceMessage_ (wstring_view format, Configuration::StdCompat::wformat_args&& args) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage_ (wstring_view format, Common::StdCompat::wformat_args&& args) noexcept
 {
     try {
         EmitTraceMessage_ (vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{format}, args));
@@ -355,7 +355,7 @@ void Debug::Private_::Emitter::EmitTraceMessage_ (wstring_view format, Configura
     catch (...) {
     }
 }
-void Debug::Private_::Emitter::EmitTraceMessage_ (string_view format, Configuration::StdCompat::format_args&& args) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage_ (string_view format, Common::StdCompat::format_args&& args) noexcept
 {
     try {
         Debug::Private_::Emitter::EmitTraceMessage_ (
@@ -645,13 +645,13 @@ TraceContextBumper::TraceContextBumper (CHAR_ARRAY_T mainName, CHAR_ARRAY_T extr
     if (extraTextAtTop.empty () or extraTextAtTop[0] == '\0') {
         auto mainNameData = mainName.data ();
         fLastWriteToken_  = Private_::Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (kEOL<wchar_t>), L"<{}> {{"sv,
-                                                                         Configuration::StdCompat::make_wformat_args (mainNameData));
+                                                                         Common::StdCompat::make_wformat_args (mainNameData));
     }
     else {
         auto mainNameData       = mainName.data ();
         auto extraTextAtTopData = extraTextAtTop.data ();
         fLastWriteToken_        = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (kEOL<wchar_t>), L"<{} ({})> {{"sv,
-                                                                     Configuration::StdCompat::make_wformat_args (mainNameData, extraTextAtTopData));
+                                                                     Common::StdCompat::make_wformat_args (mainNameData, extraTextAtTopData));
     }
     size_t len = char_traits<wchar_t>::length (mainName.data ());
     char_traits<wchar_t>::copy (fSavedContextName_.data (), mainName.data (), len);
@@ -672,7 +672,7 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
         va_start (argsList, extraFmt);
         wstring tmpFmtV  = Characters::CString::FormatV (extraFmt, argsList);
         fLastWriteToken_ = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (kEOL<wchar_t>), L"<{} ({})> {{"sv,
-                                                              Configuration::StdCompat::make_wformat_args (contextName, tmpFmtV));
+                                                              Common::StdCompat::make_wformat_args (contextName, tmpFmtV));
         va_end (argsList);
         size_t len = min (kMaxContextNameLen_ - 1, char_traits<wchar_t>::length (contextName));
         char_traits<wchar_t>::copy (fSavedContextName_.data (), contextName, len);

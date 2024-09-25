@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    template <Configuration::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
+    template <Common::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindLink_ (const KEYISH_T& key) const -> Link_*
     {
         using Common::ToInt;

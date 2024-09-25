@@ -1,7 +1,7 @@
 [01]	Foundation::Caching
 [02]	Foundation::Characters
 [03]	Foundation::Common
-[04]	Foundation::Configuration
+[04]	Foundation::Common
 [05]	Foundation::Containers::DataStructures::Array
 [06]	Foundation::Containers::DataStructures::LinkedList
 [07]	Foundation::Containers::DataStructures::LockFree

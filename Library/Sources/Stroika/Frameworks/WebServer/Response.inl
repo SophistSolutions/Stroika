@@ -12,7 +12,7 @@ namespace Stroika::Frameworks::WebServer {
     template <Characters::IConvertibleToString T>
     inline void Response::write (T&& s)
     {
-        if constexpr (Configuration::IAnyOf<T, String&&, String>) {
+        if constexpr (Common::IAnyOf<T, String&&, String>) {
             write (static_cast<const String&> (s));
         }
         else {
@@ -34,7 +34,7 @@ namespace Stroika::Frameworks::WebServer {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{{{
         {Frameworks::WebServer::Response::State::ePreparingHeaders, L"Preparing-Headers"},

@@ -6,7 +6,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Common/Endian.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/IO/Network/Listener.h"
 #include "Stroika/Foundation/IO/Network/Socket.h"
@@ -93,7 +93,7 @@ namespace {
      */
     uint16_t FromNetwork_ (uint16_t v)
     {
-        return Configuration::EndianConverter (v, Configuration::Endian::eBig, Configuration::GetEndianness ());
+        return Common::EndianConverter (v, Common::Endian::eBig, Common::GetEndianness ());
     }
     MBAPHeaderIsh_ FromNetwork_ (const MBAPHeaderIsh_& v)
     {
@@ -101,7 +101,7 @@ namespace {
     }
     uint16_t ToNetwork_ (uint16_t v)
     {
-        return Configuration::EndianConverter (v, Configuration::GetEndianness (), Configuration::Endian::eBig);
+        return Common::EndianConverter (v, Common::GetEndianness (), Common::Endian::eBig);
     }
     MBAPHeaderIsh_ ToNetwork_ (const MBAPHeaderIsh_& v)
     {

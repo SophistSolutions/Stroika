@@ -9,7 +9,7 @@
 #include <mutex>
 #include <vector>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 

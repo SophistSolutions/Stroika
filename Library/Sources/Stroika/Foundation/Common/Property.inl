@@ -68,17 +68,17 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T>
-    inline void WriteOnlyProperty<T>::Set (Configuration::ArgByValueType<T> value)
+    inline void WriteOnlyProperty<T>::Set (ArgByValueType<T> value)
     {
         fSetter_ (this, value);
     }
     template <typename T>
-    inline void WriteOnlyProperty<T>::operator() (Configuration::ArgByValueType<T> value)
+    inline void WriteOnlyProperty<T>::operator() (ArgByValueType<T> value)
     {
         Set (value);
     }
     template <typename T>
-    inline auto WriteOnlyProperty<T>::operator= (Configuration::ArgByValueType<T> value) -> WriteOnlyProperty&
+    inline auto WriteOnlyProperty<T>::operator= (ArgByValueType<T> value) -> WriteOnlyProperty&
     {
         Set (value);
         return *this;
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T>
-    inline auto Property<T>::operator= (Configuration::ArgByValueType<decayed_value_type> value) -> Property&
+    inline auto Property<T>::operator= (ArgByValueType<decayed_value_type> value) -> Property&
     {
         WriteOnlyProperty<decayed_value_type>::operator= (value);
         return *this;
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T>
-    inline auto ExtendableProperty<T>::operator= (Configuration::ArgByValueType<T> value) -> ExtendableProperty&
+    inline auto ExtendableProperty<T>::operator= (ArgByValueType<T> value) -> ExtendableProperty&
     {
         Property<T>::operator= (value);
         return *this;

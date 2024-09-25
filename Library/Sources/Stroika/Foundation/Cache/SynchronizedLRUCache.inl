@@ -70,21 +70,21 @@ namespace Stroika::Foundation::Cache {
         inherited::clear ();
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline void SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (typename Configuration::ArgByValueType<KEY> key)
+    inline void SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (typename Common::ArgByValueType<KEY> key)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::clear (key);
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline void SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (
-        function<bool (typename Configuration::ArgByValueType<KEY>)> clearPredicate)
+        function<bool (typename Common::ArgByValueType<KEY>)> clearPredicate)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::clear (clearPredicate);
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline optional<VALUE>
-    SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Lookup (typename Configuration::ArgByValueType<KEY> key) const
+    SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Lookup (typename Common::ArgByValueType<KEY> key) const
     {
         // Avoid issue with Lookup updating the stats object - if there is one - with whichKindOfLocker
         using whichKindOfLocker =
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     VALUE SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LookupValue (
-        typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher)
+        typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& valueFetcher)
     {
         /*
          *  The main reason for this class, is this logic: unlocking the shared lock and then fetching the new value (with a write lock).
@@ -125,9 +125,8 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline void
-    SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Add (typename Configuration::ArgByValueType<KEY> key,
-                                                                                               typename Configuration::ArgByValueType<VALUE> value)
+    inline void SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Add (typename Common::ArgByValueType<KEY> key,
+                                                                                                           typename Common::ArgByValueType<VALUE> value)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::Add (key, value);

@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/DataExchange/Variant/Reader.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/DataExchange/XML/SerializationConfiguration.h"

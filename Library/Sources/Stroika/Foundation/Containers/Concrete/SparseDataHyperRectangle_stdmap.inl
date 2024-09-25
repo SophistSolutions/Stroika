@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = typename DataHyperRectangle<T, INDEXES...>::_IRep;
 
     public:
-        Rep_ (Configuration::ArgByValueType<T> defaultItem)
+        Rep_ (Common::ArgByValueType<T> defaultItem)
             : fDefaultValue_{defaultItem}
         {
         }
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return fDefaultValue_;
         }
-        virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
+        virtual void SetAt (INDEXES... indexes, Common::ArgByValueType<T> v) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (v == fDefaultValue_) {
@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename... INDEXES>
-    SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem)
+    SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (Common::ArgByValueType<T> defaultItem)
         : inherited{Memory::MakeSharedPtr<Rep_> (defaultItem)}
     {
         AssertRepValidType_ ();

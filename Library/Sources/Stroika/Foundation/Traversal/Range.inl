@@ -14,9 +14,9 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename OPENNESS, typename DIFF_TYPE>
-    inline constexpr auto
-    RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs,
-                                                                                        Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType
+    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (Common::ArgByValueType<value_type> lhs,
+                                                                                                              Common::ArgByValueType<value_type> rhs)
+        -> SignedDifferenceType
     {
         if constexpr (is_enum_v<T> or is_convertible_v<T, SignedDifferenceType>) {
             return static_cast<SignedDifferenceType> (rhs) - static_cast<SignedDifferenceType> (lhs);
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename TRAITS>
-    constexpr Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
+    constexpr Range<T, TRAITS>::Range (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end)
         : Range{begin, end, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
     {
     }
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename TRAITS>
-    constexpr Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
+    constexpr Range<T, TRAITS>::Range (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
         : fBegin_{begin}
         , fEnd_{end}
         , fBeginOpenness_{lhsOpen}
@@ -111,13 +111,13 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename TRAITS>
-    constexpr Range<T, TRAITS> Range<T, TRAITS>::Ball (Configuration::ArgByValueType<T> center,
-                                                       Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen, Openness rhsOpen)
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::Ball (Common::ArgByValueType<T> center, Common::ArgByValueType<UnsignedDifferenceType> radius,
+                                                       Openness lhsOpen, Openness rhsOpen)
     {
         return Range{center - radius, center + radius, lhsOpen, rhsOpen};
     }
     template <typename T, typename TRAITS>
-    constexpr Range<T, TRAITS> Range<T, TRAITS>::ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::ContainedRange (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end)
     {
         // note the case of begin==end is depends on openness, and already handled in normal CTOR - just avoid assert for having begin/end reversed
         return begin > end ? Range{} : Range{begin, end};
@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Traversal {
         return v;
     }
     template <typename T, typename TRAITS>
-    constexpr bool Range<T, TRAITS>::Contains (Configuration::ArgByValueType<T> r) const
+    constexpr bool Range<T, TRAITS>::Contains (Common::ArgByValueType<T> r) const
     {
         if (empty ()) {
             return false;
@@ -365,7 +365,7 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T, typename TRAITS>
-    constexpr auto Range<T, TRAITS>::Extend (Configuration::ArgByValueType<T> value) const -> Range
+    constexpr auto Range<T, TRAITS>::Extend (Common::ArgByValueType<T> value) const -> Range
     {
         if (empty ()) {
             return Range{value, value, Openness::eClosed, Openness::eClosed};
@@ -526,7 +526,7 @@ namespace Stroika::Foundation::Traversal {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k{{{
         {Traversal::Openness::eOpen, L"Open"},

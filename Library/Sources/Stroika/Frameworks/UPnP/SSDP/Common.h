@@ -7,8 +7,8 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/SystemConfiguration.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
 /**
@@ -37,10 +37,10 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     /**
      *  MakeServerHeaderValue
      */
-    String MakeServerHeaderValue (const String& useProductTokenWithVersion,
-                                  const String& usePlatformTokenAndVersion =
-                                      Foundation::Configuration::GetSystemConfiguration_ActualOperatingSystem ().fRFC1945CompatProductTokenWithVersion,
-                                  const String& useUPNPVersion = "UPnP/1.0"sv);
+    String
+    MakeServerHeaderValue (const String& useProductTokenWithVersion,
+                           const String& usePlatformTokenAndVersion = Foundation::Common::GetSystemConfiguration_ActualOperatingSystem ().fRFC1945CompatProductTokenWithVersion,
+                           const String& useUPNPVersion = "UPnP/1.0"sv);
 
 }
 

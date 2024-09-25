@@ -16,7 +16,7 @@ namespace Stroika::Foundation::DataExchange::JSON {
         : PointerType{static_cast<const String&> (String{s})}
     {
     }
-    template <Configuration::IAnyOf<String> T>
+    template <Common::IAnyOf<String> T>
     inline T PointerType::As () const
     {
         if constexpr (same_as<T, String>) {

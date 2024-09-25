@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Execution::SignalHandler::Type> DefaultNames<Execution::SignalHandler::Type>::k{{{
         {Execution::SignalHandler::Type::eDirect, L"Direct"},

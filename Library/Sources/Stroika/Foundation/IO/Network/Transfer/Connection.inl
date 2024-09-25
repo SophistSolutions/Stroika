@@ -80,10 +80,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
 /*
  ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
+ *********************************** Common::DefaultNames ***********************
  ********************************************************************************
  */
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
 
     template <>
     constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>

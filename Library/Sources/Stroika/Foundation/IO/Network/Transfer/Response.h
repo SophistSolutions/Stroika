@@ -8,7 +8,7 @@
 
 #include "Stroika/Foundation/Characters/Charset.h"
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
             /**
              *
-             *  \note   Configuration::DefaultNames<> supported
+             *  \note   Common::DefaultNames<> supported
              */
             enum class ValidationStatus : uint8_t {
                 eNoSSL,

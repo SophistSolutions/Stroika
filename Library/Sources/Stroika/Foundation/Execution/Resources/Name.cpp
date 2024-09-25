@@ -8,7 +8,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/SDKChar.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
 #include "Name.h"

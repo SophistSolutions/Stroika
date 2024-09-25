@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Common/Endian.h"
 
 namespace Stroika::Frameworks::Led {
 
@@ -59,11 +59,11 @@ namespace Stroika::Frameworks::Led {
 
     inline unsigned short Led_ByteSwapFromMac (unsigned short src)
     {
-        return Configuration::EndianConverter (src, Configuration::Endian::eBig, Configuration::GetEndianness ());
+        return Common::EndianConverter (src, Common::Endian::eBig, Common::GetEndianness ());
     }
     inline short Led_ByteSwapFromMac (short src)
     {
-        return Configuration::EndianConverter (src, Configuration::Endian::eBig, Configuration::GetEndianness ());
+        return Common::EndianConverter (src, Common::Endian::eBig, Common::GetEndianness ());
     }
 
     /*
@@ -73,19 +73,19 @@ namespace Stroika::Frameworks::Led {
      */
     inline unsigned short Led_ByteSwapFromWindows (unsigned short src)
     {
-        return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
+        return Common::EndianConverter (src, Common::Endian::eLittle, Common::GetEndianness ());
     }
     inline short Led_ByteSwapFromWindows (short src)
     {
-        return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
+        return Common::EndianConverter (src, Common::Endian::eLittle, Common::GetEndianness ());
     }
     inline unsigned long Led_ByteSwapFromWindows (unsigned long src)
     {
-        return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
+        return Common::EndianConverter (src, Common::Endian::eLittle, Common::GetEndianness ());
     }
     inline long Led_ByteSwapFromWindows (long src)
     {
-        return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
+        return Common::EndianConverter (src, Common::Endian::eLittle, Common::GetEndianness ());
     }
 
     inline void UInt16ToBuf (uint16_t u, uint16_t* realBuf)

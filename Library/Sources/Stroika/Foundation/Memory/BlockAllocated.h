@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Empty.h"
+#include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Memory/BlockAllocator.h"
 
 /**
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T, bool andTrueCheck = true>
     using UseBlockAllocationIfAppropriate =
-        conditional_t<qStroika_Foundation_Memory_PreferBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Configuration::Empty>;
+        conditional_t<qStroika_Foundation_Memory_PreferBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Common::Empty>;
 
     /**
      *  \brief same idea as UseBlockAllocationIfAppropriate, except always 'inherits' from BASE_REP, so hides any existing static operator new/delete

@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Common {
@@ -29,8 +30,7 @@ namespace Stroika::Foundation::Common {
     template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
     {
-        static_assert (
-            IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
+        static_assert (IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
@@ -43,8 +43,7 @@ namespace Stroika::Foundation::Common {
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>
     DeclareInOrderComparer (FUNCTOR&& f)
     {
-        static_assert (
-            IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
+        static_assert (IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
@@ -305,10 +304,10 @@ namespace Stroika::Foundation::Common {
     template <typename FUNCTOR>
     [[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
     {
-        if constexpr (Configuration::FunctionTraits<FUNCTOR>::kArity == 2) {
-            using TRAITS = typename Configuration::FunctionTraits<FUNCTOR>;
+        if constexpr (FunctionTraits<FUNCTOR>::kArity == 2) {
+            using TRAITS = FunctionTraits<FUNCTOR>;
             return same_as<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
-                   IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::FunctionTraits<FUNCTOR>::template arg<0>::type> ();
+                   IsPotentiallyComparerRelation<FUNCTOR, typename FunctionTraits<FUNCTOR>::template arg<0>::type> ();
         }
         else {
             return false;

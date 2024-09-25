@@ -1,15 +1,15 @@
-StroikaRoot:=$(abspath ../../../../../../)/
+StroikaRoot=$(abspath ../../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Configuration/Platform/
-ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Configuration/Platform/
-
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Common/Platform/Windows/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Common/Platform/Windows/
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Foundation.pdb)
@@ -17,17 +17,15 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	:=	\
+Objs	:=
 
-SubDirs	:=	\
-	Windows \
-
+ifneq ($(findstring Windows,$(TargetPlatforms)),)
+Objs+=	$(ObjDir)Registry${OBJ_SUFFIX}
+endif
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
+all:	 $(Objs)
 
-all:	$(Objs) $(SubDirs)
 
-.PHONY:	$(SubDirs)
-$(SubDirs):
-	@$(MAKE) --directory $@ -s
+

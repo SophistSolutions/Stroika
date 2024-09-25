@@ -15,7 +15,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/SDKChar.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/AccessMode.h"

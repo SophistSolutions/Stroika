@@ -18,7 +18,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Configuration::Platform::Windows;
+using namespace Stroika::Foundation::Common::Platform::Windows;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution::Platform::Windows;

@@ -8,8 +8,8 @@
 
 #include <memory>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Streams {
     /**
      *  Used in some subclasses as a flag to indicate stream seekability.
      *
-     *  \note   Configuration::DefaultNames<> supported
+     *  \note   Common::DefaultNames<> supported
      */
     enum class SeekableFlag {
         eNotSeekable,

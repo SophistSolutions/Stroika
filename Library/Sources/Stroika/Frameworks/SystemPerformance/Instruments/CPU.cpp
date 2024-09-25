@@ -11,7 +11,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
-#include "Stroika/Foundation/Configuration/SystemConfiguration.h"
+#include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
@@ -232,7 +232,7 @@ namespace {
                     result.fLoadAverage = Info::LoadAverage{loadAve[0], loadAve[1], loadAve[2]};
                     auto tcNow          = Time::GetTickCount ();
                     result.fRunQLength  = EstimateRunQFromLoadAveArray_ ((tcNow - _GetCaptureContextTime ()).count (), loadAve);
-                    Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (),
+                    Memory::AccumulateIf<double> (&result.fRunQLength, Common::GetNumberOfLogicalCPUCores (),
                                                   std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
                 else {
@@ -276,7 +276,7 @@ namespace {
             };
             POSIXSysTimeCaptureContext_ referenceValue{};
             if (auto tmp = getCPUTime (&referenceValue)) {
-                unsigned int nLogicalCores   = Configuration::GetNumberOfLogicalCPUCores ();
+                unsigned int nLogicalCores   = Common::GetNumberOfLogicalCPUCores ();
                 result.fTotalProcessCPUUsage = tmp->fProcessCPUUsage * nLogicalCores;
                 result.fTotalCPUUsage        = tmp->fTotalCPUUsage * nLogicalCores;
                 result.fTotalLogicalCores    = nLogicalCores;
@@ -341,7 +341,7 @@ namespace {
                     double sys = kernelTimeOverInterval + userTimeOverInterval;
                     if (Time::Duration{sys} > _fOptions.fMinimumAveragingInterval) {
                         double cpu = 1 - idleTimeOverInterval / sys;
-                        return cpu * ::GetNumberOfLogicalCPUCores ();
+                        return cpu * Common::GetNumberOfLogicalCPUCores ();
                     }
                 }
                 return nullopt;
@@ -351,13 +351,13 @@ namespace {
             WinSysTimeCaptureContext_ newRawValueToStoreAsNextbaseline;
             result.fTotalCPUUsage = getCPUTime (&newRawValueToStoreAsNextbaseline);
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - WMI - remove irq time etc from above? Or add into above if missing (See counter PRocessor/% Interrupt time) - not from System - but Processor - so new collector object
-            result.fTotalLogicalCores = Configuration::GetNumberOfLogicalCPUCores ();
+            result.fTotalLogicalCores = Common::GetNumberOfLogicalCPUCores ();
 #if qUseWMICollectionSupport_
             _fContext.rwget ().rwref ()->fSystemWMICollector_.Collect ();
             Memory::CopyToIf (&result.fRunQLength,
                               _fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_));
             // "if a computer has multiple processors, you need to divide this value by the number of processors servicing the workload"
-            Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (), std::divides{}); // both normalized so '1' means all logical cores
+            Memory::AccumulateIf<double> (&result.fRunQLength, Common::GetNumberOfLogicalCPUCores (), std::divides{}); // both normalized so '1' means all logical cores
 #endif
             _NoteCompletedCapture ();
             _fContext.rwget ().rwref ()->fLastSysTimeCapture = newRawValueToStoreAsNextbaseline;

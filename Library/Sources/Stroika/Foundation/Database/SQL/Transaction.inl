@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Database::SQL {
     }
 
 }
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition>
         DefaultNames<Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition>::k{{{

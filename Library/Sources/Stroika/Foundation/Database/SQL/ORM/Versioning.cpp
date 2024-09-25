@@ -21,22 +21,21 @@ using namespace Stroika::Foundation::Debug;
  *************************** ORM::ProvisionForVersion ***************************
  ********************************************************************************
  */
-void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version targetDBVersion, const Traversal::Iterable<Schema::Table>& tables)
+void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Common::Version targetDBVersion, const Traversal::Iterable<Schema::Table>& tables)
 {
     Collection<TableProvisioner> provisioners;
     for (const auto& ti : tables) {
-        provisioners += TableProvisioner{ti.fName,
-                                         [=] (SQL::Connection::Ptr conn, optional<Configuration::Version> existingVersion,
-                                              [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                             // properly upgrade - for now just create if doesn't exist
-                                             if (!existingVersion) {
-                                                 conn.Exec (Schema::StandardSQLStatements{ti}.CreateTable ());
-                                             }
-                                         }};
+        provisioners += TableProvisioner{
+            ti.fName, [=] (SQL::Connection::Ptr conn, optional<Common::Version> existingVersion, [[maybe_unused]] Common::Version targetDBVersion) -> void {
+                // properly upgrade - for now just create if doesn't exist
+                if (!existingVersion) {
+                    conn.Exec (Schema::StandardSQLStatements{ti}.CreateTable ());
+                }
+            }};
     }
     ProvisionForVersion (conn, targetDBVersion, provisioners);
 }
-void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version targetDBVersion, const Traversal::Iterable<TableProvisioner>& tables)
+void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Common::Version targetDBVersion, const Traversal::Iterable<TableProvisioner>& tables)
 {
     TraceContextBumper ctx{"ORM::ProvisionForVersion", "conn={}"_f, conn};
     SQL::Statement doesTableExist = conn.mkStatement (conn.GetEngineProperties ()->GetSQL (SQL::EngineProperties::NonStandardSQL::eDoesTableExist));
@@ -48,7 +47,7 @@ void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version
         }
         else {
             // @todo store / pass along version
-            ti.fProvisioner (conn, Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0}, targetDBVersion);
+            ti.fProvisioner (conn, Common::Version{1, 0, Common::VersionStage::Alpha, 0}, targetDBVersion);
         }
     }
 }

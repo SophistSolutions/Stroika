@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
-#include "Stroika/Foundation/Configuration/Empty.h"
+#include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
@@ -31,6 +31,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Common;
 
 using Memory::StackBuffer;
 using Traversal::Iterator;
@@ -66,7 +67,7 @@ namespace {
 
 #if qDebug
         private:
-            mutable unsigned int fOutsandingIterators_{};
+            mutable unsigned int fOutstandingIterators_{};
 #endif
 
         protected:
@@ -86,7 +87,7 @@ namespace {
             Rep& operator= (span<const CHAR_T> s)
             {
 #if qDebug
-                Require (fOutsandingIterators_ == 0);
+                Require (fOutstandingIterators_ == 0);
 #endif
                 if constexpr (same_as<CHAR_T, char> or same_as<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
@@ -155,14 +156,14 @@ namespace {
 #endif
                     {
 #if qDebug
-                        ++fOwningRep_->fOutsandingIterators_;
+                        ++fOwningRep_->fOutstandingIterators_;
 #endif
                     }
 #if qDebug
                     virtual ~MyIterRep_ () override
                     {
-                        Require (fOwningRep_->fOutsandingIterators_ > 0); // if this fails, probably cuz fOwningRep_ destroyed
-                        --fOwningRep_->fOutsandingIterators_;
+                        Require (fOwningRep_->fOutstandingIterators_ > 0); // if this fails, probably cuz fOwningRep_ destroyed
+                        --fOwningRep_->fOutstandingIterators_;
                     }
 #endif
 
@@ -218,8 +219,8 @@ namespace {
             {
                 return _fData.empty ();
             }
-            virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
-                                                          Execution::SequencePolicy seq) const override
+            virtual Traversal::Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
+                                                          Execution::SequencePolicy                               seq) const override
             {
                 return inherited::Find (that, seq); // @todo rewrite to operatoe of fData_
             }
@@ -490,8 +491,8 @@ namespace {
             {
                 return fUnderlyingRep_->empty ();
             }
-            virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
-                                                          [[maybe_unused]] Execution::SequencePolicy seq) const override
+            virtual Traversal::Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
+                                                          [[maybe_unused]] Execution::SequencePolicy              seq) const override
             {
                 return fUnderlyingRep_->Find (that, seq);
             }
@@ -1304,7 +1305,7 @@ Containers::Sequence<String> String::Tokenize (const function<bool (Character)>&
 Containers::Sequence<String> String::Tokenize (const Containers::Set<Character>& delimiters, bool trim) const
 {
     /*
-     *  @todo Inefficient impl, to encourage code saving. Do more efficently.
+     *  @todo Inefficient impl, to encourage code saving. Do more efficiently.
      */
     return Tokenize ([delimiters] (Character c) -> bool { return delimiters.Contains (c); }, trim);
 }
@@ -1428,7 +1429,7 @@ String String::Trim (bool (*shouldBeTrimmmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmmed);
     /*
-     * This could be implemented more efficient, but this is simpler for now..
+     * This could be implemented more efficiently, but this is simpler for now...
      */
     return LTrim (shouldBeTrimmmed).RTrim (shouldBeTrimmmed);
 }

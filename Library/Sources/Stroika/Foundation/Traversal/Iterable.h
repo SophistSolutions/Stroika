@@ -12,11 +12,11 @@
 #include <ranges>
 #include <vector>
 
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/TypeHints.h"
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -66,9 +66,9 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Traversal {
 
+    using Common::ArgByValueType;
     using Common::IEqualsComparer;
     using Common::IThreeWayComparer;
-    using Configuration::ArgByValueType;
 
     /**
      *  IIterable concept: std::ranges::range and iterated over values satisfy argument predicate (if given)
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Traversal {
      * 
      * https://stackoverflow.com/questions/76532448/combining-concepts-in-c-via-parameter
      */
-    template <typename ITERABLE, template <typename> typename ITEM_PREDICATE = Configuration::True>
+    template <typename ITERABLE, template <typename> typename ITEM_PREDICATE = Common::True>
     concept IIterable = ranges::range<ITERABLE> and ITEM_PREDICATE<ranges::range_value_t<ITERABLE>>::value;
 
     /**
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Traversal {
      *  Checks if argument is ranges::range and if the value of items iterated over is convertible to OF_T.
      */
     template <typename ITERABLE, typename OF_T>
-    concept IIterableOf = IIterable<ITERABLE, Configuration::ConvertibleTo<OF_T>::template Test>;
+    concept IIterableOf = IIterable<ITERABLE, Common::ConvertibleTo<OF_T>::template Test>;
     static_assert (IIterableOf<vector<int>, int>);
     static_assert (IIterableOf<vector<long int>, int>);
     static_assert (IIterableOf<vector<int>, long int>);
@@ -594,13 +594,13 @@ namespace Stroika::Foundation::Traversal {
         template <predicate<T> THAT_FUNCTION>
         nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
         template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
-        nonvirtual Iterator<T> Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
+        nonvirtual Iterator<T> Find (Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
                                      Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
         template <predicate<T> THAT_FUNCTION>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that,
                                      Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
         template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
-        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
                                      Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
 
     public:
@@ -1372,7 +1372,7 @@ namespace Stroika::Foundation::Traversal {
         static shared_ptr<_IRep> Clone_ (const _IRep& rep);
 
     private:
-#if (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_20) || qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
+#if (__cplusplus < kStrokia_Foundation_Common_cplusplus_20) || qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct Rep_Cloner_ {
             auto operator() (const _IRep& t) const -> shared_ptr<_IRep>
             {
@@ -1443,9 +1443,9 @@ namespace Stroika::Foundation::Traversal {
      *  \note   _SafeReadRepAccessor also provides type safety, in that you template in the subtype
      *          of the REP object, and we store a single pointer, but cast to the appropriate subtype.
      *
-     *          This supports type safe useage because in DEBUG builds we check (AssertMember)
-     *          the dynamic type, and if you strucutre your code to assure a given type (say Collection<T>)
-     *          only passes in to pass class appropraitely typed objects, and just use that type in
+     *          This supports type safe usage because in DEBUG builds we check (AssertMember)
+     *          the dynamic type, and if you structure your code to assure a given type (say Collection<T>)
+     *          only passes in to pass class appropriately typed objects, and just use that type in
      *          your _SafeReadRepAccessor<> use, you should be safe.
      *
      *  @see _SafeReadWriteRepAccessor
@@ -1478,7 +1478,7 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
-     *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
+     *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure thread-safety. It takes the
      *  'this' object, and captures a writable to the internal 'REP'.
      *
      *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
@@ -1558,7 +1558,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  returns the number of elements in iterable. Equivilent to (and defaults to)
+         *  returns the number of elements in iterable. Equivalent to (and defaults to)
          *  i = MakeIterator, followed by counting number of iterations til the end.
          */
         virtual size_t size () const;
@@ -1589,7 +1589,7 @@ namespace Stroika::Foundation::Traversal {
          *  But this CAN be much faster (and commonly is) - and is used very heavily by iterables, so
          *  its worth the singling out of this important special case.
          * 
-         *  \req Configuration::IEqualToOptimizable<T>; would like to only define (with requires) but
+         *  \req Common::IEqualToOptimizable<T>; would like to only define (with requires) but
          *       cannot seem to do in C++20 - requires on virtual function
          * 
          *  Default implemented as

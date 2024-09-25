@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm::Base64 {
 
 namespace Stroika::Foundation::Memory {
 
-    using namespace Configuration;
+    //using namespace Configuration;
 
     /**
      *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
@@ -241,7 +241,7 @@ namespace Stroika::Foundation::Memory {
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
             // clang-format off
             requires (
-                Configuration::IAnyOf<T,span<const byte>,span<const uint8_t>, pair<const byte*, const byte*>, pair<const uint8_t*, const uint8_t*>, vector<byte> ,vector<uint8_t>, Streams::InputStream::Ptr<byte>,string>
+                Common::IAnyOf<T,span<const byte>,span<const uint8_t>, pair<const byte*, const byte*>, pair<const uint8_t*, const uint8_t*>, vector<byte> ,vector<uint8_t>, Streams::InputStream::Ptr<byte>,string>
                 or is_trivially_copyable_v<T>
             )
 #endif

@@ -15,8 +15,8 @@
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 
 namespace Stroika::Foundation::Characters {
 
@@ -314,15 +314,15 @@ namespace Stroika::Foundation::Characters {
         inline String ToString (const T& t)
             requires (is_enum_v<T>)
         {
-            if constexpr (not Configuration::IBoundedEnum<T>) {
+            if constexpr (not Common::IBoundedEnum<T>) {
                 return Characters::ToString (underlying_type_t<T> (t));
             }
-            else if constexpr (Configuration::DefaultNames<T>{}.size () == 0) {
+            else if constexpr (Common::DefaultNames<T>{}.size () == 0) {
                 // emit as number if no EnumNames<> declared
                 return Characters::ToString (underlying_type_t<T> (t));
             }
             else {
-                return Configuration::DefaultNames<T>{}.GetName (t);
+                return Common::DefaultNames<T>{}.GetName (t);
             }
         }
         template <floating_point T>
@@ -333,12 +333,12 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString (const shared_ptr<T>& pt)
         {
-            return (pt == nullptr) ? String{"nullptr"sv} : String{Configuration::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
+            return (pt == nullptr) ? String{"nullptr"sv} : String{Common::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
         }
         template <typename T>
         inline String ToString (const unique_ptr<T>& pt)
         {
-            return (pt == nullptr) ? String{"nullptr"sv} : String{Configuration::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
+            return (pt == nullptr) ? String{"nullptr"sv} : String{Common::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
         }
         template <typename T>
         inline String ToString (const optional<T>& o)
@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Characters {
         template <typename FUNCTION_SIGNATURE>
         inline String ToString (const function<FUNCTION_SIGNATURE>& f)
         {
-            return Configuration::StdCompat::format (L"{}", static_cast<const void*> (f.template target<remove_cvref_t<FUNCTION_SIGNATURE>> ()));
+            return Common::StdCompat::format (L"{}", static_cast<const void*> (f.template target<remove_cvref_t<FUNCTION_SIGNATURE>> ()));
         }
         inline String ToString (const chrono::duration<double>& t)
         {
@@ -444,7 +444,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     [[deprecated ("Since Stroika v3.0d5 use IToString")]] constexpr inline bool has_ToString_v =
-        Configuration::is_detected_v<Private_::has_ToString_t, T>;
+        Common::is_detected_v<Private_::has_ToString_t, T>;
 
 }
 

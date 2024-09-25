@@ -10,7 +10,7 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Version.h"
+#include "Stroika/Foundation/Common/Version.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/Variant/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/Writer.h"
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::DataExchange {
          *  Optionally provide (based on filenames/locations) information about the incoming file(read file)
          *  version.
          */
-        using ModuleNameToFileVersionMapperType = function<optional<Configuration::Version> (const String& moduleName)>;
+        using ModuleNameToFileVersionMapperType = function<optional<Common::Version> (const String& moduleName)>;
 
     public:
         /**
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::DataExchange {
          *  change. The version may not be known, in which case the function is still called, but with the verison information
          *  missing.
          */
-        using ModuleDataUpgraderType = function<VariantValue (const optional<Configuration::Version>& version, const VariantValue& rawVariantValue)>;
+        using ModuleDataUpgraderType = function<VariantValue (const optional<Common::Version>& version, const VariantValue& rawVariantValue)>;
 
     public:
         /**

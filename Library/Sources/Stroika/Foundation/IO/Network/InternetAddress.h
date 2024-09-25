@@ -20,7 +20,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/DataExchange/DefaultSerializer.h"
 #include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
@@ -97,8 +97,8 @@ namespace Stroika::Foundation::IO::Network {
     class InternetAddress {
     public:
         /**
-         *  @see Configuration::Endian
-         *  @see Configuration::EndianConverter
+         *  @see Common::Endian
+         *  @see Common::EndianConverter
          */
         enum class ByteOrder {
             Network,
@@ -450,8 +450,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         static InternetAddress GetNext (InternetAddress n);
         static InternetAddress GetPrevious (InternetAddress n);
 
-        static constexpr auto Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs)
-            -> SignedDifferenceType;
+        static constexpr auto Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType;
     };
 
 }

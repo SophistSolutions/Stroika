@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include <system_error>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
 /**

@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename RESULT_T>
         nonvirtual RESULT_T As () const
-            requires (Configuration::IAnyOf<RESULT_T, String, wstring, u8string, u16string, u32string>);
+            requires (Common::IAnyOf<RESULT_T, String, wstring, u8string, u16string, u32string>);
 
     public:
         /*

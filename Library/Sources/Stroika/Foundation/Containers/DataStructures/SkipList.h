@@ -9,10 +9,10 @@
 // for now uses std::vector...
 #include <vector>
 
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Empty.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -23,7 +23,7 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
-    using Configuration::ArgByValueType;
+    using Common::ArgByValueType;
 
     namespace SkipList_Support {
 
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         template <typename KEY_TYPE, IValidTraits<KEY_TYPE> TRAITS>
-        using StatsType = conditional_t<TRAITS::kKeepStatistics, Stats_Basic, Configuration::Empty>;
+        using StatsType = conditional_t<TRAITS::kKeepStatistics, Stats_Basic, Common::Empty>;
     }
 
     /*
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  This is typically Configuration::Empty, but can contain real stats used to debug/tune parameters,
+         *  This is typically Common::Empty, but can contain real stats used to debug/tune parameters,
          *  if you construct the SkipList with TRAITS having kKeepStatistics true.
          */
         using StatsType = SkipList_Support::StatsType<KEY_TYPE, TRAITS>;
@@ -516,7 +516,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          * Find Link for key in SkipList, else nullptr. In cases of duplicate values, return first found.
          */
-        template <Configuration::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
+        template <Common::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
         nonvirtual Link_* FindLink_ (const KEYISH_T& key) const;
 
     private:

@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Cache {
         return Traversal::Iterable<CacheElement>{move (r)};
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt) const
+    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt) const
     {
         shared_lock                         critSec{fAssertExternallySyncrhonized_};
         typename MyMapType_::const_iterator i   = fMap_.find (key);
@@ -80,8 +80,7 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key,
-                                                            LookupMarksDataAsRefreshed                  successfulLookupRefreshesAcceesFlag)
+    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
     {
         lock_guard                    critSec{fAssertExternallySyncrhonized_};
         typename MyMapType_::iterator i   = fMap_.find (key);
@@ -112,8 +111,8 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
-                                                       const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller,
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY>                          key,
+                                                       const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
                                                        LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
                                                        PurgeSpoiledDataFlagType   purgeSpoiledData)
     {
@@ -127,8 +126,8 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key,
-                                              typename Configuration::ArgByValueType<VALUE> result, PurgeSpoiledDataFlagType prgeSpoiledData)
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
+                                              PurgeSpoiledDataFlagType prgeSpoiledData)
     {
         lock_guard critSec{fAssertExternallySyncrhonized_};
         if (prgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {
@@ -143,14 +142,14 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY>   key,
-                                              typename Configuration::ArgByValueType<VALUE> result, Time::TimePointSeconds freshAsOf)
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
+                                              Time::TimePointSeconds freshAsOf)
     {
         lock_guard critSec{fAssertExternallySyncrhonized_};
         fMap_.insert ({key, MyResult_{result, freshAsOf}});
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
+    inline void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Common::ArgByValueType<KEY> key)
     {
         lock_guard critSec{fAssertExternallySyncrhonized_};
         fMap_.erase (key);

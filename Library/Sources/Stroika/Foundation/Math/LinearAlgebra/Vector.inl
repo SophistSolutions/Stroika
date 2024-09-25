@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     {
     }
     template <typename T>
-    Vector<T>::Vector (size_t dimension, Configuration::ArgByValueType<T> fillValue)
+    Vector<T>::Vector (size_t dimension, Common::ArgByValueType<T> fillValue)
         : fRep_{make_shared<IRep_> ()}
     {
         for (size_t i = 0; i < dimension; ++i) {
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     }
 #if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
     template <typename T>
-    void Vector<T>::SetAt (size_t i, Configuration::ArgByValueType<T> v)
+    void Vector<T>::SetAt (size_t i, Common::ArgByValueType<T> v)
     {
         fRep_.rwget ()->fData.SetAt (i, v);
     }

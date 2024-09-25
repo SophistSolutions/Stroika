@@ -13,14 +13,14 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Configuration;
+using namespace Stroika::Foundation::Common;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 /*
  ********************************************************************************
- ***************** Configuration::LocaleNotFoundException ***********************
+ ********************* Common::LocaleNotFoundException **************************
  ********************************************************************************
  */
 LocaleNotFoundException::LocaleNotFoundException (const optional<String>& iso2LetterLanguageCode, const optional<String>& iso2LetterTerritoryCode)
@@ -33,17 +33,17 @@ LocaleNotFoundException::LocaleNotFoundException (const optional<String>& iso2Le
 
 /*
  ********************************************************************************
- *********** Configuration::UsePlatformDefaultLocaleAsDefaultLocale *************
+ *************** Common::UsePlatformDefaultLocaleAsDefaultLocale ****************
  ********************************************************************************
  */
-void Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+void Common::UsePlatformDefaultLocaleAsDefaultLocale ()
 {
     locale::global (GetPlatformDefaultLocale ());
 }
 
 /*
  ********************************************************************************
- *********************** Configuration::GetAvailableLocales *********************
+ *********************** Common::GetAvailableLocales *********************
  ********************************************************************************
  */
 #if 0
@@ -63,7 +63,7 @@ BOOL CALLBACK EnumLocalesProc(LPTSTR lpLocaleString)
     return TRUE;
 }
 #endif
-vector<Characters::String> Configuration::GetAvailableLocales ()
+vector<Characters::String> Common::GetAvailableLocales ()
 {
     // @todo
     // horrible!!!! - see TOOD
@@ -75,10 +75,10 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
 
 /*
  ********************************************************************************
- ************************* Configuration::FindLocaleName ************************
+ ************************* Common::FindLocaleName ************************
  ********************************************************************************
  */
-Characters::String Configuration::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
+Characters::String Common::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     if (auto r = FindLocaleNameQuietly (iso2LetterLanguageCode, iso2LetterTerritoryCode)) {
         return *r;
@@ -86,14 +86,14 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
     Execution::Throw (LocaleNotFoundException{iso2LetterLanguageCode, iso2LetterTerritoryCode});
 }
 
-optional<Characters::String> Configuration::FindLocaleNameQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
+optional<Characters::String> Common::FindLocaleNameQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     using namespace Characters;
     Require (iso2LetterLanguageCode.length () == 2);
     Require (iso2LetterTerritoryCode.length () == 2); // may lift this in the future and make it optional
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Configuration::FindLocaleName", "{},{}"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode};
+    Debug::TraceContextBumper ctx{"Common::FindLocaleName", "{},{}"_f, iso2LetterLanguageCode, iso2LetterTerritoryCode};
 #endif
 
     // This is a HORRIBLE way - but I know of no better (especially no better portable way).
@@ -138,20 +138,20 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
 
 /*
  ********************************************************************************
- *************************** Configuration::FindNamedLocale *********************
+ *************************** Common::FindNamedLocale *********************
  ********************************************************************************
  */
-locale Configuration::FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
+locale Common::FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     return locale{FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ()};
 }
 
 /*
  ********************************************************************************
- ******************** Configuration::FindNamedLocaleQuietly *********************
+ ******************** Common::FindNamedLocaleQuietly *********************
  ********************************************************************************
  */
-optional<locale> Configuration::FindNamedLocaleQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
+optional<locale> Common::FindNamedLocaleQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     if (auto o = FindLocaleNameQuietly (iso2LetterLanguageCode, iso2LetterTerritoryCode)) {
         return locale{o->AsNarrowSDKString ().c_str ()};

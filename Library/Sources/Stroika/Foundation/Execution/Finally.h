@@ -9,8 +9,8 @@
 #include <concepts>
 #include <functional>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 
 /**
  *  \file
@@ -28,7 +28,7 @@
 namespace Stroika::Foundation::Execution {
 
     namespace Private_ {
-        template <Configuration::INoThrowInvocable FUNCTION>
+        template <Common::INoThrowInvocable FUNCTION>
         class FinallySentry {
         public:
             FinallySentry () = delete;
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Execution {
      *          [[maybe_unused]]auto&& cleanup  =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
      *      \endcode
      */
-    template <Configuration::INoThrowInvocable FUNCTION>
+    template <Common::INoThrowInvocable FUNCTION>
     auto Finally (FUNCTION&& f) -> Private_::FinallySentry<FUNCTION>;
 
 }

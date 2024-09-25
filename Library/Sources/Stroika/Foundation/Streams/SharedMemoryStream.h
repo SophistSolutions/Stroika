@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/InputOutputStream.h"
 
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     Ptr<ELEMENT_TYPE> New (Options options = {});
     template <typename ELEMENT_TYPE, typename COPY_FROM>
     Ptr<ELEMENT_TYPE> New (const COPY_FROM& copyFrom, Options options = {})
-        requires (same_as<ELEMENT_TYPE, byte> and Configuration::IAnyOf<COPY_FROM, Memory::BLOB, span<const ELEMENT_TYPE>>);
+        requires (same_as<ELEMENT_TYPE, byte> and Common::IAnyOf<COPY_FROM, Memory::BLOB, span<const ELEMENT_TYPE>>);
 
     namespace Private_ {
         template <typename ELEMENT_TYPE>
@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and Configuration::IAnyOf<T, Memory::BLOB, string>) or
+            requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and Common::IAnyOf<T, Memory::BLOB, string>) or
                       (same_as<ELEMENT_TYPE, Characters::Character> and same_as<T, Characters::String>));
 
     private:

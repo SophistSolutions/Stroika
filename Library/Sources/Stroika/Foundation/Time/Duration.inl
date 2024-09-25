@@ -171,8 +171,7 @@ namespace Stroika::Foundation::Time {
     }
     template <typename T>
     inline T Duration::As () const
-        requires (Configuration::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or
-                  Configuration::IDuration<T> or Configuration::ITimePoint<T>)
+        requires (Common::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or Common::IDuration<T> or Common::ITimePoint<T>)
     {
         if constexpr (integral<T> or floating_point<T>) {
             return static_cast<T> (count ());
@@ -196,17 +195,17 @@ namespace Stroika::Foundation::Time {
             AssertNotReached ();
             return String{};
         }
-        else if constexpr (Configuration::IDuration<T>) {
+        else if constexpr (Common::IDuration<T>) {
             return chrono::duration_cast<T> (*this);
         }
-        else if constexpr (Configuration::ITimePoint<T>) {
+        else if constexpr (Common::ITimePoint<T>) {
             return T{this->As<typename T::duration> ()};
         }
     }
     template <typename T>
     inline T Duration::AsPinned () const
-        requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or
-                  Configuration::IDuration<T> or Configuration::ITimePoint<T>)
+        requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or Common::IDuration<T> or
+                  Common::ITimePoint<T>)
     {
         if constexpr (integral<T> or floating_point<T>) {
             if (this->count () < numeric_limits<T>::min ()) [[unlikely]] {
@@ -226,7 +225,7 @@ namespace Stroika::Foundation::Time {
         else if constexpr (same_as<T, Characters::String>) {
             return As<T> ();
         }
-        else if constexpr (Configuration::IDuration<T>) {
+        else if constexpr (Common::IDuration<T>) {
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::chrono::duration<long long, std::__1::ratio<1, 1> >::rep' (aka 'long long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
@@ -253,7 +252,7 @@ namespace Stroika::Foundation::Time {
 #endif
             return As<T> ();
         }
-        else if constexpr (Configuration::ITimePoint<T>) {
+        else if constexpr (Common::ITimePoint<T>) {
             return T{this->AsPinned<typename T::duration> ()};
         }
     }

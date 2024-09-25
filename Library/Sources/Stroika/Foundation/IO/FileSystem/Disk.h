@@ -10,7 +10,7 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 
 /**
@@ -32,7 +32,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     using Characters::String;
 
     /**
-     *  \note   Configuration::DefaultNames<> supported
+     *  \note   Common::DefaultNames<> supported
      *  \note   These print names are mostly for display and debugging purposes, and they are not guaranteed to be safe for
      *          persistence (so be sure to version).
      */

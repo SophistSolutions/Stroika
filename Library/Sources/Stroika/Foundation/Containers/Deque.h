@@ -16,7 +16,7 @@
 
 namespace Stroika::Foundation::Containers {
 
-    using Configuration::ArgByValueType;
+    using Common::ArgByValueType;
     using Traversal::IInputIterator;
     using Traversal::IIterableOf;
     using Traversal::Iterable;

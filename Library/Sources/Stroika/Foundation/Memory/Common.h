@@ -12,7 +12,7 @@
 #include <span>
 #include <type_traits>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /**
  */

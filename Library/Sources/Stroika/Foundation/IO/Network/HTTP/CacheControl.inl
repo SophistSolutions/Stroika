@@ -16,7 +16,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<IO::Network::HTTP::CacheControl::Cacheability> DefaultNames<IO::Network::HTTP::CacheControl::Cacheability>::k{{{
         {IO::Network::HTTP::CacheControl::Cacheability::ePublic, L"public"},

@@ -16,7 +16,7 @@
 #include <process.h>
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 #if !defined(qHas_pid_t)
 #error "qHas_pid_t must  be defined in StroikaConfig.h"

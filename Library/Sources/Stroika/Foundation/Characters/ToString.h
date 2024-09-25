@@ -19,10 +19,10 @@
 #include <utility>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/CountedValue.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 
 #if __cpp_lib_stacktrace >= 202011 && !qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
 #include <stacktrace>
@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
 #else
-            return Configuration::StdCompat::format_to (ctx.out (), L"{}", String{out.str ()});
+            return Common::StdCompat::format_to (ctx.out (), L"{}", String{out.str ()});
 #endif
 #endif
         }
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Characters {
                 ++it;
 #if 0
                 if (it == ctx.end ()) {
-                    throw Configuration::StdCompat::format_error{"Invalid format args (missing }) for ToStringFormatterASCII."};
+                    throw Common::StdCompat::format_error{"Invalid format args (missing }) for ToStringFormatterASCII."};
                 }
 #endif
                 if (*it == '}') {
@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_lib_ranges >= 202207L
             return std::ranges::copy (String{out.str ()}.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
 #else
-            return Configuration::StdCompat::format_to (ctx.out (), "{}", String{out.str ()}.AsNarrowSDKString (eIgnoreErrors));
+            return Common::StdCompat::format_to (ctx.out (), "{}", String{out.str ()}.AsNarrowSDKString (eIgnoreErrors));
 #endif
         }
     };
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Characters::Private_ {
      *      template <typename T, typename TUnique = decltype ([] () -> void {})>
      *      concept IStdFormatterPredefinedFor_ = requires (T t) {
      *          typename TUnique;
-     *          Stroika::Foundation::Configuration::StdCompat::formattable<T, wchar_t>;
+     *          Stroika::Foundation::Common::StdCompat::formattable<T, wchar_t>;
      *      };
      */
     template <typename T>
@@ -224,16 +224,16 @@ namespace Stroika::Foundation::Characters::Private_ {
         // clang-format off
 
         // C++-20
-        Configuration::IAnyOf<decay_t<T>, char, wchar_t> or Configuration::IAnyOf<T, char*, const char*, wchar_t*, const wchar_t*> 
+        Common::IAnyOf<decay_t<T>, char, wchar_t> or Common::IAnyOf<T, char*, const char*, wchar_t*, const wchar_t*> 
         or requires { []<typename TRAITS, typename ALLOCATOR> (type_identity<std::basic_string<char, TRAITS, ALLOCATOR>>) {}(type_identity<T> ());  } 
         or requires { []<typename TRAITS, typename ALLOCATOR> (type_identity<std::basic_string<wchar_t, TRAITS, ALLOCATOR>>) {}(type_identity<T> ());  } 
         or requires { []<typename TRAITS> (type_identity<std::basic_string_view<char, TRAITS>>) {}(type_identity<T> ()); } 
         or requires { []<typename TRAITS> (type_identity<std::basic_string_view<wchar_t, TRAITS>>) {}(type_identity<T> ()); } 
         or requires { []<size_t N> (type_identity<wchar_t[N]>) {}(type_identity<T> ()); } 
         or std::is_arithmetic_v<T> 
-        or  Configuration::IAnyOf<decay_t<T>, nullptr_t, void*, const void*>
+        or  Common::IAnyOf<decay_t<T>, nullptr_t, void*, const void*>
         // chrono
-        or Configuration::IDuration<T> 
+        or Common::IDuration<T> 
         or requires { []<typename DURATION> (type_identity<std::chrono::sys_time<DURATION>>) {}(type_identity<T> ()); } 
 #if !defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999
         or requires { []<typename DURATION> (type_identity<std::chrono::utc_time<DURATION>>) {}(type_identity<T> ()); } 
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
         or requires { []<typename DURATION> (type_identity<std::chrono::file_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::local_time<DURATION>>) {}(type_identity<T> ()); } 
-        or Configuration::IAnyOf<decay_t<T>, chrono::day, chrono::month, chrono::year, 
+        or Common::IAnyOf<decay_t<T>, chrono::day, chrono::month, chrono::year, 
             chrono::weekday, chrono::weekday_indexed, chrono::weekday_last,
             chrono::month_day, chrono::month_day_last, chrono::month_weekday, chrono::month_weekday_last, 
             chrono::year_month, chrono::year_month_day, chrono::year_month_day_last, chrono::year_month_weekday,chrono::year_month_weekday_last 
@@ -266,13 +266,13 @@ namespace Stroika::Foundation::Characters::Private_ {
         or ranges::range<decay_t<T>>
 #endif
 #if (__cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or (_MSVC_LANG >= 202004 and _MSC_VER >= _MSC_VER_2k22_17Pt11_)) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
-        or Configuration::IPair<remove_cvref_t<T>>  or Configuration::ITuple<remove_cvref_t<T>>
+        or Common::IPair<remove_cvref_t<T>>  or Common::ITuple<remove_cvref_t<T>>
 #endif
 #if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
-        or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+        or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
 #if __cpp_lib_stacktrace >= 202011 && !qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
-        or Configuration::IAnyOf<remove_cvref_t<T>, stacktrace_entry>
+        or Common::IAnyOf<remove_cvref_t<T>, stacktrace_entry>
         or requires { []<typename ALLOCATOR> (type_identity<basic_stacktrace<ALLOCATOR>>) {}(type_identity<T> ()); } 
 #endif
 #if __cplusplus > 202101L or _LIBCPP_STD_VER >= 23 or _MSVC_LANG >= 202004
@@ -283,18 +283,18 @@ namespace Stroika::Foundation::Characters::Private_ {
         // C++26
 #if __cplusplus > 202400L or _LIBCPP_STD_VER >= 26 or _MSVC_LANG >= 202400L
         // unsure what to check - __cpp_lib_format - test c++26  __cpp_lib_formatters < 202601L  -- 202302L  is c++23
-        or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
+        or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
 
         // AND throw in other libraries Stroika is built with (this is why the question in https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
         // is so important to better resolve!
 #if qHasFeature_fmtlib 
-        or Configuration::IAnyOf<decay_t<T>, qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>
+        or Common::IAnyOf<decay_t<T>, qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>
 #if (FMT_VERSION >= 110000)
         // Workaround issue with fmtlib 11 ranges support - it matches these
-        or Configuration::IAnyOf<decay_t<T>,Common::GUID, Memory::BLOB>
+        or Common::IAnyOf<decay_t<T>,Common::GUID, Memory::BLOB>
         // FMT_VERSION has pair/tuple support after FMT version 11
-         or Configuration::IPair<remove_cvref_t<T>> or Configuration::ITuple<remove_cvref_t<T>>
+         or Common::IPair<remove_cvref_t<T>> or Common::ITuple<remove_cvref_t<T>>
 #endif
 #endif
         ;
@@ -353,12 +353,12 @@ namespace Stroika::Foundation::Characters::Private_ {
 // Just use briefly - to debug IStdFormatterPredefinedFor_ -  to verify we fail AFTER this point;
 // enable #if below and just look if these static_asserts fail - ignore any issues which come after (which is why this cannot be left #if 1)
 #if 0
-    static_assert (IStdFormatterPredefinedFor_<std::type_index> == Configuration::StdCompat::formattable<std::type_index, wchar_t>);
-    static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>> == Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
-    static_assert (IStdFormatterPredefinedFor_<std::tuple<int>> == Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
-    static_assert (IStdFormatterPredefinedFor_<std::thread::id> == Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
-    static_assert (IStdFormatterPredefinedFor_<std::filesystem::path> == Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
-    static_assert (IStdFormatterPredefinedFor_<std::exception_ptr> == Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>);
+    static_assert (IStdFormatterPredefinedFor_<std::type_index> == Common::StdCompat::formattable<std::type_index, wchar_t>);
+    static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>> == Common::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+    static_assert (IStdFormatterPredefinedFor_<std::tuple<int>> == Common::StdCompat::formattable<std::tuple<int>, wchar_t>);
+    static_assert (IStdFormatterPredefinedFor_<std::thread::id> == Common::StdCompat::formattable<std::thread::id, wchar_t>);
+    static_assert (IStdFormatterPredefinedFor_<std::filesystem::path> == Common::StdCompat::formattable<std::filesystem::path, wchar_t>);
+    static_assert (IStdFormatterPredefinedFor_<std::exception_ptr> == Common::StdCompat::formattable<std::exception_ptr, wchar_t>);
 #endif
 
     /*
@@ -385,28 +385,28 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if !__cpp_lib_format_ranges
 #if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
              or (ranges::range<decay_t<T>> and
-                 not Configuration::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
-                                           qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
+                 not Common::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
+                                    qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
 #endif
 #if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||    \
     (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240412) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
 #if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
              // available in C++23
-             or Configuration::IPair<remove_cvref_t<T>> or
-             Configuration::ITuple<remove_cvref_t<T>>
+             or Common::IPair<remove_cvref_t<T>> or
+             Common::ITuple<remove_cvref_t<T>>
 #endif
 #endif
 #if (!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
              // available in C++23
-             or Configuration::IAnyOf<remove_cvref_t<T>, thread::id>
+             or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
 #if __cplusplus < 202400L
-             or Configuration::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
+             or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
-             or is_enum_v<remove_cvref_t<T>> or Configuration::IOptional<remove_cvref_t<T>> or Configuration::IVariant<remove_cvref_t<T>> or
+             or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or
              same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>> or
-             Configuration::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>);
+             Common::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>);
 #endif /*qCompiler_IUseToStringFormatterForFormatter_Buggy*/
         ;
 
@@ -431,23 +431,23 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika:
  *  If any of these static_asserts trigger, it means you are using a newer compiler I don't have 
  *  propper IUseToStringFormatterForFormatter_ or IStdFormatterPredefinedFor_ settings for. Adjust those settings above so these tests pass.
  */
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::exception_ptr, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::optional<int>, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::pair<int, char>, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid) - because formattable requires copyable, and type_info not copyable
+static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::exception_ptr, wchar_t>);
+static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::filesystem::path, wchar_t>);
+static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::optional<int>, wchar_t>);
+static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::pair<int, char>, wchar_t>);
+static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::thread::id, wchar_t>);
+static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid) - because formattable requires copyable, and type_info not copyable
 #if !qCompilerAndStdLib_FormatThreadId_Buggy
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::thread::id, wchar_t>);
+static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::thread::id, wchar_t>);
 #endif
 #if qCompilerAndStdLib_formattable_of_tuple_Buggy
-static_assert (Stroika::Foundation::Configuration::ITuple<std::remove_cvref_t<std::tuple<int>>>);
+static_assert (Stroika::Foundation::Common::ITuple<std::remove_cvref_t<std::tuple<int>>>);
 #else
-static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::tuple<int>, wchar_t>);
+static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::tuple<int>, wchar_t>);
 #endif
 // true, but don't #include just for this
-//static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<Time::TimePointInSeconds, wchar_t>);
-//static_assert (Stroika::Foundation::Configuration<Stroika::Foundation::IO::Network::URI, wchar_t>);
+//static_assert (Stroika::Foundation::Common::StdCompat::formattable<Time::TimePointInSeconds, wchar_t>);
+//static_assert (Stroika::Foundation::Common<Stroika::Foundation::IO::Network::URI, wchar_t>);
 
 /*
  ********************************************************************************

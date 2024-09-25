@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Containers::Adapters {
      ********************************************************************************
      */
     template <IAddableTo CONTAINER_TYPE>
-    inline void Adder<CONTAINER_TYPE>::Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<value_type> value)
+    inline void Adder<CONTAINER_TYPE>::Add (CONTAINER_TYPE* container, Common::ArgByValueType<value_type> value)
     {
         RequireNotNull (container);
         using CONTAINER_ELT_TYPE = typename CONTAINER_TYPE::value_type;

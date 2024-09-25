@@ -74,7 +74,7 @@ using namespace Stroika::Foundation::IO::Network;
 
 #if defined(_MSC_VER)
 // support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
-// easiser to see/modularize (and only pulled in if this module is referenced)
+// easier to see/modularize (and only pulled in if this module is referenced)
 #pragma comment(lib, "Iphlpapi.lib")
 #endif
 
@@ -512,7 +512,7 @@ namespace {
                 (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved,
                                   _Outptr_ PWLAN_INTERFACE_INFO_LIST * ppInterfaceList)) (::GetProcAddress (fDLL, "WlanEnumInterfaces"));
             fWlanQueryInterface =
-                (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _In_ CONST GUID * pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode,
+                (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _In_ CONST ::GUID * pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode,
                                   _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize, _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID * ppData,
                                   _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType)) (::GetProcAddress (fDLL, "WlanQueryInterface"));
         }
@@ -533,7 +533,7 @@ namespace {
         DWORD (WINAPI* fWlanEnumInterfaces)
         (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved, _Outptr_ PWLAN_INTERFACE_INFO_LIST* ppInterfaceList) = nullptr;
         DWORD (WINAPI* fWlanQueryInterface)
-        (_In_ HANDLE hClientHandle, _In_ CONST GUID* pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize,
+        (_In_ HANDLE hClientHandle, _In_ CONST ::GUID* pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize,
          _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID* ppData, _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType) = nullptr;
     };
     struct WirelessInfoPlus_ : Interface::WirelessInfo {
@@ -806,7 +806,7 @@ namespace {
                 newInterface.fFriendlyName        = currAddresses->FriendlyName;
                 newInterface.fDescription         = currAddresses->Description;
 
-                static constexpr GUID kZeroGUID_{};
+                static constexpr Common::GUID kZeroGUID_{};
                 if (memcmp (&currAddresses->NetworkGuid, &kZeroGUID_, sizeof (kZeroGUID_)) != 0) {
                     newInterface.fNetworkGUID = currAddresses->NetworkGuid;
                 }

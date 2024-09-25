@@ -9,7 +9,7 @@
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_Trace_TraceToFile);
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qStroika_Foundation_Debug_Trace_DefaultTracingOn);
 
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Time/Clock.h"
 
 namespace Stroika::Foundation::Debug {
@@ -42,11 +42,11 @@ namespace Stroika::Foundation::Debug {
         [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] void EmitTraceMessage (const char* format, ...) noexcept;
         [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] void EmitTraceMessage (const wchar_t* format, ...) noexcept;
 
-        template <typename CHAR_T, Configuration::StdCompat::formattable<wchar_t>... Args>
+        template <typename CHAR_T, Common::StdCompat::formattable<wchar_t>... Args>
         nonvirtual void EmitTraceMessage (Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
         {
             try {
-                EmitTraceMessage_ (fmt.get (), Configuration::StdCompat::make_wformat_args (args...));
+                EmitTraceMessage_ (fmt.get (), Common::StdCompat::make_wformat_args (args...));
             }
             catch (...) {
             }
@@ -54,10 +54,10 @@ namespace Stroika::Foundation::Debug {
 
     private:
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage_ (size_t bufferLastNChars, wstring_view format,
-                                                                      Configuration::StdCompat::wformat_args&& args) noexcept;
-        nonvirtual void EmitTraceMessage_ (wstring_view format, Configuration::StdCompat::wformat_args&& args) noexcept;
-        nonvirtual void EmitTraceMessage_ (string_view format, Configuration::StdCompat::format_args&& args) noexcept;
-        nonvirtual void EmitTraceMessage_ (const wstring& raw) noexcept;
+                                                                      Common::StdCompat::wformat_args&& args) noexcept;
+        nonvirtual void                            EmitTraceMessage_ (wstring_view format, Common::StdCompat::wformat_args&& args) noexcept;
+        nonvirtual void                            EmitTraceMessage_ (string_view format, Common::StdCompat::format_args&& args) noexcept;
+        nonvirtual void                            EmitTraceMessage_ (const wstring& raw) noexcept;
 
     public:
         // if the last write matches the given token (no writes since then) and the timestamp is unchanged, abandon
@@ -142,8 +142,8 @@ namespace Stroika::Foundation::Debug {
         requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>)
     {
         try {
-            wstring      r   = Configuration::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt.get ()},
-                                                                  Configuration::StdCompat::make_wformat_args (args...));
+            wstring      r   = Common::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt.get ()},
+                                                           Common::StdCompat::make_wformat_args (args...));
             size_t       len = min<size_t> (r.size (), kMaxContextNameLen_);
             CHAR_ARRAY_T result;
             // Dont call Memory::Span here - but reproduce in loop to avoid deadly embrace

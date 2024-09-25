@@ -8,8 +8,8 @@
 
 #include <atomic>
 
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
 /**
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Execution {
         BarrierType fBarrierFlag_;
 
     private:
-#if (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_20)
+#if (__cplusplus < kStrokia_Foundation_Common_cplusplus_20)
         atomic_flag fLock_ = ATOMIC_FLAG_INIT;
 #else
         atomic_flag fLock_;

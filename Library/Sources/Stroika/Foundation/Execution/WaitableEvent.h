@@ -9,7 +9,7 @@
 #include <forward_list>
 #include <set>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Execution/ConditionVariable.h"
 #include "Stroika/Foundation/Execution/SpinLock.h"
 

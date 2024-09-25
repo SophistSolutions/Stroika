@@ -9,12 +9,12 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 namespace Stroika::Foundation::Execution::Resources {
 
     using namespace Stroika::Foundation::Characters;
-    using namespace Stroika::Foundation::Configuration;
+    using namespace Stroika::Foundation::Common;
 
     /**
      */

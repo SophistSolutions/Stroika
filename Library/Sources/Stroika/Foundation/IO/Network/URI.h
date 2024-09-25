@@ -10,8 +10,8 @@
 #include <string>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::IO::Network {
          *      o   string (because its all ASCII return since ENCODED)
          *      o   URI (in which case it just copies the path, and query elements)
          */
-        template <Configuration::IAnyOf<String, string, URI> RETURN_TYPE = String>
+        template <Common::IAnyOf<String, string, URI> RETURN_TYPE = String>
         nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const;
 
     public:
@@ -269,7 +269,7 @@ namespace Stroika::Foundation::IO::Network {
          *  In either case, the special case of GetPath ().empty () will be treated as '/'.
          *  So in either case, if a string is returned, its length always >= 1.
          */
-        template <Configuration::IAnyOf<String, optional<String>> RETURN_VALUE = String>
+        template <Common::IAnyOf<String, optional<String>> RETURN_VALUE = String>
         nonvirtual RETURN_VALUE GetAbsPath () const;
 
     public:
@@ -281,7 +281,7 @@ namespace Stroika::Foundation::IO::Network {
          *      o   Query (a parsed query string - much akin to a Mapping<String,String>)
          *
          */
-        template <Configuration::IAnyOf<String, URI::Query> RETURN_TYPE = Query>
+        template <Common::IAnyOf<String, URI::Query> RETURN_TYPE = Query>
         nonvirtual optional<RETURN_TYPE> GetQuery () const;
 
     public:
@@ -339,7 +339,7 @@ namespace Stroika::Foundation::IO::Network {
          *  if T==String, pctEncoded defaults to eDecoded
          *  if T==string, pctEncoded defaults to ePCTEncoded
          */
-        template <Configuration::IAnyOf<String, string> T>
+        template <Common::IAnyOf<String, string> T>
         nonvirtual T As (optional<StringPCTEncodedFlag> pctEncoded = {}) const;
 
     private:

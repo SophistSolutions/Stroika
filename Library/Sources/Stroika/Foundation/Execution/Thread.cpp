@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/StroikaConfig.h"
+#include "Stroika/Foundation/Common/StroikaConfig.h"
 
 #include <list>
 #include <sstream>

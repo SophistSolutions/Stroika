@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/IO/Network//HTTP/Status.h"
@@ -330,7 +330,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
              *
              *      eRespondToWWWAuthenticate is more secure and widely applicable, but can be slower.
              *
-             *  \note   Configuration::DefaultNames<> supported
+             *  \note   Common::DefaultNames<> supported
              */
             enum class Options {
                 eProactivelySendAuthentication,

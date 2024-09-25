@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /*
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>

@@ -778,7 +778,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             [nameMap] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (nameMap, o); });
     };
     template <typename ENUM_TYPE>
-    auto Registry::MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap) -> ReaderFromVoidStarFactory
+    auto Registry::MakeCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap) -> ReaderFromVoidStarFactory
     {
         return MakeCommonReader_NamedEnumerations (Containers::Bijection<ENUM_TYPE, String> (nameMap));
     }
@@ -788,7 +788,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         Add<ENUM_TYPE> (MakeCommonReader_NamedEnumerations<ENUM_TYPE> (nameMap));
     }
     template <typename ENUM_TYPE>
-    inline void Registry::AddCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap)
+    inline void Registry::AddCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap)
     {
         Add<ENUM_TYPE> (MakeCommonReader_NamedEnumerations<ENUM_TYPE> (nameMap));
     }
@@ -816,8 +816,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             {
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 SerializeAsType tmp   = Characters::String2Int<SerializeAsType> (fBuf_.str ());
-                if (Configuration::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Configuration::ToInt (ENUM_TYPE::eEND)) [[likely]] {
-                    *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
+                if (Common::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Common::ToInt (ENUM_TYPE::eEND)) [[likely]] {
+                    *fValue_ = Common::ToEnum<ENUM_TYPE> (tmp);
                 }
                 else {
                     DbgTrace ("Enumeration ('{}') value '{}' out of range"_f, type_index{typeid (ENUM_TYPE)}, fBuf_);

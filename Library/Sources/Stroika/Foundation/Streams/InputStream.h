@@ -9,7 +9,7 @@
 #include <memory>
 #include <optional>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/EWouldBlock.h"
 #include "Stroika/Foundation/Streams/Stream.h"

@@ -14,7 +14,7 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 

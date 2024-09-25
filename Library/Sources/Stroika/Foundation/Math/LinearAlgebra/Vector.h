@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         /**
          */
         Vector (size_t dimension);
-        Vector (size_t dimension, Configuration::ArgByValueType<T> fillValue);
+        Vector (size_t dimension, Common::ArgByValueType<T> fillValue);
         Vector (size_t dimension, const function<T ()>& filler);
         template <Traversal::IIterableOf<T> CONTAINER_OF_T>
         Vector (const CONTAINER_OF_T& c);
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     public:
         /**
          */
-        nonvirtual void SetAt (size_t i, Configuration::ArgByValueType<T> v);
+        nonvirtual void SetAt (size_t i, Common::ArgByValueType<T> v);
 #endif
 
     public:

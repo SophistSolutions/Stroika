@@ -8,7 +8,7 @@
 
 #include <filesystem>
 
-#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
@@ -82,7 +82,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
          *          an interruptible wait, D is waiting in uninterruptible disk sleep, Z is zombie,
          *          T is traced or stopped (on a signal), and W is paging.
          *
-         *  \note   Configuration::DefaultNames<> supported
+         *  \note   Common::DefaultNames<> supported
          */
         enum class RunStatus {
             eRunning,
@@ -365,7 +365,7 @@ namespace Stroika::Frameworks::SystemPerformance {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>
         DefaultNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::k{{{

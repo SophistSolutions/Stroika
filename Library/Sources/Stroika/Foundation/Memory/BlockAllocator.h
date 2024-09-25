@@ -8,7 +8,7 @@
 
 #include <cstddef>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
 /**

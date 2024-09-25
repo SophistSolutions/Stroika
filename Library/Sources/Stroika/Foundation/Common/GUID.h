@@ -14,8 +14,8 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 
 /**
  */
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Common {
          *      o   BLOB
          *      o   array<uint8_t, 16> or array<byte, 16>
          */
-        template <Configuration::IAnyOf<Characters::String, std::string, Memory::BLOB, array<byte, 16>, array<uint8_t, 16>> T>
+        template <IAnyOf<Characters::String, std::string, Memory::BLOB, array<byte, 16>, array<uint8_t, 16>> T>
         nonvirtual T As () const;
 
     public:

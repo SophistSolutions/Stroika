@@ -20,7 +20,7 @@ namespace Stroika::Foundation::IO {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<IO::AccessMode> DefaultNames<IO::AccessMode>::k{{{
         {IO::AccessMode::eNoAccess, L"No-Access"},

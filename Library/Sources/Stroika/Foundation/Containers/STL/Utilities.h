@@ -9,8 +9,8 @@
 #include <set>
 #include <vector>
 
+#include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Common.h"
 
 /**
 *  \file

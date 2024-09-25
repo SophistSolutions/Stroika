@@ -8,9 +8,9 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Configuration/Common.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
-#include "Stroika/Foundation/Configuration/StdCompat.h"
+#include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 
 /**
  *  \file
@@ -60,10 +60,10 @@ namespace Stroika::Foundation::Characters {
      *      \endcode
      * 
      */
-    template </*Configuration::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    //requires (Configuration::IAnyOf<CHAR_T,char,wchar_t>)
+    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    //requires (Common::IAnyOf<CHAR_T,char,wchar_t>)
     struct FormatString {
-        static_assert (Configuration::IAnyOf<CHAR_T, char, wchar_t>); // not sure why this works but requires/concept applied in template not working...
+        static_assert (Common::IAnyOf<CHAR_T, char, wchar_t>); // not sure why this works but requires/concept applied in template not working...
 
     public:
         /**
@@ -87,9 +87,9 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
+        template <Common::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
-        template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
+        template <Common::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
 
     private:
@@ -115,9 +115,9 @@ namespace Stroika::Foundation::Characters {
 
         constexpr wstring_view                                             get () const;
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
-        template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
+        template <Common::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
-        template <Configuration::StdCompat::formattable<wchar_t>... ARGS>
+        template <Common::StdCompat::formattable<wchar_t>... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
     };
 
@@ -146,9 +146,9 @@ namespace Stroika::Foundation::Characters {
      *  \note FormatString typically created with _f, as in "foo={}"_f
      */
     template <typename CHAR_T>
-    [[nodiscard]] String VFormat (const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args);
+    [[nodiscard]] String VFormat (const FormatString<CHAR_T>& f, const Common::StdCompat::wformat_args& args);
     template <typename CHAR_T>
-    [[nodiscard]] String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Configuration::StdCompat::wformat_args& args);
+    [[nodiscard]] String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Common::StdCompat::wformat_args& args);
 
     /*
     * 

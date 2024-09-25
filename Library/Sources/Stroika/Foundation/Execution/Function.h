@@ -10,7 +10,7 @@
 #include <functional>
 #include <memory>
 
-#include "Stroika/Foundation/Configuration/Common.h"
+#include "Stroika/Foundation/Common/Common.h"
 
 /**
  *  \file

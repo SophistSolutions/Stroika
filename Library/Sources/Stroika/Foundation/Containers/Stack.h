@@ -9,7 +9,7 @@
 #include <ranges>
 
 #include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Configuration/Concepts.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
@@ -29,7 +29,7 @@
 
 namespace Stroika::Foundation::Containers {
 
-    using Configuration::ArgByValueType;
+    using Common::ArgByValueType;
     using Traversal::IInputIterator;
     using Traversal::IIterableOf;
     using Traversal::Iterable;

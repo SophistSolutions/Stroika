@@ -62,7 +62,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename RETURNTYPE>
     inline RETURNTYPE VariantValue::As () const
         requires (Private_::IVariantValueAsBasic_<RETURNTYPE> or
-                  (Configuration::IOptional<RETURNTYPE> and Private_::IVariantValueAsBasic_<Configuration::ExtractValueType_t<RETURNTYPE>>))
+                  (Common::IOptional<RETURNTYPE> and Private_::IVariantValueAsBasic_<Common::ExtractValueType_t<RETURNTYPE>>))
     {
         if constexpr (same_as<RETURNTYPE, bool>) {
             return this->AsBool_ ();
@@ -110,7 +110,7 @@ namespace Stroika::Foundation::DataExchange {
             return this->AsBoostJSONValue_ ();
         }
 #endif
-        else if constexpr (Configuration::IOptional<RETURNTYPE>) {
+        else if constexpr (Common::IOptional<RETURNTYPE>) {
             if (this->empty ()) {
                 return nullopt;
             }
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::DataExchange {
 
 }
 
-namespace Stroika::Foundation::Configuration {
+namespace Stroika::Foundation::Common {
     template <>
     constexpr EnumNames<DataExchange::VariantValue::Type> DefaultNames<DataExchange::VariantValue::Type>::k{{{
         {DataExchange::VariantValue::eNull, L"Null"},
