@@ -205,7 +205,7 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  \note SEE http://stroika-bugs.sophists.com/browse/STK-983
          * 
-         * \note - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
+         * \note - if DataExchange::InternetMediaTypeRegistry::sThe->IsTextFormat (fContentType_), then
          *         the character set will be automatically folded into the used contentType. To avoid this, 
          *         Use UpdateHeader() to modify the contenttype field directly.
          * 
@@ -219,7 +219,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  \req this->headersCanBeSet() to set property
          * 
-         *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (contentType), then
+         *  NOTE - if DataExchange::InternetMediaTypeRegistry::sThe->IsTextFormat (contentType), then
          *  the character set will be automatically folded into the used contentType (on WRITES to the property - not reads).
          *      @todo revisit this - I think I always use character set if you use write API taking strings)--LGP 2024-06-22
          */

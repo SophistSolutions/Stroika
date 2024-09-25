@@ -141,7 +141,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          *  \note this compares all the parameters and options - so "text/plain" != "text/plain;param=3".
-         *        To get this looser form of comparison, use InternetMediaTypeRegistry::Get ().IsA (InternetMediaTypes::kJSON, compareWith);
+         *        To get this looser form of comparison, use InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, compareWith);
          */
         nonvirtual bool operator== (const InternetMediaType& rhs) const;
 
