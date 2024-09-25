@@ -226,8 +226,8 @@ namespace {
                 auto lambda  = [] (int i) { return long (i * 10); };
                 using traits = FunctionTraits<decltype (lambda)>;
                 static_assert (traits::kArity == 1);
-                static_assert (std::is_same<long, traits::result_type>::value);
-                static_assert (std::is_same<int, traits::arg<0>::type>::value);
+                static_assert (same_as<long, traits::result_type>::value);
+                static_assert (same_as<int, traits::arg<0>::type>::value);
             }
             {
                 static_assert (Traversal::IIterable<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);

@@ -33,8 +33,8 @@ namespace Stroika::Foundation::Configuration {
      *
      *          using traits = FunctionTraits<decltype(lambda)>;
      *
-     *          static_assert(std::is_same<long, traits::result_type>::value);
-     *          static_assert(std::is_same<int, traits::arg<0>::type>::value);
+     *          static_assert(same_as<long, traits::result_type>::value);
+     *          static_assert(same_as<int, traits::arg<0>::type>::value);
      *      \endcode
      * 
      *  CREDITS:
@@ -488,7 +488,7 @@ namespace Stroika::Foundation::Configuration {
         };
         template <typename ITERABLE_OF_T, typename T>
         using IsIterableOfT_t =
-            integral_constant<bool, not is_same<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
+            integral_constant<bool, not same_as<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>>;
     }
     template <typename ITERABLE_OF_T, typename T>
     [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterableOf concept")]] constexpr bool IsIterableOfT_v =
