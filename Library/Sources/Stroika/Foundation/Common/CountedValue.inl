@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
         requires (default_initializable<COUNTER_TYPE> and unsigned_integral<COUNTER_TYPE>)
-    constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Common::ArgByValueType<ValueType> value, CounterType count)
+    constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (ArgByValueType<ValueType> value, CounterType count)
         : fValue{value}
         , fCount{count}
     {

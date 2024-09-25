@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Common {
          */
         constexpr CountedValue ()
             requires (default_initializable<VALUE_TYPE>);
-        constexpr CountedValue (typename ArgByValueType<ValueType> value, CounterType count = 1);
+        constexpr CountedValue (ArgByValueType<ValueType> value, CounterType count = 1);
         template <convertible_to<VALUE_TYPE> VALUE2_TYPE, convertible_to<COUNTER_TYPE> COUNTER2_TYPE>
         constexpr CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src);
         template <convertible_to<VALUE_TYPE> VALUE2_TYPE, convertible_to<COUNTER_TYPE> COUNTER2_TYPE>
