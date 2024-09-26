@@ -2883,9 +2883,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.inl">
       <Filter>Sources\Debug</Filter>
     </None>
-    <None Include="..\..\Sources\ReadMe.md">
-      <Filter>Sources</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.inl">
       <Filter>Sources\Debug</Filter>
     </None>
