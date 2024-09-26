@@ -153,6 +153,19 @@ namespace Stroika::Foundation::Common {
 #endif
         ;
 
+
+    /**
+     *  \brief return true iff argument type T, is std::shared_ptr<A> for some A types
+     */
+    template <typename T>
+    concept ISharedPtr =
+        requires (T t) {
+            {
+                []<typename T1> (shared_ptr<T1>) {}(t)
+            };
+        }
+        ;
+
     namespace Private_ {
         template <typename T, std::size_t N>
         concept has_tuple_element = requires (T t) {
