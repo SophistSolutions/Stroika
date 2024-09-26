@@ -1,0 +1,62 @@
+StroikaRoot:=$(abspath ../../../)/
+
+ifneq ($(CONFIGURATION),)
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+endif
+
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+SrcDir			:=	$(StroikaRoot)Samples/HTMLUI/Backend/
+ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
+
+CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/)
+
+TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/Backend/
+TARGETEXE		:=	$(TARGETDIR)HTMLUI${EXE_SUFFIX}
+
+
+VPATH	=			$(SrcDir)/Sources/
+
+
+Objs	:=	\
+	$(ObjDir)IWSAPI${OBJ_SUFFIX}\
+	$(ObjDir)Main${OBJ_SUFFIX}\
+	$(ObjDir)Model${OBJ_SUFFIX}\
+	$(ObjDir)WebServer${OBJ_SUFFIX}\
+	$(ObjDir)WSImpl${OBJ_SUFFIX}\
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
+
+VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
+VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/AppVersion.h
+$(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
+	@mkdir -p $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI
+	@$(StroikaRoot)ScriptsLib/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion
+
+$(Objs):	$(VERSION_FILE_OUT)
+
+
+
+all:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/HTMLUI/Backend:"
+	@mkdir -p $(TARGETDIR)
+	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+
+
+check:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/HTMLUI/Backend/...                "
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]";
+
+
+$(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
+	fi
+	@$(call DEFAULT_LINK_LINE,$@)
+
