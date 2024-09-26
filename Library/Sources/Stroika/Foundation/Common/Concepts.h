@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Common {
         template <typename T1, typename T2 = void>
         struct is_shared_ptr_ : std::false_type {};
         template <typename T1>
-        struct is_shared_ptr_<T1> : std::true_type {};
+        struct is_shared_ptr_<shared_ptr<T1>> : std::true_type {};
         template <typename T1, typename T2 = void>
         struct is_pair_ : std::false_type {};
         template <typename T1, typename T2>
