@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note Don't apply this constructor to non-containers (non-iterables), 
          *        and don't allow it to apply to SUBCLASSES of Iterable (since then we want to select the Iterable (const Iterable& from) constructor)
          */
-        template <ranges::range CONTAINER_OF_T>
+        template <IIterableOfTo<T> CONTAINER_OF_T>
         explicit Iterable (CONTAINER_OF_T&& from)
             requires (not derived_from<remove_cvref_t<CONTAINER_OF_T>, Iterable<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
