@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Common {
 
     namespace Private_ {
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
-        template <typename T1>
+        template <typename T1, typename T2 = void>
         struct is_shared_ptr_ : std::false_type {};
         template <typename T1>
         struct is_shared_ptr_<T1> : std::true_type {};
