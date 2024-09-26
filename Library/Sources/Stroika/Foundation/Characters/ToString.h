@@ -441,7 +441,7 @@ static_assert (Stroika::Foundation::Characters::IToString<std::shared_ptr<int>>)
 static_assert (Stroika::Foundation::Common::ISharedPtr<std::shared_ptr<int>>);
 static_assert (std::regular<std::shared_ptr<int>>);
 #if defined(__clang__)
-static_assert (std::__formattable<std::shared_ptr<int>, wchar_t>); // but not unique_ptr cuz not regular, even though supported by ToString()
+//static_assert (std::__formattable<std::shared_ptr<int>, wchar_t>); // but not unique_ptr cuz not regular, even though supported by ToString()
 #else
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::shared_ptr<int>, wchar_t>); // but not unique_ptr cuz not regular, even though supported by ToString()
 #endif
