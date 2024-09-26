@@ -555,7 +555,7 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    template <ranges::range RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
     RESULT_CONTAINER Iterable<T>::Map (ELEMENT_MAPPER&& elementMapper) const
         requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
                   convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
@@ -599,7 +599,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    template <ranges::range RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
     RESULT_CONTAINER Iterable<T>::Map (ELEMENT_MAPPER&& elementMapper, RESULT_CONTAINER&& emptyResult) const
         requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
                   convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
@@ -1157,17 +1157,16 @@ namespace Stroika::Foundation::Traversal {
         return end ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRUCTOR_ARGS>
+    template <IIterableOfFrom<T> CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRUCTOR_ARGS>
     inline CONTAINER_OF_T Iterable<T>::As (CONTAINER_OF_T_CONSTRUCTOR_ARGS... args) const
     {
-        // some containers require two iterators as arguments, but Stroika ones work with EndSentinel or iterator
+        // some containers require two iterators as arguments, but Stroika ones work with default_sentinel_t or iterator
+        // use CONTAINER_OF_T () instead of CONTAINER_OF_T{} because we do want to allow coercion here - since use explicitly called As<>
         if constexpr (derived_from<CONTAINER_OF_T, Iterable<T>>) {
-            return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (),
-                                   end ()); // use () instead of {} because we do want to allow coercion here - since use explicitly called As<>
+            return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), end ());
         }
         else {
-            return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (),
-                                   Iterator<T>{end ()}); // use () instead of {} because we do want to allow coercion here - since use explicitly called As<>
+            return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), Iterator<T>{end ()});
         }
     }
     template <typename T>

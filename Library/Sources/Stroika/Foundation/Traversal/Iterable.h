@@ -84,6 +84,12 @@ namespace Stroika::Foundation::Traversal {
      *  IIterableOfTo concept: IIterable with the constraint that the items produced by iteration are 'ConvertibleTo' the argument OF_T type
      *
      *  Checks if argument is ranges::range and if the value of items iterated over is convertible to OF_T.
+     *
+     *  \par Example Usage
+     *      \code
+     *          template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
+     *          void Add (ITERABLE_OF_ADDABLE&& addAll);
+     *      \endcode
      */
     template <typename ITERABLE, typename OF_T>
     concept IIterableOfTo = IIterable<ITERABLE, Common::ConvertibleTo<OF_T>::template Test>;
@@ -259,7 +265,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  \brief  Iterable are safely copyable (by value). Since Iterable uses COW, this just copies the underlying pointer and increments the reference count.
-         */
+        */
         Iterable (const Iterable&) noexcept = default;
 
     public:
@@ -629,7 +635,7 @@ namespace Stroika::Foundation::Traversal {
          *      We chose NOT to include an overload taking iterators because there was no connection between
          *      'this' and the used iterators, so you may as well just directly call CONTAINER_OF_T{it1, it2}.
          */
-        template <typename CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRUCTOR_ARGS>
+        template <IIterableOfFrom<T> CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRUCTOR_ARGS>
         nonvirtual CONTAINER_OF_T As (CONTAINER_OF_T_CONSTRUCTOR_ARGS... args) const;
 
     public:
@@ -787,11 +793,11 @@ namespace Stroika::Foundation::Traversal {
          *  \note This could have been written as one function/overload, but then for the RESULT_CONTAINER=Iterable<T> case
          *        we would be forced to uselessly create a bogus Iterable, and then throw it away.
          */
-        template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> ELEMENT_MAPPER>
+        template <ranges::range RESULT_CONTAINER = Iterable<T>, invocable<T> ELEMENT_MAPPER>
         nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
             requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
                       convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
-        template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> ELEMENT_MAPPER>
+        template <ranges::range RESULT_CONTAINER = Iterable<T>, invocable<T> ELEMENT_MAPPER>
         nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper, RESULT_CONTAINER&& emptyResult) const
             requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
                       convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
