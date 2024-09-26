@@ -278,6 +278,11 @@ void CommandLine::Validate (Iterable<Option> options) const
     }
 }
 
+String CommandLine::GetAppName () const
+{
+    return fArgs_.empty () ? String{} : fArgs_[0];
+}
+
 tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
 {
     bool             found = false;

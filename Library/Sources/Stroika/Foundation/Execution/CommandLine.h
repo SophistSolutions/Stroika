@@ -156,6 +156,12 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
+         *  return 'argv[0]'
+         */
+        nonvirtual String GetAppName () const;
+
+    public:
+        /*
          * return get<bool> true iff arg is present in command line.
          * Either way, get<Sequence<String>>> returns same as GetArguments ();
          *
