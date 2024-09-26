@@ -138,7 +138,8 @@ namespace Stroika::Foundation::Common {
     }
 
     /**
-    */
+     *  \brief return true iff argument type T, is std::pair<a,b> for some a/b types
+     */
     template <typename T>
     concept IPair =
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
@@ -197,11 +198,26 @@ namespace Stroika::Foundation::Common {
      * Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
      * this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
      * sadly, so need this trick...
+     * 
+     *  The 'test' here just invokes convertible_to<TEST_ARGUMENT, T>
      */
     template <typename T>
     struct ConvertibleTo {
-        template <typename POTENTIALLY_ADDABLE_T>
-        using Test = is_convertible<POTENTIALLY_ADDABLE_T, T>;
+        template <typename TEST_ARGUMENT>
+        using Test = conditional_t<convertible_to<TEST_ARGUMENT, T>, true_type, false_type>;
+    };
+
+    /**
+     * Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
+     * this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
+     * sadly, so need this trick...
+     * 
+     *  The 'test' here just invokes constructible_from<TEST_ARGUMENT, T>
+     */
+    template <typename T>
+    struct ConvertibleFrom {
+        template <typename TEST_ARGUMENT>
+        using Test = conditional_t<constructible_from<TEST_ARGUMENT, T>, true_type, false_type>;
     };
 
     /**

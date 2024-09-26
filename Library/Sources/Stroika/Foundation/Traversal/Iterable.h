@@ -92,6 +92,18 @@ namespace Stroika::Foundation::Traversal {
     static_assert (IIterableOfTo<vector<int>, long int>);
     static_assert (not IIterableOfTo<vector<string>, int>);
 
+    /**
+     *  IIterableOfFrom concept: IIterable with the constraint that the items produced by iteration are 'ConvertibleFrom' the argument OF_T type
+     *
+     *  Checks if argument is ranges::range and if the value of items iterated over is convertible to OF_T.
+     */
+    template <typename ITERABLE, typename OF_T>
+    concept IIterableOfFrom = IIterable<ITERABLE, Common::ConvertibleFrom<OF_T>::template Test>;
+    static_assert (IIterableOfFrom<vector<int>, int>);
+    static_assert (IIterableOfFrom<vector<long int>, int>);
+    static_assert (IIterableOfFrom<vector<int>, long int>);
+    static_assert (not IIterableOfFrom<vector<string>, int>);
+
 #if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
 #endif
