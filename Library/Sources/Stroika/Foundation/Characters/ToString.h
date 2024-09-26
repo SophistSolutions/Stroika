@@ -408,7 +408,12 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
              or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or
              same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>> or
-             Common::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>);
+             Common::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception>
+             
+             or Common::ISharedPtr<T>
+             )
+             
+             ;
 #endif /*qCompiler_IUseToStringFormatterForFormatter_Buggy*/
         ;
 
@@ -440,7 +445,7 @@ static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::optional
 static_assert (Stroika::Foundation::Characters::IToString<std::shared_ptr<int>>);
 static_assert (Stroika::Foundation::Common::ISharedPtr<std::shared_ptr<int>>);
 static_assert (std::regular<std::shared_ptr<int>>);
-#if defined(__clang__)
+#if defined(__clang__) && 0
 //static_assert (std::__formattable<std::shared_ptr<int>, wchar_t>); // but not unique_ptr cuz not regular, even though supported by ToString()
 #else
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::shared_ptr<int>, wchar_t>); // but not unique_ptr cuz not regular, even though supported by ToString()
