@@ -11,6 +11,7 @@
 #include <functional> // needed for std::equal_to
 #include <iterator>   // needed for std::begin/std::end calls
 #include <optional>
+#include <memory>
 #include <variant>
 
 #include "Stroika/Foundation/Common/Common.h"
