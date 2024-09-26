@@ -17,17 +17,13 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   For CPUInfo, we have socketcount, and #logical cores (what msft calls logical processors in some places)
- *              but we could use a placeholder for #physical cores, maybe. MSFT has this. Not sure its sueful. Document
- *              why/why not depnding on what we decide.
- *
  *      @todo   Review API provide, and document relationship with sysconf/etc (idea is simpler, and a bit more portable,
  *              but just subset).
  *
  *      @todo   BootInformation: consider adding info like 'last shutdown at' and last shutdown reason.
  *
  *      @todo   BootInformation: simplistic impl - may not handle 'hibernate' properly... - must verify/test, and timezone
- *              change etc... just uses seconds since boot on most plantforms??
+ *              change etc... just uses seconds since boot on most platforms??
  *
  */
 
@@ -55,7 +51,7 @@ namespace Stroika::Foundation::Common {
         struct CPU {
         public:
             /**
-             *  Number of Physical Sockets/CPU chips. Also this is the number of distinct 'socketids' from the fCores.
+             *  Number of Physical Sockets/CPU chips. Also this is the number of distinct 'socket ids' from the fCores.
              */
             nonvirtual unsigned int GetNumberOfSockets () const;
 
@@ -84,7 +80,7 @@ namespace Stroika::Foundation::Common {
              */
             struct CoreDetails {
                 /**
-                 *  /proc/cpuinfo 'physical id' - use to tell numper of sockets. Each distinct socketID is a different socket
+                 *  /proc/cpuinfo 'physical id' - use to tell number of sockets. Each distinct socketID is a different socket
                  */
                 unsigned int fSocketID{};
 

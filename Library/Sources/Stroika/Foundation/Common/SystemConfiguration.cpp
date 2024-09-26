@@ -193,40 +193,42 @@ unsigned int SystemConfiguration::CPU::GetNumberOfSockets () const
 
 /*
  ********************************************************************************
- ************* Common::GetSystemConfiguration_BootInformation ************
+ ****************** Common::GetSystemConfiguration_BootInformation **************
  ********************************************************************************
  */
 SystemConfiguration::BootInformation Common::GetSystemConfiguration_BootInformation ()
 {
-    SystemConfiguration::BootInformation result;
+    // nb: this cannot change after app start, so cache it
+    static const SystemConfiguration::BootInformation kCachedResult_ = [] () {
+        SystemConfiguration::BootInformation result;
 #if qPlatform_Linux
-    struct sysinfo info;
-    ::sysinfo (&info);
-    result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
+        struct sysinfo info;
+        ::sysinfo (&info);
+        result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
 #elif qPlatform_POSIX
-    {
-        // @todo - I don't think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
-        bool                          succeeded{false};
-        static const filesystem::path kProcUptimeFileName_{"/proc/uptime"};
-        if (IO::FileSystem::Default ().Access (kProcUptimeFileName_)) {
-            /*
+        {
+            // @todo - I don't think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
+            bool                          succeeded{false};
+            static const filesystem::path kProcUptimeFileName_{"/proc/uptime"};
+            if (IO::FileSystem::Default ().Access (kProcUptimeFileName_)) {
+                /*
              *  From https://www.centos.org/docs/5/html/5.1/Deployment_Guide/s2-proc-uptime.html
              *      "The first number is the total number of seconds the system has been up"
              */
-            using Characters::String2Int;
-            for (const String& line :
-                 TextReader::New (IO::FileSystem::FileInputStream::New (kProcUptimeFileName_, IO::FileSystem::FileInputStream::eNotSeekable))
-                     .ReadLines ()) {
-                Sequence<String> t = line.Tokenize ();
-                if (t.size () >= 2) {
-                    result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::FloatConversion::ToFloat<double> (t[0]));
-                    succeeded        = true;
+                using Characters::String2Int;
+                for (const String& line :
+                     TextReader::New (IO::FileSystem::FileInputStream::New (kProcUptimeFileName_, IO::FileSystem::FileInputStream::eNotSeekable))
+                         .ReadLines ()) {
+                    Sequence<String> t = line.Tokenize ();
+                    if (t.size () >= 2) {
+                        result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::FloatConversion::ToFloat<double> (t[0]));
+                        succeeded        = true;
+                    }
+                    break;
                 }
-                break;
             }
-        }
-        if (not succeeded) {
-            /*
+            if (not succeeded) {
+                /*
              *  The hard way is to read /etc/utmp
              *
              *  http://pubs.opengroup.org/onlinepubs/009695399/basedefs/utmpx.h.html
@@ -235,33 +237,35 @@ SystemConfiguration::BootInformation Common::GetSystemConfiguration_BootInformat
              *  need to fix this..????
              *      --LGP 2015-08-21
              */
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { ::endutxent (); });
-            ::setutxent ();
-            for (const utmpx* i = ::getutxent (); i != nullptr; i = ::getutxent ()) {
-                if (i->ut_type == BOOT_TIME) {
-                    result.fBootedAt = DateTime{i->ut_tv};
-                    succeeded        = true;
+                [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { ::endutxent (); });
+                ::setutxent ();
+                for (const utmpx* i = ::getutxent (); i != nullptr; i = ::getutxent ()) {
+                    if (i->ut_type == BOOT_TIME) {
+                        result.fBootedAt = DateTime{i->ut_tv};
+                        succeeded        = true;
+                    }
                 }
             }
+            Assert (succeeded); // not a real assert, but sort of a warning if this ever gets triggered
         }
-        Assert (succeeded); // not a real assert, but sort of a warning if this ever gets triggered
-    }
 #elif qPlatform_Windows
 // ::GetTickCount () is defined to return #seconds since boot
 #if _WIN32_WINNT >= 0x0600
-    result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount64 () / 1000));
+        result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount64 () / 1000));
 #else
-    result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount () / 1000));
+        result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount () / 1000));
 #endif
 #else
-    AssertNotImplemented ();
+        AssertNotImplemented ();
 #endif
-    return result;
+        return result;
+    }();
+    return kCachedResult_;
 }
 
 /*
  ********************************************************************************
- *************** Common::GetSystemConfiguration_CPU **********************
+ ********************* Common::GetSystemConfiguration_CPU ***********************
  ********************************************************************************
  */
 SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
@@ -510,7 +514,7 @@ SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
 
 /*
  ********************************************************************************
- ************** Common::GetSystemConfiguration_Memory ********************
+ ******************* Common::GetSystemConfiguration_Memory **********************
  ********************************************************************************
  */
 SystemConfiguration::Memory Common::GetSystemConfiguration_Memory ()
@@ -539,7 +543,7 @@ SystemConfiguration::Memory Common::GetSystemConfiguration_Memory ()
 
 /*
  ********************************************************************************
- ******** Common::GetSystemConfiguration_OperatingSystem *****************
+ *************** Common::GetSystemConfiguration_OperatingSystem *****************
  ********************************************************************************
  */
 SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperatingSystem ()
@@ -899,7 +903,7 @@ SystemConfiguration::ComputerNames Common::GetSystemConfiguration_ComputerNames 
 
 /*
  ********************************************************************************
- ******************* Common::GetNumberOfLogicalCPUCores ******************
+ ************************ Common::GetNumberOfLogicalCPUCores ********************
  ********************************************************************************
  */
 unsigned int Common::GetNumberOfLogicalCPUCores (const chrono::duration<double>& allowedStaleness)
