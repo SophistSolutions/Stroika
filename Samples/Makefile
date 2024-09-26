@@ -20,6 +20,7 @@ endif
 SUBPROJECTS+=	AppSettings
 SUBPROJECTS+=	ArchiveUtility
 SUBPROJECTS+=	Containers
+SUBPROJECTS+=	HTMLUI
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
