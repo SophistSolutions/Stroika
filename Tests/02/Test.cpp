@@ -1478,8 +1478,10 @@ namespace {
         }
         {
             auto                    sp = make_shared<int> (3);
+            #if !defined (__clang__)
             [[maybe_unused]] String a  = "{}"_f(sp);
             DbgTrace ("a={}"_f, a);
+            #endif
         }
     }
 }

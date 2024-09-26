@@ -153,18 +153,15 @@ namespace Stroika::Foundation::Common {
 #endif
         ;
 
-
     /**
      *  \brief return true iff argument type T, is std::shared_ptr<A> for some A types
      */
     template <typename T>
-    concept ISharedPtr =
-        requires (T t) {
-            {
-                []<typename T1> (shared_ptr<T1>) {}(t)
-            };
-        }
-        ;
+    concept ISharedPtr = requires (T t) {
+        {
+            []<typename T1> (shared_ptr<T1>) {}(t)
+        };
+    };
     static_assert (ISharedPtr<shared_ptr<int>>);
     static_assert (not ISharedPtr<int>);
 
