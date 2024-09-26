@@ -1476,6 +1476,11 @@ namespace {
         {
             EXPECT_EQ (Characters::ToString (atomic<int>{3}), "3");
         }
+        {
+            auto                    sp = make_shared<int> (3);
+            [[maybe_unused]] String a  = "{}"_f(sp);
+            DbgTrace ("a={}"_f, a);
+        }
     }
 }
 

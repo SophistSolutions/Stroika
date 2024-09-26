@@ -333,11 +333,13 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString (const shared_ptr<T>& pt)
         {
+            // @todo consider - if formattable 'T' - maybe emit * then format (*t)?, maybe wrapped in braces
             return (pt == nullptr) ? String{"nullptr"sv} : String{Common::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
         }
         template <typename T>
         inline String ToString (const unique_ptr<T>& pt)
         {
+            // @todo consider - if formattable 'T' - maybe emit * then format (*t)?, maybe wrapped in braces
             return (pt == nullptr) ? String{"nullptr"sv} : String{Common::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
         }
         template <typename T>
