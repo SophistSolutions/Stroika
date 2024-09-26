@@ -383,6 +383,7 @@ namespace Stroika::Foundation::Characters::Private_ {
                     t.ToString ()
                 } -> convertible_to<Characters::String>;
             } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
+            //or Common::ISharedPtr<decay_t<T>>
 #if !__cpp_lib_format_ranges
 #if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
              or (ranges::range<decay_t<T>> and
@@ -438,6 +439,7 @@ static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::optional
 
 #if defined(__APPLE__)
 static_assert (Stroika::Foundation::Characters::IToString<std::shared_ptr<int>>);
+static_assert (Stroika::Foundation::Common::ISharedPtr<std::shared_ptr<int>>);
 #else
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::shared_ptr<int>, wchar_t>); // but not unique_ptr cuz not regular, even though supported by ToString()
 #endif

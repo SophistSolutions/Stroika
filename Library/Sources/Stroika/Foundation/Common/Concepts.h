@@ -165,6 +165,8 @@ namespace Stroika::Foundation::Common {
             };
         }
         ;
+    static_assert (ISharedPtr<shared_ptr<int>>);
+    static_assert (not ISharedPtr<int>);
 
     namespace Private_ {
         template <typename T, std::size_t N>
