@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
 #include "CommandLine.h"
 
@@ -230,6 +231,11 @@ CommandLine::CommandLine (int argc, const wchar_t* argv[])
     }
 }
 
+String CommandLine::GenerateUsage (Iterable<Option> options) const
+{
+    return GenerateUsage (GetAppName (), options);
+}
+
 String CommandLine::GenerateUsage (const String& exeName, Iterable<Option> options)
 {
     const String  kIndent_ = "    "sv;
@@ -278,9 +284,16 @@ void CommandLine::Validate (Iterable<Option> options) const
     }
 }
 
-String CommandLine::GetAppName () const
+String CommandLine::GetAppName (bool onlyBaseName) const
 {
-    return fArgs_.empty () ? String{} : fArgs_[0];
+    if (fArgs_.empty ()) {
+        return String{};
+    }
+    if (onlyBaseName) {
+        filesystem::path p = IO::FileSystem::ToPath (fArgs_[0]);
+        return IO::FileSystem::FromPath (p.stem ());
+    }
+    return fArgs_[0];
 }
 
 tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const

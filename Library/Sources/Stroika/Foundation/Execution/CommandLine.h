@@ -152,13 +152,15 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        static String GenerateUsage (const String& exeName, Iterable<Option> options);
+        nonvirtual String GenerateUsage (Iterable<Option> options) const;
+        static String     GenerateUsage (const String& exeName, Iterable<Option> options);
 
     public:
         /*
          *  return 'argv[0]'
+         *  
          */
-        nonvirtual String GetAppName () const;
+        nonvirtual String GetAppName (bool onlyBaseName = true) const;
 
     public:
         /*
