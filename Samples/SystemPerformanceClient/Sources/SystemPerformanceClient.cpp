@@ -229,7 +229,7 @@ int main (int argc, const char* argv[])
     const Execution::CommandLine::Option kTimeBetweenCapturesO_{
         .fSingleCharName = 'c', .fSupportsArgument = true, .fHelpArgName = "NSEC"sv, .fHelpOptionText = "time interval between captures"sv};
 
-    const initializer_list<Execution::CommandLine::Option> kAllOptions = {
+    const initializer_list<Execution::CommandLine::Option> kAllOptions_ = {
         kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_};
 
     bool                  printUsage            = cmdLine.Has (kHelp);
@@ -248,12 +248,12 @@ int main (int argc, const char* argv[])
         cmdLine.GetArguments (kRunInstrumentArg_).Map<Set<InstrumentNameType>> ([] (const String& s) { return InstrumentNameType{s}; });
 
     if (printUsage) {
-        cerr << Execution::CommandLine::GenerateUsage ("SystemPerformanceClient"sv, kAllOptions).AsNarrowSDKString ();
+        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
         return EXIT_SUCCESS;
     }
 
     try {
-        cmdLine.Validate ({kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_});
+        cmdLine.Validate (kAllOptions_);
         if (printNames) {
             Demo_PrintInstruments_ ();
         }
@@ -266,6 +266,11 @@ int main (int argc, const char* argv[])
         else {
             Demo_Using_Direct_Capture_On_Instrument_ (run, oneLineMode, Duration{captureInterval});
         }
+    }
+    catch (const Execution::InvalidCommandLineArgument&) {
+        cerr << "Error encountered: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+        return EXIT_SUCCESS;
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());

@@ -64,13 +64,13 @@ namespace {
     const Execution::CommandLine::Option kArchiveFileO_{
         .fSupportsArgument = true,
         .fRequired         = true,
-        .fHelpArgName      = "ARCHIVE-FILE",
+        .fHelpArgName      = "ARCHIVE-FILE"sv,
         .fHelpOptionText   = "ARCHIVE-FILE can be the single character - to designate stdin"sv // NYI stdin part...
     };
     const Execution::CommandLine::Option kOtherFilenamesO_{
         .fSupportsArgument = true,
         .fRepeatable       = true,
-        .fHelpArgName      = "FILE",
+        .fHelpArgName      = "FILE"sv,
     };
     const Execution::CommandLine::Option kOutputDirO_{.fLongName = "outputDirectory"sv, .fSupportsArgument = true, .fHelpOptionText = "(defaulting to .)"sv};
 
@@ -78,10 +78,6 @@ namespace {
         kHelp, kNoFailOnMissingO_, kListO_, kCreateO_, kExtractO_, kUpdateO_, kOutputDirO_, kArchiveFileO_, kOtherFilenamesO_,
     };
 
-    void Usage_ ()
-    {
-        cerr << Execution::CommandLine::GenerateUsage ("ArchiveUtility", kAllOptions_).AsNarrowSDKString ();
-    }
     // Emits errors to stderr, and Usage, etc, if needed, and not Optional<> has_value()
     optional<Options_> ParseOptions_ (int argc, const char* argv[])
     {
@@ -92,11 +88,11 @@ namespace {
             cmdLine.Validate (kAllOptions_);
         }
         catch (...) {
-            Usage_ ();
+            cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
             return optional<Options_>{};
         }
         if (cmdLine.Has (kHelp)) {
-            Usage_ ();
+            cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
             return optional<Options_>{};
         }
 
@@ -114,7 +110,7 @@ namespace {
         }
         else {
             cerr << "Missing operation" << endl;
-            Usage_ ();
+            cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
             return optional<Options_>{};
         }
         result.fArchiveFileName = IO::FileSystem::ToPath (Memory::ValueOf (cmdLine.GetArgument (kArchiveFileO_)));
@@ -172,8 +168,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (Execution::CommandLine{argc, argv}))};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Execution::CommandLine{argc, argv})};
     if (optional<Options_> o = ParseOptions_ (argc, argv)) {
         try {
             switch (o->fOperation) {
