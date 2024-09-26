@@ -49,7 +49,7 @@ if [ "$OUT_FILE_TYPE" == "AppCPlusPlusVersion" ]
 	echo "#ifndef $DEFINE_PROTECTOR " >> $VERSION_OUT_FILE
 	echo "#define $DEFINE_PROTECTOR 1" >> $VERSION_OUT_FILE
 	echo "#include \"Stroika/Foundation/StroikaPreComp.h\"" >> $VERSION_OUT_FILE
-	echo "#include \"Stroika/Foundation/Configuration/Version.h\"" >> $VERSION_OUT_FILE
+	echo "#include \"Stroika/Foundation/Common/Version.h\"" >> $VERSION_OUT_FILE
 	echo "namespace $CPPNAMESPACE {" >> $VERSION_OUT_FILE
 	echo "constexpr Stroika::Foundation::Common::Version  kVersion = Stroika::Foundation::Common::Version ($MAJOR, $MINOR, Stroika::Foundation::Common::VersionStage::$VERSIONSTAGE, $VERSIONSUBSTAGEINT, $VERSIONFINAL);" >> $VERSION_OUT_FILE
 	echo "}" >> $VERSION_OUT_FILE
