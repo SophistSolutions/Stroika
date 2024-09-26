@@ -436,7 +436,7 @@ static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::exceptio
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::filesystem::path, wchar_t>);
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::optional<int>, wchar_t>);
 
-#if defined(APPLE)
+#if defined(__APPLE__)
 static_assert (Stroika::Foundation::Characters::IToString<std::shared_ptr<int>>);
 #else
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::shared_ptr<int>, wchar_t>); // but not unique_ptr cuz not regular, even though supported by ToString()
