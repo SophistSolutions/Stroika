@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Queue_DoublyLinkedList (Queue_DoublyLinkedList&&) noexcept      = default;
         Queue_DoublyLinkedList (const Queue_DoublyLinkedList&) noexcept = default;
         Queue_DoublyLinkedList (const initializer_list<value_type>& src);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_DoublyLinkedList<T>>)
         explicit Queue_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy

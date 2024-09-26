@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Sequence_Array (Sequence_Array&&) noexcept      = default;
         Sequence_Array (const Sequence_Array&) noexcept = default;
         Sequence_Array (const initializer_list<value_type>& src);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_Array<T>>)
         explicit Sequence_Array (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy

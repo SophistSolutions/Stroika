@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers {
     using Common::ArgByValueType;
     using Common::IEqualsComparer;
     using Traversal::IInputIterator;
-    using Traversal::IIterableOf;
+    using Traversal::IIterableOfTo;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Containers {
             requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set<T>>)
         explicit Set (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
         Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();
         template <predicate<T> PREDICATE>

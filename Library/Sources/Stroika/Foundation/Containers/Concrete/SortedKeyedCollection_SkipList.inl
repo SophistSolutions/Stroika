@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<KEY_TYPE> COMPARER>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<KEY_TYPE> COMPARER>
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>>)
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (ITERABLE_OF_ADDABLE&& src)
@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<KEY_TYPE> COMPARER>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, IThreeWayComparer<KEY_TYPE> COMPARER>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
     {
@@ -241,7 +241,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IThreeWayComparer<KEY_TYPE> COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IThreeWayComparer<KEY_TYPE> COMPARER, IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline SortedKeyedCollection_SkipList<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_SkipList (const KeyExtractorType& keyExtractor,
                                                                                                 COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedKeyedCollection_SkipList{keyExtractor, forward<COMPARER> (keyComparer)}

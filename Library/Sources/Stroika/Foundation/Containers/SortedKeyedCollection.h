@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Containers {
         SortedKeyedCollection (const SortedKeyedCollection&) noexcept = default;
         template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_COMPARER&& keyComparer = KEY_COMPARER{});
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (ITERABLE_OF_ADDABLE&& src)
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>>)
@@ -136,10 +136,10 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (KEY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
-        template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER, IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)

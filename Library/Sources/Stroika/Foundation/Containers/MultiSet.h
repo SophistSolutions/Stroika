@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers {
     using Common::CountedValue;
     using Common::IEqualsComparer;
     using Traversal::IInputIterator;
-    using Traversal::IIterableOf;
+    using Traversal::IIterableOfTo;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Containers {
         MultiSet (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src)
             requires (IEqualsComparer<equal_to<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
         MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
@@ -249,13 +249,13 @@ namespace Stroika::Foundation::Containers {
          *  \note   AddAll/2 is alias for .net AddRange ()
          *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<typename TRAITS::CountedValueType>
          *
-         *  \req IInputIterator<typename TRAITS::CountedValueType> or IIterableOf<typename TRAITS::CountedValueType>
+         *  \req IInputIterator<typename TRAITS::CountedValueType> or IIterableOfTo<typename TRAITS::CountedValueType>
          *
          *  \note mutates container
          */
         template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
-        template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:

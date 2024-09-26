@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Queue_Array (Queue_Array&&) noexcept      = default;
         Queue_Array (const Queue_Array&) noexcept = default;
         Queue_Array (const initializer_list<value_type>& src);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_Array<T>>)
         explicit Queue_Array (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy

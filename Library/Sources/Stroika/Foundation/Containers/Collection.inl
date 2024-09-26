@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
         : Collection{}
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline void Collection<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, Collection<value_type>*>) {
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER>
     inline size_t Collection<T>::RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer)
     {
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {

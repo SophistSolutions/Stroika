@@ -490,7 +490,7 @@ namespace Stroika::Foundation::Common {
         using IsIterableOfT_t = integral_constant<bool, not same_as<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>>;
     }
     template <typename ITERABLE_OF_T, typename T>
-    [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterableOf concept")]] constexpr bool IsIterableOfT_v =
+    [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterableOfTo concept")]] constexpr bool IsIterableOfT_v =
         Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
 
     namespace Private_ {

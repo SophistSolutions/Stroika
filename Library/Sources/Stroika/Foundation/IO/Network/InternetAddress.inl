@@ -92,7 +92,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     template <ranges::range ITERABLE_OF_UINT8OrByte>
     inline InternetAddress::InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af)
-        requires (Traversal::IIterableOf<ITERABLE_OF_UINT8OrByte, byte> or Traversal::IIterableOf<ITERABLE_OF_UINT8OrByte, uint8_t>)
+        requires (Traversal::IIterableOfTo<ITERABLE_OF_UINT8OrByte, byte> or Traversal::IIterableOfTo<ITERABLE_OF_UINT8OrByte, uint8_t>)
         : fAddressFamily_{af}
     {
         Require (af != AddressFamily::V4 or octets.size () == 4);

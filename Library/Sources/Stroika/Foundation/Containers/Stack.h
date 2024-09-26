@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers {
 
     using Common::ArgByValueType;
     using Traversal::IInputIterator;
-    using Traversal::IIterableOf;
+    using Traversal::IIterableOfTo;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -100,10 +100,10 @@ namespace Stroika::Foundation::Containers {
         Stack (const Stack&) noexcept = default;
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename ITERABLE_OF_ADDABLE,
-                  enable_if_t<IIterableOf<ITERABLE_OF_ADDABLE, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>>* = nullptr>
+                  enable_if_t<IIterableOfTo<ITERABLE_OF_ADDABLE, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>>* = nullptr>
         explicit Stack (ITERABLE_OF_ADDABLE&& src);
 #else
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         explicit Stack (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>);
 #endif

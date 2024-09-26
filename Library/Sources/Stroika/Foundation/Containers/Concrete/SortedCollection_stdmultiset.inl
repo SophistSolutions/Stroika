@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection_stdmultiset<T>>)
     inline SortedCollection_stdmultiset<T>::SortedCollection_stdmultiset (ITERABLE_OF_ADDABLE&& src)
         : SortedCollection_stdmultiset{}
@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename T>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline SortedCollection_stdmultiset<T>::SortedCollection_stdmultiset (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedCollection_stdmultiset{forward<INORDER_COMPARER> (inOrderComparer)}
     {

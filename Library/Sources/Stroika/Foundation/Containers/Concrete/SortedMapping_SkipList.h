@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (three_way_comparable<KEY_TYPE>);
         template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER>
         SortedMapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit SortedMapping_SkipList (ITERABLE_OF_ADDABLE&& src)
             requires (three_way_comparable<KEY_TYPE>)
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 #endif
         ;
-        template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER, IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         SortedMapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         SortedMapping_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)

@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers {
     using Common::IEqualsComparer;
     using Common::KeyValuePair;
     using Traversal::IInputIterator;
-    using Traversal::IIterableOf;
+    using Traversal::IIterableOfTo;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers {
             requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         explicit Association (ITERABLE_OF_ADDABLE&& src)
             requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>>)
@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
         Association (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
@@ -359,7 +359,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
         template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
@@ -438,7 +438,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <IIterableOf<KEY_TYPE> ITERABLE_OF_KEY_TYPE>
+        template <IIterableOfTo<KEY_TYPE> ITERABLE_OF_KEY_TYPE>
         nonvirtual void RetainAll (const ITERABLE_OF_KEY_TYPE& items);
 
     public:
@@ -563,13 +563,13 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         nonvirtual Association operator+ (const ITERABLE_OF_ADDABLE& items) const;
 
     public:
         /**
          */
-        template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         nonvirtual Association& operator+= (const ITERABLE_OF_ADDABLE& items);
 
     public:

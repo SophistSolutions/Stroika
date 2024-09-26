@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedMultiSet_SkipList (const initializer_list<value_type>& src);
         template <IThreeWayComparer<T> COMPARER>
         SortedMultiSet_SkipList (COMPARER&& comparer, const initializer_list<value_type>& src);
-        template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet_SkipList<T, TRAITS>>)
         explicit SortedMultiSet_SkipList (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 #endif
         ;
-        template <IThreeWayComparer<T> COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+        template <IThreeWayComparer<T> COMPARER, IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         SortedMultiSet_SkipList (COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
         SortedMultiSet_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (ITERABLE_OF_ADDABLE&& src)
         requires (three_way_comparable<KEY_TYPE>)
@@ -256,7 +256,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IThreeWayComparer<KEY_TYPE> KEY_THREEWAY_COMPARER, IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline SortedMapping_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_SkipList (KEY_THREEWAY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMapping_SkipList{forward<KEY_THREEWAY_COMPARER> (keyComparer)}
     {

@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (ITERABLE_OF_ADDABLE&& src)
         requires (IEqualsComparer<equal_to<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
         : MultiSet{}
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename TRAITS>
-    template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     void MultiSet<T, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         // see http://stroika-bugs.sophists.com/browse/STK-645

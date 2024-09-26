@@ -43,7 +43,7 @@ void Common::UsePlatformDefaultLocaleAsDefaultLocale ()
 
 /*
  ********************************************************************************
- *********************** Common::GetAvailableLocales *********************
+ ************************* Common::GetAvailableLocales **************************
  ********************************************************************************
  */
 #if 0
@@ -75,7 +75,7 @@ vector<Characters::String> Common::GetAvailableLocales ()
 
 /*
  ********************************************************************************
- ************************* Common::FindLocaleName ************************
+ **************************** Common::FindLocaleName ****************************
  ********************************************************************************
  */
 Characters::String Common::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
@@ -138,7 +138,7 @@ optional<Characters::String> Common::FindLocaleNameQuietly (const Characters::St
 
 /*
  ********************************************************************************
- *************************** Common::FindNamedLocale *********************
+ ******************************* Common::FindNamedLocale ************************
  ********************************************************************************
  */
 locale Common::FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
@@ -148,7 +148,7 @@ locale Common::FindNamedLocale (const Characters::String& iso2LetterLanguageCode
 
 /*
  ********************************************************************************
- ******************** Common::FindNamedLocaleQuietly *********************
+ ********************** Common::FindNamedLocaleQuietly **************************
  ********************************************************************************
  */
 optional<locale> Common::FindNamedLocaleQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)

@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>>)
@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
     {
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <ITotallyOrderingComparer<KEY_TYPE> KEY_COMPARER, IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const KeyExtractorType& keyExtractor,
                                                                               KEY_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedKeyedCollection{keyExtractor, forward<KEY_COMPARER> (keyComparer)}

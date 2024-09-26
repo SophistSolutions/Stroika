@@ -81,16 +81,16 @@ namespace Stroika::Foundation::Traversal {
     concept IIterable = ranges::range<ITERABLE> and ITEM_PREDICATE<ranges::range_value_t<ITERABLE>>::value;
 
     /**
-     *  IIterableOf concept: IIterable with the constraint that the items produced by iteration are 'ConvertibleTo' the argument OF_T type
+     *  IIterableOfTo concept: IIterable with the constraint that the items produced by iteration are 'ConvertibleTo' the argument OF_T type
      *
      *  Checks if argument is ranges::range and if the value of items iterated over is convertible to OF_T.
      */
     template <typename ITERABLE, typename OF_T>
-    concept IIterableOf = IIterable<ITERABLE, Common::ConvertibleTo<OF_T>::template Test>;
-    static_assert (IIterableOf<vector<int>, int>);
-    static_assert (IIterableOf<vector<long int>, int>);
-    static_assert (IIterableOf<vector<int>, long int>);
-    static_assert (not IIterableOf<vector<string>, int>);
+    concept IIterableOfTo = IIterable<ITERABLE, Common::ConvertibleTo<OF_T>::template Test>;
+    static_assert (IIterableOfTo<vector<int>, int>);
+    static_assert (IIterableOfTo<vector<long int>, int>);
+    static_assert (IIterableOfTo<vector<int>, long int>);
+    static_assert (not IIterableOfTo<vector<string>, int>);
 
 #if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\"")

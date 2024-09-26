@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet_SkipList<T, TRAITS>>)
     inline SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet_SkipList{}
@@ -278,7 +278,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename T, typename TRAITS>
-    template <IThreeWayComparer<T> COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
+    template <IThreeWayComparer<T> COMPARER, IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet_SkipList<T, TRAITS>::SortedMultiSet_SkipList (COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet_SkipList{forward<COMPARER> (comparer)}
     {

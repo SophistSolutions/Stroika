@@ -217,10 +217,10 @@ namespace {
                 static_assert (input_iterator<Iterator<int>>); // @todo figure out why forward_iterator doesn't work here, but maybe OK
             }
             {
-                static_assert (Traversal::IIterableOf<vector<int>, int>);
-                static_assert (not Traversal::IIterableOf<vector<int>, char*>);
-                static_assert (not Traversal::IIterableOf<vector<int>, String>);
-                static_assert (not Traversal::IIterableOf<char, String>);
+                static_assert (Traversal::IIterableOfTo<vector<int>, int>);
+                static_assert (not Traversal::IIterableOfTo<vector<int>, char*>);
+                static_assert (not Traversal::IIterableOfTo<vector<int>, String>);
+                static_assert (not Traversal::IIterableOfTo<char, String>);
             }
             {
                 // Test from https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda

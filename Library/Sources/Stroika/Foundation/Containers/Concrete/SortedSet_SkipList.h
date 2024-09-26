@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedSet_SkipList (const initializer_list<T>& src);
         template <IThreeWayComparer<T> COMPARER>
         SortedSet_SkipList (COMPARER&& comparer, const initializer_list<T>& src);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet_SkipList<T>>)
         explicit SortedSet_SkipList (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 #endif
         ;
-        template <IThreeWayComparer<T> COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IThreeWayComparer<T> COMPARER, IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         SortedSet_SkipList (COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         SortedSet_SkipList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

@@ -102,8 +102,8 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::Test4_MappingCTOROverloads_"};
         using namespace Test4_MappingCTOROverloads_::xPrivate_;
         Mapping<int, A> from;
-        static_assert (Traversal::IIterableOf<Mapping<int, A>, KeyValuePair<int, A>>);
-        static_assert (Traversal::IIterableOf<Mapping<int, B>, KeyValuePair<int, B>>);
+        static_assert (Traversal::IIterableOfTo<Mapping<int, A>, KeyValuePair<int, A>>);
+        static_assert (Traversal::IIterableOfTo<Mapping<int, B>, KeyValuePair<int, B>>);
         Mapping<int, B> to1;
         for (auto i : from) {
             to1.Add (i);

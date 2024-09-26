@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers {
 
     using Common::ArgByValueType;
     using Traversal::IInputIterator;
-    using Traversal::IIterableOf;
+    using Traversal::IIterableOfTo;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&&) noexcept      = default;
         Collection (const Collection&) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
         Collection (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE>> ITERATOR_OF_ADDABLE2>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void RemoveAll ();
         template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer = {});
-        template <IIterableOf<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer = {});
         template <predicate<T> PREDICATE>
         nonvirtual size_t RemoveAll (PREDICATE&& p);

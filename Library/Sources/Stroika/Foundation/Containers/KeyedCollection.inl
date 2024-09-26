@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers {
 #endif
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer,
                                                                   ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection{keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer)}
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, ITERABLE_OF_ADDABLE&& src)
         requires (IEqualsComparer<KEY_TYPE, equal_to<KEY_TYPE>>)
         : KeyedCollection{keyExtractor, equal_to<KEY_TYPE>{}}
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Containers {
         return cntAdded;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         if constexpr (same_as<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection>) {
@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Containers {
         return nRemoved;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (const ITERABLE_OF_ADDABLE& items)
     {
         size_t cnt{};

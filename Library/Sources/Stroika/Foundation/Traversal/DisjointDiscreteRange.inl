@@ -33,13 +33,13 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename RANGE_TYPE>
-    template <IIterableOf<RANGE_TYPE> RANGES_OF_T>
+    template <IIterableOfTo<RANGE_TYPE> RANGES_OF_T>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (RANGES_OF_T&& from)
         : DisjointDiscreteRange{begin (forward<RANGES_OF_T> (from)), end (forward<RANGES_OF_T> (from))}
     {
     }
     template <typename T, typename RANGE_TYPE>
-    template <IIterableOf<T> TS>
+    template <IIterableOfTo<T> TS>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (TS&& from)
         : DisjointDiscreteRange{begin (forward<TS> (from)), end (forward<TS> (from))}
     {

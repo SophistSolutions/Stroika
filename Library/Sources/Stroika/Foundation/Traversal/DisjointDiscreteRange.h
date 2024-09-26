@@ -48,9 +48,9 @@ namespace Stroika::Foundation::Traversal {
         DisjointDiscreteRange (const DisjointDiscreteRange&) = default;
         DisjointDiscreteRange (const RangeType& from);
         DisjointDiscreteRange (const initializer_list<RangeType>& from);
-        template <IIterableOf<RANGE_TYPE> RANGES_OF_T>
+        template <IIterableOfTo<RANGE_TYPE> RANGES_OF_T>
         explicit DisjointDiscreteRange (RANGES_OF_T&& from);
-        template <IIterableOf<T> TS>
+        template <IIterableOfTo<T> TS>
         explicit DisjointDiscreteRange (TS&& from);
         template <IInputIterator<RANGE_TYPE> ITERATOR_OF_RANGE_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_RANGE_OF_T>> ITERATOR_OF_RANGE_OF_T2>
         explicit DisjointDiscreteRange (ITERATOR_OF_RANGE_OF_T&& start, ITERATOR_OF_RANGE_OF_T2&& end);
