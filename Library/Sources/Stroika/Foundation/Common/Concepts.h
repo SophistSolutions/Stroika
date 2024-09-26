@@ -126,6 +126,10 @@ namespace Stroika::Foundation::Common {
 
     namespace Private_ {
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        template <typename T1>
+        struct is_shared_ptr_ : std::false_type {};
+        template <typename T1>
+        struct is_shared_ptr_<T1> : std::true_type {};
         template <typename T1, typename T2 = void>
         struct is_pair_ : std::false_type {};
         template <typename T1, typename T2>
@@ -157,11 +161,18 @@ namespace Stroika::Foundation::Common {
      *  \brief return true iff argument type T, is std::shared_ptr<A> for some A types
      */
     template <typename T>
-    concept ISharedPtr = requires (T t) {
-        {
-            []<typename T1> (shared_ptr<T1>) {}(t)
-        };
-    };
+    concept ISharedPtr =
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        Private_::is_shared_ptr_<T>::value
+#else
+
+        requires (T t) {
+            {
+                []<typename T1> (shared_ptr<T1>) {}(t)
+            };
+        }
+#endif
+        ;
     static_assert (ISharedPtr<shared_ptr<int>>);
     static_assert (not ISharedPtr<int>);
 
