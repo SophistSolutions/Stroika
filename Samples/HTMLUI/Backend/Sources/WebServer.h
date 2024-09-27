@@ -23,7 +23,7 @@ namespace Stroika::Samples::HTMLUI {
      */
     class WebServer {
     public:
-        WebServer (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl);
+        WebServer (optional<uint16_t> portNumber);
 
     private:
         class Rep_;

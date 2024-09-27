@@ -14,6 +14,10 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+
+//tmphack will go into service module
+#include "Stroika/Foundation/Execution/Logger.h"
 
 #include "WSImpl.h"
 #include "WebServer.h"
@@ -30,6 +34,9 @@ using Containers::Sequence;
 
 using namespace Stroika::Samples::HTMLUI;
 
+//tmphack - move to Service.cpp
+using namespace Stroika::Foundation::IO::FileSystem;
+
 int main (int argc, const char* argv[])
 {
     Execution::CommandLine                               cmdLine{argc, argv};
@@ -38,8 +45,18 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    uint16_t              portNumber = 8080;
-    Time::DurationSeconds quitAfter  = Time::kInfinity;
+    optional<uint16_t>    portNumber;
+    Time::DurationSeconds quitAfter = Time::kInfinity;
+
+    //tmphack will go into service module
+    using Execution::Logger;
+    Logger::Activator loggerActivation{Logger::Options{
+        .fLogBufferingEnabled         = true,
+        .fSuppressDuplicatesThreshold = 15s,
+    }};
+    using namespace Stroika::Foundation::IO::FileSystem::FileStream; //tmphack
+    //  Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, AdoptFDPolicy::eDisconnectOnDestruction)));
+    Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (1, AdoptFDPolicy::eDisconnectOnDestruction)));
 
     using Execution::StandardCommandLineOptions::kHelp;
     const Execution::CommandLine::Option                   kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
@@ -59,8 +76,8 @@ int main (int argc, const char* argv[])
             return EXIT_SUCCESS;
         }
 
-        WebServer myWebServer{portNumber, make_shared<WSImpl> ()}; // listen and dispatch while this object exists
-        Execution::WaitableEvent{}.Wait (quitAfter);               // wait quitAfter seconds, or til user hits ctrl-c
+        WebServer myWebServer{portNumber};           // listen and dispatch while this object exists
+        Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
     }
     catch (const Execution::TimeOutException&) {
         cerr << "Timed out - so - exiting..." << endl;

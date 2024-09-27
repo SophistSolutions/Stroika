@@ -57,7 +57,7 @@ const ObjectVariantMapper AppConfigurationType::kMapper = [] () {
  ********************************************************************************
  */
 AppConfiguration_Storage_IMPL_::AppConfiguration_Storage_IMPL_ ()
-    : fOptionsFile_{"Server"sv, AppConfigurationType::kMapper, OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper ("Ask-HealthFrame"sv)}
+    : fOptionsFile_{"Server"sv, AppConfigurationType::kMapper, OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper ("Stroika-Sample-HTMLUI"sv)}
     , fActualCurrentConfigData_{fOptionsFile_.Read<AppConfigurationType> (AppConfigurationType{})}
 {
     Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date

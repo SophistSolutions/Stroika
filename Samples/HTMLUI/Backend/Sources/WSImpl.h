@@ -20,6 +20,18 @@ namespace Stroika::Samples::HTMLUI {
      */
     class WSImpl : public IWSAPI {
     public:
+        WSImpl (function<About::APIServerInfo::WebServer ()> webServerStatsFetcher);
+
+    public:
+        virtual Stroika::Frameworks::WebService::OpenAPI::Specification GetOpenAPISpecification () const override;
+
+    public:
+        virtual About about_GET () const override;
+
+    public:
+        virtual tuple<BLOB, InternetMediaType> resource_GET (const String& name) const override;
+
+    public:
         virtual Collection<String> Variables_GET () const override;
         virtual Number             Variables_GET (const String& variable) const override;
         virtual void               Variables_DELETE (const String& variable) const override;
@@ -30,6 +42,12 @@ namespace Stroika::Samples::HTMLUI {
         virtual Number minus (Number lhs, Number rhs) const override;
         virtual Number times (Number lhs, Number rhs) const override;
         virtual Number divide (Number lhs, Number rhs) const override;
+
+    private:
+        struct Rep_;
+
+    private:
+        shared_ptr<Rep_> fRep_;
     };
 
 }

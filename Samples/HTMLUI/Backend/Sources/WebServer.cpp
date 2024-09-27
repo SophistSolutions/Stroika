@@ -20,9 +20,12 @@
 #include "Stroika/Frameworks/WebService/Server/Basic.h"
 #include "Stroika/Frameworks/WebService/Server/VariantValue.h"
 
-#include "WebServer.h"
-
+#include "AppConfiguration.h"
 #include "AppVersion.h"
+#include "OperationalStatistics.h"
+#include "WSImpl.h"
+
+#include "WebServer.h"
 
 using namespace std;
 
@@ -70,7 +73,7 @@ public:
     static const WebServiceMethodDescription kTimes;
     static const WebServiceMethodDescription kDivide;
 
-    Rep_ (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
+    Rep_ (optional<uint16_t> portNumber)
         : kRoutes_{
               Route{""_RegEx, DefaultPage_},
 
@@ -141,8 +144,15 @@ public:
                                     } }})},
 
           }
-        , fWSImpl_{wsImpl}
-        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options{.fDefaultResponseHeaders = kDefaultResponseHeaders_}}
+        , fWSImpl_{make_shared<WSImpl> ([this] () -> About::APIServerInfo::WebServer {
+                About::APIServerInfo::WebServer r;
+                auto rr = this->fConnectionMgr_.statistics();
+                r.fThreadPool.fThreads             = static_cast<unsigned int> ( rr.fThreadPoolSize); // todo begingings of data to report
+                r.fThreadPool.fTasksStillQueued = rr.fThreadPoolStatistics.fNumberOfTasksAdded - rr.fThreadPoolStatistics.fNumberOfTasksCompleted;
+                r.fThreadPool.fAverageTaskRunTime = rr.fThreadPoolStatistics.GetMeanTimeConsumed ();
+                return r;
+            })}
+        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or(80))), kRoutes_, ConnectionManager::Options{.fDefaultResponseHeaders = kDefaultResponseHeaders_}}
     {
         // @todo - move this to some framework-specific regtests...
         using VariantValue = DataExchange::VariantValue;
@@ -234,7 +244,7 @@ const WebServiceMethodDescription WebServer::Rep_::kDivide{
     Sequence<String>{"divide the two argument numbers"},
 };
 
-WebServer::WebServer (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
-    : fRep_{make_shared<Rep_> (portNumber, wsImpl)}
+WebServer::WebServer (optional<uint16_t> portNumber)
+    : fRep_{make_shared<Rep_> (portNumber)}
 {
 }

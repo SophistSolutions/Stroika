@@ -243,6 +243,13 @@ const ObjectVariantMapper About::kMapper = [] () {
 const ObjectVariantMapper Stroika::Samples::HTMLUI::Model::kMapper = [] () {
     ObjectVariantMapper mapper;
 
+    mapper.AddCommonType<Collection<String>> ();
+
+    mapper.AddCommonType<Common::GUID> ();
+    mapper.AddCommonType<Collection<Common::GUID>> ();
+
+    mapper += About::kMapper;
+
     // Read/Write real/complex numbers
     mapper.Add<Number> (
         [] (const ObjectVariantMapper& mapper [[maybe_unused]], const Number* obj) -> VariantValue {

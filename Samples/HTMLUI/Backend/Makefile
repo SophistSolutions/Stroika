@@ -10,6 +10,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir			:=	$(StroikaRoot)Samples/HTMLUI/Backend/
 ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
+ResDir			:=	$(ObjDir)/Resources/
 
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/)
 
@@ -20,15 +21,20 @@ TARGETEXE		:=	$(TARGETDIR)HTMLUI${EXE_SUFFIX}
 VPATH	=			$(SrcDir)/Sources/
 
 
+SubDirs:=\
+
+SUBDIR_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) CONFIGURATION=$(CONFIGURATION) --directory $(dir) -s list-objs))
+
+# For .embed files
+CPPFLAGS += -I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ResDir))"
+
 Objs	:=	\
 	$(ObjDir)AppConfiguration${OBJ_SUFFIX}\
 	$(ObjDir)OperationalStatistics${OBJ_SUFFIX}\
-	$(ObjDir)IWSAPI${OBJ_SUFFIX}\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	$(ObjDir)Model${OBJ_SUFFIX}\
 	$(ObjDir)WebServer${OBJ_SUFFIX}\
 	$(ObjDir)WSImpl${OBJ_SUFFIX}\
-
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
@@ -42,10 +48,32 @@ $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
 $(Objs):	$(VERSION_FILE_OUT)
 
 
+Resources_Src:=\
+	../Docs/api.json \
+
+### assumes filenames all unique no matter what dir they come from
+Resources_EmbedFiles:=\
+	 $(patsubst %,%.embed,$(patsubst %,$(ResDir)%,$(notdir $(Resources_Src))))
+
+# $(info Resources_EmbedFiles=$(Resources_EmbedFiles))
+
+# easilest to just compile all if any out of date
+$(Resources_EmbedFiles):
+	@mkdir -p $(ResDir)
+	@for i in $(Resources_Src) ; do \
+		(cd `dirname $$i`; xxd -i `basename $$i` ${ResDir}/`basename $$i`.embed) ; \
+	done
+
+
+$(ObjDir)WSImpl${OBJ_SUFFIX}:	${Resources_EmbedFiles}
+
+
+# Objs += $(SUBDIR_OBJS)
 
 all:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/HTMLUI/Backend:"
 	@mkdir -p $(TARGETDIR)
+	@for s in ${SubDirs}; do $(MAKE) --directory $${s} -s MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all; done
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
@@ -62,3 +90,6 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
 	fi
 	@$(call DEFAULT_LINK_LINE,$@)
 
+
+clean::
+	@rm -rf $(ObjDir)

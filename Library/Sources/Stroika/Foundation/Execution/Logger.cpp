@@ -230,7 +230,7 @@ void Logger::Shutdown_ ()
 
 auto Logger::GetAppenders () const -> Traversal::Iterable<shared_ptr<IAppenderRep>>
 {
-    AssertNotNull (fRep_); // must be called while Logger::Activator exists
+    AssertNotNull (fRep_); // must be called while Logger::Activator exists (see Logger class description)
     return fRep_->fAppenders_;
 }
 
