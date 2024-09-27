@@ -11,7 +11,7 @@
 /**
  */
 
-namespace StroikaSample::WebServices {
+namespace Stroika::Samples::HTMLUI {
 
     /**
      *  \brief: WSImpl is the module providing the concrete C++ implementation (fully using C++ objects, exceptions etc) for the web service API.

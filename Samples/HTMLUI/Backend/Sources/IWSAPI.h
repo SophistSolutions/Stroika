@@ -13,7 +13,7 @@
 /**
  */
 
-namespace StroikaSample::WebServices {
+namespace Stroika::Samples::HTMLUI {
     using Stroika::Foundation::Characters::String;
     using Stroika::Foundation::Containers::Collection;
 

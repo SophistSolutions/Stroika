@@ -40,12 +40,12 @@ using Memory::BLOB;
 using Stroika::Frameworks::WebServer::Request;
 using Stroika::Frameworks::WebServer::Response;
 
-using namespace StroikaSample::WebServices;
+using namespace Stroika::Samples::HTMLUI;
 
 namespace {
     const Common::ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
         Headers h;
-        h.server = "Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString ();
+        h.server = "Stroika-Sample-HTMLUI/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;
     }};
 }

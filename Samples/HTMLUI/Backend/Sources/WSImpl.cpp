@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::Execution;
 
 using IO ::Network::HTTP::ClientErrorException;
 
-using namespace StroikaSample::WebServices;
+using namespace Stroika::Samples::HTMLUI;
 
 namespace {
     RWSynchronized<Mapping<String, Number>> sVariables_;

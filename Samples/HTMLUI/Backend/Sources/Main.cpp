@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Characters::Literals;
 using Characters::String;
 using Containers::Sequence;
 
-using namespace StroikaSample::WebServices;
+using namespace Stroika::Samples::HTMLUI;
 
 int main (int argc, const char* argv[])
 {

@@ -13,7 +13,7 @@
 
 #include "IWSAPI.h"
 
-namespace StroikaSample::WebServices {
+namespace Stroika::Samples::HTMLUI {
 
     using namespace std;
 

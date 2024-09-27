@@ -21,6 +21,8 @@ VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	:=	\
+	$(ObjDir)AppConfiguration${OBJ_SUFFIX}\
+	$(ObjDir)OperationalStatistics${OBJ_SUFFIX}\
 	$(ObjDir)IWSAPI${OBJ_SUFFIX}\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	$(ObjDir)Model${OBJ_SUFFIX}\
