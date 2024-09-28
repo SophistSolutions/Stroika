@@ -22,6 +22,11 @@ namespace Stroika::Foundation::Configuration {
 using namespace Configuration => Using namespace Common; etc...
 - 
 
+Generally simplify 
+            Debug::RegisterDefaultFatalErrorHandlers (Execution::DefaultLoggingFatalErrorHandler);
+            SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
+or no args/defaults...
+
 ---
 
 ### 3.0d10 {2024-09-24} {[diff](../../compare/v3.0d9...v3.0d10)}

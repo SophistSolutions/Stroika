@@ -70,6 +70,9 @@ public:
     shared_ptr<IWSAPI>    fWSImpl_;        // application logic actually handling webservices
     ConnectionManager     fConnectionMgr_; // manage http connection objects, thread pool, etc
 
+    /*
+     * data to track web method call counts, just to report api usage stats
+     */
     atomic<unsigned int> fActiveCallCnt_{0};
     struct ActiveCallCounter_ {
         ActiveCallCounter_ (Rep_& r)
@@ -83,6 +86,8 @@ public:
         }
         Rep_& fRep_;
     };
+
+    // for usage stats
     IntervalTimer::Adder fIntervalTimerAdder_;
 
     static const WebServiceMethodDescription kVariables_;

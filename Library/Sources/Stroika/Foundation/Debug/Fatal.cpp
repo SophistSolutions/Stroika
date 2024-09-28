@@ -16,22 +16,12 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 
-namespace {
-    void (*sFatalErrorHandler_) (const SDKChar* msg) noexcept = nullptr; // our handlers can never get called until  RegisterDefaultFatalErrorHandlers () is called
-
-    void TerminateHandler_ ()
-    {
-        (sFatalErrorHandler_) (SDKSTR ("std::terminate () called"));
-    }
-#if qPlatform_Windows
-    void PurecallHandler_ ()
-    {
-        (sFatalErrorHandler_) (SDKSTR ("purecall_handler_ () called"));
-    }
-#endif
-}
-
-void DefaultLoggingFatalErrorHandler ([[maybe_unused]] const SDKChar* msg) noexcept
+/*
+ ********************************************************************************
+ ************************ Debug::DefaultFatalErrorHandler ***********************
+ ********************************************************************************
+ */
+void Debug::DefaultFatalErrorHandler ([[maybe_unused]] const SDKChar* msg) noexcept
 {
     DbgTrace ("Fatal Error {} encountered"_f, String::FromSDKString (msg));
     if (auto exc = current_exception ()) {
@@ -49,9 +39,30 @@ void DefaultLoggingFatalErrorHandler ([[maybe_unused]] const SDKChar* msg) noexc
     abort ();
 }
 
+
+/*
+ ********************************************************************************
+ ******************* Debug::RegisterDefaultFatalErrorHandlers *******************
+ ********************************************************************************
+ */
+namespace {
+    void (*sFatalErrorHandler_) (const SDKChar* msg) noexcept = nullptr; // our handlers can never get called until  RegisterDefaultFatalErrorHandlers () is called, so nullptr better (BSS storage in case never used)
+    void TerminateHandler_ ()
+    {
+        (sFatalErrorHandler_) (SDKSTR ("std::terminate () called"));
+    }
+#if qPlatform_Windows
+    void PurecallHandler_ ()
+    {
+        (sFatalErrorHandler_) (SDKSTR ("purecall_handler_ () called"));
+    }
+#endif
+}
+
 void Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const SDKChar* msg) noexcept)
 {
-    sFatalErrorHandler_ = (fatalErrorHandler == nullptr) ? DefaultLoggingFatalErrorHandler : fatalErrorHandler;
+    RequireNotNull (fatalErrorHandler);
+    sFatalErrorHandler_ = fatalErrorHandler;
     set_terminate (TerminateHandler_);
 #if qPlatform_Windows
     // Not C++ standard - just msvc error call

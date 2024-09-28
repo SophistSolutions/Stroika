@@ -9,11 +9,12 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Debug/BackTrace.h"
+// #include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Fatal.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
+#include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
@@ -23,9 +24,6 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
 #endif
-
-//tmphack will go into service module
-#include "Stroika/Foundation/Execution/Logger.h"
 
 #include "AppConfiguration.h"
 #include "AppVersion.h"
@@ -39,16 +37,15 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Characters::Literals;
 
+using namespace Stroika::Frameworks::Service;
+
 using Characters::String;
 using Containers::Sequence;
 
 using namespace Stroika::Samples::HTMLUI;
 
-//tmphack - move to Service.cpp
-using namespace Stroika::Foundation::IO::FileSystem;
-using namespace Stroika::Frameworks::Service;
-
 namespace {
+    using StandardCommandLineOptions::kHelp;
     struct MyApp_ {
         SignalHandlerRegistry::SafeSignalsManager fSafeSignals;
 
@@ -56,6 +53,10 @@ namespace {
             .fLogBufferingEnabled         = true,
             .fSuppressDuplicatesThreshold = 30s,
         }};
+
+        static inline const Execution::CommandLine::Option           kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
+        static inline const Execution::CommandLine::Option           kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+        static inline const Sequence<Execution::CommandLine::Option> kAllOptions_{kHelp, kPortO_, kQuitAfterO_};
 
         MyApp_ ()
         {
@@ -68,12 +69,12 @@ namespace {
             Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
 #endif
             Debug::RegisterDefaultFatalErrorHandlers (Execution::DefaultLoggingFatalErrorHandler);
-            SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{FatalSignalHandler_, SignalHandler::Type::eDirect});
+            SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
 #if qPlatform_POSIX
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 
-            // now replace preliminary appenders after reading configuration
+            // replace preliminary appenders
             Logger::sThe.SetAppenders ([] () {
                 static const String kAppName_                            = "Stroika-Sample-HTMLUI"sv;
                 using Logging                                            = AppConfigurationType::Logging;
@@ -95,9 +96,6 @@ namespace {
                 return appenders;
             }());
         }
-        ~MyApp_ ()
-        {
-        }
 
         int Run (const Execution::CommandLine& cmdLine)
         {
@@ -113,12 +111,10 @@ namespace {
              */
             Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator;
 
-            shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
-            serviceIntegrationRep = make_shared<Main::LoggerServiceWrapper> (serviceIntegrationRep);
+            shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep =
+                make_shared<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
 
-            optional<uint16_t> portNumberOverride; // restructure so from commandline
-
-            Main m{make_shared<Stroika::Samples::HTMLUI ::Service::SampleAppServiceRep> (portNumberOverride), serviceIntegrationRep};
+            Main m{make_shared<Stroika::Samples::HTMLUI ::Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
             try {
                 const CommandLine::Option kStatusOpt_ = CommandLine::Option{.fLongName = "status"sv};
                 if (cmdLine.Has (kStatusOpt_)) {
@@ -186,24 +182,23 @@ namespace {
             cerr << endl;
         }
 
-        static void FatalSignalHandler_ (Execution::SignalID signal) noexcept
-        {
-            Thread::SuppressInterruptionInContext suppressCtx;
-            DbgTrace ("Fatal Signal: {} encountered"_f, Execution::SignalToName (signal));
-            Logger::sThe.Log (Logger::eCriticalError, "Fatal Signal: {}; Aborting..."_f, Execution::SignalToName (signal));
-            Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Debug::BackTrace::Capture ());
-            Logger::sThe.Flush ();
-            std::_Exit (EXIT_FAILURE); // skip
-        }
-
+    public:
         struct Options_ {
-
             static inline const initializer_list<CommandLine::Option> kAllOptions_{
                 StandardCommandLineOptions::kHelp,
             };
 
+            optional<uint16_t>    fPortNumberOverride;
+            Time::DurationSeconds fQuitAfter{Time::kInfinity};
+
             Options_ (const Execution::CommandLine& cmdLine)
             {
+                if (auto o = cmdLine.GetArgument (kPortO_)) {
+                    fPortNumberOverride = Characters::String2Int<uint16_t> (*o);
+                }
+                if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+                    fQuitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+                }
             }
         };
     };

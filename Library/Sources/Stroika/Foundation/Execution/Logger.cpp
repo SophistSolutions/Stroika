@@ -565,6 +565,11 @@ Logger::Activator::~Activator ()
     sThe.fRep_.reset ();
 }
 
+/*
+ ********************************************************************************
+ ***************** Execution::DefaultLoggingFatalErrorHandler *******************
+ ********************************************************************************
+ */
 void Execution::DefaultLoggingFatalErrorHandler (const Characters::SDKChar* msg) noexcept
 {
     Thread::SuppressInterruptionInContext suppressCtx;
@@ -572,6 +577,21 @@ void Execution::DefaultLoggingFatalErrorHandler (const Characters::SDKChar* msg)
     Logger::sThe.Log (Logger::eCriticalError, "Fatal Error: {}; Aborting..."_f, String::FromSDKString (msg));
     Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Debug::BackTrace::Capture ());
     Logger::sThe.Log (Logger::eCriticalError, "Uncaught exception: {}"_f, std::current_exception ());
+    Logger::sThe.Flush ();
+    std::_Exit (EXIT_FAILURE); // skip
+}
+
+/*
+ ********************************************************************************
+ ***************** Execution::DefaultLoggingCrashSignalHandler ******************
+ ********************************************************************************
+ */
+void Execution::DefaultLoggingCrashSignalHandler (Execution::SignalID signal) noexcept
+{
+    Thread::SuppressInterruptionInContext suppressCtx;
+    DbgTrace ("Fatal Signal: {} encountered"_f, Execution::SignalToName (signal));
+    Logger::sThe.Log (Logger::eCriticalError, "Fatal Signal: {}; Aborting..."_f, Execution::SignalToName (signal));
+    Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Debug::BackTrace::Capture ());
     Logger::sThe.Flush ();
     std::_Exit (EXIT_FAILURE); // skip
 }

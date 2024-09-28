@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Signals.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -432,6 +433,11 @@ namespace Stroika::Foundation::Execution {
      * Sensible argument to RegisterDefaultFatalErrorHandlers, if using Logger (but beware - caller must assure Logger::Activate called appropriately)
      */
     void DefaultLoggingFatalErrorHandler ([[maybe_unused]] const Characters::SDKChar* msg) noexcept;
+
+    /**
+     * Sensible argument to SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals(...), if using Logger (but beware - caller must assure Logger::Activate called appropriately)
+     */
+    void DefaultLoggingCrashSignalHandler (Execution::SignalID signal) noexcept;
 
 }
 
