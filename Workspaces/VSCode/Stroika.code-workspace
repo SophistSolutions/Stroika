@@ -145,7 +145,10 @@
 			"stacktrace": "cpp",
 			"__verbose_abort": "cpp",
 			"xmlexports.h": "c",
-			"expected": "cpp"
+			"expected": "cpp",
+			"generator": "cpp",
+			"print": "cpp",
+			"stdfloat": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
