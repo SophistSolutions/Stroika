@@ -39,7 +39,6 @@ void Debug::DefaultFatalErrorHandler ([[maybe_unused]] const SDKChar* msg) noexc
     abort ();
 }
 
-
 /*
  ********************************************************************************
  ******************* Debug::RegisterDefaultFatalErrorHandlers *******************

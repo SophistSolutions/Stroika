@@ -9,7 +9,6 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-// #include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Fatal.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
@@ -54,9 +53,9 @@ namespace {
             .fSuppressDuplicatesThreshold = 30s,
         }};
 
-        static inline const Execution::CommandLine::Option           kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
-        static inline const Execution::CommandLine::Option           kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
-        static inline const Sequence<Execution::CommandLine::Option> kAllOptions_{kHelp, kPortO_, kQuitAfterO_};
+        static inline const Execution::CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
+        static inline const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+        static inline const Sequence<Execution::CommandLine::Option> kAllOptions_{kHelp, kPortO_, kQuitAfterO_}; //wrong add opts from service
 
         MyApp_ ()
         {
@@ -68,7 +67,7 @@ namespace {
             Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
             Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
 #endif
-            Debug::RegisterDefaultFatalErrorHandlers (Execution::DefaultLoggingFatalErrorHandler);
+            Debug::RegisterDefaultFatalErrorHandlers (DefaultLoggingFatalErrorHandler);
             SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
 #if qPlatform_POSIX
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
@@ -101,10 +100,6 @@ namespace {
         {
             Options_ options{cmdLine};
 
-            // if (options.fGeneratePrompt or options.fOutputFile) {
-            //     return EXIT_SUCCESS;
-            // }
-
             /*
              * Several components use interval timers, and this allows those modules to run (but have timer service started/shutdown in a controlled
              * fashion).
@@ -115,14 +110,24 @@ namespace {
                 make_shared<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
 
             Main m{make_shared<Stroika::Samples::HTMLUI ::Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
+
+            if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+                ShowUsage_ (m);
+                return EXIT_SUCCESS;
+            }
+            try {
+                cmdLine.Validate (kAllOptions_);
+            }
+            catch (const Execution::InvalidCommandLineArgument&) {
+                cerr << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
+                cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+                return EXIT_FAILURE;
+            }
+
             try {
                 const CommandLine::Option kStatusOpt_ = CommandLine::Option{.fLongName = "status"sv};
                 if (cmdLine.Has (kStatusOpt_)) {
                     cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
-                    return EXIT_SUCCESS;
-                }
-                else if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
-                    ShowUsage_ (m);
                     return EXIT_SUCCESS;
                 }
                 else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
@@ -184,10 +189,9 @@ namespace {
 
     public:
         struct Options_ {
-            static inline const initializer_list<CommandLine::Option> kAllOptions_{
-                StandardCommandLineOptions::kHelp,
-            };
-
+            // static inline const initializer_list<CommandLine::Option> kAllOptions_{
+            //     StandardCommandLineOptions::kHelp,
+            // };
             optional<uint16_t>    fPortNumberOverride;
             Time::DurationSeconds fQuitAfter{Time::kInfinity};
 

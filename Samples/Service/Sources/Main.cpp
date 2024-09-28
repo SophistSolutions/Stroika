@@ -57,34 +57,6 @@ using Execution::Logger;
 #endif
 
 namespace {
-    void FatalErorrHandler_ (const Characters::SDKChar* msg) noexcept
-    {
-        Thread::SuppressInterruptionInContext suppressCtx;
-        DbgTrace ("Fatal Error {} encountered"_f, String::FromSDKString (msg));
-#if qUseLogger
-        Logger::sThe.Log (Logger::eCriticalError, "Fatal Error: {}; Aborting..."_f, String::FromSDKString (msg));
-        Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Debug::BackTrace::Capture ());
-        if (std::exception_ptr exc = std::current_exception ()) {
-            Logger::sThe.Log (Logger::eCriticalError, "Uncaught exception: {}"_f, exc);
-        }
-        Logger::sThe.Flush ();
-#endif
-        std::_Exit (EXIT_FAILURE); // skip
-    }
-    void FatalSignalHandler_ (Execution::SignalID signal) noexcept
-    {
-        Thread::SuppressInterruptionInContext suppressCtx;
-        DbgTrace ("Fatal Signal encountered: {}"_f, Execution::SignalToName (signal));
-#if qUseLogger
-        Logger::sThe.Log (Logger::eCriticalError, "Fatal Signal: {}; Aborting..."_f, Execution::SignalToName (signal));
-        Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Debug::BackTrace::Capture ());
-        Logger::sThe.Flush ();
-#endif
-        std::_Exit (EXIT_FAILURE); // skip
-    }
-}
-
-namespace {
     void ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
     {
         if (not e.fMessage.empty ()) {
@@ -150,12 +122,12 @@ int main (int argc, const char* argv[])
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
     Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
 #endif
-    Debug::RegisterDefaultFatalErrorHandlers (FatalErorrHandler_); // override the default handler to emit message via Logger
+    Debug::RegisterDefaultFatalErrorHandlers (Execution::DefaultLoggingFatalErrorHandler);
 
     /*
      *  SetStandardCrashHandlerSignals not really needed, but helpful for many applications so you get a decent log message/debugging on crash.
      */
-    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{FatalSignalHandler_, SignalHandler::Type::eDirect});
+    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
 
     /*
      *  Ignore SIGPIPE is common practice/helpful in POSIX, but not required by the service manager.
