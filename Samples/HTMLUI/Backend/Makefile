@@ -33,6 +33,7 @@ Objs	:=	\
 	$(ObjDir)OperationalStatistics${OBJ_SUFFIX}\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	$(ObjDir)Model${OBJ_SUFFIX}\
+	$(ObjDir)Service${OBJ_SUFFIX}\
 	$(ObjDir)WebServer${OBJ_SUFFIX}\
 	$(ObjDir)WSImpl${OBJ_SUFFIX}\
 

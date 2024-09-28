@@ -10,12 +10,15 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/Execution/IntervalTimer.h"
+#include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
+#include "Stroika/Frameworks/WebServer/DefaultFaultInterceptor.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
 #include "Stroika/Frameworks/WebService/Server/Basic.h"
 #include "Stroika/Frameworks/WebService/Server/VariantValue.h"
@@ -33,6 +36,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks::WebServer;
 using namespace Stroika::Frameworks::WebService;
@@ -65,6 +69,21 @@ public:
     const Sequence<Route> kRoutes_;        // rules saying how to map urls to code
     shared_ptr<IWSAPI>    fWSImpl_;        // application logic actually handling webservices
     ConnectionManager     fConnectionMgr_; // manage http connection objects, thread pool, etc
+
+    atomic<unsigned int> fActiveCallCnt_{0};
+    struct ActiveCallCounter_ {
+        ActiveCallCounter_ (Rep_& r)
+            : fRep_{r}
+        {
+            ++r.fActiveCallCnt_;
+        }
+        ~ActiveCallCounter_ ()
+        {
+            --fRep_.fActiveCallCnt_;
+        }
+        Rep_& fRep_;
+    };
+    IntervalTimer::Adder fIntervalTimerAdder_;
 
     static const WebServiceMethodDescription kVariables_;
 
@@ -121,7 +140,7 @@ public:
                             number                                           = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                         }
                         if (not number) {
-                            Execution::Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
+                            Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
                         }
                         fWSImpl_->Variables_SET (varName, *number);
                         WriteResponse (&m->rwResponse (), kVariables_);
@@ -140,7 +159,7 @@ public:
               Route{HTTP::MethodsRegEx::kPost, "divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{"arg1"sv, "arg2"sv}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
               Route{"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{"err-if-more-than-10"sv}, function<void (double)>{[] (double check) {
                                     if (check > 10) {
-                                        Execution::Throw (Execution::Exception{"more than 10"sv});
+                                        Throw (Exception{"more than 10"sv});
                                     } }})},
 
           }
@@ -153,14 +172,24 @@ public:
                 return r;
             })}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or(80))), kRoutes_, ConnectionManager::Options{.fDefaultResponseHeaders = kDefaultResponseHeaders_}}
+ , fIntervalTimerAdder_{[this] () {
+                           Debug::TraceContextBumper ctx{"webserver status gather TIMER HANDLER"}; // to debug https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues/78
+                           OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
+                           OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (fConnectionMgr_.connections ().length ());
+                           OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fConnectionMgr_.activeConnections ().length ());
+                       },
+                       15s, IntervalTimer::Adder::eRunImmediately}
     {
-        // @todo - move this to some framework-specific regtests...
-        using VariantValue = DataExchange::VariantValue;
-        Sequence<VariantValue> tmp =
-            OrderParamValues (Iterable<String>{"page", "xxx"}, PickoutParamValuesFromURL (URI{"http://www.sophist.com?page=5"}));
-        Assert (tmp.size () == 2);
-        Assert (tmp[0].ConvertTo (VariantValue::eInteger) == 5);
-        Assert (tmp[1] == nullptr);
+        using Stroika::Frameworks::WebServer::DefaultFaultInterceptor;
+        DefaultFaultInterceptor defaultHandler;
+        fConnectionMgr_.defaultErrorHandler = DefaultFaultInterceptor{[defaultHandler] (Message* m, const exception_ptr& e) {
+            // Unsure if we should bother recording 404s
+            DbgTrace ("faulting on request {}"_f, Characters::ToString (m->request ()));
+            OperationalStatisticsMgr::ProcessAPICmd::NoteError ();
+            defaultHandler.HandleFault (m, e);
+        }};
+
+        Logger::sThe.Log (Logger::eInfo, "Started WebServices on {}"_f, fConnectionMgr_.bindings ());
     }
     // Can declare arguments as Request*,Response*
     static void DefaultPage_ (Request*, Response* response)
