@@ -152,8 +152,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        nonvirtual String GenerateUsage (Iterable<Option> options) const;
-        static String     GenerateUsage (const String& exeName, Iterable<Option> options);
+        nonvirtual String GenerateUsage (const Iterable<Option>& options) const;
+        static String     GenerateUsage (const String& exeName, const Iterable<Option>& options);
 
     public:
         /*

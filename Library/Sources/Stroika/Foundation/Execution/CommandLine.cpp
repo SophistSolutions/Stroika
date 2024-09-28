@@ -231,34 +231,42 @@ CommandLine::CommandLine (int argc, const wchar_t* argv[])
     }
 }
 
-String CommandLine::GenerateUsage (Iterable<Option> options) const
+String CommandLine::GenerateUsage (const Iterable<Option>& options) const
 {
     return GenerateUsage (GetAppName (), options);
 }
 
-String CommandLine::GenerateUsage (const String& exeName, Iterable<Option> options)
+String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>& options)
 {
     const String  kIndent_ = "    "sv;
     StringBuilder sb;
-    sb << "Usage: " << exeName;
+    sb << "Usage: "sv << exeName;
     options.Apply ([&] (Option o) {
         sb << " [" << o.GetArgumentDescription (true) << "]"sv;
         if (o.fRepeatable) {
             if (o.fRequired) {
-                sb << "+";
+                sb << "+"sv;
             }
             else {
-                sb << "*";
+                sb << "*"sv;
             }
         }
         else if (not o.fRequired) {
-            sb << "?";
+            sb << "?"sv;
         }
     });
     sb << "\n"sv;
-    options.Apply ([&] (Option o) {
+    size_t maxArgDescLen{0}; // used to tab-out descriptions so they align
+    options.Apply ([&] (const Option& o) {
         if (o.fHelpOptionText) {
-            sb << kIndent_ << o.GetArgumentDescription () << " " << *o.fHelpOptionText << "\n";
+            maxArgDescLen = max (maxArgDescLen, o.GetArgumentDescription ().length ());
+        }
+    });
+    options.Apply ([&] (const Option& o) {
+        if (o.fHelpOptionText) {
+            String argDesc = o.GetArgumentDescription ();
+            sb << kIndent_ << argDesc << " "_k.Repeat (static_cast<unsigned int> (kIndent_.length () + maxArgDescLen - argDesc.size ()))
+               << "/* " << *o.fHelpOptionText << " */\n";
         }
     });
     return sb;

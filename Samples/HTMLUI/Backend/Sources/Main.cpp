@@ -14,10 +14,10 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/Logger.h"
-#include "Stroika/Foundation/Execution/Module.h"
+// #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
-#include "Stroika/Foundation/Execution/WaitableEvent.h"
+// #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
@@ -42,8 +42,15 @@ using namespace Stroika::Frameworks::Service;
 using namespace Stroika::Samples::HTMLUI;
 
 namespace {
-    using StandardCommandLineOptions::kHelp;
+    /**
+     * Simple shell application logic - setting up appropriate modules/components as needed, and handling command line processing.
+     */
     struct MyApp_ {
+        /*
+         * Setup of modules which always happens (not just when running service) - can be done here, if it requires
+         * no command line arguments. Then neatly shut down in DTOR automatically.
+         */
+
         SignalHandlerRegistry::SafeSignalsManager fSafeSignals;
 
         Logger::Activator fLoggerActivation{Logger::Options{
@@ -51,9 +58,10 @@ namespace {
             .fSuppressDuplicatesThreshold = 30s,
         }};
 
-        static inline const CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
-        static inline const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
-        static inline const Sequence<CommandLine::Option> kAllOptions_{kHelp, kPortO_, kQuitAfterO_}; //wrong add opts from service
+        static inline const CommandLine::Option           kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
+        static inline const Sequence<CommandLine::Option> kAllOptions_{
+            Sequence<CommandLine::Option>{Main::CommandOptions::kAll} +
+            Sequence<CommandLine::Option>{StandardCommandLineOptions::kHelp, kPortO_, StandardCommandLineOptions::kVersion}};
 
         MyApp_ ()
         {
@@ -77,6 +85,24 @@ namespace {
 
         int Run (const CommandLine& cmdLine)
         {
+            /**
+             *  Validate command-line arguments, handle some simple command line tasks, and parse the rest of the options
+             *  into Options_ which will be used later.
+             */
+            try {
+                cmdLine.Validate (kAllOptions_);
+            }
+            catch (const InvalidCommandLineArgument&) {
+                cerr << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
+                cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+                return EXIT_FAILURE;
+            }
+
+            if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+                cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+                return EXIT_SUCCESS;
+            }
+
             Options_ options{cmdLine};
 
             // replace preliminary appenders, after we've read the configuration (gAppConfiguration)
@@ -101,98 +127,46 @@ namespace {
                 return appenders;
             }());
 
+            /*
+             *  Create the service manager objects
+             */
             shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep =
                 make_shared<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
-
             Main m{make_shared<Stroika::Samples::HTMLUI ::Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
 
-            if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
-                ShowUsage_ (m);
-                return EXIT_SUCCESS;
-            }
-            try {
-                //cmdLine.Validate (kAllOptions_);  cannot do til we fix service options
-            }
-            catch (const InvalidCommandLineArgument&) {
-                cerr << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
-                cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
-                return EXIT_FAILURE;
-            }
-
-            const CommandLine::Option kStatusOpt_ = CommandLine::Option{.fLongName = "status"sv};
-            if (cmdLine.Has (kStatusOpt_)) {
+            if (cmdLine.Has (Main::CommandOptions::kStatus)) {
                 cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
                 return EXIT_SUCCESS;
             }
             else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
                 cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "sv
-                        << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
+                     << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
                 return EXIT_SUCCESS;
             }
+
             /*
              * Several components use interval timers, and this allows those modules to run (but have timer service started/shutdown in a controlled
              * fashion).
              */
             IntervalTimer::Manager::Activator intervalTimerMgrActivator;
 
-            m.Run (cmdLine);
+            /*
+             *  This handles the typical case, where the service is just run, or some service command is being issued to the service manager.
+             */
+            m.Run (options.fServiceArgs);
             return EXIT_SUCCESS;
-        }
-
-        static void ShowUsage_ (const Main& m, const InvalidCommandLineArgument& e = {})
-        {
-            if (not e.fMessage.empty ()) {
-                cerr << "Error: " << e.fMessage.AsUTF8<string> () << endl;
-                cerr << endl;
-            }
-            cerr << "Usage: " << m.GetServiceDescription ().fRegistrationName.AsNarrowSDKString () << " [options] where options can be :\n ";
-            if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
-                cerr << "\t--" << String{Main::CommandNames::kInstall}.AsNarrowSDKString ()
-                     << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
-                cerr << "\t--" << String{Main::CommandNames::kUnInstall}.AsNarrowSDKString ()
-                     << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
-            }
-            cerr << "\t--" << String{Main::CommandNames::kRunAsService}.AsNarrowSDKString ()
-                 << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kRunDirectly}.AsNarrowSDKString () << "          /* Run this process as a directly (doesn't exit until the serivce is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */"
-                 << endl;
-            cerr << "\t--" << String{Main::CommandNames::kStart}.AsNarrowSDKString ()
-                 << "                 /* Service/Control Function: Start the service */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kStop}.AsNarrowSDKString ()
-                 << "                  /* Service/Control Function: Stop the service */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kForcedStop}.AsNarrowSDKString ()
-                 << "            /* Service/Control Function: Forced stop the service (after trying to normally stop) */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kRestart}.AsNarrowSDKString ()
-                 << "               /* Service/Control Function: Stop and then re-start the service (ok if already stopped) */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kForcedRestart}.AsNarrowSDKString ()
-                 << "         /* Service/Control Function: Stop (force if needed) and then re-start the service (ok if already stopped) */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kReloadConfiguration}.AsNarrowSDKString () << "  /* Reload service configuration */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kPause}.AsNarrowSDKString ()
-                 << "                 /* Service/Control Function: Pause the service */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kContinue}.AsNarrowSDKString ()
-                 << "              /* Service/Control Function: Continue the paused service */" << endl;
-            cerr << "\t--Status                /* Service/Control Function: Print status of running service */ " << endl;
-            cerr << "\t--Version               /* print this application version */ " << endl;
-            cerr << "\t--help                  /* Print this help. */ " << endl;
-            cerr << endl
-                 << "\tExtra unrecognized parameters for start/restart, and forcedrestart operations will be passed along to the actual "
-                    "service process"
-                 << endl;
-            cerr << endl;
         }
 
     public:
         struct Options_ {
-            optional<uint16_t>    fPortNumberOverride;
-            Time::DurationSeconds fQuitAfter{Time::kInfinity};
+            optional<uint16_t> fPortNumberOverride;
+            Main::CommandArgs  fServiceArgs;
 
             Options_ (const CommandLine& cmdLine)
+                : fServiceArgs{cmdLine}
             {
                 if (auto o = cmdLine.GetArgument (kPortO_)) {
                     fPortNumberOverride = Characters::String2Int<uint16_t> (*o);
-                }
-                if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
-                    fQuitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
                 }
             }
         };

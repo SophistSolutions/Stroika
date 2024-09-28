@@ -1256,7 +1256,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *          EXPECT_TRUE (c.Mean () == 4);
+         *          EXPECT_EQ (c.Mean (), 4);
          *      \endcode
          *
          *  \note   returns nullopt if empty list
