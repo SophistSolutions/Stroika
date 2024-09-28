@@ -34,12 +34,10 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
-using namespace Stroika::Foundation::Characters::Literals;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks::Service;
-
-using Characters::String;
-using Containers::Sequence;
 
 using namespace Stroika::Samples::HTMLUI;
 
@@ -53,16 +51,19 @@ namespace {
             .fSuppressDuplicatesThreshold = 30s,
         }};
 
-        static inline const Execution::CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
-        static inline const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
-        static inline const Sequence<Execution::CommandLine::Option> kAllOptions_{kHelp, kPortO_, kQuitAfterO_}; //wrong add opts from service
+        static inline const CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
+        static inline const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+        static inline const Sequence<CommandLine::Option> kAllOptions_{kHelp, kPortO_, kQuitAfterO_}; //wrong add opts from service
 
         MyApp_ ()
         {
-            // Default - in case any logging writes happen before we setup the configured one
+            // Default - in case any logging writes happen before we setup the configured logging appenders
             Logger::sThe.SetAppenders (make_shared<Logger::StreamAppender> (
                 IO::FileSystem::FileOutputStream::New (1, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
 
+            /**
+             * Setup various error/assertion error handlers/checkers
+             */
 #if qPlatform_Windows
             Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
             Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
@@ -72,8 +73,13 @@ namespace {
 #if qPlatform_POSIX
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
+        }
 
-            // replace preliminary appenders
+        int Run (const CommandLine& cmdLine)
+        {
+            Options_ options{cmdLine};
+
+            // replace preliminary appenders, after we've read the configuration (gAppConfiguration)
             Logger::sThe.SetAppenders ([] () {
                 static const String kAppName_                            = "Stroika-Sample-HTMLUI"sv;
                 using Logging                                            = AppConfigurationType::Logging;
@@ -94,17 +100,6 @@ namespace {
 #endif
                 return appenders;
             }());
-        }
-
-        int Run (const Execution::CommandLine& cmdLine)
-        {
-            Options_ options{cmdLine};
-
-            /*
-             * Several components use interval timers, and this allows those modules to run (but have timer service started/shutdown in a controlled
-             * fashion).
-             */
-            Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator;
 
             shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep =
                 make_shared<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
@@ -116,36 +111,35 @@ namespace {
                 return EXIT_SUCCESS;
             }
             try {
-                cmdLine.Validate (kAllOptions_);
+                //cmdLine.Validate (kAllOptions_);  cannot do til we fix service options
             }
-            catch (const Execution::InvalidCommandLineArgument&) {
+            catch (const InvalidCommandLineArgument&) {
                 cerr << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
                 cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
                 return EXIT_FAILURE;
             }
 
-            try {
-                const CommandLine::Option kStatusOpt_ = CommandLine::Option{.fLongName = "status"sv};
-                if (cmdLine.Has (kStatusOpt_)) {
-                    cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
-                    return EXIT_SUCCESS;
-                }
-                else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
-                    cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "sv
-                         << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
-                    return EXIT_SUCCESS;
-                }
-                else {
-                    m.Run (cmdLine);
-                }
+            const CommandLine::Option kStatusOpt_ = CommandLine::Option{.fLongName = "status"sv};
+            if (cmdLine.Has (kStatusOpt_)) {
+                cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
+                return EXIT_SUCCESS;
             }
-            catch (const Execution::InvalidCommandLineArgument& e) {
-                ShowUsage_ (m, e);
+            else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
+                cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "sv
+                        << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
+                return EXIT_SUCCESS;
             }
+            /*
+             * Several components use interval timers, and this allows those modules to run (but have timer service started/shutdown in a controlled
+             * fashion).
+             */
+            IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+
+            m.Run (cmdLine);
             return EXIT_SUCCESS;
         }
 
-        static void ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = {})
+        static void ShowUsage_ (const Main& m, const InvalidCommandLineArgument& e = {})
         {
             if (not e.fMessage.empty ()) {
                 cerr << "Error: " << e.fMessage.AsUTF8<string> () << endl;
@@ -189,13 +183,10 @@ namespace {
 
     public:
         struct Options_ {
-            // static inline const initializer_list<CommandLine::Option> kAllOptions_{
-            //     StandardCommandLineOptions::kHelp,
-            // };
             optional<uint16_t>    fPortNumberOverride;
             Time::DurationSeconds fQuitAfter{Time::kInfinity};
 
-            Options_ (const Execution::CommandLine& cmdLine)
+            Options_ (const CommandLine& cmdLine)
             {
                 if (auto o = cmdLine.GetArgument (kPortO_)) {
                     fPortNumberOverride = Characters::String2Int<uint16_t> (*o);
@@ -213,66 +204,10 @@ int main (int argc, char* argv[])
 {
     try {
         MyApp_ myApp;
-        return myApp.Run (Execution::CommandLine{argc, argv});
+        return myApp.Run (CommandLine{argc, argv});
     }
     catch (...) {
         cerr << endl << "EXCEPTION: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
     }
     return EXIT_SUCCESS;
-#if 0
-    Execution::CommandLine                               cmdLine{argc, argv};
-    Debug::TraceContextBumper                            ctx{"main", "argv={}"_f, cmdLine};
-    Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
-#if qPlatform_POSIX
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
-#endif
-    optional<uint16_t>    portNumber;
-    Time::DurationSeconds quitAfter = Time::kInfinity;
-
-    //tmphack will go into service module
-    using Execution::Logger;
-    Logger::Activator loggerActivation{Logger::Options{
-        .fLogBufferingEnabled         = true,
-        .fSuppressDuplicatesThreshold = 15s,
-    }};
-    using namespace Stroika::Foundation::IO::FileSystem::FileStream; //tmphack
-    //  Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, AdoptFDPolicy::eDisconnectOnDestruction)));
-    Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (1, AdoptFDPolicy::eDisconnectOnDestruction)));
-
-    using Execution::StandardCommandLineOptions::kHelp;
-    const Execution::CommandLine::Option                   kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
-    const Execution::CommandLine::Option                   kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
-    const initializer_list<Execution::CommandLine::Option> kAllOptions_{kHelp, kPortO_, kQuitAfterO_};
-    try {
-        cmdLine.Validate (kAllOptions_);
-
-        if (auto o = cmdLine.GetArgument (kPortO_)) {
-            portNumber = Characters::String2Int<uint16_t> (*o);
-        }
-        if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
-            quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
-        }
-        if (cmdLine.Has (kHelp)) {
-            cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
-            return EXIT_SUCCESS;
-        }
-
-        WebServer myWebServer{portNumber};           // listen and dispatch while this object exists
-        Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
-    }
-    catch (const Execution::TimeOutException&) {
-        cerr << "Timed out - so - exiting..." << endl;
-        return EXIT_SUCCESS;
-    }
-    catch (const Execution::InvalidCommandLineArgument&) {
-        cerr << "Error encountered: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
-        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
-        return EXIT_SUCCESS;
-    }
-    catch (...) {
-        cerr << "Error encountered: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << " - terminating..." << endl;
-        return EXIT_FAILURE;
-    }
-    return EXIT_SUCCESS;
-#endif
 }
