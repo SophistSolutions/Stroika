@@ -267,7 +267,7 @@ DEFAULT_LINK_LINE=\
 
 # copy LinkTime_CopyFilesToEXEDir files to EXEDIR
 ifneq ($(LinkTime_CopyFilesToEXEDir),)
-	DEFAULT_LINK_LINE += ; cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1)
+	DEFAULT_LINK_LINE += && cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1)
 endif
 
 
