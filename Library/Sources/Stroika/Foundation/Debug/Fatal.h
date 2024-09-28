@@ -19,13 +19,18 @@
 namespace Stroika::Foundation::Debug {
 
     /**
+     * Default argument to RegisterDefaultFatalErrorHandlers
+     */
+    void DefaultFatalErrorHandler ([[maybe_unused]] const Characters::SDKChar* msg) noexcept;
+
+    /**
      *  set_unexpected () and set_terminate () to handlers which will abort the applicaiton and
      *  print to the tracelog.
      *
      *  If called with no argument, it installs its OWN handler. To replace with your own, either call
      *  with an explicit handler here or call the underlying C++ APIs.
      */
-    void RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) noexcept = nullptr);
+    void RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) noexcept = &DefaultFatalErrorHandler);
 
 }
 

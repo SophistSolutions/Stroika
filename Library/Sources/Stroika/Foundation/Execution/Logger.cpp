@@ -10,19 +10,22 @@
 #include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/SDKChar.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Debug/BackTrace.h"
+#include "Stroika/Foundation/Debug/Debugger.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/BlockingQueue.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/Execution/Process.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/Streams/TextWriter.h"
 #include "Stroika/Foundation/Time/DateTime.h"
-
-#include "BlockingQueue.h"
-#include "Common.h"
-#include "Process.h"
-#include "Synchronized.h"
-#include "Thread.h"
-#include "TimeOutException.h"
 
 #include "Logger.h"
 
@@ -560,4 +563,15 @@ Logger::Activator::~Activator ()
     Assert (sThe.fRep_ != nullptr); // this is the only way it gets cleared so better not be null
     sThe.Shutdown_ ();              // @todo maybe cleanup this code now that we have activator architecture?
     sThe.fRep_.reset ();
+}
+
+void Execution::DefaultLoggingFatalErrorHandler (const Characters::SDKChar* msg) noexcept
+{
+    Thread::SuppressInterruptionInContext suppressCtx;
+    DbgTrace ("Fatal Error: {} encountered"_f, String::FromSDKString (msg));
+    Logger::sThe.Log (Logger::eCriticalError, "Fatal Error: {}; Aborting..."_f, String::FromSDKString (msg));
+    Logger::sThe.Log (Logger::eCriticalError, "Backtrace: {}"_f, Debug::BackTrace::Capture ());
+    Logger::sThe.Log (Logger::eCriticalError, "Uncaught exception: {}"_f, std::current_exception ());
+    Logger::sThe.Flush ();
+    std::_Exit (EXIT_FAILURE); // skip
 }

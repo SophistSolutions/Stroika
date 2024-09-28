@@ -428,6 +428,11 @@ namespace Stroika::Foundation::Execution {
     };
 #endif
 
+    /**
+     * Sensible argument to RegisterDefaultFatalErrorHandlers, if using Logger (but beware - caller must assure Logger::Activate called appropriately)
+     */
+    void DefaultLoggingFatalErrorHandler ([[maybe_unused]] const Characters::SDKChar* msg) noexcept;
+
 }
 
 /*
