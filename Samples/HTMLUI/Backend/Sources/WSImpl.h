@@ -31,18 +31,6 @@ namespace Stroika::Samples::HTMLUI {
     public:
         virtual tuple<BLOB, InternetMediaType> resource_GET (const String& name) const override;
 
-    public:
-        virtual Collection<String> Variables_GET () const override;
-        virtual Number             Variables_GET (const String& variable) const override;
-        virtual void               Variables_DELETE (const String& variable) const override;
-        virtual void               Variables_SET (const String& variable, const Number& value) override;
-
-    public:
-        virtual Number plus (Number lhs, Number rhs) const override;
-        virtual Number minus (Number lhs, Number rhs) const override;
-        virtual Number times (Number lhs, Number rhs) const override;
-        virtual Number divide (Number lhs, Number rhs) const override;
-
     private:
         struct Rep_;
 

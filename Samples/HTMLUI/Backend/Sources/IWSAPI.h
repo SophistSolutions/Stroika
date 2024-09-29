@@ -49,20 +49,6 @@ namespace Stroika::Samples::HTMLUI {
 
     public:
         virtual tuple<BLOB, InternetMediaType> resource_GET (const String& name) const = 0;
-
-    public:
-        virtual Collection<String> Variables_GET () const                                      = 0;
-        virtual Number             Variables_GET (const String& variable) const                = 0;
-        virtual void               Variables_DELETE (const String& variable) const             = 0;
-        virtual void               Variables_SET (const String& variable, const Number& value) = 0;
-
-    public:
-        /**
-         */
-        virtual Number plus (Number lhs, Number rhs) const   = 0;
-        virtual Number minus (Number lhs, Number rhs) const  = 0;
-        virtual Number times (Number lhs, Number rhs) const  = 0;
-        virtual Number divide (Number lhs, Number rhs) const = 0;
     };
 
 }

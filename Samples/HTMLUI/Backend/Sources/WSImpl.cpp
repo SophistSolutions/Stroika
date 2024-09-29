@@ -52,9 +52,6 @@ using namespace Stroika::Samples::HTMLUI;
 using IO::Network::URI;
 using Memory::BLOB;
 
-namespace {
-    RWSynchronized<Mapping<String, Number>> sVariables_;
-}
 
 namespace {
     namespace Resources_ {
@@ -186,51 +183,4 @@ tuple<BLOB, InternetMediaType> WSImpl::resource_GET (const String& name) const
         return make_tuple (GetOpenAPISpecification ().As (Frameworks::WebService::OpenAPI::kMediaType), Frameworks::WebService::OpenAPI::kMediaType);
     }
     Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
-}
-
-Collection<String> WSImpl::Variables_GET () const
-{
-    return sVariables_.cget ()->Keys ();
-}
-
-Number WSImpl::Variables_GET (const String& variable) const
-{
-    if (auto o = sVariables_.cget ()->Lookup (variable)) {
-        return *o;
-    }
-    Execution::Throw (ClientErrorException{"no such variable"sv});
-}
-
-void WSImpl::Variables_DELETE (const String& variable) const
-{
-    sVariables_.rwget ()->Remove (variable);
-}
-
-void WSImpl::Variables_SET (const String& variable, const Number& value)
-{
-    sVariables_.rwget ()->Add (variable, value);
-}
-
-Number WSImpl::plus (Number lhs, Number rhs) const
-{
-    return lhs + rhs;
-}
-
-Number WSImpl::minus (Number lhs, Number rhs) const
-{
-    return lhs - rhs;
-}
-
-Number WSImpl::times (Number lhs, Number rhs) const
-{
-    return lhs * rhs;
-}
-
-Number WSImpl::divide (Number lhs, Number rhs) const
-{
-    if (rhs == Number{0}) {
-        // Note - important to use ClientErrorException so web-server returns HTTP status 400, instead of 500
-        Execution::Throw (ClientErrorException{"divide by zero"sv});
-    }
-    return lhs / rhs;
 }
