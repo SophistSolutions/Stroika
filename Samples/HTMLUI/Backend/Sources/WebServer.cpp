@@ -93,50 +93,47 @@ public:
     static const WebServiceMethodDescription kAbout_;
 
     Rep_ (optional<uint16_t> portNumber)
-        : kRoutes_{
-              Route{"/api"_RegEx, DefaultPage_},
+        : kRoutes_{Route{"/api"_RegEx, DefaultPage_},
 
-            /**
+                   /**
              * /about - health check etc
              */
-            Route{
-                "/api/about"_RegEx,
-                mkRequestHandler (kAbout_, About::kMapper, function<About (void)>{[this] () { ActiveCallCounter_ acc{*this}; return fWSImpl_->about_GET (); }})},
+                   Route{"/api/about"_RegEx, mkRequestHandler (kAbout_, About::kMapper, function<About (void)>{[this] () {
+                                                                   ActiveCallCounter_ acc{*this};
+                                                                   return fWSImpl_->about_GET ();
+                                                               }})},
 
-            /**
+                   /**
              * /resource
              */
-            Route{HTTP::MethodsRegEx::kGet, "/api/resource/(.+)"_RegEx, [this] (Message* m, const String& resID) {
-                ActiveCallCounter_ acc{*this};
-                auto r = fWSImpl_->resource_GET (resID);
-                m->rwResponse().contentType  = get<InternetMediaType> (r);
-                m->rwResponse().write (get<BLOB> (r));
-            }}
+                   Route{HTTP::MethodsRegEx::kGet, "/api/resource/(.+)"_RegEx,
+                         [this] (Message* m, const String& resID) {
+                             ActiveCallCounter_ acc{*this};
+                             auto               r         = fWSImpl_->resource_GET (resID);
+                             m->rwResponse ().contentType = get<InternetMediaType> (r);
+                             m->rwResponse ().write (get<BLOB> (r));
+                         }}
 
           }
         , fWSImpl_{make_shared<WSImpl> ([this] () -> About::APIServerInfo::WebServer {
-                About::APIServerInfo::WebServer r;
-                auto rr = this->fConnectionMgr_.statistics();
-                r.fThreadPool.fThreads             = static_cast<unsigned int> ( rr.fThreadPoolSize); // todo begingings of data to report
-                r.fThreadPool.fTasksStillQueued = rr.fThreadPoolStatistics.fNumberOfTasksAdded - rr.fThreadPoolStatistics.fNumberOfTasksCompleted;
-                r.fThreadPool.fAverageTaskRunTime = rr.fThreadPoolStatistics.GetMeanTimeConsumed ();
-                return r;
-            })}
-        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or(80))),
-         kRoutes_, 
-         ConnectionManager::Options{
-             .fMaxConcurrentlyHandledConnections = 20
-             ,.fDefaultResponseHeaders = kDefaultResponseHeaders_     
-             ,.fCollectStatistics = true
-             }
-         }
- , fIntervalTimerAdder_{[this] () {
-                           Debug::TraceContextBumper ctx{"webserver status gather TIMER HANDLER"}; // to debug https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues/78
-                           OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
-                           OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (fConnectionMgr_.connections ().length ());
-                           OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fConnectionMgr_.activeConnections ().length ());
-                       },
-                       15s, IntervalTimer::Adder::eRunImmediately}
+            About::APIServerInfo::WebServer r;
+            auto                            rr = this->fConnectionMgr_.statistics ();
+            r.fThreadPool.fThreads             = static_cast<unsigned int> (rr.fThreadPoolSize); // todo begingings of data to report
+            r.fThreadPool.fTasksStillQueued = rr.fThreadPoolStatistics.fNumberOfTasksAdded - rr.fThreadPoolStatistics.fNumberOfTasksCompleted;
+            r.fThreadPool.fAverageTaskRunTime = rr.fThreadPoolStatistics.GetMeanTimeConsumed ();
+            return r;
+        })}
+        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (80))), kRoutes_,
+                          ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 20,
+                                                     .fDefaultResponseHeaders            = kDefaultResponseHeaders_,
+                                                     .fCollectStatistics                 = true}}
+        , fIntervalTimerAdder_{[this] () {
+                                   Debug::TraceContextBumper ctx{"webserver status gather TIMER HANDLER"}; // to debug https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues/78
+                                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
+                                   OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (fConnectionMgr_.connections ().length ());
+                                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fConnectionMgr_.activeConnections ().length ());
+                               },
+                               15s, IntervalTimer::Adder::eRunImmediately}
     {
         using Stroika::Frameworks::WebServer::DefaultFaultInterceptor;
         DefaultFaultInterceptor defaultHandler;
@@ -152,22 +149,22 @@ public:
     // Can declare arguments as Request*,Response*
     static void DefaultPage_ (Request*, Response* response)
     {
-         WriteDocsPage (
-            response,
-            Sequence<WebServiceMethodDescription>{
-                kAbout_,
-            },
-            DocsOptions{.fH1Text = "Stroika-Sample-HTMLUI"_k,
-                        .fIntroductoryText = "EARLY DRAFT. ."_k,
-                        .fVariables2Substitute =
-                            Mapping<String, String>{
-                                {"ShowAsExternalURI"sv,
-                                 gAppConfiguration->ShowAsExternalURL
-                                     .value_or (Characters::Format ("http://[::1]:{}"_f, gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
-                                     .As<String> ()
-                                     .AssureEndsWith ('/')}},
-                        //.fOpenAPISpecification    = kOpenAPISpecification,
-                        .fOpenAPISpecificationURI = URI{"resource/api.json"sv}});
+        WriteDocsPage (response,
+                       Sequence<WebServiceMethodDescription>{
+                           kAbout_,
+                       },
+                       DocsOptions{.fH1Text           = "Stroika-Sample-HTMLUI"_k,
+                                   .fIntroductoryText = "EARLY DRAFT. ."_k,
+                                   .fVariables2Substitute =
+                                       Mapping<String, String>{
+                                           {"ShowAsExternalURI"sv,
+                                            gAppConfiguration->ShowAsExternalURL
+                                                .value_or (Characters::Format ("http://[::1]:{}"_f, gAppConfiguration->WebServerPort.value_or (
+                                                                                                        AppConfigurationType::kWebServerPort_Default)))
+                                                .As<String> ()
+                                                .AssureEndsWith ('/')}},
+                                   //.fOpenAPISpecification    = kOpenAPISpecification,
+                                   .fOpenAPISpecificationURI = URI{"resource/api.json"sv}});
     }
 };
 

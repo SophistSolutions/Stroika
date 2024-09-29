@@ -52,7 +52,6 @@ using namespace Stroika::Samples::HTMLUI;
 using IO::Network::URI;
 using Memory::BLOB;
 
-
 namespace {
     namespace Resources_ {
         constexpr
@@ -109,7 +108,6 @@ About WSImpl::about_GET () const
     // NB: this code counts on ReferenceContentManager::gThe being initialized before we can get any webservice calls
 
     static const Sequence<ComponentInfo> kAPIServerComponents_{initializer_list<ComponentInfo>{
-
         ComponentInfo{"Stroika"sv, Version{kStroika_Version_FullVersion}.AsPrettyVersionString (), URI{"https://github.com/SophistSolutions/Stroika"sv}}
 #if qHasFeature_boost
         ,
