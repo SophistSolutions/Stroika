@@ -172,7 +172,7 @@ public:
  *  Documentation on WSAPIs
  */
 const WebServiceMethodDescription WebServer::Rep_::kAbout_{
-    "/api/about"sv,
+    "api/about"sv,
     Set<String>{IO::Network::HTTP::Methods::kGet},
     DataExchange::InternetMediaTypes::kJSON,
     "Data about the AskHealthFrame server status, version etc"sv,
