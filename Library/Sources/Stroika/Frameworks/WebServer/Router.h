@@ -80,7 +80,8 @@ namespace Stroika::Frameworks::WebServer {
          *  \note that the request handler is called with any String arguments based on the pathMatch regular expression.
          * 
          *  \note that Routes that match on a hostRelativeURI, the hostRelativeURI is first normalized (funny characters translated to unicode, sequences of // removed etc)
-         *        before matching against the regular expression.
+         *        before matching against the regular expression. This means that it is always a mistake for a route URI match to begin with a slash, as it will
+         *        never match.
          * 
          *  \par Example Usage (GET with explicit method regexp)
          *      \code
