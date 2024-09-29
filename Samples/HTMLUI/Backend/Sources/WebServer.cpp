@@ -15,7 +15,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+// #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/DefaultFaultInterceptor.h"
@@ -93,20 +93,20 @@ public:
     static const WebServiceMethodDescription kAbout_;
 
     Rep_ (optional<uint16_t> portNumber)
-        : kRoutes_{Route{"/api"_RegEx, DefaultPage_},
+        : kRoutes_{Route{"api/?"_RegEx, DefaultPage_},
 
                    /**
-             * /about - health check etc
-             */
-                   Route{"/api/about"_RegEx, mkRequestHandler (kAbout_, About::kMapper, function<About (void)>{[this] () {
-                                                                   ActiveCallCounter_ acc{*this};
-                                                                   return fWSImpl_->about_GET ();
-                                                               }})},
+                     * /about - health check etc
+                     */
+                   Route{"api/about/?"_RegEx, mkRequestHandler (kAbout_, About::kMapper, function<About (void)>{[this] () {
+                                                                    ActiveCallCounter_ acc{*this};
+                                                                    return fWSImpl_->about_GET ();
+                                                                }})},
 
                    /**
-             * /resource
-             */
-                   Route{HTTP::MethodsRegEx::kGet, "/api/resource/(.+)"_RegEx,
+                     * /resource
+                     */
+                   Route{HTTP::MethodsRegEx::kGet, "api/resource/(.+)"_RegEx,
                          [this] (Message* m, const String& resID) {
                              ActiveCallCounter_ acc{*this};
                              auto               r         = fWSImpl_->resource_GET (resID);
@@ -128,6 +128,7 @@ public:
                                                      .fDefaultResponseHeaders            = kDefaultResponseHeaders_,
                                                      .fCollectStatistics                 = true}}
         , fIntervalTimerAdder_{[this] () {
+                                   // capture stats at regular time intervals
                                    Debug::TraceContextBumper ctx{"webserver status gather TIMER HANDLER"}; // to debug https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues/78
                                    OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
                                    OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (fConnectionMgr_.connections ().length ());
@@ -143,7 +144,6 @@ public:
             OperationalStatisticsMgr::ProcessAPICmd::NoteError ();
             defaultHandler.HandleFault (m, e);
         }};
-
         Logger::sThe.Log (Logger::eInfo, "Started WebServices on {}"_f, fConnectionMgr_.bindings ());
     }
     // Can declare arguments as Request*,Response*
@@ -154,7 +154,7 @@ public:
                            kAbout_,
                        },
                        DocsOptions{.fH1Text           = "Stroika-Sample-HTMLUI"_k,
-                                   .fIntroductoryText = "EARLY DRAFT. ."_k,
+                                   .fIntroductoryText = "EARLY DRAFT..."_k,
                                    .fVariables2Substitute =
                                        Mapping<String, String>{
                                            {"ShowAsExternalURI"sv,

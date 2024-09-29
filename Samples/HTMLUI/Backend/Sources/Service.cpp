@@ -38,26 +38,6 @@ namespace {
     const Main::ServiceDescription kServiceDescription_{"Stroika-Sample-HTMLUI Service"_k, "Stroika-Sample-HTMLUI Service"_k};
 }
 
-namespace {
-    //
-    // Typically have one like this for each major module your service manages.
-    //
-    // These get defined/declared in that module, and just referenced here
-    //
-    struct SomeModuleALikeWebServer_ {
-        // initialize that service//module here, including starting any threads
-        SomeModuleALikeWebServer_ ()
-            : fSomeOtherTaskDoingRealWork_{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New (
-                                                                                        [] () {
-                                                                                            Execution::Sleep (24h); // wait 1 day ... simple test....
-                                                                                        },
-                                                                                        Thread::eAutoStart)}
-        {
-        }
-        ~SomeModuleALikeWebServer_ () = default;
-        Thread::CleanupPtr fSomeOtherTaskDoingRealWork_;
-    };
-}
 SampleAppServiceRep::SampleAppServiceRep (optional<uint16_t> portNumberOverride)
     : fPortNumberOverride_{portNumberOverride}
 {
@@ -79,15 +59,6 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
             Logger::sThe.Log (Logger::eError, "Failed to successfully start service"_f);
         }
     });
-
-    /*
-     *  Startup modules.
-     *
-     *  \note initialized in the order given here, and shutdown in the reverse order, so order really does matter.
-     *        Put the more general ones with fewest dependencies first.
-     */
-    //  SomeModuleALikeWebServer_ moduleA;
-    //SomeModuleALikeWebServer_ moduleB; // typically of a differnt type
 
     startedCB (); // Notify service control mgr that the service has started
 

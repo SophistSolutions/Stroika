@@ -105,8 +105,6 @@ About WSImpl::about_GET () const
     using APIEndpoint     = APIServerInfo::APIEndpoint;
     using Database        = APIServerInfo::Database;
 
-    // NB: this code counts on ReferenceContentManager::gThe being initialized before we can get any webservice calls
-
     static const Sequence<ComponentInfo> kAPIServerComponents_{initializer_list<ComponentInfo>{
         ComponentInfo{"Stroika"sv, Version{kStroika_Version_FullVersion}.AsPrettyVersionString (), URI{"https://github.com/SophistSolutions/Stroika"sv}}
 #if qHasFeature_boost
@@ -168,7 +166,7 @@ About WSImpl::about_GET () const
         return r;
     }();
     APIServerInfo::WebServer webServerStats = [&] () { return fRep_->fWebServerStatsFetcher (); }();
-    optional<Database>       dbStats; // no DB for now
+    optional<Database>       dbStats; // no DB in this demo
 
     return About{AppVersion::kVersion,
                  APIServerInfo{AppVersion::kVersion, kAPIServerComponents_, machineInfo, processInfo, apiStats, webServerStats, dbStats}};
