@@ -50,7 +50,7 @@
       //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-WebServer/WebServer.exe",
       "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-HTMLUI/Backend/HTMLUI.exe",
       // "program": "${workspaceFolder}/Tests/37/Test37.exe",
-      "args": [],
+      "args": ["--port=8084", "--run-directly" ],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
       "environment": [],

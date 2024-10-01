@@ -1,0 +1,26 @@
+// app global css in SCSS form
+
+.pageCard {
+  margin-top: 5px;
+  // border-top-style:solid ;
+  // border-color: lightgray;
+
+  box-shadow: 2px 2px 8px 4px rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+
+.pageCard:hover {
+  box-shadow: 3px 3px 8px 6px rgba(0, 0, 0, 0.2);
+}
+
+// NOT to be confused with no-wrap, which does flex-wrap: none
+.truncateWithElipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.debugInfoJSONViewers {
+  margin-right: 2em;
+  background-color: transparent !important;
+}

@@ -1,0 +1,55 @@
+{
+  "name": "stroika-htmlui-quasarexample",
+  "version": "1.0.0",
+  "description": "stroika-htmlui-quasarexample",
+  "productName": "stroika-htmlui-quasarexample",
+  "author": "Lewis Pringle <lewis@sophists.com>",
+  "private": true,
+  "scripts": {
+    "dev": "quasar dev",
+    "build": "quasar build",
+    "lint": "eslint --ext .js,.ts,.vue ./",
+    "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@quasar/cli": "^2.4.1",
+    "@quasar/extras": "^1.0.0",
+    "@vueuse/core": "^10.0",
+    "dotenv": "^16.0.1",
+    "luxon": "^3.4",
+    "moment": "^2.29.3",
+    "pinia": "^2.2",
+    "pinia-plugin-persistedstate": "^3.2.1",
+    "quasar": "^2.16",
+    "t": "^0.5.1",
+    "vue": "^3.4.0",
+    "vue-json-viewer": "^3.0.4",
+    "vue-router": "^4.4 "
+  },
+  "devDependencies": {
+    "@quasar/app-vite": "^1.0.0",
+    "@types/luxon": "^3.0.0",
+    "@types/node": "^12.20.21",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "autoprefixer": "^10.4.2",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^8.5.0",
+    "prettier": "^2.5.1",
+    "typescript": "^5.0",
+    "workbox-build": "^6.5.3",
+    "workbox-cacheable-response": "^6.5.3",
+    "workbox-core": "^6.5.3",
+    "workbox-expiration": "^6.5.3",
+    "workbox-precaching": "^6.5.3",
+    "workbox-routing": "^6.5.3",
+    "workbox-strategies": "^6.5.3"
+  },
+  "engines": {
+    "node": "^18 || ^20",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}
