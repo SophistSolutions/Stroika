@@ -46,3 +46,11 @@ clean::
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent --directory Backend MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
 
+
+html:
+ifeq ($(shell which quasar),1)
+	echo skipping htm
+else
+	(cd QuasarBasedHTMLApp; npm i; npm run build)
+	rm -rf ${TARGETDIR}html; cp -r QuasarBasedHTMLApp/dist/spa ${TARGETDIR}html
+endif
