@@ -34,7 +34,7 @@ function throwIfError_(response: Response): Response {
 export async function fetchAboutInfo(apiServer: string): Promise<IAbout> {
   try {
     const response: Response = await fetch(
-      `${apiServer}/about`,
+      `${apiServer}/api/about`,
       kFetchOptions_
     );
     throwIfError_(response);

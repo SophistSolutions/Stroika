@@ -35,6 +35,7 @@ all :
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/HTMLUI:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent --directory Backend MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) html
 
  check:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "$(call FUNCTION_CAPITALIZE_WORD,$@) Samples/HTMLUI:"
@@ -49,8 +50,8 @@ clean::
 
 html:
 ifeq ($(shell which quasar),1)
-	echo skipping htm
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "***skipping html cuz no quasar installed***"
 else
-	(cd QuasarBasedHTMLApp; npm i; npm run build)
-	rm -rf ${TARGETDIR}html; cp -r QuasarBasedHTMLApp/dist/spa ${TARGETDIR}html
+	@(cd QuasarBasedHTMLApp; npm i; npm run build)
+	@rm -rf ${TARGETDIR}html; cp -r QuasarBasedHTMLApp/dist/spa ${TARGETDIR}html
 endif

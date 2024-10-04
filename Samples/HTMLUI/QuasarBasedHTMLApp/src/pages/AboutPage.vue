@@ -120,14 +120,14 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
 <template>
   <q-page class="q-pa-md">
     <div class="row text-h5">
-      <div class="col">About 'AskHealthFrame Test-GUI'</div>
+      <div class="col">About 'Sample HTMLUI App''</div>
     </div>
 
     <div class="row q-pa-md justify-center">
       <!--App Description Overview-->
       <q-card class="pageCard col-11">
         <q-card-section style="margin-left: 2em">
-          Test GUI for configuring and developing AskHealthFrame Backend Server.
+          About backend server for HTMLUI Sample App.
         </q-card-section>
       </q-card>
 
@@ -141,7 +141,7 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
       <q-card class="pageCard col-11" v-if="aboutData">
         <q-card-section>
           <div class="row">
-            <div class="col-6 text-h6">AskHealthFrame Backend</div>
+            <div class="col-6 text-h6">Sample HTMLUI</div>
           </div>
           <div class="row">
             <div class="col-1" />

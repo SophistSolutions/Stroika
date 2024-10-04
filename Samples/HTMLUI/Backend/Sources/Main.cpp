@@ -105,7 +105,7 @@ namespace {
 
             Options_ options{cmdLine};
 
-            // replace preliminary appenders, after we've read the configuration (gAppConfiguration)
+            // replace preliminary logging appenders, after we've read the configuration (gAppConfiguration)
             Logger::sThe.SetAppenders ([] () {
                 static const String kAppName_                            = "Stroika-Sample-HTMLUI"sv;
                 using Logging                                            = AppConfigurationType::Logging;
@@ -181,7 +181,7 @@ int main (int argc, char* argv[])
         return myApp.Run (CommandLine{argc, argv});
     }
     catch (...) {
-        cerr << endl << "EXCEPTION: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
+        cerr << endl << "EXCEPTION: {}"_f (current_exception ()).AsNarrowSDKString () << endl;
     }
     return EXIT_SUCCESS;
 }

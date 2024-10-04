@@ -12,13 +12,14 @@
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
-// #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/DefaultFaultInterceptor.h"
+#include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
 #include "Stroika/Frameworks/WebService/Server/Basic.h"
 #include "Stroika/Frameworks/WebService/Server/VariantValue.h"
@@ -57,6 +58,53 @@ namespace {
     }};
 }
 
+namespace {
+    const ConstantProperty<FileSystemRequestHandler::Options> kStaticSiteHandlerOptions_{[] () {
+        Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_{
+            pair<RegularExpression, CacheControl>{RegularExpression{".*[0-9a-fA-F]+\\.(js|css|js\\.map)"sv, CompareOptions::eCaseInsensitive},
+                                                  CacheControl::kImmutable},
+            pair<RegularExpression, CacheControl>{RegularExpression::kAny,
+                                                  CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{24h}.As<int32_t> ()}},
+        };
+        return FileSystemRequestHandler::Options{.fDefaultIndexFileNames = Sequence<String>{"index.html"_k},
+                                                 .fCacheControlSettings  = kFSCacheControlSettings_};
+    }};
+}
+
+// Configuration object passed to GUI as startup parameters/configuration
+#if 0
+namespace {
+    struct Config_ {
+        optional<String>       API_ROOT;         // if specified takes precedence over DEFAULT_API_PORT
+        optional<unsigned int> DEFAULT_API_PORT; // added to remote host used in web browser for accessing API
+
+        static const ObjectVariantMapper kMapper;
+    };
+    const WebServiceMethodDescription kGUIConfig_{
+        "config"sv,
+        Set<String>{IO::Network::HTTP::Methods::kGet},
+        DataExchange::InternetMediaTypes::kJSON,
+        "GUI config"sv,
+        Sequence<String>{},
+        Sequence<String>{"GUI config."sv},
+    };
+    const ObjectVariantMapper Config_::kMapper = [] () {
+        ObjectVariantMapper mapper;
+        mapper.AddCommonType<optional<String>> ();
+        mapper.AddCommonType<optional<unsigned int>> ();
+        mapper.AddClass<Config_> ({
+            {"API_ROOT"sv, &Config_::API_ROOT},
+            {"DEFAULT_API_PORT"sv, &Config_::DEFAULT_API_PORT},
+        });
+        return mapper;
+    }();
+    Config_ GetConfig_ ()
+    {
+        return Config_{nullopt, gAppConfiguration.Get ().WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)};
+    }
+}
+#endif
+
 /*
  *  It's often helpful to structure together, routes, special interceptors, with your connection manager, to package up
  *  all the logic /options for HTTP interface.
@@ -93,26 +141,32 @@ public:
     static const WebServiceMethodDescription kAbout_;
 
     Rep_ (optional<uint16_t> portNumber)
-        : kRoutes_{Route{"api/?"_RegEx, DefaultPage_},
+        : kRoutes_{
+            
+            Route{"api/?"_RegEx, DefaultPage_}
 
-                   /**
-                     * /about - health check etc
-                     */
-                   Route{"api/about/?"_RegEx, mkRequestHandler (kAbout_, About::kMapper, function<About (void)>{[this] () {
-                                                                    ActiveCallCounter_ acc{*this};
-                                                                    return fWSImpl_->about_GET ();
-                                                                }})},
+            /**
+             * /about - health check etc
+             */
+            , Route{"api/about/?"_RegEx, mkRequestHandler (kAbout_, About::kMapper, function<About (void)>{[this] () {
+                                                            ActiveCallCounter_ acc{*this};
+                                                            return fWSImpl_->about_GET ();
+                                                        }})}
 
-                   /**
-                     * /resource
-                     */
-                   Route{HTTP::MethodsRegEx::kGet, "api/resource/(.+)"_RegEx,
-                         [this] (Message* m, const String& resID) {
-                             ActiveCallCounter_ acc{*this};
-                             auto               r         = fWSImpl_->resource_GET (resID);
-                             m->rwResponse ().contentType = get<InternetMediaType> (r);
-                             m->rwResponse ().write (get<BLOB> (r));
-                         }}
+            /**
+             * /resource
+             */
+            , Route{HTTP::MethodsRegEx::kGet, "api/resource/(.+)"_RegEx,
+                    [this] (Message* m, const String& resID) {
+                        ActiveCallCounter_ acc{*this};
+                        auto               r         = fWSImpl_->resource_GET (resID);
+                        m->rwResponse ().contentType = get<InternetMediaType> (r);
+                        m->rwResponse ().write (get<BLOB> (r));
+                    }}
+
+          // ,    Route{"config.json"_RegEx, mkRequestHandler (kGUIConfig_, Config_::kMapper, function<Config_ (void)>{[=] () { return GetConfig_ (); }})},
+           ,   Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / ".." / "html"sv, kStaticSiteHandlerOptions_}},
+
 
           }
         , fWSImpl_{make_shared<WSImpl> ([this] () -> About::APIServerInfo::WebServer {
@@ -175,7 +229,7 @@ const WebServiceMethodDescription WebServer::Rep_::kAbout_{
     "api/about"sv,
     Set<String>{IO::Network::HTTP::Methods::kGet},
     DataExchange::InternetMediaTypes::kJSON,
-    "Data about the AskHealthFrame server status, version etc"sv,
+    "Data about the Sample HTMLUI server status, version etc"sv,
     Sequence<String>{
         "curl {{ShowAsExternalURI}}/api/about"sv,
     },
