@@ -50,7 +50,7 @@ $(Objs):	$(VERSION_FILE_OUT)
 
 
 Resources_Src:=\
-	../Docs/api.json \
+	../OpenAPI/api.json \
 
 ### assumes filenames all unique no matter what dir they come from
 Resources_EmbedFiles:=\

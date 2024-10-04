@@ -218,7 +218,7 @@ public:
                                                 .As<String> ()
                                                 .AssureEndsWith ('/')}},
                                    //.fOpenAPISpecification    = kOpenAPISpecification,
-                                   .fOpenAPISpecificationURI = URI{"resource/api.json"sv}});
+                                   .fOpenAPISpecificationURI = URI{"api/resource/api.json"sv}});
     }
 };
 
