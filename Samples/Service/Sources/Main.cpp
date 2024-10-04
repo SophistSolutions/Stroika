@@ -152,7 +152,7 @@ int main (int argc, const char* argv[])
     if (dockerContainerFlag) {
         using namespace IO::FileSystem;
         Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (
-            FileOutputStream::New (1 /*STDOUT_FILENO*/, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
+            FileOutputStream::New (STDOUT_FILENO, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
     }
     else {
 #if qHas_Syslog

@@ -14,10 +14,8 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/Logger.h"
-// #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
-// #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
@@ -67,7 +65,7 @@ namespace {
         {
             // Default - in case any logging writes happen before we setup the configured logging appenders
             Logger::sThe.SetAppenders (make_shared<Logger::StreamAppender> (
-                IO::FileSystem::FileOutputStream::New (1, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
+                IO::FileSystem::FileOutputStream::New (STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
 
             /**
              * Setup various error/assertion error handlers/checkers
@@ -113,7 +111,7 @@ namespace {
                 Sequence<shared_ptr<Logger::IAppenderRep>> appenders;
                 if (loggingConfig.ToStdOut.value_or (Logging::kToStdOut_Default)) {
                     appenders += make_shared<Logger::StreamAppender> (
-                        IO::FileSystem::FileOutputStream::New (1, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
+                        IO::FileSystem::FileOutputStream::New (STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
                 }
 #if qHas_Syslog
                 if (loggingConfig.ToSysLog.value_or (Logging::kToSysLog_Default)) {

@@ -6,6 +6,11 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+
+#if qPlatform_POSIX
+#include <unistd.h>
+#endif
+
 #include "Stroika/Foundation/Common/Enumeration.h"
 
 /**
@@ -44,6 +49,16 @@ namespace Stroika::Foundation::IO::FileSystem::FileStream {
      *      2               Standard error  STDERR_FILENO                   stderr
      */
     using FileDescriptorType = int;
+
+#if !qPlatform_POSIX and !defined(STDIN_FILENO)
+    #define STDIN_FILENO 0
+#endif
+#if !qPlatform_POSIX and !defined(STDOUT_FILENO)
+    #define STDOUT_FILENO 1
+#endif
+#if !qPlatform_POSIX and !defined(STDERR_FILENO)
+    #define STDERR_FILENO 2
+#endif
 
 }
 
