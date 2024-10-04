@@ -49,7 +49,7 @@ clean::
 
 
 html:
-ifeq ($(shell which quasar),1)
+ifeq ($(shell which quasar 2>/dev/null),)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "***skipping html cuz no quasar installed***"
 else
 	@(cd QuasarBasedHTMLApp; npm i; npm run build)
