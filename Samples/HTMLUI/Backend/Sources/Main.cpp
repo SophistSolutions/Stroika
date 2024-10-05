@@ -110,8 +110,8 @@ namespace {
                 Logging                                    loggingConfig = gAppConfiguration->fLogging.value_or (Logging{});
                 Sequence<shared_ptr<Logger::IAppenderRep>> appenders;
                 if (loggingConfig.ToStdOut.value_or (Logging::kToStdOut_Default)) {
-                    appenders += make_shared<Logger::StreamAppender> (
-                        IO::FileSystem::FileOutputStream::New (STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
+                    appenders += make_shared<Logger::StreamAppender> (IO::FileSystem::FileOutputStream::New (
+                        STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
                 }
 #if qHas_Syslog
                 if (loggingConfig.ToSysLog.value_or (Logging::kToSysLog_Default)) {
@@ -179,7 +179,7 @@ int main (int argc, char* argv[])
         return myApp.Run (CommandLine{argc, argv});
     }
     catch (...) {
-        cerr << endl << "EXCEPTION: {}"_f (current_exception ()).AsNarrowSDKString () << endl;
+        cerr << endl << "EXCEPTION: {}"_f(current_exception ()).AsNarrowSDKString () << endl;
     }
     return EXIT_SUCCESS;
 }

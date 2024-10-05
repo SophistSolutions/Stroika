@@ -2,4 +2,3 @@
 - Installer
 - Docker container support so builds
 - Wrap output into docker container
-- do decent openapi file for this sample (not sure best tool)

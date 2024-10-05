@@ -17,41 +17,31 @@ ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/
 .NOTPARALLEL:
 
 
-# CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/)
-
 TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/
-# TARGETEXE		:=	$(TARGETDIR)HTMLUI${EXE_SUFFIX}
-
-
-# VPATH	=			$(SrcDir)/Sources/
-
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
-
 
 
 all :
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/HTMLUI:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent --directory Backend MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) html
+	@$(MAKE) --silent html
 
- check:
+check:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "$(call FUNCTION_CAPITALIZE_WORD,$@) Samples/HTMLUI:"
-	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent --directory Backend MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
 
 clean::
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "$(call FUNCTION_CAPITALIZE_WORD,$@) Samples/HTMLUI:"
-	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent --directory Backend MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
 
 
 html:
 ifeq ($(shell which quasar 2>/dev/null),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "***skipping html cuz no quasar installed***"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed***"
+	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else
-	@(cd QuasarBasedHTMLApp; npm i; npm run build)
-	@rm -rf ${TARGETDIR}html; cp -r QuasarBasedHTMLApp/dist/spa ${TARGETDIR}html
+	@$(MAKE) --silent --directory QuasarBasedHTMLApp MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all
 endif
