@@ -1,4 +1,3 @@
-- assure handles well if no quasar installed
 - Installer
 - Docker container support so builds
 - Wrap output into docker container
