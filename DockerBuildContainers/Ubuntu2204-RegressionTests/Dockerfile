@@ -26,8 +26,8 @@ RUN apt-get install -y software-properties-common; \
 RUN apt-get update  # unclear why update needed but container build fails without
 RUN apt-get -qq install -y clang++-15 && apt-get install -y libc++-15-dev libc++abi-15-dev
 
-# Used for Samples/HTMLUI (not needed - autodetected)
-RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
+# # Used for Samples/HTMLUI (not needed - autodetected)
+# RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
 
 #Only needed to run with valgrind regtests
 RUN apt-get -qq install -y valgrind
