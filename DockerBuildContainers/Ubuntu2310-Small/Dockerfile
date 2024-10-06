@@ -42,6 +42,9 @@ RUN apt-get -qq install -y p7zip-full; \
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
 RUN apt-get -qq install -y g++
 
+# Used for Samples/HTMLUI (not needed - autodetected)
+RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
+
 #Only needed to use sanitizer builds
 RUN apt-get -qq install -y libasan5 libasan6 libubsan1
 

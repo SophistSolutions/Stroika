@@ -23,6 +23,9 @@ RUN apt-get -qq install -y clang++-16
 RUN apt-get -qq install -y clang++-17
 RUN apt-get -qq install -y clang++-18 && apt-get install -y libc++-18-dev libc++abi-18-dev
 
+# Used for Samples/HTMLUI (not needed - autodetected)
+RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
+
 #Only needed to run with valgrind regtests
 RUN apt-get -qq install -y valgrind
 

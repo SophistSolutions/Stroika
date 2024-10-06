@@ -59,6 +59,13 @@ RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip
 COPY Windows-Cygwin/Getting-Started-With-Stroika.md ./tools/cygwin/home
 COPY Windows-Cygwin/.bash_profile ./tools/cygwin/home
 
+
+ARG INSTALL_QUASAR=0
+SHELL ["cmd", "/S", "/C"]
+RUN IF %INSTALL_QUASAR%==1 ( choco install -y --force nodejs-lts )
+RUN IF %INSTALL_QUASAR%==1 ( npm i -g npm @quasar/cli )
+
+
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # and much worse with windows (in part due to available shell commands)
 CMD ["bash.exe", "--login"]

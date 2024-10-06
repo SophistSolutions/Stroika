@@ -99,6 +99,10 @@ RUN \
 COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
 COPY Windows-MSYS/.bash_profile $MSYS_DIR/home/
 
+ARG INSTALL_QUASAR=0
+SHELL ["cmd", "/S", "/C"]
+RUN IF %INSTALL_QUASAR%==1 ( pacman --noconfirm -S mingw-w64-x86_64-nodejs && npm i -g npm @quasar/cli )
+
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # and much worse with windows (in part due to available shell commands)
 CMD ["bash.exe", "--login"]
