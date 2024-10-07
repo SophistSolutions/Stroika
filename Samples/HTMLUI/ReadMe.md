@@ -14,13 +14,13 @@ This sample guides you to breakup your web-service application into serveral par
 
 ## Backend/C++/Stroika
 
-- [AppConfiguration.h](Sources/AppConfiguration.h) / [AppConfiguration.cpp](Sources/AppConfiguration.cpp) - automatically managed serialization of per-app-instance configuration data
-- [Model.h](Sources/Model.h) / [Model.cpp](Sources/Model.cpp) - the objects you read/write/manipulate through your web service API (things that have to be serialized/deserialized)
-- [IWSAPI.h](Sources/IWSAPI.h) - the abstract C++ API defininng what methods can be called (pure C++ objects, no marshalling etc)
-- [WSImpl.cpp](Sources/WSImpl.cpp) - the pure application logic part of your webservices. Here you inherit from IWSAPI, and simple return the appropriate C++ object results.
-- [WebServer.cpp](Sources/WebServer.cpp) - this ties together the abstract interface with URL rules (routes etc), and simply maps delegated route handlers to the IWSAPI
-- [Server.cpp](Sources/Server.cpp) - register app as operating system 'service' and manage startup of components
-- [Main.cpp](Sources/Main.cpp) - Command-line processing, and basic overall app startup/flow.
+- [AppConfiguration.h](Backend/Sources/AppConfiguration.h) / [AppConfiguration.cpp](Backend/Sources/AppConfiguration.cpp) - automatically managed serialization of per-app-instance configuration data
+- [Model.h](Backend/Sources/Model.h) / [Model.cpp](Backend/Sources/Model.cpp) - the objects you read/write/manipulate through your web service API (things that have to be serialized/deserialized)
+- [IWSAPI.h](Backend/Sources/IWSAPI.h) - the abstract C++ API defininng what methods can be called (pure C++ objects, no marshalling etc)
+- [WSImpl.cpp](Backend/Sources/WSImpl.cpp) - the pure application logic part of your webservices. Here you inherit from IWSAPI, and simple return the appropriate C++ object results.
+- [WebServer.cpp](Backend/Sources/WebServer.cpp) - this ties together the abstract interface with URL rules (routes etc), and simply maps delegated route handlers to the IWSAPI
+- [Server.cpp](Backend/Sources/Server.cpp) - register app as operating system 'service' and manage startup of components
+- [Main.cpp](Backend/Sources/Main.cpp) - Command-line processing, and basic overall app startup/flow.
 
 - To test this example:
   - Run the service (under the debugger if you wish)
