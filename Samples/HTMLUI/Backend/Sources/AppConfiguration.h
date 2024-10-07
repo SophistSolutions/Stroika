@@ -26,7 +26,7 @@ namespace Stroika::Samples::HTMLUI {
     using IO::Network::URI;
 
     /**
-     *  This is the type of object stored in configuration.
+     *  This is the type of object stored in application configuration.
      */
     struct AppConfigurationType {
 
@@ -34,6 +34,8 @@ namespace Stroika::Samples::HTMLUI {
         optional<IO::Network::PortType>        WebServerPort;
         static constexpr IO::Network::PortType kWebServerPort_Default = 9080;
 
+        // apparent URI often 'localhost:port#' - but for things like webgui or openapi url listings, better
+        // to list external URL
         optional<URI> ShowAsExternalURL;
 
         struct Logging {
