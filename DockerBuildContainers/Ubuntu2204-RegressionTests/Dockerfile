@@ -38,7 +38,7 @@ RUN \
 ARG NODE_MAJOR=20
 RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y nodejs npm ; npm i -g npm @quasar/cli
+RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
 
 #Only needed to run with valgrind regtests
 RUN apt-get -qq install -y valgrind
