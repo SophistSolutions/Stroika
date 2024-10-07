@@ -2,11 +2,11 @@
 <WixLocalization Culture="en-us" Codepage="1252" xmlns="http://schemas.microsoft.com/wix/2006/localization">
    <String Id="Language">1033</String>         <!-- Supported language and codepage codes can be found here: http://www.tramontana.co.hu/wix/lesson2.php#2.4 -->
  
-   <String Id="ApplicationName">Stroika Sample Service</String>
+   <String Id="ApplicationName">Stroika Sample HTMLUI Service</String>
    <String Id="ManufacturerName">Sophist Solutions, Inc.</String>
    <String Id="ManufacturerFullName">Sophist Solutions, Inc</String>
-   <String Id="ProductDescription">Sample Stroika based Service Application</String>
-   <String Id="Comments">Installs Sample Stroika based Service Application</String>
+   <String Id="ProductDescription">Sample Stroika based HTMLUI Service Application</String>
+   <String Id="Comments">Installs Sample Stroika based HTMLUI Service Application</String>
  
    <String Id="LicenseRtf" Overridable="yes">Eula-en.rtf</String>
  
@@ -19,6 +19,6 @@
    <String Id="FeatureMainProgramDescription">The main version including all dependencies.</String>
    <String Id="FeatureMainProgramTitle">Main program</String>
  
-   <String Id="ServiceDisplayName">Stroika Sample Service</String>
+   <String Id="ServiceDisplayName">Stroika Sample HTMLUI Service</String>
    <String Id="ServiceDescription">Monitors the system's performance, applications and user experience.</String>
 </WixLocalization>

@@ -5,9 +5,9 @@ ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-BASIC_NAME_LC=stroika-sampleservice
-BASIC_NAME=Stroika-SampleService
-OUTDIR_NAME=Samples-Service
+BASIC_NAME_LC=stroika-sampleshtmluiservice
+BASIC_NAME=Stroika-SampleHTMLUIService
+OUTDIR_NAME=Samples-HTMLUI
 
 
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
@@ -19,7 +19,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/$(OUTDIR_NAME)/
 
-BUILT_SERVICE_EXE				=	$(TARGET_OUT_DIR)Service${EXE_SUFFIX}
+BUILT_SERVICE_EXE				=	$(TARGET_OUT_DIR)Backend/HTMLUI${EXE_SUFFIX}
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION

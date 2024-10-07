@@ -31,8 +31,8 @@
   <?define Win64 = "no" ?>
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
   <?endif ?>
-  <?define serviceEXESourcePath = "..\..\..\IntermediateFiles\$(var.CONFIGURATION)\Samples-Service\WIX_TMP\Stroika-SampleService-Service.exe" ?>
-  <?define serviceName = "Stroika-Sample-Service" ?>
+  <?define serviceEXESourcePath = "..\..\..\IntermediateFiles\$(var.CONFIGURATION)\Samples-Service\WIX_TMP\Stroika-SampleHTMLUIService-Service.exe" ?>
+  <?define serviceName = "Stroika-Sample-HTMLUI-Service" ?>
 
   <!--
       ====================================================================================
@@ -163,9 +163,9 @@
             </Component>
 
             <!-- Main program file -->
-            <Component Id="StroikaSampleService.exe_comp" Guid="*" Win64="$(var.Win64)">
+            <Component Id="StroikaSampleHTMLUIService.exe_comp" Guid="*" Win64="$(var.Win64)">
 
-              <File Source="$(var.serviceEXESourcePath)" Id="StroikaSampleServiceExe" KeyPath="yes" />
+              <File Source="$(var.serviceEXESourcePath)" Id="StroikaSampleHTMLUIServiceExe" KeyPath="yes" />
 
               <ServiceInstall Id="ServiceInstaller" Account="LocalSystem" Description="!(loc.ServiceDescription)" DisplayName="!(loc.ServiceDisplayName)" ErrorControl="normal"
                               LoadOrderGroup="NetworkProvider" Name="$(var.serviceName)" Start="auto" Type="ownProcess" Vital="yes" Arguments="--run-as-service" />
@@ -191,7 +191,7 @@
       <!-- A feature block for the main (GUI) program and all its dependencies -->
       <Feature Id="MainProgram" Title="!(loc.FeatureMainProgramTitle)" Description="!(loc.FeatureMainProgramDescription)" Level="1">
         <ComponentRef Id="INSTALLDIR_comp" />
-        <ComponentRef Id="StroikaSampleService.exe_comp" />
+        <ComponentRef Id="StroikaSampleHTMLUIService.exe_comp" />
 
       </Feature>
 
