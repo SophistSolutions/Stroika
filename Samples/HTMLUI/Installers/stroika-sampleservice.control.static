@@ -1,0 +1,6 @@
+Package: stroika-sampleservice
+Priority: optional
+Section: admin
+Maintainer: Lewis G. Pringle, Jr <lewis@sophists.com>
+Depends: 
+Description: Stroika Sample Service

@@ -1,0 +1,26 @@
+# INSTALL THIS FILE TO /usr/lib/systemd/system/stroika-sampleservice.service
+
+[Unit]
+Description=Stroika Sample Service
+After=syslog.target
+#After=syslog.target network.target
+#Conflicts=sendmail.service exim.service
+
+[Service]
+#
+# NOTE, we can support Type=simple by setting ExecStart=/opt/Stroika-SampleService/Stroika-SampleService --run-directly
+# but then I'd have to read up on how todo restart/stop
+#
+Type=forking
+
+# In stroika, this defaults to IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + ".pid"_k;
+PIDFile=/var/run/Stroika-Sample-Service.pid
+#EnvironmentFile=-/etc/sysconfig/network
+#ExecStartPre=-/usr/libexec/postfix/aliasesdb
+#ExecStartPre=-/usr/libexec/postfix/chroot-update
+ExecStart=/opt/Stroika-SampleService/Stroika-SampleService --start
+ExecReload=/opt/Stroika-SampleService/Stroika-SampleService --restart
+ExecStop=/opt/Stroika-SampleService/Stroika-SampleService --stop
+
+[Install]
+WantedBy=multi-user.target

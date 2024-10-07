@@ -45,3 +45,8 @@ ifeq ($(shell which quasar 2>/dev/null),)
 else
 	@$(MAKE) --silent --directory QuasarBasedHTMLApp MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all
 endif
+
+.PHONY: installers installer-deb installer-rpm installer-wix
+installers installer-deb installer-rpm installer-wix:
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Samples/HTMLUI: Building Installers:"
+	@$(MAKE) --no-print-directory --directory Installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
