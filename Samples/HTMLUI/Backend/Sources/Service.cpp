@@ -32,8 +32,6 @@ using namespace Stroika::Frameworks::Service;
 using namespace Stroika::Samples::HTMLUI;
 using namespace Stroika::Samples::HTMLUI::Service;
 
-using Execution::Logger;
-
 namespace {
     const Main::ServiceDescription kServiceDescription_{.fRegistrationName = "Stroika-Sample-HTMLUI Service"_k,
                                                         .fPrettyName       = "Stroika Sample HTMLUI Service"_k};
@@ -63,13 +61,12 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
 
     startedCB (); // Notify service control mgr that the service has started
 
-    Logger::sThe.Log (Logger::eInfo, "{} (version {}) service started successfully"_f, kServiceDescription_.fPrettyName,
-                      Characters::ToString (AppVersion::kVersion));
+    Logger::sThe.Log (Logger::eInfo, "{} (version {}) service started successfully"_f, kServiceDescription_.fPrettyName, AppVersion::kVersion);
     successfullyStarted = true;
 
     // the final object delcared on the stack before we wait, so its the first run when we are handling the
     // thread aboort exception, and unwinding this call.
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () { Logger::sThe.Log (Logger::eInfo, "Beginning service shutdown"_f); });
+    [[maybe_unused]] auto&& cleanup2 = Finally ([&] () { Logger::sThe.Log (Logger::eInfo, "Beginning service shutdown"_f); });
 
     WebServer myWebServer{fPortNumberOverride_}; // listen and dispatch while this object exists
 
@@ -78,7 +75,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
      *  abort (raise exception) and all the destructors on the stack (above) from this routine will get played
      *  backewards to cleanup.
      */
-    Execution::WaitableEvent{}.Wait (); // until told to stop by abort exception
+    WaitableEvent{}.Wait (); // until told to stop by abort exception
 
     AssertNotReached ();
 }
