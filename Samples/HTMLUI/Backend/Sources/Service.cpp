@@ -35,7 +35,8 @@ using namespace Stroika::Samples::HTMLUI::Service;
 using Execution::Logger;
 
 namespace {
-    const Main::ServiceDescription kServiceDescription_{"Stroika-Sample-HTMLUI Service"_k, "Stroika-Sample-HTMLUI Service"_k};
+    const Main::ServiceDescription kServiceDescription_{.fRegistrationName = "Stroika-Sample-HTMLUI Service"_k,
+                                                        .fPrettyName       = "Stroika Sample HTMLUI Service"_k};
 }
 
 SampleAppServiceRep::SampleAppServiceRep (optional<uint16_t> portNumberOverride)
