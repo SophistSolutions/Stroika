@@ -15,6 +15,7 @@ ResDir			:=	$(ObjDir)/Resources/
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/)
 
 TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/Backend/
+TARGETHTMLDIR	:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/html/
 TARGETEXE		:=	$(TARGETDIR)HTMLUI${EXE_SUFFIX}
 
 
@@ -76,7 +77,7 @@ all:
 	@mkdir -p $(TARGETDIR)
 	@for s in ${SubDirs}; do $(MAKE) --directory $${s} -s MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all; done
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@ln -s ${TARGETDIR}../html ${TARGETDIR}html
+	@ln -s --directory ${TARGETHTMLDIR} ${TARGETDIR}html
 
 
 check:

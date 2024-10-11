@@ -72,7 +72,6 @@ namespace {
 }
 
 // Configuration object passed to GUI as startup parameters/configuration
-#if 0
 namespace {
     struct Config_ {
         optional<String>       API_ROOT;         // if specified takes precedence over DEFAULT_API_PORT
@@ -103,7 +102,6 @@ namespace {
         return Config_{nullopt, gAppConfiguration.Get ().WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)};
     }
 }
-#endif
 
 /*
  *  It's often helpful to structure together, routes, special interceptors, with your connection manager, to package up
@@ -164,10 +162,15 @@ public:
                         m->rwResponse ().write (get<BLOB> (r));
                     }}
 
-          // ,    Route{"config.json"_RegEx, mkRequestHandler (kGUIConfig_, Config_::kMapper, function<Config_ (void)>{[=] () { return GetConfig_ (); }})},
-           ,   Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / "html"sv, kStaticSiteHandlerOptions_}},
+            /*
+             * configuration data for web-gui - private - just so can communicate with /api
+             */
+           , Route{"config.json"_RegEx, mkRequestHandler (kGUIConfig_, Config_::kMapper, function<Config_ (void)>{[=] () { return GetConfig_ (); }})}
 
-
+            /*
+             * Serve up contents of html folder as static site
+             */
+           , Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / "html"sv, kStaticSiteHandlerOptions_}}
           }
         , fWSImpl_{make_shared<WSImpl> ([this] () -> About::APIServerInfo::WebServer {
             About::APIServerInfo::WebServer r;
@@ -177,8 +180,9 @@ public:
             r.fThreadPool.fAverageTaskRunTime = rr.fThreadPoolStatistics.GetMeanTimeConsumed ();
             return r;
         })}
-        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (80))), kRoutes_,
-                          ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 20,
+        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
+                         , kRoutes_
+                         , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 20,
                                                      .fDefaultResponseHeaders            = kDefaultResponseHeaders_,
                                                      .fCollectStatistics                 = true}}
         , fIntervalTimerAdder_{[this] () {
@@ -194,7 +198,7 @@ public:
         DefaultFaultInterceptor defaultHandler;
         fConnectionMgr_.defaultErrorHandler = DefaultFaultInterceptor{[defaultHandler] (Message* m, const exception_ptr& e) {
             // Unsure if we should bother recording 404s
-            DbgTrace ("faulting on request {}"_f, Characters::ToString (m->request ()));
+            DbgTrace ("faulting on request {}"_f, Characters::ToString(m->request ()));
             OperationalStatisticsMgr::ProcessAPICmd::NoteError ();
             defaultHandler.HandleFault (m, e);
         }};

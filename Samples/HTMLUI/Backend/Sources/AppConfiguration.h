@@ -32,7 +32,7 @@ namespace Stroika::Samples::HTMLUI {
 
         // KISS for now, but will need to replace with more general bindings object, spec addr/port/cert/other options
         optional<IO::Network::PortType>        WebServerPort;
-        static constexpr IO::Network::PortType kWebServerPort_Default = 9080;
+        static constexpr IO::Network::PortType kWebServerPort_Default = 80;
 
         // apparent URI often 'localhost:port#' - but for things like webgui or openapi url listings, better
         // to list external URL

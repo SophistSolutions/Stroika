@@ -165,16 +165,12 @@
 
             <!-- Main program file -->
             <Component Id="SampleHTMLUI.exe_comp" Guid="*" Win64="$(var.Win64)">
-
               <File Source="$(var.serviceEXESourcePath)" Id="SampleHTMLUIExe" KeyPath="yes" />
-
               <ServiceInstall Id="ServiceInstaller" Account="LocalSystem" Description="!(loc.ServiceDescription)" DisplayName="!(loc.ServiceDisplayName)" ErrorControl="normal" LoadOrderGroup="NetworkProvider" Name="$(var.serviceName)" Start="auto" Type="ownProcess" Vital="yes" Arguments="--run-as-service" />
-
-
-              <!-- need this included, but not working right now... LGP 2024-10-07 -->
-              <!-- <ServiceControl Id="ServiceControl" Name="$(var.serviceName)" Start="install" Stop="both" Remove="uninstall" /> -->
-
+              <ServiceControl Id="ServiceControl" Name="$(var.serviceName)" Start="install" Stop="both" Remove="uninstall" />
             </Component>
+
+            <!--ASAN DLL if used...-->
              <Component Id="SampleHTMLUI.exe_dlls_comp" Guid="*" Win64="$(var.Win64)">
               <File Source="$(var.serviceDLLsPath)clang_rt.asan_dynamic-x86_64.dll" Id="clang_rt_asan_dynamic_x86_64_dll" />
             </Component>
