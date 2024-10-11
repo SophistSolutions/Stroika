@@ -110,22 +110,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::ContainsAll (const Iterable<value_type>& items) const
     {
-        for (const auto& i : items) {
-            if (not Contains (i)) {
-                return false;
-            }
-        }
-        return true;
+        return items.All ([&] (ArgByValueType<T> i) { return this->Contains (i); });
     }
     template <typename T>
     bool Set<T>::ContainsAny (const Iterable<value_type>& items) const
     {
-        for (const auto& i : items) {
-            if (Contains (i)) {
-                return true;
-            }
-        }
-        return false;
+        return items.Any ([&] (ArgByValueType<T> i) { return this->Contains (i); });
     }
     template <typename T>
     bool Set<T>::IsSubsetOf (const Set& superset) const
