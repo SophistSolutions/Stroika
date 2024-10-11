@@ -523,18 +523,27 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
             eventType = EVENTLOG_ERROR_TYPE;
             break;
     }
-#define CATEGORY_Normal 0x00000001L
-    WORD eventCategoryID = CATEGORY_Normal;
-// See SPR#565 for wierdness - where I cannot really get these paid attention to
-// by the Windows EventLog. So had to use the .Net eventlogger. It SEEMS
-#define EVENT_Message 0x00000064L
-    const DWORD kEventID     = EVENT_Message;
-    HANDLE      hEventSource = ::RegisterEventSource (NULL, fEventSourceName_.AsSDKString ().c_str ());
+    constexpr auto CATEGORY_Normal = 0x00000001L;
+    WORD           eventCategoryID = CATEGORY_Normal;
+    // See SPR#565 for wierdness - where I cannot really get these paid attention to
+    // by the Windows EventLog. So had to use the .Net eventlogger. It SEEMS
+    constexpr auto EVENT_Message = 0x00000064L;
+    const DWORD    kEventID      = EVENT_Message;
+    HANDLE         hEventSource  = ::RegisterEventSource (NULL, fEventSourceName_.AsSDKString ().c_str ());
     Verify (hEventSource != NULL);
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([hEventSource] () noexcept { Verify (::DeregisterEventSource (hEventSource)); });
     SDKString               tmp     = message.AsSDKString ();
     const Characters::SDKChar* msg  = tmp.c_str ();
-    Verify (::ReportEvent (hEventSource, eventType, eventCategoryID, kEventID, NULL, (WORD)1, 0, &msg, NULL));
+    constexpr PSID             kUserSid_     = nullptr;
+    constexpr bool             kWriteOldWay_ = true;
+    if constexpr (kWriteOldWay_) {
+        Verify (::ReportEvent (hEventSource, eventType, eventCategoryID, kEventID, kUserSid_, (WORD)1, 0, &msg, nullptr));
+    }
+    else {
+        // Doing something like this appears to require using the message compiler, which is crazy; maybe a better way...
+        DWORD dataSize = static_cast<DWORD> ((tmp.size () + 1) * sizeof (SDKChar));
+        Verify (::ReportEvent (hEventSource, eventType, eventCategoryID, kEventID, kUserSid_, 0, dataSize, nullptr, (LPVOID)msg));
+    }
 }
 #endif
 
