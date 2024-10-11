@@ -41,6 +41,7 @@ SampleAppServiceRep::SampleAppServiceRep (optional<uint16_t> portNumberOverride)
     : fPortNumberOverride_{portNumberOverride}
 {
 }
+
 void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
 {
     /*
