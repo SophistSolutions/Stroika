@@ -1064,9 +1064,9 @@ namespace Stroika::Foundation::Characters {
          *      o   const Character*
          *
          *  \note
-         *      o   As<u8string> () equivilent to AsUTF8 () call
-         *      o   As<u16string> () equivilent to AsUTF16 () call
-         *      o   As<u32string> () equivilent to AsUTF32 () call
+         *      o   As<u8string> () equivalent to AsUTF8 () call
+         *      o   As<u16string> () equivalent to AsUTF16 () call
+         *      o   As<u32string> () equivalent to AsUTF32 () call
          *
          *  \note   We tried to also have template<typename T> explicit operator T () const; - conversion operator - but
          *          We got too frequent confusion in complex combinations of templates, like with:

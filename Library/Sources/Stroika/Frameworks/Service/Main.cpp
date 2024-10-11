@@ -1003,7 +1003,7 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
         fRunThread_.Join ();
     }
     catch (...) {
-        DbgTrace (L"mapping run-thread.Join () exception {} to dwWin32ExitCode=1"_f, current_exception ());
+        DbgTrace ("mapping run-thread.Join () exception {} to dwWin32ExitCode=1"_f, current_exception ());
         fServiceStatus_.dwWin32ExitCode = 1; // some non-zero exit code
     }
     SetServiceStatus_ (SERVICE_STOPPED);

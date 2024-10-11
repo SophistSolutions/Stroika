@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Containers {
          *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
          *      \req    Ensure (item == nullptr or returnValue == item->has_value());
          *
-         *  \note   Alias - Lookup (key, RangeType* value) - is equivilent to .Net TryGetValue ()
+         *  \note   Alias - Lookup (key, RangeType* value) - is equivalent to .Net TryGetValue ()
          *
          *  @see   LookupValue ()
          *  @see   InverseLookup ()

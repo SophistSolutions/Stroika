@@ -167,9 +167,9 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     public:
         /**
-         * @brief Many (all) instruments will have corresponding c++ objects to represent what is captuerd. Typically
+         * @brief Many (all) instruments will have corresponding c++ objects to represent what is captured. Typically
          *        this entry will have only one entry, but multiple types could be supported. This MAY not represent all
-         *        measurement types supported by this instrument (that is some may not have a C++ struct equivilent)
+         *        measurement types supported by this instrument (that is some may not have a C++ struct equivalent)
          */
         Common::ReadOnlyProperty<Mapping<type_index, MeasurementType>> type2MeasurementTypes;
 

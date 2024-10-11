@@ -589,6 +589,8 @@ namespace Stroika::Foundation::Traversal {
          *  \note though semantically similar to iterating, it maybe faster, due to delegating 'search' to backend container
          *        implementation (though then call to lambda/checker maybe indirected countering this performance benefit).
          *
+         *  \alias FirstThat
+         * 
          *  @see Apply
          *
          *  \note   \em Thread-Safety   The argument function (lambda) may
@@ -667,10 +669,13 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual T NthValue (size_t n, ArgByValueType<T> defaultValue = {}) const;
 
     public:
-/**
-         *  \brief Alias 'Filter' - produce a subset of this iterable where argument function returns true
+        /**
+         *  \brief produce a subset of this iterable where argument function returns true
          *
          *  BASED ON Microsoft .net Linq.
+         * 
+         *  \alias Filter
+         *  \alias AllThat, AllOf
          *
          *  This returns either an Iterable<T>, or a concrete container (provided template argument). If returning
          *  just an Iterable<T>, then the result is lazy evaluated. If a concrete container is provided, its fully constructed
@@ -1002,7 +1007,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \req from <= to
          * 
-         *  \note equivilent to Skip (from).Take (to-from)
+         *  \note equivalent to Skip (from).Take (to-from)
          *
          *  @see https://www.w3schools.com/jsref/jsref_slice_array.asp  (EXCEPT FOR NOW - we don't support negative indexes or optional args; maybe do that for SEQUENCE subclass?)
          *  @see Take
@@ -1343,9 +1348,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         * \brief not empty () - synonym for .net Any() Linq method.
-         *
-         *  Second overload (with filter function) same as .Where(filter).Any ();
+         * \brief Any() same as not empty (); Any (includeIfTrue) returns true iff includeIfTrue returns true on any values in iterable
          *
          *  \note
          *      BASED ON Microsoft .net Linq. (Last)
@@ -1353,6 +1356,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note @see Count
          *  \note @see Where
+         *  \alias AnyThat (predicate)
          */
         nonvirtual bool Any () const;
         nonvirtual bool Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
@@ -1451,7 +1455,7 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
     /**
-     *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
+     *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure thread safety. It takes the
      *  'this' object, and captures a const reference to the internal 'REP'.
      *
      *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
@@ -1491,7 +1495,7 @@ namespace Stroika::Foundation::Traversal {
         const Iterable<T>*  fIterableEnvelope_;
 
 #if qDebug
-        Debug::AssertExternallySynchronizedMutex::ReadContext fAssertReadLock_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex::ReadContext fAssertReadLock_;
 #endif
     };
 

@@ -349,7 +349,7 @@ namespace Stroika::Foundation::Execution {
          *          fCurrentPressure_ = lockedConfigData->fPressure.Value (Pressure::Low);
          *      \endcode
          *
-         *  This is roughly equivilent (if using a recursive mutex) to (COUNTER_EXAMPLE):
+         *  This is roughly equivalent (if using a recursive mutex) to (COUNTER_EXAMPLE):
          *      \code
          *          lock_guard<Synchronized<T,TRAITS>>  critSec (fConfig_);
          *          fCurrentCell_ = fConfig_->fCell.Value (Cell::Short);

@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Database::SQL {
          * 
          *  This causes no data to be written for the commands already issued in the transaction.
          * 
-         *  This is equivilent to just destroying this object, except that it can propagate
+         *  This is equivalent to just destroying this object, except that it can propagate
          *  exceptions if needed, whereas a destructor cannot.
          */
         nonvirtual void Rollback ();
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Database::SQL {
          * 
          *  This causes no data to be written for the commands already issued in the transaction.
          * 
-         *  This is equivilent to just destroying this object, except that it can propagate
+         *  This is equivalent to just destroying this object, except that it can propagate
          *  exceptions if needed, whereas a destructor cannot.
          */
         virtual void Rollback () = 0;

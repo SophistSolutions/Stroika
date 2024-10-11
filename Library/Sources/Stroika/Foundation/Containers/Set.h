@@ -228,11 +228,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  return true iff for all item in 'items' this->Contains(item) returns true (so this is superset of items)
          */
         nonvirtual bool ContainsAll (const Iterable<value_type>& items) const;
 
     public:
         /**
+         *  return true iff for any item in 'items' this->Contains(item) returns true
          */
         nonvirtual bool ContainsAny (const Iterable<value_type>& items) const;
 

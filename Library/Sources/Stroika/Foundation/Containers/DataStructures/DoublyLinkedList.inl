@@ -455,7 +455,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         this->Invariant ();
         if (i.fCurrent_ == nullptr) {
             /*
-             *      NB: If I am past the last item on the list, AddBefore() is equivilent
+             *      NB: If I am past the last item on the list, AddBefore() is equivalent
              *  to Appending to the list.
              */
             Assert (i.Done ());

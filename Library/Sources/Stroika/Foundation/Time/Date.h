@@ -456,7 +456,7 @@ namespace Stroika::Foundation::Time {
          *  \brief Y-M-D format - locale independant, and ISO-8601 date format standard
          *
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
-         *        so equivilent to %Y-%m-%d
+         *        so equivalent to %Y-%m-%d
          *  \note this is LOCALE-INDEPENDENT
          *  \see kMonthDayYearFormat
          * 
