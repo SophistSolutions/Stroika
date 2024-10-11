@@ -5,11 +5,13 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Fatal.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
@@ -100,8 +102,19 @@ namespace {
                 cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
                 return EXIT_SUCCESS;
             }
-
-            Options_ options{cmdLine};
+            else if (cmdLine.Has (Main::CommandOptions::kStatus)) {
+                // no need to wrap in logger, and load options for this
+                Main m{make_shared<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
+                cout << m.GetServiceStatusMessage ().AsNarrowSDKString ();
+                return EXIT_SUCCESS;
+            }
+            else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
+                // no need to wrap in logger, and load options for this
+                Main m{make_shared<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
+                cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "sv
+                     << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
+                return EXIT_SUCCESS;
+            }
 
             // replace preliminary logging appenders, after we've read the configuration (gAppConfiguration)
             Logger::sThe.SetAppenders ([] () {
@@ -125,22 +138,14 @@ namespace {
                 return appenders;
             }());
 
+            Options_ options{cmdLine};
+
             /*
              *  Create the service manager objects
              */
             shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep =
                 make_shared<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
-            Main m{make_shared<Stroika::Samples::HTMLUI ::Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
-
-            if (cmdLine.Has (Main::CommandOptions::kStatus)) {
-                cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
-                return EXIT_SUCCESS;
-            }
-            else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
-                cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "sv
-                     << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
-                return EXIT_SUCCESS;
-            }
+            Main m{make_shared<Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
 
             /*
              * Several components use interval timers, and this allows those modules to run (but have timer service started/shutdown in a controlled
@@ -175,8 +180,10 @@ namespace {
 int main (int argc, char* argv[])
 {
     try {
-        MyApp_ myApp;
-        return myApp.Run (CommandLine{argc, argv});
+        CommandLine               cmdLine{argc, argv};
+        Debug::TraceContextBumper ctx{"main", "args={}"_f, cmdLine};
+        MyApp_                    myApp;
+        return myApp.Run (cmdLine);
     }
     catch (...) {
         cerr << endl << "EXCEPTION: {}"_f(current_exception ()).AsNarrowSDKString () << endl;
