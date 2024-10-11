@@ -1071,7 +1071,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline bool Iterable<T>::Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
-        return not Where (includeIfTrue).empty ();
+        return static_cast<bool> (Find (includeIfTrue));
     }
     template <typename T>
     inline size_t Iterable<T>::Count () const
