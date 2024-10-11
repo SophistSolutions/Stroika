@@ -160,7 +160,8 @@ namespace {
             return EXIT_SUCCESS;
         }
 
-    public:
+    private:
+        // Capture any application-specific command-line options as fields of the Options struct
         struct Options_ {
             optional<uint16_t> fPortNumberOverride;
             Main::CommandArgs  fServiceArgs;

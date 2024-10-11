@@ -165,7 +165,7 @@ public:
                     }}
 
           // ,    Route{"config.json"_RegEx, mkRequestHandler (kGUIConfig_, Config_::kMapper, function<Config_ (void)>{[=] () { return GetConfig_ (); }})},
-           ,   Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / ".." / "html"sv, kStaticSiteHandlerOptions_}},
+           ,   Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / "html"sv, kStaticSiteHandlerOptions_}},
 
 
           }

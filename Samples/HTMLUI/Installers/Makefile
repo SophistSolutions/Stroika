@@ -204,7 +204,7 @@ endif
 	@rm -rf $(WIX_WORKDIR) $(WIX_BUILD_OUT)
 	@#Make directories to be created by the installer
 	@mkdir -p $(WIX_WORKDIR)
-	@cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)$(BASIC_NAME)-Service.exe 2>&1 >> $(WIX_BUILD_OUT)
+	@cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)HTMLUI.exe 2>&1 >> $(WIX_BUILD_OUT)
 	@cp $(TARGET_OUT_DIR)Backend/*.dll $(WIX_WORKDIR) 2>&1 >> $(WIX_BUILD_OUT)
 	@cp -r $(BUILT_HTML_DIR) $(WIX_WORKDIR)html
 	@echo heat dir $(WIX_PATH_PREFIX) heat dir $(HTMLDIR_WINDOWSPATH) -nologo -o $(WIXHTMLFRAGFILE_WINDOWPATH) -scom -frag -srd -sreg -gg -cg SampleHTMLUI_html_comp -dr HTML_DIR_REF >> $(WIX_BUILD_OUT)
