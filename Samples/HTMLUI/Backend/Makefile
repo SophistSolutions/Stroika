@@ -77,7 +77,8 @@ all:
 	@mkdir -p $(TARGETDIR)
 	@for s in ${SubDirs}; do $(MAKE) --directory $${s} -s MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all; done
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@mkdir -p ${TARGETDIR}html; ln -s ${TARGETHTMLDIR} ${TARGETDIR}html
+	echo mkdir -p ${TARGETDIR}html; ln -s ${TARGETHTMLDIR} ${TARGETDIR}html
+	mkdir -p ${TARGETDIR}html; ln -s ${TARGETHTMLDIR} ${TARGETDIR}html
 
 
 check:
