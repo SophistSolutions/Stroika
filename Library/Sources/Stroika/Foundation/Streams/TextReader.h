@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Streams::TextReader {
      *  \par Example Usage
      *      \code
      *          for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
-     *              DbgTrace (L"***in Common::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
+     *              DbgTrace ("***in Common::GetSystemConfiguration_CPU capture_ line={}"_f, line);
      *          }
      *      \endcode
      *  
