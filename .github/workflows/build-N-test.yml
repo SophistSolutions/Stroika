@@ -164,6 +164,7 @@ jobs:
           if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/*-Installer-Build.Out
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
             /tmp/Trace*.txt
       - name: Archive Core-Dumps
