@@ -194,6 +194,7 @@ CANDLE_ARCH=x64
 endif
 TARGET_OUT_INSTALLER_WIX_WINDOWSPATH=$(shell cygpath --mixed $(TARGET_OUT_INSTALLER_WIX))
 HTMLDIR_WINDOWSPATH=$(shell cygpath --mixed $(WIX_WORKDIR)html)
+DLLSDIR_WINDOWSPATH=$(shell cygpath --mixed $(WIX_WORKDIR)dlls)
 WIXHTMLFRAGFILE_WINDOWPATH=$(shell cygpath --mixed $(WIX_WORKDIR)html.wxs)
 WIXDLLSFRAGFILE_WINDOWPATH=$(shell cygpath --mixed $(WIX_WORKDIR)dlls.wxs)
 $(TARGET_OUT_INSTALLER_WIX): $(BUILT_SERVICE_EXE) Makefile ${BUILT_HTML_DIR}
@@ -213,16 +214,16 @@ endif
 doBld_:
 	mkdir -p $(WIX_WORKDIR)
 	cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)HTMLUI.exe 2>&1
-	cp $(TARGET_OUT_DIR)Backend/*.dll $(WIX_WORKDIR) 2>&1
+	mkdir -p $(WIX_WORKDIR)dlls
+	# cp $(TARGET_OUT_DIR)Backend/*.dll $(WIX_WORKDIR) 2>&1
+	cp $(TARGET_OUT_DIR)Backend/*.dll $(WIX_WORKDIR)/dlls 2>&1
 	cp -r $(BUILT_HTML_DIR) $(WIX_WORKDIR)html
-	$(WIX_PATH_PREFIX) heat dir $(HTMLDIR_WINDOWSPATH) -nologo -o $(WIXHTMLFRAGFILE_WINDOWPATH) -scom -frag -srd -sreg -gg -cg SampleHTMLUI_html_comp -dr HTML_DIR_REF
-	DEPENDSONDLL_WINDOWSPATH=`ls $(WIX_WORKDIR)*.dll`;\
-	if [ "" == "$$DEPENDSONDLL_WINDOWSPATH" ] ; then  \
-		echo > $$DEPENDSONDLL_WINDOWSPATH;  \
-	else \
-		DEPENDSONDLL_WINDOWSPATH=`cygpath --mixed "$$DEPENDSONDLL_WINDOWSPATH"`;\
-		$(WIX_PATH_PREFIX) heat file $$DEPENDSONDLL_WINDOWSPATH -nologo -o $(WIXDLLSFRAGFILE_WINDOWPATH) -scom -frag -srd -sreg -gg -cg SampleHTMLUI_dlls_comp -dr INSTALLDIR; \
-	fi
+	$(WIX_PATH_PREFIX) heat dir $(HTMLDIR_WINDOWSPATH) -nologo -o $(WIXHTMLFRAGFILE_WINDOWPATH) \
+		-scom -frag -srd -sreg -gg \
+		-cg SampleHTMLUI_html_comp -dr HTML_DIR_REF
+	$(WIX_PATH_PREFIX) heat dir $(DLLSDIR_WINDOWSPATH) -nologo -o $(WIXDLLSFRAGFILE_WINDOWPATH) \
+		-scom -frag -srd -sreg -gg \
+		-cg SampleHTMLUI_dlls_comp -dr INSTALLDIR
 	$(WIX_PATH_PREFIX) candle.exe -v -arch $(CANDLE_ARCH) -dARCH=$(ARCH) \
 		-dCONFIGURATION=$(CONFIGURATION) \
 		-dDISPLAY_FULL_VERSION=$(WIX_VERSION) \
@@ -232,6 +233,9 @@ doBld_:
 	$(WIX_PATH_PREFIX) light.exe \
 		$(shell cygpath --mixed $(WIX_OUT_OBJ_DIR)Installer.wixobj)  \
 		$(shell cygpath --mixed $(WIX_OUT_OBJ_DIR)html.wixobj) \
+		$(shell cygpath --mixed $(WIX_OUT_OBJ_DIR)dlls.wixobj) \
 		-b $(HTMLDIR_WINDOWSPATH) \
-		-ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)'
+		-b $(DLLSDIR_WINDOWSPATH) \
+		-ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl \
+		-out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)'
 

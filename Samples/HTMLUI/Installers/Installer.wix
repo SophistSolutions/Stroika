@@ -171,9 +171,9 @@
             </Component>
 
             <!--ASAN DLL if used...-->
-             <Component Id="SampleHTMLUI.exe_dlls_comp" Guid="*" Win64="$(var.Win64)">
+             <!-- <Component Id="SampleHTMLUI.exe_dlls_comp" Guid="*" Win64="$(var.Win64)">
               <File Source="$(var.serviceDLLsPath)clang_rt.asan_dynamic-x86_64.dll" Id="clang_rt_asan_dynamic_x86_64_dll" />
-            </Component>
+            </Component> -->
 
             <Directory Id="HTML_DIR_REF" Name="html">
             </Directory>
@@ -196,7 +196,7 @@
       <Feature Id="MainProgram" Title="!(loc.FeatureMainProgramTitle)" Description="!(loc.FeatureMainProgramDescription)" Level="1">
         <ComponentRef Id="INSTALLDIR_comp" />
         <ComponentRef Id="SampleHTMLUI.exe_comp" />
-        <ComponentRef Id="SampleHTMLUI.exe_dlls_comp" />
+        <ComponentGroupRef Id="SampleHTMLUI_dlls_comp" />
         <ComponentGroupRef  Id="SampleHTMLUI_html_comp" />
       </Feature>
 
