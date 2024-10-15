@@ -215,15 +215,18 @@ doBld_:
 	mkdir -p $(WIX_WORKDIR)
 	cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)HTMLUI.exe 2>&1
 	mkdir -p $(WIX_WORKDIR)dlls
-	# cp $(TARGET_OUT_DIR)Backend/*.dll $(WIX_WORKDIR) 2>&1
-	cp $(TARGET_OUT_DIR)Backend/*.dll $(WIX_WORKDIR)/dlls 2>&1
+	find $(TARGET_OUT_DIR)Backend -name "*.dll" -exec cp '{}' $(WIX_WORKDIR)/dlls \;
 	cp -r $(BUILT_HTML_DIR) $(WIX_WORKDIR)html
 	$(WIX_PATH_PREFIX) heat dir $(HTMLDIR_WINDOWSPATH) -nologo -o $(WIXHTMLFRAGFILE_WINDOWPATH) \
 		-scom -frag -srd -sreg -gg \
 		-cg SampleHTMLUI_html_comp -dr HTML_DIR_REF
-	$(WIX_PATH_PREFIX) heat dir $(DLLSDIR_WINDOWSPATH) -nologo -o $(WIXDLLSFRAGFILE_WINDOWPATH) \
-		-scom -frag -srd -sreg -gg \
-		-cg SampleHTMLUI_dlls_comp -dr INSTALLDIR
+	if ls -1 $(WIX_WORKDIR)dlls/* >/dev/null 2>&1; then \
+		$(WIX_PATH_PREFIX) heat dir $(DLLSDIR_WINDOWSPATH) -nologo -o $(WIXDLLSFRAGFILE_WINDOWPATH) \
+			-scom -frag -srd -sreg -gg \
+			-cg SampleHTMLUI_dlls_comp -dr INSTALLDIR;  \
+	else \
+		cp EmptyDLLs.wix $(WIX_WORKDIR)dlls.wxs; \
+	fi
 	$(WIX_PATH_PREFIX) candle.exe -v -arch $(CANDLE_ARCH) -dARCH=$(ARCH) \
 		-dCONFIGURATION=$(CONFIGURATION) \
 		-dDISPLAY_FULL_VERSION=$(WIX_VERSION) \
