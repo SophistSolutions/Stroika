@@ -215,7 +215,7 @@ doBld_:
 	mkdir -p $(WIX_WORKDIR)
 	cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)HTMLUI.exe 2>&1
 	mkdir -p $(WIX_WORKDIR)dlls
-	find $(TARGET_OUT_DIR)Backend -name "*.dll" -exec cp '{}' $(WIX_WORKDIR)/dlls \;
+	/bin/find $(TARGET_OUT_DIR)Backend -name "*.dll" -exec cp '{}' $(WIX_WORKDIR)/dlls \;
 	cp -r $(BUILT_HTML_DIR) $(WIX_WORKDIR)html
 	$(WIX_PATH_PREFIX) heat dir $(HTMLDIR_WINDOWSPATH) -nologo -o $(WIXHTMLFRAGFILE_WINDOWPATH) \
 		-scom -frag -srd -sreg -gg \
