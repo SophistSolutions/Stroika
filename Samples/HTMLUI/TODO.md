@@ -1,5 +1,5 @@
 - Installer
-  (working - on unix - and someday maybe macos)
+  test unix installer
 
 - Wrap output into docker container
   (often more useful than deb or rpm)

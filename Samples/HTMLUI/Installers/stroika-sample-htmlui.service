@@ -1,26 +1,21 @@
 # INSTALL THIS FILE TO /usr/lib/systemd/system/stroika-sample-htmlui.service
 
 [Unit]
-Description=Stroika Sample Service
+Description=Stroika Sample HTMLUI Service
 After=syslog.target
-#After=syslog.target network.target
-#Conflicts=sendmail.service exim.service
 
 [Service]
 #
-# NOTE, we can support Type=simple by setting ExecStart=/opt/Stroika-Sample-HTMLUI/HTMLUI --run-directly
+# NOTE, we can support Type=simple by setting ExecStart=/opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI --run-directly
 # but then I'd have to read up on how todo restart/stop
 #
 Type=forking
 
 # In stroika, this defaults to IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + ".pid"_k;
-PIDFile=/var/run/Stroika-Sample-Service.pid
-#EnvironmentFile=-/etc/sysconfig/network
-#ExecStartPre=-/usr/libexec/postfix/aliasesdb
-#ExecStartPre=-/usr/libexec/postfix/chroot-update
-ExecStart=/opt/Stroika-Sample-HTMLUI/htmlui --start
-ExecReload=/opt/Stroika-Sample-HTMLUI/htmlui --restart
-ExecStop=/opt/Stroika-Sample-HTMLUI/htmlui --stop
+PIDFile=/var/run/Stroika-Sample-HTMLUI.pid
+ExecStart=/opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI --start
+ExecReload=/opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI --restart
+ExecStop=/opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI --stop
 
 [Install]
 WantedBy=multi-user.target
