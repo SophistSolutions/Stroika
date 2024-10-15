@@ -1,4 +1,4 @@
-# INSTALL THIS FILE TO /usr/lib/systemd/system/stroika-sampleservice.service
+# INSTALL THIS FILE TO /usr/lib/systemd/system/stroika-sample-htmlui.service
 
 [Unit]
 Description=Stroika Sample Service
@@ -8,7 +8,7 @@ After=syslog.target
 
 [Service]
 #
-# NOTE, we can support Type=simple by setting ExecStart=/opt/Stroika-SampleService/Stroika-SampleService --run-directly
+# NOTE, we can support Type=simple by setting ExecStart=/opt/Stroika-Sample-HTMLUI/HTMLUI --run-directly
 # but then I'd have to read up on how todo restart/stop
 #
 Type=forking
@@ -18,9 +18,9 @@ PIDFile=/var/run/Stroika-Sample-Service.pid
 #EnvironmentFile=-/etc/sysconfig/network
 #ExecStartPre=-/usr/libexec/postfix/aliasesdb
 #ExecStartPre=-/usr/libexec/postfix/chroot-update
-ExecStart=/opt/Stroika-SampleService/Stroika-SampleService --start
-ExecReload=/opt/Stroika-SampleService/Stroika-SampleService --restart
-ExecStop=/opt/Stroika-SampleService/Stroika-SampleService --stop
+ExecStart=/opt/Stroika-Sample-HTMLUI/htmlui --start
+ExecReload=/opt/Stroika-Sample-HTMLUI/htmlui --restart
+ExecStop=/opt/Stroika-Sample-HTMLUI/htmlui --stop
 
 [Install]
 WantedBy=multi-user.target

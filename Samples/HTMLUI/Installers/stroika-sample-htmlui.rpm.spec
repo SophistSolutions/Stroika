@@ -6,8 +6,8 @@
 %define          debug_package %{nil}
 %define        __os_install_post %{_dbpath}/brp-compress
 
-Summary: Stroika Sample Service
-Name: stroika-sampleservice
+Summary: Stroika Sample HTMLUI
+Name: stroika-sample-htmlui
 License: Open-Source
 Group: System Environment/Daemons
 SOURCE0 : %{name}-%{version}.tar.gz
@@ -41,19 +41,19 @@ if [ "$1" = "1" ]; then
    echo "Nothing needed for initial installation" > /dev/null
 elif [ "$1" == "2" ]; then
    echo "Stop the service if its already running" > /dev/null
-   systemctl stop stroika-sampleservice
+   systemctl stop stroika-sample-htmlui
 fi
 
 %preun
 if [ $1 -eq 0 ] ; then
-	systemctl disable stroika-sampleservice
+	systemctl disable stroika-sample-htmlui
 fi
 
 %post
-	systemctl enable stroika-sampleservice
-	systemctl start stroika-sampleservice
+	systemctl enable stroika-sample-htmlui
+	systemctl start stroika-sample-htmlui
 
 %files
-/opt/Stroika-SampleService/Stroika-SampleService
-/usr/lib/systemd/system/stroika-sampleservice.service
-%config(noreplace) /var/opt/Stroika-SampleService/
+/opt/Stroika-Sample-HTMLUI/htmlui
+/usr/lib/systemd/system/stroika-sample-htmlui.service
+%config(noreplace) /var/opt/Stroika-Sample-HTMLUI/

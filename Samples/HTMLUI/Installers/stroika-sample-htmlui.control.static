@@ -1,6 +1,6 @@
-Package: stroika-sampleservice
+Package: stroika-sample-htmlui
 Priority: optional
 Section: admin
 Maintainer: Lewis G. Pringle, Jr <lewis@sophists.com>
 Depends: 
-Description: Stroika Sample Service
+Description: Stroika Sample HTMLUI Service

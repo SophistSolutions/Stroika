@@ -5,8 +5,8 @@ ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-BASIC_NAME_LC=stroika-sampleshtmlui
-BASIC_NAME=Stroika-SampleHTMLUI
+BASIC_NAME_LC=stroika-sample-htmlui
+BASIC_NAME=Stroika-Sample-HTMLUI
 OUTDIR_NAME=Samples-HTMLUI
 
 
