@@ -59,7 +59,7 @@ Resources_EmbedFiles:=\
 
 # $(info Resources_EmbedFiles=$(Resources_EmbedFiles))
 
-# easilest to just compile all if any out of date
+# easiest to just compile all if any out of date
 $(Resources_EmbedFiles):
 	@mkdir -p $(ResDir)
 	@for i in $(Resources_Src) ; do \
