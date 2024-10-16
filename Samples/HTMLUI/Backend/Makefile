@@ -10,7 +10,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir			:=	$(StroikaRoot)Samples/HTMLUI/Backend/
 ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
-ResDir			:=	$(ObjDir)/Resources/
+ResDir			:=	$(ObjDir)Resources/
 
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/)
 
@@ -63,7 +63,7 @@ Resources_EmbedFiles:=\
 $(Resources_EmbedFiles):
 	@mkdir -p $(ResDir)
 	@for i in $(Resources_Src) ; do \
-		(cd `dirname $$i`; xxd -i `basename $$i` ${ResDir}/`basename $$i`.embed) ; \
+		(cd `dirname $$i`; xxd -i `basename $$i` ${ResDir}`basename $$i`.embed) ; \
 	done
 
 
