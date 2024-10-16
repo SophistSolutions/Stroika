@@ -33,4 +33,4 @@ RUN apt-get install -y nodejs  ;apt-get install -y  npm ; npm i -g npm @quasar/c
 RUN apt-get -qq install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-RUN apt-get -qq install -y g++-13-arm-linux-gnueabihf iputils-ping
+RUN apt-get -qq install -y g++-13-arm-linux-gnueabihf g++-14-arm-linux-gnueabihf iputils-ping

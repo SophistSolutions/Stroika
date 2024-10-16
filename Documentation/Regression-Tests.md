@@ -54,19 +54,6 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=Ubuntu2310_x86_64
-
-  (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
-
-  ```bash
-  RUN_IN_DOCKER=1 \
-      USE_TEST_BASENAME=Ubuntu2310_x86_64 \
-      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests \
-      MACHINE=Hercules \
-      ./ScriptsLib/RunRemoteRegressionTests
-  ```
-
 - \$TEST_TARGET=Ubuntu2404_x86_64
 
   (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
@@ -76,6 +63,19 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu2404_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
+      MACHINE=Hercules \
+      ./ScriptsLib/RunRemoteRegressionTests
+  ```
+
+- \$TEST_TARGET=Ubuntu2410_x86_64
+
+  (remote execute on machine hercules using docker and copy back results; takes about 6 HRs)
+
+  ```bash
+  RUN_IN_DOCKER=1 \
+      USE_TEST_BASENAME=Ubuntu2410_x86_64 \
+      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
   ```

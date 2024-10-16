@@ -8,12 +8,7 @@ RUN apt-get update
 RUN apt-get -qq install -y sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-#
-# NO IDEA why needed, but as of 2022-11-29 this extra apt-get updated needed before installing 
-#       build-essential
-# --LGP 2022-11-29
-
-RUN apt-get update && apt-get -qq install -y build-essential
+RUN apt-get -qq install -y build-essential
 
 #
 # p7zip-full:                   Used to unpack sources for lzma SDK
@@ -46,7 +41,7 @@ RUN apt-get -qq install -y g++
 # RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
 
 #Only needed to use sanitizer builds
-RUN apt-get -qq install -y libasan5 libasan6 libubsan1
+RUN apt-get -qq install -y libasan6 libubsan1
 
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
 COPY Ubuntu2410-Small/.bash_profile /root

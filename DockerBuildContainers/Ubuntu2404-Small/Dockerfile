@@ -11,9 +11,15 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #
 # NO IDEA why needed, but as of 2022-11-29 this extra apt-get updated needed before installing 
 #       build-essential
-# --LGP 2022-11-29
-
+# Otherwise get stuff like:
+#    E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20230311ubuntu0.22.04.1_all.deb  404  Not Found [IP: 185.125.190.81 80]
+#    E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+#    E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/v/vim/xxd_8.2.3995-1ubuntu2.18_amd64.deb  404  Not Found [IP: 91.189.91.83 80]
+#    E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+#
+# --LGP 2024-10-16
 RUN apt-get update && apt-get -qq install -y build-essential
+
 
 #
 # p7zip-full:                   Used to unpack sources for lzma SDK

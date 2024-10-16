@@ -19,7 +19,8 @@ RUN apt-get -qq install -y g++-14
 #and only install libc++-14-dev since others don't appear to work on this release of ubuntu (at least not instlaling mulitple versions)
 RUN apt-get update  # unclear why update needed but container build fails without
 RUN apt-get -qq install -y clang++-17
-RUN apt-get -qq install -y clang++-18 && apt-get install -y libc++-18-dev libc++abi-18-dev
+RUN apt-get -qq install -y clang++-18
+RUN apt-get -qq install -y clang++-19 && apt-get install -y libc++-19-dev libc++abi-19-dev
 
 # Used for Samples/HTMLUI (not needed - autodetected)
 RUN apt-get install -y nodejs  ;apt-get install -y  npm ; npm i -g npm @quasar/cli
@@ -28,4 +29,4 @@ RUN apt-get install -y nodejs  ;apt-get install -y  npm ; npm i -g npm @quasar/c
 RUN apt-get -qq install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-RUN apt-get -qq install -y g++-13-arm-linux-gnueabihf iputils-ping
+RUN apt-get -qq install -y g++-14-arm-linux-gnueabihf iputils-ping

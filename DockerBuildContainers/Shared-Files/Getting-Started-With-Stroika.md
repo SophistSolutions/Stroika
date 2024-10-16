@@ -22,7 +22,7 @@ make default-configurations
 
 then
 ~~~bash
-make CONFIGURAITON=YOUR-SELECTED-CONFIGURATION all -j10
+make CONFIGURATION=YOUR-SELECTED-CONFIGURATION all -j10
 ~~~
 to build just that one configuration (building one is faster than building many).
 
