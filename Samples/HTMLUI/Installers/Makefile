@@ -99,7 +99,7 @@ endif
 # just comment out...
 DEB_WORKDIR:=$(shell mktemp -d)/
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
-DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build.Out
+DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build-Output.txt
 $(TARGET_OUT_INSTALLER_DEB): $(BUILT_SERVICE_EXE) Makefile
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building DEB installer: "
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "temp files: $(DEB_WORKDIR); log: $(DEB_BUILD_OUT)"`
@@ -143,7 +143,7 @@ endif
 
 RPM_WORKDIR=$(ObjDir)RPM_TMP/
 RPM_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
-RPM_BUILD_OUT=$(ObjDir)RPM-Installer-Build.Out
+RPM_BUILD_OUT=$(ObjDir)RPM-Installer-Build-Output.txt
 $(TARGET_OUT_INSTALLER_RPM): $(BUILT_SERVICE_EXE) Makefile
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building RPM installer: "
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "temp files: $(RPM_WORKDIR); log: $(RPM_BUILD_OUT)"`"..."
@@ -179,7 +179,7 @@ endif
 WIX_WORKDIR=$(ObjDir)WIX_TMP/
 WIX_OUT_OBJ_DIR=$(WIX_WORKDIR)
 WIX_OUT_OBJ_DIR_WIN=$(shell cygpath --mixed $(WIX_OUT_OBJ_DIR))
-WIX_BUILD_OUT=$(ObjDir)WIX-Installer-Build.Out
+WIX_BUILD_OUT=$(ObjDir)WIX-Installer-Build-Output.txt
 WIX_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 WIX_4DOT_VERSION=$(shell $(StroikaRoot)ScriptsLib/ExtractVersionInformation $(VERSION_FILE_IN) Win32FourDot)
 ifeq ($(qFeatureFlag_WIX),use)
