@@ -1,4 +1,4 @@
-FROM ubuntu:23.10
+FROM ubuntu:24.10
 
 # Get latest packages system, so can do installs
 RUN apt-get update
@@ -42,13 +42,13 @@ RUN apt-get -qq install -y p7zip-full; \
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
 RUN apt-get -qq install -y g++
 
-# # Used for Samples/HTMLUI (not needed - autodetected)
+# # Used for Samples/HTMLUI (not needed - autodetected) - disabled so we have some configs tested where not installed
 # RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
 
 #Only needed to use sanitizer builds
 RUN apt-get -qq install -y libasan5 libasan6 libubsan1
 
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
-COPY Ubuntu2310-Small/.bash_profile /root
+COPY Ubuntu2410-Small/.bash_profile /root
 
 CMD /bin/bash -l

@@ -12,6 +12,9 @@ RUN apt-get -qq install -y lsb-release
 #install the latest (C++20 compat) g++ compilers
 RUN apt-get -qq install -y g++-12 g++-13 g++-14
 
+#Just so we test this in installers (some samples build rpm installers)
+RUN apt-get -qq install -y rpm
+
 # For reasons which elude me, installing libc++-N removes all the other
 # https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
 #
@@ -23,7 +26,7 @@ RUN apt-get -qq install -y clang++-16
 RUN apt-get -qq install -y clang++-17
 RUN apt-get -qq install -y clang++-18 && apt-get install -y libc++-18-dev libc++abi-18-dev
 
-# Used for Samples/HTMLUI (not needed - autodetected)
+# Used for Samples/HTMLUI (not needed - autodetected - but good to test)
 RUN apt-get install -y nodejs  ;apt-get install -y  npm ; npm i -g npm @quasar/cli
 
 #Only needed to run with valgrind regtests
