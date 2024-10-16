@@ -54,6 +54,6 @@ fi
 	systemctl start stroika-sample-htmlui
 
 %files
-/opt/Stroika-Sample-HTMLUI/htmlui
+/opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI
 /usr/lib/systemd/system/stroika-sample-htmlui.service
 %config(noreplace) /var/opt/Stroika-Sample-HTMLUI/
