@@ -5,9 +5,11 @@ FROM $BASED_ON_IMAGE
 # Get latest packages system, so can do installs
 RUN apt-get update
 
+# Cuz often connect to it via ssh
 RUN apt-get install -y openssh-server
 
-RUN apt-get install -y clang-format curl vim apt-file iproute2 npm lldb
+# handy dev tools to debug, etc...
+RUN apt-get install -y clang-format curl vim apt-file nodejs iproute2 lldb
 
 EXPOSE 22
 ## @todo have not figured out how to get sshd to start automatically
