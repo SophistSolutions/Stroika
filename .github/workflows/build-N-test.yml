@@ -399,5 +399,14 @@ jobs:
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
     - name: Make Stroika
       run: make all
+    - name: Archive Log Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Log Data (${{ matrix.displayTargetName }})
+        if-no-files-found: warn
+        path: |
+          IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/*-Installer-Build.Out
+          IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
