@@ -286,6 +286,7 @@ namespace Stroika::Foundation::Debug {
          *  \note - though CTOR not declared noexcept, ReadContext cannot throw an exception (it asserts out on failure)
          */
         using ReadContext = shared_lock<const AssertExternallySynchronizedMutex>;
+        static_assert (movable <ReadContext> and not copyable<ReadContext>);
 
     public:
         /**
@@ -305,6 +306,7 @@ namespace Stroika::Foundation::Debug {
          *  \note - though CTOR not declared noexcept, WriteContext cannot throw an exception (it asserts out on failure)
          */
         using WriteContext = lock_guard<AssertExternallySynchronizedMutex>;
+        static_assert (not movable <WriteContext> and not copyable<WriteContext>);
 
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     private:
@@ -320,6 +322,7 @@ namespace Stroika::Foundation::Debug {
         static mutex& GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLocks_ (could do one mutex per AssertExternallySynchronizedMutex but static probably performs better)
 #endif
     };
+    static_assert (movable <AssertExternallySynchronizedMutex> and  copyable<AssertExternallySynchronizedMutex>);
 
 }
 
