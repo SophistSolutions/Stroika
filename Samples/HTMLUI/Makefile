@@ -36,10 +36,11 @@ check:
 
 clobber::
 	@$(MAKE) --silent --directory Backend MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
-	@$(MAKE) --silent --directory html MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
+	@$(MAKE) --silent --directory QuasarBasedHTMLApp MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
 
 clean::
 	@$(MAKE) --silent --directory Backend MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
+	@$(MAKE) --silent --directory QuasarBasedHTMLApp MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
 
 
 html:
