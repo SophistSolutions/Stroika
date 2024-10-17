@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     /**
      *  \brief IStdFormatterPredefinedFor_<T> = what formattable<T,wchar_t> WOULD have returned if it could be evaluated safely without its value being memoized.
      * 
-     * \see       \see https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
+     * \see https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
      * 
      * \see https://en.cppreference.com/w/cpp/utility/format/formatter    std::formatter predefined for
      *
@@ -348,8 +348,8 @@ namespace Stroika::Foundation::Characters::Private_ {
 // Debugging hacks to make sure IStdFormatterPredefinedFor_ defined properly
 //
 //      CRAZY - but cannot check (at least on visual studio) here: checking NOW causes
-//      this to FAIL later (i guess compiler caches results
-//      cuz thinks its constant). if this worked, I'd add more static_asserts to check...
+//      this to FAIL later (i guess compiler caches results cuz thinks its constant). 
+//      if this worked, I'd add more static_asserts to check...
 //
 // Just use briefly - to debug IStdFormatterPredefinedFor_ -  to verify we fail AFTER this point;
 // enable #if below and just look if these static_asserts fail - ignore any issues which come after (which is why this cannot be left #if 1)
