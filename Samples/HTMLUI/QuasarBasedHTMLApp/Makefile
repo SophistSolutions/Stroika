@@ -33,7 +33,6 @@ endif
 	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) build-dist_
 
 clean clobber:
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Samples-HTMLUI/HTML $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
 	@rm -rf ../IntermediateFiles/*/Samples-HTMLUI/html
 	@if [ "$@"=="clobber" ] ; then \
