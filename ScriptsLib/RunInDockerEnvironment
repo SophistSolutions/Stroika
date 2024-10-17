@@ -111,7 +111,7 @@ RunCMD_ "docker run \
 	${EXTRA_DOCKER_ARGS} \
 	--detach \
 	${CONTAINER_IMAGE} \
-	'(sudo mkdir -p ~; sudo chmod a+w ~; sleep inf) > /dev/null'"
+	'(sudo mkdir -p ~; sudo chmod a+w ~; sleep inf) '"
 
 # Run this to completion
 RunCMD_ docker exec ${CONTAINER_NAME} ${CMD2RUN} 
