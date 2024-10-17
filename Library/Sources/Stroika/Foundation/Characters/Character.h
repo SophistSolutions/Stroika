@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Characters {
     concept IUNICODECodePoint = IBasicUNICODECodePoint<T> or same_as<remove_cv_t<T>, wchar_t>;
 
     /**
-     *  concept IStdBasicStringCompatibleCharacter tests if the 'T' argument is a legit CHARACTER argument to std::basic_string.
+     *  \brief concept IStdBasicStringCompatibleCharacter tests if the 'T' argument is a legit CHARACTER argument to std::basic_string, and basic_string_view (char,char8_t,char16_t,char32_t,wchar_t).
      * 
      *  \note ALL of these character types are ALSO legitimate arguments to Stroika's String class (array of span of such). In the case
      *        of char, the text must be ASCII.
