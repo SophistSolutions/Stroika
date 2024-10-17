@@ -29,7 +29,8 @@ QUICK_BUILD ?= 1
 # CHECK FOR UPDATED VERSIONS http://xerces.apache.org/xerces-c/
 #
 
-VERSION=3.2.5
+VERSION=3.3.0
+#VERSION=3.2.5
 #VERSION=3.2.4
 #VERSION=3.2.3
 ifeq (Unix,$(BuildPlatform))
