@@ -63,7 +63,7 @@ namespace {
 #define START_LIB_EXCEPTION_MAPPER_ try {
 #define END_LIB_EXCEPTION_MAPPER_                                                                                                          \
     }                                                                                                                                      \
-    catch (const xercesc::OutOfMemoryException&)                                                                                       \
+    catch (const xercesc::OutOfMemoryException&)                                                                                           \
     {                                                                                                                                      \
         Execution::Throw (bad_alloc{}, "xerces OutOfMemoryException - throwing bad_alloc");                                                \
     }                                                                                                                                      \
@@ -287,7 +287,7 @@ namespace {
         optional<URI>                       fTargetNamespace;
         Resource::ResolverPtr               fResolver;
         Memory::BLOB                        fSchemaData;
-        xercesc::XMLGrammarPool*        fCachedGrammarPool{nullptr};
+        xercesc::XMLGrammarPool*            fCachedGrammarPool{nullptr};
         Map2StroikaExceptionsErrorReporter_ fErrorReporter_;
 
         virtual const Providers::ISchemaProvider* GetProvider () const override
@@ -1075,7 +1075,7 @@ namespace {
             }
             START_LIB_EXCEPTION_MAPPER_
             {
-                XPathQueryHelper_                         xpHelp{fNode_, e, true};
+                XPathQueryHelper_                     xpHelp{fNode_, e, true};
                 AutoRelease_<xercesc::DOMXPathResult> r = (*xpHelp.expr)->evaluate (fNode_, xpHelp.rt, nullptr);
                 return XPathQueryHelper_::ToResult_ (r);
             }
@@ -1088,7 +1088,7 @@ namespace {
                 e2o.fSnapshot                  = false;
                 return Sequence<XPath::Result>{this->Lookup (XPath::Expression{e.GetExpression (), e2o})};
             }
-            shared_ptr<XPathQueryHelper_>                         xpHelp = make_shared<XPathQueryHelper_> (fNode_, e, false);
+            shared_ptr<XPathQueryHelper_>                     xpHelp = make_shared<XPathQueryHelper_> (fNode_, e, false);
             shared_ptr<AutoRelease_<xercesc::DOMXPathResult>> r =
                 make_shared<AutoRelease_<xercesc::DOMXPathResult>> ((*xpHelp->expr)->evaluate (fNode_, xpHelp->rt, nullptr));
             Assert (not e.GetOptions ().fSnapshot);
