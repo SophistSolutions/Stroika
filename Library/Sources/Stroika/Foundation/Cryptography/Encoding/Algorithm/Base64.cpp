@@ -54,11 +54,7 @@ namespace {
     };
     struct base64_decodestate_ {
         base64_decodestep_ step{step_a};
-#if qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy
-        byte plainchar{(byte)0};
-#else
-        byte plainchar{0};
-#endif
+        byte               plainchar{0};
     };
     int base64_decode_value_ (signed char value_in)
     {

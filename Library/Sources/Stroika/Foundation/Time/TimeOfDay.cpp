@@ -276,18 +276,8 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get
     wistringstream               iss{rep};
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
-#if qCompilerAndStdLib_std_get_time_pctx_Buggy
-    if (formatPattern == "%X"sv) {
-        tmget.get_time (itbegin, itend, iss, errState, &when);
-    }
-    else {
-        // Best I can see to do to workaround this bug
-        return Parse_ (rep, LOCALE_USER_DEFAULT);
-    }
-#else
-    wstring wsFormatPattern = formatPattern.As<wstring> ();
+    wstring                      wsFormatPattern = formatPattern.As<wstring> ();
     (void)tmget.get (itbegin, itend, iss, errState, &when, wsFormatPattern.c_str (), wsFormatPattern.c_str () + wsFormatPattern.length ());
-#endif
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
 #if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
         errState = (::strptime (String{rep}.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr)
@@ -387,10 +377,3 @@ void TimeOfDay::ClearSecondsField ()
     fTime_ -= secs;
     Assert (fTime_ < kMaxSecondsPerDay);
 }
-
-#if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
-String TimeOfDay::ToString () const
-{
-    return Format ();
-}
-#endif

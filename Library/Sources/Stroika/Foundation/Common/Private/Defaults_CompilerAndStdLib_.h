@@ -55,7 +55,7 @@
 /*
  *  @eee StroikaConfig.cpp
  *
- * We want to issue a warning about the compiler/build system compatability flags, but we don't want to issue the warning for every file
+ * We want to issue a warning about the compiler/build system compatibility flags, but we don't want to issue the warning for every file
  * compiled.
  *
  * That way -for the COMMON case of using Stroika with a NEWER compiler than has been tested, you get ONE message, not one per file in stroika. This isnt perfect, because
@@ -110,23 +110,14 @@
 
 #elif defined(_MSC_VER)
 
-#define _MSC_VER_2k22_17Pt0_ 1930
-#define _MSC_VER_2k22_17Pt1_ 1931
-#define _MSC_VER_2k22_17Pt2_ 1932
-#define _MSC_VER_2k22_17Pt3_ 1933
-#define _MSC_VER_2k22_17Pt4_ 1934
-#define _MSC_VER_2k22_17Pt5_ 1935
-#define _MSC_VER_2k22_17Pt6_ 1936
-#define _MSC_VER_2k22_17Pt7_ 1937
-#define _MSC_VER_2k22_17Pt8_ 1938
 #define _MSC_VER_2k22_17Pt9_ 1939
 #define _MSC_VER_2k22_17Pt10_ 1940
 #define _MSC_VER_2k22_17Pt11_ 1941
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
-#if _MSC_VER < _MSC_VER_2k22_17Pt0_
+#if _MSC_VER < _MSC_VER_2k22_17Pt9_
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2022 (use Stroika v2.1 or earlier)"
+    "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2022 (17.9) - (use Stroika v2.1 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k22_17Pt11_
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
@@ -230,29 +221,6 @@ foo.cpp:
 //static_assert (__cpp_lib_atomic_shared_ptr >= 201711, "Stroika v3 requires __cpp_lib_atomic_shared_ptr >= 201711");   -- sadly fails on xcode 14.3, so must live with no having this...
 
 /*
- *https://developercommunity.visualstudio.com/t/__sanitizer_annotate_contiguous_containe/10119696?entry=problem&ref=native&refTime=1660499588239&refUserId=b9c6175e-9d87-6b50-bc33-61424496814f
->C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\sanitizer\common_interface_defs.h(154): error C2382: 'std::__sanitizer_annotate_contiguous_container': redefinition; different exception specifications
-1>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\vector(451): note: see declaration of 'std::__sanitizer_annotate_contiguous_container'
-1>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\sanitizer\common_interface_defs.h(154): error C2733: '__sanitizer_annotate_contiguous_container': you cannot overload a function with 'extern "C"' linkage
-1>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\vector(451): note: see declaration of 'std::__sanitizer_annotate_contiguous_container'
-1
-*/
-#ifndef qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy
-
-#if defined(_MSC_VER)
-// first broken in _MSC_VER_2k22_17Pt3_
-// Verified still broken in _MSC_VER_2k22_17Pt4_
-// Verified still broken in _MSC_VER_2k22_17Pt5_
-// Appears fixed in _MSC_VER_2k22_17Pt6_
-#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt3_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt5_)
-#else
-#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy 0
-#endif
-
-#endif
-
-/*
 Test.cpp:1109:93: error: no viable constructor or deduction guide for deduction of template arguments of 'span'
             ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{b}));
 */
@@ -263,45 +231,6 @@ Test.cpp:1109:93: error: no viable constructor or deduction guide for deduction 
 #define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy (_LIBCPP_VERSION < 16000)
 #else
 #define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy 0
-#endif
-
-#endif
-
-/*
-* **** TEST IN RELEASE BUILD
-* 
-C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\Led\Marker.inl(218): error C2027: use of undefined type 'Stroika::Frameworks::Led::TextStore'
-C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\Led\Marker.h(96): note: see declaration of 'Stroika::Frameworks::Led::TextStore'
-
-AND I THINK diff manifestation of same bug
-
-\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.inl(57): warning C4353: nonstandard extension used: constant 0 as function expression.  Use '__noop' function intrinsic instead
-C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.inl(146): note: see reference to function template instantiation 'void Stroika::Foundation::Execution::Throw<std::bad_alloc>(const T &,const char *)' being compiled
-*/
-#ifndef qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-
-#if defined(_MSC_VER)
-// first broken in _MSC_VER_2k22_17Pt4_
-// still broken in _MSC_VER_2k22_17Pt5_
-// still broken in _MSC_VER_2k22_17Pt6_
-// still broken in _MSC_VER_2k22_17Pt7_
-// verified fixed in _MSC_VER_2k22_17Pt8_
-#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy                                          \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt7_)
-#else
-#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy 0
-#endif
-
-#endif
-
-//
-#ifndef qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-#if defined(_MSC_VER)
-// first broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy                                          \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
-#else
-#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy 0
 #endif
 
 #endif
@@ -320,15 +249,6 @@ C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): note: e
 #ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
 
 #if defined(_MSC_VER)
-// verified broken in _MSC_VER_2k22_17Pt0_
-// verified broken in _MSC_VER_2k22_17Pt1_
-// verified broken in _MSC_VER_2k22_17Pt2_
-// verified broken in _MSC_VER_2k22_17Pt3_
-// verified broken in _MSC_VER_2k22_17Pt4_
-// verified broken in _MSC_VER_2k22_17Pt5_
-// verified broken in _MSC_VER_2k22_17Pt6_
-// verified broken in _MSC_VER_2k22_17Pt7_
-// verified broken in _MSC_VER_2k22_17Pt8_
 // verified broken in _MSC_VER_2k22_17Pt9_
 // verified broken in _MSC_VER_2k22_17Pt10_
 // Appears FIXED in _MSC_VER_2k22_17Pt11_
@@ -406,88 +326,11 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 #ifndef qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
 
 #if defined(_MSC_VER)
-// verified broken in _MSC_VER_2k22_17Pt0_
-// verified broken in _MSC_VER_2k22_17Pt1_
-// verified broken in _MSC_VER_2k22_17Pt2_
-// verified broken in _MSC_VER_2k22_17Pt3_
-// verified broken in _MSC_VER_2k22_17Pt4_
-// verified broken in _MSC_VER_2k22_17Pt5_
-// verified broken in _MSC_VER_2k22_17Pt6_
-// verified broken in _MSC_VER_2k22_17Pt7_   - MSFT claims fixed, but I tried to warn them - it is not - https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352#T-N1439942-N1454940
-// verified broken in _MSC_VER_2k22_17Pt8_
 // verified broken in _MSC_VER_2k22_17Pt9_
 // appears finally fixed in _MSC_VER_2k22_17Pt10_
 #define qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt9_)
 #else
 #define qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy 0
-#endif
-
-#endif
-
-/*
- *https://developercommunity.visualstudio.com/t/__sanitizer_annotate_contiguous_containe/10119696?entry=problem&ref=native&refTime=1660499588239&refUserId=b9c6175e-9d87-6b50-bc33-61424496814f
- */
-
-#ifndef qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy
-
-#if defined(_MSC_VER)
-// first broken in _MSC_VER_2k22_17Pt3_
-#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt3_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt3_)
-#else
-#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy 0
-#endif
-
-#endif
-
-/*
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp(60): error C2440: 'initializing': cannot convert from 'int' to 'std::byte'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp(60): note: Conversion to enumeration type requires an explicit cast (static_cast, C-style cast or function-style cast)
-*/
-// see https://en.cppreference.com/w/cpp/types/byte "due to C++17 relaxed enum class initialization rules."
-#ifndef qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy
-
-#if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k22_17Pt0_
-// verified still broken in _MSC_VER_2k22_17Pt1_
-// verified still broken in _MSC_VER_2k22_17Pt2_
-// verified still broken in _MSC_VER_2k22_17Pt3_
-// verified still broken in _MSC_VER_2k22_17Pt4_
-// verified still broken in _MSC_VER_2k22_17Pt5_
-// verified still broken in _MSC_VER_2k22_17Pt6_
-// verified still broken in _MSC_VER_2k22_17Pt7_
-// fixed in _MSC_VER_2k22_17Pt8_
-#define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy                                                                       \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt7_)
-#else
-#define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy 0
-#endif
-
-#endif
-
-/*
-* 
-* ONLY in Release-x86 builds broken
-* 
-// Get runtime failure in Test_12_DateRange_ in 
-FAILED : RegressionTestFailure;
-dr.Contains (dr.GetMidpoint ());
-C :\Sandbox\Stroika\DevRoot\Tests\50\Test.cpp : 750
-        [](3 seconds)[50] Foundation::Time (../Builds/Release-U-32/Tests/Test50.exe)
- */
-#ifndef qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
-
-#if defined(_MSC_VER)
-// APPEARS FIXED in _MSC_VER_2k22_17Pt0_
-// And then RE-BROKEN in _MSC_VER_2k22_17Pt2_
-// APPEARS still BROKEN in _MSC_VER_2k22_17Pt3_
-// APPEARS still BROKEN in _MSC_VER_2k22_17Pt4_
-// APPEARS still BROKEN in _MSC_VER_2k22_17Pt5_
-// Fixed in _MSC_VER_2k22_17Pt6_
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy                                                      \
-    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt5_)) && !qDebug && defined (_M_IX86))
-#else
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
 
 #endif
@@ -513,70 +356,6 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 #define qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy ((__GNUC__ == 14))
 #else
 #define qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy 0
-#endif
-
-#endif
-
-/*
-*  on Windows DEBUG x86 builds only...
-==2736==ERROR: AddressSanitizer: container-overflow on address 0x0110ed9d at pc 0x0020f13a bp 0x0110df2c sp 0x0110db0c
-READ of size 6 at 0x0110ed9d thread T0
-    #0 0x20f155 in __asan_wrap_strnlen D:\a\_work\1\s\src\vctools\asan\llvm\compiler-rt\lib\sanitizer_common\sanitizer_common_interceptors.inc:389
-    #1 0x5c5548 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::type_case_s_compute_narrow_string_length minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2323
-    #2 0x5c4e8e in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::type_case_s minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2310
-    #3 0x5ba7f1 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::state_case_type minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2054
-    #4 0x5b2ba8 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::process minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:1699
-    #5 0x5a6104 in common_vsprintf<__crt_stdio_output::standard_base,char> minkernel\crts\ucrt\src\appcrt\stdio\output.cpp:167
-    #6 0x5c9d75 in __stdio_common_vsprintf minkernel\crts\ucrt\src\appcrt\stdio\output.cpp:239
-    #7 0x23b80e in vsnprintf C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h:1439
-    #8 0x23b770 in snprintf C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h:1931
-    #9 0x2278cc in Stroika::Foundation::Debug::Emitter::DoEmitMessage_<wchar_t> C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:354
-    #10 0x221f6e in Stroika::Foundation::Debug::Emitter::EmitTraceMessage C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:259
-    #11 0x224555 in Stroika::Foundation::Debug::Private_::EmitFirstTime C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:159
-    #12 0x1bf670 in `Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1>::operator() C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.inl:34
-    #13 0x1b607a in std::invoke<`Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1> > C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.33.31629\include\type_traits:1548
-    #14 0x1b4f65 in std::call_once<`Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1> > C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.33.31629\include\mutex:558
-    #15 0x1c1012 in Stroika::Foundation::Debug::Emitter::Get C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.inl:33
-    #16 0x223534 in Stroika::Foundation::Debug::TraceContextBumper::TraceContextBumper C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:526
-    #17 0x223328 in Stroika::Foundation::Debug::TraceContextBumper::TraceContextBumper C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:559
-    #18 0x372092 in Stroika::Foundation::Execution::SignalHandlerRegistry::SignalHandlerRegistry C:\Stroika\Library\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp:317
-    #19 0x371f21 in Stroika::Foundation::Execution::SignalHandlerRegistry::Get C:\Stroika\Library\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp:306
-    #20 0x1cba70 in Stroika::TestHarness::Setup C:\Stroika\Tests\TestHarness\TestHarness.cpp:69
-    #21 0x1ad737 in main C:\Stroika\Tests\04\Test.cpp:251
-    #22 0x587b22 in invoke_main D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:78
-    #23 0x587a26 in __scrt_common_main_seh D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:288
-    #24 0x5878cc in __scrt_common_main D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:330
-    #25 0x587b87 in mainCRTStartup D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_main.cpp:16
-    #26 0x76f06708 in BaseThreadInitThunk+0x18 (C:\Windows\System32\KERNEL32.DLL+0x6b816708)
-    #27 0x77567cfc in RtlGetFullPathName_UEx+0xac (C:\Windows\SYSTEM32\ntdll.dll+0x4b2e7cfc)
-    #28 0x77567cca in RtlGetFullPathName_UEx+0x7a (C:\Windows\SYSTEM32\ntdll.dll+0x4b2e7cca)
-*/
-#ifndef qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy
-
-#if defined(_MSC_VER)
-// first/only found broken in _MSC_VER_2k22_17Pt3_
-// Appears FIXED in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy                                                                           \
-    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
-#else
-#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy 0
-#endif
-
-#endif
-
-/*
- * https://developercommunity.visualstudio.com/t/Fatal-Corruption-in-X86-ASAN-regression/10130063?port=1025&fsid=7a8d8e50-f549-4b33-a16d-c10fbf32b8fc&entry=problem
- */
-
-#ifndef qCompilerAndStdLib_Debug32_asan_Poison_Buggy
-
-#if defined(_MSC_VER)
-// first/only found broken in _MSC_VER_2k22_17Pt3_
-// Appears FIXED in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy                                                                                       \
-    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
-#else
-#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy 0
 #endif
 
 #endif
@@ -740,8 +519,7 @@ ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (w
 // Still Broken in _MSC_VER_2k22_17Pt9_
 // Still Broken in _MSC_VER_2k22_17Pt10_
 // Still Broken in _MSC_VER_2k22_17Pt11_
-#define qCompilerAndStdLib_CompareOpReverse_Buggy                                                                                          \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt11_)
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
 #else
 #define qCompilerAndStdLib_CompareOpReverse_Buggy 0
 #endif
@@ -1126,97 +904,6 @@ In file included from Thread.cpp:18:
 
 #endif
 
-/**
- *
-On Vs2k19:
-1>   Compiling Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.cpp ...
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): error C2244: 'Stroika::Foundation::Containers::Collection<T>::Collection': unable to match function definition to an existing declaration
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(67): note: see declaration of 'Stroika::Foundation::Containers::Collection<T>::Collection'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: definition
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(CONTAINER_OF_ADDABLE &&)'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: existing declarations
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(const Collection<T>::Iterable<T>::PtrImplementationTemplate<Stroika::Foundation::Containers::Collection<T>::_IRep> &) noexcept'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(Collection<T>::Iterable<T>::PtrImplementationTemplate<Stroika::Foundation::Containers::Collection<T>::_IRep> &&) noexcept'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(COPY_FROM_ITERATOR_OF_ADDABLE,COPY_FROM_ITERATOR_OF_ADDABLE)'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(CONTAINER_OF_ADDABLE &&)'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(const std::initializer_list<_Elem> &)'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(const Stroika::Foundation::Containers::Collection<T> &) noexcept'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(Stroika::Foundation::Containers::Collection<T> &&) noexcept'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(void)'
-1>   Compiling Library/Sources/Stroika/Foundation/Characters/Platform/Windows/CodePage.cpp ...
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): error C2244: 'Stroika::Foundation::Containers::Collection<T>::Collection': unable to match function definition to an existing declaration
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(67): note: see declaration of 'Stroika::Foundation::Containers::Collection<T>::Collection'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: definition
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(CONTAINER_OF_ADDABLE &&)'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: existing declarations
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(const Collection<T>::Iterable<T>::PtrImplementationTemplate<Stroika::Foundation::Containers::Collection<T>::_IRep> &) noexcept'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(Collection<T>::Iterable<T>::PtrImplementationTemplate<Stroika::Foundation::Containers::Collection<T>::_IRep> &&) noexcept'
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(COPY_FROM_ITERATOR_OF_ADDABLE,COPY_FROM_ITERATOR_OF_ADDABLE)'
-
-
-CLANG:
-         Compiling Library/Sources/Stroika/Foundation/Characters/String.cpp ... 
-In file included from CipherAlgorithm.cpp:14:
-In file included from ./../../Memory/Optional.h:16:
-In file included from ./../../Debug/../Characters/../Memory/../Containers/Adapters/Adder.h:13:
-In file included from ./../../Containers/Factory/../Concrete/../Collection.h:411:
-./../../Containers/Collection.inl:68:27: error: out-of-line definition of 'Collection<T>' does not match any declaration in 'Collection<T>'
-    inline Collection<T>::Collection (CONTAINER_OF_ADDABLE&& src)
-                          ^~~~~~~~~~
-         Compiling Library/Sources/Stroika/Foundation/Characters/String2Int.cpp ... 
-
-
-WORKAROUND IF NEEDED
-in enable_if_t's, but may not need this anymore
-#if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
-                                                     and is_convertible_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>, T>
-#else
-                                                     and Collection<T>::template IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
-#endif
-
- */
-#ifndef qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
-
-#if defined(_MSC_VER)
-// BROKEN in _MSC_VER_2k22_17Pt0_
-// Appears to work fine now _MSC_VER_2k22_17Pt1_
-#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy                                                                       \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
-#else
-#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy 0
-#endif
-
-#endif
-
-/*
-      SEE 
-            https://stackoverflow.com/questions/29483120/program-with-noexcept-constructor-accepted-by-gcc-rejected-by-clang
-
-    ===
-Test1.cpp:
-/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/Memoizer.h:72:9: error: exception specification of explicitly defaulted move constructor does not match the calculated
-      one
-        Memoizer (Memoizer&& from) noexcept = default;
-        ^
-Test.cpp:241:78: note: in instantiation of template class 'Stroika::Foundation::Cache::Memoizer<int, MemoizerSupport::DEFAULT_CACHE_BWA_, int, int>' requested here
-                Memoizer<int, MemoizerSupport::DEFAULT_CACHE_BWA_, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
-                                                                             ^
-1 error generated.
-/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:19: recipe for target '/Sandbox/Stroika-Dev/IntermediateFiles/clang++-6-release-libstdc++/Tests/01/Test.o' failed
-make[3]: *** [/Sandbox/Str
-*/
-#ifndef qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
-
-#if defined(_MSC_VER)
-// Broken in _MSC_VER_2k22_17Pt0_
-// Verified fixed in _MSC_VER_2k22_17Pt1_
-#define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
-#else
-#define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy 0
-#endif
-
-#endif
-
 /*
     http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x
     http://stackoverflow.com/questions/11713745/why-does-the-printf-family-of-functions-care-about-locale
@@ -1253,35 +940,6 @@ ABORTING...
 #endif
 
 /*
- *  NOTE - when this fails - it compiles but crashes in MSFT implementaiton
- *
- *                []  (19 seconds)  [50]  Foundation::Time  (../Builds/Debug-U-32/Test50/Test50.exe) crash/assert failure
- *                  NOTE - assert error so only fails on DEBUG builds
-
- As of 
-    _STL_VERIFY(_Strbuf != nullptr, "istreambuf_iterator is not dereferencable"); asserts out
-
-    https://developercommunity.visualstudio.com/t/qcompilerandstdlib-std-get-time-pctx-buggy/1359575
-
-    REPORTED 2021-03-05 APX
-
- */
-#ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
-
-#if defined(_MSC_VER)
-// VERIFIED STILL BROKEN in _MSC_VER_2k22_17Pt0_
-// VERIFIED STILL BROKEN in _MSC_VER_2k22_17Pt1_
-// VERIFIED STILL BROKEN in _MSC_VER_2k22_17Pt2_
-// VERIFIED STILL BROKEN in _MSC_VER_2k22_17Pt3_
-// APPARENTLY FIXED IN _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt3_)
-#else
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
-#endif
-
-#endif
-
-/*
 C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(660): error C2440: 'initializing': cannot convert from '_Ty' to 'ATL::CComQIPtr<IALCommand,& _GUID_e331d383_5bba_401a_91eb_5d3538b16053>'
         with
         [
@@ -1297,15 +955,6 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 */
 #ifndef qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
 #if defined(_MSC_VER)
-// still broken in _MSC_VER_2k22_17Pt0_
-// still broken in _MSC_VER_2k22_17Pt1_
-// still broken in _MSC_VER_2k22_17Pt2_
-// still broken in _MSC_VER_2k22_17Pt3_
-// still broken in _MSC_VER_2k22_17Pt4_
-// still broken in _MSC_VER_2k22_17Pt5_
-// still broken in _MSC_VER_2k22_17Pt6_
-// still broken in _MSC_VER_2k22_17Pt7_
-// still broken in _MSC_VER_2k22_17Pt8_
 // still broken in _MSC_VER_2k22_17Pt9_
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
@@ -1326,65 +975,6 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 #define qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt10_)
 #else
 #define qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy 0
-#endif
-#endif
-
-/*
-*  on Windows DEBUG x86 builds only...
-==2736==ERROR: AddressSanitizer: container-overflow on address 0x0110ed9d at pc 0x0020f13a bp 0x0110df2c sp 0x0110db0c
-READ of size 6 at 0x0110ed9d thread T0
-    #0 0x20f155 in __asan_wrap_strnlen D:\a\_work\1\s\src\vctools\asan\llvm\compiler-rt\lib\sanitizer_common\sanitizer_common_interceptors.inc:389
-    #1 0x5c5548 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::type_case_s_compute_narrow_string_length minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2323
-    #2 0x5c4e8e in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::type_case_s minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2310
-    #3 0x5ba7f1 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::state_case_type minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2054
-    #4 0x5b2ba8 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::process minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:1699
-    #5 0x5a6104 in common_vsprintf<__crt_stdio_output::standard_base,char> minkernel\crts\ucrt\src\appcrt\stdio\output.cpp:167
-    #6 0x5c9d75 in __stdio_common_vsprintf minkernel\crts\ucrt\src\appcrt\stdio\output.cpp:239
-    #7 0x23b80e in vsnprintf C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h:1439
-    #8 0x23b770 in snprintf C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h:1931
-    #9 0x2278cc in Stroika::Foundation::Debug::Emitter::DoEmitMessage_<wchar_t> C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:354
-    #10 0x221f6e in Stroika::Foundation::Debug::Emitter::EmitTraceMessage C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:259
-    #11 0x224555 in Stroika::Foundation::Debug::Private_::EmitFirstTime C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:159
-    #12 0x1bf670 in `Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1>::operator() C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.inl:34
-    #13 0x1b607a in std::invoke<`Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1> > C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.33.31629\include\type_traits:1548
-    #14 0x1b4f65 in std::call_once<`Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1> > C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.33.31629\include\mutex:558
-    #15 0x1c1012 in Stroika::Foundation::Debug::Emitter::Get C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.inl:33
-    #16 0x223534 in Stroika::Foundation::Debug::TraceContextBumper::TraceContextBumper C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:526
-    #17 0x223328 in Stroika::Foundation::Debug::TraceContextBumper::TraceContextBumper C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:559
-    #18 0x372092 in Stroika::Foundation::Execution::SignalHandlerRegistry::SignalHandlerRegistry C:\Stroika\Library\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp:317
-    #19 0x371f21 in Stroika::Foundation::Execution::SignalHandlerRegistry::Get C:\Stroika\Library\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp:306
-    #20 0x1cba70 in Stroika::TestHarness::Setup C:\Stroika\Tests\TestHarness\TestHarness.cpp:69
-    #21 0x1ad737 in main C:\Stroika\Tests\04\Test.cpp:251
-    #22 0x587b22 in invoke_main D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:78
-    #23 0x587a26 in __scrt_common_main_seh D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:288
-    #24 0x5878cc in __scrt_common_main D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:330
-    #25 0x587b87 in mainCRTStartup D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_main.cpp:16
-    #26 0x76f06708 in BaseThreadInitThunk+0x18 (C:\Windows\System32\KERNEL32.DLL+0x6b816708)
-    #27 0x77567cfc in RtlGetFullPathName_UEx+0xac (C:\Windows\SYSTEM32\ntdll.dll+0x4b2e7cfc)
-    #28 0x77567cca in RtlGetFullPathName_UEx+0x7a (C:\Windows\SYSTEM32\ntdll.dll+0x4b2e7cca)
-*/
-#ifndef qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy
-
-#if defined(_MSC_VER)
-// first/only found broken in _MSC_VER_2k22_17Pt3_
-#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy                                                                           \
-    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
-#else
-#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy 0
-#endif
-
-#endif
-
-/*
- * https://developercommunity.visualstudio.com/t/Fatal-Corruption-in-X86-ASAN-regression/10130063?port=1025&fsid=7a8d8e50-f549-4b33-a16d-c10fbf32b8fc&entry=problem
- */
-#ifndef qCompilerAndStdLib_Debug32_asan_Poison_Buggy
-#if defined(_MSC_VER)
-// first/only found broken in _MSC_VER_2k22_17Pt3_
-#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy                                                                                       \
-    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
-#else
-#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy 0
 #endif
 #endif
 
@@ -1437,13 +1027,7 @@ In file included from ../Characters/StringBuilder.h:273,
    */
 #ifndef qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
 
-#if defined(_MSC_VER)
-// NOTE - not always buggy on MSFT - depends on chosen syntax, but the one I think most likely right doesnt work on vis studio so blame them
-// still buggy in _MSC_VER_2k22_17Pt4_
-// Fixed in _MSC_VER_2k22_17Pt6_
-#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
-#elif defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 12
 // VERIFIED BROKEN IN GCC 13
 // VERIFIED BROKEN IN GCC 14
@@ -2022,15 +1606,6 @@ In file included from ../Characters/Format.h:15,
 #ifndef qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
 
 #if defined(_MSC_VER)
-// still broken in _MSC_VER_2k22_17Pt0_
-// still broken in _MSC_VER_2k22_17Pt1_
-// still broken in _MSC_VER_2k22_17Pt2_
-// still broken in _MSC_VER_2k22_17Pt3_
-// still broken in _MSC_VER_2k22_17Pt4_
-// still broken in _MSC_VER_2k22_17Pt5_
-// still broken in _MSC_VER_2k22_17Pt6_
-// still broken in _MSC_VER_2k22_17Pt7_
-// still broken in _MSC_VER_2k22_17Pt8_
 // still broken in _MSC_VER_2k22_17Pt9_
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
@@ -2379,15 +1954,6 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 
 #if defined(_MSC_VER)
 
-// verified still broken in _MSC_VER_2k22_17Pt0_
-// verified still broken in _MSC_VER_2k22_17Pt1_
-// verified still broken in _MSC_VER_2k22_17Pt2_
-// verified still broken in _MSC_VER_2k22_17Pt3_
-// verified still broken in _MSC_VER_2k22_17Pt4_
-// verified still broken in _MSC_VER_2k22_17Pt5_
-// verified still broken in _MSC_VER_2k22_17Pt6_
-// verified still broken in _MSC_VER_2k22_17Pt7_
-// verified still broken in _MSC_VER_2k22_17Pt8_
 // verified still broken in _MSC_VER_2k22_17Pt9_
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
@@ -2429,11 +1995,6 @@ In file included from Namespace.cpp:10:
 // VERIFIED BROKEN IN GCC 12.3 - so wondering if this is not a compiler bug but a me bug --LGP 2023-08-08
 // FIXED in GCC 13
 #define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
-#elif defined(_MSC_VER)
-// verified broken in _MSC_VER_2k22_17Pt5_ (BUT ONLY WHEN BUILDING INSIDE DOCKER????)
-// Fixed in _MSC_VER_2k22_17Pt6_
-#define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy                                                            \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
 #else
 #define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy 0
 #endif
@@ -2778,12 +2339,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Co
 // appears still broken in clang++-17
 // appears still broken in clang++-18
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
-#elif defined(_MSC_VER)
-// Newly broken in _MSC_VER_2k22_17Pt2_ - wonder if that means this is my bug not vs2k22/clang?
-// broken in _MSC_VER_2k22_17Pt3_
-// Appears FIXED in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy                                                                            \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k22_17Pt2_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt3_))
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
 #endif
@@ -2896,15 +2451,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-18
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #elif defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k22_17Pt0_
-// verified still broken in _MSC_VER_2k22_17Pt1_
-// verified still broken in _MSC_VER_2k22_17Pt2_
-// verified still broken in _MSC_VER_2k22_17Pt3_
-// verified still broken in _MSC_VER_2k22_17Pt4_
-// verified still broken in _MSC_VER_2k22_17Pt5_
-// verified still broken in _MSC_VER_2k22_17Pt6_
-// verified still broken in _MSC_VER_2k22_17Pt7_
-// verified still broken in _MSC_VER_2k22_17Pt8_
 // verified still broken in _MSC_VER_2k22_17Pt9_
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
@@ -2950,7 +2496,6 @@ Test.cpp:173:31: error: template template argument has different template parame
  */
 #ifndef qCompilerAndStdLib_template_template_auto_deduced_Buggy
 #if defined(_MSC_VER)
-// first noted broken in _MSC_VER_2k22_17Pt8_
 // still broken in _MSC_VER_2k22_17Pt9_
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
@@ -3053,15 +2598,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #ifndef qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
 
 #if defined(_MSC_VER)
-// Verified still broken in _MSC_VER_2k22_17Pt0_
-// Verified still broken in _MSC_VER_2k22_17Pt1_
-// Verified still broken in _MSC_VER_2k22_17Pt2_
-// Verified still broken in _MSC_VER_2k22_17Pt3_
-// Verified still broken in _MSC_VER_2k22_17Pt4_
-// Verified still broken in _MSC_VER_2k22_17Pt5_
-// Verified still broken in _MSC_VER_2k22_17Pt6_
-// Verified still broken in _MSC_VER_2k22_17Pt7_
-// Verified still broken in _MSC_VER_2k22_17Pt8_
 // Verified still broken in _MSC_VER_2k22_17Pt9_
 // Verified still broken in _MSC_VER_2k22_17Pt10_
 // Verified still broken in _MSC_VER_2k22_17Pt11_
@@ -3168,16 +2704,7 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 */
 #ifndef qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
 
-#if defined(_MSC_VER)
-// still buggy in _MSC_VER_2k22_17Pt0_
-// still buggy in _MSC_VER_2k22_17Pt1_
-// still buggy in _MSC_VER_2k22_17Pt2_
-// still buggy in _MSC_VER_2k22_17Pt3_
-// still buggy in _MSC_VER_2k22_17Pt4_
-// Appears fixed in _MSC_VER_2k22_17Pt5_
-#define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy                                                                    \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
-#elif defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 11
 // appears fixed in GCC 12
 #define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
@@ -3255,15 +2782,6 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 #ifndef qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
 
 #if defined(_MSC_VER)
-// verified broken in _MSC_VER_2k22_17Pt0_
-// verified broken in _MSC_VER_2k22_17Pt1_
-// verified broken in _MSC_VER_2k22_17Pt2_
-// verified broken in _MSC_VER_2k22_17Pt3_
-// verified broken in _MSC_VER_2k22_17Pt4_
-// verified broken in _MSC_VER_2k22_17Pt5_
-// verified broken in _MSC_VER_2k22_17Pt6_
-// verified broken in _MSC_VER_2k22_17Pt7_
-// verified broken in _MSC_VER_2k22_17Pt8_
 // verified broken in _MSC_VER_2k22_17Pt9_
 // verified broken in _MSC_VER_2k22_17Pt10_
 // verified broken in _MSC_VER_2k22_17Pt11_
@@ -3271,32 +2789,6 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
-#endif
-
-#endif
-
-/*
-* Only broken on vs2k22, Release-x86 builds
-FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Tests\42\Test.cpp: 66
-   []  (0  seconds)  [42]  Foundation::Execution::Other  (../Builds/Release-x86/Tests/Test42.exe)
-*/
-#ifndef qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy
-
-#if defined(_MSC_VER)
-// first noticed broken in _MSC_VER_2k22_17Pt0_
-// still broken in _MSC_VER_2k22_17Pt1_
-// still broken in _MSC_VER_2k22_17Pt2_
-// still broken in _MSC_VER_2k22_17Pt3_
-// still broken in _MSC_VER_2k22_17Pt4_
-// still broken in _MSC_VER_2k22_17Pt5_
-// still broken in _MSC_VER_2k22_17Pt6_
-// still broken in _MSC_VER_2k22_17Pt7_
-// still broken in _MSC_VER_2k22_17Pt8_
-// appears fixed in _MSC_VER_2k22_17Pt9_
-#define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy                                                                 \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt0_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt8_)
-#else
-#define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy 0
 #endif
 
 #endif
@@ -3338,15 +2830,6 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #ifndef qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
 
 #if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k22_17Pt0_
-// verified still broken in _MSC_VER_2k22_17Pt1_
-// verified still broken in _MSC_VER_2k22_17Pt2_
-// verified still broken in _MSC_VER_2k22_17Pt3_
-// verified still broken in _MSC_VER_2k22_17Pt4_
-// verified still broken in _MSC_VER_2k22_17Pt5_
-// verified still broken in _MSC_VER_2k22_17Pt6_
-// verified still broken in _MSC_VER_2k22_17Pt7_
-// verified still broken in _MSC_VER_2k22_17Pt8_
 // verified still broken in _MSC_VER_2k22_17Pt9_
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
@@ -3400,49 +2883,12 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #ifndef qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 
 #if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k22_17Pt0_
-// verified still broken in _MSC_VER_2k22_17Pt1_
-// verified still broken in _MSC_VER_2k22_17Pt2_
-// verified still broken in _MSC_VER_2k22_17Pt3_
-// verified still broken in _MSC_VER_2k22_17Pt4_
-// verified still broken in _MSC_VER_2k22_17Pt5_
-// verified still broken in _MSC_VER_2k22_17Pt6_
-// verified still broken in _MSC_VER_2k22_17Pt7_
-// verified still broken in _MSC_VER_2k22_17Pt8_
 // verified still broken in _MSC_VER_2k22_17Pt9_
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
 #define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
 #else
 #define qCompilerAndStdLib_locale_utf8_string_convert_Buggy 0
-#endif
-
-#endif
-
-/**
- *  We use some of these definitions in .natvis files, so we need them to stay around
- *  so they can be called by the debugger.\
- * 
- *  See https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio-1/1473717 
- *  for where I complained about this.
- * 
- *  TO TEST:
- *      > Run in debugger the TIME (roughly Test50) - and break in Test_2_TestTimeOfDay_, and Test_5_DateTimeTimeT_ etc 
- *        and see if the ToString() stuff gets called in debugger when viewing TimeOfday, DateTime etc objects.
- * 
- * AND WHEN I do next stroika release, send note to MSFT that this is still broken and provide sample/reference to how to reproduce
- * using 'Test50'.
-*/
-#ifndef qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy
-
-#if defined(_MSC_VER)
-// still broken in _MSC_VER_2k22_17Pt0_
-// Microsoft appears to be ignorning this, so just assume broken in _MSC_VER_2k22_17Pt1_
-// still broken in _MSC_VER_2k22_17Pt2_
-#define qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt2_)
-#else
-#define qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy 0
 #endif
 
 #endif
@@ -3614,11 +3060,7 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
  */
 #if !defined(_NoOp_)
 #if defined(_MSC_VER)
-#if qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-#define _NoOp_(...)
-#else
 #define _NoOp_ __noop
-#endif
 #else
 #define _NoOp_(...)
 #endif

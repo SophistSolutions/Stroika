@@ -259,13 +259,6 @@ weekday Date::GetDayOfWeek () const
     return DayOfWeek{R (targetDayOfWeek, 7) + Sunday.c_encoding ()};
 }
 
-#if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
-String Date::ToString () const
-{
-    return Format ();
-}
-#endif
-
 /*
  ********************************************************************************
  *************************** Date::DayDifference ********************************

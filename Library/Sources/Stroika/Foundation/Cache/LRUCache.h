@@ -136,11 +136,7 @@ namespace Stroika::Foundation::Cache {
         LRUCache (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
             requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>);
 
-#if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
-        LRUCache (LRUCache&& from) noexcept;
-#else
         LRUCache (LRUCache&& from);
-#endif
         LRUCache (const LRUCache& from)
             requires (same_as<KEY_HASH_FUNCTION, nullptr_t>);
         LRUCache (const LRUCache& from)

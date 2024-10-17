@@ -49,11 +49,9 @@ namespace Stroika::Foundation::Time {
         Ensure (0 <= n and n <= 59);
         return static_cast<uint8_t> (n);
     }
-#if not(qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug)
     inline String TimeOfDay::ToString () const
     {
         return Format ();
     }
-#endif
 
 }

@@ -173,12 +173,7 @@ namespace {
             istreambuf_iterator<wchar_t>              itend;                 // end-of-stream
 
             istreambuf_iterator<wchar_t> i;
-            // In Debug build on Windows, this generates Assertion error inside stdc++ runtime library
-            // first noticed broken in vs2k17 (qCompilerAndStdLib_std_get_time_pctx_Buggy)
-#if !qCompilerAndStdLib_std_get_time_pctx_Buggy
-            // get assertion istreambuf_iterator is not dereferenceable failure if we enable this on VS2k
             i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-#endif
         };
         std_get_time_pctxBuggyTest ();
 
@@ -1069,16 +1064,7 @@ namespace {
             EXPECT_TRUE (i == 2);
         }
         {
-#if qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
-            Date                d1 = DateTime::Now ().GetDate () - 1;
-            Date                d2 = DateTime::Now ().GetDate () + 1;
-            String              t1 = Characters::ToString (d1);
-            DiscreteRange<Date> dr{d1, d2};
-            DbgTrace ("dr={}"_f, Characters::ToString (dr));
-            DbgTrace ("drContains={}"_f, dr.Contains (dr.GetMidpoint ()));
-#else
             DiscreteRange<Date> dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};
-#endif
             EXPECT_TRUE (dr.Contains (dr.GetMidpoint ()));
         }
     }
