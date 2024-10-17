@@ -391,8 +391,8 @@ namespace Stroika::Foundation::Characters::Private_ {
                                     qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
 #endif
-#if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240412) ||    \
-    (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240412) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
+#if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240908) ||    \
+    (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240908) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
 #if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
              // available in C++23
              or Common::IPair<remove_cvref_t<T>> or
@@ -403,7 +403,7 @@ namespace Stroika::Foundation::Characters::Private_ {
              // available in C++23
              or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
-#if __cplusplus < 202400L
+#if __cplusplus < 202400L || (defined (_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE <= 14)
              or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
              or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or
@@ -432,6 +432,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika:
 /*
  *  If any of these static_asserts trigger, it means you are using a newer compiler I don't have 
  *  proper IUseToStringFormatterForFormatter_ or IStdFormatterPredefinedFor_ settings for. Adjust those settings above so these tests pass.
+ *      (or if qCompiler_IUseToStringFormatterForFormatter_Buggy - clang++ - then see IUseToStringFormatterForFormatter_ directly)
  */
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::exception_ptr, wchar_t>);
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::filesystem::path, wchar_t>);
