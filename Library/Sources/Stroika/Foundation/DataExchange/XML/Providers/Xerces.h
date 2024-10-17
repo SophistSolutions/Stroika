@@ -48,18 +48,16 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
 
 namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
 
-    XERCES_CPP_NAMESPACE_USE;
-
     /**
      */
     struct IXercesSchemaRep : Schema::IRep {
-        virtual xercesc_3_2::XMLGrammarPool* GetCachedGrammarPool () = 0;
+        virtual xercesc::XMLGrammarPool* GetCachedGrammarPool () = 0;
     };
 
     /**
      */
     struct IXercesNodeRep : virtual DOM::Node::IRep {
-        virtual xercesc_3_2::DOMNode* GetInternalTRep () = 0;
+        virtual xercesc::DOMNode* GetInternalTRep () = 0;
     };
 
     /**

@@ -37,6 +37,8 @@ using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
 
+XERCES_CPP_NAMESPACE_USE;
+
 using std::byte;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -61,7 +63,7 @@ namespace {
 #define START_LIB_EXCEPTION_MAPPER_ try {
 #define END_LIB_EXCEPTION_MAPPER_                                                                                                          \
     }                                                                                                                                      \
-    catch (const xercesc_3_2::OutOfMemoryException&)                                                                                       \
+    catch (const xercesc::OutOfMemoryException&)                                                                                       \
     {                                                                                                                                      \
         Execution::Throw (bad_alloc{}, "xerces OutOfMemoryException - throwing bad_alloc");                                                \
     }                                                                                                                                      \
@@ -257,7 +259,7 @@ namespace {
                 // Reset fgXercesCacheGrammarFromParse to TRUE so we actually load the XSD here
                 reader->setFeature (XMLUni::fgXercesCacheGrammarFromParse, true);
                 reader->setErrorHandler (&fErrorReporter_);
-                xercesc_3_2::Grammar* g = reader->loadGrammar (mis, Grammar::SchemaGrammarType, true);
+                xercesc::Grammar* g = reader->loadGrammar (mis, Grammar::SchemaGrammarType, true);
                 AssertNotNull (g);
                 const XMLCh* ts = g->getTargetNamespace ();
                 if (ts and *ts) {
@@ -285,7 +287,7 @@ namespace {
         optional<URI>                       fTargetNamespace;
         Resource::ResolverPtr               fResolver;
         Memory::BLOB                        fSchemaData;
-        xercesc_3_2::XMLGrammarPool*        fCachedGrammarPool{nullptr};
+        xercesc::XMLGrammarPool*        fCachedGrammarPool{nullptr};
         Map2StroikaExceptionsErrorReporter_ fErrorReporter_;
 
         virtual const Providers::ISchemaProvider* GetProvider () const override
@@ -305,7 +307,7 @@ namespace {
         {
             return fResolver;
         }
-        virtual xercesc_3_2::XMLGrammarPool* GetCachedGrammarPool () override
+        virtual xercesc::XMLGrammarPool* GetCachedGrammarPool () override
         {
             return fCachedGrammarPool;
         }
@@ -841,7 +843,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual xercesc_3_2::DOMNode* GetInternalTRep () override
+        virtual xercesc::DOMNode* GetInternalTRep () override
         {
             return fNode_;
         }
@@ -1000,7 +1002,7 @@ namespace {
             optional<AutoRelease_<DOMXPathExpression>> expr;
             XPathQueryHelper_ (DOMNode* n, const XPath::Expression& e, bool firstOnly)
             {
-                xercesc_3_2::DOMDocument* doc = n->getOwnerDocument ();
+                xercesc::DOMDocument* doc = n->getOwnerDocument ();
                 resolver.emplace (doc->createNSResolver (nullptr));
                 auto namespaceDefs = e.GetOptions ().fNamespaces;
                 if (namespaceDefs.GetDefaultNamespace ()) {
@@ -1014,7 +1016,7 @@ namespace {
                 try {
                     expr.emplace (doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), *resolver));
                 }
-                catch (const xercesc_3_2::DOMXPathException&) {
+                catch (const xercesc::DOMXPathException&) {
                     // MANY basic things are not supported in Xerces XPath - like a[1] - brackets not supported.
                     Execution::Throw (XPath::XPathExpressionNotSupported::kThe);
                 }
@@ -1037,7 +1039,7 @@ namespace {
                         AssertNotImplemented ();
                 }
             }
-            static optional<XPath::Result> ToResult_ (const xercesc_3_2::DOMXPathResult* r)
+            static optional<XPath::Result> ToResult_ (const xercesc::DOMXPathResult* r)
             {
                 RequireNotNull (r);
                 switch (r->getResultType ()) {
@@ -1074,7 +1076,7 @@ namespace {
             START_LIB_EXCEPTION_MAPPER_
             {
                 XPathQueryHelper_                         xpHelp{fNode_, e, true};
-                AutoRelease_<xercesc_3_2::DOMXPathResult> r = (*xpHelp.expr)->evaluate (fNode_, xpHelp.rt, nullptr);
+                AutoRelease_<xercesc::DOMXPathResult> r = (*xpHelp.expr)->evaluate (fNode_, xpHelp.rt, nullptr);
                 return XPathQueryHelper_::ToResult_ (r);
             }
             END_LIB_EXCEPTION_MAPPER_
@@ -1087,8 +1089,8 @@ namespace {
                 return Sequence<XPath::Result>{this->Lookup (XPath::Expression{e.GetExpression (), e2o})};
             }
             shared_ptr<XPathQueryHelper_>                         xpHelp = make_shared<XPathQueryHelper_> (fNode_, e, false);
-            shared_ptr<AutoRelease_<xercesc_3_2::DOMXPathResult>> r =
-                make_shared<AutoRelease_<xercesc_3_2::DOMXPathResult>> ((*xpHelp->expr)->evaluate (fNode_, xpHelp->rt, nullptr));
+            shared_ptr<AutoRelease_<xercesc::DOMXPathResult>> r =
+                make_shared<AutoRelease_<xercesc::DOMXPathResult>> ((*xpHelp->expr)->evaluate (fNode_, xpHelp->rt, nullptr));
             Assert (not e.GetOptions ().fSnapshot);
             if (xpHelp->rt == DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE or xpHelp->rt == DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE) [[unlikely]] {
                 return Traversal::CreateGenerator<XPath::Result> ([xpHelp, r, firstTime = true] () mutable -> optional<XPath::Result> {
