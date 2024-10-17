@@ -15,14 +15,14 @@ TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing $(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/html)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)/
 
+NEED_GNU_MAKE_ := 4.0.0
+OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VERSION) $(NEED_GNU_MAKE_))))
+
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Samples-HTMLUI/HTML Build:"
 ifeq ($(CONFIGURATION),)
 	@echo "Cannot complete build without a configuraiton" && exit 1;
 endif
-	$(info MAKE_VERSION=$(MAKE_VERSION))
-NEED_GNU_MAKE_ := 4.0.0
-OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VERSION) $(NEED_GNU_MAKE_))))
 ifeq ($(OK_GNU_MAKE_VERSION_),)
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(shell realpath --canonicalize-missing $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)
 else
