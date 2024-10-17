@@ -287,6 +287,11 @@ namespace Stroika::Foundation::Characters {
         : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
     {
     }
+    template <IStdBasicStringCompatibleCharacter CHAR_T>
+    inline String::String (const basic_string_view<CHAR_T>& s)
+        : inherited{CTORFromBasicStringView_ (s)}
+    {
+    }
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline String::String (const Iterable<CHAR_T>& src)
         requires (not Memory::ISpan<CHAR_T>)

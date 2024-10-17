@@ -28,6 +28,26 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
+ *
+ *      @todo   Add NormalizeSpace (Character useSpaceCharacter = ' ');
+ *              see Qt 'QString::simplify()'. Idea is Trim() (right and left) - plus replace contiguous substrings with
+ *              Character::IsSpace() with a single (given) space character.
+ *
+ *      @todo   Compare
+ *          template    <typename TCHAR>
+ *              basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text)
+ *                  {
+ *                      std::locale loc1;   // default locale
+ *                      const ctype<TCHAR>& ct = use_facet<ctype<TCHAR>>(loc1);
+ *                      typename basic_string<TCHAR>::const_iterator i = text.end ();
+ *                      for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i-1)); --i)
+ *                          ;
+ *                      return basic_string<TCHAR> (text.begin (), i);
+ *                  }
+ *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the locale stuff? Maybe?
+ *          i think locale stuff needed for std::string cuz not unicode but not needed wti stk impl cuz using unicode
+ *          add this to DOCS for class, but not needed in impl...
+ *
  *      @todo   EXPLAIN why InsertAt () returns string and Append() doesn't! Or - change it!
  *              Basic idea is that append is SO convnentit (+=) - that we just must support that
  *              and it can be done safely.
@@ -58,8 +78,6 @@
  *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
- *      @todo   Add overload for ReplaceAll() where first arg is a lambda on a character, so easier to generalize to replace all whitespace, etc.
- *
  *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implementation and make sure
  *              it is all correct for each (especially SetStorage () stuff looks questionable)
  *
@@ -67,23 +85,6 @@
  *
  *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operator+) API. See/maybe use new
  *              Stroika Range type?
- *
- *      @todo   Add NormalizeSpace (Character useSpaceCharacter = ' ');
- *              see Qt 'QString::simplify()'. Idea is Trim() (right and left) - plus replace contiguous substrings with
- *              Character::IsSpace() with a single (given) space character.
- *
- *      @todo   Compare
- *          template    <typename TCHAR>
- *              basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text)
- *                  {
- *                      std::locale loc1;   // default locale
- *                      const ctype<TCHAR>& ct = use_facet<ctype<TCHAR>>(loc1);
- *                      typename basic_string<TCHAR>::const_iterator i = text.end ();
- *                      for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i-1)); --i)
- *                          ;
- *                      return basic_string<TCHAR> (text.begin (), i);
- *                  }
- *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the locale stuff? Maybe?
  */
 
 namespace Stroika::Foundation::Containers {
@@ -189,6 +190,9 @@ namespace Stroika::Foundation::Characters {
     private:
         using inherited = Iterable<Character>;
 
+    protected:
+        class _IRep;
+
     public:
         /**
          * All the constructors are obvious, except
@@ -239,31 +243,15 @@ namespace Stroika::Foundation::Characters {
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
-    public:
-#if qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-        String (const basic_string_view<char>& str); // char==ASCII
-        String (const basic_string_view<char8_t>& str);
-        String (const basic_string_view<char16_t>& str);
-        String (const basic_string_view<char32_t>& str);
-        String (const basic_string_view<wchar_t>& str);
-#else
-        template <>
-        String (const basic_string_view<char>& str); // char==ASCII
-        template <>
-        String (const basic_string_view<char8_t>& str);
-        template <>
-        String (const basic_string_view<char16_t>& str);
-        template <>
-        String (const basic_string_view<char32_t>& str);
-        template <>
-        String (const basic_string_view<wchar_t>& str);
-#endif
+    private:
+        static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char>& str); // char==ASCII
+        static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char8_t>& str);
+        static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char16_t>& str);
+        static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char32_t>& str);
+        static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<wchar_t>& str);
 
     public:
         ~String () = default;
-
-    protected:
-        class _IRep;
 
     protected:
         /**
@@ -290,6 +278,9 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          EXPECT_TRUE (string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8 ());
          *      \endcode
+         * 
+         *  \note   This is not generally needed, as you can just use the String::CTOR, but for cases like
+         *          std::string-> String - where the conversion needs extra information (an assertion about character encoding of source characters).
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
          */
@@ -483,7 +474,7 @@ namespace Stroika::Foundation::Characters {
          *  @see    Concatenate() for a similar function that doesn't modify the source
          * 
          *  \todo CONSIDER DEPRECATING/LOSING THIS API - right now its NOT performant, but could easily be tweaked. Just better to use StringBuilder... Also API could
-         *        be generalized like CTOR - with appenbding any 'convertible to string' type, like char16_t, etc...
+         *        be generalized like CTOR - with appending any 'convertible to string' type, like char16_t, etc...
          */
         nonvirtual void Append (Character c);
         nonvirtual void Append (const String& s);
@@ -517,7 +508,7 @@ namespace Stroika::Foundation::Characters {
          *  \req (from <= to)
          *  \req (to <= size ())
          *
-         *  \em Note that this is quite inefficent: consider using StringBuilder
+         *  \em Note that this is quite inefficient: consider using StringBuilder
          */
         nonvirtual String RemoveAt (size_t charAt) const;
         nonvirtual String RemoveAt (size_t from, size_t to) const;
@@ -535,7 +526,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Remove the all occurrences of Character 'c'/'/subString/ from the string (walking front to back - if removeal creates one, it too is removed). Not an error if none
+         *  Remove the all occurrences of Character 'c'/'/subString/ from the string (walking front to back - if removal creates one, it too is removed). Not an error if none
          *  found. Doesn't modify this (const method) - returns resulting string.
          *
          *  \em Note that this is quite inefficient: consider using StringBuffer
@@ -616,7 +607,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
-         *  if the exceed those endpoints. And if arguments are <0, they are interpretted as end-relative.
+         *  if the exceed those endpoints. And if arguments are <0, they are interpreted as end-relative.
          *
          *  \note \em Alias
          *      This API - when called with negative indexes - used to be called SafeCircularSubString ().
@@ -845,7 +836,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         * RFind (substring) returns the index of the last occurance of the given substring in
+         * RFind (substring) returns the index of the last occurrence of the given substring in
          * this string. This function always returns a valid string index, which is followed by the
          * given substring, or optional<size_t> {} otherwise.
          *
@@ -992,7 +983,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Combine the given array into a single string (typically comma space) separated.
-         *  If given a list of length n, this adds n-1 seperators.
+         *  If given a list of length n, this adds n-1 separators.
          * 
          *  \note .Net version - https://docs.microsoft.com/en-us/dotnet/api/system.string.join?redirectedfrom=MSDN&view=net-6.0#System_String_Join_System_String_System_String___
          *  \note Java version - https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#join-java.lang.CharSequence-java.lang.CharSequence...-
@@ -1129,7 +1120,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note - As of Stroika 2.1d23 - the resulting string may have a different length than this->size() due to surrogates,
          *          but eventually the intent is to fix Stroika's string class so this is not true, and it returns the length of the string
-         *          in size () with surrogates removed (in other words uses ucs32 represenation). But not there yet.
+         *          in size () with surrogates removed (in other words uses ucs32 representation). But not there yet.
          */
         template <typename T = u32string>
         nonvirtual T AsUTF32 () const
@@ -1139,7 +1130,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  See docs on SDKChar for meaning (character set).
          * 
-         *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends alot).
+         *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends a lot).
          *  But in that case, AsNarrowSDKString () will throw, unless AllowMissingCharacterErrorsFlag is specified.
          */
         nonvirtual SDKString AsSDKString () const;
@@ -1148,9 +1139,9 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  See docs on SDKChar for meaning (character set). If SDKChar is a wide character, there is probably still a
-         *  default 'code page' to interpret narrow characters (Windows CP_ACP). This is a string in that characterset.
+         *  default 'code page' to interpret narrow characters (Windows CP_ACP). This is a string in that character set.
          * 
-         *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends alot).
+         *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends a lot).
          *  But in that case, AsNarrowSDKString () will throw, unless AllowMissingCharacterErrorsFlag is specified.
          */
         nonvirtual string AsNarrowSDKString () const;
@@ -1272,7 +1263,7 @@ namespace Stroika::Foundation::Characters {
          *  this reasonably likely to change in future versions.
          * 
          *  \note It is generally true that the data IsASCII (span) IFF Peek<ASCII> returns non-nullopt. But this is
-         *        not ACTUALLY always true. Generally, Stroika constructs strings like this. But callers may manaully construct
+         *        not ACTUALLY always true. Generally, Stroika constructs strings like this. But callers may manually construct
          *        a String with backend rep u32string, for example (e.g because of move construct) - and that might just happen
          *        to be all ascii. You can count on that IF you get back value from PeekData<ASCII> - it must be all ASCII. But
          *        the contrapositive is not always true.
@@ -1367,7 +1358,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \note BREAKING change between Stroika 2.1 and v3 - const c_str/0 no longer guaraneed to return non-null
+         *  \note BREAKING change between Stroika 2.1 and v3 - const c_str/0 no longer guaranteed to return non-null
          * 
          *        Mitigating this, the non-const c_str() still will return non-null, and the const overload taking
          *        StackBuffer<wchar_t> will also guarantee returning non-null.
@@ -1668,7 +1659,7 @@ namespace Stroika::Foundation::Characters {
      * Protected helper Rep class.
      * 
      *  \note   Important design note - String reps are IMMUTABLE. Changes to string like +=, create new string reps (so costly).
-     *          Use StringBuilder for that purpose in performance sensative code.
+     *          Use StringBuilder for that purpose in performance sensitive code.
      */
     class String::_IRep : public Iterable<Character>::_IRep {
     public:
@@ -1713,20 +1704,6 @@ namespace Stroika::Foundation::Characters {
     static_assert (IConvertibleToString<u16string>);
     static_assert (IConvertibleToString<u32string>);
     static_assert (not IConvertibleToString<optional<String>>);
-
-    /**
-     *  Use Stroika String more easily with std::ostream.
-     *
-     *  \note   EXPERIMENTAL API (added /as of 2014-02-15 - Stroika 2.0a21)
-     *
-     *  \note   Note sure how well this works being in a namespace!
-     *
-     *  \note   Intentionally don't do operator>> because not so well defined for strings (could do as wtith STL I guess?)
-     *
-     *  \note   tried to use templates to avoid the need to create a dependency of this module on iostream,
-     *          but that failed (maybe doable but overloading was trickier).
-     */
-    wostream& operator<< (wostream& out, const String& s);
 
     namespace Private_ {
         // This is just anything that can be treated as a 'span<const Character>'
@@ -1792,7 +1769,7 @@ namespace Stroika::Foundation::Characters {
      */
     struct String::ThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         /**
-         *  optional CompareOptions to CTOR allows for case insensative compares
+         *  optional CompareOptions to CTOR allows for case insensitive compares
          */
         constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
 

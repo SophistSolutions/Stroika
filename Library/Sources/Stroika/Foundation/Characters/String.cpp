@@ -542,64 +542,42 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ************************************* String ***********************************
  ********************************************************************************
  */
-#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-template <>
-#endif
-String::String (const basic_string_view<char>& str)
-    : String{(RequireExpression (Character::IsASCII (span{str.data (), str.size ()})),
-              Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (span{str.data (), str.size ()}))}
+shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char>& str)
 {
+    RequireExpression (Character::IsASCII (span{str.data (), str.size ()}));
+    return Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (span{str.data (), str.size ()});
 }
 
-namespace {
-    String mkStr_ (const basic_string_view<char8_t>& str)
-    {
-        // StringConstant_::Rep<char8_t> not supported
-        if (Character::IsASCII (span{str.data (), str.size ()})) {
-            // saves data ptr - without copying
-            return String{basic_string_view{reinterpret_cast<const char*> (str.data ()), str.size ()}};
-        }
-        else {
-            return String{span{str.data (), str.size ()}}; // copies data
-        }
+shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char8_t>& str)
+{
+    // StringConstant_::Rep<char8_t> not supported
+    if (Character::IsASCII (span{str.data (), str.size ()})) {
+        // saves data ptr - without copying
+        return CTORFromBasicStringView_ (basic_string_view{reinterpret_cast<const char*> (str.data ()), str.size ()});
+    }
+    else {
+        return mk_ (span<const char8_t>{str.data (), str.size ()}); // copies data
     }
 }
 
-#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-template <>
-#endif
-String::String (const basic_string_view<char8_t>& str)
-    : String{mkStr_ (str)}
+shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char16_t>& str)
 {
+    return Memory::MakeSharedPtr<StringConstant_::Rep<char16_t>> (span{str.data (), str.size ()});
 }
 
-#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-template <>
-#endif
-String::String (const basic_string_view<char16_t>& str)
-    : String{Memory::MakeSharedPtr<StringConstant_::Rep<char16_t>> (span{str.data (), str.size ()})}
+shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char32_t>& str)
 {
+    return Memory::MakeSharedPtr<StringConstant_::Rep<char32_t>> (span{str.data (), str.size ()});
 }
 
-#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-template <>
-#endif
-String::String (const basic_string_view<char32_t>& str)
-    : String{Memory::MakeSharedPtr<StringConstant_::Rep<char32_t>> (span{str.data (), str.size ()})}
-{
-}
-
-#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-template <>
-#endif
-String::String (const basic_string_view<wchar_t>& str)
-    : String{Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()})}
+shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<wchar_t>& str)
 {
     Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
                                                // for these const strings are also nul-terminated.
     // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
     // be nul-terminated.
     // -- LGP 2019-01-29
+    return Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()});
 }
 
 String String::FromStringConstant (span<const ASCII> s)
