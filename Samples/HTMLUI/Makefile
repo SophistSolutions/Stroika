@@ -44,7 +44,7 @@ clean::
 
 html:
 ifeq ($(shell which quasar 2>/dev/null),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed***"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed:" `$(StroikaRoot)ScriptsLib/GetMessageForMissingTool quasar` ***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else
 	@$(MAKE) --silent --directory QuasarBasedHTMLApp MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all

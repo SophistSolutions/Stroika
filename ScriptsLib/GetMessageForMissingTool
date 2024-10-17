@@ -84,6 +84,8 @@ elif [ $TOOL == "node" ] ; then
 	elif [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install -y nodejs" && echo && exit 0
 	fi
+elif [ $TOOL == "quasar" ] ; then
+	echo -n ": (maybe first install nodejs/npm) then npm i -g npm @quasar/cli" && echo && exit 0
 elif [ $TOOL == "sed" ] ||  [ $TOOL == "gsed" ] ; then
 	if [ $DistroBasedOn == "Darwin" ] ; then
 		echo -n ": try brew install gnu-sed" && echo && exit 0
