@@ -2186,7 +2186,7 @@ static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::t
 #define qCompilerAndStdLib_formattable_of_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__)
 // Appears broken on clang-15 and linux
-#define qCompilerAndStdLib_formattable_of_tuple_Buggy  ((__clang_major__ <= 15))
+#define qCompilerAndStdLib_formattable_of_tuple_Buggy ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_formattable_of_tuple_Buggy 0
 #endif

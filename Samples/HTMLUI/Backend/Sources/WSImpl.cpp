@@ -54,10 +54,10 @@ using Memory::BLOB;
 
 namespace {
     namespace Resources_ {
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-variable\"");
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-variable\"");
         constexpr
 #include "api.json.embed"
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-variable\"");
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-variable\"");
     }
 }
 

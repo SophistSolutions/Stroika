@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 // Debugging hacks to make sure IStdFormatterPredefinedFor_ defined properly
 //
 //      CRAZY - but cannot check (at least on visual studio) here: checking NOW causes
-//      this to FAIL later (i guess compiler caches results cuz thinks its constant). 
+//      this to FAIL later (i guess compiler caches results cuz thinks its constant).
 //      if this worked, I'd add more static_asserts to check...
 //
 // Just use briefly - to debug IStdFormatterPredefinedFor_ -  to verify we fail AFTER this point;
@@ -403,7 +403,7 @@ namespace Stroika::Foundation::Characters::Private_ {
              // available in C++23
              or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
-#if __cplusplus < 202400L || (defined (_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE <= 14)
+#if __cplusplus < 202400L || (defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE <= 14)
              or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
              or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or
