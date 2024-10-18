@@ -63,7 +63,7 @@ jobs:
         )' .github/workflows/build-N-test-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
-  build-n-test-Linux:
+  Linux:
     needs: LinuxMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
@@ -176,7 +176,7 @@ jobs:
           path: |
             *core*
   
-  build-n-test-MacOS:
+  MacOS:
     needs: MacOSMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
@@ -262,7 +262,7 @@ jobs:
           path: |
             Builds/${{ matrix.config_name }}/Samples-*
 
-  build-n-test-Windows:
+  Windows:
     needs: WindowsMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
