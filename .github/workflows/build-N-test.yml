@@ -156,7 +156,7 @@ jobs:
             Builds/Stroika-Doxygen-Help.tar.gz
           #Dont name based on who built - sb all the same
           overwrite: true
-      - name: Archive Log Results
+      - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -240,11 +240,11 @@ jobs:
           echo "TMPDIR using ENV.TMPDIR=${{ env.TMPDIR }}"
           # Just the echo line above shows empty, and then the ls line causes exit 1/failure
           #ls -l ${{ env.TMPDIR }}/Trace*.txt
-          #if this gets fixed, then lose Workaround GitHub-Actions-MacOS, and directly reference ${{ env.TMPDIR }}/Trace*.txt in Archive Log Results
+          #if this gets fixed, then lose Workaround GitHub-Actions-MacOS, and directly reference ${{ env.TMPDIR }}/Trace*.txt in Archive Log Data
       - name: Build System Info
         run: |
           df -h
-      - name: Archive Log Results
+      - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -334,11 +334,11 @@ jobs:
           docker stop buildContainer
           (docker cp "buildContainer:TRACE_LOGS/" $ARTIFACTS_DIR) || :
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
-      - name: Archive Log Results
+      - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Log Results (${{ matrix.displayTargetName }})
+          name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
             ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
@@ -346,7 +346,7 @@ jobs:
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
         with:
-          name: Samples (${{ matrix.displayTargetName }})
+          name: Sample apps (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
             ${{ env.ARTIFACTS_DIR }}Samples-*
@@ -399,7 +399,7 @@ jobs:
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
     - name: Make Stroika
       run: make all
-    - name: Archive Log Results
+    - name: Archive Log Data
       if: always()
       uses: actions/upload-artifact@v4
       with:
