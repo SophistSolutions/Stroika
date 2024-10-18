@@ -248,7 +248,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Log Results (${{ matrix.displayTargetName }})
+          name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
@@ -257,7 +257,7 @@ jobs:
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
         with:
-          name: Samples (${{ matrix.displayTargetName }})
+          name: Sample apps (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/Samples-*

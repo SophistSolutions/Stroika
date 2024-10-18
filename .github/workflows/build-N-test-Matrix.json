@@ -120,6 +120,17 @@
         "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
         "run_on_branch": "v3-Release"
     },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-24.04-clang++-18-debug-libc++",
+        "compiler": "clang++-18",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
+        "run_on_branch": "v3-Release"
+    },
     {},
     {
         "comment": "ubuntu 24.10"
