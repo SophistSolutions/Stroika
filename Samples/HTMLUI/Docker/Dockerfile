@@ -2,7 +2,7 @@
 # Build this container with 
 #   docker build -t htmlui-test --target deploy ../../../ -f Dockerfile
 # Run produced container with
-#   docker run --rm -it -p 8080:80 test
+#   docker run --rm -it -p 8080:80 --name htmlui test
 
 
 # Define Builder and do actual compiling
@@ -31,6 +31,13 @@ WORKDIR /opt/Stroika-Sample-HTMLUI
 
 # For configuration/log data etc...
 RUN mkdir /var/opt/Stroika-Sample-HTMLUI
+
+# CONFIGURATION
+RUN echo "{\n\
+    \"ShowAsExternalURL\" : null,\n\
+    \"Logging\" : null,\n\
+    \"WebServerPort\" : null\n\
+}\n" > /var/opt/Stroika-Sample-HTMLUI/Serverx.json
 
 COPY --from=builder /tmp/build/Builds/${CONFIGURATION}/Samples-HTMLUI/Backend/HTMLUI .
 COPY --from=builder /tmp/build/Builds/${CONFIGURATION}/Samples-HTMLUI/html/ html

@@ -99,7 +99,7 @@ namespace {
     }();
     Config_ GetConfig_ ()
     {
-        return Config_{nullopt, gAppConfiguration.Get ().WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)};
+        return Config_{nullopt, gAppConfiguration.Get ().WebServerPort};
     }
 }
 

@@ -120,7 +120,7 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
 <template>
   <q-page class="q-pa-md">
     <div class="row text-h5">
-      <div class="col">About 'Sample HTMLUI App''</div>
+      <div class="col">About 'Sample HTMLUI App'</div>
     </div>
 
     <div class="row q-pa-md justify-center">

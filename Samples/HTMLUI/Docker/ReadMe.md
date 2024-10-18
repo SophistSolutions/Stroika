@@ -13,7 +13,7 @@ docker build -t test --target deploy ../../../ -f Dockerfile CONFIGURATION=Debug
 
 and run the produced container with:
 ~~~
-docker run --rm -it -p 8080:80 test
+docker run --rm -it -p 8080:80 --name htmlui test
 ~~~
 
 then BROWSE the your target machine - port 8080.

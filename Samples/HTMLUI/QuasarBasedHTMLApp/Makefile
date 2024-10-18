@@ -58,6 +58,8 @@ update-components_: $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && npm i > ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}/NPM-Install.txt 2>&1
 
 build-dist_: $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
+	@# note - this build ignores .env file; used only for test/dev builds (maybe overwrite .env file with one form CONFIGURATION?)
+	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_).env
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Building ( log2 ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}Build.txt ) ..."`
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && npm run build > ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}/Build.txt 2>&1
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Copying to ${PER_CONFIGURATION_BUILDS_DIR} ..."`
