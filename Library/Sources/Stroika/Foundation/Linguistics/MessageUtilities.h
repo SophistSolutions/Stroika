@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Linguistics::MessageUtilities {
      *  \note - methods come in two versions - one that takes a locale, and one that doesn't. If the locale is omitted,
      *          the default locale - locale{} - is used.
      * 
-     *  // internally synchronized
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     class Manager {
     public:
@@ -61,8 +61,9 @@ namespace Stroika::Foundation::Linguistics::MessageUtilities {
         Manager (const Containers::Sequence<shared_ptr<const IRep>>& utilObjs = {});
 
     public:
-        // threadsafe
-        Manager& operator= (const Manager& rhs) = default;
+        /**
+         */
+        nonvirtual Manager& operator= (const Manager& rhs) = default;
 
     public:
         /**
@@ -70,7 +71,7 @@ namespace Stroika::Foundation::Linguistics::MessageUtilities {
          *  locale (or argument locale) and what is installed with Configuration if its available.
          *
          *  This is generally unneeded, as you can call MakeNounSingular, RemoveTrailingSentencePunctuation directly (below).
-         *  But if you have to make many calls in a row, caching the 'MessageUtilties' - locale specific object - can improve
+         *  But if you have to make many calls in a row, caching the 'shared_ptr<const IRep>' - locale specific object - can improve
          *  performance.
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
@@ -88,7 +89,7 @@ namespace Stroika::Foundation::Linguistics::MessageUtilities {
     public:
         /**
          *  Implement current-ui-language-specific noun-pluralization logic for the given noun string (assuming the count of that noun
-         *  is given (english rules - if count != 1 - append s, but we don't wnat that logic to proliferate through the app, so
+         *  is given (english rules - if count != 1 - append s, but we don't want that logic to proliferate through the app, so
          *  its easier to localize.
          *
          *  The variation with two strings - the second one is the explicit plural - just plugged in if the count is non-zero

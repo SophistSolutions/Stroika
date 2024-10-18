@@ -88,6 +88,8 @@ namespace Stroika::Foundation::Execution {
      *      \endcode
      * 
      *  @see DbgTrace
+     * 
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     class Logger final {
     public:

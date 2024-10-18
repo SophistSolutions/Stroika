@@ -27,7 +27,7 @@ using namespace Stroika::Foundation::Execution;
  */
 bool Impl_en::AppliesToThisLocale (const String& localeName) const
 {
-    return String::FromNarrowSDKString (locale ().name ()).StartsWith (localeName);
+    return String::FromNarrowSDKString (locale{}.name ()).StartsWith (localeName);
     //return l.name ().find ("en") == 0;
 }
 
@@ -35,15 +35,15 @@ pair<String, optional<String>> Impl_en::RemoveTrailingSentencePunctuation (const
 {
     // super primitive (may want to trim trailing whitespace if any on msg after remove of punctuation but shouldnt be any)
     if (msg.EndsWith ("."sv)) {
-        return pair<String, optional<String>>{msg.SubString (0, -1), "."sv};
+        return {msg.SubString (0, -1), "."sv};
     }
     if (msg.EndsWith ("?"sv)) {
-        return pair<String, optional<String>>{msg.SubString (0, -1), "?"sv};
+        return {msg.SubString (0, -1), "?"sv};
     }
     if (msg.EndsWith ("!"sv)) {
-        return pair<String, optional<String>>{msg.SubString (0, -1), "!"sv};
+        return {msg.SubString (0, -1), "!"sv};
     }
-    return pair<String, optional<String>>{msg, nullopt};
+    return {msg, nullopt};
 }
 
 String Impl_en::PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const
@@ -67,8 +67,8 @@ String Impl_en::MakeNounSingular (const String& s) const
     String r = s;
     // take an ENGLISH string and munge it so its singular (if it happened to have been plural)
 
-    // hande special case of 'wives' -> 'wife' as in 'midwives'
-    // @todo there are more like thief, and theives
+    // handle special case of 'wives' -> 'wife' as in 'midwives'
+    // @todo there are more like thief, and thieves
     if (r.length () >= 5) {
         size_t l = r.length ();
         if (s[l - 5] == 'w' and s[l - 4] == 'i' and s[l - 3] == 'v' and s[l - 2] == 'e' and s[l - 1] == 's') {
