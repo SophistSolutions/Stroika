@@ -39,7 +39,7 @@ namespace {
             return reasonForError;
         }
         StringBuilder sb;
-        auto          tmp = Linguistics::MessageUtiltiesManager::Get ()->RemoveTrailingSentencePunctuation (reasonForError);
+        auto          tmp = Linguistics::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation (reasonForError);
         sb << tmp.first;
         sb << " while "sv;
         for (auto i = activities.begin (); i != activities.end ();) {

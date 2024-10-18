@@ -9,6 +9,12 @@ especially those they need to be aware of when upgrading.
 
 ### DRAFT UPGRADE NOTES FOR 3.0d11
 
+
+Replace 
+    Linguistics::MessageUtiltiesManager::Get () with 
+    Linguistics::MessageUtilities::Manager::sThe
+
+
 namespace Stroika::Foundation::Configuration {
     template <typename ENUM_TYPE>
     class EnumNames;

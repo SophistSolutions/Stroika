@@ -341,13 +341,13 @@ String Time::GetFormattedAgeWithUnit (const optional<Date>& birthDate, const opt
         int yearDiff = deathDate.has_value () ? YearDifference (*deathDate, *birthDate) : YearDifference (DateTime::GetToday (), *birthDate);
         if (yearDiff >= 0 and yearDiff < 2) {
             float yearDiffF = deathDate.has_value () ? YearDifferenceF (*deathDate, *birthDate) : YearDifferenceF (DateTime::GetToday (), *birthDate);
-            int     months   = int (yearDiffF * 12.0f + 0.4999f);
-            wstring unitBase = abbrevUnit ? L"mo" : L"month";
-            return Format ("{} {}"_f, months, Linguistics::MessageUtiltiesManager::Get ()->PluralizeNoun (unitBase, months));
+            int    months   = int (yearDiffF * 12.0f + 0.4999f);
+            String unitBase = abbrevUnit ? "mo"_k : "month"_k;
+            return Format ("{} {}"_f, months, Linguistics::MessageUtilities::Manager::sThe.PluralizeNoun (unitBase, months));
         }
         else {
-            wstring unitBase = abbrevUnit ? L"yr" : L"year";
-            return Format ("{} {}"_f, yearDiff, Linguistics::MessageUtiltiesManager::Get ()->PluralizeNoun (unitBase, yearDiff));
+            String unitBase = abbrevUnit ? "yr"_k : "year"_k;
+            return Format ("{} {}"_f, yearDiff, Linguistics::MessageUtilities::Manager::sThe.PluralizeNoun (unitBase, yearDiff));
         }
     }
     else {

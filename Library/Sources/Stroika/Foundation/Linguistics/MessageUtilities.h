@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 
 /**
@@ -20,12 +21,13 @@
  *              linguistic code I could move here, and I'm sure I could dig up more...
  */
 
-namespace Stroika::Foundation::Linguistics {
+namespace Stroika::Foundation::Linguistics::MessageUtilities {
 
     using Characters::String;
+    using Common::KeyValuePair;
 
-    struct MessageUtilities {
-        virtual ~MessageUtilities ()                                                                                             = default;
+    struct IRep {
+        virtual ~IRep ()                                                                                                         = default;
         virtual bool                           AppliesToThisLocale (const String& localeName) const                              = 0;
         virtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const                       = 0;
         virtual String                         PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const = 0;
@@ -34,7 +36,7 @@ namespace Stroika::Foundation::Linguistics {
 
     /**
      */
-    struct MessageUtilities_en : MessageUtilities {
+    struct Impl_en : IRep {
         virtual bool                           AppliesToThisLocale (const String& localeName) const override;
         virtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const override;
         virtual String                         PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const override;
@@ -42,22 +44,25 @@ namespace Stroika::Foundation::Linguistics {
     };
 
     /*
-     *  Maps locales to MessageUtilities instances, that can be used to lingustically specifically update a message
+     *  Maps locales to MessageUtilities instances, that can be used to linguistically specifically update a message
+     * 
+     *  \note - methods come in two versions - one that takes a locale, and one that doesn't. If the locale is omitted,
+     *          the default locale - locale{} - is used.
+     * 
+     *  // internally synchronized
      */
-    class MessageUtiltiesManager {
-    public:
-        /**
-         * Get the currently installed MessageUtiltiesManager
-         */
-        static shared_ptr<const MessageUtiltiesManager> Get ();
-
+    class Manager {
     public:
         /**
          */
-        static void Set (const shared_ptr<const MessageUtiltiesManager>& newMsgMgr);
+        static Manager sThe;
 
     public:
-        MessageUtiltiesManager (const Containers::Sequence<shared_ptr<const MessageUtilities>>& utilObjs = {});
+        Manager (const Containers::Sequence<shared_ptr<const IRep>>& utilObjs = {});
+
+    public:
+        // threadsafe
+        Manager& operator= (const Manager& rhs) = default;
 
     public:
         /**
@@ -70,7 +75,7 @@ namespace Stroika::Foundation::Linguistics {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
          */
-        nonvirtual shared_ptr<const MessageUtilities> LookupHandler (const locale& l = locale{}) const;
+        nonvirtual shared_ptr<const IRep> LookupHandler (const locale& l = locale{}) const;
 
     public:
         /**
@@ -101,10 +106,10 @@ namespace Stroika::Foundation::Linguistics {
         nonvirtual String MakeNounSingular (const String& s) const;
 
     private:
-        Containers::Sequence<shared_ptr<const MessageUtilities>>                        fMessageHandlers_;
-        static inline Execution::Synchronized<shared_ptr<const MessageUtiltiesManager>> sTheMessageUtiltiesManager_;
-        mutable Execution::Synchronized<optional<Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>>> fCached_;
+        Execution::Synchronized<Containers::Sequence<shared_ptr<const IRep>>>                           fMessageHandlers_;
+        mutable Execution::Synchronized<optional<Common::KeyValuePair<locale, shared_ptr<const IRep>>>> fLocaleCache_;
     };
+    inline Manager Manager::sThe;
 
 }
 

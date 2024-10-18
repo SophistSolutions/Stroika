@@ -17,20 +17,21 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Linguistics;
+using namespace Stroika::Foundation::Linguistics::MessageUtilities;
 using namespace Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
- *************************** MessageUtilities_en ********************************
+ *********************************** Impl_en ************************************
  ********************************************************************************
  */
-bool MessageUtilities_en::AppliesToThisLocale (const String& localeName) const
+bool Impl_en::AppliesToThisLocale (const String& localeName) const
 {
     return String::FromNarrowSDKString (locale ().name ()).StartsWith (localeName);
     //return l.name ().find ("en") == 0;
 }
 
-pair<String, optional<String>> MessageUtilities_en::RemoveTrailingSentencePunctuation (const String& msg) const
+pair<String, optional<String>> Impl_en::RemoveTrailingSentencePunctuation (const String& msg) const
 {
     // super primitive (may want to trim trailing whitespace if any on msg after remove of punctuation but shouldnt be any)
     if (msg.EndsWith ("."sv)) {
@@ -45,7 +46,7 @@ pair<String, optional<String>> MessageUtilities_en::RemoveTrailingSentencePunctu
     return pair<String, optional<String>>{msg, nullopt};
 }
 
-String MessageUtilities_en::PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const
+String Impl_en::PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const
 {
     // Implement VERY WEAK ENGLISH rules for now... (ignores y ->ies, and other cases too)
     if (count == 1) {
@@ -61,7 +62,7 @@ String MessageUtilities_en::PluralizeNoun (const String& s, const optional<Strin
     }
 }
 
-String MessageUtilities_en::MakeNounSingular (const String& s) const
+String Impl_en::MakeNounSingular (const String& s) const
 {
     String r = s;
     // take an ENGLISH string and munge it so its singular (if it happened to have been plural)
@@ -92,7 +93,7 @@ String MessageUtilities_en::MakeNounSingular (const String& s) const
         else if (s[s.length () - 3] == 's' and s[s.length () - 2] == 'e' and s[s.length () - 1] == 's') {
             r = s.substr (0, s.length () - 1);
         }
-        // because of diabets mellitus - (and others???? - don't map trailing 'us' to 'u'
+        // because of diabetes mellitus - (and others???? - don't map trailing 'us' to 'u'
         else if (s[s.length () - 1] == 's' and s[s.length () - 2].IsASCII () and s[s.length () - 2].IsAlphabetic () and
                  (s[s.length () - 2] != 's' and s[s.length () - 2] != 'u')) {
             r = s.substr (0, s.length () - 1);
@@ -103,25 +104,30 @@ String MessageUtilities_en::MakeNounSingular (const String& s) const
 
 /*
  ********************************************************************************
- ************************** MessageUtiltiesManager ******************************
+ ************************************ Manager ***********************************
  ********************************************************************************
  */
-shared_ptr<const MessageUtilities> MessageUtiltiesManager::LookupHandler (const locale& l) const
+Manager::Manager (const Containers::Sequence<shared_ptr<const IRep>>& utilObjs)
+    : fMessageHandlers_{utilObjs}
 {
-    optional<Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>> cachedVal = fCached_.load ();
+}
+
+shared_ptr<const IRep> Manager::LookupHandler (const locale& l) const
+{
+    optional<Common::KeyValuePair<locale, shared_ptr<const IRep>>> cachedVal = fLocaleCache_.load ();
     if (cachedVal && cachedVal->fKey == l) {
         return cachedVal->fValue;
     }
-    cachedVal = [&] () {
+    cachedVal = [&] () -> KeyValuePair<locale, shared_ptr<const IRep>> {
         //  search here user installed ones with AddHandler ()
-        for (const shared_ptr<const MessageUtilities>& h : fMessageHandlers_) {
+        for (const shared_ptr<const IRep>& h : fMessageHandlers_.load ()) {
             if (h->AppliesToThisLocale (String::FromNarrowSDKString (l.name ()))) {
-                return Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>{l, h};
+                return {l, h};
             }
         }
         // if nothing applies, return this...
-        return Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>{l, make_shared<MessageUtilities_en> ()};
+        return {l, make_shared<Impl_en> ()};
     }();
-    fCached_.store (cachedVal);
+    fLocaleCache_.store (cachedVal);
     return cachedVal->fValue;
 }

@@ -2,59 +2,42 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
-namespace Stroika::Foundation::Linguistics {
+namespace Stroika::Foundation::Linguistics::MessageUtilities {
 
     /*
      ********************************************************************************
-     ****************** Linguistics::MessageUtiltiesManager *************************
+     *************** Linguistics::MessageUtilities::Manager *************************
      ********************************************************************************
      */
-    inline shared_ptr<const MessageUtiltiesManager> MessageUtiltiesManager::Get ()
-    {
-        auto l = sTheMessageUtiltiesManager_.load ();
-        if (l == nullptr) {
-            l = make_shared<const MessageUtiltiesManager> ();
-            sTheMessageUtiltiesManager_.store (l);
-        }
-        return l;
-    }
-    inline void MessageUtiltiesManager::Set (const shared_ptr<const MessageUtiltiesManager>& newMsgMgr)
-    {
-        sTheMessageUtiltiesManager_.store (newMsgMgr == nullptr ? make_shared<const MessageUtiltiesManager> () : newMsgMgr);
-    }
-    inline MessageUtiltiesManager::MessageUtiltiesManager (const Containers::Sequence<shared_ptr<const MessageUtilities>>& utilObjs)
-        : fMessageHandlers_{utilObjs}
-    {
-    }
-    inline pair<String, optional<String>> MessageUtiltiesManager::RemoveTrailingSentencePunctuation (const String& msg) const
+    inline pair<String, optional<String>> Manager::RemoveTrailingSentencePunctuation (const String& msg) const
     {
         return LookupHandler ()->RemoveTrailingSentencePunctuation (msg);
     }
-    inline pair<String, optional<String>> MessageUtiltiesManager::RemoveTrailingSentencePunctuation (const locale& l, const String& msg) const
+    inline pair<String, optional<String>> Manager::RemoveTrailingSentencePunctuation (const locale& l, const String& msg) const
     {
         return LookupHandler (l)->RemoveTrailingSentencePunctuation (msg);
     }
-    inline String MessageUtiltiesManager::PluralizeNoun (const String& s, int count) const
+    inline String Manager::PluralizeNoun (const String& s, int count) const
     {
         return LookupHandler ()->PluralizeNoun (s, nullopt, count);
     }
-    inline String MessageUtiltiesManager::PluralizeNoun (const String& s, const String& sPlural, int count) const
+    inline String Manager::PluralizeNoun (const String& s, const String& sPlural, int count) const
     {
         return LookupHandler ()->PluralizeNoun (s, sPlural, count);
     }
-    inline String MessageUtiltiesManager::PluralizeNoun (const locale& l, const String& s, int count) const
+    inline String Manager::PluralizeNoun (const locale& l, const String& s, int count) const
     {
         return LookupHandler (l)->PluralizeNoun (s, nullopt, count);
     }
-    inline String MessageUtiltiesManager::PluralizeNoun (const locale& l, const String& s, const String& sPlural, int count) const
+    inline String Manager::PluralizeNoun (const locale& l, const String& s, const String& sPlural, int count) const
     {
         return LookupHandler (l)->PluralizeNoun (s, sPlural, count);
     }
-    inline String MessageUtiltiesManager::MakeNounSingular (const locale& l, const String& s) const
+    inline String Manager::MakeNounSingular (const locale& l, const String& s) const
     {
         return LookupHandler (l)->MakeNounSingular (s);
     }
-    inline String MessageUtiltiesManager::MakeNounSingular (const String& s) const
+    inline String Manager::MakeNounSingular (const String& s) const
     {
         return LookupHandler ()->MakeNounSingular (s);
     }

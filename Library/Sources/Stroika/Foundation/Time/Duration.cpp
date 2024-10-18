@@ -121,7 +121,7 @@ namespace {
 
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
-    auto                lingMgr = Linguistics::MessageUtiltiesManager::Get ();
+    auto                lingMgr = Linguistics::MessageUtilities::Manager::sThe.LookupHandler ();
     static const String kCommaSpace_{", "sv};
     if (empty ()) {
         return String{};
@@ -308,7 +308,7 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
     Characters::String suffix = isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
 
     auto fmtDate = [suffix] (int timeInSelectedUnit, const String& singularUnit, const String& pluralUnit) -> String {
-        String label = Linguistics::MessageUtiltiesManager::Get ()->PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
+        String label = Linguistics::MessageUtilities::Manager::sThe.PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
         return Characters::Format (L"{} {} {}"_f, timeInSelectedUnit, label, suffix);
     };
 
