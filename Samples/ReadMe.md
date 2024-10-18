@@ -17,6 +17,14 @@
 * [Containers](Containers/)
   demonstrates the basic ideas of the Stroika container class library
 
+* [HTMLUI](HTMLUI/)
+  **very good place to start**
+
+  WebService app, auto startup operating system service, installers, build from docker, run under docker.
+
+  This sample combines all of what you need to build an installable app, which runs as a platform-native service,
+  and exposes its HTML user interface (using vue3 / quasar).
+
 * [LedIt](LedIt/)
   is a word processor application. It was originally working on Windows,
   MacOS, and Linux, but only the Windows code has been ported and tested
