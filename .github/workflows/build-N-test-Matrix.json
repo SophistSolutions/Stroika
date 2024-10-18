@@ -83,63 +83,9 @@
         "COMMENT-1": "SKIP cuz runs out of disk space",
         "run_on_branch": "never"
     },
+    {},
     {
-        "comment": "ubuntu 23.10"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-23.10-g++-13",
-        "compiler": "g++-13",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests",
-        "cpp_version": "c++20",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "always"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-23.10-g++-13-c++20",
-        "compiler": "g++-13",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests",
-        "cpp_version": "c++20",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-23.10-clang++-16-debug-libc++-c++23",
-        "compiler": "clang++-16",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests",
-        "cpp_version": "c++2b",
-        "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
-        "run_on_branch-DISABLED": "always"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-23.10-clang++-16-release-libstdc++",
-        "compiler": "clang++-16",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests",
-        "cpp_version": "c++20",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --stdlib libstdc++ --trace2file enable",
-        "run_on_branch": "v3-Release"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-23.10-clang++-All3rdParty (Debug)",
-        "compiler": "clang++-16",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests",
-        "cpp_version": "c++20",
-        "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
-        "run_on_branch": "v3-Release"
+        "comment": "ubuntu 24.04"
     },
     {
         "build_job": "Linux",
@@ -163,7 +109,43 @@
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
         "run_on_branch": "v3-Release"
     },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-24.04-clang++-17-debug-libc++",
+        "compiler": "clang++-17",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
+        "run_on_branch": "v3-Release"
+    },
     {},
+    {
+        "comment": "ubuntu 24.10"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-24.10-g++-14",
+        "compiler": "g++-14",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "always"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-24.10-g++-14-c++20",
+        "compiler": "g++-14",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
     {
         "comment": "MacOS"
     },
