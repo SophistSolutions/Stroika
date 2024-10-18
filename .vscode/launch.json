@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch Chrome",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:9000",
+      "webRoot": "${workspaceFolder}/Samples/HTMLUI/QuasarBasedHTMLApp"
+    },
+    {
       "name": "(gdb-UNIX) Launch EXE",
       "type": "cppdbg",
       "request": "launch",
