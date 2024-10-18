@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Linguistics/MessageUtilities.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Variant/JSON/Reader.h"
@@ -51,7 +52,7 @@ String OptionsFile::LoggerMessage::FormatMessage () const
     if (fDetails) {
         StringBuilder sb;
         sb << "; "sv << *fDetails;
-        details = sb.str ();
+        details = Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation (sb);
     }
     switch (fMsg) {
         case Msg::eSuccessfullyReadFile:
