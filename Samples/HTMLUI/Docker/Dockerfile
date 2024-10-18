@@ -34,7 +34,7 @@ RUN mkdir /var/opt/Stroika-Sample-HTMLUI
 
 # CONFIGURATION
 #   @todo - allow config info to be sepecified some other way - at docker startup time? Or better document how todo (probably container BUILD_ARG)
-RUN echo "{\n\
+RUN echo -e "{\n\
     \"ShowAsExternalURL\" : null,\n\
     \"Logging\" : {\"\"ToStdOut\" : true, \"\"ToSysLog\" : false},\n\
     \"WebServerPort\" : null\n\
