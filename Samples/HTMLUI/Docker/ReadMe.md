@@ -7,7 +7,7 @@ docker build -t test --target deploy ../../../ -f Dockerfile
 ~~~
 OR
 ~~~
-docker build -t test --target deploy ../../../ -f Dockerfile CONFIGURATION=Debug JFLAG=-j10
+docker build -t test --target deploy ../../../ -f Dockerfile --build-arg CONFIGURATION=Debug --build-arg JFLAG=-j10
 ~~~
 
 

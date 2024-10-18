@@ -38,7 +38,7 @@ RUN echo "{\n\
     \"ShowAsExternalURL\" : null,\n\
     \"Logging\" : {\"\"ToStdOut\" : true, \"\"ToSysLog\" : false},\n\
     \"WebServerPort\" : null\n\
-}\n" > /var/opt/Stroika-Sample-HTMLUI/Serverx.json
+}\n" > /var/opt/Stroika-Sample-HTMLUI/Server.json
 
 COPY --from=builder /tmp/build/Builds/${CONFIGURATION}/Samples-HTMLUI/Backend/HTMLUI .
 COPY --from=builder /tmp/build/Builds/${CONFIGURATION}/Samples-HTMLUI/html/ html
