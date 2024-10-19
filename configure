@@ -3118,7 +3118,7 @@ if ($onlyGenerateIfCompilerExists) {
 			$generate = false;
 			$generateBecause = "clang++-16/17 with libcstd++ doesn't support c++23 mode";
 		}
-		if ($generate && $itsVersion <= 16.0 && $STDCXXLIB eq "libc++" && $ubuntuVersion == 24.04) {
+		if ($generate && $itsVersion < 16.0 && $STDCXXLIB eq "libc++" && $ubuntuVersion == 24.04) {
 			$generate = false;
 			$generateBecause = "Libc++ only supports Clang 16 and later on ubuntu 24.04";
 		}
