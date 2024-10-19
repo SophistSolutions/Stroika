@@ -425,15 +425,15 @@ namespace {
         }
         static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
         {
-            xmlNsPtr              ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
-            basic_string<xmlChar> prefix2Try{BAD_CAST "a"};
+            xmlNsPtr    ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
+            string      prefix2Try{ "a"};
             while (ns2Use == nullptr) {
                 // Need to hang the namespace declaration someplace? Could do it just on this element (xmlNewNs)
                 // Or on the root doc (xmlNewGlobalNs).
                 // For now - do on DOC, so we end up with a more terse overall document.
                 // Also - sadly - must cons up SOME prefix, which doesn't conflict. No good way I can see todo that, so do a bad way.
                 // OK - can do still manually using docs root elt - maybe - but do this way for now... cuz xmlNewGlobalNs deprecated
-                ns2Use = xmlNewNs (n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), prefix2Try.c_str ());
+                ns2Use = xmlNewNs (n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), BAD_CAST prefix2Try.c_str ());
                 if (ns2Use == nullptr) {
                     ++prefix2Try[0]; // if 'a' didn't work, try 'b' // @todo this could use better error handling, but pragmatically probably OK
                 }
