@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         // chrono
         or Common::IDuration<T> 
         or requires { []<typename DURATION> (type_identity<std::chrono::sys_time<DURATION>>) {}(type_identity<T> ()); } 
-#if !defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999
+#if !defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 199999
         or requires { []<typename DURATION> (type_identity<std::chrono::utc_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::tai_time<DURATION>>) {}(type_identity<T> ()); } 
         or requires { []<typename DURATION> (type_identity<std::chrono::gps_time<DURATION>>) {}(type_identity<T> ()); } 
@@ -247,12 +247,12 @@ namespace Stroika::Foundation::Characters::Private_ {
             chrono::weekday, chrono::weekday_indexed, chrono::weekday_last,
             chrono::month_day, chrono::month_day_last, chrono::month_weekday, chrono::month_weekday_last, 
             chrono::year_month, chrono::year_month_day, chrono::year_month_day_last, chrono::year_month_weekday,chrono::year_month_weekday_last 
-#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999)
+#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 199999)
             , chrono::sys_info, chrono::local_info
 #endif
         >
         or requires { []<typename DURATION> (type_identity<chrono::hh_mm_ss<DURATION>>) {}(type_identity<T> ()); } 
-#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 189999)
+#if (not defined (_GLIBCXX_RELEASE) or _GLIBCXX_RELEASE > 12) and (!defined(_LIBCPP_VERSION) or _LIBCPP_VERSION > 199999)
         or requires { []<typename DURATION, typename TimeZonePtr> (type_identity<chrono::zoned_time<DURATION, TimeZonePtr>>) {}(type_identity<T> ()); } 
 #endif
 

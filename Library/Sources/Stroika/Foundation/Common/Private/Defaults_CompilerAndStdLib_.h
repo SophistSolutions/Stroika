@@ -159,8 +159,15 @@ foo.cpp:
     int main ()
     {
     using namespace std;
+    #ifdef __GLIBCXX__
     cerr << "__GLIBCXX__=" << __GLIBCXX__ << "\n";
+    #endif
+    #ifdef _GLIBCXX_RELEASE
     cerr << "_GLIBCXX_RELEASE=" << _GLIBCXX_RELEASE << "\n";
+    #endif
+    #ifdef _LIBCPP_VERSION
+    cerr << "_LIBCPP_VERSION=" << _LIBCPP_VERSION << "\n";
+    #endif
     return 0;
     }
 
