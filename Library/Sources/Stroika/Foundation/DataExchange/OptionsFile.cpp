@@ -52,7 +52,7 @@ String OptionsFile::LoggerMessage::FormatMessage () const
     if (fDetails) {
         StringBuilder sb;
         sb << "; "sv << *fDetails;
-        details = Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation (sb);
+        details = Linguistics::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation (sb).first;
     }
     switch (fMsg) {
         case Msg::eSuccessfullyReadFile:

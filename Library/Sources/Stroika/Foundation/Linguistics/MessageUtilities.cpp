@@ -7,6 +7,7 @@
 #include <locale>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
@@ -25,15 +26,15 @@ using namespace Stroika::Foundation::Execution;
  *********************************** Impl_en ************************************
  ********************************************************************************
  */
-bool Impl_en::AppliesToThisLocale (const String& localeName) const
+bool Impl_en::AppliesToThisLocale (const locale& l) const
 {
-    return String::FromNarrowSDKString (locale{}.name ()).StartsWith (localeName);
+    return String::FromNarrowSDKString (locale{}.name ()).StartsWith (String::FromNarrowSDKString (l.name ()), CompareOptions::eCaseInsensitive);
     //return l.name ().find ("en") == 0;
 }
 
 pair<String, optional<String>> Impl_en::RemoveTrailingSentencePunctuation (const String& msg) const
 {
-    // super primitive (may want to trim trailing whitespace if any on msg after remove of punctuation but shouldnt be any)
+    // super primitive (may want to trim trailing whitespace if any on msg after remove of punctuation but shouldn't be any)
     if (msg.EndsWith ("."sv)) {
         return {msg.SubString (0, -1), "."sv};
     }
@@ -56,7 +57,7 @@ String Impl_en::PluralizeNoun (const String& s, const optional<String>& sPlural,
         return *sPlural;
     }
     else {
-        String tmp = s;
+        StringBuilder tmp = s;
         tmp.push_back ('s');
         return tmp;
     }
@@ -121,7 +122,7 @@ shared_ptr<const IRep> Manager::LookupHandler (const locale& l) const
     cachedVal = [&] () -> KeyValuePair<locale, shared_ptr<const IRep>> {
         //  search here user installed ones with AddHandler ()
         for (const shared_ptr<const IRep>& h : fMessageHandlers_.load ()) {
-            if (h->AppliesToThisLocale (String::FromNarrowSDKString (l.name ()))) {
+            if (h->AppliesToThisLocale (l)) {
                 return {l, h};
             }
         }

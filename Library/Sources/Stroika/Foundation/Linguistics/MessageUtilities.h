@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Linguistics::MessageUtilities {
 
     struct IRep {
         virtual ~IRep ()                                                                                                         = default;
-        virtual bool                           AppliesToThisLocale (const String& localeName) const                              = 0;
+        virtual bool                           AppliesToThisLocale (const locale& l) const                                       = 0;
         virtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const                       = 0;
         virtual String                         PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const = 0;
         virtual String                         MakeNounSingular (const String& s) const                                          = 0;
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Linguistics::MessageUtilities {
     /**
      */
     struct Impl_en : IRep {
-        virtual bool                           AppliesToThisLocale (const String& localeName) const override;
+        virtual bool                           AppliesToThisLocale (const locale& l) const override;
         virtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const override;
         virtual String                         PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const override;
         virtual String                         MakeNounSingular (const String& s) const override;
@@ -48,6 +48,11 @@ namespace Stroika::Foundation::Linguistics::MessageUtilities {
      * 
      *  \note - methods come in two versions - one that takes a locale, and one that doesn't. If the locale is omitted,
      *          the default locale - locale{} - is used.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          s = Linguistics::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation (s)
+     *      \endcode
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
@@ -82,6 +87,11 @@ namespace Stroika::Foundation::Linguistics::MessageUtilities {
         /**
          *  Uses a MessageUtilities based on the current thread's locale, if called between the start and end of main, and
          *  otherwise uses an arbitrary one.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          s = Linguistics::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation (s)
+         *      \endcode
          */
         nonvirtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const;
         nonvirtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const locale& l, const String& msg) const;
