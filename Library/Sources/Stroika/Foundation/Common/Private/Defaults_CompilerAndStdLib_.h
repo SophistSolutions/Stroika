@@ -1600,7 +1600,7 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #elif defined(__clang__)
 // first broken in clang++ 19 (linux)
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19))
 #else
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy 0
 #endif

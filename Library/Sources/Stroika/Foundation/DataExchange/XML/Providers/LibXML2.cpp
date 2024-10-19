@@ -425,8 +425,8 @@ namespace {
         }
         static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
         {
-            xmlNsPtr    ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
-            string      prefix2Try{ "a"};
+            xmlNsPtr ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
+            string   prefix2Try{"a"};
             while (ns2Use == nullptr) {
                 // Need to hang the namespace declaration someplace? Could do it just on this element (xmlNewNs)
                 // Or on the root doc (xmlNewGlobalNs).

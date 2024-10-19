@@ -74,11 +74,11 @@ namespace Stroika::Samples::HTMLUI::Model {
                 optional<String> fFullVersionedOSName;
 
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
                 auto operator<=> (const OperatingSystem&) const = default;
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
 
                 /**
