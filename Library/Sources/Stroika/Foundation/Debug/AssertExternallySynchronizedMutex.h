@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Debug {
     public:
         /**
          *  \note   Copy/Move constructor checks for existing locks while copying.
-         *          Must be able to readlock source on copy, and have zero existing locks on src for move.
+         *          Must be able to read lock source on copy, and have zero existing locks on src for move.
          *          These 'constructors' don't really do/copy/move anything, but just check the state of their own
          *          lock count and the state of the 'src' lock counts.
          * 
@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Debug {
     public:
         /**
          *  \note   operator= checks for existing locks while copying.
-         *          Must be able to readlock source on copy, and have zero existing locks on target or move.
+         *          Must be able to read lock source on copy, and have zero existing locks on target or move.
          */
         nonvirtual AssertExternallySynchronizedMutex& operator= (AssertExternallySynchronizedMutex&& rhs) noexcept;
         nonvirtual AssertExternallySynchronizedMutex& operator= (const AssertExternallySynchronizedMutex& rhs) noexcept;
@@ -276,9 +276,9 @@ namespace Stroika::Foundation::Debug {
          * 
          *  This type alias makes a little more clear in reading code that the 'lock' is really just an assertion about thread safety
          * 
-         *  Since AssertExternallySynchronizedMutex follows the concpet 'mutex' you can obviously use any
+         *  Since AssertExternallySynchronizedMutex follows the concept 'mutex' you can obviously use any
          *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::ReadContext - makes it a little more clear
-         *  self-documenting in your code, that you are doing this in a context where you are only reading the pseduo-locked data.
+         *  self-documenting in your code, that you are doing this in a context where you are only reading the pseudo-locked data.
          * 
          *  \note we get away with 'const' in shared_lock<const AssertExternallySynchronizedMutex> because we chose to make
          *        lock_shared, and unlock_shared const methods (see their docs above).
@@ -296,17 +296,18 @@ namespace Stroika::Foundation::Debug {
          * 
          *  Since AssertExternallySynchronizedMutex follows the concept 'mutex' you can obviously use any
          *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::WriteContext - makes it a little more clear
-         *  self-documenting in your code, that you are doing this in a context where you are only writing the pseduo-locked data.
+         *  self-documenting in your code, that you are doing this in a context where you are only writing the pseudo-locked data.
          * 
-         *  Plus, the fact that it forces a non-const interpetation on the object in question (by using lock_guard of a non-const AssertExternallySynchronizedMutex)
+         *  Plus, the fact that it forces a non-const interpretation on the object in question (by using lock_guard of a non-const AssertExternallySynchronizedMutex)
          *  makes it a little easier to catch cases where you accidentally use WriteContext and meant ReadContext.
          * 
-         *  \note - considered using  scoped_lock, but it amounts to the same thing, and that gets some ambiguous construction issues (rare but why bother here)
+         *  \note - used lock_guard before Stroika v3.0d10, but switched to unique_lock so movable (handy in some cases). 
+         *          And performance not much of an issue since this is all debug-only code.
          * 
          *  \note - though CTOR not declared noexcept, WriteContext cannot throw an exception (it asserts out on failure)
          */
-        using WriteContext = lock_guard<AssertExternallySynchronizedMutex>;
-        static_assert (not movable<WriteContext> and not copyable<WriteContext>);
+        using WriteContext = unique_lock<AssertExternallySynchronizedMutex>;
+        static_assert (movable<WriteContext> and not copyable<WriteContext>);
 
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     private:
