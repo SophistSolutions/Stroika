@@ -1476,13 +1476,14 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     class Iterable<T>::_SafeReadRepAccessor {
     public:
-        _SafeReadRepAccessor () = delete;
-        _SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept;
+        _SafeReadRepAccessor ()                            = delete;
+        _SafeReadRepAccessor (const _SafeReadRepAccessor&) = delete;
         _SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept;
         _SafeReadRepAccessor (const Iterable<T>* it) noexcept;
 
     public:
-        nonvirtual _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor& rhs) noexcept;
+        nonvirtual _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) = delete;
+        nonvirtual _SafeReadRepAccessor& operator= (_SafeReadRepAccessor&& rhs) noexcept;
 
     public:
         nonvirtual const REP_SUB_TYPE& _ConstGetRep () const noexcept;
@@ -1498,6 +1499,7 @@ namespace Stroika::Foundation::Traversal {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex::ReadContext fAssertReadLock_;
 #endif
     };
+    //static_assert (movable<Iterable<int>::_SafeReadRepAccessor<REP_SUB_TYPE>> and not copyable<Iterable<int>::_SafeReadRepAccessor<REP_SUB_TYPE>>);
 
     /**
      *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure thread-safety. It takes the
@@ -1514,13 +1516,14 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     class Iterable<T>::_SafeReadWriteRepAccessor {
     public:
-        _SafeReadWriteRepAccessor ()                                     = delete;
-        _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor& src) = default;
+        _SafeReadWriteRepAccessor ()                                 = delete;
+        _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor&) = delete;
         _SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& src);
         _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
 
     public:
         nonvirtual _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
+        nonvirtual _SafeReadWriteRepAccessor& operator= (_SafeReadWriteRepAccessor&&) noexcept;
 
     public:
         nonvirtual const REP_SUB_TYPE& _ConstGetRep () const;
@@ -1535,6 +1538,7 @@ namespace Stroika::Foundation::Traversal {
         Iterable<T>* fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
 #endif
     };
+    //static_assert (movable<Iterable<int>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>> and not copyable<Iterable<int>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>>);
 
     /**
      *  \brief  Implementation detail for iterator implementors.

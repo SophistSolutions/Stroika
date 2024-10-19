@@ -124,18 +124,6 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename REP_SUB_TYPE>
-    inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept
-        : fConstRef_{src.fConstRef_}
-        , fIterableEnvelope_{src.fIterableEnvelope_}
-#if qDebug
-        , fAssertReadLock_{src.fIterableEnvelope_}
-#endif
-    {
-        RequireNotNull (fConstRef_);
-        EnsureMember (fConstRef_, REP_SUB_TYPE);
-    }
-    template <typename T>
-    template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept
         : fConstRef_{src.fConstRef_}
         , fIterableEnvelope_{src.fIterableEnvelope_}
@@ -149,12 +137,12 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename REP_SUB_TYPE>
-    inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept -> _SafeReadRepAccessor&
+    inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (_SafeReadRepAccessor&& rhs) noexcept -> _SafeReadRepAccessor&
     {
         fConstRef_               = rhs.fConstRef_;
         this->fIterableEnvelope_ = rhs.fIterableEnvelope_;
 #if qDebug
-        this->fAssertReadLock_ = rhs.fAssertReadLock_;
+        this->fAssertReadLock_ = move (rhs.fAssertReadLock_);
 #endif
         return *this;
     }
@@ -203,6 +191,19 @@ namespace Stroika::Foundation::Traversal {
         from.fIterableEnvelope_ = nullptr;
 #endif
         from.fRepReference_ = nullptr;
+    }
+    template <typename T>
+    template <typename REP_SUB_TYPE>
+    inline auto Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::operator= (_SafeReadWriteRepAccessor&& rhs) noexcept -> _SafeReadWriteRepAccessor&
+    {
+        fRepReference_ = rhs.fRepReference_;
+        EnsureMember (fRepReference_, REP_SUB_TYPE);
+#if qDebug
+        this->fAssertWriteLock_  = move (rhs.fAssertWriteLock_);
+        this->fIterableEnvelope_ = rhs.fIterableEnvelope_;
+        rhs.fIterableEnvelope_   = nullptr;
+#endif
+        return *this;
     }
     template <typename T>
     template <typename REP_SUB_TYPE>
@@ -318,7 +319,7 @@ namespace Stroika::Foundation::Traversal {
     template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer)
     {
-        // @todo OPTIMIZATION - check if contexpr EQUALS_COMPARE == equal_to and if less<> defined - and if so - construct a std::set<> to lookup/compare (do on shorter side)
+        // @todo OPTIMIZATION - check if constexpr EQUALS_COMPARE == equal_to and if less<> defined - and if so - construct a std::set<> to lookup/compare (do on shorter side)
         /*
          *  An extremely inefficient but space-constant implementation. N^2 and check
          *  a contains b and b contains a
