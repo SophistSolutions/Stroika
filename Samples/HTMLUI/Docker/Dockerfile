@@ -19,7 +19,7 @@ RUN apt-get install -y nodejs; apt-get install -y  npm; npm i -g npm @quasar/cli
 
 RUN make CONFIGURATION= distclean && \
     make CONFIGURATION=${CONFIGURATION} libraries ${JFLAG} && \
-    make CONFIGURATION=${CONFIGURATION} --directory=Samples/HTMLUI/ all ${JFLAG}
+    make CONFIGURATION=${CONFIGURATION} --directory=Samples/HTMLUI/ --no-print-directory all ${JFLAG}
 
 
 ### Actual running container
@@ -36,7 +36,7 @@ RUN mkdir /var/opt/Stroika-Sample-HTMLUI
 #   @todo - allow config info to be sepecified some other way - at docker startup time? Or better document how todo (probably container BUILD_ARG)
 RUN echo -e "{\n\
     \"ShowAsExternalURL\" : null,\n\
-    \"Logging\" : {\"\"ToStdOut\" : true, \"\"ToSysLog\" : false},\n\
+    \"Logging\" : {\"ToStdOut\" : true, \"ToSysLog\" : false},\n\
     \"WebServerPort\" : null\n\
 }\n" > /var/opt/Stroika-Sample-HTMLUI/Server.json
 
