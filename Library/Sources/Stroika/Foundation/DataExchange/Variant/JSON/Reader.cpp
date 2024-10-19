@@ -750,7 +750,7 @@ namespace {
                 return get<VariantValue> (fVV_);
             }
 
-            // use variant to save construct/destruct of uneeded parts
+            // use variant to save construct/destruct of unneeded parts
             variant<VariantValue, vector<VariantValue>, Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>> fVV_;
 
             String fKey; // only allowed of context type = eMap (so COULD embed in above variant, but KISS) - also could use optional<String> which would help some things and make others worse...
