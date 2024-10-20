@@ -367,7 +367,6 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 
 #endif
 
-
 /**
  *  PROBABLY not stricyly a bug - maybe enable and remove the source of these warnings - but way too many warnings to be useful
  *  right now....
@@ -378,7 +377,7 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 #ifndef qCompilerAndStdLib_AssumeWarningSpamming_Buggy
 
 #if defined(__clang__)
-#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 19))
+#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19))
 #else
 #define qCompilerAndStdLib_AssumeWarningSpamming_Buggy 0
 #endif
