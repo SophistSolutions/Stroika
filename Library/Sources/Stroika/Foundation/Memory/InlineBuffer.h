@@ -386,7 +386,7 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     private:
-        constexpr T*      BufferAsT_ () noexcept;
+        constexpr T*       BufferAsT_ () noexcept;
         constexpr const T* BufferAsT_ () const noexcept;
 
     private:
