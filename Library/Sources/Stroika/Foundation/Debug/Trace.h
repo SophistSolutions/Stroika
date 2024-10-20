@@ -304,7 +304,6 @@ namespace Stroika::Foundation::Debug {
         but only after 'd' stage development so I can lose C-style FMT string overloads...
      */
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-
 #define DbgTrace Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage
 #else
 #define DbgTrace _NoOp_
