@@ -29,9 +29,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <floating_point T>
     constexpr unsigned int Precision::GetEffectivePrecision () const
     {
+        // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
 #if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 199999
         return fPrecision.value_or (numeric_limits<T>::max_digits10); //needed on xcode? - only tested needed there
 #endif
+        return fPrecision.value_or (numeric_limits<T>::max_digits10);
+        ;
         //return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
         return fPrecision.value_or (numeric_limits<T>::digits10); // docs kind of lean towards this or digits10-1.
     }
