@@ -18,6 +18,12 @@
  *  to evaluate / example objects (see .natvis file).
  * 
  *  A mechanism akin to this might be used going forward for gdb/lldb?
+ * 
+ *  As a temporary hack (looking to do better) - you can call --LGP 2024-10-20
+ *         Stroika::Foundation::Debug::Visualizations::ToStdString(v)
+ *      on many Stroika types (like VariantValue) to view them in most debuggers
+ * 
+ *      NOTE - this sometimes doesn't work with asan, so you may need to disable asan to use this.
  */
 
 namespace Stroika::Foundation::Debug::Visualizations {

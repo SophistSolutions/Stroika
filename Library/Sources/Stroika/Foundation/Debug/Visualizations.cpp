@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Database/SQL/Statement.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
@@ -46,6 +47,10 @@ namespace Stroika::Foundation::Debug::Visualizations {
         return t.str ().AsUTF8 ();
     }
     u8string ToStdString (const Stroika::Foundation::Common::GUID& t)
+    {
+        return t.ToString ().AsUTF8 ();
+    }
+    u8string ToStdString (const Stroika::Foundation::DataExchange::VariantValue& t)
     {
         return t.ToString ().AsUTF8 ();
     }
