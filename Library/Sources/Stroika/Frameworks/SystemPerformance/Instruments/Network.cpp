@@ -218,14 +218,18 @@ namespace {
             static const filesystem::path                          kProcFileName_{"/proc/net/dev"};
             //static    const String kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev"sv };
             // Note - /procfs files always unseekable
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
             unsigned int nLine  = 0;
+#endif
             unsigned int n2Skip = 2;
             for (const Sequence<String>& line :
                  reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kProcFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
                 ++nLine;
+#endif
                 if (n2Skip > 0) {
                     --n2Skip;
                     continue;
