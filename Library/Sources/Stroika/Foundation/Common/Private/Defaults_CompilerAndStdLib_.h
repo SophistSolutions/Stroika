@@ -88,7 +88,7 @@
     "Warning: Stroika v3 does not support versions prior to clang++ 15 (non-apple); note that Stroika v2.1 supports earlier clang "        \
     "versions"
 #endif
-#if (__clang_major__ > 18)
+#if (__clang_major__ > 19)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Info: Stroika untested with this version of clang++ - (>18.x) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -517,7 +517,8 @@ ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (w
 // reproduced in clang 16
 // reproduced in clang 17
 // reproduced in clang 18
-#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
+// reproduced in clang 19
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 13 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
 // Still broken in GCC 14
@@ -1199,8 +1200,9 @@ concept constructible_from = destructible<_Tp> && is_constructible_v<_Tp, _Args.
 // noticed broken in clang++15 with LIBC++
 // noticed broken in clang++17 with LIBC++
 //  clang++18 with LIBC++
+//  clang++19 with LIBC++
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 18)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 19)
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
@@ -1351,8 +1353,9 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 // fixed in clang++16 (but assume broken there too)
 // broken in clang++17
 // broken in clang++18      error: type constraint differs in template redeclaration
+// broken in clang++19
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
 #else
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy 0
 #endif
@@ -1440,7 +1443,8 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../includ
 #if defined(__clang__)
 // also broken in clang++-17
 // also broken in clang++-18
-#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 18)
+// also broken in clang++-19
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 19)
 #else
 #define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy 0
 #endif
@@ -1553,8 +1557,9 @@ make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
 // broken in clang++-16
 // broken in clang++-17
 // broken in clang++-18
+// broken in clang++-19
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
 #else
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
 #endif
@@ -1903,9 +1908,10 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // fails with clang++16 using _GLIBCXX_RELEASE
 // fails with clang++17 using _GLIBCXX_RELEASE
 // fails with clang++18 using _GLIBCXX_RELEASE
+// fails with clang++19 using _GLIBCXX_RELEASE
 #if defined(_GLIBCXX_RELEASE)
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy                                                                                 \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE <= 12) or (__clang_major__ <= 18))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE <= 12) or (__clang_major__ <= 19))
 #else
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy 0
 #endif
@@ -2536,8 +2542,9 @@ Stack dump:
 // verified still broken in clang++-15
 // appears fixed in clang++16
 // appears broken in clang++-18
+// appears broken in clang++-19
 #define qCompilerAndStdLib_template_second_concept_Buggy                                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18) or (__clang_major__ == 19))
 #else
 #define qCompilerAndStdLib_template_second_concept_Buggy 0
 #endif

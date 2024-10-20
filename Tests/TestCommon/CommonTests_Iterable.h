@@ -15,6 +15,7 @@ namespace CommonTests {
 
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
+        using namespace Stroika::Foundation::Traversal;
 
 #if qHasFeature_GoogleTest
         template <typename USING_ITERABLE_CONTAINER>
