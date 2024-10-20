@@ -2387,6 +2387,16 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveE
 /usr/bin/ld: /tmp/lto-llvm-91d516.o: in function `Stroika::Foundation::Memory::InlineBuffer<char, 10240ul>::Allocate_(unsigned long)':
 /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation10Characters7CString6FormatEPKcz+0x1f6): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
 
+Building Stroika Tests {clang++-release}:
+   Linking Test Builds/clang++-release/Tests/Test01 (Foundation::Caching) ... 
+/usr/bin/ld: /tmp/lto-llvm-b42694.o: in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::reserve(unsigned long, bool)':
+ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb]+0x80): undefined reference to `_ZN7Stroika10Foundation9Execution11ThrowIfNullITkNSt3__124equality_comparable_withIDnEEPvEEvT_'
+/usr/bin/ld: /tmp/lto-llvm-b42694.o: in function `_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:599:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E]+0x12): undefined reference to `_ZN7Stroika10Foundation9Execution11ThrowIfNullITkNSt3__124equality_comparable_withIDnEEPSt4byteEEvT_'
+/usr/bin/ld: /tmp/lto-llvm-b42694.o: in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::Allocate_(unsigned long)':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:568:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E]+0x27): undefined reference to `_ZN7Stroika10Foundation9Execution11ThrowIfNullITkNSt3__124equality_comparable_withIDnEEPvEEvT_'
+clang++: error: linker command failed with exit code 1 (use -v to see invoc
+
 */
 #ifndef qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
 
@@ -2396,7 +2406,8 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveE
 // broken in clang++16 - release builds - seemed OK for a while but then broke again - not just says missing symbol... so possibly different bug???
 // same issue with clang++-17-release-libc++23
 // same issue with clang++-18-release-libc++23
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
+// same issue with clang++-19-release on Ubuntu 24.10
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
 #else
 #define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
 #endif
