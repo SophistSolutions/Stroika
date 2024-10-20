@@ -133,4 +133,5 @@ namespace Stroika::Foundation::Execution {
         static const bad_alloc kException_;
         ThrowIfNull (p, kException_);
     }
+    
 }
