@@ -531,7 +531,7 @@ namespace Stroika::Foundation::Memory {
     }
 #endif
     template <typename T, size_t BUF_SIZE>
-    inline T* InlineBuffer<T, BUF_SIZE>::BufferAsT_ () noexcept
+    constexpr T* InlineBuffer<T, BUF_SIZE>::BufferAsT_ () noexcept
     {
         return reinterpret_cast<T*> (&fInlinePreallocatedBuffer_[0]);
     }
