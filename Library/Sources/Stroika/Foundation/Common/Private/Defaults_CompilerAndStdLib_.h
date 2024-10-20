@@ -2138,7 +2138,7 @@ In file included from ../Execution/../Characters/../Containers/Sequence.h:16,
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 190000))
+#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 199999))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
