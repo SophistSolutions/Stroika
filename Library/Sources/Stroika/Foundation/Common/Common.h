@@ -16,6 +16,11 @@ namespace Stroika {
 
 namespace Stroika::Foundation::Common {
 
+#if qCompilerAndStdLib_AssumeWarningSpamming_Buggy
+    // INTENTIONALLY UNBALANCED WITH _END - cuz this is used all over the place!!!
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wassume\"");
+#endif
+
     /**
      *  The assume attribute was introduced in c++23, and Stroika OPTIONALLY supports this, but doesn't require it as of Stroika v3.
      *  So use _ASSUME_ATTRIBUTE_ () to conditionally use [[assume(X)]]

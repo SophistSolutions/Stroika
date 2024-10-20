@@ -367,6 +367,24 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 
 #endif
 
+
+/**
+ *  PROBABLY not stricyly a bug - maybe enable and remove the source of these warnings - but way too many warnings to be useful
+ *  right now....
+ * 
+ * 
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Enumeration.inl:203:26: warning: assumption is ignored because it contains (potential) side-effects [-Wassume]
+ */
+#ifndef qCompilerAndStdLib_AssumeWarningSpamming_Buggy
+
+#if defined(__clang__)
+#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 19))
+#else
+#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy 0
+#endif
+
+#endif
+
 /*
 
 
