@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <floating_point T>
     constexpr unsigned int Precision::GetEffectivePrecision () const
     {
-#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 190000
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 199999
         return fPrecision.value_or (numeric_limits<T>::max_digits10); //needed on xcode? - only tested needed there
 #endif
         //return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
