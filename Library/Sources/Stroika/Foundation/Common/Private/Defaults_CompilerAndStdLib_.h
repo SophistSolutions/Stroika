@@ -2173,7 +2173,7 @@ int main ()
 // Broken with 150007 on clang15 ubunto 22.04
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 15007))
 */
-#if defined(_GLIBCXX_RELEASE)
+#if defined(_GLIBCXX_RELEASE) && !defined(_LIBCPP_VERSION)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
 // AT LEAST with clang++14, this is broken in _GLIBCXX_RELEASE==12 (Ubuntu 22.04)
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 12)
