@@ -56,10 +56,10 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <typename ALGORITHM, typename RETURN_TYPE>
     inline auto IncrementalDigester<ALGORITHM, RETURN_TYPE>::Complete () -> ReturnType
     {
-        if constexpr (qDebug) {
-            Require (not this->fCompleted_);
-            this->fCompleted_ = true;
-        }
+#if qDebug
+        Require (not this->fCompleted_);
+        this->fCompleted_ = true;
+#endif
         if constexpr (same_as<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
             return fDigesterAlgorithm_.Complete ();
         }
