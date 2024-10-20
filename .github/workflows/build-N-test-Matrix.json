@@ -177,7 +177,7 @@
         "cpp_version": "c++20",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "always"
+        "run_on_branch": "v3-Release"
     },
     {
         "build_job": "Linux",
@@ -186,7 +186,7 @@
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests",
         "cpp_version": "c++23",
-        "config_name": "Release",
+        "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable",
         "run_on_branch": "v3-Release"
     },
