@@ -9,6 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ### DRAFT UPGRADE NOTES FOR 3.0d11
 
+-- Support clang++19, and XCode 16 and MacOS 15
 
 Replace 
     Linguistics::MessageUtiltiesManager::Get () with 

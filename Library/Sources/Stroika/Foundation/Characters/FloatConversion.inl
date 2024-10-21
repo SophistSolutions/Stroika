@@ -30,17 +30,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     constexpr unsigned int Precision::GetEffectivePrecision () const
     {
         // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
-#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 199999
-        return fPrecision.value_or (numeric_limits<T>::max_digits10); //needed on xcode? - only tested needed there
-#endif
         return fPrecision.value_or (numeric_limits<T>::max_digits10);
-        ;
-        //return fPrecision.value_or (numeric_limits<T>::digits10 + 1);
-        return fPrecision.value_or (numeric_limits<T>::digits10); // docs kind of lean towards this or digits10-1.
+        // SEE LINK ABOVE _ DOCUMENY WHCIH / WHY WE USE ---return fPrecision.value_or (numeric_limits<T>::digits10); // docs kind of lean towards this or digits10-1.
     }
     /**
      *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
      *         you get the exact same answer.
+     * 
+     *  \see  // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
+     *        numeric_limits<T>::max_digits10
      */
     constexpr inline Precision Precision::kFull{Precision::FullFlag::eFull};
 
