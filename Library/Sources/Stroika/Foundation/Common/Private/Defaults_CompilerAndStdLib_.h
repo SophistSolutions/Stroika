@@ -74,7 +74,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 15 (XCode 15)"
 #endif
-#if (__clang_major__ > 15)
+#if (__clang_major__ > 16)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -423,13 +423,15 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #if defined(__clang__) && defined(__APPLE__)
 // reproduced on clang 15
+// reproduced on clang 16
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
 // still broken in clang++ 15
 // still broken in clang++ 16
 // still broken in clang++ 17
 // still broken in clang++ 18
+// appears fixed for clang++19
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
@@ -441,6 +443,7 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 #ifndef qCompilerAndStdLib_default_initializable_broken_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
+// appears fixed in XCode16
 #define qCompilerAndStdLib_default_initializable_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_default_initializable_broken_Buggy 0
@@ -471,12 +474,14 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
 
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed broken in apply clang 15
+// first noticed broken in apply clang 16
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 16
 // broken in  clang 17
 // broken in  clang 18
+// appears fixed for clang++19
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
@@ -486,7 +491,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
 #endif
 
 /**
-*  NO IDEA if this is LGP bug or compiler bug.
+*  NO IDEA if this is LGP bug or compiler bug - all compilers seem pretty consisent so must be me ! --LGP 2024-10-21
 
 I don't understand why we need the explicit String version and requires not same_as<> string template versions (want just the template version)
 *          But when I try that, clang and visual studio barf with ...
@@ -529,7 +534,8 @@ ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (w
 
 #if defined(__clang__) && defined(__APPLE__)
 // replicated in xcode 15
-#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// replicated in xcode 16
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__)
 // reproduced in clang 16
 // reproduced in clang 17
@@ -572,6 +578,7 @@ make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49
 // seen on apply clang++ 15, clang++-16
 // seen on clang++17 ubuntu 24.04
 // seen on clang++18 ubuntu 24.04
+// appears fixed for clang++19
 #define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #elif defined(__GNUC__)
 // FIRST SEEN BROKEN IN GCC 13 and 12 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
@@ -860,6 +867,7 @@ In file included from BackTrace.cpp:24:
 
 #if defined(__clang__) && !defined(__APPLE__) && defined(__GLIBCXX__)
 // broken in clang++-18 with
+// appears fixed for clang++19
 #define qCompilerAndStdLib_StdBacktraceCompile_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_StdBacktraceCompile_Buggy 0
@@ -1174,6 +1182,7 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../includ
 #ifndef qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
 #if defined(__clang__)
 // Seen on clang++-18 on ubuntu
+// appears fixed for clang++19
 #define qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy (__clang_major__ <= 18)
 #else
 #define qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy 0
@@ -1205,14 +1214,30 @@ concept constructible_from = destructible<_Tp> && is_constructible_v<_Tp, _Args.
 /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Common/Compare.h:289:23: note: while substituting template arguments into constraint expression here
             requires (constructible_from<ACTUAL_COMPARER, ARGS...>);
 
+
+
+luded from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Characters/StringBuilder.h:9:
+In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Characters/String.h:15:
+In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Characters/Character.h:13:
+/Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Common/Compare.h:301:23: error: satisfaction of constraint 'constructible_from<ACTUAL_COMPARER, ARGS...>' depends on itself
+  301 |             requires (constructible_from<ACTUAL_COMPARER, ARGS...>)
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/Common/Compare.h:301:23: note: while substituting template arguments into constraint expression here
+  301 |             requires (constructible_from<ACTUAL_COMPARER, ARGS...>)
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode16.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_constructible.h:26:68: note: while checking constraint satisfaction for template 'ComparisonRelationDeclaration<Stroika::Foundation::Common::ComparisonRelationType::eEquals, std::function<bool (Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String)>>' required here
+   26 | inline constexpr bool is_constructible_v = __is_constructible(_Tp, _Args...);
+      |
+
  */
 #ifndef qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 // Noticed broken in crapple-clang++14
 // reproduced in xcode 15
+// reproduced in xcode 16
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
 // Noticed broken in -clang++14
 // noticed broken in clang++15 with LIBC++
@@ -1405,10 +1430,12 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 */
 #ifndef qCompilerAndStdLib_template_concept_matcher_requires_Buggy
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_template_concept_matcher_requires_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// still broken in clang++16
+#define qCompilerAndStdLib_template_concept_matcher_requires_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++17
 // Noticed broken in -clang++18
+// appears fixed in clang++19
 #define qCompilerAndStdLib_template_concept_matcher_requires_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_template_concept_matcher_requires_Buggy 0
@@ -1572,8 +1599,9 @@ make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
 #elif defined(__clang__) && defined(__APPLE__)
 // First noticed in clang++-14
 // Reproduced in clang++-15
+// Reproduced in clang++-16
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
 // broken in clang++-15
 // broken in clang++-16
@@ -1791,6 +1819,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
  */
 #ifndef qCompiler_IUseToStringFormatterForFormatter_Buggy
 #if defined(__clang__) and __clang_major__ <= 18
+// appears fixed for clang++19
 #define qCompiler_IUseToStringFormatterForFormatter_Buggy 1
 #else
 #define qCompiler_IUseToStringFormatterForFormatter_Buggy 0
@@ -1817,6 +1846,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
       |             ^                        ~~~~~
  */
 #ifndef qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
+// appears fixed for clang++19
 #if defined(__clang__) and __clang_major__ <= 18 && __cpp_lib_stacktrace >= 202011 && defined(_GLIBCXX_RELEASE)
 #define qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy 1
 #else
@@ -1853,6 +1883,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 #if defined(__clang_major__) && !defined(__APPLE__)
 // broken on ubuntu clang++-15, but the xcode version of clang++ (uses much newer LIBCPP_VERSION) - seems OK
+// appears fixed in XCode16
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 0
@@ -2222,6 +2253,7 @@ static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::t
 #ifndef qCompilerAndStdLib_formattable_of_tuple_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 // Appears broken on XCode 15
+// appears fixed in XCode16
 #define qCompilerAndStdLib_formattable_of_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__)
 // Appears broken on clang-15 and linux
@@ -2348,7 +2380,8 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Co
 // Appears broken on XCode 13
 // Still broken on XCode 14
 // Still broken on XCode 15
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// Still broken on XCode 16
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
 // appears still broken in clang++-13
 // appears still broken in clang++-14
@@ -2356,6 +2389,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Co
 // appears still broken in clang++-16
 // appears still broken in clang++-17
 // appears still broken in clang++-18
+// appears fixed for clang++19
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
@@ -2478,6 +2512,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-16
 // still broken in clang++-17
 // still broken in clang++-18
+// appears fixed for clang++19
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k22_17Pt9_
@@ -2499,19 +2534,24 @@ Test.cpp:173:31: error: template template argument has different template parame
 /Users/lewis/Sandbox/Stroika-Remote-Build-Dir/Library/Sources/Stroika/Foundation/Cache/LRUCache.h:86:5: note: too many template parameters in template template argument
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
 
+
+     Linking Builds/Debug/Samples-SQL/SQL ... 
+/Users/lewis/Sandbox/StroikaDev/Samples/SystemPerformanceClient//Sources/SystemPerformanceClient.cpp:71:16: error: no matching function for call to 'clock_cast'
 **/
 #ifndef qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 // verified still broken xcode 15
+// verified still broken xcode 16
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-14
 // verified still broken in clang++-15
 // verified still broken in clang++-16
 // verified still broken in clang++-17
 // verified still broken in clang++-18
+// appears fixed for clang++19
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
@@ -2770,6 +2810,17 @@ Interface.cpp:347:45: runtime error: member access within misaligned address 0x7
   00 00 00 00 6c 6f 30 00  00 00 00 00 00 00 00 00  00 00 00 00 10 02 00 00  7f 00 00 01 00 00 00 00
 
 
+terface.cpp:464:60: runtime error: member access within misaligned address 0x00016f24c56c for type 'const ifreq', which requires 8 byte alignment
+0x00016f24c56c: note: pointer points here
+  00 00 00 00 6c 6f 30 00  00 00 00 00 00 00 00 00  00 00 00 00 10 02 00 00  7f 00 00 01 00 00 00 00
+              ^ 
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior Interface.cpp:464:60 in 
+Interface.cpp:197:71: runtime error: member access within misaligned address 0x00016f24c56c for type 'const ifreq', which requires 8 byte alignment
+0x00016f24c56c: note: pointer points here
+  00 00 00 00 6c 6f 30 00  00 00 00 00 00 00 00 00  00 00 00 00 10 02 00 00  7f 00 00 01 00 00 00 00
+     
+
+
 PROBABLY not a sanitizer bug - but not totally clear what this is caused by
 TRIED alignas to fix on the array but no luck
 */
@@ -2778,7 +2829,8 @@ TRIED alignas to fix on the array but no luck
 #if defined(__clang__) && defined(__APPLE__)
 // reproduced on XCode 14
 // reproduced on XCode 15
-#define qMacUBSanitizerifreqAlignmentIssue_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 15)
+// reproduced on XCode 16
+#define qMacUBSanitizerifreqAlignmentIssue_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
 #else
 #define qMacUBSanitizerifreqAlignmentIssue_Buggy 0
 #endif
@@ -2792,7 +2844,8 @@ TRIED alignas to fix on the array but no luck
 #if defined(__clang__) && defined(__APPLE__)
 // Still BROKEN on XCode 14
 // Still BROKEN on XCode 15
-#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// Still BROKEN on XCode 16
+#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_locale_pctX_print_time_Buggy 0
 #endif
