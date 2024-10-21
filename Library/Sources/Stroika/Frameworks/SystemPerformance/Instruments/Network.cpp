@@ -219,7 +219,7 @@ namespace {
             //static    const String kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev"sv };
             // Note - /procfs files always unseekable
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-            unsigned int nLine  = 0;
+            unsigned int nLine = 0;
 #endif
             unsigned int n2Skip = 2;
             for (const Sequence<String>& line :

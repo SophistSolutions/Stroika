@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Debug::Visualizations {
     {
         // automatically 'forced include' if you #include header and are building qDebug. But to include otherwise (e.g. release build) - call this method.
     }
-    u8string ToStdString(const u8string& a)
+    u8string ToStdString (const u8string& a)
     {
         return a;
     }
