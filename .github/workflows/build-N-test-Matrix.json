@@ -267,6 +267,15 @@
         "extra_config_args": "--apply-default-debug-flags --trace2file enable",
         "run_on_branch": "v3-Release"
     },
+    {
+        "build_job": "MacOS",
+        "displayTargetName": "MacOS-15-XCode-16.0",
+        "runs_on": "macos-15",
+        "xcode": "16.0",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "always"
+    },
     {},
     {
         "comment": "Windows"
