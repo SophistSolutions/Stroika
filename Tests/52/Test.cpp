@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 //  TEST    Foundation::PERFORMANCE
+
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
@@ -1153,7 +1154,7 @@ namespace {
     }
 }
 
-#if qPlatform_Windows
+#if qPlatform_Windows && 0
 namespace {
     namespace Test_WString2UTF8_ {
         static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used

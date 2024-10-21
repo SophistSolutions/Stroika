@@ -2211,31 +2211,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.h">
       <Filter>Sources\Common\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Characters_StringUtils_.h">
-      <Filter>Sources\Common\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Characters_TChar_.h">
-      <Filter>Sources\Common\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_CompilerAndStdLib_.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_BlockAllocated_.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_Common_.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\CompilerAndStdLib_.h">
       <Filter>Sources\Common\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Configuration_Common_.h">
       <Filter>Sources\Common\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Cryptography_SSL_.h">
-      <Filter>Sources\Common\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Database_ODBCClient_.h">
-      <Filter>Sources\Common\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_DataExchange_XML_Common_.h">
-      <Filter>Sources\Common\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Debug_Assertions_.h">
-      <Filter>Sources\Common\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Execution_Logging_.h">
       <Filter>Sources\Common\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Execution_Module_.h">
@@ -2244,7 +2228,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Execution_Threads_.h">
       <Filter>Sources\Common\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_BlockAllocated_.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\ThirdPartyComonents_.h">
       <Filter>Sources\Common\Private</Filter>
     </ClInclude>
   </ItemGroup>

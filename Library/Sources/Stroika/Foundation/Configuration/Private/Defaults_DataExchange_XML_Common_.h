@@ -1,1 +1,0 @@
-#include "Stroika/Foundation/Common/Private/Defaults_DataExchange_XML_Common_.h"

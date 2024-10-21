@@ -28,22 +28,16 @@
 /**
  *  \def qStroika_Foundation_Memory_PreferBlockAllocation
  *
- *  \brief  Allow use of block-allocation im classes which uses DECLARE_USE_BLOCK_ALLOCATION()
+ *  \brief  Allow use of block-allocation in classes which uses DECLARE_USE_BLOCK_ALLOCATION(), or UseBlockAllocationIfAppropriate etc
  *
  *  Allow use of block-allocation. The main reason to disable it indiscriminately
  *  is for debugging purposes (looking for memory leaks). But others may have other
  *  reasons.
  *
  *      Defaults to 1
- *
- *  \hideinitializer
  */
-#if defined(__Doxygen__)
-#define qStroika_Foundation_Memory_PreferBlockAllocation
-#endif
-
-#if !defined(qStroika_Foundation_Memory_PreferBlockAllocation)
-#error "qStroika_Foundation_Memory_PreferBlockAllocation should normally be defined indirectly by StroikaConfig.h"
+#ifndef qStroika_Foundation_Memory_PreferBlockAllocation
+#define qStroika_Foundation_Memory_PreferBlockAllocation 1
 #endif
 
 namespace Stroika::Foundation::Memory {
@@ -51,7 +45,7 @@ namespace Stroika::Foundation::Memory {
     /**
      *  Use this to force use of block allocation for a given type, by inheriting this class from that type (this ignores qStroika_Foundation_Memory_PreferBlockAllocation).
      *
-     *  \note - typically DONT use this, but use UseBlockAllocationIfAppropriate intead.
+     *  \note - typically DONT use this, but use UseBlockAllocationIfAppropriate instead.
      *
      *  \par Example Usage:
      *      \code
