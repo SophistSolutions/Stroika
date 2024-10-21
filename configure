@@ -571,6 +571,11 @@ sub getUbuntuVersion
 	}
 }
 
+sub getMacOSVersion
+{
+	return trim (`/usr/bin/sw_vers | grep ProductVersion | awk 'END {print \$2}'`);
+}
+
 
 sub getXCodeVersion_
 {
@@ -989,7 +994,7 @@ sub	SetDefaultForCompilerDriver_
 	# This appears to only be needed when running on m1 hardware, but no easy way I can find to
 	# tell that so always do this by default
 	if (!defined $MACOSX_DEPLOYMENT_TARGET && "$^O" eq "darwin") {
-		my $osVersion = trim (`/usr/bin/sw_vers | grep ProductVersion | awk 'END {print \$2}'`);
+		my $osVersion = getMacOSVersion();
 		($osVersion =~ /^((\d+)\.(\d+))/gm);	# force convert to 2-digit form as I've seen in examples but not sure makes much sense
 		$MACOSX_DEPLOYMENT_TARGET = $1;
 	}
@@ -1075,6 +1080,7 @@ sub	SetDefaultForCompilerDriver_
 			}
 
 			my $skipSanCuzBroken = false;
+			my $skipASANSanCuzBroken = false;
 			# Sanitizers crash with gcc 11 and ubuntu 22.04 (not worth debugging right now...) -
 			# failure running some regtests - crash in leak sanitizer at end of run... --LGP 2024-05-01
 			# NOTE - now disabling BOTH ASAN and UBSAN, but maybe only ASAN broken--LGP 2024-08-21
@@ -1097,9 +1103,14 @@ sub	SetDefaultForCompilerDriver_
 					$skipSanCuzBroken = true;
 				}
 			}
-
+			if ("$^O" eq "darwin") {
+				# From MacOS 15, and XCode 16:
+				#	#clang++ -rdynamic -mmacosx-version-min=15.0 -fsanitize=address,undefined -static-libsan -stdlib=libc++ --std=c++20 -g -arch arm64 -Wl,-no_warn_duplicate_libraries -o 7zDec 7zMain.o lzma.a -lstdc++ -lc
+				#	clang++: error: static AddressSanitizer runtime is not supported on darwin
+				$skipASANSanCuzBroken = true;
+			}
 			if (!$skipSanCuzBroken and !$sanitizerFlagsNoneSet) {
-				if (!IsTargettingSanitizer_ ('address')) {
+				if (!IsTargettingSanitizer_ ('address') && !$skipASANSanCuzBroken) {
 					push @sanitizerFlags, 'address';
 				}
 				if (!IsTargettingSanitizer_ ('undefined')) {
@@ -3048,6 +3059,10 @@ sub	WriteConfigFile_
 	my $ubuntuVersion = getUbuntuVersion();
 	if ($ubuntuVersion != 0) {
 		print (OUT "        <!--Ubuntu: $ubuntuVersion-->\n");
+	}
+	if ("$^O" eq "darwin") {
+		my $osVersion = getMacOSVersion();
+		print (OUT "        <!--MacOS: $osVersion-->\n");
 	}
 
 	print (OUT "</Configuration>\n");
