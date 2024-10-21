@@ -1238,7 +1238,7 @@ namespace {
                                 }
                                 else {
                                     // in this case we effectively did an atomic upgrade, because no intervening writers
-                                    Assert (writeLock.load ());
+                                    EXPECT_TRUE (writeLock.load ());
                                     writeLock.store (false);
                                 }
                                 return true; // instead of reloading here, could return false and let retyr code happen
