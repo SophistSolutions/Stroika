@@ -262,7 +262,7 @@
         "build_job": "MacOS",
         "displayTargetName": "MacOS-15-XCode-15.3-Debug",
         "runs_on": "macos-15",
-        "xcode": "15.3",
+        "xcode": "16.0",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable",
         "run_on_branch": "always"
