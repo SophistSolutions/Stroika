@@ -3063,6 +3063,20 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 #endif
 
 /*
+@CONFIGVAR:     qSilenceAnnoyingCompilerWarnings
+ *
+ *  &note   I looked into doing a simple set of macros to hide the
+ *          #if qSilenceAnnoyingCompilerWarnings && __MSVCVER \n#pragma stuff, but VC11 didn't like having
+ *          the pragmas that disable warnings inside of a macro - so that won't work (I think by definition
+ *          of how the C++ spec is written, that should have worked - macros should work as if separate phase
+ *          before compiler ahnd then these are compiler pragmas). But if it doesn't work, cannot use it ;-)
+ *          -- LGP 2012-11-14
+ */
+#ifndef qSilenceAnnoyingCompilerWarnings
+#define qSilenceAnnoyingCompilerWarnings 1
+#endif
+
+/*
  *******************************************************************
  *******************************************************************
  ****************** REACT TO SOME DEFINES (BWA) ********************
