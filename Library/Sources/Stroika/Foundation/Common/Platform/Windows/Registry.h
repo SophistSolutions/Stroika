@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Common::Platform::Windows {
      *  Simple utility class to allow (read-only) access to the windows registry.
      *
      *  I considered making this support modification, but as JSON configuration files seem a better path than using
-     *  the registry, and this is mainly for backward compatability with older systems, I chose to keep this read-only.
+     *  the registry, and this is mainly for backward compatibility with older systems, I chose to keep this read-only.
      *
      *  \par Example Usage
      *      \code
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Common::Platform::Windows {
          *  \note @todo - should return empty VariantValue if detectably missing, but for permissions issues, raise exception
          *
          *  \note Unlike the underlying Windows registry APIs, you can pass in a prefName with backslashes, and it will be
-         *        interpretted as lookup relative to 'this' registry key
+         *        interpreted as lookup relative to 'this' registry key
          */
         nonvirtual DataExchange::VariantValue Lookup (const Characters::String& valuePath) const;
 
