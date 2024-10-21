@@ -637,7 +637,8 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 // reproduced in clang 16
 // reproduced in clang 17
 // release only bug - (lto?)- clang++18
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
+// release only bug - (lto?)- clang++19
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
 // and broken in GCC 12 with raspberrypi-g++-12-release-sanitize_address
