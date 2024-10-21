@@ -185,22 +185,6 @@ namespace Stroika::Foundation::Characters::CString {
     template <typename T>
     T String2Int (const wstring& s);
 
-    /*
-    @CONFIGVAR:     qPlatformSupports_wcscasecmp
-    @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
-    */
-#ifndef qPlatformSupports_wcscasecmp
-#error "qPlatformSupports_wcscasecmp should normally be defined indirectly by StroikaConfig.h"
-#endif
-
-    /*
-    @CONFIGVAR:     qPlatformSupports_wcsncasecmp
-    @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
-    */
-#ifndef qPlatformSupports_wcsncasecmp
-#error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
-#endif
-
 #if !qPlatformSupports_wcscasecmp
 #if _MSC_VER
 #define wcscasecmp _wcsicmp

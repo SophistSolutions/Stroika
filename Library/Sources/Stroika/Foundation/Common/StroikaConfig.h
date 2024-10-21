@@ -13,7 +13,6 @@
 //Out of alphabetic order because other defaults depend on qDebug
 #include "Stroika/Foundation/Common/Private/Defaults_Debug_Assertions_.h"
 
-#include "Stroika/Foundation/Common/Private/Defaults_Characters_StringUtils_.h"
 #include "Stroika/Foundation/Common/Private/Defaults_Characters_TChar_.h"
 #include "Stroika/Foundation/Common/Private/Defaults_CompilerAndStdLib_.h"
 #include "Stroika/Foundation/Common/Private/Defaults_Cryptography_SSL_.h"
@@ -23,6 +22,5 @@
 #include "Stroika/Foundation/Common/Private/Defaults_Execution_Module_.h"
 #include "Stroika/Foundation/Common/Private/Defaults_Execution_Threads_.h"
 #include "Stroika/Foundation/Common/Private/Defaults_Memory_BlockAllocated_.h"
-#include "Stroika/Foundation/Common/Private/Defaults_Memory_Common_.h"
 
 #endif /*_Stroika_Foundation_Common_StroikaConfig_h_*/

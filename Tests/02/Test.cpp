@@ -1988,7 +1988,7 @@ namespace {
         {
             String big = "1"_k.Repeat (1000);
             EXPECT_EQ (big.size (), 1000u);
-            String a   = Characters::Format ("BIG shortened '{:.10}'"_f, big);
+            String a = Characters::Format ("BIG shortened '{:.10}'"_f, big);
             DbgTrace ("a={}"_f, a);
             EXPECT_EQ (a.size (), 26u);
             EXPECT_EQ (a, "BIG shortened '1111111111'");

@@ -2247,9 +2247,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_BlockAllocated_.h">
       <Filter>Sources\Common\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_Common_.h">
-      <Filter>Sources\Common\Private</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
