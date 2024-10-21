@@ -318,10 +318,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\CompilerAndStdLib_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Configuration_Common_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Debug_Assertions_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Execution_Module_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Execution_Threads_.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Platform_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_BlockAllocated_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\ThirdPartyComonents_.h" />

@@ -27,6 +27,13 @@
 
 /**
  *  \file
+ * 
+ *  The purpose of this module is to define any std c++ functions/classes etc - which may not be provided by the
+ *  current std c++ library (often because not compiled with appropriate --std=... flag) - and/or because its
+ *  an old compiler. 
+ *
+ *  This doesn't strictly violate any rules about sticking stuff into namespace std - cuz we don't. That's why we use a
+ *  separate namespace (that often just indirects to the namespace std - where the function/class is defined already).
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *

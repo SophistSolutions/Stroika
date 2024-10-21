@@ -1,8 +1,8 @@
 ﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Common_Private_Defaults_CompilerAndStdLib_h_
-#define _Stroika_Foundation_Common_Private_Defaults_CompilerAndStdLib_h_ 1
+#ifndef _Stroika_Foundation_Common_Private_CompilerAndStdLib_h_
+#define _Stroika_Foundation_Common_Private_CompilerAndStdLib_h_ 1
 
 /*
  * This file is a private Stroika implementation detail, and shouldn't be included directly.
@@ -3263,4 +3263,4 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 #include <ciso646>
 #endif
 
-#endif /*_Stroika_Foundation_Common_Private_Defaults_CompilerAndStdLib_h_*/
+#endif /*_Stroika_Foundation_Common_Private_CompilerAndStdLib_h_*/

@@ -24,6 +24,35 @@
 
 namespace Stroika::Foundation::Debug {
 
+/*
+ *  Assume the define _DEBUG is used throughout the code to indicate DEBUG mode (assertions on). Assure NDEBUG flag
+ *  is set consistently (even if its not explicitly checked).
+ */
+#if !defined(qDebug)
+#if defined(_DEBUG)
+#define qDebug 1
+#elif defined(NDEBUG)
+#define qDebug 0
+#else
+    // The <cassert> convention is that if NDEBUG is defined, we turn off debugging, but if nothing like it is defined, we
+    // turn on assertions by default. The caller can simply specify qDebug to prevent this defaulting if desired.
+#define qDebug 1
+#endif
+#endif
+
+// Check for consistent defines
+#if qDebug
+#if defined(NDEBUG)
+    // NB #warning is a non-standard extension - maybe we shouldnt use?
+    static_assert (false, "INCONSISTENT DEFINES (NDEBUG and qDebug=1)");
+#endif
+#else
+#if defined(_DEBUG)
+    // NB #warning is a non-standard extension - maybe we shouldnt use?
+    static_assert (false, "INCONSISTENT DEFINES (_DEBUG and qDebug=0)");
+#endif
+#endif
+
     /**
      *  \brief Stroika_Foundation_Debug_Widen is used mostly internally to expand macros like Stroika_Foundation_Debug_Widen ( __FILE__) into UNICODE SAFE strings (so debug messages work properly if run on locale with charset other than matching filesystem)
      *  Idea from https://stackoverflow.com/questions/3291047/how-do-i-print-the-string-which-file-expands-to-correctly

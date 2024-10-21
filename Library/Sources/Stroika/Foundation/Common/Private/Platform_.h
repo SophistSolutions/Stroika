@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Common_Private_Defaults_Configuration_Common_h_
-#define _Stroika_Foundation_Common_Private_Defaults_Configuration_Common_h_ 1
+#ifndef _Stroika_Foundation_Common_Private_Platform_h_
+#define _Stroika_Foundation_Common_Private_Platform_h_ 1
 
 /*
  * This file is a private Stroika implementation detail, and shouldn't be included directly.
@@ -77,7 +77,7 @@
 #endif
 #endif
 
-// Have all these default to 0, if not oetherwise defined, so you can use if constexpr (qPlatform_Linux), etc
+// Have all these default to 0, if not otherwise defined, so you can use if constexpr (qPlatform_Linux), etc
 #if !qPlatform_MacOS
 #define qPlatform_MacOS 0
 #endif
@@ -114,10 +114,22 @@
 #endif
 
 #if qPlatform_Windows
-// Too many different compoents have quirky dependencies about what to include in what order.
-// This define helps mittigate that problem.
+// Too many different components have quirky dependencies about what to include in what order.
+// This define helps mitigate that problem.
 // (especially see MFC vs winsock, and stroikas use of winsock2, windows.h including winsock.h etc)
 #define WIN32_LEAN_AND_MEAN 1
 #endif // qPlatform_Windows
 
-#endif /*_Stroika_Foundation_Common_Private_Defaults_Configuration_Common_h_*/
+#ifndef qSupport_Proc_Filesystem
+#if defined(__linux__)
+#define qSupport_Proc_Filesystem 1
+#else
+#define qSupport_Proc_Filesystem 0
+#endif
+#endif
+
+#ifndef qHas_pid_t
+#define qHas_pid_t qPlatform_POSIX
+#endif
+
+#endif /*_Stroika_Foundation_Common_Private_Platform_h_*/
