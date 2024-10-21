@@ -106,12 +106,7 @@ PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CON
 endif
 endif
 
-
-# Fails with CONFIGURATION=clang++-15-debug-libc++, not clear why - so just dont use sanitizers with curl /clang (not worth narrowing)
-ifeq (clang,$(findstring clang,$(LINKER)))
-CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
-CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
-endif
+# NOT sure why needed - retest --LGP 2024-10-21 - and better document why if still needed
 ifeq ($(shell test `$(StroikaRoot)ScriptsLib/GetGCCVersion $(LINKER) -i` -lt 12; echo $$?), 0)
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
