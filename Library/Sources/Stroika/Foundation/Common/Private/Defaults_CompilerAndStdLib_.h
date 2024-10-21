@@ -1365,7 +1365,11 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
  */
 #ifndef qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
 
-#if defined(__clang__) && !defined(__APPLE__)
+#if defined(__clang__) && defined(__APPLE__)
+// broken in clang++16
+#define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                         \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+#elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
 // fixed in clang++16 (but assume broken there too)
