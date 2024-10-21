@@ -1976,7 +1976,7 @@ namespace {
         EXPECT_EQ (a7, "foo as a string"sv);
         DbgTrace (L"t2:  cidr= {}, s1={}, s2={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});
         DbgTrace ("t2:  cidr= {}, s1={}, s2={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});
-        // @todo add mapping for wstring/string even for std  case using my ToString mechansim (details elude me - must be careful to avoid introducing ambiguity)
+        // @todo add mapping for wstring/string even for std  case using my ToString mechanism (details elude me - must be careful to avoid introducing ambiguity)
         //        DbgTrace2 (L"t2:  s1={}, s2={}, s3={}",  "s1", String{"s2"}, string{"s3"});
         DbgTrace ("t2: cidr= {}, s1={}, s2={}, s3={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"}, wstring{L"s3"});
         //         DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
@@ -1987,8 +1987,11 @@ namespace {
 
         {
             String big = "1"_k.Repeat (1000);
+            EXPECT_EQ (big.size (), 1000u);
             String a   = Characters::Format ("BIG shortened '{:.10}'"_f, big);
             DbgTrace ("a={}"_f, a);
+            EXPECT_EQ (a.size (), 26u);
+            EXPECT_EQ (a, "BIG shortened '1111111111'");
         }
         {
             // EXPECT_EQ ("{}"_f(atomic<int>{3}), "3");    // DOES NOT work because formattable requires T be copyable, and stdc++ requires atomic<T> not copyable
