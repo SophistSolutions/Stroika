@@ -14,7 +14,6 @@
  *      o   qStroika_Foundation_Common_Platform_MacOS       (implies qStroika_Foundation_Common_Platform_POSIX)
  */
 
-
 /**
  *  \brief qStroika_Foundation_Common_Platform_Windows true iff compiling targeting the Windows platform (Win32 or Win64)
  */

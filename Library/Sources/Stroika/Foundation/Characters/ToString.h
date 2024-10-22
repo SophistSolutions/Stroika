@@ -432,13 +432,13 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroi
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
-
-
 #if qCompilerAndStdLib_StdFmtOfPath_Buggy
 template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<std::filesystem::path> {};
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, wchar_t>
+    : Stroika::Foundation::Characters::ToStringFormatter<std::filesystem::path> {};
 template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<std::filesystem::path> {};
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, char>
+    : Stroika::Foundation::Characters::ToStringFormatterASCII<std::filesystem::path> {};
 #endif
 
 /*
