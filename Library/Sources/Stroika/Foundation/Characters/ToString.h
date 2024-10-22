@@ -287,6 +287,8 @@ namespace Stroika::Foundation::Characters::Private_ {
         or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
 
+
+
         // AND throw in other libraries Stroika is built with (this is why the question in https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
         // is so important to better resolve!
 #if qHasFeature_fmtlib 
@@ -298,6 +300,7 @@ namespace Stroika::Foundation::Characters::Private_ {
          or Common::IPair<remove_cvref_t<T>> or Common::ITuple<remove_cvref_t<T>>
 #endif
 #endif
+
         ;
     // clang-format on
 
@@ -428,6 +431,15 @@ template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFor
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
+
+
+
+#if qCompilerAndStdLib_StdFmtOfPath_Buggy
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<std::filesystem::path> {};
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<std::filesystem::path> {};
+#endif
 
 /*
  *  If any of these static_asserts trigger, it means you are using a newer compiler I don't have 

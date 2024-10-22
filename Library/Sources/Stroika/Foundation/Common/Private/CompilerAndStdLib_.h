@@ -1828,6 +1828,20 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 
 /*
+
+ */
+#ifndef qCompilerAndStdLib_StdFmtOfPath_Buggy
+#if defined(__clang__) and __clang_major__ == 19 and _LIBCPP_STD_VER == 23
+// appears broken ONLY for clang++19 and stdc++ version 23
+#define qCompilerAndStdLib_StdFmtOfPath_Buggy 1
+#else
+#define qCompilerAndStdLib_StdFmtOfPath_Buggy 0
+#endif
+#endif
+
+
+
+/*
 /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stacktrace:595:3: error: no matching function for call to 'operator delete'
   595 |                 _GLIBCXX_OPERATOR_DELETE (static_cast<void*>(_M_frames),
       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
