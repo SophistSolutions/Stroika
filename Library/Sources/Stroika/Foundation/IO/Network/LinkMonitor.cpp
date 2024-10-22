@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <netdb.h>
@@ -13,11 +13,11 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #endif
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <WinSock2.h>
 
 #include <WS2tcpip.h>
@@ -30,7 +30,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Platform/Windows/WinSock.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
@@ -127,7 +127,7 @@ int main (void)
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 // /SEE THIS CODE FOR WINDOWS
 //http ://support.microsoft.com/default.aspx?scid=http://support.microsoft.com:80/support/kb/articles/Q129/3/15.asp&NoWebContent=1
 #endif
@@ -138,7 +138,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     Debug::TraceContextBumper ctx{"IO::Network::GetPrimaryInternetAddress"};
 #endif
 /// HORRIBLY KLUDGY BAD IMPL!!!
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #if 0
     DWORD TEST = GetComputerNameEx((COMPUTER_NAME_FORMAT)cnf, buffer, &dwSize))
@@ -157,7 +157,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
         return *f;
     }
     return InternetAddress{};
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {
         struct ::ifreq ifreq {};
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
@@ -209,7 +209,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
                              macaddrBytes[3], macaddrBytes[4], macaddrBytes[5]);
         return String{buf};
     };
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
     // This counts on SIOCGIFHWADDR, which appears to be Linux specific
     for (SocketAddress::FamilyType family : {SocketAddress::INET, SocketAddress::INET6}) {
         ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (family, Socket::DGRAM);
@@ -233,7 +233,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
             }
         }
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     IP_ADAPTER_INFO adapterInfo[10];
     DWORD           dwBufLen = sizeof (adapterInfo);
     Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetAdaptersInfo (adapterInfo, &dwBufLen));
@@ -260,10 +260,10 @@ struct LinkMonitor::Rep_ {
         // @todo - add some such StopMonitorIfNeeded_();
     }
     Containers::Collection<Callback> fCallbacks_;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     Execution::Thread::Ptr fMonitorThread_;
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     HANDLE fMonitorHandler_ = INVALID_HANDLE_VALUE;
 #endif
 
@@ -274,7 +274,7 @@ struct LinkMonitor::Rep_ {
         }
     }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // cannot use LAMBDA cuz we need WINAPI call convention
     static void WINAPI CB_ (void* callerContext, PMIB_UNICASTIPADDRESS_ROW Address, MIB_NOTIFICATION_TYPE NotificationType)
     {
@@ -291,7 +291,7 @@ struct LinkMonitor::Rep_ {
 
     void StartMonitorIfNeeded_ ()
     {
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         if (fMonitorThread_ == nullptr) {
             // very slight race starting this but not worth worrying about
             fMonitorThread_ = Execution::Thread::New ([this] () {
@@ -346,7 +346,7 @@ struct LinkMonitor::Rep_ {
             fMonitorThread_.SetThreadName ("Network LinkMonitor thread"sv);
             fMonitorThread_.Start ();
         }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         /*
         * @todo    Minor - but we maybe should be using NotifyIpInterfaceChange... - not sure we get stragiht up/down issues this
         *          way...
@@ -361,12 +361,12 @@ struct LinkMonitor::Rep_ {
 
     ~Rep_ ()
     {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
         if (fMonitorThread_ != nullptr) {
             fMonitorThread_.AbortAndWaitForDone ();
         }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         if (fMonitorHandler_ != INVALID_HANDLE_VALUE) {
             // @todo should check error result, but then do what?
             // also - does this blcok until pending notifies done?

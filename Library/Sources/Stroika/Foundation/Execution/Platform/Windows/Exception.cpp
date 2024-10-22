@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 
 #include <shellapi.h>
@@ -19,7 +19,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "HRESULTErrorException.h"
 #endif
 #include "Stroika/Foundation/Time/Realtime.h"

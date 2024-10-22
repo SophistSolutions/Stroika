@@ -7,7 +7,7 @@
 
 #include <list>
 #include <sstream>
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <process.h>
 #include <windows.h>
 #endif
@@ -27,11 +27,11 @@
 #include "Synchronized.h"
 #include "TimeOutException.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include "Platform/POSIX/SignalBlock.h"
 #include "SignalHandlers.h"
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Platform/Windows/WaitSupport.h"
 #endif
 
@@ -53,12 +53,12 @@ using Debug::AssertExternallySynchronizedMutex;
 //
 //#define   qSupportSetThreadNameDebuggerCall_   0
 #ifndef qSupportSetThreadNameDebuggerCall_
-#if qDebug && qPlatform_Windows
+#if qDebug && qStroika_Foundation_Common_Platform_Windows
 #define qSupportSetThreadNameDebuggerCall_ 1
 #endif
 #endif
 #ifndef qSupportSetThreadNameDebuggerCall_
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #define qSupportSetThreadNameDebuggerCall_ 1
 #endif
 #endif
@@ -98,7 +98,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
 #if (_WIN32_WINNT < 0x0502)
     namespace XXX_ {
@@ -149,13 +149,13 @@ namespace {
 
 using Debug::TraceContextBumper;
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     Synchronized<bool> sHandlerInstalled_{false};
 }
 #endif
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 // Important to use direct signal handler because we send the signal to a specific thread, and must set a thread local
 // variable
 SignalHandler kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
@@ -245,13 +245,13 @@ Thread::Ptr::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] con
     : fRunnable_{runnable}
 {
     // @todo - never used anything from configuration (yet) - should!)
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     static bool sDidInit_{false}; // initialize after main() started, but before any threads
     if (not sDidInit_) {
         sDidInit_                               = true;
         kCallInRepThreadAbortProcSignalHandler_ = SignalHandler{Rep_::InterruptionSignalHandler_, SignalHandler::Type::eDirect};
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     if (configuration.has_value () and configuration->fThrowInterruptExceptionInsideUserAPC.has_value ()) {
         fThrowInterruptExceptionInsideUserAPC_ = configuration->fThrowInterruptExceptionInsideUserAPC.value ();
     }
@@ -324,7 +324,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     if (fInitialPriority_.load () != nullopt) [[unlikely]] {
         sb << "initialPriority: "sv << fInitialPriority_.load () << ", "sv;
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     sb << "throwInterruptExceptionInsideUserAPC: "sv << fThrowInterruptExceptionInsideUserAPC_;
 #endif
     sb << "}"sv;
@@ -335,7 +335,7 @@ void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
 {
     if (GetNativeHandle () != NativeHandleType{}) {
 #if qSupportSetThreadNameDebuggerCall_
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         if (::IsDebuggerPresent ()) {
             // This hack from http://www.codeproject.com/KB/threads/Name_threads_in_debugger.aspx
             struct THREADNAME_INFO {
@@ -354,7 +354,7 @@ void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
             }
             IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof (info) / sizeof (DWORD), (ULONG_PTR*)&info));
         }
-#elif qPlatform_POSIX && (__GLIBC__ > 2 or (__GLIBC__ == 2 and __GLIBC_MINOR__ >= 12))
+#elif qStroika_Foundation_Common_Platform_POSIX && (__GLIBC__ > 2 or (__GLIBC__ == 2 and __GLIBC_MINOR__ >= 12))
         // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
         //
         // according to http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html - the length max is 15 characters
@@ -377,7 +377,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
 #endif
     NativeHandleType nh = GetNativeHandle ();
     if (nh != NativeHandleType{}) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         switch (priority) {
             case Priority::eLowest:
                 Verify (::SetThreadPriority (nh, THREAD_PRIORITY_LOWEST));
@@ -397,7 +397,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
             default:
                 RequireNotReached ();
         }
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
         /*
          *  pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
          *
@@ -521,7 +521,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 #endif
 
         try {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             {
                 // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it -
                 // and accept aborts after we've marked reference count as set.
@@ -609,7 +609,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
          *      On POSIX - this is sending a signal which generates EINTR error.
          *      On Windoze - this is QueueUserAPC to enter an alertable state.
          */
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         {
             [[maybe_unused]] lock_guard critSec{sHandlerInstalled_};
             if (not sHandlerInstalled_) {
@@ -618,13 +618,13 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
             }
         }
         (void)Execution::SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
     }
 }
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
 {
     //
@@ -638,7 +638,7 @@ void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
     // Note - using SIG_IGN doesn't work, because then the signal doesn't get delivered, and the EINTR doesn't happen
     //
 }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 void CALLBACK Thread::Ptr::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
     TraceContextBumper          ctx{"Thread::Ptr::Rep_::CalledInRepThreadAbortProc_"};
@@ -670,7 +670,7 @@ namespace {
             if (cfg->fStackGuard) {
                 result.fStackSize = *cfg->fStackGuard;
             }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             if (cfg->fThrowInterruptExceptionInsideUserAPC) {
                 result.fThrowInterruptExceptionInsideUserAPC = *cfg->fThrowInterruptExceptionInsideUserAPC;
             }
@@ -900,7 +900,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) con
     return false;
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -1010,7 +1010,7 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::Ti
     threads.Apply ([timeoutAt] (const Ptr& t) { t.WaitForDoneUntil (timeoutAt); });
 }
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     SignalID sSignalUsedForThreadInterrupt_ = SIGUSR2;
 }
@@ -1059,9 +1059,9 @@ string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const Forma
     stringstream out;
     out << threadID;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     constexpr size_t kSizeOfThreadID_ = sizeof (DWORD); // All MSFT SDK Thread APIs use DWORD for thread id
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
     constexpr size_t kSizeOfThreadID_ = sizeof (pthread_t);
 #else
     // on MSFT this object is much larger than thread id because it includes handle and id

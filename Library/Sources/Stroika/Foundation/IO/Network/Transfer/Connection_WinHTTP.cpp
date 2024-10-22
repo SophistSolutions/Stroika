@@ -25,7 +25,7 @@
 #include "Stroika/Foundation/Time/Date.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
@@ -48,7 +48,7 @@ using Memory::BLOB;
 
 using std::byte;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 using Stroika::Foundation::Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 using Stroika::Foundation::Memory::StackBuffer;

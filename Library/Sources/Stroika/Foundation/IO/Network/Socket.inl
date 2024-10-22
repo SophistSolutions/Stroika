@@ -108,7 +108,7 @@ namespace Stroika::Foundation::IO::Network {
         return Common::StdCompat::compare_three_way{}(_GetSharedRep (), rhs._GetSharedRep ());
     }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     /*
      ********************************************************************************
      ******************* ThrowWSASystemErrorIfNegative ******************************

@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <shlobj.h>
 #include <windows.h>
 #elif qPlatoform_POSIX
@@ -11,7 +11,7 @@
 #endif
 
 #include "Stroika/Foundation/Execution/Throw.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
@@ -35,7 +35,7 @@ using Characters::SDKString;
  */
 filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     // @todo NYI createIfNotPresent - not sure we want/should???
 
     // Cacheable because the environment variables should be set externally.
@@ -50,7 +50,7 @@ filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNo
         return filesystem::path{};
     }();
     return kCachedResult_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     // @todo DO overlaod with no args, so we can CACHE - like we do for POSIX!
 
     wchar_t fileBuf[MAX_PATH]{};
@@ -76,10 +76,10 @@ filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNo
  */
 filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
 {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     static const filesystem::path kVarSpool_{"/var/spool/"sv};
     return kVarSpool_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
     SDKChar fileBuf[MAX_PATH]{};
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, false));
@@ -107,11 +107,11 @@ filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
  */
 filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     // USED UNTIL STROIKA v2.0a207 - so watch out for older apps - backward compat - static String kVarLib_ = String_Constant{ L"/var/lib/" };
     static const filesystem::path kVarLib_{"/var/opt/"};
     return kVarLib_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     SDKChar fileBuf[MAX_PATH]{};
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
     filesystem::path result = fileBuf;
@@ -134,10 +134,10 @@ filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool create
  */
 filesystem::path FileSystem::WellKnownLocations::GetRuntimeVariableData ()
 {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     static const filesystem::path kResult_{"/var/run/"sv};
     return kResult_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     return GetTemporary ();
 #else
     AssertNotImplemented ();
@@ -145,7 +145,7 @@ filesystem::path FileSystem::WellKnownLocations::GetRuntimeVariableData ()
 #endif
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ************** FileSystem::WellKnownLocations::GetWinSxS ***********************
@@ -196,14 +196,14 @@ namespace {
     }
     SDKString GetTemporary_ ()
     {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
         const char* pPath = ::getenv ("TMPDIR");
         if (pPath != nullptr) {
             return AssureDirectoryPathSlashTerminated_ (pPath);
         }
         return "/tmp/";
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
         SDKChar buf[4 * 1024];
         if (::GetTempPath (static_cast<DWORD> (Memory::NEltsOf (buf)), buf) == 0) {
@@ -225,14 +225,14 @@ filesystem::path FileSystem::WellKnownLocations::GetTemporary ()
     // This has the defect that it misses setenv calls, but that SB so rare,
     // and not clearly a bug we ignore subsequent changes...
     static const filesystem::path kCachedResult_ = [] () -> filesystem::path {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
         const char* pPath = ::getenv ("TMPDIR");
         if (pPath != nullptr) {
             return AssureDirectoryPathSlashTerminated_ (pPath);
         }
         return "/tmp/";
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
         SDKChar buf[4 * 1024];
         if (::GetTempPath (static_cast<DWORD> (Memory::NEltsOf (buf)), buf) == 0) {

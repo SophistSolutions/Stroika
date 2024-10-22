@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Characters/Platform/Windows/CodePage.h"
 #endif
 
@@ -207,7 +207,7 @@ namespace Stroika::Foundation::Characters {
      */
     [[deprecated ("Since Stroika v3.0d2 - on windows use CP_ACP, and elsewhere probably dont use")]] inline CodePage GetDefaultSDKCodePage ()
     {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 //http://blogs.msdn.com/b/michkap/archive/2005/01/06/347834.aspx
 #if defined(CP_ACP)
         Assert (CP_ACP == 0);

@@ -18,7 +18,7 @@
 
  */
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 struct TextStyle;
 struct ScrpSTElement;
 #endif

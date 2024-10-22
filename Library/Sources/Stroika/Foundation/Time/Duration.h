@@ -10,9 +10,9 @@
 #include <climits>
 #include <string>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <sys/time.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <Winsock2.h>
 #endif
 

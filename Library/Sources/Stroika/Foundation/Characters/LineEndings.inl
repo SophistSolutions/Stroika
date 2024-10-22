@@ -22,11 +22,11 @@ namespace Stroika::Foundation::Characters {
         GetEOL ()
     {
         // note queer syntax for strings so works with many character types, including Characters::Character
-        if constexpr (qPlatform_Windows) {
+        if constexpr (qStroika_Foundation_Common_Platform_Windows) {
             static constexpr T kResult_[] = {'\r', '\n', '\0'}; // "\r\n"
             return kResult_;
         }
-        else if constexpr (qPlatform_POSIX) {
+        else if constexpr (qStroika_Foundation_Common_Platform_POSIX) {
             static constexpr T kResult_[] = {'\n', '\0'}; //  "\n"
             return kResult_;
         }
@@ -147,9 +147,9 @@ namespace Stroika::Foundation::Characters {
     {
         TCHAR* outPtr = outBuf;
         for (size_t i = 1; i <= srcTextBytes; ++i) {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
             TCHAR c = (srcText[i - 1] == '\r') ? '\n' : srcText[i - 1];
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             TCHAR c = srcText[i - 1];
             if (c == '\r') {
                 // peek at next character - and if we have a CRLF sequence - then advance pointer
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Characters {
             Assert (outPtr < outBuf + outBufSize);
 #if defined(macintosh)
             TCHAR c = (srcText[i - 1] == '\n') ? '\r' : srcText[i - 1];
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             TCHAR c = srcText[i - 1];
             if (c == '\n') {
                 *outPtr++ = '\r';

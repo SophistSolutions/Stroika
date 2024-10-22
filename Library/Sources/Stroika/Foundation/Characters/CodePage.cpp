@@ -54,7 +54,7 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Characters;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     inline const wchar_t* SAFE_WIN_WCHART_CAST_ (const char16_t* t)
     {
@@ -651,7 +651,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
             *outCharCnt = UTFConvert::kThe.Convert (span{inMBChars, inMBChars + inMBCharCnt}, span{outChars, *outCharCnt}).fTargetProduced;
         } break;
         default: {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             Characters::Platform::Windows::PlatformCodePageConverter{fCodePage}.MapToUNICODE (inMBChars, inMBCharCnt,
                                                                                               SAFE_WIN_WCHART_CAST_ (outChars), outCharCnt);
 #else
@@ -660,7 +660,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
         } break;
     }
 
-#if qPlatform_Windows && 0
+#if qStroika_Foundation_Common_Platform_Windows && 0
     if constexpr (qDebug) {
         // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
         size_t               tstCharCnt = *outCharCnt;
@@ -689,7 +689,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
     Require (*outCharCnt == 0 or outChars != nullptr);
 
     [[maybe_unused]] size_t outBufferSize = *outCharCnt;
-#if qDebug && qPlatform_Windows
+#if qDebug && qStroika_Foundation_Common_Platform_Windows
     size_t countOfBOMCharsAdded = 0; // just for the Windows debug check at the end
 #endif
 
@@ -718,7 +718,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 if (GetHandleBOM ()) {
                     outChars[0] = '\xff';
                     outChars[1] = '\xfe';
-#if qDebug && qPlatform_Windows
+#if qDebug && qStroika_Foundation_Common_Platform_Windows
                     countOfBOMCharsAdded = 2;
 #endif
                 }
@@ -740,7 +740,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 if (GetHandleBOM ()) {
                     outChars[0] = '\xfe';
                     outChars[1] = '\xff';
-#if qDebug && qPlatform_Windows
+#if qDebug && qStroika_Foundation_Common_Platform_Windows
                     countOfBOMCharsAdded = 2;
 #endif
                 }
@@ -765,7 +765,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                     reinterpret_cast<unsigned char*> (outChars)[0] = 0xef;
                     reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
                     reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
-#if qDebug && qPlatform_Windows
+#if qDebug && qStroika_Foundation_Common_Platform_Windows
                     countOfBOMCharsAdded = 3;
 #endif
                 }
@@ -781,7 +781,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
             *outCharCnt = useOutCharCount;
         } break;
         default: {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             Characters::Platform::Windows::PlatformCodePageConverter{fCodePage}.MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt,
                                                                                                 outChars, outCharCnt);
 #else
@@ -790,7 +790,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
         }
     }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     if constexpr (qDebug) {
         // Assure my baked tables perform the same as the builtin Win32 API
         size_t            win32TstCharCnt = outBufferSize;
@@ -837,7 +837,7 @@ DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-dec
  ********************************************************************************
  */
 namespace {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     shared_ptr<set<CodePage>> s_EnumCodePagesProc_Accumulator_;
     BOOL FAR PASCAL           EnumCodePagesProc_ (LPTSTR lpCodePageString)
     {
@@ -852,7 +852,7 @@ CodePagesInstalled::CodePagesInstalled ()
     Assert (fCodePages_.size () == 0);
 
     shared_ptr<set<CodePage>> accum = make_shared<set<CodePage>> ();
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     static mutex sCritSec_;
     {
         [[maybe_unused]] lock_guard critSec{sCritSec_};
@@ -1017,7 +1017,7 @@ void Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEn
 {
     RequireNotNull (intoResult);
     Require (wsStart <= wsEnd);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     Platform::Windows::WideStringToNarrow (wsStart, wsEnd, codePage, intoResult);
 #else
     *intoResult = CodeCvt<wchar_t>{codePage}.String2Bytes<string> (span{wsStart, wsEnd});
@@ -1057,7 +1057,7 @@ void Characters::NarrowStringToWide (const char* sStart, const char* sEnd, CodeP
 {
     RequireNotNull (intoResult);
     Require (sStart <= sEnd);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     Platform::Windows::NarrowStringToWide (sStart, sEnd, codePage, intoResult);
 #else
     *intoResult =

@@ -9,7 +9,7 @@
 #include <compare>
 #include <filesystem>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <netfw.h>
 #endif
 
@@ -34,14 +34,14 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
         String           fDescription;
         String           fGroup;
         filesystem::path fApplication;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         NET_FW_PROFILE_TYPE2  fProfileMask;
         NET_FW_RULE_DIRECTION fDirection;
         NET_FW_IP_PROTOCOL_   fProtocol;
 #endif
         String fLocalPorts;
         String fRemotePorts;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         NET_FW_ACTION fAction;
 #endif
         bool fEnabled;

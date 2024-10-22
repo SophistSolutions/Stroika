@@ -7,9 +7,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <unistd.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <io.h>
 #endif
 
@@ -20,7 +20,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
@@ -43,7 +43,7 @@ using Execution::ThrowPOSIXErrNo;
 using Execution::ThrowPOSIXErrNoIfNegative;
 using Execution::ThrowSystemErrNo;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
@@ -59,7 +59,7 @@ namespace {
         {
             auto activity = LazyEvalActivity ([&] () -> String { return Characters::Format ("opening {} for write access"_f, fFileName_); });
             DeclareActivity currentActivity{&activity};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
             errno_t e = ::_wsopen_s (&fFD_, fileName.generic_wstring ().c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or,
                                      _SH_DENYNO, _S_IREAD | _S_IWRITE);
@@ -87,7 +87,7 @@ namespace {
         {
             IgnoreExceptionsForCall (Flush ()); // for fFlushFlag == FlushFlag::eToDisk
             if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenWrite ()) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                 ::_close (fFD_);
 #else
                 ::close (fFD_);
@@ -103,7 +103,7 @@ namespace {
         {
             Require (IsOpenWrite ());
             if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                 ::_close (fFD_);
 #else
                 ::close (fFD_);
@@ -124,7 +124,7 @@ namespace {
             const byte*     i   = elts.data ();
             const byte*     end = elts.data () + elts.size ();
             while (i < end) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                 int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
 #else
                 int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
@@ -140,9 +140,9 @@ namespace {
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 auto activity = LazyEvalActivity{[&] () -> String { return Characters::Format ("flushing data to {}"_f, fFileName_); }};
                 DeclareActivity currentActivity{&activity};
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                 ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                 ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
 #else
                 AssertNotImplemented ();
@@ -152,9 +152,9 @@ namespace {
         virtual Streams::SeekOffsetType GetWriteOffset () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
             return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
 #else
             return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
@@ -171,27 +171,27 @@ namespace {
                     if (offset < 0) [[unlikely]] {
                         Execution::Throw (kException_);
                     }
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
 #else
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
                 } break;
                 case Whence::eFromCurrent: {
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
 #else
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
                 } break;
                 case Whence::eFromEnd: {
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
 #else
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));

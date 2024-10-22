@@ -3,9 +3,9 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <io.h>
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
 #include <unistd.h>
 #endif
 #include <cstdlib>

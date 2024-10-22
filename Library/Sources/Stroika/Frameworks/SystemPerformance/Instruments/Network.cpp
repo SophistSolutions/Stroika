@@ -3,7 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <WinSock2.h>
 
 #include <Iphlpapi.h>
@@ -27,7 +27,7 @@
 #include "Stroika/Foundation/Streams/TextReader.h"
 #include "Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
@@ -59,11 +59,11 @@ using Instruments::Network::Options;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_ qPlatform_Windows
+#define qUseWMICollectionSupport_ qStroika_Foundation_Common_Platform_Windows
 #endif
 
 #ifndef qSupportProcNet_
-#define qSupportProcNet_ qPlatform_Linux
+#define qSupportProcNet_ qStroika_Foundation_Common_Platform_Linux
 #endif
 
 #if qUseWMICollectionSupport_
@@ -83,7 +83,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #pragma comment(lib, "iphlpapi.lib")
 #endif
 
@@ -146,7 +146,7 @@ namespace {
     using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     struct Last {
         uint64_t         fTotalBytesReceived;
@@ -364,7 +364,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
@@ -508,17 +508,17 @@ namespace {
 
 namespace {
     struct NetworkInstrumentRep_
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         : InstrumentRep_POSIX_
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         : InstrumentRep_Windows_
 #else
         : InstrumentRepBase_<SystemPerformance::Support::Context>
 #endif
     {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         using inherited = InstrumentRep_POSIX_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         using inherited = InstrumentRep_Windows_;
 #else
         using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;

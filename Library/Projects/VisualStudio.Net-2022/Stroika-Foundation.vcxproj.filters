@@ -2216,11 +2216,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\CompilerAndStdLib_.h">
       <Filter>Sources\Common\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Platform_.h">
-      <Filter>Sources\Common\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\ThirdPartyComonents_.h">
       <Filter>Sources\Common\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Platform\Common.h">
+      <Filter>Sources\Common\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

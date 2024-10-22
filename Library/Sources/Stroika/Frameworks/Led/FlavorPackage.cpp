@@ -11,7 +11,7 @@
 
 #include "Config.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <fcntl.h>
 #include <io.h>
 #include <shellapi.h>
@@ -84,7 +84,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     Require (end <= GetTextStore ().GetEnd ());
     Require (start <= end);
     size_t length = end - start;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     Memory::StackBuffer<Led_tChar> buf{2 * length + 1}; //CRLF
 #else
     Memory::StackBuffer<Led_tChar> buf{length};
@@ -94,7 +94,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
         GetTextStore ().CopyOut (start, length, buf2.data ());
 #if qStroika_FeatureSupported_XWindows
         length = Characters::NLToNative<Led_tChar> (buf2, length, buf, length);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         length = Characters::NLToNative<Led_tChar> (buf2.data (), length, buf.data (), 2 * length + 1);
 #endif
     }
@@ -105,7 +105,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     // (or any other NUL-chars)
     length = Led_SkrunchOutSpecialChars (buf.data (), length, '\0');
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     buf[length] = '\0'; // Windows always expects CF_TEXT to be NUL char terminated
     length++;           // so AddFlavorData() writes out the NUL-byte
 #endif
@@ -146,7 +146,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& fla
 
         Led_tChar* buffp   = reinterpret_cast<Led_tChar*> (static_cast<char*> (buf)); // INTERPRET array of bytes as Led_tChars
         size_t     nTChars = length / sizeof (Led_tChar);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         if (nTChars > 0) {
             // On Windows - CF_TEXT always GUARANTEED to be NUL-terminated, and the
             // length field is often wrong (rounded up to some chunk size, with garbage
@@ -177,7 +177,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
         fileSpecBufferLength = flavorPackage.ReadFlavorData (kFILEClipFormat, fileSpecBufferLength, fileSpecBuffer.data ());
 
 // Unpack the filename
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         TCHAR realFileName[_MAX_PATH + 1];
         {
             HDROP hdrop = (HDROP)::GlobalAlloc (GMEM_FIXED, fileSpecBufferLength);
@@ -223,7 +223,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (filesystem::path fil
 void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat,
                                                                             [[maybe_unused]] optional<CodePage> suggestedCodePage)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     if (suggestedClipFormat != nullptr and *suggestedClipFormat == kBadClipFormat) {
         TCHAR drive[_MAX_DRIVE];
         TCHAR dir[_MAX_DIR];
@@ -278,7 +278,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
      *  preferred code page - so just do the read/replace here...
      */
     span<const byte> rawByteSpan{reinterpret_cast<const byte*> (rawBytes), nRawBytes};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{suggestedCodePage.value_or (CP_ACP)}};
 #else
     CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{locale{}}};
@@ -368,7 +368,7 @@ size_t ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, 
  */
 void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // NOTE: FOR THE PC - it is assumed all this happens  in the context of an open/close clipboard
     // done in the Led_MFC class overrides of OnCopyCommand_Before/OnCopyCommand_After
     HANDLE h = ::GlobalAlloc (GHND | GMEM_MOVEABLE, bufSize);

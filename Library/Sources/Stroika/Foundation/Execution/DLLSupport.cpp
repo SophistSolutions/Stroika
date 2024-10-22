@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 
 #include "Throw.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Platform/Windows/Exception.h"
 #endif
 
@@ -27,7 +27,7 @@ using Debug::TraceContextBumper;
  ********************************************************************************
  */
 namespace {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     // CAN RETURN NULL
     DLLHandle LoadDLL_ (const SDKChar* dllName, int flags)
     {
@@ -38,7 +38,7 @@ namespace {
 #endif
     }
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // CAN RETURN NULL
     DLLHandle LoadDLL_ (const SDKChar* dllName)
     {
@@ -49,7 +49,7 @@ namespace {
     void ThrowLoadErr_ ()
     {
         // @todo should do something to record the original DLL name
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         // either main module or not found
         const char* err = dlerror ();
         if (err != nullptr) [[unlikely]] {
@@ -66,9 +66,9 @@ DLLLoader::DLLLoader (const SDKChar* dllName)
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s"), dllName);
 #endif
     RequireNotNull (dllName);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     fModule_ = LoadDLL_ (dllName, RTLD_NOW);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     fModule_ = LoadDLL_ (dllName);
 #endif
     if (fModule_ == nullptr) {
@@ -82,7 +82,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
 #endif
     RequireNotNull (dllName);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     fModule_ = LoadDLL_ (dllName, RTLD_NOW);
 #else
     fModule_ = LoadDLL_ (dllName);
@@ -90,7 +90,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
     if (fModule_ == nullptr) {
         for (auto i = searchPath.begin (); i != searchPath.end (); ++i) {
             filesystem::path modulePath = *i / dllName;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             fModule_ = LoadDLL_ (modulePath.c_str (), RTLD_NOW);
 #else
             fModule_ = LoadDLL_ (modulePath.c_str ());
@@ -105,7 +105,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
     }
 }
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 DLLLoader::DLLLoader (const SDKChar* dllName, int flags)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -123,7 +123,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader/3 - loading DLL %s, flags=0x%x"), dllName, flags);
 #endif
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     fModule_ = LoadDLL_ (dllName, flags);
 #else
     fModule_ = LoadDLL_ (dllName);
@@ -131,7 +131,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
     if (fModule_ == nullptr) {
         for (auto i = searchPath.begin (); i != searchPath.end (); ++i) {
             filesystem::path modulePath = *i / dllName;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             fModule_ = LoadDLL_ (modulePath.c_str (), flags);
 #else
             fModule_ = LoadDLL_ (modulePath.c_str ());
@@ -153,7 +153,7 @@ DLLLoader::~DLLLoader ()
     DbgTrace ("DLLLoader - unloading dll 0x%p", fModule_);
 #endif
     AssertNotNull (fModule_);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     ::FreeLibrary (fModule_);
 #else
     if (::dlclose (fModule_) != 0) {

@@ -13,7 +13,7 @@
 	
 
 #if		qSupportStdAboutBoxDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_AboutBoxID, purgeable) {
 			{0, 0, 283, 425},
 			dBoxProc,
@@ -68,7 +68,7 @@
 			}
 		};
 		#endif
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_AboutBoxID	DIALOG DISCARDABLE  34, 22, 250, 110
 		CAPTION "About XXXX!"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -99,7 +99,7 @@
 
 
 #if		qSupportStdFindDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_FindBoxID) {
 			{0, 0, 121, 428},
 			movableDBoxProc,
@@ -152,7 +152,7 @@
 				}
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_FindBoxID DIALOG DISCARDABLE  34, 22, 262, 60
 		CAPTION "Find"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -176,7 +176,7 @@
 
 
 #if		qSupportStdReplaceDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_ReplaceBoxID) {
 			{0, 0, 139, 544},
 			movableDBoxProc,
@@ -254,7 +254,7 @@
 				}
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_ReplaceBoxID DIALOG DISCARDABLE  34, 22, 314, 72
 		CAPTION "Find / Replace"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -307,7 +307,7 @@
 
 
 #if		qSupportParagraphIndentsDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_ParagraphIndentsID, purgeable) {
 			{0, 0, 158, 292},
 			movableDBoxProc,
@@ -365,7 +365,7 @@
 					}
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_ParagraphIndentsID DIALOG DISCARDABLE  0, 0, 136, 86
 		CAPTION "Paragraph Indents"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -393,7 +393,7 @@
 
 
 #if		qSupportParagraphSpacingDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_ParagraphSpacingID, purgeable) {
 			{0, 0, 163, 382},
 			movableDBoxProc,
@@ -470,7 +470,7 @@
 			0,
 			"Line Spacing:"
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_ParagraphSpacingID DIALOG DISCARDABLE  0, 0, 221, 87
 		CAPTION "Paragraph Spacing"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -498,7 +498,7 @@
 
 
 #if		qSupportUnknownEmbeddingInfoDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_UnknownEmbeddingInfoBoxID, purgeable) {
 			{0, 0, 123, 425},
 			dBoxProc,
@@ -526,7 +526,7 @@
 				},
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_UnknownEmbeddingInfoBoxID	DIALOG DISCARDABLE  34, 22, 250, 60
 		CAPTION "Embedding Properties"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -546,7 +546,7 @@
 
 
 #if		qSupportOtherFontSizeDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_OtherFontSizeID, purgeable) {
 			{0, 0, 110, 212},
 			movableDBoxProc,
@@ -584,7 +584,7 @@
 				}
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_OtherFontSizeID DIALOG DISCARDABLE  0, 0, 122, 49
 		CAPTION "Font Size"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -606,7 +606,7 @@
 
 
 #if		qSupportURLXEmbeddingInfoDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_URLXEmbeddingInfoBoxID, purgeable) {
 			{0, 0, 145, 369},
 			movableDBoxProc,
@@ -654,7 +654,7 @@
 				}
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_URLXEmbeddingInfoBoxID	DIALOG DISCARDABLE  0, 0, 235, 90
 		CAPTION "URL Embedding Properties"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -679,7 +679,7 @@
 
 
 #if		qSupportURLXEmbeddingInfoDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_AddURLXEmbeddingInfoBoxID, purgeable) {
 			{0, 0, 140, 375},
 			movableDBoxProc,
@@ -727,7 +727,7 @@
 				}
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_AddURLXEmbeddingInfoBoxID	DIALOG DISCARDABLE  0, 0, 230, 68
 		CAPTION "Add URL"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -751,7 +751,7 @@
 
 
 #if		qSupportAddNewTableDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_AddNewTableBoxID, purgeable) {
 			{0, 0, 114, 313},
 			movableDBoxProc,
@@ -804,7 +804,7 @@
 				}
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_AddNewTableBoxID	DIALOG DISCARDABLE  34, 22, 180, 68
 		CAPTION "Add New Table"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -831,7 +831,7 @@
 
 
 #if		qSupportEditTablePropertiesDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_EditTablePropertiesBoxID, purgeable) {
 			{0, 0, 290, 466},
 			movableDBoxProc,
@@ -1017,7 +1017,7 @@
 				},
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_EditTablePropertiesBoxID	DIALOG DISCARDABLE  0, 0, 302, 211
 		CAPTION "Edit Table Properties"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -1076,7 +1076,7 @@
 
 
 #if		qSupportStdSpellCheckDlg
-	#if		qPlatform_MacOS
+	#if		qStroika_Foundation_Common_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_SpellCheckBoxID) {
 			{0, 0, 194, 520},
 			movableDBoxProc,
@@ -1174,7 +1174,7 @@
 				},
 			}
 		};
-	#elif	qPlatform_Windows
+	#elif	qStroika_Foundation_Common_Platform_Windows
 		kLedStdDlg_SpellCheckBoxID DIALOG DISCARDABLE  34, 22, 360, 120
 		CAPTION "Check Spelling"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU

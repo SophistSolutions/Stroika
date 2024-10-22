@@ -4,18 +4,18 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cstdlib>
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <windows.h>
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Characters/Platform/Windows/SmartBSTR.h"
 #endif
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Finally.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/COM.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
@@ -26,11 +26,11 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 using namespace Stroika::Foundation::Characters::Platform::Windows;
 #endif
 using namespace Stroika::Foundation::Containers;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 using namespace Stroika::Foundation::Execution::Platform::Windows;
 #endif
 using namespace Stroika::Foundation::IO::Network;
@@ -39,7 +39,7 @@ using namespace Stroika::Foundation::IO::Network::SystemFirewall;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "oleaut32.lib")
 #endif
@@ -56,14 +56,14 @@ String Rule::ToString () const
     sb << "Name: "sv << fName << ","sv;
     sb << "Description: "sv << fDescription << ","sv;
     sb << "Application: "sv << fApplication << ","sv;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     sb << "ProfileMask: "sv << (int)fProfileMask << ","sv;
     sb << "Direction: "sv << (int)fDirection << ","sv;
     sb << "Protocol: "sv << (int)fProtocol << ","sv;
 #endif
     sb << "LocalPorts: "sv << fLocalPorts << ","sv;
     sb << "RemotePorts: "sv << fRemotePorts << ","sv;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     sb << "Action: "sv << (int)fAction << ","sv;
 #endif
     sb << "Enabled: "sv << fEnabled << ","sv;
@@ -76,7 +76,7 @@ String Rule::ToString () const
  ***************** IO::Network::SystemFirewall::Manager *************************
  ********************************************************************************
  */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     Rule ReadRule_ (INetFwRule* pFwRule)
     {
@@ -170,7 +170,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
         }
     }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     COMInitializer          comInitializeContext{COINIT_APARTMENTTHREADED};
     INetFwPolicy2*          pNetFwPolicy2     = nullptr;
     INetFwRules*            pFwRules          = nullptr;
@@ -219,7 +219,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
 optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName) const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("SystemFirewall::Manager::Lookup", "ruleName={}"_f, ruleName)};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     COMInitializer          comInitializeContext{COINIT_APARTMENTTHREADED};
     INetFwPolicy2*          pNetFwPolicy2     = nullptr;
     INetFwRules*            pFwRules          = nullptr;
@@ -258,7 +258,7 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll () const
 {
     Debug::TraceContextBumper ctx{"SystemFirewall::Manager::LookupAll"};
     Collection<Rule>          rules;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     COMInitializer          comInitializeContext{COINIT_APARTMENTTHREADED};
     INetFwPolicy2*          pNetFwPolicy2     = nullptr;
     INetFwRules*            pFwRules          = nullptr;

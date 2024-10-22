@@ -13,7 +13,7 @@
 
 #include "Assertions.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <cstdio>
 #endif
 
@@ -33,7 +33,7 @@ namespace {
             DbgTrace ("{} ({}) failed in '{}'; {}:{}"_f, assertCategory == nullptr ? L"Unknown assertion" : assertCategory,
                       assertionText == nullptr ? L"" : assertionText, functionName == nullptr ? L"" : functionName,
                       fileName == nullptr ? L"" : fileName, lineNum);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             fwprintf (stderr, L"%s (%s) failed in '%s'; %s:%d\n", assertCategory == nullptr ? L"Unknown assertion" : assertCategory,
                       assertionText == nullptr ? L"" : assertionText, functionName == nullptr ? L"" : functionName,
                       fileName == nullptr ? L"" : fileName, lineNum);
@@ -48,7 +48,7 @@ namespace {
 #endif
             DropIntoDebuggerIfPresent ();
             DbgTrace ("ABORTING..."_f);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             fprintf (stderr, "ABORTING...\n");
 #endif
         }
@@ -62,7 +62,7 @@ namespace {
         DbgTrace ("{} ({}) failed in '{}'; {}:{}"_f, assertCategory == nullptr ? L"Unknown assertion" : assertCategory,
                   assertionText == nullptr ? L"" : assertionText, functionName == nullptr ? L"" : functionName,
                   fileName == nullptr ? L"" : fileName, lineNum);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         fwprintf (stderr, L"%s (%s) failed in '%s'; %s:%d\n", assertCategory == nullptr ? L"Unknown assertion" : assertCategory,
                   assertionText == nullptr ? L"" : assertionText, functionName == nullptr ? L"" : functionName,
                   fileName == nullptr ? L"" : fileName, lineNum);

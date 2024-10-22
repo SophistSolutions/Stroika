@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <tchar.h>
 #endif
 

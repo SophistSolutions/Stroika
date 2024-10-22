@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::Led {
                 Based on SPR#0864</p>
         */
 #ifndef qUseWin32CompareStringCallForCaseInsensitiveSearch
-#define qUseWin32CompareStringCallForCaseInsensitiveSearch qPlatform_Windows
+#define qUseWin32CompareStringCallForCaseInsensitiveSearch qStroika_Foundation_Common_Platform_Windows
 #endif
 
     /*

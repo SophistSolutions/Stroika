@@ -5,11 +5,11 @@
 
 #include <cstdio>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <netdb.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <WinSock2.h>
 
 #include <WS2tcpip.h>
@@ -20,7 +20,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Finally.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #endif
@@ -37,7 +37,7 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 // API should return char* but MSFT returns WIDECHARS sometimes - undo that
 #undef gai_strerror
 #define gai_strerror gai_strerrorA
@@ -107,7 +107,7 @@ DNS DNS::Default ()
 
 DNS::DNS ()
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
 }

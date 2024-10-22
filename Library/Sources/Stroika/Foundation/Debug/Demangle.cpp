@@ -7,7 +7,7 @@
 
 #if defined(__GNUC__) && defined(__GLIBCXX__)
 #include <cxxabi.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 
 #include <Dbghelp.h>
@@ -19,7 +19,7 @@
 
 using namespace Stroika::Foundation;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 // otherwise modules linking with this code will tend to get link errors without explicitly linking
 // to this module...
 #pragma comment(lib, "Dbghelp.lib")
@@ -43,7 +43,7 @@ Characters::String Debug::Demangle (const Characters::String& originalName)
     if (status == 0) {
         return Characters::String::FromNarrowSDKString (realname);
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     char resultBuf[10 * 1024];
     if (::UnDecorateSymbolName (originalName.AsNarrowSDKString (Characters::eIgnoreErrors).c_str (), resultBuf, sizeof (resultBuf), UNDNAME_COMPLETE) != 0) {
         return Characters::String::FromNarrowSDKString (resultBuf);

@@ -1489,7 +1489,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_span (bool start, const char* 
 
 void StyledTextIOReader_HTML::HandleHTMLThingyTag_strike ([[maybe_unused]] bool start, [[maybe_unused]] const char* text, [[maybe_unused]] size_t nBytes)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     BasicFontStackOperation (start);
     if (start) {
         FontSpecification fsp = fFontStack.back ();
@@ -2395,7 +2395,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
     if (newOne.GetStyle_SubOrSuperScript () != FontSpecification::eSuperscript and IsTagOnStack (writerContext, "sup")) {
         WriteCloseTag (writerContext, "sup");
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     if (not newOne.GetStyle_Strikeout () and IsTagOnStack (writerContext, "strike")) {
         WriteCloseTag (writerContext, "strike");
     }
@@ -2447,7 +2447,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
                 }
             } break;
         }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         if (newOne.GetStyle_Strikeout () and not IsTagOnStack (writerContext, "strike")) {
             WriteOpenTag (writerContext, "strike");
         }

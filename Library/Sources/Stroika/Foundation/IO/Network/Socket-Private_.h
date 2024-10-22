@@ -11,13 +11,13 @@
 #include <cstdlib>
 #include <sys/types.h>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <netdb.h>
 #include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <winsock2.h>
 
 #include <io.h>
@@ -25,7 +25,7 @@
 
 #include <Mstcpip.h>
 #endif
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #endif
@@ -33,7 +33,7 @@
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #endif
@@ -57,13 +57,13 @@ namespace Stroika::Foundation::IO::Network {
 
         using Debug::AssertExternallySynchronizedMutex;
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         /*
          *  Internally we use this -1 value to mean invalid socket, but keep that a private implementation
          *  detail, since I'm not sure it will be good for all socket implementations?
          */
         constexpr Socket::PlatformNativeHandle kINVALID_NATIVE_HANDLE_ = -1; // right value??
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         constexpr Socket::PlatformNativeHandle kINVALID_NATIVE_HANDLE_ = INVALID_SOCKET;
 #endif
 
@@ -122,24 +122,24 @@ namespace Stroika::Foundation::IO::Network {
                 // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
                 switch (shutdownTarget) {
                     case Socket::ShutdownTarget::eReads:
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                         ::shutdown (fSD_, SHUT_RD);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                         ::shutdown (fSD_, SD_RECEIVE);
 #endif
                         break;
                     case Socket::ShutdownTarget::eWrites:
 // I believe this triggers TCP FIN
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                         ::shutdown (fSD_, SHUT_WR);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                         ::shutdown (fSD_, SD_SEND);
 #endif
                         break;
                     case Socket::ShutdownTarget::eBoth:
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                         ::shutdown (fSD_, SHUT_RDWR);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                         ::shutdown (fSD_, SD_BOTH);
 #endif
                         break;
@@ -151,9 +151,9 @@ namespace Stroika::Foundation::IO::Network {
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                     ::close (fSD_);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                     ::closesocket (fSD_);
 #else
                     AssertNotImplemented ();
@@ -179,7 +179,7 @@ namespace Stroika::Foundation::IO::Network {
                 return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
 #elif defined(SO_PROTOCOL)
                 return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                 /*
                         *  According to https://msdn.microsoft.com/en-us/library/windows/desktop/ms741621(v=vs.85).aspx,
                         *      WSAENOPROTOOPT  The socket option is not supported on the specified protocol. For example,
@@ -208,9 +208,9 @@ namespace Stroika::Foundation::IO::Network {
                 Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized};
                 // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
                 RequireNotNull (optval);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                 ThrowPOSIXErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                 ThrowWSASystemErrorIfSOCKET_ERROR (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #else
                 AssertNotImplemented ();
@@ -230,9 +230,9 @@ namespace Stroika::Foundation::IO::Network {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
                 // According to http://linux.die.net/man/2/setsockopt cannot return EINTR, so no need to retry
                 RequireNotNull (optval);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                 ThrowPOSIXErrNoIfNegative (::setsockopt (fSD_, level, optname, optval, optvallen));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                 ThrowWSASystemErrorIfSOCKET_ERROR (::setsockopt (fSD_, level, optname, reinterpret_cast<const char*> (optval), optvallen));
 #else
                 AssertNotImplemented ();

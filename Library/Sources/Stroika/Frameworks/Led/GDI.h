@@ -133,7 +133,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual DistanceType ComputeTabStopAfterPosition (Tablet* tablet, DistanceType afterPos) const;
     };
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     /**
      */
     class FontObject {
@@ -151,7 +151,7 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     /**
      */
     class Brush {
@@ -293,14 +293,14 @@ namespace Stroika::Frameworks::Led {
         nonvirtual Led_Rect GetBoundingRect () const;
 
     public:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         Region (RgnHandle rgn);
         RgnHandle GetOSRep () const;
         RgnHandle GetOSRep ();
 
     private:
         bool fOwned;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         operator HRGN () const;
         int  CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode);
         BOOL PtInRegion (int x, int y) const;
@@ -310,9 +310,9 @@ namespace Stroika::Frameworks::Led {
         BOOL DeleteObject ();
 #endif
     private:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         RgnHandle fRgn;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         HRGN fRgn;
 #endif
     };
@@ -337,7 +337,7 @@ namespace Stroika::Frameworks::Led {
     public:
         constexpr Color (const Color&) = default;
         constexpr Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         explicit Color (COLORREF colorRef);
 #endif
 
@@ -371,7 +371,7 @@ namespace Stroika::Frameworks::Led {
         static const Color kAqua;
 
     public:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual COLORREF GetOSRep () const;
 #endif
 
@@ -394,7 +394,7 @@ namespace Stroika::Frameworks::Led {
 
     unsigned int Distance (Color lhs, Color rhs);
     unsigned int Distance_Squared (Color lhs, Color rhs);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     unsigned int Distance_Squared (COLORREF lhs, COLORREF rhs);
 #endif
 
@@ -405,7 +405,7 @@ namespace Stroika::Frameworks::Led {
      *  Note - this class is used in conjunction with @'GDI_Obj_Selector'.
      */
     class Pen {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     public:
         Pen (int nPenStyle, int nWidth, COLORREF crColor);
         ~Pen ();
@@ -517,7 +517,7 @@ namespace Stroika::Frameworks::Led {
     public:
         FontSpecification (const FontSpecification&) = default;
         FontSpecification ()                         = default;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         explicit FontSpecification (const LOGFONT& logFont);
 #endif
         // Force users to be EXPLICIT about this object-slicing, since many of the fields
@@ -525,7 +525,7 @@ namespace Stroika::Frameworks::Led {
         explicit FontSpecification (const IncrementalFontSpecification& from);
 
     public:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         struct FontNameSpecifier { // So struct copies etc will work and so we can define op==
             FontNameSpecifier ();
             FontNameSpecifier (const SDKChar* from);
@@ -572,7 +572,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual SubOrSuperScript GetStyle_SubOrSuperScript () const;
         nonvirtual void             SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual bool GetStyle_Strikeout () const;
         nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
@@ -581,7 +581,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual FontSize GetPointSize () const;
         nonvirtual void     SetPointSize (FontSize pointSize);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual long PeekAtTMHeight () const;        // Speed tweek
         nonvirtual void PokeAtTMHeight (long tmHeight); // ditto
 #endif
@@ -590,7 +590,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetTextColor (const Color& textColor);
 
     public:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual LOGFONT GetOSRep () const;
         nonvirtual void    GetOSRep (LOGFONT* logFont) const;
         nonvirtual void    SetOSRep (LOGFONT logFont);
@@ -615,7 +615,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void MergeIn (const IncrementalFontSpecification& addInTheseAttributes);
 
     private:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         LOGFONT fFontInfo{}; // Could make this MUCH smaller on windows - do for future release!
 #else
         FontNameSpecifier fFontFamily{};
@@ -696,7 +696,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void             InvalidateStyle_SubOrSuperScript ();
         nonvirtual void             SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual bool GetStyle_Strikeout () const;
         nonvirtual bool GetStyle_Strikeout_Valid () const;
         nonvirtual void InvalidateStyle_Strikeout ();
@@ -713,7 +713,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool           GetPointSize_Valid () const;
         nonvirtual void           InvalidatePointSize ();
         nonvirtual void           SetPointSize (FontSize pointSize);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual void PokeAtTMHeight (long tmHeight); // ditto
 #endif
 
@@ -728,7 +728,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetTextColor (const Color& textColor);
 
     public:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual LOGFONT GetOSRep () const;
         nonvirtual void    GetOSRep (LOGFONT* logFont) const;
         nonvirtual void    SetOSRep (LOGFONT logFont); // marks all attribs as valid
@@ -750,7 +750,7 @@ namespace Stroika::Frameworks::Led {
         bool fStyleValid_Italic : 1 {false};
         bool fStyleValid_Underline : 1 {false};
         bool fStyleValid_SubOrSuperScript : 1 {false};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         bool fStyleValid_Strikeout : 1 {false};
         bool fDidSetOSRepCallFlag : 1 {false};
 #endif
@@ -766,12 +766,12 @@ namespace Stroika::Frameworks::Led {
     class InstalledFonts {
     public:
         enum FilterOptions {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             eSkipAtSignFonts = 0x1,
             eSkipRasterFonts = 0x2,
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             eDefaultFilterOptions = eSkipAtSignFonts | eSkipRasterFonts
 #else
             eDefaultFilterOptions = 0
@@ -790,7 +790,7 @@ namespace Stroika::Frameworks::Led {
         FilterOptions     fFilterOptions;
         vector<SDKString> fFontNames;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     private:
         static BOOL FAR PASCAL FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int fontType, LPVOID pThis);
 #endif
@@ -798,7 +798,7 @@ namespace Stroika::Frameworks::Led {
 
     // Query the OS for the default font that should be used for new text windows
     FontSpecification GetStaticDefaultFont ();
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     FontSpecification GetStaticDefaultFont (BYTE charSet);
 #endif
 
@@ -858,7 +858,7 @@ namespace Stroika::Frameworks::Led {
     Led_Rect EnsureRectOnScreen (const Led_Rect& r);
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     Led_Point AsLedPoint (POINT p);
     POINT     AsPOINT (Led_Point p);
     Led_Rect  AsLedRect (RECT r);
@@ -896,7 +896,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     public:
         FontMetrics () = default;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         FontMetrics (const TEXTMETRIC& from);
 #elif qStroika_FeatureSupported_XWindows
         FontMetrics (const PlatformSpecific& from);
@@ -913,20 +913,20 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual DistanceType GetMaxCharacterWidth () const;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual DistanceType GetAveCharacterWidth () const;
 #endif
 
         // Convertion operator to make it easier to make GDI calls with one of our guys on a
         // with something expected a system specific one - like to fill in its value!
     public:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         operator const TEXTMETRIC* () const;
         operator TEXTMETRIC* ();
 #endif
 
     private:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         TEXTMETRIC fPlatformSpecific{};
 #elif qStroika_FeatureSupported_XWindows
         PlatformSpecific fPlatformSpecific{};
@@ -953,9 +953,9 @@ namespace Stroika::Frameworks::Led {
      */
     class Tablet {
     public:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         Tablet (GrafPtr gp);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         enum OwnDCControl {
             eOwnsDC,
             eDoesntOwnDC
@@ -970,9 +970,9 @@ namespace Stroika::Frameworks::Led {
         virtual ~Tablet ();
 
     public:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         nonvirtual operator GrafPtr () const;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         nonvirtual operator HDC () const;
 #endif
 
@@ -996,9 +996,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidth);
 
     public:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         nonvirtual void SetPort ();
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         nonvirtual BOOL     BitBlt (int x, int y, int nWidth, int nHeight, Tablet* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
         nonvirtual BOOL     CreateCompatibleDC (Tablet* pDC);
         nonvirtual COLORREF SetTextColor (COLORREF crColor);
@@ -1039,7 +1039,7 @@ namespace Stroika::Frameworks::Led {
         Led_Point fDrawableOrigin;
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     private:
         nonvirtual HWND         GetWindow () const;
         nonvirtual unsigned int SetTextAlign (unsigned int nTextAlign);
@@ -1084,7 +1084,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void HilightArea_SolidHelper (const Region& hilightArea, Color hilightBackColor, Color hilightForeColor,
                                                  Color oldBackColor, Color oldForeColor);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     private:
         class RecolorHelper;
 
@@ -1105,10 +1105,10 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual FontMetrics GetFontMetrics () const;
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     private:
         GrafPtr fGrafPort;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     public:
         HDC          m_hDC;       // The output DC (must be first data member)
         HDC          m_hAttribDC; // The Attribute DC
@@ -1150,13 +1150,13 @@ namespace Stroika::Frameworks::Led {
         Region  fOldClip;
     };
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     /**
      */
     GrafPtr Led_GetCurrentGDIPort ();
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     class WindowDC : public Tablet {
     public:
         WindowDC (HWND hWnd);
@@ -1167,7 +1167,7 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     class MacPortAndClipRegionEtcSaver {
     public:
         MacPortAndClipRegionEtcSaver ();
@@ -1183,7 +1183,7 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     class Bitmap {
     public:
         Bitmap () = default;
@@ -1227,9 +1227,9 @@ namespace Stroika::Frameworks::Led {
             using inherited = Tablet;
 
         public:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
             OT (GrafPtr gp);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             OT (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
 #elif qStroika_FeatureSupported_XWindows
             OT (Display* display, Drawable drawable);
@@ -1240,11 +1240,11 @@ namespace Stroika::Frameworks::Led {
         Tablet*  fOrigTablet;
         Led_Rect fOffscreenRect;
         Tablet*  fOffscreenTablet;
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         GDHandle  fOrigDevice;
         CGrafPtr  fOrigPort;
         GWorldPtr fOffscreenGWorld;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         OT     fMemDC;
         Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
         // but decare outside, so stays around for successive rows which are the same size.
@@ -1266,9 +1266,9 @@ namespace Stroika::Frameworks::Led {
     */
     class GDI_Obj_Selector {
     public:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect);
-#elif qPlatform_MacOS || qStroika_FeatureSupported_XWindows
+#elif qStroika_Foundation_Common_Platform_MacOS || qStroika_FeatureSupported_XWindows
         GDI_Obj_Selector (Tablet* tablet, const Pen& pen);
 #endif
     public:
@@ -1276,10 +1276,10 @@ namespace Stroika::Frameworks::Led {
 
     private:
         Tablet* fTablet;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         HGDIOBJ fRestoreObject;
         HGDIOBJ fRestoreAttribObject;
-#elif qPlatform_MacOS
+#elif qStroika_Foundation_Common_Platform_MacOS
         Pen fRestorePen;
 #endif
     };
@@ -1318,7 +1318,7 @@ namespace Stroika::Frameworks::Led {
     short    Led_GetMacPictWidth (const Led_Picture* picture);
     short    Led_GetMacPictHeight (const Led_Picture* picture);
     Led_Size Led_GetMacPictSize (const Led_Picture* picture);
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     short    Led_GetMacPictTop (const Led_Picture* const* picture);
     short    Led_GetMacPictLeft (const Led_Picture* const* picture);
     short    Led_GetMacPictBottom (const Led_Picture* const* picture);
@@ -1330,7 +1330,7 @@ namespace Stroika::Frameworks::Led {
 
 // Windows DIB support
 #ifndef qHaveWindowsDIBDefined
-#define qHaveWindowsDIBDefined qPlatform_Windows
+#define qHaveWindowsDIBDefined qStroika_Foundation_Common_Platform_Windows
 #endif
 
 #if !qHaveWindowsDIBDefined
@@ -1389,7 +1389,7 @@ namespace Stroika::Frameworks::Led {
     Led_DIB*    Led_CloneDIB (const Led_DIB* dib);
     const void* Led_GetDIBBitsPointer (const Led_DIB* dib);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     Led_DIB* Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm);
 #endif
 
@@ -1453,7 +1453,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     Led_Rect CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     void Led_CenterWindowInParent (HWND w);
 #endif
 

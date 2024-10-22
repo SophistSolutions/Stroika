@@ -302,7 +302,7 @@ namespace Stroika::Frameworks::Led {
                                                                         const byte* fileStart, const byte* fileEnd) override;
 
     public:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         virtual bool InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
 #if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
@@ -336,7 +336,7 @@ namespace Stroika::Frameworks::Led {
         virtual void ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to) override;
 
     public:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         nonvirtual void ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
 #if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor

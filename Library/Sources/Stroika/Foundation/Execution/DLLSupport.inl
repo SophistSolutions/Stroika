@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Execution {
     {
         AssertNotNull (fModule_);
         RequireNotNull (procName);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         auto result{::GetProcAddress (fModule_, procName)};
         if (result == nullptr) {
             Execution::ThrowSystemErrNo ();
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (procName);
         return GetProcAddress (Characters::String{procName}.AsNarrowSDKString (Characters::eIgnoreErrors).c_str ());
     }
-#if !qPlatform_Windows
+#if !qStroika_Foundation_Common_Platform_Windows
     inline DLLException::DLLException (const char* message)
         : Execution::RuntimeErrorException<>{Characters::String::FromNarrowSDKString (message)}
     {

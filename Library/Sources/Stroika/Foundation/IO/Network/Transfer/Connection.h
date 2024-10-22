@@ -64,7 +64,7 @@
 namespace Stroika::Foundation::IO::Network::Transfer::Connection {
 
 //avoid windows header clash...
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #undef DELETE
 #endif
 

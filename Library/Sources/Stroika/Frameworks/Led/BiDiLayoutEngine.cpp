@@ -181,7 +181,7 @@ public:
 } aMyIWriteMemoizedUniscribeDirFunction;
 #endif
 
-#if qPlatform_Windows && qTryToUseUNISCRIBEForTextRuns
+#if qStroika_Foundation_Common_Platform_Windows && qTryToUseUNISCRIBEForTextRuns
 namespace {
 
     /*

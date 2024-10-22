@@ -6,9 +6,9 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <windows.h>
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
 #include <sys/mman.h>
 #include <unistd.h>
 #endif
@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
@@ -35,7 +35,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
@@ -48,7 +48,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
 {
     auto activity = LazyEvalActivity ([&] () -> String { return Characters::Format ("memory mapping {} for read access"_f, fileName); });
     DeclareActivity currentActivity{&activity};
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     int fd = -1;
     Execution::ThrowPOSIXErrNoIfNegative (fd = open (fileName.c_str (), O_RDONLY));
     auto fileLength = filesystem::file_size (fileName);
@@ -59,7 +59,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
     }
     fSpan_ = span{reinterpret_cast<const byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0)), static_cast<size_t> (fileLength)};
     ::close (fd); //http://linux.die.net/man/2/mmap says don't need to keep FD open while mmapped
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     try {
         // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
         fFileHandle_ = ::CreateFile (fileName.c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -91,11 +91,11 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
 
 MemoryMappedFileReader::~MemoryMappedFileReader ()
 {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     if (::munmap (const_cast<byte*> (fSpan_.data ()), fSpan_.size ())) {
         DbgTrace ("munmap failed: Cannot throw in DTOR, so just DbgTrace log: errno={}"_f, errno);
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     if (fSpan_.data () != nullptr) {
         (void)::UnmapViewOfFile (fSpan_.data ());
     }

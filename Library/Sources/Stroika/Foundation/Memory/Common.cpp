@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <windows.h>
 
 #include <Psapi.h>
@@ -23,7 +23,7 @@ using namespace Stroika::Foundation;
 Memory::GlobalAllocationStatistics Memory::GetGlobalAllocationStatistics ()
 {
     GlobalAllocationStatistics s;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ::GetCurrentProcessId ());
     if (hProcess != nullptr) {
 #pragma comment(lib, "Psapi.lib")

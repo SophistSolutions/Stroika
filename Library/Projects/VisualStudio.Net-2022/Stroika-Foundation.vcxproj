@@ -316,9 +316,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Locale.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Platform\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\CompilerAndStdLib_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Platform_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_BlockAllocated_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\ThirdPartyComonents_.h" />

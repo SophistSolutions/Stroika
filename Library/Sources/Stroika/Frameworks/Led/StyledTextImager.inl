@@ -182,9 +182,9 @@ namespace Stroika::Frameworks::Led {
                                                                     const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType pixelsDrawn)
     {
         Color lightColor = Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         Pen pen (PS_DOT, 1, lightColor.GetOSRep ());
-#elif qPlatform_MacOS
+#elif qStroika_Foundation_Common_Platform_MacOS
         Pen pen (patCopy, &Pen::kGrayPattern, lightColor);
 #elif qStroika_FeatureSupported_XWindows
         Pen pen;

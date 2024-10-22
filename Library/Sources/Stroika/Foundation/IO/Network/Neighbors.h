@@ -54,7 +54,7 @@ namespace Stroika::Foundation::IO::Network {
         struct Options {
             enum class Strategy {
                 eArpProgram,
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
                 eProcNetArp,
 #endif
             };

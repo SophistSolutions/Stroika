@@ -9,10 +9,10 @@
 #include <compare>
 #include <optional>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <arpa/inet.h>
 #include <sys/socket.h> // for AF_INET etc
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <WinSock2.h>
 
 #include <in6addr.h>
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  v4 ip addr as a long.
      */
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     using in_addr_t = ::in_addr_t;
 #else
     using in_addr_t = uint32_t;
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Only specifically specialized variants are supported. As<T> supported variants include:
          *      As<String> ();
-         *      As<in_addr_t> ();                               // qPlatform_POSIX ONLY
+         *      As<in_addr_t> ();                               // qStroika_Foundation_Common_Platform_POSIX ONLY
          *      As<in_addr> ();                                 // GetAddressFamily () == V4 only
          *      As<array<byte,4>> ();                           // GetAddressFamily () == V4 only
          *      As<array<uint8_t,4>> ();                        // GetAddressFamily () == V4 only

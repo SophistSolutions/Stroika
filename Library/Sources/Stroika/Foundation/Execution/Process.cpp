@@ -23,18 +23,18 @@ using namespace Stroika::Foundation::Execution;
 bool Execution::IsProcessRunning (pid_t pid)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper traceCtx{L"Stroika::Foundation::Execution::IsProcessRunning", L"pid=%d", pid};
+    Debug::TraceContextBumper traceCtx{"Stroika::Foundation::Execution::IsProcessRunning", "pid={}"_f, pid};
 #endif
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     // http://stackoverflow.com/questions/9152979/check-if-process-exists-given-its-pid
     // http://linux.die.net/man/2/getpgid
     // if not owner, trick of kill (pid, 0) returns error EPERM
     pid_t tmp{::getpgid (pid)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"getpgid (pid=%d) -> %d, with ernno=%d", pid, tmp, errno);
+    DbgTrace ("getpgid (pid={}) -> {}, with ernno={}"_f, pid, tmp, errno);
 #endif
     return tmp > 0;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     HANDLE process = ::OpenProcess (SYNCHRONIZE, FALSE, pid);
     if (process == nullptr) {
         // This can fail for a variety of reasons, including permissions, and because the process died a long time ago.

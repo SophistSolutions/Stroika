@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  Predefined well known code pages (generally not used/useful except on Windows)
      * 
-     *  NOTE - not #if qPlatform_Windows or in windows namespace cuz can be used for Windows interoperability on other platforms - much supported portably.
+     *  NOTE - not #if qStroika_Foundation_Common_Platform_Windows or in windows namespace cuz can be used for Windows interoperability on other platforms - much supported portably.
      */
     namespace WellKnownCodePages {
         constexpr CodePage kANSI = 1252;

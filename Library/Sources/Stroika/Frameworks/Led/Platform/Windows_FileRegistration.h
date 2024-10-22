@@ -17,7 +17,7 @@
 
 namespace Stroika::Frameworks::Led::Platform {
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     class Win32FileAssociationRegistrationHelper {
     public:
         Win32FileAssociationRegistrationHelper (const SDKString& fileSuffix);
@@ -49,7 +49,7 @@ namespace Stroika::Frameworks::Led::Platform {
     };
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     class Win32UIFileAssociationInfo {
     public:
         Win32UIFileAssociationInfo (const SDKString& fileSuffix, const SDKString& fileProgID, const SDKString& fileProgIDPrettyName,
@@ -70,7 +70,7 @@ namespace Stroika::Frameworks::Led::Platform {
     };
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     class Win32UIFileAssociationRegistrationHelper {
     public:
         Win32UIFileAssociationRegistrationHelper (HINSTANCE hInstance);

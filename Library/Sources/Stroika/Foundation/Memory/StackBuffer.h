@@ -22,14 +22,15 @@ namespace Stroika::Foundation::Memory {
      * 
      *      https://www.codeguru.com/visual-studio/adventures-with-_chkstk/
      */
-    constexpr size_t kStackBuffer_SizeIfLargerStackGuardCalled = qPlatform_Windows ? (sizeof (int) == 4 ? 4 : 8) * 1024 : 16 * 1024;
+    constexpr size_t kStackBuffer_SizeIfLargerStackGuardCalled =
+        qStroika_Foundation_Common_Platform_Windows ? (sizeof (int) == 4 ? 4 : 8) * 1024 : 16 * 1024;
 
     /**
      *  \note good to keep this small (around 2k) for Windows, cuz else _chkstack calls end up litering profiles in alot of functions
      *        even if along paths not actually used. COULD optimize those paths with specific value in usages, but seems reasonable to keep
      *        to 2k for now --LGP 2023-09-12
      */
-    constexpr size_t kStackBuffer_TargetInlineByteBufferSize = qPlatform_Windows ? 2 * 1024 : 4 * 1024;
+    constexpr size_t kStackBuffer_TargetInlineByteBufferSize = qStroika_Foundation_Common_Platform_Windows ? 2 * 1024 : 4 * 1024;
 
     /**
      */

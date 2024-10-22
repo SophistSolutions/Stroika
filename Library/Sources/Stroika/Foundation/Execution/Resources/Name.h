@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Execution::Resources {
 
     /**
      */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // This can be any Windows RT-type, such as RT_CURSOR, or RT_DIALOG
     using ResourceType = LPCTSTR;
 #else
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution::Resources {
     class Name {
     public:
         Name (const String& name, ResourceType type = PredefinedTypes::kRES);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         Name (const int intResName, ResourceType type = PredefinedTypes::kRES);
 #endif
 
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Execution::Resources {
 
     private:
         SDKString fName_;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         optional<int> fIntName_;
 #endif
         ResourceType fType_;

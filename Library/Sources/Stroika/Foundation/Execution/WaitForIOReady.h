@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Execution {
      *        STILL NEEDED however, due to aborting threads (and cuz some users may still choose to use the thread interruption approach to wakeup)
      */
 #ifndef qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #define qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks 3000
 #endif
 #endif
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Execution {
          *  This is the underlying native type 'HighLevelType objects must be converted to in order to
          *  be used with the operating-system poll/select feature.
          */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         using SDKPollableType = SOCKET;
 #else
         using SDKPollableType = int;

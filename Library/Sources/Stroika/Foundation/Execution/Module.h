@@ -8,7 +8,7 @@
 
 #include <filesystem>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <unistd.h>
 #endif
 
@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Execution {
 #if qHas_pid_t
     using pid_t = ::pid_t;
 #else
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     using pid_t = DWORD;
 #else
     using pid_t = int;

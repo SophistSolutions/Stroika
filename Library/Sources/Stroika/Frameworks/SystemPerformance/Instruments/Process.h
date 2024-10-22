@@ -322,10 +322,10 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
             eAlways
         };
         ProcessNameReadPolicy fProcessNameReadPolicy{eOnlyIfEXENotRead};
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         bool fAllowUse_ProcFS{true};
         bool fAllowUse_PS{true};
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 //PERHAPS SUPPORT IN FUTURE?
 //bool                          fAllowUse_WMI                   { true };
 #endif

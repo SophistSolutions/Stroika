@@ -3,10 +3,10 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <poll.h>
 #include <unistd.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 
 #include <winsock2.h>
@@ -19,7 +19,7 @@
 #include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Exceptions.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Platform/Windows/Exception.h"
 #include "Platform/Windows/WaitSupport.h"
 #endif
@@ -181,7 +181,7 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
     [[maybe_unused]] int timeoutMilliseconds = Math::Round<int> (time2Wait.count () * 1000);
     Assert (timeoutMilliseconds >= 0);
     int pollResult;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #if qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks > 0
     while (true) {
         Thread::CheckForInterruption ();

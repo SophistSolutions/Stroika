@@ -11,12 +11,12 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <aclapi.h>
 #include <io.h>
 #include <shlobj.h>
 #include <windows.h>
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
 #include <unistd.h>
 #endif
 
@@ -24,7 +24,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
@@ -46,7 +46,7 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Memory;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
@@ -81,7 +81,7 @@ String IO::FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
  */
 void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathName)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     static PACL pACL = nullptr; // Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
     if (pACL == nullptr) {
         PSID pSIDEveryone = nullptr;
@@ -119,7 +119,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
                                                            pACL,                                         // DACL specified
                                                            nullptr);                                     // don't change SACL
     // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
     ////TODO: Somewhat PRIMITIVE - TMPHACK
     if (filePathName.empty ()) [[unlikely]] {
         Execution::Throw (Exception{make_error_code (errc::no_such_file_or_directory), L"bad filename"_k});
@@ -150,7 +150,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
  */
 String IO::FileSystem::GetVolumeName (const filesystem::path& driveLetterAbsPath)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // SEM_FAILCRITICALERRORS needed to avoid dialog in call to GetVolumeInformation
     AdjustSysErrorMode errorModeAdjuster (AdjustSysErrorMode::GetErrorMode () | SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
 
@@ -175,7 +175,7 @@ String IO::FileSystem::GetVolumeName (const filesystem::path& driveLetterAbsPath
  */
 void IO::FileSystem::CopyFile (const filesystem::path& srcFile, const filesystem::path& destPath)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // see if can be/should be rewritten to use Win32 API of same name!!!
     //
     // If I DON'T do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
@@ -198,7 +198,7 @@ vector<String> IO::FileSystem::FindFiles (const filesystem::path& path, const St
     if (path.empty ()) {
         return result;
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     String          usePath       = AssureDirectoryPathSlashTerminated (FromPath (path));
     String          matchFullPath = usePath + (fileNameToMatch.empty () ? L"*" : fileNameToMatch);
     WIN32_FIND_DATA fd{};
@@ -236,7 +236,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
     }
 
     Containers::Set<String> resultSet;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     String          usePath = AssureDirectoryPathSlashTerminated (FromPath (path));
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
@@ -261,7 +261,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
     return vector<String>{resultSet.begin (), Iterator<String>{resultSet.end ()}};
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ********************* FileSystem::DirectoryChangeWatcher ***********************
@@ -314,7 +314,7 @@ void IO::FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ********************** FileSystem::AdjustSysErrorMode **************************

@@ -316,7 +316,7 @@ namespace {
                  */
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_NOSIGNAL, 1));
 
-#if qDebug && qPlatform_POSIX
+#if qDebug && qStroika_Foundation_Common_Platform_POSIX
                 {
                     struct sigaction oldact;
                     (void)::sigaction (SIGPIPE, NULL, &oldact);
@@ -346,7 +346,7 @@ namespace {
 
                 if (fOptions_.fTCPKeepAlives) {
                     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPALIVE, fOptions_.fTCPKeepAlives->fEnabled));
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
                     if (fOptions_.fTCPKeepAlives->fTimeIdleBeforeSendingKeepalives) {
                         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPIDLE, *fOptions_.fTCPKeepAlives->fTimeIdleBeforeSendingKeepalives));
                     }

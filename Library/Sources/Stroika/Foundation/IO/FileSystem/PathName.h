@@ -42,12 +42,12 @@ namespace Stroika::Foundation::IO::FileSystem {
     *   \see https://www.msys2.org/docs/filesystem-paths/
      */
 #ifndef qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
-#define qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin qPlatform_Windows
+#define qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin qStroika_Foundation_Common_Platform_Windows
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     constexpr wchar_t kPathComponentSeperator = '\\';
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
     constexpr wchar_t kPathComponentSeperator = '/';
 #endif
 

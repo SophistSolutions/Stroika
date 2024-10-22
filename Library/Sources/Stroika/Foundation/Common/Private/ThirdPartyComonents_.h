@@ -18,7 +18,7 @@
 @DESCRIPTION:
 */
 #ifndef qHas_Syslog
-#define qHas_Syslog qPlatform_POSIX
+#define qHas_Syslog qStroika_Foundation_Common_Platform_POSIX
 #endif
 
 /*

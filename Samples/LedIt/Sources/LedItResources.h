@@ -385,7 +385,7 @@ enum {
 #define WIND_TextDoc 200
 #define prto_TextDoc 201
 
-#elif qPlatform_Windows
+#elif qRCBWA_Platform_Windows
 
 #define IDR_MAINFRAME 128
 #define kLedItDocumentIconID 129

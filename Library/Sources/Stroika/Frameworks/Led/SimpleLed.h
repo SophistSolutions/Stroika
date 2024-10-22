@@ -177,13 +177,13 @@ namespace Stroika::Frameworks::Led {
     public:
         LedDialogText ();
 
-#if qPlatform_Windows && defined(_MFC_VER)
+#if qStroika_Foundation_Common_Platform_Windows && defined(_MFC_VER)
     public:
         virtual void PostNcDestroy () override;
         virtual int  OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message) override;
 #endif
 
-#if qPlatform_Windows && defined(_MFC_VER)
+#if qStroika_Foundation_Common_Platform_Windows && defined(_MFC_VER)
     protected:
         DECLARE_MESSAGE_MAP ()
         DECLARE_DYNCREATE (LedDialogText)

@@ -6,17 +6,17 @@
 #include <filesystem>
 #include <functional>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>
 #include <unistd.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #include <winioctl.h>
 #endif
 
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 #include <sys/sysmacros.h>
 #endif
 
@@ -93,7 +93,7 @@ optional<double> IOStatsType::EstimatedPercentInUse () const
 
 // for io stats
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_ qPlatform_Windows
+#define qUseWMICollectionSupport_ qStroika_Foundation_Common_Platform_Windows
 #endif
 
 #if qUseWMICollectionSupport_
@@ -169,7 +169,7 @@ namespace {
     using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     void ApplyDiskTypes_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
     {
@@ -223,7 +223,7 @@ namespace {
     }
 }
 #endif
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 namespace {
     struct PerfStats_ {
         double fSectorsRead;
@@ -609,7 +609,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
 
     struct _Context : SystemPerformance::Support::Context {
@@ -847,17 +847,17 @@ namespace {
 
 namespace {
     struct FilesystemInstrumentRep_
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         : InstrumentRep_Linux_
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         : InstrumentRep_Windows_
 #else
         : InstrumentRepBase_<SystemPerformance::Support::Context>
 #endif
     {
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         using inherited = InstrumentRep_Linux_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         using inherited = InstrumentRep_Windows_;
 #else
         using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
@@ -887,7 +887,7 @@ namespace {
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
             Debug::TraceContextBumper                       ctx{"Instruments::Filesystem _InternalCapture"};
-#if qPlatform_Linux or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
             Info result = inherited::_InternalCapture ();
 #else
             Info result;

@@ -5,7 +5,7 @@
 
 #include <sstream>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/resource.h>
@@ -21,7 +21,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Execution/CommandLine.h"
@@ -60,7 +60,7 @@ using Memory::StackBuffer;
 #include <fstream>
 #endif
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     // no-except cuz the exception will show up in tracelog, and nothing useful to do, and could be quite bad to except cuz mostly used
     // in cleanup, and could cause leaks
@@ -74,7 +74,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     static const int kMaxFD_ = [] () -> int {
         int            result{};
@@ -116,7 +116,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     pid_t UseFork_ ()
     {
@@ -128,7 +128,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <spawn.h>
 namespace {
     //  https://www.ibm.com/support/knowledgecenter/ssw_aix_53/com.ibm.aix.basetechref/doc/basetrf1/posix_spawn.htm%23posix_spawn
@@ -139,7 +139,7 @@ namespace {
 extern char** environ;
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     class AutoHANDLE_ {
     public:
@@ -197,7 +197,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
 // still unsure if needed/useful - I now think the PeekNamedPipe stuff is NOT needed, but
 // I can turn it on if needed -- LGP 2009-05-07
@@ -232,7 +232,7 @@ namespace {
  ***************** Execution::ProcessRunner::Exception **************************
  ********************************************************************************
  */
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
                                      const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
     : inherited{mkMsg_ (cmdLine, errorMessage, stderrSubset, wExitStatus, wTermSig, wStopSig)}
@@ -243,7 +243,7 @@ ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorM
     , fWStopSig_{wStopSig}
 {
 }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err)
     : inherited{mkMsg_ (cmdLine, errorMessage, stderrSubset, err)}
     , fCmdLine_{cmdLine}
@@ -252,7 +252,7 @@ ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorM
 {
 }
 #endif
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
                                          const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
 {
@@ -285,7 +285,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     }
     return sb;
 }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
                                          const optional<DWORD>& err)
 {
@@ -373,7 +373,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
     if (optional<pid_t> o = fRep_->fPID) {
 #if qPlatform_Posix
         ::kill (SIGTERM, *o);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         // @todo - if this OpenProcess gives us any trouble, we can return the handle directry from the 'CreateRunnable' where we invoke the process
         HANDLE processHandle = ::OpenProcess (PROCESS_TERMINATE, false, *o);
         if (processHandle != nullptr) {
@@ -553,7 +553,7 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
     return result;
 }
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
                                 Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress, const String& cmdLine,
@@ -912,7 +912,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                   ProgressMonitor::Updater progress, const String& cmdLine, const SDKChar* currentDir,
@@ -1202,9 +1202,9 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 #endif
         SDKString      currentDirBuf_;
         const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         Process_Runner_POSIX_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err, effectiveCmdLine);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         Process_Runner_Windows_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err, effectiveCmdLine);
 #endif
     };
@@ -1260,7 +1260,7 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
         }
     }
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     Characters::SDKString thisEXEPath = executable.native ();
 
     // Note - we do this OUTSIDE the fork since its unsafe to do mallocs etc inside forked space.
@@ -1333,7 +1333,7 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
     else {
         return pid;
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     PROCESS_INFORMATION processInfo{};
     processInfo.hProcess            = INVALID_HANDLE_VALUE;
     processInfo.hThread             = INVALID_HANDLE_VALUE;

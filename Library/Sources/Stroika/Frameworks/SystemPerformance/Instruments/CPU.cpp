@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <optional>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #endif
 
@@ -44,7 +44,7 @@ using Instruments::CPU::Options;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_ qPlatform_Windows
+#define qUseWMICollectionSupport_ qStroika_Foundation_Common_Platform_Windows
 #endif
 
 #if qUseWMICollectionSupport_
@@ -104,7 +104,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 namespace {
     struct POSIXSysTimeCaptureContext_ {
         double user;
@@ -289,7 +289,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     struct WinSysTimeCaptureContext_ {
         double IdleTime;
@@ -373,17 +373,17 @@ namespace {
 
 namespace {
     struct CPUInstrumentRep_
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         : InstrumentRep_Linux_
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         : InstrumentRep_Windows_
 #else
         : InstrumentRepBase_<SystemPerformance::Support::Context>
 #endif
     {
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         using inherited = InstrumentRep_Linux_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         using inherited = InstrumentRep_Windows_;
 #else
         using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
@@ -415,7 +415,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::CPU::{}CPUInstrumentRep_::_InternalCapture"};
 #endif
-#if qPlatform_Linux or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
             Info result = inherited::_InternalCapture ();
 #else
             Info result;

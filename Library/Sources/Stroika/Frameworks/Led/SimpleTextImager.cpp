@@ -497,11 +497,11 @@ void SimpleTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
      *  on the way out. That way - the drawsegment code need not worry about restoring
      *  these things.
      */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     tablet->SetPort ();
     RGBColor oldForeColor = GDI_GetForeColor ();
     RGBColor oldBackColor = GDI_GetBackColor ();
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
     GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
 #endif
@@ -578,14 +578,14 @@ void SimpleTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
         }
     }
     catch (...) {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         Assert (*tablet == Led_GetCurrentGDIPort ());
         GDI_RGBForeColor (oldForeColor);
         GDI_RGBBackColor (oldBackColor);
 #endif
         throw;
     }
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     Assert (*tablet == Led_GetCurrentGDIPort ());
     GDI_RGBForeColor (oldForeColor);
     GDI_RGBBackColor (oldBackColor);

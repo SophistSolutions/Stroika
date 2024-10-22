@@ -569,7 +569,7 @@ GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
                 }
             }
             catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
                 if (e.code () == errc::no_such_file_or_directory) {
                     Stroika::Frameworks::Test::WarnTestIssue (
                         Characters::Format ("Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f, current_exception ())

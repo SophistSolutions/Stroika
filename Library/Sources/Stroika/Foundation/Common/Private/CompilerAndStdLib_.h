@@ -950,7 +950,7 @@ In file included from Thread.cpp:18:
  */
 #ifndef qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
 
-#if defined(__APPLE__) && defined(__MACH__) /*qPlatform_MacOS - not not including Defaults_Configuration_Common.h before here*/
+#if defined(__APPLE__) && defined(__MACH__) /*qStroika_Foundation_Common_Platform_MacOS - not not including Defaults_Configuration_Common.h before here*/
 #define qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy 1
 #else
 #define qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy 0
@@ -966,7 +966,7 @@ ABORTING...
  */
 #ifndef qCompilerAndStdLib_unnamed_semaphores_Buggy
 
-#if defined(__APPLE__) && defined(__MACH__) /*qPlatform_MacOS - not not including Defaults_Configuration_Common.h before here*/
+#if defined(__APPLE__) && defined(__MACH__) /*qStroika_Foundation_Common_Platform_MacOS - not not including Defaults_Configuration_Common.h before here*/
 #define qCompilerAndStdLib_unnamed_semaphores_Buggy 1
 #else
 #define qCompilerAndStdLib_unnamed_semaphores_Buggy 0

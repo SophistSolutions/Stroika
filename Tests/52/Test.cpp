@@ -1154,7 +1154,7 @@ namespace {
     }
 }
 
-#if qPlatform_Windows && 0
+#if qStroika_Foundation_Common_Platform_Windows && 0
 namespace {
     namespace Test_WString2UTF8_ {
         static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used

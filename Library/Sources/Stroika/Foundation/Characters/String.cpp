@@ -662,7 +662,7 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
      */
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
     static_assert (kBaseOfFixedBufSize_ < 64); // this code below assumes, so must re-tune if this ever fails
-    if constexpr (qPlatform_Windows and not qDebug) {
+    if constexpr (qStroika_Foundation_Common_Platform_Windows and not qDebug) {
         static_assert (kBaseOfFixedBufSize_ == 3 * sizeof (void*));
         if constexpr (sizeof (void*) == 4) {
             static_assert (kBaseOfFixedBufSize_ == 12);
@@ -671,8 +671,9 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
             static_assert (kBaseOfFixedBufSize_ == 24);
         }
     }
-    constexpr size_t kOverheadSizeForMakeShared_ = qPlatform_Windows ? (sizeof (void*) == 4 ? 12 : 16) : sizeof (unsigned long) * 2;
-#if qPlatform_Windows
+    constexpr size_t kOverheadSizeForMakeShared_ =
+        qStroika_Foundation_Common_Platform_Windows ? (sizeof (void*) == 4 ? 12 : 16) : sizeof (unsigned long) * 2;
+#if qStroika_Foundation_Common_Platform_Windows
     static_assert (kOverheadSizeForMakeShared_ == sizeof (_Ref_count_base)); // not critically counted on, just to debug/fix sizes
 #endif
     static constexpr size_t kNElts1_ = (64 - kBaseOfFixedBufSize_ - kOverheadSizeForMakeShared_) / sizeof (CHAR_T);
@@ -680,7 +681,7 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     static constexpr size_t kNElts3_ = (128 - kBaseOfFixedBufSize_ - kOverheadSizeForMakeShared_) / sizeof (CHAR_T);
 
     // These checks are NOT important, just for documentation/reference
-    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1 and not qDebug) {
+    if constexpr (qStroika_Foundation_Common_Platform_Windows and sizeof (CHAR_T) == 1 and not qDebug) {
         if constexpr (sizeof (void*) == 4) {
             static_assert (kNElts1_ == 40);
             static_assert (kNElts2_ == 72);

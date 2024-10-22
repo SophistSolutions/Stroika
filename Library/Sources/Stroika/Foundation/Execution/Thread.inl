@@ -61,9 +61,9 @@ namespace Stroika::Foundation::Execution {
         static void ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexcept;
 
     private:
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         static void InterruptionSignalHandler_ (SignalID signal) noexcept;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         static void CALLBACK CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter);
 #endif
 
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Execution {
         wstring       fThreadName_;
         Synchronized<exception_ptr> fSavedException_; // really no logical need for Synchronized<>, except when used from ToString() for debugging
         Synchronized<optional<Priority>> fInitialPriority_; // where we store priority before start
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         bool fThrowInterruptExceptionInsideUserAPC_{false};
 #endif
 
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Execution {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         return fRep_ != nullptr;
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     inline bool Thread::Ptr::ThrowInterruptExceptionInsideUserAPC () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};

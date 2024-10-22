@@ -51,7 +51,7 @@ void Exception::ThrowPOSIXErrNo (errno_t errNo, const path& p1, const path& p2)
     Debug::TraceContextBumper ctx{"IO::FileSystem::Exception::ThrowPOSIXErrNo", "sysErr={}, p1={}, p2={}"_f, errNo, p1, p2};
 #endif
     Require (errNo != 0);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     error_code ec{errNo, system_category ()};
 #else
     error_code ec{errNo, generic_category ()};
@@ -71,9 +71,9 @@ void Exception::ThrowSystemErrNo (int sysErr, const path& p1, const path& p2)
 
 void Exception::ThrowSystemErrNo (const path& p1, const path& p2)
 {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     ThrowSystemErrNo (errno, p1, p2);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     ThrowSystemErrNo (::GetLastError (), p1, p2);
 #endif
 }

@@ -9,7 +9,7 @@ namespace Stroika::Foundation::Common {
      *********************************** Common::GUID *******************************
      ********************************************************************************
      */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     constexpr GUID::GUID (const ::GUID& src) noexcept
         : Data1{src.Data1}
         , Data2{src.Data2}

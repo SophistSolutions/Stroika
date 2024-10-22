@@ -49,7 +49,7 @@ namespace {
  *          tm.year is years  since 1900 (kTM_Year_RelativeToYear_)
  */
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     TimeOfDay mkTimeOfDay_ (const ::SYSTEMTIME& sysTime)
     {
@@ -69,7 +69,7 @@ namespace {
 #endif
 
 namespace {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     ::SYSTEMTIME toSysTime_ (TimeOfDay tod)
     {
         ::SYSTEMTIME t{};
@@ -100,7 +100,7 @@ namespace {
 }
 
 namespace {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     ::SYSTEMTIME toSYSTEM_ (const Date& date)
     {
         ::SYSTEMTIME st{};
@@ -162,7 +162,7 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     ::tm tmTime{};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     (void)::_gmtime64_s (&tmTime, &unixEpochTime);
 #else
     (void)::gmtime_r (&unixEpochTime, &tmTime);
@@ -185,10 +185,10 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     ::tm  tmTimeDataBuf{};
     ::tm* tmTimeData = ::gmtime_r (&unixTime, &tmTimeDataBuf);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     ::tm tmTimeDataBuf{};
     if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
         ThrowPOSIXErrNo (e);
@@ -203,7 +203,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
                             static_cast<unsigned> (tmTimeData->tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
@@ -218,7 +218,7 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 DateTime::DateTime (const ::SYSTEMTIME& sysTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{mkDate_ (sysTime)}
@@ -624,11 +624,11 @@ DateTime DateTime::AsTimezone (Timezone tz) const
 
 DateTime DateTime::Now () noexcept
 {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     // time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
     // Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
     return DateTime{::time (nullptr)}.AsLocalTime ();
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     ::SYSTEMTIME st{};
     ::GetLocalTime (&st);
     return DateTime{st, Timezone::kLocalTime};
@@ -852,7 +852,7 @@ timespec DateTime::As_Simple_ () const
     return tspec;
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 ::SYSTEMTIME DateTime::AsSYSTEMTIME_ () const
 {
     // CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...

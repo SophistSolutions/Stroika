@@ -362,7 +362,7 @@ size_t Characters::Private_::BuiltinSingleByteTableCodePageRep_::ComputeTargetBy
     }
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ***************** Characters::Private_::WindowsNative_ *************************

@@ -10,11 +10,11 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Common/Platform/Windows/Registry.h"
 #endif
 #include "Stroika/Foundation/Debug/Trace.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Execution/Synchronized.h"
@@ -271,7 +271,7 @@ optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const Inter
 shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::DefaultBackend ()
 {
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::DefaultBackend"};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     return WindowsRegistryDefaultBackend ();
 #endif
     // @todo fix for MacOS - which doesn't support these - http://stroika-bugs.sophists.com/browse/STK-795
@@ -594,7 +594,7 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
     return make_shared<DefaultEmptyBackendRep_> ();
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<IBackendRep>
 {
     /*

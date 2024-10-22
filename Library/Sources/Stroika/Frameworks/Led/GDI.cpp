@@ -21,7 +21,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 // Often included by <Windows.h> automaticly, but sometimes people define NOIME or VC_EXTRALEAN, and then we
 // must include this manaully.
 #include <windows.h>
@@ -29,7 +29,7 @@ using namespace Stroika::Frameworks::Led;
 #include <imm.h>
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 // RTL Imaging flags
 #define qUseUniscribeToImage qUniscribeAvailableWithSDK
 #define qUseFakeTTGetWPlacementToImage 1
@@ -58,7 +58,7 @@ using namespace Stroika::Frameworks::Led;
 
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  *  Used to use CreateCompatibleBitmap, but as of SPR#1271 try using a DIBSection (of a compatile depth) instead).
  *  This has no noticable effect on normal drawing, but greatly speeds HilightRectangle () code for some computers.
@@ -68,7 +68,7 @@ using namespace Stroika::Frameworks::Led;
 #endif
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 inline bool operator== (PALETTEENTRY lhs, COLORREF rhs)
 {
     return RGB (lhs.peRed, lhs.peGreen, lhs.peBlue) == rhs;
@@ -81,7 +81,7 @@ inline bool operator== (PALETTEENTRY lhs, COLORREF rhs)
 #endif
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #ifdef _UNICODE
 const bool kRunning32BitGDI = true; //  UNICODE only supported on 32GDI (NT or Win2k or Later)
 #else
@@ -89,7 +89,7 @@ const bool kRunning32BitGDI = ((::GetVersion () & 0x80000000) == 0); // I BELIEV
 #endif // Should be a better way to check for 32bit GDI!!!
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 inline void Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
 {
     Require (nChars < static_cast<size_t> (numeric_limits<int>::max ()));
@@ -105,7 +105,7 @@ inline void Win32_TextOut (HDC hdc, int xStart, int yStart, const Led_tChar* str
 }
 #endif
 
-#if qPlatform_Windows && qUseUniscribeToImage
+#if qStroika_Foundation_Common_Platform_Windows && qUseUniscribeToImage
 
 const size_t kMaxUNISCRIBECharacters = 30000;
 
@@ -314,7 +314,7 @@ namespace {
     }
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
 
     inline RGBQUAD mkRGBQuad (COLORREF c)
@@ -538,11 +538,11 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows && qUseFakeTTGetWPlacementToImage
+#if qStroika_Foundation_Common_Platform_Windows && qUseFakeTTGetWPlacementToImage
 static bool Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* srcText, size_t len, wchar_t* glyphImagesOut);
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ************************************ Bitmap ********************************
@@ -694,7 +694,7 @@ void FontSpecification::SetFromOSRep (const string& osRep)
 */
 void FontSpecification::SetFontName (const SDKString& fontName)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     Characters::CString::Copy (fFontInfo.lfFaceName, Memory::NEltsOf (fFontInfo.lfFaceName), fontName.c_str ());
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif qStroika_FeatureSupported_XWindows
@@ -702,7 +702,7 @@ void FontSpecification::SetFontName (const SDKString& fontName)
 #endif
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 FontSpecification::FontNameSpecifier::FontNameSpecifier (const Characters::SDKChar* from)
 {
     Characters::CString::Copy (fName, Memory::NEltsOf (fName), from);
@@ -711,7 +711,7 @@ FontSpecification::FontNameSpecifier::FontNameSpecifier (const Characters::SDKCh
 
 void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     Characters::CString::Copy (fFontInfo.lfFaceName, Memory::NEltsOf (fFontInfo.lfFaceName), fontNameSpecifier.fName);
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif qStroika_FeatureSupported_XWindows
@@ -719,7 +719,7 @@ void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifie
 #endif
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 struct FontSelectionInfo {
     FontSelectionInfo (BYTE desiredCharset)
         : fDesiredCharset (desiredCharset)
@@ -827,7 +827,7 @@ FontSpecification Led::GetStaticDefaultFont ()
     static bool              sDefaultFontValid = false;
     static FontSpecification sDefaultFont;
     if (not sDefaultFontValid) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         sDefaultFont = GetStaticDefaultFont (DEFAULT_CHARSET);
 #elif qStroika_FeatureSupported_XWindows
         {
@@ -835,7 +835,7 @@ FontSpecification Led::GetStaticDefaultFont ()
             sDefaultFont.SetPointSize (12);
         }
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         sDefaultFont.SetTextColor (Led_GetTextColor ());
 #endif
         sDefaultFontValid = true;
@@ -843,7 +843,7 @@ FontSpecification Led::GetStaticDefaultFont ()
     return (sDefaultFont);
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 FontSpecification Led::GetStaticDefaultFont (BYTE charSet)
 {
     FontSpecification defaultFont;
@@ -925,7 +925,7 @@ IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecificati
             result.InvalidateStyle_SubOrSuperScript ();
         }
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     {
         if (not lhs.GetStyle_Strikeout_Valid () or not rhs.GetStyle_Strikeout_Valid () or lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
             result.InvalidateStyle_Strikeout ();
@@ -961,7 +961,7 @@ IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecificati
     return result;
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ******************************** Tablet::RecolorHelper *************************
@@ -1204,13 +1204,13 @@ void Tablet::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led
  *********************************** Tablet *************************************
  ********************************************************************************
  */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 Tablet::Tablet (GrafPtr gp)
     : fGrafPort (gp)
 {
     RequireNotNull (gp);
 }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 Tablet::Tablet (HDC hdc, Tablet::OwnDCControl ownsDC)
     : m_hDC (hdc)
     , fRecolorHelper (nullptr)
@@ -1262,7 +1262,7 @@ Tablet::Tablet (Display* display, Drawable drawable)
 
 Tablet::~Tablet ()
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     delete fRecolorHelper;
     if (m_hDC != nullptr and fOwnsDC == eOwnsDC) {
         ::DeleteDC (Detach ());
@@ -1322,7 +1322,7 @@ TWIPS_Rect Tablet::CvtToTWIPS (Led_Rect from) const
 */
 void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateType scrollVBy)
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     Rect      qdMoveRect = AsQDRect (windowRect);
     RgnHandle updateRgn  = ::NewRgn ();
     Execution::ThrowIfNull (updateRgn);
@@ -1334,7 +1334,7 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
     ::InvalRgn (updateRgn);
 #endif
     ::DisposeRgn (updateRgn);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     RECT gdiMoveRect = AsRECT (windowRect);
     // NB: I used to use ScrollDC (Led 2.1 and earlier). But that code appeared to sometimes leave
     // little bits of crufy around. I never understood why. But I assume it was a windows bug.
@@ -1410,13 +1410,13 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
 */
 void Tablet::FrameRegion (const Region& r, const Color& c)
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     MacPortAndClipRegionEtcSaver saver; // unclear if this is useful/needed?
     SetPort ();
     PenMode (srcCopy); // ???
     GDI_RGBForeColor (c.GetOSRep ());
     ::FrameRgn (r.GetOSRep ());
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     Brush brush = Brush (c.GetOSRep ());
     (void)::FrameRgn (*this, r, brush, 1, 1);
 #else
@@ -1458,13 +1458,13 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
 {
     RequireNotNull (text);
     RequireNotNull (charLocations);
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     SetPort ();
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     const DistanceType kMaxTextWidthResult = 0x7fff;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     DistanceType kMaxTextWidthResult = kRunning32BitGDI ? 0x7fffffff : 0x7fff;
     if (IsPrinting ()) {
         // See SPR#0435
@@ -1510,7 +1510,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
             }
         }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         SIZE size;
         Assert (sizeof (int) == sizeof (DistanceType));
 #if qUseUniscribeToImage
@@ -1594,7 +1594,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
     }
 
 // LGP-991220 - This is generating asserts elsewhere - and seems like such a hack. Not sure why needed. Try getting rid of and see what happens?
-#if qPlatform_Windows && 0
+#if qStroika_Foundation_Common_Platform_Windows && 0
     // This gross hack is cuz we do a GetTextExtent() at the end of the
     // DrawText for PC, to see how much we drew. This is the only hack
     // I could think of to assure we get consistent results (which is very important).
@@ -1651,7 +1651,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
         }
 
 // Actually image the characters
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);
 
 #if qUseUniscribeToImage
@@ -1838,7 +1838,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
 
 void Tablet::SetBackColor (const Color& backColor)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     SetBkColor (backColor.GetOSRep ());
 #elif qStroika_FeatureSupported_XWindows
     if (backColor == Color::kWhite) {
@@ -1867,7 +1867,7 @@ void Tablet::SetBackColor (const Color& backColor)
 
 void Tablet::SetForeColor (const Color& foreColor)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     SetTextColor (foreColor.GetOSRep ());
 #elif qStroika_FeatureSupported_XWindows
     if (foreColor == Color::kWhite) {
@@ -1902,7 +1902,7 @@ void Tablet::SetForeColor (const Color& foreColor)
 void Tablet::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color& eraseColor)
 {
     if (not eraseRect.IsEmpty ()) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         Led_Rect         eraser = eraseRect;
         Brush            backgroundBrush (eraseColor.GetOSRep ());
         GDI_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
@@ -1946,7 +1946,7 @@ void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unuse
                                       [[maybe_unused]] Color hilightForeColor, Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         /*
          *  SPR#1271 - major reworking using DIB sections etc, to get much better display of hilighted text.
          */
@@ -2006,7 +2006,7 @@ void Tablet::HilightArea_SolidHelper (const Region& hilightArea, [[maybe_unused]
                                       [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         Assert (false); // probably not hard - bit not totally obvious how todo and since not called yet - ignore for now... LGP 2002-12-03
 #elif qStroika_FeatureSupported_XWindows
         Assert (false); // I have no XWin region implementation yet... LGP 2002-12-03
@@ -2020,7 +2020,7 @@ void Tablet::HilightArea_SolidHelper (const Region& hilightArea, [[maybe_unused]
 */
 FontMetrics Tablet::GetFontMetrics () const
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     RequireNotNull (m_hAttribDC);
     TEXTMETRIC tms;
     Verify (::GetTextMetrics (m_hAttribDC, &tms) != 0);
@@ -2279,12 +2279,12 @@ void Tablet::ParseFontName (const SDKString& fontName, SDKString* familyName, SD
  ***************************** OffscreenTablet::OT ******************************
  ********************************************************************************
  */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 OffscreenTablet::OT::OT (GrafPtr gp)
     : inherited (gp)
 {
 }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 OffscreenTablet::OT::OT (HDC hdc, Tablet::OwnDCControl ownsDC)
     : inherited (hdc, ownsDC)
 {
@@ -2305,11 +2305,11 @@ OffscreenTablet::OffscreenTablet ()
     : fOrigTablet (nullptr)
     , fOffscreenRect (Led_Rect (0, 0, 0, 0))
     , fOffscreenTablet (nullptr)
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     , fOrigDevice (nullptr)
     , fOrigPort (nullptr)
     , fOffscreenGWorld (nullptr)
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     , fMemDC ()
     , fMemoryBitmap ()
     , fOldBitmapInDC (nullptr)
@@ -2321,7 +2321,7 @@ OffscreenTablet::OffscreenTablet ()
 
 OffscreenTablet::~OffscreenTablet ()
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     if (fOrigPort != nullptr) {
         ::SetGWorld (fOrigPort, fOrigDevice); // restore gworld
     }
@@ -2329,7 +2329,7 @@ OffscreenTablet::~OffscreenTablet ()
         ::DisposeGWorld (fOffscreenGWorld);
     }
     delete fOffscreenTablet;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     if (fOldBitmapInDC != nullptr) {
         (void)fMemDC.SelectObject (fOldBitmapInDC);
     }
@@ -2352,7 +2352,7 @@ void OffscreenTablet::Setup (Tablet* origTablet)
     RequireNotNull (origTablet);
 
     fOrigTablet = origTablet;
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     // Save the old gworld info
     Assert (fOrigPort == nullptr);
     Assert (fOrigDevice == nullptr);
@@ -2370,7 +2370,7 @@ void OffscreenTablet::Setup (Tablet* origTablet)
     if (fOffscreenGWorld != nullptr) {
         fOffscreenTablet = new OT (reinterpret_cast<GrafPtr> (fOffscreenGWorld));
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     if (fMemDC.CreateCompatibleDC (fOrigTablet)) {
         fOffscreenTablet = &fMemDC;
     }
@@ -2389,7 +2389,7 @@ void OffscreenTablet::Setup (Tablet* origTablet)
 Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceType extraToAddToBottomOfRect)
 {
     Tablet* result = fOrigTablet;
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     if (fOffscreenTablet != nullptr) {
         fOffscreenRect = currentRowRect;
         fOffscreenRect.bottom += extraToAddToBottomOfRect;
@@ -2426,7 +2426,7 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
         fOffscreenTablet = nullptr;
     good:;
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     if (fOffscreenTablet != nullptr) {
         fOffscreenRect = currentRowRect;
         fOffscreenRect.bottom += extraToAddToBottomOfRect;
@@ -2522,7 +2522,7 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
 void OffscreenTablet::BlastBitmapToOrigTablet ()
 {
     if (fOffscreenTablet != nullptr) {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         Rect bounds = AsQDRect (fOffscreenRect);
         ::SetGWorld (fOrigPort, fOrigDevice); // restore gworld
         GDI_RGBForeColor (Color::kBlack.GetOSRep ());
@@ -2538,7 +2538,7 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
         ::CopyBits (&tabletGrafPort->portBits, &((GrafPtr)fOrigPort)->portBits, &tabletGrafPort->portRect, &bounds, srcCopy, nullptr);
 #endif
         ::UnlockPixels (::GetGWorldPixMap (fOffscreenGWorld));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         Tablet* screenDC = fOrigTablet;
         screenDC->BitBlt (fOffscreenRect.left, fOffscreenRect.top, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (),
                           fOffscreenTablet, fOffscreenRect.left, fOffscreenRect.top, SRCCOPY);
@@ -2566,7 +2566,7 @@ InstalledFonts::InstalledFonts (
     : fFilterOptions (filterOptions)
     , fFontNames ()
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     LOGFONT lf;
     memset (&lf, 0, sizeof (LOGFONT));
     lf.lfCharSet = DEFAULT_CHARSET;
@@ -2602,7 +2602,7 @@ InstalledFonts::InstalledFonts (
 #endif
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 BOOL FAR PASCAL InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int fontType, LPVOID pThis)
 {
     InstalledFonts* thisP = reinterpret_cast<InstalledFonts*> (pThis);
@@ -2654,10 +2654,10 @@ void Globals::InvalidateGlobals ()
 {
 // From the name, it would appear we invalidated, and re-validate later. But I think this implematnion is a bit
 // simpler, and should perform fine given its expected usage.
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     fLogPixelsH = 72;
     fLogPixelsV = 72;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     WindowDC screenDC (nullptr);
     fLogPixelsH = ::GetDeviceCaps (screenDC, LOGPIXELSX);
     fLogPixelsV = ::GetDeviceCaps (screenDC, LOGPIXELSY);
@@ -2738,7 +2738,7 @@ size_t Led::Led_GetDIBPalletByteCount (const Led_DIB* dib)
         const BITMAPINFOHEADER& hdr       = dib->bmiHeader;
         //unsigned short          bitCount  = Led_ByteSwapFromWindows (hdr.biBitCount);
         if (Led_ByteSwapFromWindows (hdr.biCompression) == BI_BITFIELDS) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             Assert (sizeof (DWORD) == sizeof (unsigned int));
 #endif
             Assert (4 == sizeof (unsigned int));
@@ -2835,7 +2835,7 @@ const void* Led::Led_GetDIBBitsPointer (const Led_DIB* dib)
     return reinterpret_cast<const char*> (dib) + Led_ByteSwapFromWindows (hdr.biSize) + Led_GetDIBPalletByteCount (dib);
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ****************************** Led_DIBFromHBITMAP ******************************
@@ -3117,7 +3117,7 @@ Led_Rect Led::CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn)
     return Led_Rect (yTop, xLeft, r.GetHeight (), r.GetWidth ());
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 void Led::Led_CenterWindowInParent (HWND w)
 {
     Assert (::IsWindow (w));
@@ -3144,7 +3144,7 @@ void Led::Led_CenterWindowInParent (HWND w)
 
 ////////////////////////////// PRIVATE UTILITIES
 
-#if qPlatform_Windows && qUseFakeTTGetWPlacementToImage
+#if qStroika_Foundation_Common_Platform_Windows && qUseFakeTTGetWPlacementToImage
 
 ///////////////////////////////////////////////////////////////////////////////////
 ////////////// CODE FROM Microsoft Knowledge Base Article - 241020  ///////////////

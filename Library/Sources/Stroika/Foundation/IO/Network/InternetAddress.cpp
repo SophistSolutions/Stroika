@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <winsock2.h>
 
 #include <ws2tcpip.h>
@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Platform/Windows/WinSock.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
@@ -27,13 +27,13 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 // Not sure why this is necessary, but we get link errors sometimes without it... Maybe a windows makefile issue on regtest apps?
 // -- LGP 2014-11-06
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
-#if qPlatform_Windows && (NTDDI_VERSION < NTDDI_VISTA)
+#if qStroika_Foundation_Common_Platform_Windows && (NTDDI_VERSION < NTDDI_VISTA)
 namespace {
     int inet_pton (int af, const char* src, void* dst)
     {

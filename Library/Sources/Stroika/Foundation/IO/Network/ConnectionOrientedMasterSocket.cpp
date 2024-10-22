@@ -32,9 +32,9 @@ namespace {
         {
             Debug::TraceContextBumper                       ctx{"IO::Network::Socket::Listen", "backlog={}"_f, backlog};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             ThrowWSASystemErrorIfSOCKET_ERROR (::listen (fSD_, backlog));
 #else
             AssertNotImplemented ();
@@ -45,10 +45,10 @@ namespace {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             sockaddr_storage                                peer{};
             socklen_t                                       sz = sizeof (peer);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             return ConnectionOrientedStreamSocket::Attach (
                 Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); }));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             return ConnectionOrientedStreamSocket::Attach (
                 ThrowWSASystemErrorIfSOCKET_ERROR (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
 #else

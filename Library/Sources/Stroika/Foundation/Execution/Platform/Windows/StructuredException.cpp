@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
@@ -117,7 +117,7 @@ namespace {
                     TraceContextBumper ctx1{"ContextRecord"};
                     DbgTrace ("ContextRecord->ContextFlags = 0x{:x}"_f, pExp->ContextRecord->ContextFlags);
                     DbgTrace ("ContextRecord->Dr0 = 0x{:x}"_f, pExp->ContextRecord->Dr0);
-#if qPlatform_Win32
+#if qStroika_Foundation_Common_Platform_Win32
                     DbgTrace ("ContextRecord->Esp = 0x{:x}"_f, pExp->ContextRecord->Esp);
 #endif
                 }

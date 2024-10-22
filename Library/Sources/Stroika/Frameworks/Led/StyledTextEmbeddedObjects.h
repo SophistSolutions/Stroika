@@ -198,7 +198,7 @@ namespace Stroika::Frameworks::Led {
         SDKString fOpenCommandName;
     };
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     /*
     @CLASS:         StandardMacPictureStyleMarker
     @BASES:         @'SimpleEmbeddedObjectStyleMarker'
@@ -209,7 +209,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = SimpleEmbeddedObjectStyleMarker;
 
     public:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         using PictureHandle = HANDLE;
 #endif
 
@@ -225,7 +225,7 @@ namespace Stroika::Frameworks::Led {
         static SimpleEmbeddedObjectStyleMarker* mk (const char* embeddingTag, const void* data, size_t len);
         static SimpleEmbeddedObjectStyleMarker* mk (ReaderFlavorPackage& flavorPackage);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         static const Led_DIB* sUnsupportedFormatPict; // Must be set externally by user of this class before we ever build one of these
                                                       // objects, or an assert error.
                                                       // Reason for this design is we need access to some pict resource, but we don't want
@@ -252,7 +252,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         PictureHandle fPictureHandle;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         size_t fPictureSize;
 #endif
     };
@@ -312,7 +312,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         static const Led_ClipFormat kURLDClipFormat;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         static const Led_ClipFormat kWin32URLClipFormat;
 #endif
         static const Led_PrivateEmbeddingTag kEmbeddingTag;
@@ -356,7 +356,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual FontSpecification GetDisplayFont (const StyleRunElement& runElement) const;
     };
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     class StandardMacPictureWithURLStyleMarker : public SimpleEmbeddedObjectStyleMarker {
     private:
         using inherited = SimpleEmbeddedObjectStyleMarker;
@@ -406,7 +406,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         StandardMacPictureStyleMarker::PictureHandle fPictureHandle;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         size_t fPictureSize;
 #endif
     };
@@ -481,7 +481,7 @@ namespace Stroika::Frameworks::Led {
         ~StandardUnknownTypeStyleMarker ();
 
     public:
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         static const Led_DIB* sUnknownPict;
 #endif
 

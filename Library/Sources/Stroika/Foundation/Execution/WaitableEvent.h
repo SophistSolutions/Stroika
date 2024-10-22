@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \note the user of this class must assure all waiters have completed their wait before destrying the event (checked with assertions).
+         *  \note the user of this class must assure all waiters have completed their wait before destroying the event (checked with assertions).
          */
 #if qDebug || qStroika_FeatureSupported_Valgrind
         ~WaitableEvent ();

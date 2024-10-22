@@ -6,9 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <sys/socket.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <WinSock2.h>
 
 #include <WS2tcpip.h>
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::IO::Network {
         constexpr SocketAddress (const sockaddr_in& iaddr) noexcept;
         constexpr SocketAddress (const sockaddr_in6& iaddr) noexcept;
         constexpr SocketAddress (const sockaddr_storage& iaddr) noexcept;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         SocketAddress (const SOCKET_ADDRESS& sockaddr);
 #endif
         explicit SocketAddress (const InternetAddress& iaddr, PortType portNumber = kAnyPort);

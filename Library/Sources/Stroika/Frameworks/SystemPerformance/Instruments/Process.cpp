@@ -3,10 +3,10 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 #include <netinet/tcp.h>
 #include <sys/sysinfo.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 
 #include <Wdbgexts.h>
@@ -40,9 +40,9 @@
 #include "Stroika/Foundation/Streams/iostream/FStreamSupport.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include "Stroika/Foundation/Execution/Platform/POSIX/Users.h"
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/Users.h"
 #endif
@@ -86,19 +86,20 @@ using Instruments::Process::ProcessType;
 // avoiding other calls
 #define qUseWinInternalSupport_ 0
 #ifndef qUseWinInternalSupport_
-#define qUseWinInternalSupport_ qPlatform_Windows
+#define qUseWinInternalSupport_ qStroika_Foundation_Common_Platform_Windows
 #endif
 
 // This appears to work, but I fear (not tested) its not super performant - performance not tested -- LGP 2016-03-11
 //#define   qUseCreateToolhelp32SnapshotToCountThreads      0
 #ifndef qUseCreateToolhelp32SnapshotToCountThreads
-#define qUseCreateToolhelp32SnapshotToCountThreads qPlatform_Windows
+#define qUseCreateToolhelp32SnapshotToCountThreads qStroika_Foundation_Common_Platform_Windows
 #endif
 
 // Still maybe needed for thread count -- but check with ifdefs
 #define qUseWMICollectionSupport_ 0
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_ qPlatform_Windows && (!qUseCreateToolhelp32SnapshotToCountThreads and !qUseWinInternalSupport_)
+#define qUseWMICollectionSupport_                                                                                                          \
+    qStroika_Foundation_Common_Platform_Windows && (!qUseCreateToolhelp32SnapshotToCountThreads and !qUseWinInternalSupport_)
 #endif
 
 #if qUseWinInternalSupport_
@@ -132,7 +133,7 @@ using SystemPerformance::Support::WMICollector;
 #pragma comment(lib, "psapi.lib") // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     struct SetPrivilegeInContext_ {
         enum IgnoreError {
@@ -307,7 +308,7 @@ namespace {
     using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 namespace {
     /*
      *  Missing items we don't currently capture:
@@ -1194,7 +1195,7 @@ namespace {
 };
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     struct UNICODE_STRING {
         USHORT Length;
@@ -1236,7 +1237,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     struct PerfStats_ {
         TimePointSeconds          fCapturedAt;
@@ -1670,17 +1671,17 @@ namespace {
 
 namespace {
     struct ProcessInstrumentRep_
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         : InstrumentRep_Linux_
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         : InstrumentRep_Windows_
 #else
         : InstrumentRepBase_<ModuleCommonContext_>
 #endif
     {
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         using inherited = InstrumentRep_Linux_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         using inherited = InstrumentRep_Windows_;
 #else
         using inherited = InstrumentRepBase_<ModuleCommonContext_>;
@@ -1719,7 +1720,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::ProcessDetails _InternalCapture"};
 #endif
-#if qPlatform_Linux or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
             return inherited::_InternalCapture ();
 #else
             return ProcessMapType{};

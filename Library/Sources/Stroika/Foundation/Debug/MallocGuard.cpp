@@ -5,11 +5,11 @@
 
 #include <atomic>
 #include <exception>
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 #include <malloc.h>
 #endif
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <unistd.h>
 #endif
 

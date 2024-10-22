@@ -98,7 +98,7 @@ namespace Stroika::Frameworks::Led {
         sCommandNames = cmdNames;
     }
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
     // class StandardMacPictureStyleMarker
     inline StandardMacPictureStyleMarker::PictureHandle StandardMacPictureStyleMarker::GetPictureHandle () const
     {
@@ -107,9 +107,9 @@ namespace Stroika::Frameworks::Led {
     }
     inline size_t StandardMacPictureStyleMarker::GetPictureByteSize () const
     {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         return ::GetHandleSize (Handle (fPictureHandle));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         return fPictureSize; // cannot use ::GlobalSize () since that sometimes returns result larger than
                              // actual picture size (rounds up)
 #endif
@@ -123,7 +123,7 @@ namespace Stroika::Frameworks::Led {
         return (fDIBData);
     }
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
     // class StandardMacPictureWithURLStyleMarker
     inline StandardMacPictureStyleMarker::PictureHandle StandardMacPictureWithURLStyleMarker::GetPictureHandle () const
     {
@@ -132,9 +132,9 @@ namespace Stroika::Frameworks::Led {
     }
     inline size_t StandardMacPictureWithURLStyleMarker::GetPictureByteSize () const
     {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         return ::GetHandleSize (Handle (fPictureHandle));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         return fPictureSize; // cannot use ::GlobalSize () since that sometimes returns result larger than
                              // actual picture size (rounds up)
 #endif

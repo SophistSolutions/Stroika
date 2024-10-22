@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #include <winioctl.h>
 #endif
@@ -225,7 +225,7 @@ KeyedCollection<DiskInfoType, filesystem::path> FileSystem::GetAvailableDisks ()
 {
     KeyedCollection<DiskInfoType, filesystem::path> result{[] (DiskInfoType e) { return e.fDeviceName; }};
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #if qCaptureDiskDeviceInfoWindows_ && 0
     for (const auto& s : GetPhysicalDiskDeviceInfo_ ()) {
         DbgTrace (L"s=%s", s.c_str ());

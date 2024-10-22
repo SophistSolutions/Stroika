@@ -19,7 +19,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     {
         Require (not p1.empty () or p2.empty ()); // if only one path provided, provide it first
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     template <typename WINDOWS_API_RESULT>
     inline static void Exception::ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const path& p1, const path& p2)
     {

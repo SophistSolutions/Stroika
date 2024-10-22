@@ -46,15 +46,15 @@ namespace {
 Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind,
                                                                     const optional<IPPROTO>& protocol)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
     Socket::PlatformNativeHandle sfd;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     sfd = Handle_ErrNoResultInterruption ([=] () -> int {
         return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol)));
     });
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
     ThrowWSASystemErrorIfSOCKET_ERROR (
         sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol))));
@@ -64,7 +64,7 @@ Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddres
 #endif
     if (family == SocketAddress::FamilyType::INET6) {
         int useIPV6Only = not kUseDualStackSockets_;
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         // Linux follows the RFC, and uses dual-stack mode by default
         constexpr bool kOSDefaultIPV6Only_{false};
         bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
@@ -125,7 +125,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     sockaddr_storage     useSockAddr = sockAddr.As<sockaddr_storage> ();
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
     try {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
         Handle_ErrNoResultInterruption (

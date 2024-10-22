@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Linguistics/Words.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Characters/Platform/Windows/SmartBSTR.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
@@ -36,7 +36,7 @@ using namespace Time;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     TimeOfDay mkTimeOfDay_ (const ::SYSTEMTIME& sysTime)
     {
@@ -98,7 +98,7 @@ TimeOfDay::FormatException::FormatException ()
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     TimeOfDay Parse_ (const String& rep, LCID lcid)
     {

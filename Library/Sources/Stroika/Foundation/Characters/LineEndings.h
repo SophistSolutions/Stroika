@@ -18,9 +18,9 @@ namespace Stroika::Foundation::Characters {
      */
     template <IPossibleCharacterRepresentation T>
     static constexpr T kEOL[] = {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         '\r', '\n', '\0' // "\r\n"
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
         '\n', '\0' // "\n"
 #endif
     };

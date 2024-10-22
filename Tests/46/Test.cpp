@@ -94,7 +94,7 @@ namespace {
         void Test_ExtractDirAndBaseName_ ()
         {
 // Tests from DOCS line in ExtractDirAndBaseName (except now with different values - cuz using filesystem::path::parent_path/filename
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             EXPECT_TRUE ((filesystem::path (L"/usr/lib").parent_path () == L"/usr"));
             EXPECT_TRUE ((filesystem::path (L"/usr/lib").filename () == L"lib"));
             EXPECT_TRUE ((filesystem::path (L"/usr/").parent_path () == L"/usr"));
@@ -107,7 +107,7 @@ namespace {
             EXPECT_TRUE ((filesystem::path (L".").filename () == L"."));
             EXPECT_TRUE ((filesystem::path (L"..").parent_path () == L""));
             EXPECT_TRUE ((filesystem::path (L"..").filename () == L".."));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             EXPECT_TRUE ((filesystem::path{L"\\usr\\lib"}.parent_path () == L"\\usr"));
             EXPECT_TRUE ((filesystem::path (L"\\usr\\lib").filename () == L"lib"));
             EXPECT_TRUE ((filesystem::path (L"\\usr\\").parent_path () == L"\\usr"));
@@ -130,9 +130,9 @@ namespace {
             EXPECT_TRUE (filesystem::path (L"foo.cpp").stem () == L"foo");
             EXPECT_TRUE (filesystem::path (L"foo.exe").stem () == L"foo");
             EXPECT_TRUE (filesystem::path (L".exe").stem () == L".exe");
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             EXPECT_TRUE (filesystem::path (L"/tmp/.CPUBurner").stem () == L".CPUBurner");
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             EXPECT_TRUE (filesystem::path (L"c:\\tmp\\.CPUBurner").stem () == L".CPUBurner");
 #endif
         }

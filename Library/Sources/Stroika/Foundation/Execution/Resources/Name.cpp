@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #endif
 
@@ -17,7 +17,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Resources;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 extern const Resources::ResourceType PredefinedTypes::kRES = SDKSTR ("RES");
 #else
 extern const Resources::ResourceType PredefinedTypes::kRES = 0;

@@ -50,7 +50,7 @@ namespace {
     {
         (sFatalErrorHandler_) (SDKSTR ("std::terminate () called"));
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     void PurecallHandler_ ()
     {
         (sFatalErrorHandler_) (SDKSTR ("purecall_handler_ () called"));
@@ -63,7 +63,7 @@ void Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const 
     RequireNotNull (fatalErrorHandler);
     sFatalErrorHandler_ = fatalErrorHandler;
     set_terminate (TerminateHandler_);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // Not C++ standard - just msvc error call
     (void)_set_purecall_handler (PurecallHandler_);
 #endif

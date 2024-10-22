@@ -21,7 +21,7 @@
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Signals.h"
 #endif
@@ -93,7 +93,7 @@ namespace Stroika::Frameworks::Service {
     using Containers::Sequence;
     using Execution::pid_t;
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     using Execution::SignalID;
 #endif
 
@@ -159,7 +159,7 @@ namespace Stroika::Frameworks::Service {
     public:
         class IServiceIntegrationRep;
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     public:
         class BasicUNIXServiceImpl;
 #endif
@@ -170,7 +170,7 @@ namespace Stroika::Frameworks::Service {
     public:
         class RunNoFrillsService;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     public:
         class WindowsService;
 #endif
@@ -739,7 +739,7 @@ namespace Stroika::Frameworks::Service {
         shared_ptr<IApplicationRep> fAppRep_;
     };
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     /**
      *  Default for UNIX - responds in standard way to basic signals etc
      */
@@ -809,7 +809,7 @@ namespace Stroika::Frameworks::Service {
     };
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     /**
      *  Run as a windows service - integrating with the Windows Service Mgr
      *

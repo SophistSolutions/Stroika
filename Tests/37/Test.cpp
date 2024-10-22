@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #include <winerror.h>
 #include <wininet.h> // for error codes
@@ -19,7 +19,7 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
@@ -199,7 +199,7 @@ namespace {
                     EXPECT_TRUE (false);
                 }
             }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             void Bug2_Windows_Errors_Mapped_To_Conditions_ ()
             {
                 EXPECT_TRUE ((error_code{ERROR_NOT_ENOUGH_MEMORY, system_category ()} == errc::not_enough_memory));
@@ -260,7 +260,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test5_error_code_condition_compares_"};
         Test5_error_code_condition_compares_::Private::Bug1_ ();
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         Test5_error_code_condition_compares_::Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
 #endif
     }

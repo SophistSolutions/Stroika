@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #endif
 
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     private:
         span<const byte> fSpan_;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         HANDLE fFileHandle_{INVALID_HANDLE_VALUE};
         HANDLE fFileMapping_{INVALID_HANDLE_VALUE};
 #endif

@@ -21,7 +21,7 @@ using namespace Stroika::Foundation::IO::Network;
  ********************* IO::Network::SocketAddress *******************************
  ********************************************************************************
  */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
     : fSocketAddress_{}
 {

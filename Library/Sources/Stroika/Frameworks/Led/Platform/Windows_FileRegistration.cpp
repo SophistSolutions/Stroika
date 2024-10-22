@@ -15,7 +15,7 @@ using namespace Stroika::Frameworks::Led::Platform;
 
 using Memory::StackBuffer;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 
 inline void ThrowIfRegError (LONG e)
 {

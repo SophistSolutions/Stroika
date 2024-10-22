@@ -9,14 +9,14 @@
 #include <cstdio> // for a couple sprintf() calls - could pretty easily be avoided
 
 #include "Stroika/Foundation/Characters/CodePage.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Characters/Platform/Windows/CodePage.h"
 #endif
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
@@ -35,7 +35,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
@@ -170,7 +170,7 @@ IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
         return IncrementalFontSpecification{}; // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
     }
     IncrementalFontSpecification fontSpec;
-#if qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#if qStroika_Foundation_Common_Platform_Windows || qStroika_FeatureSupported_XWindows
     fontSpec.SetFontNameSpecifier (ftep->fFontName.c_str ());
 #endif
     return fontSpec;
@@ -317,7 +317,7 @@ RTFIO::ListTables::ListTables (const vector<ListTableEntry>& listTableEntries, c
  */
 #if qStroika_Frameworks_Led_SupportGDI
 const Led_PrivateEmbeddingTag RTFIO::kRTFBodyGroupFragmentEmbeddingTag = "RTFBFrag";
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 const Led_ClipFormat RTFIO::kRTFBodyGroupFragmentClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T("RTFF")));
 #else
 const Led_ClipFormat RTFIO::kRTFBodyGroupFragmentClipFormat = static_cast<Led_ClipFormat> ('RTFF');
@@ -1303,7 +1303,7 @@ StyledTextIOReader_RTF::StyledTextIOReader_RTF (SrcStream* srcStream, SinkStream
     , fDefaultUnsupportedCharacterChar (LED_TCHAR_OF ('?'))
     , fRTFInfo (rtfInfo == nullptr ? new RTFInfo () : rtfInfo)
     , fOwnRTFInfo (rtfInfo == nullptr)
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     , fCachedFontSize (0)
     , fCachedFontSizeTMHeight (0)
 #endif
@@ -1315,7 +1315,7 @@ StyledTextIOReader_RTF::StyledTextIOReader_RTF (SrcStream* srcStream, SinkStream
      *  Unclear what that default should be???
      */
     fPlainFont.SetPointSize (12);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     fCachedFontSize         = 12;
     fCachedFontSizeTMHeight = fPlainFont.PeekAtTMHeight ();
 #endif
@@ -3227,7 +3227,7 @@ void StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
 void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] TWIPS_Point size,
                                                                [[maybe_unused]] size_t nBytes, [[maybe_unused]] const void* data)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     using RTFOLEEmbedding = RTFIO::RTFOLEEmbedding;
     //const Led_ClipFormat                                kOLEEmbedClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Object Descriptor")));
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
@@ -3449,7 +3449,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] TWIPS_Po
             }
             return Led_CloneDIB (dib);
         } break;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         case eEMF: {
             Led_DIB*     result = nullptr;
             HENHMETAFILE hMF    = ::SetEnhMetaFileBits (static_cast<UINT> (nBytes), reinterpret_cast<const unsigned char*> (data));
@@ -3481,12 +3481,12 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] TWIPS_Po
     return nullptr;
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
 @METHOD:        StyledTextIOReader_RTF::ConstructDIBFromEMFHelper
 @DESCRIPTION:   <p>Construct a Led_DIB given HENHMETAFILE, the desired 'shownSize' and 'bmSize' can OVERRIDE the
             size specified in the metafile itself.</p>
-                <p>This routine is only available if @'qPlatform_Windows'.</p>
+                <p>This routine is only available if @'qStroika_Foundation_Common_Platform_Windows'.</p>
 */
 Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSize, [[maybe_unused]] TWIPS_Point bmSize, const HENHMETAFILE hMF)
 {
@@ -3616,7 +3616,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
                 // LGP 2000/04/26
                 return;
             }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             if (fte->fCharSet != -1) {
                 // Not sure what I should do if Win32CharSetToCodePage returns zero? -- LGP 2002-12-08
                 CodePage cp = Platform::Windows::Win32CharSetToCodePage (fte->fCharSet);
@@ -3639,14 +3639,14 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
             if (newSize > 128) {
                 newSize = 128;
             }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             if (newSize == fCachedFontSize) {
                 fontSpec.PokeAtTMHeight (fCachedFontSizeTMHeight);
                 break;
             }
 #endif
             fontSpec.SetPointSize (static_cast<FontSpecification::FontSize> (newSize)); //pinned above 4..128
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             fCachedFontSize         = static_cast<FontSpecification::FontSize> (newSize);
             fCachedFontSizeTMHeight = fontSpec.PeekAtTMHeight ();
 #endif
@@ -3675,7 +3675,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
             fontSpec.SetStyle_SubOrSuperScript (FontSpecification::eSuperscript);
         } break;
         case RTFIO::eControlAtom_strike: {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             bool turnStyleOn = true; // no arg means ON
             if (cw.fHasArg) {
                 turnStyleOn = cw.fValue;
@@ -4836,7 +4836,7 @@ void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContex
             WriteTag ("super");
             break;
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     if (newOne.GetStyle_Strikeout ()) {
         WriteTag ("strike");
     }
@@ -4863,7 +4863,7 @@ void StyledTextIOWriter_RTF::AssureColorTableBuilt (WriterContext& writerContext
     }
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     BOOL FAR PASCAL Save_Charset_EnumFontFamiliesProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int /*fontType*/, LPVOID pCharset)
     {
@@ -4881,7 +4881,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
         // on StyledTextIOWriter_RTF::DTOR
         set<SDKString> fontNames;
         writerContext.GetSrcStream ().SummarizeFontAndColorTable (&fontNames, nullptr);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         WindowDC screenDC (nullptr);
 #endif
         for (set<SDKString>::const_iterator i = fontNames.begin (); i != fontNames.end (); ++i) {
@@ -4902,7 +4902,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
 //      Very minimal support to get this working as well as it did for Led 3.0. SPR#1577.
 //      Got basically working enough to fix this bug.
 //
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
                 if (name == Led_SDK_TCHAROF ("New York")) {
                     fte.fFamily = FontTableEntry::eSwiss;
                 }
@@ -4921,7 +4921,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
                 else if (name == Led_SDK_TCHAROF ("Times")) {
                     fte.fFamily = FontTableEntry::eRoman;
                 }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                 LOGFONT lf;
                 (void)::memset (&lf, 0, sizeof (lf));
                 Characters::CString::Copy (lf.lfFaceName, Memory::NEltsOf (lf.lfFaceName), name.c_str ());

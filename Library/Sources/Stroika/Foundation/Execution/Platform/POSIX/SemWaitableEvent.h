@@ -8,7 +8,7 @@
 
 #include <semaphore.h>
 
-#if !qPlatform_POSIX
+#if !qStroika_Foundation_Common_Platform_POSIX
 #error "ONLY INCLUDE FOR POSIX"
 #endif
 

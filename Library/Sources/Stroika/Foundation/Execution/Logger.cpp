@@ -483,7 +483,7 @@ void Logger::FileAppender::Log (Priority logLevel, const String& message)
     fRep_->Log (logLevel, message);
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ********************** Execution::WindowsEventLogAppender **********************

@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -156,7 +156,7 @@ namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, all)
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         // Many performance instruments use pipes
         // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
         //  --LGP 2014-02-05

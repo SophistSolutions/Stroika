@@ -20,24 +20,24 @@ namespace Stroika::Foundation::IO::Network {
     }
     constexpr InternetAddress::InternetAddress (const in_addr_t& i)
         : fAddressFamily_ (AddressFamily::V4)
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         , fV4_{i}
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         , fV4_{in_addr{{static_cast<uint8_t> (Memory::BitSubstring (i, 0, 8)), static_cast<uint8_t> (Memory::BitSubstring (i, 8, 16)),
                         static_cast<uint8_t> (Memory::BitSubstring (i, 16, 24)), static_cast<uint8_t> (Memory::BitSubstring (i, 24, 32))}}}
 #endif
     {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         Assert (fV4_.s_addr == i);
 #endif
     }
     inline InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
         : fAddressFamily_{AddressFamily::V4}
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         , fV4_{i}
 #endif
     {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         fV4_.s_addr = i;
 #endif
         if (byteOrder == ByteOrder::Host) {
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     template <>
     String InternetAddress::As<String> () const;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     template <>
     inline in_addr_t InternetAddress::As<in_addr_t> () const
     {

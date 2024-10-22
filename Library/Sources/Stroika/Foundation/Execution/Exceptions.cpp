@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #include <wininet.h> // for error codes
 #endif
@@ -75,7 +75,7 @@ ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonFo
  ***************** Private_::SystemErrorExceptionPrivate_ ***********************
  ********************************************************************************
  */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 
 // for InternetGetConnectedState
 #if _MSC_VER
@@ -124,7 +124,7 @@ optional<String> TryToOverrideDefaultWindowsSystemCategoryMessage_ (error_code e
 #endif
 Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkMsg_ (error_code errCode)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // for some messages, the default windows implementation does poorly generating messages
     if (optional<String> o = TryToOverrideDefaultWindowsSystemCategoryMessage_ (errCode)) {
         return *o;
@@ -142,9 +142,9 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombined
         sb += Characters::Format ("{{errno: {}}}"_f, errCode.value ());
     }
     else if (errCode.category () == system_category ()) {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         sb += Characters::Format ("{{errno: {}}}"_f, errCode.value ());
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         sb += Characters::Format ("{{Windows error: {}}}"_f, errCode.value ());
 #else
         sb += Characters::Format ("{{system error: {}}}"_f, errCode.value ());
@@ -177,7 +177,7 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
 #endif
 
     // double check the compare-with-conditions code working the way I think its supposed to...  matching multiple error codes -- LGP 2019-02-04
-#if qPlatform_Windows && qDebug
+#if qStroika_Foundation_Common_Platform_Windows && qDebug
     if (errCode.category () == system_category ()) {
         switch (errCode.value ()) {
             case ERROR_NOT_ENOUGH_MEMORY: // errc::not_enough_memory

@@ -408,7 +408,7 @@ namespace Stroika::Frameworks::Led {
     //  class   TextImager::FontCacheInfoUpdater
     inline TextImager::FontCacheInfoUpdater::~FontCacheInfoUpdater ()
     {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         if (fRestoreObject != nullptr) {
             Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
         }
@@ -488,9 +488,9 @@ namespace Stroika::Frameworks::Led {
     */
     void TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
     {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 // Should probably do something similar?
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         HFONT hFont = (HFONT)::GetCurrentObject (fTablet->m_hAttribDC, OBJ_FONT);
         Verify (hFont != nullptr);
         LOGFONT lf;

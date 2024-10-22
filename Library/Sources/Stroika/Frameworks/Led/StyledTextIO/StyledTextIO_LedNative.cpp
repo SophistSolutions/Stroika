@@ -171,7 +171,7 @@ inline PortableStyleRunData_Version5 mkPortableStyleRunData_Version5 (const Styl
     data.fStyleSet |= isr.GetStyle_Italic () ? (1 << data.eItalic) : 0;
     data.fStyleSet |= isr.GetStyle_Underline () ? (1 << data.eUnderline) : 0;
 // note these set to zero in memset above so no need to set on other platforms
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     data.fStyleSet |= isr.GetStyle_Strikeout () ? (1 << data.eStrikeout) : 0;
 #endif
     UInt16ToBuf (isr.GetPointSize (), &data.fPointSize);
@@ -186,7 +186,7 @@ inline StyledInfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableSt
     fsp.SetStyle_Bold (!!(srcData.fStyleSet & (1 << srcData.eBold)));
     fsp.SetStyle_Italic (!!(srcData.fStyleSet & (1 << srcData.eItalic)));
     fsp.SetStyle_Underline (!!(srcData.fStyleSet & (1 << srcData.eUnderline)));
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     fsp.SetStyle_Strikeout (!!(srcData.fStyleSet & (1 << srcData.eStrikeout)));
 #endif
     short fontSize = BufToUInt16 (&srcData.fPointSize);
@@ -272,7 +272,7 @@ inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const Styl
     data.fStyleSet |= isr.GetStyle_Italic () ? (1 << data.eItalic) : 0;
     data.fStyleSet |= isr.GetStyle_Underline () ? (1 << data.eUnderline) : 0;
 // note these set to zero in memset above so no need to set on other platforms
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     data.fStyleSet |= isr.GetStyle_Strikeout () ? (1 << data.eStrikeout) : 0;
 #endif
     data.fStyleSet |= (isr.GetStyle_SubOrSuperScript () == FontSpecification::eSubscript) ? (1 << data.eSubscript) : 0;
@@ -292,7 +292,7 @@ inline StyledInfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableSt
     fsp.SetStyle_Bold (!!(srcData.fStyleSet & (1 << srcData.eBold)));
     fsp.SetStyle_Italic (!!(srcData.fStyleSet & (1 << srcData.eItalic)));
     fsp.SetStyle_Underline (!!(srcData.fStyleSet & (1 << srcData.eUnderline)));
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     fsp.SetStyle_Strikeout (!!(srcData.fStyleSet & (1 << srcData.eStrikeout)));
 #endif
     if (srcData.fStyleSet & (1 << srcData.eSubscript)) {
@@ -395,7 +395,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         }
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #else
         auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
@@ -496,7 +496,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         }
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #else
         auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
@@ -606,7 +606,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         }
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #else
         auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
@@ -739,7 +739,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         }
         size_t            nChars = totalTextLength * sizeof (wchar_t);
         StackBuffer<char> result{Memory::eUninitialized, nChars};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nChars = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Characters2Bytes (span{buf}, as_writable_bytes (span{result})).size ();
 #else
         nChars = CodeCvt<Led_tChar>{locale{}}.Characters2Bytes (span{buf}, as_writable_bytes (span{result})).size ();

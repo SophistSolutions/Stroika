@@ -7,10 +7,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <poll.h>
 #include <unistd.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <io.h>
 #endif
 
@@ -22,7 +22,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Streams/BufferedInputStream.h"
@@ -59,7 +59,7 @@ namespace {
         {
             auto activity = LazyEvalActivity{[&] () -> String { return Characters::Format ("opening {} for read access"_f, fFileName_); }};
             DeclareActivity currentActivity{&activity};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
             if (e != 0) {
                 FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
@@ -92,7 +92,7 @@ namespace {
             }
 #endif
             if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                 ::_close (fFD_);
 #else
                 ::close (fFD_);
@@ -109,7 +109,7 @@ namespace {
         {
             Require (IsOpenRead ());
             if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                 ::_close (fFD_);
 #else
                 ::close (fFD_);
@@ -123,7 +123,7 @@ namespace {
         }
         virtual optional<size_t> AvailableToRead () override
         {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             pollfd pollData{fFD_, POLLIN, 0};
             int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
             Assert (pollResult >= 0);
@@ -135,7 +135,7 @@ namespace {
                 return 1;
             }
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             AssertNotImplemented ();
             return nullopt;
 #endif
@@ -166,7 +166,7 @@ namespace {
             DeclareActivity currentActivity{&readingFromFileActivity};
 
             if (blockFlag == NoDataAvailableHandling::eDontBlock) {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                 pollfd pollData{fFD_, POLLIN, 0};
                 int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
                 Assert (pollResult >= 0);
@@ -177,7 +177,7 @@ namespace {
                     // if there is data available, safe to perform normal read = fall-thru
                 }
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                 /*
                  *  For now, assume all FILE reads are already non-blocking. Not sure about this.
                  *
@@ -200,7 +200,7 @@ namespace {
             /*
              *  Standard blocking read
              */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (
                                               ::_read (fFD_, intoBuffer.data (), Math::PinToMaxForType<unsigned int> (nRequested)))));
 #else
@@ -210,9 +210,9 @@ namespace {
         virtual Streams::SeekOffsetType GetReadOffset () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
-#elif qPlatform_Linux
+#elif qStroika_Foundation_Common_Platform_Linux
             return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #else
             return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
@@ -231,27 +231,27 @@ namespace {
                     if (offset < 0) [[unlikely]] {
                         Execution::Throw (kException_);
                     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
-#elif qPlatform_Linux
+#elif qStroika_Foundation_Common_Platform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
 #else
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
                 } break;
                 case Whence::eFromCurrent: {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
-#elif qPlatform_Linux
+#elif qStroika_Foundation_Common_Platform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
 #else
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
                 } break;
                 case Whence::eFromEnd: {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
-#elif qPlatform_Linux
+#elif qStroika_Foundation_Common_Platform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
 #else
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));

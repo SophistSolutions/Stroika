@@ -60,7 +60,7 @@ bool Execution::MatchesCommandLineArgument (const String& actualArg, const Strin
     if (actualArg.empty ()) {
         return false;
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     if (actualArg[0] != '-' and actualArg[0] != '/') {
         return false;
     }

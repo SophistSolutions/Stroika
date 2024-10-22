@@ -99,7 +99,7 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
      */
     filesystem::path GetTemporary ();
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     /**
      *  Returns:
      *      empty string if the directory doesn't exist.

@@ -79,7 +79,7 @@ void StyledTextIOWriter_PlainText::Write ()
     Led_tChar buf[8 * 1024];
     size_t    bytesRead = 0;
     while ((bytesRead = GetSrcStream ().readNTChars (buf, Memory::NEltsOf (buf))) != 0) {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         Led_tChar buf2[2 * Memory::NEltsOf (buf)];
 #else
         Led_tChar buf2[Memory::NEltsOf (buf)];

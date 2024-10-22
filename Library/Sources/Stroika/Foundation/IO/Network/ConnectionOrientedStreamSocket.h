@@ -44,7 +44,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         struct KeepAliveOptions {
             bool fEnabled{};
-#if qPlatform_Linux or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
             optional<unsigned int>          fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
             optional<Time::DurationSeconds> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
             optional<Time::DurationSeconds> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL

@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Execution {
         TraceContenxtBumper tctx{"Execution::ThrowPOSIXErrNo", "{}"_f, errNo};
 #endif
         Require (errNo != 0);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         error_code ec{errNo, system_category ()};
 #else
         error_code ec{errNo, generic_category ()};
@@ -171,12 +171,12 @@ namespace Stroika::Foundation::Execution {
         Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
         Throw (SystemErrorException{ec});
     }
-#if qPlatform_POSIX or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_POSIX or qStroika_Foundation_Common_Platform_Windows
     [[noreturn]] inline void ThrowSystemErrNo ()
     {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         ThrowSystemErrNo (errno);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         ThrowSystemErrNo (::GetLastError ());
 #endif
     }

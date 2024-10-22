@@ -8,7 +8,7 @@
 
 #include <optional>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <sys/socket.h>
 #endif
 
@@ -17,11 +17,11 @@
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #endif
 
-#if qPlatform_Linux or qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_MacOS
 using IPPROTO = int;
 #endif
 
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
          */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         using PlatformNativeHandle = SOCKET;
 #else
         using PlatformNativeHandle = int;
@@ -407,7 +407,7 @@ namespace Stroika::Foundation::IO::Network {
         }
     };
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     /**
      * If the argument value (return code from some WSA API call) is SOCKET_ERROR (or if T = SOCKET we check for INVALID_SOCKET)
      * This function throws a system error code given by WSAGetLastError ()

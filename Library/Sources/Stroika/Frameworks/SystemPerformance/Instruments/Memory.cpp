@@ -49,7 +49,7 @@ using Instruments::Memory::Options;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_ qPlatform_Windows
+#define qUseWMICollectionSupport_ qStroika_Foundation_Common_Platform_Windows
 #endif
 
 #if qUseWMICollectionSupport_
@@ -120,7 +120,7 @@ namespace {
     using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 namespace {
     struct _Context : SystemPerformance::Support::Context {
         uint64_t               fSaved_MajorPageFaultsSinceBoot{};
@@ -290,7 +290,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
@@ -388,17 +388,17 @@ namespace {
 
 namespace {
     struct MemoryInstrumentRep_
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         : InstrumentRep_Linux_
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         : InstrumentRep_Windows_
 #else
         : InstrumentRepBase_<SystemPerformance::Support::Context>
 #endif
     {
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         using inherited = InstrumentRep_Linux_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         using inherited = InstrumentRep_Windows_;
 #else
         using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
@@ -430,7 +430,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::Memory::Info _InternalCapture"};
 #endif
-#if qPlatform_Linux or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
             Info result = inherited::_InternalCapture ();
 #else
             Info result;

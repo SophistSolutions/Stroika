@@ -7,14 +7,14 @@
 #include <filesystem>
 #include <thread>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <fstream>
 #include <unistd.h>
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 #include <sys/sysinfo.h>
 #endif
 #include <utmpx.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 
 #include <VersionHelpers.h>
@@ -27,13 +27,13 @@
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Common/Platform/Windows/Registry.h"
 #endif
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
@@ -43,7 +43,7 @@
 
 #include "SystemConfiguration.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/Streams/iostream/FStreamSupport.h"
@@ -201,11 +201,11 @@ SystemConfiguration::BootInformation Common::GetSystemConfiguration_BootInformat
     // nb: this cannot change after app start, so cache it
     static const SystemConfiguration::BootInformation kCachedResult_ = [] () {
         SystemConfiguration::BootInformation result;
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         struct sysinfo info;
         ::sysinfo (&info);
         result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
         {
             // @todo - I don't think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
             bool                          succeeded{false};
@@ -248,7 +248,7 @@ SystemConfiguration::BootInformation Common::GetSystemConfiguration_BootInformat
             }
             Assert (succeeded); // not a real assert, but sort of a warning if this ever gets triggered
         }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 // ::GetTickCount () is defined to return #seconds since boot
 #if _WIN32_WINNT >= 0x0600
         result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount64 () / 1000));
@@ -274,7 +274,7 @@ SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
     // @todo - no API to capture (maybe not useful) # physical cores
     using CPU = SystemConfiguration::CPU;
     CPU result;
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
     {
         using Characters::String2Int;
         static const filesystem::path kProcCPUInfoFileName_{"/proc/cpuinfo"sv};
@@ -409,7 +409,7 @@ SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
             result.fCores.Append (CPU::CoreDetails{Memory::NullCoalesce (currentSocketID), useModelName});
         }
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     /*
      *  Based on https://msdn.microsoft.com/en-us/library/ms683194?f=255&MSPPError=-2147217396
      *
@@ -521,13 +521,13 @@ SystemConfiguration::Memory Common::GetSystemConfiguration_Memory ()
 {
     using Memory = SystemConfiguration::Memory;
     Memory result;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     // page size cannot change while running, but number of pages can
     // (e.g. https://pubs.vmware.com/vsphere-50/index.jsp?topic=%2Fcom.vmware.vsphere.vm_admin.doc_50%2FGUID-0B4C3128-F854-43B9-9D80-A20C0C8B0FF7.html)
     static const size_t kPageSize_{static_cast<size_t> (::sysconf (_SC_PAGESIZE))};
     result.fPageSize         = kPageSize_;
     result.fTotalPhysicalRAM = ::sysconf (_SC_PHYS_PAGES) * kPageSize_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     ::SYSTEM_INFO sysInfo{};
     ::GetNativeSystemInfo (&sysInfo);
     result.fPageSize = sysInfo.dwPageSize;
@@ -551,7 +551,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
     using OperatingSystem                       = SystemConfiguration::OperatingSystem;
     static const OperatingSystem kCachedResult_ = [] () -> OperatingSystem {
         OperatingSystem tmp;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         tmp.fTokenName = "Unix"sv;
         try {
             tmp.fTokenName = Execution::ProcessRunner{"uname"}.Run (String{}).Trim ();
@@ -660,7 +660,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
             catch (...) {
             }
         }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         tmp.fTokenName = "Windows"sv;
 
         /*
@@ -799,7 +799,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
     return kCachedResult_;
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #pragma comment(lib, "Mincore.lib") // for stuff like IsWindows10OrGreater
 #endif
 SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ApparentOperatingSystem ()
@@ -808,7 +808,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ApparentOper
     static const OperatingSystem kCachedResult_ = [] () -> OperatingSystem {
         OperatingSystem tmp{GetSystemConfiguration_ActualOperatingSystem ()};
         // not sure if/how to do this differently on linux? Probably pay MORE attention to stuff from uname and less to stuff like /etc/os-release
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         // Dizzy numbering - from https://docs.microsoft.com/en-us/windows/desktop/sysinfo/operating-system-version
         optional<String> winCompatibilityVersionName;
         optional<String> winCompatibilityVersionNumber;
@@ -853,7 +853,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ApparentOper
  ***************** GetSystemConfiguration_ComputerNames *************************
  ********************************************************************************
  */
-#if 0 && qPlatform_POSIX
+#if 0 && qStroika_Foundation_Common_Platform_POSIX
 // ALTERNATE APPROACH TO CONSIDER
 string  name;
 {
@@ -879,7 +879,7 @@ SystemConfiguration::ComputerNames Common::GetSystemConfiguration_ComputerNames 
 {
     using ComputerNames = SystemConfiguration::ComputerNames;
     ComputerNames result;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #if defined(HOST_NAME_MAX)
     char nameBuf[HOST_NAME_MAX + 1]; // size from http://man7.org/linux/man-pages/man2/gethostname.2.html
 #else
@@ -888,7 +888,7 @@ SystemConfiguration::ComputerNames Common::GetSystemConfiguration_ComputerNames 
     Execution::ThrowPOSIXErrNoIfNegative (::gethostname (nameBuf, Memory::NEltsOf (nameBuf)));
     nameBuf[Memory::NEltsOf (nameBuf) - 1] = '\0'; // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated
     result.fHostname                       = String::FromNarrowSDKString (nameBuf);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     constexpr COMPUTER_NAME_FORMAT kUseNameFormat_ = ComputerNameNetBIOS; // total WAG -- LGP 2014-10-10
     DWORD                          dwSize          = 0;
     (void)::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);

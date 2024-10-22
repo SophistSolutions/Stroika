@@ -224,7 +224,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline bool Led_ClipboardObjectAcquire::FormatAvailable (Led_ClipFormat clipType)
     {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         return (!!::IsClipboardFormatAvailable (clipType));
 #elif qStroika_FeatureSupported_XWindows
         // Wild guess - no good answer yet - LGP 2003-05-06
@@ -241,7 +241,7 @@ namespace Stroika::Frameworks::Led {
     inline Led_ClipboardObjectAcquire::~Led_ClipboardObjectAcquire ()
     {
 // For windows me must unlock, but not delete
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         if (fLockedData != nullptr) {
             ::GlobalUnlock (fLockedData);
         }
@@ -249,7 +249,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool Led_ClipboardObjectAcquire::GoodClip () const
     {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         return (fOSClipHandle != nullptr and fLockedData != nullptr);
 #else
         return false; // X-TMP-HACK-LGP991213
@@ -263,7 +263,7 @@ namespace Stroika::Frameworks::Led {
     inline size_t Led_ClipboardObjectAcquire::GetDataLength () const
     {
         Assert (GoodClip ());
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         return (::GlobalSize (fOSClipHandle));
 #endif
     }

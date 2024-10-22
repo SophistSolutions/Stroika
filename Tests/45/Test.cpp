@@ -768,7 +768,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
 #if qHasFeature_GoogleTest

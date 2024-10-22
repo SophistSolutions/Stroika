@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <unistd.h>
 #endif
 
@@ -49,13 +49,13 @@ namespace Stroika::Foundation::IO::FileSystem::FileStream {
      */
     using FileDescriptorType = int;
 
-#if !qPlatform_POSIX and !defined(STDIN_FILENO)
+#if !qStroika_Foundation_Common_Platform_POSIX and !defined(STDIN_FILENO)
 #define STDIN_FILENO 0
 #endif
-#if !qPlatform_POSIX and !defined(STDOUT_FILENO)
+#if !qStroika_Foundation_Common_Platform_POSIX and !defined(STDOUT_FILENO)
 #define STDOUT_FILENO 1
 #endif
-#if !qPlatform_POSIX and !defined(STDERR_FILENO)
+#if !qStroika_Foundation_Common_Platform_POSIX and !defined(STDERR_FILENO)
 #define STDERR_FILENO 2
 #endif
 

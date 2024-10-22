@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"

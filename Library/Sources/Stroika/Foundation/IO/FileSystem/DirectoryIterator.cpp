@@ -3,9 +3,9 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <windows.h>
-#elif qPlatform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
 #include <dirent.h>
 #endif
 
@@ -15,7 +15,7 @@
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/IO/FileSystem/Exception.h"
@@ -44,10 +44,10 @@ private:
     IteratorReturnType fIteratorReturnType_;
     String             fDirName_;
     filesystem::path   fReportPrefix_;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     DIR*    fDirIt_{nullptr};
     dirent* fCur_{nullptr};
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     HANDLE          fHandle_{INVALID_HANDLE_VALUE}; // after constructor - fHandle_ == INVALID_HANDLE_VALUE means iterator ATEND
     WIN32_FIND_DATA fFindFileData_{};
 #endif
@@ -58,14 +58,14 @@ public:
         : fIteratorReturnType_{iteratorReturns}
         , fDirName_{dir}
         , fReportPrefix_{mkReportPrefix_ (ToPath (dir), iteratorReturns)}
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         , fDirIt_{::opendir (dir.AsSDKString ().c_str ())}
 #endif
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s'", dir.c_str ()};
 #endif
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         if (fDirIt_ == nullptr) {
             Execution::ThrowPOSIXErrNo ();
         }
@@ -81,7 +81,7 @@ public:
             optional<filesystem::path> tmphack;
             More (&tmphack, true);
         }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
         while (fHandle_ != INVALID_HANDLE_VALUE and
                (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
@@ -90,7 +90,7 @@ public:
         }
 #endif
     }
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     Rep_ (const String& dirName, const optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_{iteratorReturns}
         , fDirName_{dirName}
@@ -109,7 +109,7 @@ public:
             } while (fCur_ != nullptr and fCur_->d_ino != *curInode);
         }
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     // missing name implies Iterator::IsAtEnd ()
     Rep_ (const String& dir, const optional<String>& name, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_{iteratorReturns}
@@ -130,11 +130,11 @@ public:
 #endif
     virtual ~Rep_ ()
     {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         if (fDirIt_ != nullptr) {
             ::closedir (fDirIt_);
         }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         if (fHandle_ != INVALID_HANDLE_VALUE) {
             ::FindClose (fHandle_);
         }
@@ -145,7 +145,7 @@ public:
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         RequireNotNull (result);
         *result = nullopt;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         if (advance) {
         Again:
             RequireNotNull (fCur_);
@@ -166,7 +166,7 @@ public:
         if (fCur_ != nullptr) {
             *result = fReportPrefix_ / fCur_->d_name;
         }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         if (advance) {
         Again:
             Require (fHandle_ != INVALID_HANDLE_VALUE);
@@ -191,10 +191,10 @@ public:
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
         const Rep_& rrhs = *Debug::UncheckedDynamicCast<const Rep_*> (rhs);
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         return fDirName_ == rrhs.fDirName_ and fIteratorReturnType_ == rrhs.fIteratorReturnType_ and
                ((fCur_ == rrhs.fCur_ and fCur_ == nullptr) or (rrhs.fCur_ != nullptr and fCur_->d_ino == rrhs.fCur_->d_ino));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         return fHandle_ == rrhs.fHandle_;
 #endif
     }
@@ -204,7 +204,7 @@ public:
         Debug::TraceContextBumper ctx{"Entering DirectoryIterator::Rep_::Clone"};
 #endif
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         AssertNotNull (fDirIt_);
         /*
          *  must find telldir() returns the location of the NEXT read. We must pass along the value of telldir as
@@ -236,7 +236,7 @@ public:
          *  find the same inode. Not perfect (in case that is deleted) - but not sure there is a guaranteed way then.
          */
         return make_unique<Rep_> (fDirName_, fCur_ == nullptr ? optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         return make_unique<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName),
                                   fIteratorReturnType_);
 #endif

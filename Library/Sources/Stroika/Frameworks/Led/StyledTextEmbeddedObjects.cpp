@@ -4,7 +4,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Memory/Platform/Windows/Handle.h"
 #endif
 
@@ -28,14 +28,14 @@ static struct FooBarBlatzRegistryCleanupHack {
     }
 } sOneOfThese;
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
 static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle pictureHandle, Tablet* tablet, Color foreColor,
                                    Color backColor, const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType* pixelsDrawn,
                                    const Led_Size& imageSize, const Led_Size& margin = kDefaultEmbeddingMargin) noexcept;
 #endif
 static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, Color foreColor, Color backColor, const Led_Rect& drawInto, CoordinateType useBaseLine,
                             DistanceType* pixelsDrawn, const Led_Size& imageSize, const Led_Size& margin = kDefaultEmbeddingMargin) noexcept;
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 static PixMap** MakePixMapFromDIB (const Led_DIB* dib);
 #endif
 
@@ -54,19 +54,19 @@ EmbeddedObjectCreatorRegistry* EmbeddedObjectCreatorRegistry::sThe = nullptr;
 
 void EmbeddedObjectCreatorRegistry::AddStandardTypes ()
 {
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
     AddAssoc (StandardMacPictureStyleMarker::kClipFormat, StandardMacPictureStyleMarker::kEmbeddingTag, &StandardMacPictureStyleMarker::mk,
               &StandardMacPictureStyleMarker::mk);
     AddAssoc (StandardDIBStyleMarker::kClipFormat, StandardDIBStyleMarker::kEmbeddingTag, &StandardDIBStyleMarker::mk, &StandardDIBStyleMarker::mk);
 #endif
 
     AddAssoc (StandardURLStyleMarker::kURLDClipFormat, StandardURLStyleMarker::kEmbeddingTag, &StandardURLStyleMarker::mk, &StandardURLStyleMarker::mk);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     AddAssoc (StandardURLStyleMarker::kWin32URLClipFormat, StandardURLStyleMarker::kEmbeddingTag, &StandardURLStyleMarker::mk,
               &StandardURLStyleMarker::mk);
 #endif
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
     AddAssoc (StandardMacPictureWithURLStyleMarker::kClipFormats, StandardMacPictureWithURLStyleMarker::kClipFormatCount,
               StandardMacPictureWithURLStyleMarker::kEmbeddingTag, &StandardMacPictureWithURLStyleMarker::mk,
               &StandardMacPictureWithURLStyleMarker::mk);
@@ -212,15 +212,15 @@ SimpleEmbeddedObjectStyleMarker::CommandNames SimpleEmbeddedObjectStyleMarker::M
     return cmdNames;
 }
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ************************** StandardMacPictureStyleMarker ***********************
  ********************************************************************************
  */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 const Led_ClipFormat StandardMacPictureStyleMarker::kClipFormat = kPICTClipFormat;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 // Surprising, the QuickTime for windows 2.1 picture viewer doesn't appear to export (on copy) a
 // native format rep of the picture. So I've no guess what the RIGHT arg is to RegisterClipboardFormat.
 // So - this is as good a guess as any. At least then Led can xfer pictures among instances of itself.
@@ -229,24 +229,24 @@ const Led_ClipFormat StandardMacPictureStyleMarker::kClipFormat = static_cast<Le
 #endif
 constexpr Led_PrivateEmbeddingTag StandardMacPictureStyleMarker::kEmbeddingTag = "Pict2";
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 const Led_DIB* StandardMacPictureStyleMarker::sUnsupportedFormatPict = nullptr;
 #endif
 
 StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture* pictData, size_t picSize)
     : SimpleEmbeddedObjectStyleMarker ()
     , fPictureHandle (nullptr)
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     , fPictureSize (0)
 #endif
 {
     RequireNotNull (pictData);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     RequireNotNull (sUnsupportedFormatPict);
 #endif
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     fPictureHandle = (PictureHandle)Led_DoNewHandle (picSize);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     fPictureSize   = picSize;
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Execution::ThrowIfNull (fPictureHandle);
@@ -258,7 +258,7 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
 StandardMacPictureStyleMarker::~StandardMacPictureStyleMarker ()
 {
     AssertNotNull (fPictureHandle);
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     ::DisposeHandle (Handle (fPictureHandle));
 #else
     ::GlobalFree (fPictureHandle);
@@ -347,18 +347,18 @@ const char* StandardMacPictureStyleMarker::GetTag () const
  ************************** StandardDIBStyleMarker ******************************
  ********************************************************************************
  */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 // I don't know of any standard type for this, so just make one up...
 // LGP 960429
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 'DIB ';
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = CF_DIB;
 #elif qStroika_FeatureSupported_XWindows
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 666; // X-TMP-HACK-LGP991214
 #endif
 constexpr Led_PrivateEmbeddingTag StandardDIBStyleMarker::kEmbeddingTag = "DIB";
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 Led_Picture** StandardDIBStyleMarker::sUnsupportedFormatPict = nullptr;
 #endif
 
@@ -366,7 +366,7 @@ StandardDIBStyleMarker::StandardDIBStyleMarker (const Led_DIB* pictData)
     : SimpleEmbeddedObjectStyleMarker ()
     , fDIBData (nullptr)
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     RequireNotNull (sUnsupportedFormatPict); // see class declaration for descriptio
 #endif
     RequireNotNull (pictData);
@@ -475,9 +475,9 @@ const char* StandardDIBStyleMarker::GetTag () const
  ****************************** StandardURLStyleMarker **************************
  ********************************************************************************
  */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat = 'URLD';
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 // Netscape USED to have some sort of predefined name like Netscsape Bookmark, or something like that.
 // Apparently not any more. Will have to investigate further to see what todo for Netscape...
 // LGP 960429
@@ -517,7 +517,7 @@ SimpleEmbeddedObjectStyleMarker* StandardURLStyleMarker::mk (ReaderFlavorPackage
         length = flavorPackage.ReadFlavorData (kURLDClipFormat, length, buf.data ());
         return (mk (kEmbeddingTag, buf.data (), length));
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     if (flavorPackage.GetFlavorAvailable (kWin32URLClipFormat)) {
         size_t                    length = flavorPackage.GetFlavorSize (kWin32URLClipFormat);
         Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
@@ -592,7 +592,7 @@ void StandardURLStyleMarker::Write (SinkStream& sink)
 void StandardURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
 {
     flavorPackage.AddFlavorData (kURLDClipFormat, fURLData.GetURLDLength (), fURLData.PeekAtURLD ());
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     size_t                    len = fURLData.GetURLLength () + 1;
     Memory::StackBuffer<char> hackBuf{Memory::eUninitialized, len};
     memcpy (hackBuf.data (), fURLData.PeekAtURL (), len - 1);
@@ -680,7 +680,7 @@ FontSpecification StandardURLStyleMarker::GetDisplayFont (const StyleRunElement&
     return fsp;
 }
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ************************ StandardMacPictureWithURLStyleMarker ******************
@@ -695,16 +695,16 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
     : SimpleEmbeddedObjectStyleMarker ()
     , fPictureHandle (nullptr)
     ,
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     fPictureSize (0)
     ,
 #endif
     fURLData (urlData)
 {
     RequireNotNull (pictData);
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     fPictureHandle = (StandardMacPictureStyleMarker::PictureHandle)Led_DoNewHandle (picSize);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     fPictureSize   = picSize;
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Execution::ThrowIfNull (fPictureHandle);
@@ -718,9 +718,9 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
 StandardMacPictureWithURLStyleMarker::~StandardMacPictureWithURLStyleMarker ()
 {
     AssertNotNull (fPictureHandle);
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     ::DisposeHandle (Handle (fPictureHandle));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     ::GlobalFree (fPictureHandle);
 #endif
 }
@@ -893,7 +893,7 @@ StandardDIBWithURLStyleMarker::StandardDIBWithURLStyleMarker (const Led_DIB* dib
     , fDIBData (nullptr)
     , fURLData (urlData)
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     RequireNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict); // see class declaration for descriptio
 #endif
     RequireNotNull (dibData);
@@ -1069,9 +1069,9 @@ const char* StandardDIBWithURLStyleMarker::GetTag () const
  ************************* StandardUnknownTypeStyleMarker ***********************
  ********************************************************************************
  */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 Led_Picture** StandardUnknownTypeStyleMarker::sUnknownPict = nullptr;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 const Led_DIB* StandardUnknownTypeStyleMarker::sUnknownPict = nullptr;
 #endif
 const Led_PrivateEmbeddingTag StandardUnknownTypeStyleMarker::kDefaultEmbeddingTag = "UnknwnDlf";
@@ -1090,7 +1090,7 @@ StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat f
     fDisplayDIB ()
 {
     memcpy (fEmbeddingTag, embeddingTag, sizeof (fEmbeddingTag));
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
     RequireNotNull (sUnknownPict); // If this is ever triggered, see class declaration where we delcare this field
 #endif
     fData = new char[nBytes];
@@ -1142,11 +1142,11 @@ TWIPS_Point StandardUnknownTypeStyleMarker::CalcDefaultShownSize ()
 
 TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     RequireNotNull (sUnknownPict);
     StackBasedHandleLocker locker (sUnknownPict);
     Led_Size               pixelSize = Led_GetMacPictSize (sUnknownPict);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     RequireNotNull (sUnknownPict);
     Led_Size pixelSize = Led_GetDIBImageSize (sUnknownPict);
 #elif qStroika_FeatureSupported_XWindows
@@ -1171,11 +1171,11 @@ void StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager
                         drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, shownPixelSize);
         return;
     }
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     MacPictureDrawSegment (sUnknownPict, tablet, imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor),
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                            drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, shownPixelSize);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     DIBDrawSegment (sUnknownPict, tablet, imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor),
                     imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                     drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, shownPixelSize);
@@ -1261,7 +1261,7 @@ void Led::AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& t
     InsertEmbeddingForExistingSentinel (embedding, textStore, insertAt, ownerForEmbedding);
 }
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ************************** MacPictureDrawSegment *******************************
@@ -1275,9 +1275,9 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 
     StackBasedHandleLocker locker (pictureHandle);
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     tablet->SetPort ();
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     Tablet* dc = tablet;
 #endif
 
@@ -1291,10 +1291,10 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
     Assert (embedBottom <= drawInto.bottom);
     Led_Rect innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.GetLeft () + margin.h), pictSize);
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     GDI_RGBForeColor (foreColor.GetOSRep ());
     GDI_RGBBackColor (backColor.GetOSRep ());
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     dc->SetTextColor (foreColor.GetOSRep ());
     dc->SetBkColor (backColor.GetOSRep ());
 #endif
@@ -1311,9 +1311,9 @@ static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, [[maybe_unused]]
     RequireNotNull (dib);
     RequireNotNull (tablet);
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     tablet->SetPort ();
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     Tablet* dc = tablet;
 #endif
 
@@ -1331,7 +1331,7 @@ static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, [[maybe_unused]]
         *pixelsDrawn = ourBoundsRect.GetWidth ();
     }
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #if 1
     GDI_RGBForeColor (Color::kBlack.GetOSRep ());
     GDI_RGBBackColor (Color::kWhite.GetOSRep ());
@@ -1339,12 +1339,12 @@ static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, [[maybe_unused]]
     GDI_RGBForeColor (foreColor.GetOSRep ());
     GDI_RGBBackColor (backColor.GetOSRep ());
 #endif
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     dc->SetTextColor (foreColor.GetOSRep ());
     dc->SetBkColor (backColor.GetOSRep ());
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     // Must erase above the picture, and below it. And
     Rect rr = AsQDRect (innerBoundsRect);
 
@@ -1367,7 +1367,7 @@ static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, [[maybe_unused]]
         AssertNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);
         ::DrawPicture (StandardDIBStyleMarker::sUnsupportedFormatPict, &rr);
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     //const BITMAPINFOHEADER&   hdr         =   dib->bmiHeader;
     const void* lpBits = Led_GetDIBBitsPointer (dib);
     //const char*               lpBits      =   ((const char*)dib) + Led_ByteSwapFromWindows (hdr.biSize) + Led_GetDIBPalletByteCount (dib);
@@ -1376,7 +1376,7 @@ static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, [[maybe_unused]]
 #endif
 }
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
 {
     RequireNotNull (dib);

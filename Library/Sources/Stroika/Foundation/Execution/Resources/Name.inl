@@ -12,13 +12,13 @@ namespace Stroika::Foundation::Execution::Resources {
      */
     inline Name::Name (const String& name, ResourceType type)
         : fName_ (name.AsSDKString ())
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         , fIntName_ ()
 #endif
         , fType_ (type)
     {
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     inline Name::Name (const int intResName, ResourceType type)
         : fName_ ()
         , fIntName_ (intResName)
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Execution::Resources {
 #endif
     inline String Name::GetPrintName () const
     {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         if (fIntName_.has_value ()) {
             return Characters::Format ("#{}"_f, *fIntName_);
         }
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Execution::Resources {
     }
     inline const SDKChar* Name::GetSDKString () const
     {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         if (fIntName_.has_value ()) {
             return MAKEINTRESOURCE (*fIntName_);
         }

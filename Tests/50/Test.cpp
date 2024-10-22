@@ -51,7 +51,7 @@ namespace {
             }
             catch (...) {
                 // suppress macOS warn here - just not such locale installed
-#if !qPlatform_MacOS
+#if !qStroika_Foundation_Common_Platform_MacOS
                 Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format ("test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale {}"_f, localeName)
                         .c_str ());
@@ -92,7 +92,7 @@ namespace {
             }
             catch (...) {
                 // suppress macos warn here - just not such locale installed
-#if !qPlatform_MacOS
+#if !qStroika_Foundation_Common_Platform_MacOS
                 Stroika::Frameworks::Test::WarnTestIssue (
                     L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
 #endif
@@ -220,7 +220,7 @@ namespace {
                 }
             }
             catch (...) {
-#if !qPlatform_MacOS
+#if !qStroika_Foundation_Common_Platform_MacOS
                 Stroika::Frameworks::Test::WarnTestIssue (
                     L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
 #endif

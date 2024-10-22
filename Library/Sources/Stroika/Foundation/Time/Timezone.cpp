@@ -7,7 +7,7 @@
 #include <cstring>
 #include <ctime>
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <time.h>
 #endif
 
@@ -214,7 +214,7 @@ Characters::String Timezone::ToString () const
 TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
 {
     TimeZoneInformationType result;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     try {
         result.fID = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/timezone"sv)).ReadAll ().Trim ();
     }
@@ -280,7 +280,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
     result.fDaylightSavingsTime.fAbbreviation         = String::FromNarrowSDKString (tzname[1]);
     result.fDaylightSavingsTime.fName                 = String::FromNarrowSDKString (tzname[1]);
     result.fDaylightSavingsTime.fBiasInMinutesFromUTC = -GetLocaltimeToGMTOffset_ (true) / 60;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     using Common::KeyValuePair;
     using Containers::Mapping;
     // Table from Stering around 2015-05-01
@@ -458,7 +458,7 @@ namespace {
     {
 #if 0
     // WRONG - but COULD use this API - but not sure needed
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     TIME_ZONE_INFORMATION   tzInfo {};
     (void)::GetTimeZoneInformation (&tzInfo);
     int unsignedBias    =   abs (tzInfo.Bias);

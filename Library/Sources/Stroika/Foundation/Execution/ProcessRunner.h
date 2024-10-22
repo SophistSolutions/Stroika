@@ -270,29 +270,29 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset = {},
                    const optional<uint8_t>& wExitStatus = optional<uint8_t>{}, const optional<uint8_t>& wTermSig = optional<uint8_t>{},
                    const optional<uint8_t>& wStopSig = optional<uint8_t>{});
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset = {},
                    const optional<DWORD>& err = optional<DWORD>{});
 #endif
     private:
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         static String mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
                               const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         static String mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err);
 #endif
     private:
         String fCmdLine_;
         String fErrorMessage_;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         optional<uint8_t> fWExitStatus_;
         optional<uint8_t> fWTermSig_;
         optional<uint8_t> fWStopSig_;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         optional<DWORD> fErr_;
 #endif
     };

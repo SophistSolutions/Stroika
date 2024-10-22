@@ -338,7 +338,7 @@ namespace Stroika::Foundation::Execution {
      *          platform - errno and GetLastError(). It is still an assertion (require) error to call these when errno / GetLastError () would return 0.
      */
     [[noreturn]] void ThrowSystemErrNo (int sysErr);
-#if qPlatform_POSIX or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_POSIX or qStroika_Foundation_Common_Platform_Windows
     [[noreturn]] void ThrowSystemErrNo ();
 #endif
 

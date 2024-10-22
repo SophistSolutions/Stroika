@@ -310,11 +310,11 @@ void StandardStyledTextIOSinkStream::PopContext ()
 
 #if qStroika_Frameworks_Led_SupportGDI
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 const Led_ClipFormat Led::kLedPrivateClipFormat = 'LedP';
 const Led_ClipFormat Led::kRTFClipFormat        = 'RTF ';
 const Led_ClipFormat Led::kHTMLClipFormat       = 'HTML';
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 const TCHAR          kLedPrivateClipTypeName[]  = _T ("Led Rich Text Format");
 const Led_ClipFormat Led::kLedPrivateClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kLedPrivateClipTypeName));
 const TCHAR          kRTFClipTypeName[]         = _T ("Rich Text Format");
@@ -802,10 +802,10 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 // Should add code here to grab file-type from OS. If called from XXX - then thats already done, but in case
 // called from elsewhere...
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     if (suggestedClipFormat != nullptr and *suggestedClipFormat == kBadClipFormat) {
         TCHAR drive[_MAX_DRIVE];
         TCHAR dir[_MAX_DIR];
@@ -884,7 +884,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPac
         return true;
     }
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // A bit of a hack. MSIE 3.0 generates both FILE and DIB objects on the clip
     // for when we drag out pictures. This allows us to grab the dibs in that case.
     // I just hope it doesn't cause too much trouble for other cases. For Led 2.2, we
@@ -901,7 +901,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPac
     else if (InternalizeFlavor_OtherRegisteredEmbedding (flavorPackage, from, to)) {
         return true;
     }
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     else if (InternalizeFlavor_STYLAndTEXT (flavorPackage, from, to)) {
         return true;
     }
@@ -912,7 +912,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPac
     return false;
 }
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     size_t pasteStart = from;
@@ -1125,7 +1125,7 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavors (WriterFlavorPackag
 
     ExternalizeFlavor_TEXT (flavorPackage, start, end);
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     ExternalizeFlavor_STYL (flavorPackage, start, end);
 #endif
 }
@@ -1135,7 +1135,7 @@ void StyledTextFlavorPackageExternalizer::ExternalizeBestFlavor (WriterFlavorPac
     ExternalizeFlavor_RTF (flavorPackage, from, to);
 }
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     Require (from <= to);

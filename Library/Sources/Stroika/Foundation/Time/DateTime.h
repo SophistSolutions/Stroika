@@ -12,7 +12,7 @@
 #include <locale>
 #include <string>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #endif
 
@@ -124,9 +124,9 @@ namespace Stroika::Foundation::Time {
         explicit DateTime (time_t unixEpochTime) noexcept;
         explicit DateTime (const ::tm& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         explicit DateTime (const ::timespec& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         explicit DateTime (const ::timeval& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         explicit DateTime (const ::SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
         explicit DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
 #endif
@@ -428,7 +428,7 @@ namespace Stroika::Foundation::Time {
         // new bug define for clang/xcode? cannot do requires and tmeplate specailize?
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
             requires (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String> or
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                       same_as<T, SYSTEMTIME> or
 #endif
                       Common::ITimePoint<T>)
@@ -519,7 +519,7 @@ namespace Stroika::Foundation::Time {
             requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String>)
 #endif
         ;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         nonvirtual SYSTEMTIME AsSYSTEMTIME_ () const;
 #endif
         template <typename CLOCK_T, typename DURATION_T>

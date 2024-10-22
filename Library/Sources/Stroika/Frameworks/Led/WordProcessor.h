@@ -1181,7 +1181,7 @@ namespace Stroika::Frameworks::Led {
             kFontStyleBold_CmdID,
             kFontStyleItalic_CmdID,
             kFontStyleUnderline_CmdID,
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             kFontStyleStrikeout_CmdID,
 #endif
             kSubScriptCommand_CmdID,
@@ -1281,7 +1281,7 @@ namespace Stroika::Frameworks::Led {
         virtual void OnFontStyleItalicCommand ();
         virtual void OnUpdateFontStyleUnderlineCommand (CommandUpdater* enabler);
         virtual void OnFontStyleUnderlineCommand ();
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         virtual void OnUpdateFontStyleStrikeoutCommand (CommandUpdater* enabler);
         virtual void OnFontStyleStrikeoutCommand ();
 #endif
@@ -1878,7 +1878,7 @@ namespace Stroika::Frameworks::Led {
         struct TableSelectionPropertiesInfo;
         virtual bool EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     private:
         static UINT_PTR CALLBACK ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 #endif

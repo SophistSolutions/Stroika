@@ -18,7 +18,7 @@ using namespace Stroika::Foundation::Characters;
 #if !qTargetPlatformSDKUseswchar_t
 wstring Characters::SDK2Wide (span<const SDKChar> s)
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
     return kCvt_.Bytes2String<wstring> (as_bytes (s));
 #else
@@ -28,7 +28,7 @@ wstring Characters::SDK2Wide (span<const SDKChar> s)
 wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag)
 {
     constexpr auto kOptions_ = CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kOptions_};
     return kCvt_.Bytes2String<wstring> (as_bytes (s));
 #else
@@ -57,7 +57,7 @@ wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrors
 #if !qTargetPlatformSDKUseswchar_t
 SDKString Characters::Wide2SDK (span<const wchar_t> s)
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
     return kCvt_.String2Bytes<SDKString> (s);
 #else
@@ -67,7 +67,7 @@ SDKString Characters::Wide2SDK (span<const wchar_t> s)
 SDKString Characters::Wide2SDK (span<const wchar_t> s, AllowMissingCharacterErrorsFlag)
 {
     constexpr auto kOptions_ = CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kOptions_};
     return kCvt_.String2Bytes<SDKString> (s);
 #else

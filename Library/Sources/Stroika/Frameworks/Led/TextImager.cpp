@@ -20,7 +20,7 @@ using namespace Stroika::Frameworks::Led;
  *********************** TextImager::FontCacheInfoUpdater ***********************
  ********************************************************************************
  */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 namespace {
     inline bool LogFontsEqual_ (LOGFONT lhs, LOGFONT rhs)
     {
@@ -45,13 +45,13 @@ namespace {
 #endif
 TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Tablet* tablet, const FontSpecification& fontSpec)
     : fImager{imager}
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     , fTablet{tablet}
     , fRestoreObject{nullptr}
     , fRestoreAttribObject{nullptr}
 #endif
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     /*
      *  For Windows:
      *
@@ -121,7 +121,7 @@ TextImager::TextImager ()
     , fCachedFontSpec{}
     , fCachedFontInfo{}
     ,
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     fCachedFont{nullptr}
 #else
     fCachedFontValid{false}
@@ -140,7 +140,7 @@ TextImager::~TextImager ()
         delete *i;
         *i = nullptr;
     }
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     delete fCachedFont;
 #endif
 }
@@ -224,7 +224,7 @@ void TextImager::PurgeUnneededMemory ()
 void TextImager::InvalidateAllCaches ()
 {
 // Classes which cache font-based information must OVERRIDE and invalidate it...
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     delete fCachedFont;
     fCachedFont = nullptr;
 #else

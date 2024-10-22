@@ -6,15 +6,15 @@
 #include <cstdlib> // to force __GLIBCXX__ define reference
 #include <sstream>
 
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 #include <execinfo.h>
 #include <unistd.h>
 #if defined(__GNUC__) && defined(__GLIBCXX__)
 #include <cxxabi.h>
 #endif
-#elif qPlatform_MacOS
+#elif qStroika_Foundation_Common_Platform_MacOS
 #define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED 1
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 // BOOST_STACKTRACE_USE_WINDBG seems to be default on windows, and very slow
 #define BOOST_STACKTRACE_USE_WINDBG_CACHED 1
@@ -115,7 +115,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         }
     }
     return result.str ();
-#elif qPlatform_Linux
+#elif qStroika_Foundation_Common_Platform_Linux
     /*
      *  @see http://man7.org/linux/man-pages/man3/backtrace.3.html
      */
@@ -181,7 +181,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         }
     }
     return out;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     // No real need todo this because boost does so well, but could be done pretty easily - see
     // http://www.debuginfo.com/examples/src/SymFromAddr.cpp -- LGP 2020-03-01
     return wstring{};

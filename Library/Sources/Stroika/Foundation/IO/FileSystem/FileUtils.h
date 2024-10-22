@@ -10,7 +10,7 @@
 #include <set>
 #include <vector>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 #endif
 
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     void CopyFile (const filesystem::path& srcFile, const filesystem::path& destPath);
 
 // COULD be made portable but alot of changes needed
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     class DirectoryChangeWatcher {
     private:
         DirectoryChangeWatcher (const DirectoryChangeWatcher&) = delete;
@@ -75,7 +75,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 #endif
 
 // Should be in a PLATFORM_WINDOWS subfile or sub-namespace... And DOCUMENT!!!!
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     struct AdjustSysErrorMode {
         static UINT GetErrorMode ();
         AdjustSysErrorMode (UINT newErrorMode);

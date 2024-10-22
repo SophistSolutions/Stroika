@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -60,9 +60,9 @@ namespace {
                 again:
                     (void)ioReady.WaitUntil (timeOutAt);
                     char data[1024];
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                     int nb = ::read (fSD_, data, NEltsOf (data));
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                     int flags = 0;
                     int nb    = ::recv (fSD_, data, (int)NEltsOf (data), flags);
 #endif
@@ -84,9 +84,9 @@ namespace {
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                               useSockAddr = sockAddr.As<sockaddr_storage> ();
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
             AssertNotImplemented ();
@@ -96,7 +96,7 @@ namespace {
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                               useSockAddr = sockAddr.As<sockaddr_storage> ();
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             // http://developerweb.net/viewtopic.php?id=3196.
             // and see https://stackoverflow.com/questions/4181784/how-to-set-socket-timeout-in-c-when-making-multiple-connections/4182564#4182564 for why not using SO_RCVTIMEO/SO_SNDTIMEO
             long savedFlags{};
@@ -136,7 +136,7 @@ namespace {
                     } break;
                 }
             }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             // https://stackoverflow.com/questions/46045434/winsock-c-connect-timeout
             {
                 u_long block = 1;
@@ -200,10 +200,10 @@ namespace {
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
 
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             return Handle_ErrNoResultInterruption (
                 [this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             int flags        = 0;
             int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
             return static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
@@ -218,7 +218,7 @@ namespace {
             Assert (fCurrentPendingReadsCount++ == 0);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
-#if qPlatform_POSIX or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_POSIX or qStroika_Foundation_Common_Platform_Windows
             {
                 fd_set input;
                 FD_ZERO (&input);
@@ -229,9 +229,9 @@ namespace {
                         // don't know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
                         // But MUST check if is EOF or real data available
                         char buf[1024];
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
                         int tmp = Handle_ErrNoResultInterruption ([&] () -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); });
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                         int tmp = ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
 #else
                         AssertNotImplemented ();
@@ -260,7 +260,7 @@ namespace {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld",
                                                                                          static_cast<long long> (end - start))};
 #endif
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             /*
              *  https://linux.die.net/man/2/write says "writes up to count bytes". So handle case where we get partial writes.
              *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
@@ -273,7 +273,7 @@ namespace {
                 Assert (0 <= n and n <= (end - start));
                 return static_cast<size_t> (n);
             });
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             /*
              *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
              *  file descriptors in windows implementation.
@@ -320,12 +320,12 @@ namespace {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             KeepAliveOptions                               result;
             result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
             // Only available if linux >= 2.4
             result.fMaxProbesSentBeforeDrop              = getsockopt<int> (SOL_TCP, TCP_KEEPCNT);
             result.fTimeIdleBeforeSendingKeepalives      = Time::DurationSeconds{getsockopt<int> (SOL_TCP, TCP_KEEPIDLE)};
             result.fTimeBetweenIndividualKeepaliveProbes = Time::DurationSeconds{getsockopt<int> (SOL_TCP, TCP_KEEPINTVL)};
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 // WSAIoctl (..., SIO_KEEPALIVE_VALS) can be used to set some of these values, but I can find no way
 // to fetch them --LGP 2017-02-27
 #endif
@@ -335,7 +335,7 @@ namespace {
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             setsockopt<int> (SOL_SOCKET, SO_KEEPALIVE, keepAliveOptions.fEnabled);
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
             // Only available if linux >= 2.4
             if (keepAliveOptions.fMaxProbesSentBeforeDrop) {
                 setsockopt<int> (SOL_TCP, TCP_KEEPCNT, *keepAliveOptions.fMaxProbesSentBeforeDrop);
@@ -346,7 +346,7 @@ namespace {
             if (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes) {
                 setsockopt<int> (SOL_TCP, TCP_KEEPINTVL, static_cast<int> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes->count ()));
             }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             // windows only allows setting these two, and both at the same time
             if (keepAliveOptions.fEnabled and
                 (keepAliveOptions.fTimeIdleBeforeSendingKeepalives or keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes)) {
@@ -388,7 +388,7 @@ Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::To
     Characters::StringBuilder sb;
     sb << "{"sv;
     sb << "Enabled: "sv << fEnabled << ","sv;
-#if qPlatform_Linux or qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
     if (fMaxProbesSentBeforeDrop) {
         sb << "Max-Probes-Sent-Before-Drop: "sv << fMaxProbesSentBeforeDrop << ","sv;
     }

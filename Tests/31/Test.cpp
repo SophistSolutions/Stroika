@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include <windows.h>
 #if qHasFeature_ATLMFC
 #include <atlenc.h>
@@ -67,7 +67,7 @@ namespace {
     namespace Base64Test {
         namespace PRIVATE_ {
 
-#if qPlatform_Windows && qHasFeature_ATLMFC
+#if qStroika_Foundation_Common_Platform_Windows && qHasFeature_ATLMFC
             namespace {
                 using Encoding::Algorithm::LineBreak;
                 vector<byte> DecodeBase64_ATL_ (const string& s)
@@ -118,7 +118,7 @@ namespace {
                 inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
                 {
                     using namespace Encoding::Algorithm;
-#if qPlatform_Windows && qHasFeature_ATLMFC
+#if qStroika_Foundation_Common_Platform_Windows && qHasFeature_ATLMFC
                     EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
                                                (Base64::Options{.fLineBreak = Base64::LineBreak::eCRLF_LB})),
                                EncodeBase64_ATL_ (bytes, Base64::LineBreak::eCRLF_LB));
@@ -129,7 +129,7 @@ namespace {
                 }
                 inline void VERIFY_ATL_DECODE_ ()
                 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #else
 #endif
                 }
@@ -642,7 +642,7 @@ namespace {
                         "ARIA-256-GCM"sv,
 // It appears these failures ONLY happen on X86 and x64 systems --LGP 2021-12-10
 // no idea why these work on windows, but fail on Unix... --LGP 2021-09-14
-#if qPlatform_POSIX && (defined(__x86__) || defined(__x86_64__))
+#if qStroika_Foundation_Common_Platform_POSIX && (defined(__x86__) || defined(__x86_64__))
                         "AES-256-CBC-HMAC-SHA256"sv,
                         "AES-256-CBC-HMAC-SHA1"sv,
                         "AES-128-CBC-HMAC-SHA256"sv,

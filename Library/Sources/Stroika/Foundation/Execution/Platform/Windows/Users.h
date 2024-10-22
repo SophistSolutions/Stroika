@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if !qPlatform_Windows
+#if !qStroika_Foundation_Common_Platform_Windows
 #error "ONLY INCLUDE FOR Windows"
 #endif
 

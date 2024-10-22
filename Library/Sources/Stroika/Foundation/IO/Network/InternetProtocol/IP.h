@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 #include <netinet/ip.h>
 #endif
 
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
          *
          * copied field names to match http://lxr.free-electrons.com/source/include/uapi/linux/ip.h
          */
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         using PacketHeader = ::iphdr;
 #else
         Stroika_Foundation_Common_STRUCT_PACKED (struct iphdr_le_ {

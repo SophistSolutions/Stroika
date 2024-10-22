@@ -42,26 +42,26 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"{}ArpDashA_", "includePurgedEntries={}"_f, includePurgedEntries};
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         SystemInterfacesMgr sysInterfacesMgr;
 #endif
         Collection<Neighbor> result;
         using std::byte;
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         ProcessRunner pr{"arp -an"sv}; // -a means 'BSD-style output' and -n means numeric (dont do reverse dns)
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         ProcessRunner pr{includePurgedEntries ? "arp -av"sv : "arp -a"sv}; // -a means 'BSD-style output', -v verbose(show invalid items)
 #endif
         Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
         pr.SetStdOut (useStdOut);
         pr.Run ();
         String out;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         String curInterface;
 #endif
         Streams::TextReader::Ptr stdOut = Streams::TextReader::New (useStdOut);
         for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             Sequence<String> s = i.Tokenize ();
             if (s.length () >= 4) {
                 // raspberrypi.34ChurchStreet.sophists.com (192.168.244.32) at b8:27:eb:cc:c7:80 [ether] on enp0s31f6
@@ -88,7 +88,7 @@ namespace {
                     result += Neighbor{InternetAddress{s[1].SubString (1, -1)}, s[3], interfaceID};
                 }
             }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
             if (i.StartsWith ("Interface:"sv)) {
                 Sequence<String> s = i.Tokenize ();
                 if (s.length () >= 2) {
@@ -128,7 +128,7 @@ namespace {
     }
 }
 
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
 namespace {
     Collection<Neighbor> ProcNetArp_ (bool includePurgedEntries)
     {
@@ -216,7 +216,7 @@ public:
             return nullopt;
         };
         // try strategies in best to worst order (filtered by caller restriction on which we can try)
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
         if (auto o = tryStrategy (Options::Strategy::eProcNetArp)) {
             return *o;
         }
@@ -237,7 +237,7 @@ public:
         switch (s) {
             case Options::Strategy::eArpProgram:
                 return ArpDashA_ (fOptions_.fIncludePurgedEntries.value_or (false), fOptions_.fOmitAllFFHardwareAddresses.value_or (true));
-#if qPlatform_Linux
+#if qStroika_Foundation_Common_Platform_Linux
             case Options::Strategy::eProcNetArp:
                 // fOmitAllFFHardwareAddresses not needed here apparently
                 return ProcNetArp_ (fOptions_.fIncludePurgedEntries.value_or (false));
