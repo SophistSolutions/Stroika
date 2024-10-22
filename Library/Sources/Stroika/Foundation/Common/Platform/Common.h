@@ -5,6 +5,17 @@
 #define _Stroika_Foundation_Common_Platform_Common_h_ 1
 
 /**
+ *  Platforms (not always mutually exclusive)
+ *      o   qStroika_Foundation_Common_Platform_Windows
+ *      o   qStroika_Foundation_Common_Platform_Win32       (implies qStroika_Foundation_Common_Platform_Windows)
+ *      o   qStroika_Foundation_Common_Platform_Win64       (implies qStroika_Foundation_Common_Platform_Windows)
+ *      o   qStroika_Foundation_Common_Platform_POSIX
+ *      o   qStroika_Foundation_Common_Platform_Linux       (implies qStroika_Foundation_Common_Platform_POSIX)
+ *      o   qStroika_Foundation_Common_Platform_MacOS       (implies qStroika_Foundation_Common_Platform_POSIX)
+ */
+
+
+/**
  *  \brief qStroika_Foundation_Common_Platform_Windows true iff compiling targeting the Windows platform (Win32 or Win64)
  */
 #ifndef qStroika_Foundation_Common_Platform_Windows
