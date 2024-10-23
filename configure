@@ -1172,7 +1172,7 @@ sub	SetDefaultForCompilerDriver_
 		}
 
 		# /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cbb0a.dir/link.txt --verbose=1
-		# /usr/bin/clang-18 -I/Sandbox/Stroika-Dev/Builds/clang++-18-release-libc++23/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-18-release-libc++23/ -I/Sandbox/Stroika-Dev/Builds/clang++-18-release-libc++23/ThirdPartyComponents/include/libxml2/ -DqDebug=0 -DqHasFeature_ATLMFC=0 -DqHasFeature_boost=1 -DqHasFeature_LibCurl=1 -DqHasFeature_fmtlib=0 -DqHasFeature_GoogleTest=1 -DqHasFeature_LZMA=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_sqlite=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_Xerces=0 -DqHasFeature_libxml2=1 -DqHasFeature_ZLib=1 -DqStroika_Foundation_Debug_Trace_TraceToFile=1 -DqStroika_Foundation_Debug_Trace_DefaultTracingOn=1 -DLIBXML_STATIC -O3 -g -flto  CMakeFiles/cmTC_cbb0a.dir/testCCompiler.c.o -o cmTC_cbb0a 
+		# /usr/bin/clang-18 -I/Sandbox/Stroika-Dev/Builds/clang++-18-release-libc++23/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-18-release-libc++23/ -I/Sandbox/Stroika-Dev/Builds/clang++-18-release-libc++23/ThirdPartyComponents/include/libxml2/ -DqDebug=0 -DqStroika_HasComponent_ATLMFC=0 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=1 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_WinHTTP=0 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_Trace_TraceToFile=1 -DqStroika_Foundation_Debug_Trace_DefaultTracingOn=1 -DLIBXML_STATIC -O3 -g -flto  CMakeFiles/cmTC_cbb0a.dir/testCCompiler.c.o -o cmTC_cbb0a 
 		# /usr/bin/ld: /usr/lib/llvm-18/bin/../lib/LLVMgold.so: error loading plugin: /usr/lib/llvm-18/bin/../lib/LLVMgold.so: cannot open shared object file: No such file or directory
 		# clang-18: error: linker command failed with exit code 1 (use -v to see invocation)
 		# gmake[3]: *** [CMakeFiles/cmTC_cbb0a.dir/build.make:100: cmTC_cbb0a] Error 1
@@ -2320,19 +2320,19 @@ sub GetDefaultCZZFLAGS_flags_
 			my $dashFlag="-D";
 			push @flags, $dashFlag . "qStroika_Foundation_Debug_AssertionsChecked=" . ZERO_OR_1_ ($gAssertionsEnabled);
 			if (defined $FEATUREFLAG_ATLMFC) {
-				push @flags, $dashFlag . "qHasFeature_ATLMFC=" . ZERO_OR_1_ ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem);
+				push @flags, $dashFlag . "qStroika_HasComponent_ATLMFC=" . ZERO_OR_1_ ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem);
 			}
-			push @flags, $dashFlag . "qHasFeature_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_LibCurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_fmtlib=" . ZERO_OR_1_ (($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_GoogleTest=" . ZERO_OR_1_ (($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_WinHTTP=" . ZERO_OR_1_ ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem);
-			push @flags, $dashFlag . "qHasFeature_Xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_libxml2=" . ZERO_OR_1_ (($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseSystem));
-			push @flags, $dashFlag . "qHasFeature_ZLib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_libcurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_fmtlib=" . ZERO_OR_1_ (($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_googletest=" . ZERO_OR_1_ (($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_WinHTTP=" . ZERO_OR_1_ ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem);
+			push @flags, $dashFlag . "qStroika_HasComponent_xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_libxml2=" . ZERO_OR_1_ (($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_zlib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
 			if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 				push @flags, $dashFlag . "qStroika_Foundation_Debug_Trace_TraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
 				#override the default (true iff qStroika_Foundation_Debug_AssertionsChecked) - if set the trace2file option set 

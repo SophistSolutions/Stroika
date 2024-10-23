@@ -32,7 +32,7 @@ using namespace Stroika::Frameworks;
 
 using Stroika::Foundation::Debug::TraceContextBumper;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     GTEST_TEST (Foundation_Time, AssumptionsAboutUnderlyingTimeLocaleLibrary_)
     {
@@ -1105,7 +1105,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Stroika::Frameworks::Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

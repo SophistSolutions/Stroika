@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/FeatureNotSupportedException.h"
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 #include "Private_/ZLibSupport.h"
 #endif
 
@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::DataExchange::Compression;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Streams;
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 using Compression::Private_::DeflateRep_;
 using Compression::Private_::InflateRep_;
 #endif
@@ -30,7 +30,7 @@ using Compression::Private_::InflateRep_;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if !qHasFeature_ZLib
+#if !qStroika_HasComponent_zlib
 namespace {
     const auto kNotSuppExcept_ = Execution::FeatureNotSupportedException{"Deflate (ZLIB)"sv};
 }
@@ -38,7 +38,7 @@ namespace {
 
 Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
 {
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
     struct MyRep_ : IRep {
         Deflate::Compress::Options fOptions_;
         shared_ptr<DeflateRep_>    fDelegate2;
@@ -63,7 +63,7 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
 }
 Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decompress::Options& o)
 {
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
     struct MyRep_ : IRep {
         shared_ptr<Private_::InflateRep_> fDelegate2;
         virtual InputStream::Ptr<byte>    Transform (const InputStream::Ptr<byte>& src)

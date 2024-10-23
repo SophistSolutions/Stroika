@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #endif
 
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
 
     using Memory::BLOB;
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
     /**
      */
     enum class Direction {

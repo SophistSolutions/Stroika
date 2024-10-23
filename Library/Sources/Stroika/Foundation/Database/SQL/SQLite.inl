@@ -6,7 +6,7 @@
 
 namespace Stroika::Foundation::Database::SQL::SQLite {
 
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_sqlite
     /*
      ********************************************************************************
      ****************************** SQLite::CompiledOptions *************************

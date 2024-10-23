@@ -23,10 +23,10 @@
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-#if qHasFeature_libxml2
+#if qStroika_HasComponent_libxml2
 #include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
 #endif
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
 #include "Stroika/Foundation/DataExchange/XML/Providers/Xerces.h"
 #endif
 
@@ -66,7 +66,7 @@ using Containers::SortedMapping;
 using Debug::TraceContextBumper;
 using Memory::BLOB;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     //
     // PUT THIS OR SOMETHING LIKE IT TO STROIKA EVENTUALLY
@@ -95,7 +95,7 @@ namespace {
               [] (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading) {
                   return XML::DOM::Document::New (in, schemaToValidateAgainstWhileReading);
               });
-#if qHasFeature_libxml2
+#if qStroika_HasComponent_libxml2
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                   const Schema::Ptr& schema) { XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, in, callback, schema); },
               [] (const BLOB& schemaData, const ResolverPtr& resolver) {
@@ -105,7 +105,7 @@ namespace {
                   return XML::DOM::Document::New (XML::Providers::LibXML2::kDefaultProvider, in, schemaToValidateAgainstWhileReading);
               });
 #endif
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                   const Schema::Ptr& schema) { XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, in, callback, schema); },
               [] (const BLOB& schemaData, const ResolverPtr& resolver) {
@@ -1473,10 +1473,10 @@ namespace {
             };
             {
                 test1 (DOM::Document::New ({nullopt, "simpleElt"}));
-#if qHasFeature_libxml2
+#if qStroika_HasComponent_libxml2
                 test1 (DOM::Document::New (XML::Providers::LibXML2::kDefaultProvider, NameWithNamespace{nullopt, "simpleElt"}));
 #endif
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
                 test1 (DOM::Document::New (XML::Providers::Xerces::kDefaultProvider, {nullopt, "simpleElt"}));
 #endif
             }
@@ -1707,7 +1707,7 @@ namespace {
                 EXPECT_EQ (mrManager3.GetValue ("name/family"), "Bossy");
             }
             catch (const XML::DOM::XPath::XPathExpressionNotSupported&) {
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
                 Assert (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider); // sadly Xerces 3.2 doesn't support [
 #else
                 AssertNotReached ();
@@ -1727,7 +1727,7 @@ namespace {
             auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"sv});
             EXPECT_EQ (n1, nullptr);
             auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // Xerces 3.2.5 appears to match despite the wrong namespace reference
                 EXPECT_EQ (badHeader1, nullptr);                                       // no namespace specified
             }
@@ -1746,7 +1746,7 @@ namespace {
             EXPECT_EQ (docRelHeader2, header); // verify // working (at least somewhat - limited for xerces)
             EXPECT_NE (header.LookupOneElement (XPath::Expression{"n:SourceDefinitions", kXPathOptions_}), nullptr);
             EXPECT_EQ (header.GetValue (XPath::Expression{"n:SourceDefinitions/n:SourceDefinition/n:Version", kXPathOptions_}), "v3"sv);
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // fails on xerces 3.2.5
                 auto docRelHeader3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData//n:Header", kXPathOptions_});
                 EXPECT_EQ (docRelHeader3, header); // verify // working
@@ -1798,7 +1798,7 @@ namespace {
                     </Terms>
                 </ConceptDetails>
             */
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
 
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // Xerces 3.2.5 doesn't come close to supporting this
 #endif
@@ -1842,7 +1842,7 @@ namespace {
                 //DbgTrace (L"savedAerobicExcerciseSerialized=%s", Characters::ToString (savedAerobicExcerciseSerialized).c_str ());
                 // DbgTrace (L"NEW savedAerobicExcerciseSerialized=%s", Characters::ToString (aerobicExcerciseElt).c_str ());
                 EXPECT_NE (savedAerobicExcerciseSerialized, Characters::ToString (aerobicExcerciseElt));
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
             }
 #endif
         });
@@ -1854,7 +1854,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

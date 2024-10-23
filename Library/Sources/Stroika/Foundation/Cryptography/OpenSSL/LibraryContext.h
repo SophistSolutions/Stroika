@@ -9,7 +9,7 @@
 #include <string>
 #include <string_view>
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 #include <openssl/evp.h>
 #endif
 
@@ -27,7 +27,7 @@
  *  \file
  */
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     using Characters::String;

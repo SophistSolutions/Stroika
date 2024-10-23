@@ -14,13 +14,13 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
 #include "Stroika/Foundation/DataExchange/Compression/Zip/Reader.h"
 #endif
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/Compression/GZip.h"
-#if qHasFeature_LZMA
+#if qStroika_HasComponent_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
 #include "Stroika/Foundation/DataExchange/JSON/Patch.h"
@@ -57,7 +57,7 @@ using DataExchange::VariantValue;
 
 ///// @todo ADD SEPEARET MODULE TO TEST VARIANTVALUE!!!
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 /*
  * Validating JSON parse results:
  *      http://json.parser.online.fr/
@@ -174,7 +174,7 @@ namespace {
             0x00, 0x17, 0x06, 0x87, 0x53, 0x01, 0x09, 0x80, 0xd7, 0x00, 0x07, 0x0b, 0x01, 0x00, 0x01, 0x23, 0x03, 0x01, 0x01, 0x05, 0x5d,
             0x00, 0x10, 0x00, 0x00, 0x0c, 0x81, 0x9b, 0x0a, 0x01, 0xa0, 0xee, 0xa0, 0x06, 0x00, 0x00};
         Assert (sizeof (ksample_zip_7z_) == 2157);
-#if qHasFeature_LZMA
+#if qStroika_HasComponent_LZMA
         Archive::_7z::Reader reader (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{ksample_zip_7z_}));
         EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
                                                                              L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
@@ -350,7 +350,7 @@ namespace {
             0x27, 0xd7, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x50, 0x4b, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x05, 0x00, 0x1f, 0x02,
             0x00, 0x00, 0x4f, 0x09, 0x00, 0x00, 0x00, 0x00};
         Assert (sizeof (ksample_zip_) == 2948);
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
         Archive::Zip::Reader reader{Streams::ExternallyOwnedSpanInputStream::New<byte> (span{ksample_zip_})};
 
         EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
@@ -1096,7 +1096,7 @@ namespace {
             if constexpr (Compression::Deflate::kSupported) {
                 Memory::BLOB compressed = Compression::Deflate::Compress::New ().Transform (b);
                 EXPECT_EQ (b, Compression::Deflate::Decompress::New ().Transform (compressed));
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
                 {
                     DISABLE_COMPILER_MSC_WARNING_START (4996);
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
@@ -1274,7 +1274,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

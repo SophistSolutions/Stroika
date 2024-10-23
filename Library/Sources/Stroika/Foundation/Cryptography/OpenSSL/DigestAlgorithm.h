@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 #include <openssl/evp.h>
 #endif
 
@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     using Characters::String;
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 
     /**
      *  \brief object oriented wrapper on OpenSSL digest algoritms (const EVP_MD*)

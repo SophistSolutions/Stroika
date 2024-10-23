@@ -126,7 +126,7 @@ namespace {
                     appenders += make_shared<Logger::StreamAppender> (IO::FileSystem::FileOutputStream::New (
                         STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
                 }
-#if qHas_Syslog
+#if qStroika_HasComponent_syslog
                 if (loggingConfig.ToSysLog.value_or (Logging::kToSysLog_Default)) {
                     appenders += make_shared<Logger::SysLogAppender> (kAppName_);
                 }

@@ -13,6 +13,21 @@ especially those they need to be aware of when upgrading.
 // DEPRECATED NAME (to be removed in Stroika v3.0a1 - deprecated since Stroika v3.0d11)
     #define qDebug qStroika_Foundation_Debug_AssertionsChecked
 
+// DEPRECATED NAMES - BACKWARD COMPAT FROM PRE v3.0d11 - until v3.0a1 --LGP 2024-10-23
+#define qHas_Syslog qStroika_HasComponent_syslog
+#define qHasLibrary_ODBC qStroika_HasComponent_ODBC
+#define qHasFeature_sqlite qStroika_HasComponent_sqlite
+#define qHasFeature_OpenSSL qStroika_HasComponent_OpenSSL
+#define qHasFeature_Xerces qStroika_HasComponent_xerces
+#define qHasFeature_ATLMFC qStroika_HasComponent_ATLMFC
+#define qHasFeature_boost qStroika_HasComponent_boost
+#define qHasFeature_LibCurl qStroika_HasComponent_libcurl
+#define qHasFeature_fmtlib qStroika_HasComponent_fmtlib
+#define qHasFeature_GoogleTest qStroika_HasComponent_googletest
+#define qHasFeature_LZMA qStroika_HasComponent_LZMA
+#define qHasFeature_WinHTTP qStroika_HasComponent_WinHTTP
+#define qHasFeature_libxml2 qStroika_HasComponent_libxml2
+
     
 -- Support clang++19, and XCode 16 and MacOS 15
 
@@ -502,7 +517,7 @@ or no args/defaults...
     - VERSION 1.15.0
   - fmtlib
      - VERSION 11.0.1
-       - prompted lots of BWA check for use of qHasFeature_fmtlib FMT_VERSION >= 110000
+       - prompted lots of BWA check for use of qStroika_HasComponent_fmtlib FMT_VERSION >= 110000
 
 #### Release-Validation
 - Compilers Tested/Supported
@@ -1051,7 +1066,7 @@ or no args/defaults...
     - replace old \<PkgConfigLinkLineAppendages> with simpler PkgConfigNames (to fix libxml2 include issue)
     - for libxml add LIBXML_STATIC to CPPFLAGS (so seen in vscode)
     - new configure LinkTime_CopyFilesToEXEDir feature, and used to replace old ScriptsLib/Vs2kASANBugWorkaround
-    - Xerces defaults to not being built (if libxml2 is built - qHasFeature_libxml2); and new --default-third-party-components --all-available-third-party-components options available
+    - Xerces defaults to not being built (if libxml2 is built - qStroika_HasComponent_libxml2); and new --default-third-party-components --all-available-third-party-components options available
     - **NOT BACKWARD COMPATIBLE** - cleaned up format and names used in configure files/scripts. Users may need to update makefile scritps; Linker=>LINKER; EXTRA_PREFIX_LINKER_ARGS=> LinkerArgs_ExtraPrefix; EXTRA_SUFFIX_LINKER_ARGS=> LinkerArgs_ExtraSuffix; LIB_DEPENDENCIES=>LinkerArgs_LibDependencies; LIBS_PATH=>LinkerArgs_LibPath
     - fixed minor array indexing bug in configure perl script
     - simplify LinkerArgs_LibPath configure - just store cmdline args in variable not actual path so dont need to do that magic in app
@@ -6571,7 +6586,7 @@ or no args/defaults...
       - changed mirror for boost to sophists.com cuz I cannot find another working one
       - tweak boost/ConfigureAndBuild file and user-config.jam
       - workaround https://stroika.atlassian.net/browse/STK-711 - issue g++-10 --std=c++2a with building boost 1.72
-      - use qHasFeature_boost check not \_\_has_include(<boost/thread/shared_mutex.hpp>) because of we compiled with !qHasFeature_boost - dont use boost even if system installed
+      - use qStroika_HasComponent_boost check not \_\_has_include(<boost/thread/shared_mutex.hpp>) because of we compiled with !qStroika_HasComponent_boost - dont use boost even if system installed
     - libcurl
       - use 7.70.0
     - OpenSSL
@@ -13070,7 +13085,7 @@ with:
                 <li>configure automatically setting right defaults for macos/xcode</li>
             </ul>
         </li>
-        <li>Fixed detect qHasFeature_ATLMFC - was broken (detected when Bob installed on system without atlmfc)</li>
+        <li>Fixed detect qStroika_HasComponent_ATLMFC - was broken (detected when Bob installed on system without atlmfc)</li>
         <li>malloc.h is linux specific</li>
         <li>sysinfo is linux specific</li>
         <li>librt build configuraiton flag (is linux specific)</li>
@@ -17052,7 +17067,7 @@ arguments, including this)
 <ul>
     <li>Fixed POSIX bug with DirectoryIterator/DirectoryIterable</li>
     <li>OptionsFile improvements (logerror/logwarning, file suffixes)</li>
-    <li>Makefile / build tweaks, including progress on mkae skel, qHasFeature_zlib, and ENABLE_GLIBCXX_DEBUG configurability not strictly implied by enable-assertions, and small improvement to make clobber (still wrong)</li>
+    <li>Makefile / build tweaks, including progress on mkae skel, qStroika_HasComponent_zlib, and ENABLE_GLIBCXX_DEBUG configurability not strictly implied by enable-assertions, and small improvement to make clobber (still wrong)</li>
     <li>Minimal testing</li>
 </ul>
 </td>

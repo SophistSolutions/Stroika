@@ -8,9 +8,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::IO::Network::Transfer, qHasFeature_LibCurl, qHasFeature_LibCurl);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::IO::Network::Transfer, qStroika_HasComponent_libcurl, qStroika_HasComponent_libcurl);
 
-#if qHasFeature_LibCurl
+#if qStroika_HasComponent_libcurl
 namespace Stroika::Foundation::IO::Network::Transfer::LibCurl {
 
     inline void ThrowIfError (CURLcode status)
@@ -23,7 +23,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::LibCurl {
 }
 #endif
 
-#if qHasFeature_LibCurl
+#if qStroika_HasComponent_libcurl
 namespace Stroika::Foundation::IO::Network::Transfer {
     [[deprecated ("Since Stroika v3.0d4")]] inline const std::error_category& LibCurl_error_category () noexcept
     {

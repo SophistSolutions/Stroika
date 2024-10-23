@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qHas_Syslog
+#if qStroika_HasComponent_syslog
 #include <syslog.h>
 #endif
 
@@ -349,7 +349,7 @@ void Logger::Log (Priority logLevel, const wchar_t* format, ...)
 }
 #endif
 
-#if qHas_Syslog
+#if qStroika_HasComponent_syslog
 /*
  ********************************************************************************
  ************************ Execution::SysLogAppender *****************************

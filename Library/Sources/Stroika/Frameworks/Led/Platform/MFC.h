@@ -21,7 +21,8 @@
     tested as a replacemnt edit control inheriting from CWnd (@LEC).</p>
  */
 
-static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC code requires the ATLMFC feature to be set true");
+static_assert (qStroika_HasComponent_ATLMFC,
+               "Error: Stroika::Framework::Led::Platform MFC code requires the ATLMFC feature to be set true");
 
 DISABLE_COMPILER_MSC_WARNING_START (4459)
 DISABLE_COMPILER_MSC_WARNING_START (5054)

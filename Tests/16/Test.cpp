@@ -39,7 +39,7 @@ using namespace CommonTests::KeyedCollectionTests::Test1_Basics_;
 //using T1_Traits        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
 //using T1_Key_Extractor = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Key_Extractor;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     namespace Test_KeyedCollectionTypeIndexUsesStdSet_ {
         struct Obj_ {
@@ -147,7 +147,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

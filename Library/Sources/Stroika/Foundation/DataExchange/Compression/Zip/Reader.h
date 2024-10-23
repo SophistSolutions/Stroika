@@ -20,7 +20,7 @@
  */
 
 namespace Stroika::Foundation::DataExchange::Compression::Zip {
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
     /**
      *  \par Example Usage
      *      \code

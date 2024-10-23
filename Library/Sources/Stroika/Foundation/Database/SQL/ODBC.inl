@@ -6,7 +6,7 @@
 
 namespace Stroika::Foundation::Database::SQL::ODBC {
 
-#if qHasLibrary_ODBC
+#if qStroika_HasComponent_ODBC
 
     /*
      ********************************************************************************

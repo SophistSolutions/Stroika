@@ -18,7 +18,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         namespace {
             template <typename FACTORY, typename DEFAULT_VALUES_ITERABLE>
             auto mk_ (const FACTORY& f, const DEFAULT_VALUES_ITERABLE& il)

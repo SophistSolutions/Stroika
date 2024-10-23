@@ -11,7 +11,7 @@
 #include <map>
 #include <vector>
 
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // for g++-13 g++-release-sanitize_address_undefined warning: 'long unsigned int __atomic_sub_fetch_8(volatile void*, long unsigned int, int)' writing 8 bytes into a region of size 0 overflows the destination [-Wstringop-overflow=
 #include <boost/json/value.hpp>
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::DataExchange {
         template <typename T>
         concept IVariantValueAsBasic_ =
             Common::IAnyOf<T, bool, BLOB, Date, DateTime, wstring, String, Mapping<String, VariantValue>, map<wstring, VariantValue>, Sequence<VariantValue>, vector<VariantValue>>
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
             or same_as<T, boost::json::value>
 #endif
             or integral<T> or floating_point<T>;
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::DataExchange {
         template <typename T>
         VariantValue (const optional<T>& val)
             requires (is_convertible_v<T, VariantValue>); // @todo redo with constraint/typename syntax (I think converitble_to<VariantValue>)
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
         VariantValue (const boost::json::value& val);
 #endif
 
@@ -443,7 +443,7 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual String               AsString_ () const;
         nonvirtual Mapping<String, VariantValue> AsMapping_ () const;
         nonvirtual Sequence<VariantValue> AsSequence_ () const;
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
         nonvirtual boost::json::value AsBoostJSONValue_ () const;
 #endif
 

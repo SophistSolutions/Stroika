@@ -45,8 +45,8 @@ using namespace Stroika::Frameworks;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_GoogleTest
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_googletest
+#if qStroika_HasComponent_sqlite
 namespace {
     // Bad example (for now) without Bind - just formatting sql lines
     namespace RegressionTest1_sqlite_ScansDBTest_ {
@@ -765,7 +765,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

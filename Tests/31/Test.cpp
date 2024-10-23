@@ -8,7 +8,7 @@
 
 #if qStroika_Foundation_Common_Platform_Windows
 #include <windows.h>
-#if qHasFeature_ATLMFC
+#if qStroika_HasComponent_ATLMFC
 #include <atlenc.h>
 #endif
 #endif
@@ -53,7 +53,7 @@ using namespace Stroika::Frameworks;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     uint32_t ToLE_ (uint32_t n)
     {
@@ -67,7 +67,7 @@ namespace {
     namespace Base64Test {
         namespace PRIVATE_ {
 
-#if qStroika_Foundation_Common_Platform_Windows && qHasFeature_ATLMFC
+#if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
             namespace {
                 using Encoding::Algorithm::LineBreak;
                 vector<byte> DecodeBase64_ATL_ (const string& s)
@@ -118,7 +118,7 @@ namespace {
                 inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
                 {
                     using namespace Encoding::Algorithm;
-#if qStroika_Foundation_Common_Platform_Windows && qHasFeature_ATLMFC
+#if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
                     EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
                                                (Base64::Options{.fLineBreak = Base64::LineBreak::eCRLF_LB})),
                                EncodeBase64_ATL_ (bytes, Base64::LineBreak::eCRLF_LB));
@@ -465,7 +465,7 @@ namespace {
     namespace EnumerateOpenSSLAlgorithmsInContexts_ {
         void DoRegressionTests_ ()
         {
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
             Debug::TraceContextBumper ctx{"EnumerateOpenSSLAlgorithmsInContexts_::DoRegressionTests_"};
             Set<String>               defaultContextAvailableCipherAlgorithms =
                 OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
@@ -511,7 +511,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"AllSSLEncrytionRoundtrip::DoRegressionTests_"};
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
             using Memory::BLOB;
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
@@ -691,7 +691,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"OpenSSLDeriveKeyTests_::DoRegressionTests_"};
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
             using Characters::String;
             using Memory::BLOB;
             using namespace Stroika::Foundation::Cryptography::Encoding;
@@ -755,7 +755,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"OpenSSLEncryptDecryptTests_::DoRegressionTests_"};
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
             using Characters::String;
             using Memory::BLOB;
             using namespace Stroika::Foundation::Cryptography::Encoding;
@@ -835,7 +835,7 @@ namespace {
                 const Memory::BLOB encResult = Memory::BLOB::FromHex (
                     "62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 "
                     "ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
                 const OpenSSL::DerivedKey kDerivedKey =
                     OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};
                 // HORRIBLE MESS OF AN API! -
@@ -872,7 +872,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

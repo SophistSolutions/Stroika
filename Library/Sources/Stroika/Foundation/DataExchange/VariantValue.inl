@@ -105,7 +105,7 @@ namespace Stroika::Foundation::DataExchange {
         else if constexpr (same_as<RETURNTYPE, vector<VariantValue>>) {
             return this->AsSequence_ ().As<vector<VariantValue>> ();
         }
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
         else if constexpr (same_as<RETURNTYPE, boost::json::value>) {
             return this->AsBoostJSONValue_ ();
         }

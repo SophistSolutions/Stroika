@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 #include <openssl/evp.h>
 #endif
 
@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
 using namespace Stroika::Foundation::Memory;
 
-#if qHasFeature_OpenSSL && defined(_MSC_VER)
+#if qStroika_HasComponent_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #if OPENSSL_VERSION_NUMBER < 0x1010000fL
 #pragma comment(lib, "libeay32.lib")
@@ -33,7 +33,7 @@ using namespace Stroika::Foundation::Memory;
 #endif
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 
 /*
  ********************************************************************************

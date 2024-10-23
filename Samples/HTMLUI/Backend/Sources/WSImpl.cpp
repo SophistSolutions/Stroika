@@ -17,10 +17,10 @@
 #include "Stroika/Frameworks/SystemPerformance/Measurement.h"
 #include "Stroika/Frameworks/WebService/OpenAPI/Specification.h"
 
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
 #include <boost/version.hpp>
 #endif
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 #include <openssl/opensslv.h>
 #endif
 
@@ -109,11 +109,11 @@ About WSImpl::about_GET () const
 
     static const Sequence<ComponentInfo> kAPIServerComponents_{initializer_list<ComponentInfo>{
         ComponentInfo{"Stroika"sv, Version{kStroika_Version_FullVersion}.AsPrettyVersionString (), URI{"https://github.com/SophistSolutions/Stroika"sv}}
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
         ,
         ComponentInfo{"boost"sv, String{BOOST_LIB_VERSION}}
 #endif
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
         ,
         ComponentInfo{"OpenSSL"sv, OPENSSL_VERSION_TEXT, URI{"https://www.openssl.org/"sv}}
 #endif

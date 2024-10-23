@@ -18,7 +18,7 @@
 
 namespace Stroika::Foundation::DataExchange::Archive::_7z {
 
-#if qHasFeature_LZMA
+#if qStroika_HasComponent_LZMA
     /**
      *  @todo add example usage (and docs)
      */

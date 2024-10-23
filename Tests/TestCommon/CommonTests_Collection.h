@@ -23,7 +23,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         namespace Test1_OldMiscBagTests_ {
 
             template <typename CONCRETE_CONTAINER>

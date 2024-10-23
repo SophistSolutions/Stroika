@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
         Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
     };
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
     /**
      */
     Streams::InputStream::Ptr<byte> DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream::Ptr<byte>& in,
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
     Memory::BLOB DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
     /**
      */
     Streams::InputStream::Ptr<byte> EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream::Ptr<byte>& in,
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
     Memory::BLOB EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
     /**
      *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
      *  to the returned output stream is decrypted before being passed to the argument output stream.
@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
                                                  AESOptions options = AESOptions::eDEFAULT);
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
     /**
      *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
      *  to the returned output stream is encrpted before being passed to the argument output stream.

@@ -102,7 +102,7 @@ namespace {
 #endif
 }
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 /*
  *  TODO:
  *
@@ -299,7 +299,7 @@ namespace {
             v.push_back (s2);
         }
         sort (v.begin (), v.end (), [] (S a, S b) { return b.fS1 < a.fS1; });
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         EXPECT_TRUE (v[0].fS1 == v[1].fS1);
 #endif
     }
@@ -334,7 +334,7 @@ namespace {
             v.push_back (s2);
         }
         sort (v.begin (), v.end (), [] (S a, S b) { return b.fS1 < a.fS1; });
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         EXPECT_TRUE (v[0].fS1 == v[1].fS1);
 #endif
     }
@@ -349,7 +349,7 @@ namespace {
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         EXPECT_TRUE (w.length () == KBase.length () * 10);
 #endif
     }
@@ -364,7 +364,7 @@ namespace {
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         EXPECT_TRUE (w.length () == wcslen (KBase) * 10);
 #endif
     }
@@ -379,7 +379,7 @@ namespace {
         for (int i = 0; i < 100; ++i) {
             w += KBase;
         }
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         EXPECT_TRUE (w.length () == wcslen (KBase) * 100);
 #endif
     }
@@ -1545,7 +1545,7 @@ namespace {
     }
 }
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     GTEST_TEST (Stroika_Performance_Tests, all)
     {
@@ -1583,12 +1583,12 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         exit (EXIT_FAILURE);
     }
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     TemporaryTest_::DoTest_ ();
 #endif
 
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

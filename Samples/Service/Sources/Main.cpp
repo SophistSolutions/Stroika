@@ -155,7 +155,7 @@ int main (int argc, const char* argv[])
             make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
     }
     else {
-#if qHas_Syslog
+#if qStroika_HasComponent_syslog
         Logger::sThe.SetAppenders (make_shared<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
 #elif qPlatform_Windows
         Logger::sThe.SetAppenders (make_shared<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));

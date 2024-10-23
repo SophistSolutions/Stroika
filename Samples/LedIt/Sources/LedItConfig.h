@@ -37,7 +37,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
-static_assert (qHasFeature_ATLMFC, "Error: LedIt requires the ATLMFC feature to be set true when building Stroika");
+static_assert (qStroika_HasComponent_ATLMFC, "Error: LedIt requires the ATLMFC feature to be set true when building Stroika");
 
 enum FileFormat {
     eTextFormat,

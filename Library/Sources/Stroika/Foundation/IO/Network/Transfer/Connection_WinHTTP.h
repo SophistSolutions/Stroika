@@ -12,7 +12,7 @@
  *
  */
 
-#if qHasFeature_WinHTTP
+#if qStroika_HasComponent_WinHTTP
 namespace Stroika::Foundation::IO::Network::Transfer::WinHTTP::Connection {
 
     using namespace Stroika::Foundation::IO::Network::Transfer::Connection;

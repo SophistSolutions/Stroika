@@ -22,7 +22,7 @@ namespace Stroika::Foundation::DataExchange::Compression::GZip {
      *  Check at compile time if GZip is supported.
      */
     constexpr bool kSupported =
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
         true
 #else
         false

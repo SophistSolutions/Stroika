@@ -4,7 +4,7 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 
     /*
      ********************************************************************************

@@ -24,7 +24,7 @@
 #include <stacktrace>
 #endif
 
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
 #include <boost/stacktrace.hpp>
 #endif
 
@@ -74,7 +74,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         o << eText;
     }
     return Characters::NarrowSDK2Wide (o.str (), eIgnoreErrors);
-#elif qHasFeature_boost
+#elif qStroika_HasComponent_boost
     using namespace boost;
 
     auto bt = stacktrace::stacktrace ();

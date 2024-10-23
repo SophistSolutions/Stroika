@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #endif
@@ -30,7 +30,7 @@ using Memory::BLOB;
 
 // @todo examine/test https://github.com/saju/misc/blob/master/misc/openssl_aes.c
 
-#if qHasFeature_OpenSSL && defined(_MSC_VER)
+#if qStroika_HasComponent_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #if OPENSSL_VERSION_NUMBER < 0x1010000fL
 #pragma comment(lib, "libeay32.lib")
@@ -48,7 +48,7 @@ using Memory::BLOB;
 /// SEE https://wiki.openssl.org/index.php/EVP_Symmetric_Encryption_and_Decryption
 //// for details on what todo
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 
 namespace {
     struct InOutStrmCommon_ {

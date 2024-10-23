@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     using Characters::String;
     using Memory::BLOB;
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);

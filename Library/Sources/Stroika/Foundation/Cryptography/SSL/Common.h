@@ -23,11 +23,11 @@
  */
 
 /*
-@CONFIGVAR:     qHasFeature_OpenSSL
+@CONFIGVAR:     qStroika_HasComponent_OpenSSL
 @DESCRIPTION:   <p>0 or 1</p>
 */
-#if !defined(qHasFeature_OpenSSL)
-#error "qHasFeature_OpenSSL should normally be defined indirectly by StroikaConfig.h"
+#if !defined(qStroika_HasComponent_OpenSSL)
+#error "qStroika_HasComponent_OpenSSL should normally be defined indirectly by StroikaConfig.h"
 #endif
 
 namespace Stroika::Foundation::Cryptography::SSL {

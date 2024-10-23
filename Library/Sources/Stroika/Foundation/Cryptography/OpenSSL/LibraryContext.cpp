@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 #include <openssl/evp.h>
 #if OPENSSL_VERSION_MAJOR >= 3
 #include <openssl/provider.h>
@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Debug;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_OpenSSL && defined(_MSC_VER)
+#if qStroika_HasComponent_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #if OPENSSL_VERSION_NUMBER < 0x1010000fL
 #pragma comment(lib, "libeay32.lib")
@@ -37,7 +37,7 @@ using namespace Stroika::Foundation::Debug;
 #endif
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 
 namespace {
     void AccumulateIntoSetOfCipherNames_ (const ::EVP_CIPHER* ciph, Set<String>* ciphers)

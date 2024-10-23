@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 
 using namespace Stroika::Frameworks;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     namespace Cookies_Test01_ {
         void RunAll ()
@@ -175,7 +175,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

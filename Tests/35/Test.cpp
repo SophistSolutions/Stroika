@@ -30,7 +30,7 @@ using namespace Stroika::Frameworks;
 using Execution::ModuleGetterSetter;
 using Traversal::Iterable;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     GTEST_TEST (Foundation_DataExchange_Other, Test1_Atom_)
     {
@@ -308,7 +308,7 @@ int main (int argc, const char* argv[])
 {
     Execution::Logger::Activator logMgrActivator; // for OptionsFile test
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

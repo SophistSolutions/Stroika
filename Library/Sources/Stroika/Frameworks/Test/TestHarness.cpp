@@ -94,7 +94,7 @@ vector<string> Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const ch
     Debug::RegisterDefaultFatalErrorHandlers (FatalErrorHandler_);
     using namespace Execution;
     SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{FatalSignalHandler_, SignalHandler::Type::eDirect});
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     // @todo fix to COPY so safe...
     testing::InitGoogleTest (&argc, const_cast<char**> (argv));
 #endif

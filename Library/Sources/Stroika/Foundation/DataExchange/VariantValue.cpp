@@ -218,7 +218,7 @@ VariantValue::VariantValue (const Traversal::Iterable<VariantValue>& val)
 {
 }
 
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
 namespace {
     inline auto mk_ (const boost::json::value& val) -> VariantValue
     {
@@ -639,7 +639,7 @@ DateTime VariantValue::AsDateTime_ () const
     }
 }
 
-#if qHasFeature_boost
+#if qStroika_HasComponent_boost
 boost::json::value VariantValue::AsBoostJSONValue_ () const
 {
     using namespace boost;

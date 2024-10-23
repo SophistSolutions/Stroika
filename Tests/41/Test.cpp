@@ -43,7 +43,7 @@ using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::OnlyDefaultConstructibleAndMoveable;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     bool kVerySlow_ = qStroika_Foundation_Debug_AssertionsChecked and (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer);
     bool kSortaSlow_ = qStroika_Foundation_Debug_AssertionsChecked or Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer;
@@ -749,7 +749,7 @@ int main (int argc, const char* argv[])
         }
     });
 #endif
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

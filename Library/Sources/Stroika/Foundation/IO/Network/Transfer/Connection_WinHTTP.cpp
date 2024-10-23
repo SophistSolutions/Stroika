@@ -5,7 +5,7 @@
 
 #include <optional>
 
-#if qHasFeature_WinHTTP
+#if qStroika_HasComponent_WinHTTP
 #include <windows.h>
 
 #include <Winhttp.h>
@@ -41,7 +41,7 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
-#if qHasFeature_WinHTTP
+#if qStroika_HasComponent_WinHTTP
 using IO::Network::Transfer::WinHTTP::Connection::Options;
 #endif
 using Memory::BLOB;
@@ -53,7 +53,7 @@ using Stroika::Foundation::Execution::Platform::Windows::ThrowIfZeroGetLastError
 #endif
 using Stroika::Foundation::Memory::StackBuffer;
 
-CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasFeature_WinHTTP, qHasFeature_WinHTTP);
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qStroika_HasComponent_WinHTTP, qStroika_HasComponent_WinHTTP);
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -63,13 +63,13 @@ CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasF
  *
  */
 
-#if qHasFeature_WinHTTP
+#if qStroika_HasComponent_WinHTTP
 // otherwise modules linking with this code will tend to get link errors without explicitly linking
 // to this module...
 #pragma comment(lib, "Winhttp.lib")
 #endif
 
-#if qHasFeature_WinHTTP
+#if qStroika_HasComponent_WinHTTP
 namespace {
     struct AutoWinHINTERNET_ {
         HINTERNET fHandle;

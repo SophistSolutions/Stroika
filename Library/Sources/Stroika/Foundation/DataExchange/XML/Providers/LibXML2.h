@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libxml2 not set");
+static_assert (qStroika_HasComponent_libxml2, "Don't include this file if qStroika_HasComponent_libxml2 not set");
 
 #include <libxml/parser.h>
 #include <libxml/schemasInternals.h>
@@ -79,6 +79,6 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_libxml2, qHasFeature_libxml2);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qStroika_HasComponent_libxml2, qStroika_HasComponent_libxml2);
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Providers_LibXML2_h_*/

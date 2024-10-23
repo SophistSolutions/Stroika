@@ -27,7 +27,7 @@ using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Frameworks;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     namespace Test1_URI_ {
         namespace Private_ {
@@ -589,7 +589,7 @@ GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

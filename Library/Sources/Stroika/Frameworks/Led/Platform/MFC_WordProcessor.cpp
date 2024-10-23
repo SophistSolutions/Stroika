@@ -5,7 +5,7 @@
 
 #include <climits>
 
-#if qHasFeature_ATLMFC
+#if qStroika_HasComponent_ATLMFC
 
 #include <afxext.h>
 #include <atlstr.h>

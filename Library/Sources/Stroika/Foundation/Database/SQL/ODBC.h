@@ -25,18 +25,18 @@
  */
 
 /*
-@CONFIGVAR:     qHasLibrary_ODBC
+@CONFIGVAR:     qStroika_HasComponent_ODBC
 @DESCRIPTION:   <p>Defines if Stroika is built supporting ODBC (only do if ODBC headers in -I path)/p>
 */
-#ifndef qHasLibrary_ODBC
-#error "qHasLibrary_ODBC should normally be defined indirectly by StroikaConfig.h"
+#ifndef qStroika_HasComponent_ODBC
+#error "qStroika_HasComponent_ODBC should normally be defined indirectly by StroikaConfig.h"
 #endif
 
 namespace Stroika::Foundation::Database::SQL::ODBC {
 
     using namespace std;
 
-#if qHasLibrary_ODBC
+#if qStroika_HasComponent_ODBC
 
     namespace Connection {
 

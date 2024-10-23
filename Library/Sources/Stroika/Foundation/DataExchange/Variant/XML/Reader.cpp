@@ -47,7 +47,7 @@ public:
         Debug::TraceContextBumper ctx{"DataExchange::XML::Reader::Rep_::Read"};
 #endif
 // TODO - USE SAXREADER HERE!!!
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
         AssertNotImplemented ();
         return VariantValue{};
 #else

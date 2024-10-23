@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 #include <openssl/evp.h>
 #endif
 
@@ -21,7 +21,7 @@
  *
  */
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     using Characters::String;

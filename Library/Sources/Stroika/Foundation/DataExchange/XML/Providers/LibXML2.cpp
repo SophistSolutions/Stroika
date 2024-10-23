@@ -36,9 +36,9 @@ using std::byte;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-static_assert (qHasFeature_libxml2, "Don't compile this file if qHasFeature_libxml2 not set");
+static_assert (qStroika_HasComponent_libxml2, "Don't compile this file if qStroika_HasComponent_libxml2 not set");
 
-CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_libxml2, qHasFeature_libxml2);
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qStroika_HasComponent_libxml2, qStroika_HasComponent_libxml2);
 
 namespace {
     // From https://www.w3.org/TR/xml-names/

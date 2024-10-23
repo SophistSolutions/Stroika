@@ -18,7 +18,7 @@
 
 namespace Stroika::Foundation::DataExchange::Archive::Zip {
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
     /**
      *  @todo add example usage (and docs)
      */

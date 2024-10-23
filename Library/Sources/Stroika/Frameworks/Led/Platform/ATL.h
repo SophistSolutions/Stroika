@@ -14,7 +14,8 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform ATL code requires the ATLMFC feature to be set true");
+static_assert (qStroika_HasComponent_ATLMFC,
+               "Error: Stroika::Framework::Led::Platform ATL code requires the ATLMFC feature to be set true");
 
 #include <atlbase.h>
 #include <atlcom.h>

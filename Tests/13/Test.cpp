@@ -45,7 +45,7 @@ using MyOnlyCopyableMoveable_ComparerWithEquals_ = AsIntsEqualsComparer<OnlyCopy
 using MyOnlyCopyableMoveable_LESS_               = AsIntsLessComparer<OnlyCopyableMoveable>;
 using MyOnlyCopyableMoveable_THREEWAY_           = AsIntsThreeWayComparer<OnlyCopyableMoveable>;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
     void RunTests_ (CONCRETE_CONTAINER_FACTORY factory)
@@ -215,7 +215,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

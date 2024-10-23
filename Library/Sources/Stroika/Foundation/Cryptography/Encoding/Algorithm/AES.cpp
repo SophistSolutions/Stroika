@@ -18,7 +18,7 @@ using namespace Stroika::Foundation::Cryptography::OpenSSL;
 
 using Memory::BLOB;
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 namespace {
     OpenSSLCryptoParams cvt_ (const OpenSSL::DerivedKey& key, AESOptions options)
     {
@@ -67,7 +67,7 @@ namespace {
 }
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 /*
  ********************************************************************************
  ***************************** Algorithm::DecodeAES *****************************
@@ -83,7 +83,7 @@ Memory::BLOB Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Memory:
 }
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 /*
  ********************************************************************************
  ****************************** Algorithm::EncodeAES ****************************
@@ -99,7 +99,7 @@ Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory:
 }
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 /*
  ********************************************************************************
  **************************** Algorithm::AESEncoder *****************************
@@ -111,7 +111,7 @@ Streams::OutputStream::Ptr<byte> Algorithm::AESDecoder (const OpenSSL::DerivedKe
 }
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 /*
  ********************************************************************************
  ****************************** Algorithm::AESEncoder ***************************

@@ -26,7 +26,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     using namespace Stroika::Samples::SQL;
 
     {
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_sqlite
         auto connectionFactory = [=] () {
             // Use InMemory DB
             return SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = u"direct-employees-test"});
@@ -36,7 +36,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     }
 
     {
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_sqlite
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "direct-employees-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
@@ -47,7 +47,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #endif
     }
 
-#if qHasLibrary_ODBC
+#if qStroika_HasComponent_ODBC
     {
         // Note - classes structured so you COULD use SQLite or ODBC transparently, but
         // the ODBC layer NYI (as of 2021-08-08) so commented out...
@@ -58,7 +58,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #endif
 
     {
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_sqlite
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
@@ -74,7 +74,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     {
         // EmployeesDB test, but using C++ objects and ORM mapping layer (and threads)
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_sqlite
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "orm-employees-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
@@ -89,7 +89,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     }
 
     {
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_sqlite
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "computer-network.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () { return SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath}); };

@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 #include <openssl/evp.h>
 #endif
 
@@ -32,7 +32,7 @@ using namespace Stroika::Foundation::Memory;
 using Memory::BLOB;
 using Memory::StackBuffer;
 
-#if qHasFeature_OpenSSL && defined(_MSC_VER)
+#if qStroika_HasComponent_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #if OPENSSL_VERSION_NUMBER < 0x1010000fL
 #pragma comment(lib, "libeay32.lib")
@@ -45,7 +45,7 @@ using Memory::StackBuffer;
 #endif
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 /*
  ********************************************************************************
  ********************** Cryptography::OpenSSL::DerivedKey ***********************
@@ -67,7 +67,7 @@ String DerivedKey::ToString () const
  **************** Cryptography::OpenSSL::WinCryptDeriveKey **********************
  ********************************************************************************
  */
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 namespace {
     pair<BLOB, BLOB> mkWinCryptDeriveKey_ (size_t keyLen, [[maybe_unused]] DigestAlgorithm digestAlgorithm, const BLOB& passwd)
     {
@@ -156,7 +156,7 @@ WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherA
 }
 #endif
 
-#if qHasFeature_OpenSSL
+#if qStroika_HasComponent_OpenSSL
 /*
  ********************************************************************************
  ******************* Cryptography::OpenSSL::EVP_BytesToKey **********************

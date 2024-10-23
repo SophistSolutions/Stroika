@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 #define GTEST_DONT_DEFINE_TEST 1
 #include <gtest/gtest.h>
 #endif
@@ -28,7 +28,7 @@ namespace Stroika::Frameworks::Test {
      *          }
      *      \endcode
      * 
-     *  if qHasFeature_GoogleTest is enabled, this calls testing::InitGoogleTest(), which may remove some values from argc/argv.
+     *  if qStroika_HasComponent_googletest is enabled, this calls testing::InitGoogleTest(), which may remove some values from argc/argv.
      *  Use the value returned from Setup() to get the adjusted args list. Note - no character-set mapping is done in this routine. Just copying of the same
      *  starting raw data.
      */

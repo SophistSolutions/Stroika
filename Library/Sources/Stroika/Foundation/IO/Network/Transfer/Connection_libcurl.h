@@ -8,7 +8,7 @@
 
 #include <system_error>
 
-#if qHasFeature_LibCurl
+#if qStroika_HasComponent_libcurl
 // For CURLCode define
 #include <curl/curl.h>
 #endif
@@ -22,7 +22,7 @@
  *              libraries using curl (like CurlNetAccessor::initCurl in xerces) do the same thing.
  */
 
-#if qHasFeature_LibCurl
+#if qStroika_HasComponent_libcurl
 namespace Stroika::Foundation::IO::Network::Transfer::LibCurl {
 
     /**

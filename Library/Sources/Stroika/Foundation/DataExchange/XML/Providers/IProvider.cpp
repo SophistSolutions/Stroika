@@ -5,10 +5,10 @@
 
 #include "IProvider.h"
 
-#if qHasFeature_Xerces
+#if qStroika_HasComponent_xerces
 #include "Xerces.h"
 #endif
-#if qHasFeature_libxml2
+#if qStroika_HasComponent_libxml2
 #include "LibXML2.h"
 #endif
 
@@ -21,9 +21,9 @@ const XML::Providers::IXMLProvider* XML::Providers::Private_::GetDefaultProvider
 {
     // libxml2 has better XPath support than Xerces (and so therefore also better schema validation).
     // so make it the default as of 2024-01-14
-#if qHasFeature_libxml2
+#if qStroika_HasComponent_libxml2
     return &LibXML2::kDefaultProvider;
-#elif qHasFeature_Xerces
+#elif qStroika_HasComponent_xerces
     return &Xerces::kDefaultProvider;
 #endif
 }

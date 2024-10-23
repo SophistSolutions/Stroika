@@ -15,10 +15,10 @@
 
 #include "Connection.h"
 
-#if qHasFeature_LibCurl
+#if qStroika_HasComponent_libcurl
 #include "Connection_libcurl.h"
 #endif
-#if qHasFeature_WinHTTP
+#if qStroika_HasComponent_WinHTTP
 #include "Connection_WinHTTP.h"
 #endif
 
@@ -175,10 +175,10 @@ Response Connection::Ptr::Send (const Request& r)
  */
 Connection::Ptr Transfer::Connection::New (const Connection::Options& options)
 {
-#if qHasFeature_LibCurl
+#if qStroika_HasComponent_libcurl
     return LibCurl::Connection::New (options);
 #endif
-#if qHasFeature_WinHTTP
+#if qStroika_HasComponent_WinHTTP
     return WinHTTP::Connection::New (options);
 #endif
     Execution::Throw (Execution::RequiredComponentMissingException{Execution::RequiredComponentMissingException::kIONetworkClientFactory});

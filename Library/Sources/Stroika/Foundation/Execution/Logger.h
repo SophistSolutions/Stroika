@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Execution {
      *              Logger::sThe.AddAppender (make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, AdoptFDPolicy::eDisconnectOnDestruction)));
      *          }
      *          else {
-     *              #if qHas_Syslog
+     *              #if qStroika_HasComponent_syslog
      *                  Logger::sThe.AddAppender (make_shared<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
      *              #elif qStroika_Foundation_Common_Platform_Windows
      *                  Logger::sThe.AddAppender (make_shared<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Execution {
         using IAppenderRepPtr [[deprecated ("Since Stroika v3.0d6 - just use shared_ptr<IAppenderRep>")]] = shared_ptr<IAppenderRep>;
 
     public:
-#if qHas_Syslog
+#if qStroika_HasComponent_syslog
         class SysLogAppender;
 #endif
         class FileAppender;
@@ -370,7 +370,7 @@ namespace Stroika::Foundation::Execution {
         virtual void Log (Priority logLevel, const String& message) = 0;
     };
 
-#if qHas_Syslog
+#if qStroika_HasComponent_syslog
     /**
      */
     class Logger::SysLogAppender : public Logger::IAppenderRep {

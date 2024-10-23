@@ -143,7 +143,7 @@
                 Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 */
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 #include <zlib.h>
 
 using namespace Stroika::Foundation;
@@ -2506,7 +2506,7 @@ namespace {
 ///////////////////////////////// END OF unzip.c ////////////////////
 #endif
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 class Zip::Reader::Rep_ : public Reader::_IRep {
 private:
     struct MyISeekInStream : zlib_filefunc64_def {

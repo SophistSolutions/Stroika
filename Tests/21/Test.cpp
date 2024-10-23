@@ -61,7 +61,7 @@ using COMPARE_OnlyCopyableMoveable                  = AsIntsEqualsComparer<OnlyC
  *          as a DEMO, than as a regression test.
  */
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_1_ ()
@@ -934,7 +934,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

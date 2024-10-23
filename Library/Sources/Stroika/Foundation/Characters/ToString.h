@@ -37,7 +37,7 @@
  *      @todo   ToString(tuple) should use variadic templates and support multiple (past 3) args
  */
 
-#if qHasFeature_fmtlib && (FMT_VERSION >= 110000)
+#if qStroika_HasComponent_fmtlib && (FMT_VERSION >= 110000)
 namespace Stroika::Foundation::Common {
     struct GUID;
 }
@@ -291,7 +291,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 
         // AND throw in other libraries Stroika is built with (this is why the question in https://stackoverflow.com/questions/78774217/how-to-extend-stdformatter-without-sometimes-introducing-conflicts-can-concep
         // is so important to better resolve!
-#if qHasFeature_fmtlib 
+#if qStroika_HasComponent_fmtlib 
         or Common::IAnyOf<decay_t<T>, qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>
 #if (FMT_VERSION >= 110000)
         // Workaround issue with fmtlib 11 ranges support - it matches these
@@ -388,7 +388,7 @@ namespace Stroika::Foundation::Characters::Private_ {
             } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
     //or Common::ISharedPtr<decay_t<T>>
 #if !__cpp_lib_format_ranges
-#if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
+#if !qStroika_HasComponent_fmtlib or (FMT_VERSION < 110000)
              or (ranges::range<decay_t<T>> and
                  not Common::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
                                     qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
@@ -396,7 +396,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
 #if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240908) ||    \
     (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240908) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
-#if !qHasFeature_fmtlib or (FMT_VERSION < 110000)
+#if !qStroika_HasComponent_fmtlib or (FMT_VERSION < 110000)
              // available in C++23
              or Common::IPair<remove_cvref_t<T>> or
              Common::ITuple<remove_cvref_t<T>>

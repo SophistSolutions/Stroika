@@ -7,7 +7,7 @@
 #include <windows.h>
 #endif
 
-#if qHasLibrary_ODBC
+#if qStroika_HasComponent_ODBC
 #include <sql.h>
 #include <sqlext.h>
 #endif
@@ -26,7 +26,7 @@ using namespace Debug;
 
 using Database::SQL::EngineProperties;
 
-#if qHasLibrary_ODBC
+#if qStroika_HasComponent_ODBC
 
 namespace {
     void ThrowIfSQLError_ (SQLRETURN r, const String& message)

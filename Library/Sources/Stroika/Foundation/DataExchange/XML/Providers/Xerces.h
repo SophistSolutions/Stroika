@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerces not set");
+static_assert (qStroika_HasComponent_xerces, "Don't include this file if qStroika_HasComponent_xerces not set");
 
 // avoid namespace conflict with some Xerces code
 #undef Assert
@@ -95,6 +95,6 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qStroika_HasComponent_xerces, qStroika_HasComponent_xerces);
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Providers_Xerces_h_*/

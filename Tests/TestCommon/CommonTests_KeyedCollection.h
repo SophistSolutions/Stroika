@@ -32,7 +32,7 @@ namespace CommonTests {
                 };
             };
             using T1_Traits = KeyedCollection_DefaultTraits<T1, int, T1_Key_Extractor>;
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
             template <typename CONTAINER, typename TEST_FUNCTION>
             void RunTest (CONTAINER coll, TEST_FUNCTION testFunction)
             {
@@ -62,7 +62,7 @@ namespace CommonTests {
 #endif
         }
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         /**
          */
         template <typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>

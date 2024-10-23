@@ -17,7 +17,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation::Containers;
         using namespace Stroika::Foundation::Traversal;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         template <typename USING_ITERABLE_CONTAINER>
         void SimpleIterableTests (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container)
         {

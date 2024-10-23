@@ -44,7 +44,7 @@ using Time::DateTime;
 using Time::Duration;
 using Time::TimeOfDay;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
 namespace {
     namespace DoRegressionTests_BasicDataRoundtrips_1_ {
         template <typename T>
@@ -880,7 +880,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;

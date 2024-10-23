@@ -5,7 +5,7 @@
 
 #include <csignal>
 
-#if qHasFeature_LibCurl
+#if qStroika_HasComponent_libcurl
 #include <curl/curl.h>
 #endif
 
@@ -37,9 +37,9 @@ using Stroika::Foundation::IO::Network::Transfer::Connection::Options;
 // Uncomment this line to enable libcurl to print diagnostics to stderr
 //#define       USE_LIBCURL_VERBOSE_    1
 
-CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasFeature_LibCurl, qHasFeature_LibCurl);
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qStroika_HasComponent_libcurl, qStroika_HasComponent_libcurl);
 
-#if qHasFeature_LibCurl
+#if qStroika_HasComponent_libcurl
 using namespace Stroika::Foundation::IO::Network::Transfer::LibCurl;
 
 namespace {

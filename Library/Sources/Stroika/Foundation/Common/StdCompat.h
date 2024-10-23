@@ -14,10 +14,10 @@
 
 // Various kooky constraints
 //      (1) clang++15/16 don't set __cpp_lib_format, so cannot check __cpp_lib_format >= 201907 instead check __has_include(<format>)
-//      (2) has_include <format> false positives on some versions of XCode, and no reason to even build qHasFeature_fmtlib unless
+//      (2) has_include <format> false positives on some versions of XCode, and no reason to even build qStroika_HasComponent_fmtlib unless
 //          its needed, so check it first
 
-#if qHasFeature_fmtlib
+#if qStroika_HasComponent_fmtlib
 #include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/xchar.h>
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Common::StdCompat {
      */
     using namespace std;
 
-#if qHasFeature_fmtlib
+#if qStroika_HasComponent_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
 #elif __has_include(<format>)
 #define qStroika_Foundation_Characters_FMT_PREFIX_ std

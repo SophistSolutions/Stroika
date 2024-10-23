@@ -18,7 +18,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
-#if qHasFeature_GoogleTest
+#if qStroika_HasComponent_googletest
         namespace Test1_BasicConstruction {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
             void DoAllTests_ ()

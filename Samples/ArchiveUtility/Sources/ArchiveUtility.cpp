@@ -10,10 +10,10 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
-#if qHasFeature_LZMA
+#if qStroika_HasComponent_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
 #endif
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
@@ -26,7 +26,7 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-#if qHasFeature_LZMA || qHasFeature_ZLib
+#if qStroika_HasComponent_LZMA || qStroika_HasComponent_zlib
 using namespace Stroika::Foundation::DataExchange;
 #endif
 using namespace Stroika::Foundation::Streams;
@@ -127,12 +127,12 @@ namespace {
     DataExchange::Archive::Reader OpenArchive_ (const filesystem::path& archiveName)
     {
 // @todo - must support other formats, have a registry, and autodetect
-#if qHasFeature_LZMA
+#if qStroika_HasComponent_LZMA
         if (IO::FileSystem::FromPath (archiveName).EndsWith (".7z"sv, Characters::eCaseInsensitive)) {
             return move (Archive::_7z::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
         if (IO::FileSystem::FromPath (archiveName).EndsWith (".zip"sv, Characters::eCaseInsensitive)) {
             return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
@@ -192,7 +192,7 @@ int main (int argc, const char* argv[])
             String exceptMsg = Characters::ToString (current_exception ());
             cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
             if (o->fNoFailOnMissingLibrary.value_or (false)) {
-#if !qHasFeature_LZMA || !qHasFeature_ZLib
+#if !qStroika_HasComponent_LZMA || !qStroika_HasComponent_zlib
                 if (exceptMsg.Contains ("Unrecognized format"sv)) {
                     return EXIT_SUCCESS;
                 }

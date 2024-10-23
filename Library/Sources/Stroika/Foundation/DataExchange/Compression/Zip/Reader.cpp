@@ -9,7 +9,7 @@
 
 /// FILE DEPRECATED
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 // SEE http://www.zlib.net/zlib_how.html
 #include <zlib.h>
 
@@ -230,7 +230,7 @@ namespace {
 }
 #endif
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 namespace {
     class Rep_ : public Reader::IRep {
     public:

@@ -22,7 +22,7 @@ namespace Stroika::Foundation::DataExchange::Compression::Deflate {
      *  Check at compile time if deflate is supported.
      */
     constexpr bool kSupported =
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
         true
 #else
         false

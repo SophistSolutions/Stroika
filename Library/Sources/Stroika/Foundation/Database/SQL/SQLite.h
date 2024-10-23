@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <optional>
 
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_sqlite
 #include <sqlite/sqlite3.h>
 #endif
 
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
     using IO::Network::URI;
     using Time::Duration;
 
-#if qHasFeature_sqlite
+#if qStroika_HasComponent_sqlite
 
     /**
      *  This defines what options sqlite was compiled with.

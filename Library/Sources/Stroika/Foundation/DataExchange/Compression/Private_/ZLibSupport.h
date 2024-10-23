@@ -9,7 +9,7 @@
 
 #include "Stroika/Foundation/DataExchange/Compression/Common.h"
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 // SEE http://www.zlib.net/zlib_how.html
 #include <zlib.h>
 #endif
@@ -23,7 +23,7 @@ using namespace Stroika::Foundation::DataExchange::Compression;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Streams;
 
-#if qHasFeature_ZLib
+#if qStroika_HasComponent_zlib
 namespace Stroika::Foundation::DataExchange::Compression::Private_ {
     inline void ThrowIfZLibErr_ (int err)
     {
