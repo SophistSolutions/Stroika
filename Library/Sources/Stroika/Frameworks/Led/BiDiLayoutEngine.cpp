@@ -68,7 +68,7 @@ using namespace Stroika::Frameworks::Led;
  *  LTR run. But - with UNISCRIBE - you get two runs - and the period comes out on the right.
  */
 #ifndef qTestUNISCRIBEResultsEqualFriBidi
-#if qDebug && qTryToUseUNISCRIBEForTextRuns && qUseFriBidi
+#if qStroika_Foundation_Debug_AssertionsChecked && qTryToUseUNISCRIBEForTextRuns && qUseFriBidi
 //      #define qTestUNISCRIBEResultsEqualFriBidi   0
 #define qTestUNISCRIBEResultsEqualFriBidi 1
 #endif
@@ -369,7 +369,7 @@ Led_tString TextLayoutBlock::GetVirtualText (const ScriptRunElt& scriptRunElt) c
     return Led_tString{s, e};
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void TextLayoutBlock::Invariant_ () const
 {
     size_t len = GetTextLength ();
@@ -625,7 +625,7 @@ bool TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
                 s.fRealStart = scriptItems[i].iCharPos;
                 s.fRealEnd   = scriptItems[i + 1].iCharPos;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 {
                     for (size_t j = 0; j < static_cast<size_t> (nScriptItems); ++j) {
                         Assert (logicalToVisual[visualToLogical[i]] == i);

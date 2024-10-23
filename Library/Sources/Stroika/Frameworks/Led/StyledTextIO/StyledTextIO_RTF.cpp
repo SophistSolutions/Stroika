@@ -2998,7 +2998,7 @@ RTFIO::ControlWord StyledTextIOReader_RTF::ReadControlWord ()
                 controlWordBuf[controlWordLen] = c;
                 ++controlWordLen;
             }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             else {
                 Assert (false); // just a notification that I should probably up the eMaxControlAtomNameLen define...
             }
@@ -4333,7 +4333,7 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
             }
         }
 // Actual CELLs
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         size_t nCellsWritten = 0;
 #endif
         for (size_t c = 0; c < columns; ++c) {
@@ -4346,12 +4346,12 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
                 WriteBody (wc);
                 fStyleRunSummary = x;
                 WriteTag ("cell");
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 ++nCellsWritten;
 #endif
             }
         }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Assert (nCellsWritten == cellInfos.size ()); //  must write same number of cells as celldefs
 #endif
         WriteTag ("row");

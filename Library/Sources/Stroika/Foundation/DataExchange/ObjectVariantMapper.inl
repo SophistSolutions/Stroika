@@ -369,14 +369,14 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (optional<T>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (DOMAIN_TYPE)); // just for side-effect of assert check
             (void)Lookup_ (typeid (RANGE_TYPE));  // just for side-effect of assert check
         }
@@ -384,21 +384,21 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::Collection<T>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
     template <typename T, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Traversal::DiscreteRange<T, TRAITS>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T));        // just for side-effect of assert check
             (void)Lookup_ (typeid (KEY_TYPE)); // just for side-effect of assert check
         }
@@ -406,7 +406,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Mapping<KEY_TYPE, VALUE_TYPE>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
             (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
         }
@@ -414,42 +414,42 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Traversal::Range<T, TRAITS>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Sequence<T>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Set<T>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
     template <typename T, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Execution::Synchronized<T, TRAITS>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const vector<T>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
     template <typename T1, typename T2>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const pair<T1, T2>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
             (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
         }
@@ -457,14 +457,14 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Common::CountedValue<T>*)
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         (void)Lookup_ (typeid (T)); // just for side-effect of assert check
 #endif
     }
     template <typename T1, typename T2>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Common::KeyValuePair<T1, T2>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
             (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
         }
@@ -472,14 +472,14 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T1>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
         }
     }
     template <typename T1, typename T2>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1, T2>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
             (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
         }
@@ -487,7 +487,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T1, typename T2, typename T3>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1, T2, T3>*)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
             (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
             (void)Lookup_ (typeid (T3)); // just for side-effect of assert check
@@ -496,7 +496,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T, size_t SZ>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const T (*)[SZ])
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
@@ -1102,7 +1102,7 @@ namespace Stroika::Foundation::DataExchange {
                                                                const ClassMapperOptions<CLASS>&            options)
     {
         using namespace Characters::Literals;
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             {
                 // assure each field unique
                 Containers::MultiSet<StructFieldMetaInfo> t;
@@ -1213,7 +1213,7 @@ namespace Stroika::Foundation::DataExchange {
                                                                          const Traversal::Iterable<StructFieldInfo>& fields,
                                                                          const ClassMapperOptions<CLASS>& options, const ObjectVariantMapper* use2Validate)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             // Assure for each field type is registered. This is helpful 99% of the time the assert is triggered.
             // If you ever need to avoid it (I don't see how because this mapper doesn't work with circular data structures)
             // you can just define a bogus mapper temporarily, and then reset it to the real one before use.

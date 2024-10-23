@@ -116,13 +116,13 @@ namespace Stroika::Frameworks::Led {
     public:
         /*
         @METHOD:        SpellCheckEngine::Invariant
-        @DESCRIPTION:   <p>if @'qDebug' is on, this called the virtual @'SpellCheckEngine::Invariant' () method
-            (in subclasses) to check the state. It can be called freely of @'qDebug' is off - it will have no effect. If
+        @DESCRIPTION:   <p>if @'qStroika_Foundation_Debug_AssertionsChecked' is on, this called the virtual @'SpellCheckEngine::Invariant' () method
+            (in subclasses) to check the state. It can be called freely of @'qStroika_Foundation_Debug_AssertionsChecked' is off - it will have no effect. If
             it is on, however, the time used by this funcion could be significant.</p>
         */
         nonvirtual void Invariant () const;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const;
 #endif

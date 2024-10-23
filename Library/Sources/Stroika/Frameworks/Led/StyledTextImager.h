@@ -32,7 +32,7 @@ namespace Stroika::Frameworks::Led {
  * checking.
  */
 #ifndef qStroika_Frameworks_Led_AssertWarningForEqualPriorityMarkers
-#define qStroika_Frameworks_Led_AssertWarningForEqualPriorityMarkers qDebug
+#define qStroika_Frameworks_Led_AssertWarningForEqualPriorityMarkers qStroika_Foundation_Debug_AssertionsChecked
 #endif
 
     class StyleMarker;
@@ -377,7 +377,7 @@ namespace Stroika::Frameworks::Led {
         // Debug support
     public:
         nonvirtual void Invariant () const;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const;
 #endif

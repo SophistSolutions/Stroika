@@ -76,7 +76,7 @@ size_t CommandHandler::GetUndoRedoWhatMessageText (char* buf, size_t bufSize)
 SingleUndoCommandHandler::SingleUndoCommandHandler ()
     : CommandHandler{}
     , fLastCmd{nullptr}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     , fDoingCommands{false}
 #endif
 {
@@ -84,7 +84,7 @@ SingleUndoCommandHandler::SingleUndoCommandHandler ()
 
 void SingleUndoCommandHandler::Post (Command* newCommand)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fDoingCommands);
 #endif
     IdleManager::NonIdleContext nonIdleContext;
@@ -118,13 +118,13 @@ void SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
 
     IdleManager::NonIdleContext nonIdleContext;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fDoingCommands);
     fDoingCommands = true;
     try {
 #endif
         fLastCmd->UnDo (interactor);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     }
     catch (...) {
         fDoingCommands = false;
@@ -142,13 +142,13 @@ void SingleUndoCommandHandler::DoRedo (TextInteractor& interactor)
 
     IdleManager::NonIdleContext nonIdleContext;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fDoingCommands);
     fDoingCommands = true;
     try {
 #endif
         fLastCmd->ReDo (interactor);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     }
     catch (...) {
         fDoingCommands = false;
@@ -212,7 +212,7 @@ MultiLevelUndoCommandHandler::MultiLevelUndoCommandHandler (size_t maxUndoLevels
     , fCommands{}
     , fCommandGroupCount{0}
     , fUndoneGroupCount{0}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     , fDoingCommands{false}
 #endif
 {
@@ -226,7 +226,7 @@ MultiLevelUndoCommandHandler::~MultiLevelUndoCommandHandler ()
 void MultiLevelUndoCommandHandler::Post (Command* newCommand)
 {
     RequireNotNull (newCommand);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fDoingCommands);
 #endif
 
@@ -349,7 +349,7 @@ void MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
     [[maybe_unused]] bool result = GetLastCmdRangeBefore (&start, &end);
     Assert (result);
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fDoingCommands);
     fDoingCommands = true;
     try {
@@ -357,7 +357,7 @@ void MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
         for (int i = static_cast<int> (end); i >= static_cast<int> (start); --i) {
             fCommands[i]->UnDo (interactor);
         }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     }
     catch (...) {
         fDoingCommands = false;
@@ -382,7 +382,7 @@ void MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
     [[maybe_unused]] bool result = GetLastCmdRangeAfter (&start, &end);
     Assert (result);
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fDoingCommands);
     fDoingCommands = true;
     try {
@@ -390,7 +390,7 @@ void MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
         for (size_t i = start; i <= end; ++i) {
             fCommands[i]->ReDo (interactor);
         }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     }
     catch (...) {
         fDoingCommands = false;

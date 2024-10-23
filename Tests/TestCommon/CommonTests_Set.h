@@ -172,7 +172,7 @@ namespace CommonTests {
             void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
                 USING_SET_CONTAINER s1       = factory ();
-                constexpr size_t    kABunch_ = qDebug ? 128 : 2 * 1024;
+                constexpr size_t    kABunch_ = qStroika_Foundation_Debug_AssertionsChecked ? 128 : 2 * 1024;
                 for (size_t i = 0; i < kABunch_; ++i) {
                     s1.Add (i);
                 }

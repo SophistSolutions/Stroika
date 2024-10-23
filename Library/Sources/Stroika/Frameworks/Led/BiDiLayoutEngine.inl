@@ -32,7 +32,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void TextLayoutBlock::Invariant () const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }

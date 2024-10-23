@@ -168,7 +168,7 @@ namespace {
                 return kNAN_STR_;
             }
             default: {
-                if constexpr (qCompilerAndStdLib_valgrind_fpclassify_check_Buggy && qDebug) {
+                if constexpr (qCompilerAndStdLib_valgrind_fpclassify_check_Buggy && qStroika_Foundation_Debug_AssertionsChecked) {
                     if (Debug::IsRunningUnderValgrind ()) {
                         if (isinf (f)) {
                             DbgTrace ("fpclassify ({}) = {}"_f, (double)f, fpclassify (f));

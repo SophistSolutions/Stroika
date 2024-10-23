@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Characters {
 
     [[deprecated ("Since Stroika v3.0d2 - use wstring{s.begin(), s.end()}")]] inline wstring ASCIIStringToWide (const string& s)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
                 Assert (isascii (*i));
             }
@@ -354,7 +354,7 @@ namespace Stroika::Foundation::Characters {
     }
     [[deprecated ("Since Stroika v3.0d2 - seems unneeded - use String{}.AsASCII() iuf needed}")]] inline string WideStringToASCII (const wstring& s)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
                 Assert (isascii (*i));
             }

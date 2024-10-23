@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Debug {
         if constexpr (is_pointer_v<T>) {
             Require (arg != nullptr);
         }
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-local-typedefs\"");
             using DECAYED_T = conditional_t<is_reference_v<T>, remove_cvref_t<T>, remove_pointer_t<remove_cvref_t<T>>>; // remove_reference_t
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-local-typedefs\"");

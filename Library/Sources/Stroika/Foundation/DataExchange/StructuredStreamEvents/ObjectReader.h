@@ -139,7 +139,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     /**
      */
 #ifndef qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-#define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing qDebug
+#define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing qStroika_Foundation_Debug_AssertionsChecked
 #endif
 
     /**

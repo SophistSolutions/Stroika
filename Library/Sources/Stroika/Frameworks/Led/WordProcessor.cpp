@@ -264,7 +264,7 @@ void ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector& ra
     }
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void ParagraphDatabaseRep::Invariant_ () const
 {
     inheritedMC::Invariant_ ();
@@ -686,7 +686,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textSto
     , fNextTableRow{0}
     , fNextTableCell{0}
     , fCurrentTableCell{size_t (-1)}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     , fTableOpenLevel{0}
     , fTableRowOpen{false}
     , fTableCellOpen{false}
@@ -721,7 +721,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp,
     , fNextTableRow{0}
     , fNextTableCell{0}
     , fCurrentTableCell{size_t (-1)}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     , fTableOpenLevel{0}
     , fTableRowOpen{false}
     , fTableCellOpen{false}
@@ -733,7 +733,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp,
 
 WordProcessorTextIOSinkStream::~WordProcessorTextIOSinkStream ()
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Assert (fTableOpenLevel == 0);
     Assert (not fTableRowOpen);
     Assert (not fTableCellOpen);
@@ -847,7 +847,7 @@ void WordProcessorTextIOSinkStream::SetTextHidden (bool hidden)
 
 void WordProcessorTextIOSinkStream::StartTable ()
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     // NB: because of nested tables - we COULD be starting a table inside another table.
     // If we are - then we must be inside a table cell (so row/cell must be open). Otherwise, they
     // must both be closed
@@ -915,7 +915,7 @@ void WordProcessorTextIOSinkStream::StartTable ()
 
 void WordProcessorTextIOSinkStream::EndTable ()
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fTableOpenLevel >= 1);
     Require (not fTableRowOpen); // caller must close row/cell before closing table
     Require (not fTableCellOpen);
@@ -951,7 +951,7 @@ void WordProcessorTextIOSinkStream::EndTable ()
 
 void WordProcessorTextIOSinkStream::StartTableRow ()
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fTableOpenLevel >= 1);
     Require (not fTableRowOpen);
     Require (not fTableCellOpen);
@@ -983,7 +983,7 @@ void WordProcessorTextIOSinkStream::StartTableRow ()
 
 void WordProcessorTextIOSinkStream::EndTableRow ()
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fTableOpenLevel >= 1);
     Require (fTableRowOpen);
     Require (not fTableCellOpen);
@@ -1041,7 +1041,7 @@ void WordProcessorTextIOSinkStream::EndTableRow ()
 
 void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 
     Require (fTableOpenLevel >= 1);
     Require (fTableRowOpen);
@@ -1083,7 +1083,7 @@ void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
 
 void WordProcessorTextIOSinkStream::EndTableCell ()
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fTableOpenLevel >= 1);
     Require (fTableRowOpen);
     Require (fTableCellOpen);
@@ -1221,7 +1221,7 @@ void WordProcessorTextIOSinkStream::Flush ()
 
     // Flush the cached paragraph info
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             [[maybe_unused]] size_t curInsert = whereToInsert;
             for (auto i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i) {
                 curInsert += (*i).second;
@@ -5110,7 +5110,7 @@ DistanceType WordProcessor::MeasureSegmentHeight (size_t from, size_t to) const
     if (pmEnd - pmStart == 1) {
         vector<WordProcessorTable*> tables = GetTablesInRange (pmStart, pmEnd);
         if (tables.size () == 1) {
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 WordProcessorTable* t = tables[0];
                 Assert (t->GetStart () == pmStart);
                 Assert (t->GetEnd () == pmEnd);
@@ -5261,7 +5261,7 @@ DistanceType WordProcessor::MeasureSegmentBaseLine (size_t from, size_t to) cons
     if (pmEnd - pmStart == 1) {
         vector<WordProcessorTable*> tables = GetTablesInRange (pmStart, pmEnd);
         if (tables.size () == 1) {
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 WordProcessorTable* t = tables[0];
                 Assert (t->GetStart () == pmStart);
                 Assert (t->GetEnd () == pmEnd);
@@ -5866,7 +5866,7 @@ bool WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) noexcept
     return coalesce;
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void WordProcessor::WPPartition::Invariant_ () const
 {
     Partition::Invariant_ (); //  Cannot call LineBasedPartition::Invariant_ () - AKA inherited::Invariant_ () because
@@ -6109,7 +6109,7 @@ vector<Led_Rect> WordProcessorTable::GetRowHilightRects () const
         }
     }
 
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         // Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
         for (auto orit = result.begin (); orit != result.end (); ++orit) {
             Ensure ((*orit).GetWidth () > 0);
@@ -7102,24 +7102,24 @@ void WordProcessorTable::GetRealCell (size_t* row, size_t* column) const
             return;
         }
         else {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             bool changed = false;
 #endif
             if (flags & eMergeCellLeft) {
                 Assert (c > 0);
                 --c;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 changed = true;
 #endif
             }
             if (flags & eMergeCellUp) {
                 Assert (r > 0);
                 --r;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 changed = true;
 #endif
             }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Assert (changed);
 #endif
         }
@@ -7525,7 +7525,7 @@ void WordProcessorTable::SetDimensions (size_t rows, size_t columns)
         InsertColumn (oldColumns);
         ++oldColumns;
     }
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         GetDimensions (&oldRows, &oldColumns);
         Assert (oldRows == rows);
         Assert (oldColumns == columns);

@@ -45,8 +45,8 @@ using Test::ArchtypeClasses::OnlyDefaultConstructibleAndMoveable;
 
 #if qHasFeature_GoogleTest
 namespace {
-    bool kVerySlow_  = qDebug and (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer);
-    bool kSortaSlow_ = qDebug or Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer;
+    bool kVerySlow_ = qStroika_Foundation_Debug_AssertionsChecked and (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer);
+    bool kSortaSlow_ = qStroika_Foundation_Debug_AssertionsChecked or Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer;
 }
 
 namespace {
@@ -455,7 +455,7 @@ namespace {
                 struct APrime : Debug::AssertExternallySynchronizedMutex {
                     int x;
                 };
-#if !qDebug
+#if !qStroika_Foundation_Debug_AssertionsChecked
                 EXPECT_TRUE (sizeof (A) == sizeof (APrime));
 #endif
             }
@@ -473,7 +473,8 @@ namespace {
         namespace Private_ {
             void TestBasics_ ()
             {
-                static constexpr size_t kIOverallRepeatCount_{(qDebug or qStroika_FeatureSupported_Valgrind) ? 50 : 1000}; // tweak count cuz too slow
+                static constexpr size_t kIOverallRepeatCount_{
+                    (qStroika_Foundation_Debug_AssertionsChecked or qStroika_FeatureSupported_Valgrind) ? 50 : 1000}; // tweak count cuz too slow
                 Sequence<int> tmp{Traversal::DiscreteRange<int>{1, 1000}};
                 Thread::Ptr   t1 = Thread::New ([&tmp] () {
                     for (int i = 1; i < kIOverallRepeatCount_; ++i) {
@@ -516,8 +517,9 @@ namespace {
             template <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
             void TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
             {
-                static const size_t     kIOverallRepeatCount_              = kVerySlow_ ? 10 : (kSortaSlow_ ? 50 : 1000);
-                static const int        kInnerConstantForHowMuchStuffTodo_ = kVerySlow_ ? 10 : ((qDebug or kSortaSlow_) ? 100 : 1000);
+                static const size_t kIOverallRepeatCount_ = kVerySlow_ ? 10 : (kSortaSlow_ ? 50 : 1000);
+                static const int    kInnerConstantForHowMuchStuffTodo_ =
+                    kVerySlow_ ? 10 : ((qStroika_Foundation_Debug_AssertionsChecked or kSortaSlow_) ? 100 : 1000);
                 Synchronized<CONTAINER> syncObj;
                 Thread::Ptr             adderThread = Thread::New (
                     [&syncObj, &addF] () {

@@ -355,8 +355,8 @@ BOOL LedLineItApplication::InitInstance ()
     fOleTemplateServer.UpdateRegistry (OAT_INPLACE_SERVER);
     COleObjectFactory::UpdateRegistryAll ();
 
-#if qIncludeBasicSpellcheckEngine && qDebug
-    if constexpr (qDebug) {
+#if qIncludeBasicSpellcheckEngine && qStroika_Foundation_Debug_AssertionsChecked
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         SpellCheckEngine_Basic::RegressionTest ();
     }
     fSpellCheckEngine = make_shared<SpellCheckEngine_Basic_Simple> ();

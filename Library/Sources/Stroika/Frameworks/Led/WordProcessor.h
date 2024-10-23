@@ -295,7 +295,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept;
         nonvirtual void CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const override;
 #endif
@@ -908,7 +908,7 @@ namespace Stroika::Frameworks::Led {
         size_t                                   fNextTableCell;
         size_t                                   fCurrentTableCell;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         unsigned int fTableOpenLevel;
         bool         fTableRowOpen;
@@ -1502,7 +1502,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual bool NeedToCoalesce (PartitionMarker* pm) noexcept override;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const override;
 #endif

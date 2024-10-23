@@ -118,7 +118,7 @@ bool LineBasedPartition::NeedToCoalesce (PartitionMarker* pm) noexcept
     return coalesce;
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 /*
 @METHOD:        LineBasedPartition::Invariant_
 @DESCRIPTION:   <p>Check internal consitency of data structures. Don't call this directly. Call Invariant instead.

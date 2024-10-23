@@ -83,7 +83,7 @@ namespace {
 #else
             bool answer = _Right.compare (0, _Right.length (), fBase + _Left.fIndex, _Left.fWordLen) > 0;
 #endif
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 Led_tString left = Led_tString{fBase + _Left.fIndex, fBase + _Left.fIndex + _Left.fWordLen};
                 Assert (answer == (left < _Right));
             }
@@ -668,7 +668,7 @@ void SpellCheckEngine_Basic::SetDictionaries (const vector<const Dictionary*>& d
     fDictionaries = dictionaries;
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 /*
 @METHOD:        SpellCheckEngine_Basic::Invariant_
 @DESCRIPTION:   <p>Check validity of SpellCheck engine. Called by @'SpellCheckEngine::Invariant'.</p>
@@ -708,7 +708,7 @@ void SpellCheckEngine_Basic::Invariant_ () const
 }
 #endif
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void SpellCheckEngine_Basic::RegressionTest ()
 {
     try {
@@ -971,7 +971,7 @@ void SpellCheckEngine_Basic::CompiledDictionary::GetInfoBlocks (const InfoBlock*
 
 TextBreaks_SpellChecker::TextBreaks_SpellChecker ()
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass
     // That fact is important - since subclasses might change its result in a way to voilate this regression test. Thats fine - if its
     // desired by the subclass. This is just a test to make sure logical changes we make to this code have intended
@@ -1007,7 +1007,7 @@ TextBreaks_SpellChecker::CharacterClasses TextBreaks_SpellChecker::CharToCharact
     return inherited::CharToCharacterClass (startOfText, lengthOfText, charToExamine);
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void TextBreaks_SpellChecker::RegressionTest ()
 {
     {

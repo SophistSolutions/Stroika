@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
         }
     }

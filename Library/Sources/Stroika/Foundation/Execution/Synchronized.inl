@@ -416,7 +416,7 @@ namespace Stroika::Foundation::Execution {
             this->fDbgTraceLocksName = move (src.fDbgTraceLocksName);
         }
         _NoteLockStateChanged (L"ReadableReference move-Locked");
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         src.fT = nullptr;
 #endif
         //src.fSharedLock_ = nullptr;

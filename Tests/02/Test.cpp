@@ -114,7 +114,7 @@ namespace {
 
 namespace {
     namespace Test2Helpers_ {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         const int kLoopEnd = 1000;
 #else
         const int kLoopEnd = 2000;

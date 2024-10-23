@@ -17,7 +17,7 @@
     </p>
  *
  *  TODO:
- *      @todo   MAJOR CLAENAUP here required. Still alot of this overlaps with Stroika stuff (like qDebug) - LOSE
+ *      @todo   MAJOR CLAENAUP here required. Still alot of this overlaps with Stroika stuff (like qStroika_Foundation_Debug_AssertionsChecked) - LOSE
  *              overalaps and configs no longer used.
  *
  */
@@ -87,11 +87,11 @@
  *  Led contains lots of internal debugging code which is mainly intended to find bugs
  *  in Led itself. Its less valuable for finding bugs in your programs' usage of Led. Much of that debugging
  *  code makes Led quite slow (for larger documents).</p>
- *      <p>The Led sample applications are all built with qHeavyDebugging when qDebug is on. But Led defaults
+ *      <p>The Led sample applications are all built with qHeavyDebugging when qStroika_Foundation_Debug_AssertionsChecked is on. But Led defaults
  *  to having this value false, so that your applications won't be needlessly slow.</p>
  *      <p>If you run into some subtle bug, or if you aren't worried about the speed of Led with large documents
  *      when debugging is ON, then you may want to turn this flag ON.</p>
- *      <p>See also @'qDebug'</p>
+ *      <p>See also @'qStroika_Foundation_Debug_AssertionsChecked'</p>
  */
 #ifndef qStroika_Frameworks_Led_HeavyDebugging
 #define qStroika_Frameworks_Led_HeavyDebugging 0

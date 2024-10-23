@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
@@ -342,7 +342,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fLength_ = newLength;
         Invariant ();
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T>
     void Array<T>::Invariant_ () const noexcept
     {
@@ -536,11 +536,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         RequireNotNull (data);
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T>
     inline Array<T>::IteratorBase::~IteratorBase ()
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         // hack so crash and debug easier
         _fData       = reinterpret_cast<Array<T>*> (-1);
         _fCurrentIdx = numeric_limits<size_t>::max ();
@@ -611,18 +611,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     constexpr void Array<T>::IteratorBase::AssertDataMatches (const Array* data) const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == _fData);
 #endif
     }
     template <typename T>
     inline void Array<T>::IteratorBase::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T>
     void Array<T>::IteratorBase::Invariant_ () const noexcept
     {

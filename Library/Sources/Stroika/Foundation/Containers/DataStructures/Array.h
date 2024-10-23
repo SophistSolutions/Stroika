@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual void Invariant () const noexcept;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void Invariant_ () const noexcept;
 #endif
@@ -340,7 +340,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         IteratorBase (const Array* data);
         IteratorBase (const IteratorBase&) noexcept = default;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         ~IteratorBase ();
 #endif
 
@@ -374,7 +374,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual void Invariant () const noexcept;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void Invariant_ () const noexcept;
 #endif

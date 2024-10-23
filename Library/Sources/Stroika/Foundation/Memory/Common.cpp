@@ -36,7 +36,7 @@ Memory::GlobalAllocationStatistics Memory::GetGlobalAllocationStatistics ()
 #if qOverrideOpNewDeleteForAccounting
             s.fTotalOutstandingAllocations    = GetAllocator_ ().GetNetAllocationCount ();
             s.fTotalOutstandingBytesAllocated = GetAllocator_ ().GetNetAllocatedByteCount ();
-#elif qDebug
+#elif qStroika_Foundation_Debug_AssertionsChecked
             _CrtMemState memState;
             _CrtMemCheckpoint (&memState);
             s.fTotalOutstandingAllocations    = memState.lCounts[_NORMAL_BLOCK] + memState.lCounts[_CLIENT_BLOCK];

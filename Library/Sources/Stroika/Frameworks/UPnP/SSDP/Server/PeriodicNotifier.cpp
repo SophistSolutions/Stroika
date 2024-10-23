@@ -36,7 +36,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi,
                                     IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
 {
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
     }
 

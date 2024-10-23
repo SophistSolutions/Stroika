@@ -40,7 +40,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest1_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_ and qDebug) {
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
@@ -67,7 +67,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest2_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_ and qDebug) {
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
@@ -241,7 +241,8 @@ namespace {
             {
                 Debug::TraceContextBumper       ctx1{"expect-failed-wait"};
                 constexpr Time::DurationSeconds kMarginOfErrorLo_ = .5s;
-                constexpr Time::DurationSeconds kMarginOfErrorHi_Warn_ = qDebug ? 5.0s : 3.0s; // if sys busy, thread could be put to sleep almost any amount of time
+                constexpr Time::DurationSeconds kMarginOfErrorHi_Warn_ =
+                    qStroika_Foundation_Debug_AssertionsChecked ? 5.0s : 3.0s; // if sys busy, thread could be put to sleep almost any amount of time
                 constexpr Time::DurationSeconds kMarginOfErrorHi_Error_ = 15.0s; // ""
                 constexpr Time::DurationSeconds kWaitOnAbortFor         = 1.0s;
                 Time::TimePointSeconds          startTestAt             = Time::GetTickCount ();
@@ -285,7 +286,7 @@ namespace {
             {
                 Debug::TraceContextBumper ctx1{"expect-abort-to-work-and-wait-to-succceed"};
                 constexpr Time::DurationSeconds kMarginOfError_ = 10s; // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
-                constexpr Time::DurationSeconds kWaitOnAbortFor = qDebug ? 7.0s : 3.0s;
+                constexpr Time::DurationSeconds kWaitOnAbortFor = qStroika_Foundation_Debug_AssertionsChecked ? 7.0s : 3.0s;
                 // use such a long timeout cuz we run this on 'debug' builds,
                 // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
                 // due to timeout on raspberrypi (rare even there)
@@ -381,7 +382,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest3_WaitableEvents_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_ and qDebug) {
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
@@ -486,7 +487,7 @@ namespace {
             Debug::TraceContextBumper ctx{"RegressionTest4_Synchronized_"};
             Debug::TimingTrace        tt;
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-            if (kRunningValgrind_ and qDebug) {
+            if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
                 // Test passes, but takes hours and adds insufficient value to wait
                 DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
                 return;
@@ -503,7 +504,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest5_Aborting_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_ and qDebug) {
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
@@ -562,7 +563,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest6_ThreadWaiting_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_ and qDebug) {
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes a while under valgrind.
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;
@@ -643,7 +644,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest8_ThreadPool_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_ and qDebug) {
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes a while under valgrind.
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
             return;

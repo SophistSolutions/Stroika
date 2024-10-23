@@ -18,7 +18,7 @@ using PartitionMarker = Partition::PartitionMarker;
  */
 Partition::Partition (TextStore& textStore)
     :
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     fFinalConstructCalled{false}
     ,
 #endif
@@ -26,7 +26,7 @@ Partition::Partition (TextStore& textStore)
     , fFindContainingPMCache{nullptr}
     , fPartitionWatchers{}
     , fMarkersToBeDeleted{}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     , fPartitionMarkerCount{0}
 #endif
     , fPartitionMarkerFirst{nullptr}
@@ -62,7 +62,7 @@ Partition::~Partition ()
             markersToRemoveAtATime[i] = cur;
         }
         fTextStore.RemoveMarkers (markersToRemoveAtATime, i);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         fPartitionMarkerCount -= i;
 #endif
         for (; i != 0; --i) {
@@ -70,7 +70,7 @@ Partition::~Partition ()
         }
     }
     fTextStore.RemoveMarkerOwner (this);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Ensure (fPartitionMarkerCount == 0);
 #endif
 }
@@ -85,14 +85,14 @@ Partition::~Partition ()
  */
 void Partition::FinalConstruct ()
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fFinalConstructCalled);
     fFinalConstructCalled = true;
     Assert (fPartitionMarkerCount == 0);
 #endif
     Assert (fPartitionMarkerFirst == nullptr);
     PartitionMarker* pm = MakeNewPartitionMarker (nullptr);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     ++fPartitionMarkerCount;
 #endif
     fTextStore.AddMarker (pm, 0, fTextStore.GetLength () + 1, this); // include ALL text
@@ -113,7 +113,7 @@ TextStore* Partition::PeekAtTextStore () const
         */
 PartitionMarker* Partition::GetPartitionMarkerContainingPosition (size_t charPosition) const
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fFinalConstructCalled);
 #endif
     Require (charPosition <= GetEnd () + 1); // cuz last PM contains bogus char past end of buffer
@@ -155,7 +155,7 @@ PartitionMarker* Partition::GetPartitionMarkerContainingPosition (size_t charPos
         */
 PartitionMarker* Partition::MakeNewPartitionMarker (PartitionMarker* insertAfterMe)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fFinalConstructCalled);
 #endif
     return new PartitionMarker{*this, insertAfterMe};
@@ -172,7 +172,7 @@ PartitionMarker* Partition::MakeNewPartitionMarker (PartitionMarker* insertAfter
         */
 void Partition::Split (PartitionMarker* pm, size_t at)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fFinalConstructCalled);
 #endif
     RequireNotNull (pm);
@@ -229,7 +229,7 @@ void Partition::Split (PartitionMarker* pm, size_t at)
 
         throw;
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     ++fPartitionMarkerCount;
 #endif
     DoDidSplitCalls (watcherInfos);
@@ -246,7 +246,7 @@ void Partition::Split (PartitionMarker* pm, size_t at)
 */
 void Partition::Coalece (PartitionMarker* pm)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fFinalConstructCalled);
 #endif
     AssertNotNull (pm);
@@ -278,7 +278,7 @@ void Partition::Coalece (PartitionMarker* pm)
             Assert (fPartitionMarkerLast == pm);
             fPartitionMarkerLast = pm->fPrevious;
         }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         --fPartitionMarkerCount;
 #endif
         AccumulateMarkerForDeletion (pm);
@@ -293,7 +293,7 @@ void Partition::Coalece (PartitionMarker* pm)
 */
 void Partition::AccumulateMarkerForDeletion (PartitionMarker* m)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fFinalConstructCalled);
 #endif
     AssertNotNull (m);
@@ -306,7 +306,7 @@ void Partition::AccumulateMarkerForDeletion (PartitionMarker* m)
 
 void Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fFinalConstructCalled);
 #endif
     Assert (fMarkersToBeDeleted.IsEmpty ()); // would be bad to do a replace with any of these not
@@ -318,7 +318,7 @@ void Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
 
 void Partition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fFinalConstructCalled);
 #endif
     fMarkersToBeDeleted.FinalizeMarkerDeletions ();
@@ -326,10 +326,10 @@ void Partition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
     Invariant ();
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void Partition::Invariant_ () const
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (fFinalConstructCalled);
 #endif
     size_t lastCharDrawn = 0;
@@ -458,13 +458,13 @@ TextDirection PartitioningTextImager::GetTextDirection (size_t charPosition) con
 */
 DistanceType PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const
 {
-#if !qCacheTextMeasurementsForPM || qDebug
+#if !qCacheTextMeasurementsForPM || qStroika_Foundation_Debug_AssertionsChecked
     DistanceType referenceValue = CalcSegmentSize_REFERENCE (from, to);
 #endif
 
 #if qCacheTextMeasurementsForPM
     DistanceType value = CalcSegmentSize_CACHING (from, to);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Assert (value == referenceValue);
 #endif
     return value;
@@ -764,7 +764,7 @@ size_t PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text
     return (lastTabIndex);
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void PartitioningTextImager::Invariant_ () const
 {
     if (fPartition.get () != nullptr) {

@@ -118,7 +118,7 @@ namespace Stroika::Frameworks::Led {
         MarkerOfATypeMarkerSink<MARKER> result;
         fTextStore.CollectAllMarkersInRangeInto (charAfterPos, charAfterPos + 1, this, result);
         AssertNotNull (result.fResult);
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             MarkerVector markers = CollectAllInRange (charAfterPos, charAfterPos + 1);
             Assert (markers.size () == 1);
             Assert (result.fResult == markers[0]);
@@ -349,7 +349,7 @@ namespace Stroika::Frameworks::Led {
         typename MarkerVector::const_iterator miStart = markers.begin ();
         typename MarkerVector::const_iterator miEnd   = markers.end ();
         if (from > 0) {
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 MarkerVector tmp = CollectAllNonEmptyInRange (from - 1, from);
                 Assert (tmp.size () == 1);
                 Assert (tmp[0] == markers[0]);
@@ -683,11 +683,11 @@ namespace Stroika::Frameworks::Led {
     template <typename MARKER, typename MARKERINFO, typename INCREMENTALMARKERINFO>
     inline void MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::Invariant () const
     {
-#if qDebug && qStroika_Frameworks_Led_HeavyDebugging
+#if qStroika_Foundation_Debug_AssertionsChecked && qStroika_Frameworks_Led_HeavyDebugging
         Invariant_ ();
 #endif
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename MARKER, typename MARKERINFO, typename INCREMENTALMARKERINFO>
     void MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::Invariant_ () const
     {

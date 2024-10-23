@@ -139,7 +139,7 @@ Debug::Private_::ModuleInit_::~ModuleInit_ ()
 {
     Assert (sModuleData_ != nullptr);
     delete sModuleData_;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     sModuleData_ = nullptr;
 #endif
 }

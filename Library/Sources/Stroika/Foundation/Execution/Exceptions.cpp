@@ -177,7 +177,7 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
 #endif
 
     // double check the compare-with-conditions code working the way I think its supposed to...  matching multiple error codes -- LGP 2019-02-04
-#if qStroika_Foundation_Common_Platform_Windows && qDebug
+#if qStroika_Foundation_Common_Platform_Windows && qStroika_Foundation_Debug_AssertionsChecked
     if (errCode.category () == system_category ()) {
         switch (errCode.value ()) {
             case ERROR_NOT_ENOUGH_MEMORY: // errc::not_enough_memory

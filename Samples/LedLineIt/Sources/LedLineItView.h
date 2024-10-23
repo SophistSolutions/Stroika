@@ -167,7 +167,7 @@ public:
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if !qDebug
+#if !qStroika_Foundation_Debug_AssertionsChecked
 inline LedLineItDocument& LedLineItView::GetDocument () const
 {
     return *(LedLineItDocument*)m_pDocument;

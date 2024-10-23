@@ -1338,14 +1338,14 @@ MultiRowTextImager::PartitionElementCacheInfo MultiRowTextImager::PMInfoCacheMgr
             Assert (fCurFillCachePM == nullptr); // can only do one fillcache at a time...
             fCurFillCachePM = pm;
             fImager.FillCache (pm, fCurFillCacheInfo);
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 for (size_t t = 0; t < fCurFillCacheInfo.GetRowCount (); ++t) {
                     Assert (fCurFillCacheInfo.GetLineRelativeRowStartPosition (t) <= pm->GetLength ());
                     Assert (fCurFillCacheInfo.PeekAtRowStart (t) <= pm->GetLength ());
                 }
             }
             i = fPMCache.insert (MAP_CACHE::value_type (pm, fCurFillCacheInfo)).first;
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 Assert (fCurFillCacheInfo.GetRowCount () == i->second.GetRowCount ());
                 for (size_t t = 0; t < fCurFillCacheInfo.GetRowCount (); ++t) {
                     Assert (fCurFillCacheInfo.PeekAtRowHeight (t) == i->second.PeekAtRowHeight (t));

@@ -14,7 +14,7 @@ using namespace Stroika::Frameworks::Led;
 // Debug later why this doesn't work. Actually - I think I'm still going to do a lot more
 // on the invarients with hackmarkers, so I can more efficiently add and remove them!
 // This should be fine as-is for the 1.0 release however - LGP950527
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 //#define   qHeavyMarkerDebugging       1
 #endif
 
@@ -541,7 +541,7 @@ public:
 
     nonvirtual void FreeHackTree1 (Marker* m)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             Assert (OurStuff (m)->fIsHackMarker);
         }
         for (Marker* mi = OurStuff (m)->fFirstSubMarker; mi != NULL;) {
@@ -557,7 +557,7 @@ public:
             m->fTextStoreHook = NULL; // so not deleted twice by RemoveMarkers()
         }
         else {
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 m->fTextStoreHook = (ChunkedArrayMarkerHook*)666; // magic # so we know these are bad... Should never be referenced after this
             }
             delete m;
@@ -683,7 +683,7 @@ void ChunkedArrayTextStore::RemoveMarkerOwner (MarkerOwner* owner)
         // Look just below at 'markersWhichShouldHaveBeenDeleted' to see just what markers are left.
         //
         // See Led's FAQ#27 - http://www.sophists.com/Led/LedClassLib/ClassLibDocs/Recipes.html#27
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (camoh->fTotalMarkersPresent != 0) {
                 vector<Marker*>  markersWhichShouldHaveBeenDeleted;
                 VectorMarkerSink tmp{&markersWhichShouldHaveBeenDeleted};
@@ -1424,7 +1424,7 @@ void ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t
         AssertNotNull (parent);
         Assert (QUICK_Contains (*marker, *parent));
         if (Contains (start, end, *parent)) {
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 // before we re-adjust anything. - make sure all is well...
                 for (Marker* mi = OurStuff (marker)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
                     Assert (QUICK_Contains (*mi, *marker));
@@ -1808,7 +1808,7 @@ RoutineTop:
     return (true);
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void ChunkedArrayTextStore::Invariant_ () const
 {
     TextStore::Invariant_ ();
@@ -1820,7 +1820,7 @@ void ChunkedArrayTextStore::Invariant_ () const
 }
 #endif
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void ChunkedArrayTextStore::WalkSubTreeAndCheckInvariants (const Marker* m) const
 {
     AssertNotNull (m);

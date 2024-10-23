@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
             unsigned char digest[16]; /* actual digest after MD5Final call */
         };
         MD5_CTX fCtx_{};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         bool fCompleted_{false};
 #endif
 

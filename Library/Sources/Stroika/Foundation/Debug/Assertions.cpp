@@ -21,9 +21,9 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Debug;
 
-CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qDebug, qDebug);
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qStroika_Foundation_Debug_AssertionsChecked, qStroika_Foundation_Debug_AssertionsChecked);
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 
 namespace {
     void DefaultAssertionHandler_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,

@@ -48,12 +48,12 @@ namespace Stroika::Foundation::Debug {
      *      The compilation compile-time macro qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled can be used
      *      to control if AssertExternallySynchronizedMutex checking is enabled.
      * 
-     *      If its not defined (typical), we look at qDebug. If that is false, qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled is disabled.
+     *      If its not defined (typical), we look at qStroika_Foundation_Debug_AssertionsChecked. If that is false, qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled is disabled.
      * 
-     *      If qDebug is true, BUT, we have TSAN enabled, we STILL (change in Stroika v3.0d1) - DISABLE kAssertExternallySynchronizedMutexEnabled
+     *      If qStroika_Foundation_Debug_AssertionsChecked is true, BUT, we have TSAN enabled, we STILL (change in Stroika v3.0d1) - DISABLE kAssertExternallySynchronizedMutexEnabled
      *      since its slow, and redundant.
      * 
-     *      Only if qDebug is true, there is no TSAN, and qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled is made
+     *      Only if qStroika_Foundation_Debug_AssertionsChecked is true, there is no TSAN, and qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled is made
      *      do we turn on qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled.
      * 
      *  \note TRIED to do this with constexpr bool kAssertExternallySynchronizedMutexEnabled, but as of C++20 rules
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Debug {
      *        based on requires/if constexpr, unless it is a template.
      */
 #if not defined(qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled)
-#if qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
+#if qStroika_Foundation_Debug_AssertionsChecked and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
 #define qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled 1
 #else
 #define qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled 0

@@ -84,7 +84,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4996);
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
-#if qDebug || qStroika_FeatureSupported_Valgrind
+#if qStroika_Foundation_Debug_AssertionsChecked || qStroika_FeatureSupported_Valgrind
 WaitableEvent::~WaitableEvent ()
 {
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects

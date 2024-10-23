@@ -35,7 +35,7 @@ ifeq (qStroika_Foundation_Memory_PreferBlockAllocation=1,$(findstring qStroika_F
 USING_BLOCK_ALLOCATION?=1
 else ifeq (qStroika_Foundation_Memory_PreferBlockAllocation=0,$(findstring qStroika_Foundation_Memory_PreferBlockAllocation=0,$(CPPFLAGS)))
 USING_BLOCK_ALLOCATION?=0
-else ifeq (qDebug=1,$(findstring qDebug=1,$(CPPFLAGS)))
+else ifeq (qStroika_Foundation_Debug_AssertionsChecked=1,$(findstring qStroika_Foundation_Debug_AssertionsChecked=1,$(CPPFLAGS)))
 USING_BLOCK_ALLOCATION?=1
 else
 USING_BLOCK_ALLOCATION?=0

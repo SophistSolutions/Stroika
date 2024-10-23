@@ -316,7 +316,7 @@ namespace {
                  */
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_NOSIGNAL, 1));
 
-#if qDebug && qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Foundation_Debug_AssertionsChecked && qStroika_Foundation_Common_Platform_POSIX
                 {
                     struct sigaction oldact;
                     (void)::sigaction (SIGPIPE, NULL, &oldact);

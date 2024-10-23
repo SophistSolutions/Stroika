@@ -169,7 +169,7 @@ namespace {
             flags |= options.fReadOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
 
             string uriArg;
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 [[maybe_unused]] int n{};
                 if (options.fDBPath) {
                     ++n;

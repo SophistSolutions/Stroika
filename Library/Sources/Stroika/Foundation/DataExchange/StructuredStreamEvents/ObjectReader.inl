@@ -276,7 +276,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 }
                 else {
                     optional<ReaderFromVoidStarFactory> o = fActiveContext_->GetObjectReaderRegistry ().Lookup (i.fFieldMetaInfo.GetTypeInfo ());
-                    if constexpr (qDebug) {
+                    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                         if (not o.has_value ()) {
                             DbgTrace ("(forTypeInfo = {}) - UnRegistered Type!"_f, i.fFieldMetaInfo);
                             AssertNotReached ();
@@ -676,7 +676,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
     inline shared_ptr<IElementConsumer> Registry::MakeContextReader (type_index ti, void* destinationObject) const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (not fFactories_.ContainsKey (ti)) {
                 using namespace Characters;
                 Debug::TraceContextBumper ctx{"Registry::MakeContextReader",
@@ -703,7 +703,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename CLASS>
     void Registry::AddCommonReader_Class (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             for (const auto& kv : fieldDescriptions) {
                 if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.GetTypeInfo ())) {
                     using namespace Characters;

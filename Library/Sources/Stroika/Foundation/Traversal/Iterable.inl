@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Traversal {
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
         : fConstRef_{Debug::UncheckedDynamicCast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
         , fIterableEnvelope_{it}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fAssertReadLock_{it->_fThisAssertExternallySynchronized}
 #endif
     {
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Traversal {
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept
         : fConstRef_{src.fConstRef_}
         , fIterableEnvelope_{src.fIterableEnvelope_}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fAssertReadLock_{move (src.fAssertReadLock_)}
 #endif
     {
@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Traversal {
     {
         fConstRef_               = rhs.fConstRef_;
         this->fIterableEnvelope_ = rhs.fIterableEnvelope_;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         this->fAssertReadLock_ = move (rhs.fAssertReadLock_);
 #endif
         return *this;
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
         : fRepReference_{Debug::UncheckedDynamicCast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.rwget ())}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fAssertWriteLock_{iterableEnvelope->_fThisAssertExternallySynchronized}
         , fIterableEnvelope_{iterableEnvelope}
 #endif
@@ -180,14 +180,14 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from)
         : fRepReference_{from.fRepReference_}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fAssertWriteLock_{move (from.fAssertWriteLock_)}
         , fIterableEnvelope_{from.fIterableEnvelope_}
 #endif
     {
         RequireNotNull (fRepReference_);
         EnsureMember (fRepReference_, REP_SUB_TYPE);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         from.fIterableEnvelope_ = nullptr;
 #endif
         from.fRepReference_ = nullptr;
@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Traversal {
     {
         fRepReference_ = rhs.fRepReference_;
         EnsureMember (fRepReference_, REP_SUB_TYPE);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         this->fAssertWriteLock_  = move (rhs.fAssertWriteLock_);
         this->fIterableEnvelope_ = rhs.fIterableEnvelope_;
         rhs.fIterableEnvelope_   = nullptr;
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Traversal {
     inline REP_SUB_TYPE& Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
     {
         EnsureNotNull (fRepReference_);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         EnsureNotNull (fIterableEnvelope_);
         EnsureNotNull (fIterableEnvelope_->_fRep);
         Ensure (fIterableEnvelope_->_fRep.use_count () == 1);
@@ -404,7 +404,7 @@ namespace Stroika::Foundation::Traversal {
         auto ri{rhs.begin ()};
         auto le{lhs.end ()};
         if (useIterableSize) {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             auto re{rhs.end ()};
             Assert ((li != le) == (ri != re)); // cuz same length, and this requires size cannot change during call
 #endif
@@ -414,11 +414,11 @@ namespace Stroika::Foundation::Traversal {
                 }
                 ++li;
                 ++ri;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 Assert ((li != le) == (ri != re)); // cuz same length, and this requires size cannot change during call
 #endif
             }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Assert (li == le and ri == re);
 #endif
             return true;

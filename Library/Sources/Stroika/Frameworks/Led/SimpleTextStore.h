@@ -54,7 +54,7 @@ namespace Stroika::Frameworks::Led {
         Led_tChar*      fBuffer;
         vector<Marker*> fMarkers;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const override;
 #endif

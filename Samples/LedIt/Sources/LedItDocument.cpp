@@ -1616,7 +1616,7 @@ bool LedItDocument::DoPromptFileName (CString& fileName, UINT nIDSTitle, bool is
     return bResult;
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void LedItDocument::AssertValid () const
 {
     COleServerDoc::AssertValid ();

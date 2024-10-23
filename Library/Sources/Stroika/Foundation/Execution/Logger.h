@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Execution {
         Logger& operator= (const Logger&) = delete;
         Logger& operator= (Logger&&)      = delete;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         ~Logger ();
 #endif

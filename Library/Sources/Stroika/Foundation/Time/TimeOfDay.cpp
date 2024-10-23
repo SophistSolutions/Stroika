@@ -133,7 +133,7 @@ namespace {
 TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds, DataExchange::ValidationStrategy validationStrategy)
     : TimeOfDay
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     0
 #else
     hour, minute, seconds
@@ -143,7 +143,7 @@ TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int secon
     // Subtle - but we can let the base constructor run on the unvalidated data in NO-DEBUG mode, cuz it will just compute a bogus
     // value that will be ignored because of the below exception
     //
-    // But for the qDebug case, we have to initialize with a valid value and only assign if it passes muster
+    // But for the qStroika_Foundation_Debug_AssertionsChecked case, we have to initialize with a valid value and only assign if it passes muster
     if (hour >= 24 or minute >= 60 or seconds > 60) {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
             Execution::Throw (FormatException::kThe);
@@ -152,7 +152,7 @@ TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int secon
             Require (false);
         }
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     *this = TimeOfDay{hour, minute, seconds};
 #endif
 }

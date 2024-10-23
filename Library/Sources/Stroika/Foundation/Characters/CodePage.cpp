@@ -661,7 +661,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
     }
 
 #if qStroika_Foundation_Common_Platform_Windows && 0
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
         size_t               tstCharCnt = *outCharCnt;
         StackBuffer<wchar_t> tstBuf{Memory::eUninitialized, *outCharCnt};
@@ -689,7 +689,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
     Require (*outCharCnt == 0 or outChars != nullptr);
 
     [[maybe_unused]] size_t outBufferSize = *outCharCnt;
-#if qDebug && qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Foundation_Debug_AssertionsChecked && qStroika_Foundation_Common_Platform_Windows
     size_t countOfBOMCharsAdded = 0; // just for the Windows debug check at the end
 #endif
 
@@ -718,7 +718,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 if (GetHandleBOM ()) {
                     outChars[0] = '\xff';
                     outChars[1] = '\xfe';
-#if qDebug && qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Foundation_Debug_AssertionsChecked && qStroika_Foundation_Common_Platform_Windows
                     countOfBOMCharsAdded = 2;
 #endif
                 }
@@ -740,7 +740,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 if (GetHandleBOM ()) {
                     outChars[0] = '\xfe';
                     outChars[1] = '\xff';
-#if qDebug && qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Foundation_Debug_AssertionsChecked && qStroika_Foundation_Common_Platform_Windows
                     countOfBOMCharsAdded = 2;
 #endif
                 }
@@ -765,7 +765,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                     reinterpret_cast<unsigned char*> (outChars)[0] = 0xef;
                     reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
                     reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
-#if qDebug && qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Foundation_Debug_AssertionsChecked && qStroika_Foundation_Common_Platform_Windows
                     countOfBOMCharsAdded = 3;
 #endif
                 }
@@ -791,7 +791,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
     }
 
 #if qStroika_Foundation_Common_Platform_Windows
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         // Assure my baked tables perform the same as the builtin Win32 API
         size_t            win32TstCharCnt = outBufferSize;
         StackBuffer<char> win32TstBuf{Memory::eUninitialized, win32TstCharCnt};
@@ -802,7 +802,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 // SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
 // used for bad conversions. Reason is cuz for characters that don't map - our table and
 // the system table can differ in how they map depending on current OS code page.
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Assert ((win32TstCharCnt + countOfBOMCharsAdded) == *outCharCnt or outChars[0] == '?');
         Assert (memcmp (win32TstBuf.data (), outChars + countOfBOMCharsAdded, win32TstCharCnt) == 0 or outChars[0] == '?');
 #endif

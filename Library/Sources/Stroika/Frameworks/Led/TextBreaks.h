@@ -115,7 +115,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void RegressionTest ();
 #endif
@@ -136,7 +136,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void RegressionTest ();
 #endif
@@ -157,7 +157,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void RegressionTest ();
 #endif

@@ -935,7 +935,7 @@ resource 'STR#' (STRx_Standards, "Standards", purgeable) {
 include	"PP Document Alerts.rsrc" not 'ckid';
 include	"ColorAlertIcons.rsrc" not 'ckid';
 
-#if		qDebug
+#if		qStroika_Foundation_Debug_AssertionsChecked
 include	"PP DebugAlerts.rsrc" not 'ckid';
 #endif
 

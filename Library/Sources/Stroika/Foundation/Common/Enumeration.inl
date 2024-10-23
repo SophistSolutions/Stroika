@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Common {
         if (e == ENUM_TYPE::eEND) {
             return nullptr;
         }
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             Require (OffsetFromStart<ENUM_TYPE> (e) < fEnumNames_.size ());
             auto refImpl = [this] (ENUM_TYPE e) -> const wchar_t* {
                 for (const auto& i : fEnumNames_) {

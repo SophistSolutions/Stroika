@@ -28,7 +28,7 @@ namespace Stroika::Foundation::DataExchange {
         : fValue_{src}
     {
         // IF NOT CONSTEXPR validate src is already in ATOM_MANAGER
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         if (not is_constant_evaluated ()) {
             (void)ATOM_MANAGER::Extract (src); // for side-effect - assertion valid index
         }

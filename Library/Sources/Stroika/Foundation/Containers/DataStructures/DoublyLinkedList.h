@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_* fHead_{};
         Link_* fTail_{};
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         virtual void Invariant_ () const noexcept;
 #endif
@@ -367,11 +367,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         const Link_* fCurrent_{nullptr};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         const DoublyLinkedList* fData_{nullptr};
 #endif
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void Invariant_ () const noexcept;
 #endif

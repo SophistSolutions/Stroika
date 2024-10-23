@@ -56,7 +56,7 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         virtual void FinalConstruct ();
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         bool fFinalConstructCalled;
 #endif
@@ -117,7 +117,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual PartitionMarker* GetLastPartitionMarker () const;
 
     private:
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         size_t fPartitionMarkerCount;
 #endif
         PartitionMarker* fPartitionMarkerFirst;
@@ -126,7 +126,7 @@ namespace Stroika::Frameworks::Led {
         // Debug support
     public:
         nonvirtual void Invariant () const;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const;
 #endif
@@ -267,7 +267,7 @@ namespace Stroika::Frameworks::Led {
         // Debug support
     public:
         nonvirtual void Invariant () const;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const;
 #endif

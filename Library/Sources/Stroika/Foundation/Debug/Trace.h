@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Debug {
 #warning "use qStroika_Foundation_Debug_Trace_DefaultTracingOn since Stroika v3.0d4 "
 #define qStroika_Foundation_Debug_Trace_DefaultTracingOn qDefaultTracingOn
 #else
-#define qStroika_Foundation_Debug_Trace_DefaultTracingOn qDebug
+#define qStroika_Foundation_Debug_Trace_DefaultTracingOn qStroika_Foundation_Debug_AssertionsChecked
 #endif
 #endif
 

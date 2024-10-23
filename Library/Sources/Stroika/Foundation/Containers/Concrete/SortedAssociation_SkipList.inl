@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void SortedAssociation_SkipList<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
         }
     }

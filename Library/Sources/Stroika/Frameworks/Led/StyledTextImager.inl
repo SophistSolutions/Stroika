@@ -212,7 +212,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline void StyledTextImager::Invariant () const
     {
-#if qDebug and qStroika_Frameworks_Led_HeavyDebugging
+#if qStroika_Foundation_Debug_AssertionsChecked and qStroika_Frameworks_Led_HeavyDebugging
         Invariant_ ();
 #endif
     }

@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::AssertRepValidType_ () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMemeber
         }
     }

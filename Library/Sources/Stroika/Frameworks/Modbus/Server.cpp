@@ -155,7 +155,7 @@ namespace {
         [[maybe_unused]] auto&& cleanup = Execution::Finally (
             [thisModbusConnectionNumber] () { DbgTrace ("Finishing Modbus connection {}"_f, thisModbusConnectionNumber); });
 #endif
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (auto p = connectionSocket.GetPeerAddress ()) {
                 DbgTrace ("Starting connection from peer: {}"_f, *p);
             }

@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void LinkedList<T>::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         //
         // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
         // old for old, and when I match, stop on new
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (pi->fData_ == movedFrom);
 #endif
         auto                  newI = this->fHead_;
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Assert (oldI == pi->fCurrent_);
         pi->fCurrent_ = newI;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         pi->fData_ = this;
 #endif
     }
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline T* LinkedList<T>::PeekAt (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         Require (not i.Done ());
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         Invariant ();
@@ -241,7 +241,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         /*
@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         RequireNotNull (newLinkCreatedAt);
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         /*
@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         AssertNotNull (i.fCurrent_); // since not done...
@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::Remove (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         Require (not i.Done ());
@@ -470,7 +470,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         AssertNotNull (cur); // cuz i <= fLength
         cur->fItem = item;
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T>
     void LinkedList<T>::Invariant_ () const noexcept
     {
@@ -494,7 +494,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     constexpr LinkedList<T>::ForwardIterator::ForwardIterator ([[maybe_unused]] const LinkedList* data, UnderlyingIteratorRep startAt) noexcept
         : fCurrent_{startAt}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fData_{data}
 #endif
     {
@@ -509,7 +509,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void LinkedList<T>::ForwardIterator::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
@@ -561,7 +561,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     size_t LinkedList<T>::ForwardIterator::CurrentIndex (const LinkedList* data) const
     {
         Require (not Done ());
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
         RequireNotNull (fData_);
 #endif
@@ -591,19 +591,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     constexpr void LinkedList<T>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const LinkedList* data) const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
 #endif
     }
     template <typename T>
     inline bool LinkedList<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (fData_ == nullptr or rhs.fData_ == nullptr or fData_ == rhs.fData_); // fData_==null for end sentinel case
 #endif
         return fCurrent_ == rhs.fCurrent_;
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T>
     void LinkedList<T>::ForwardIterator::Invariant_ () const noexcept
     {

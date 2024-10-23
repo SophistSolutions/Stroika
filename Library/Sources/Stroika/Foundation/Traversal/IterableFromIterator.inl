@@ -6,7 +6,7 @@
 
 namespace Stroika::Foundation::Traversal {
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     /*
      ********************************************************************************
      * IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_IteratorTracker *
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Traversal {
             return nullptr;
         }
         else {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             return fIteratorTracker_.MakeDelegatedIterator (Iterator<T>{make_unique<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)});
 #else
             return Iterator<T>{make_unique<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)};
@@ -62,12 +62,12 @@ namespace Stroika::Foundation::Traversal {
     {
         struct MyIterable_ : public Iterable<T> {
             struct Rep : public IterableFromIterator<T>::_Rep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 using inherited        = typename IterableFromIterator<T>::_Rep;
                 using _IteratorTracker = typename inherited::_IteratorTracker;
 #endif
                 Iterator<T> fOriginalIterator;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 mutable _IteratorTracker fIteratorTracker_{};
 #endif
                 Rep (const Iterator<T>& originalIterator)
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Traversal {
                 }
                 virtual Iterator<T> MakeIterator () const override
                 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                     return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);
 #else
                     return fOriginalIterator;

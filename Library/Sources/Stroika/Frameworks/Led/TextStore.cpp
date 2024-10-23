@@ -266,7 +266,7 @@ size_t TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
         Led_tChar& thisChar = charBuf[curPos - lastReadAtPos];
 
 // sensible todo but too slow - this code is only called in DEBUG mode and its performance critical there...
-#if qDebug && 0
+#if qStroika_Foundation_Debug_AssertionsChecked && 0
         {
             Led_tChar xxx;
             CopyOut (curPos, 1, &xxx);
@@ -312,7 +312,7 @@ size_t TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
         }
         Assert (curPos - lastReadAtPos < kBufSize);
         Led_tChar& thisChar = charBuf[curPos - lastReadAtPos];
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             Led_tChar xxx;
             CopyOut (curPos, 1, &xxx);
             Assert (xxx == thisChar);
@@ -718,7 +718,7 @@ TextStore* TextStore::PeekAtTextStore () const
     return const_cast<TextStore*> (this);
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 /*
 @METHOD:        TextStore::Invariant_
 @DESCRIPTION:   <p>Check internal consitency of data structures. Don't call this directly. Call TextStore::Invariant instead.

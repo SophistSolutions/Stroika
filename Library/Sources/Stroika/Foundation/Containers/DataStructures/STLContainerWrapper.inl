@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     constexpr void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const STLContainerWrapper* data) const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
 #endif
     }

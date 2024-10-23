@@ -330,7 +330,7 @@ void SimpleTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, cons
     }
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void SimpleTextStore::Invariant_ () const
 {
     TextStore::Invariant_ ();

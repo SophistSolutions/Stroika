@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Memory {
     inline InlineBuffer<T, BUF_SIZE>::InlineBuffer () noexcept
         : fLiveData_{BufferAsT_ ()}
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Assert (UsingInlinePreallocatedBuffer_ ()); // cuz empty size so always fits
         (void)::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
         (void)::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Memory {
     inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (InlineBuffer&& src)
         : InlineBuffer{}
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         size_t origSize     = src.size ();
         size_t origCapacity = src.capacity ();
 #endif
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Memory {
             Ensure (src.fSize_ == 0);
             Ensure (src.capacity () == BUF_SIZE);
         }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Ensure (this->size () == origSize);
         Ensure (this->capacity () == origCapacity);
 #endif
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Memory {
     inline InlineBuffer<T, BUF_SIZE>& InlineBuffer<T, BUF_SIZE>::operator= (InlineBuffer&& rhs)
     {
         Invariant ();
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         size_t origFromSize     = rhs.size ();
         size_t origFromCapacity = rhs.capacity ();
 #endif
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Memory {
             Ensure (rhs.fSize_ == 0);
             Ensure (rhs.capacity () == BUF_SIZE);
         }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Ensure (this->size () == origFromSize);
         Ensure (this->capacity () == origFromCapacity);
 #endif
@@ -512,11 +512,11 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T, size_t BUF_SIZE>
     void InlineBuffer<T, BUF_SIZE>::Invariant_ () const noexcept
     {

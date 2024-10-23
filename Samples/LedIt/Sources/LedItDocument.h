@@ -173,7 +173,7 @@ private:
     nonvirtual void OpenFile (const FSSpec& inFileSpec);
 #endif
 #if qPlatform_Windows
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 public:
     virtual void AssertValid () const override;
 #endif

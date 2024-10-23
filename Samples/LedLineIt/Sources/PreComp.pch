@@ -20,17 +20,17 @@
 
 
 
-// You can manually specify qDebug flag, but I now let it default to the
+// You can manually specify qStroika_Foundation_Debug_AssertionsChecked flag, but I now let it default to the
 // 'dont_inline' flag since that almost always tracks if we are doing debug
 // builds or not... That way, I don't have to change the precomp file...
-#ifndef	qDebug
+#ifndef	qStroika_Foundation_Debug_AssertionsChecked
 	#if		qRez
-		#define	qDebug	0
+		#define	qStroika_Foundation_Debug_AssertionsChecked	0
 	#else
 		#if		__option (dont_inline)
-			#define	qDebug	1
+			#define	qStroika_Foundation_Debug_AssertionsChecked	1
 		#else
-			#define	qDebug	0
+			#define	qStroika_Foundation_Debug_AssertionsChecked	0
 		#endif
 	#endif
 #endif
@@ -42,7 +42,7 @@
 
 
 
-#if		qDebug
+#if		qStroika_Foundation_Debug_AssertionsChecked
 	#undef	_DEBUG
 	#undef	NDEBUG
 	#define	_DEBUG	1

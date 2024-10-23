@@ -32,14 +32,14 @@ namespace {
 //#define   qSuperAssertChecks_MemAllocator 0
 //#define   qSuperAssertChecks_MemAllocator 1
 #ifndef qSuperAssertChecks_MemAllocator
-#define qSuperAssertChecks_MemAllocator qDebug
+#define qSuperAssertChecks_MemAllocator qStroika_Foundation_Debug_AssertionsChecked
 #endif
 
 namespace {
 #if qSuperAssertChecks_MemAllocator
     inline void SUPER_ASSERT_ (bool t)
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             Assert (t);
         }
         else {

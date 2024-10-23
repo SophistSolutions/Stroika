@@ -27,10 +27,10 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Slight debugging aid. Tells you how many existing markers are out there, and a few other statistics.
         This just keeps track of the given variables. To see them - you must peek in the debugger at the ChunkedArrayTextStore's
         instance variables.</p>
-            <p>Turn ON iff @'qDebug' - by default.</p>
+            <p>Turn ON iff @'qStroika_Foundation_Debug_AssertionsChecked' - by default.</p>
 */
 #ifndef qKeepChunkedArrayStatistics
-#define qKeepChunkedArrayStatistics qDebug
+#define qKeepChunkedArrayStatistics qStroika_Foundation_Debug_AssertionsChecked
 #endif
 
 /*
@@ -182,7 +182,7 @@ namespace Stroika::Frameworks::Led {
         size_t             fLength{0};
         vector<TextChunk*> fTextChunks;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void    Invariant_ () const override;
         nonvirtual void WalkSubTreeAndCheckInvariants (const Marker* m) const;

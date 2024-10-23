@@ -314,7 +314,7 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual void clear () noexcept;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         static constexpr byte kGuard1_[8] = {
             0x45_b, 0x23_b, 0x12_b, 0x56_b, 0x99_b, 0x76_b, 0x12_b, 0x55_b,
@@ -346,7 +346,7 @@ namespace Stroika::Foundation::Memory {
 
     private:
         size_t fSize_{};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         byte fGuard1_[sizeof (kGuard1_)];
 #endif
         DISABLE_COMPILER_MSC_WARNING_START (4324)
@@ -356,7 +356,7 @@ namespace Stroika::Foundation::Memory {
         };
         DISABLE_COMPILER_MSC_WARNING_END (4324)
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         byte fGuard2_[sizeof (kGuard2_)];
 #endif
         T* fLiveData_{};
@@ -380,7 +380,7 @@ namespace Stroika::Foundation::Memory {
         nonvirtual void Invariant () const noexcept;
 
     private:
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         nonvirtual void Invariant_ () const noexcept;
         nonvirtual void ValidateGuards_ () const noexcept;
 #endif

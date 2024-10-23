@@ -9,6 +9,11 @@ especially those they need to be aware of when upgrading.
 
 ### DRAFT UPGRADE NOTES FOR 3.0d11
 
+
+// DEPRECATED NAME (to be removed in Stroika v3.0a1 - deprecated since Stroika v3.0d11)
+    #define qDebug qStroika_Foundation_Debug_AssertionsChecked
+
+    
 -- Support clang++19, and XCode 16 and MacOS 15
 
 Replace 
@@ -1035,7 +1040,7 @@ or no args/defaults...
   - generally replace InputStream<byte>::Ptr with (or Character) with InputStream::Ptr<byte> (or Character). Same
     for OutputStream. And same for SomeKindOfStream::New () - now needs template (of T) - parameter - like MemoryStream::New<byte> ()
 - replace Time::DurationSecondsType with Time::DurationSeconds (if a duration) and sometimes Time::TimePointSeconds (if from GetTickCount)
-- due to new ASSUME_ATTRIBUTE macro, and experimental use of it in Assert/Require macros, some assert/require calls may need to be wrapped in #if qDebug
+- due to new ASSUME_ATTRIBUTE macro, and experimental use of it in Assert/Require macros, some assert/require calls may need to be wrapped in #if qStroika_Foundation_Debug_AssertionsChecked
 
 #### Change Details
 - Compilers support changes
@@ -1376,7 +1381,7 @@ or no args/defaults...
       - Lose old MacOS 'quicktime/carbon' code (so check pre-v3.0d5 for that code if ever needed)
       - lose old apis support: qUseSystemNetscapeOpenURLs, 
       - minor cleanups to constexpr Led code, etc, modernizing usage
-        lose some no longer needed (and not helpful/wrong) #define checkers etc for qDebug/NDEBUG, etc; lose qHasIsAscii
+        lose some no longer needed (and not helpful/wrong) #define checkers etc for qStroika_Foundation_Debug_AssertionsChecked/NDEBUG, etc; lose qHasIsAscii
       - Led cleanups of #defines - no longer supprt qWideCharacters/qMultibyteCharacters/qSingleByteCharacters - instead always do what we used to call qWideCharacter, 
       - document @todo : switch to using span<const Character> at some point (if I work enuf of Stroika/Led)
       - Minor Led cleanups/modernizing/comments/warnings
@@ -2055,7 +2060,7 @@ or no args/defaults...
             <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
           - Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
     - Concepts Usage
-    - use if constexpr instead of #if qDebug in a few places
+    - use if constexpr instead of #if qStroika_Foundation_Debug_AssertionsChecked in a few places
       <br/>e.g. around qStroika_Foundation_Exection_Throw_TraceThrowpoint
     - use more perfect forwarding (e.g. use PREDICATE&& instead of const PREDICATE& - in response to (oblique) suggestion from https://www.reddit.com/r/cpp/comments/zl7ncq/stroika_an_opensource_modern_portable_threadsavvy/ comment/suggestion)
     - **not 100% backward compatible** - but changed most constexpr string constants throughout stroika from wstring_view to string_view - since they are all ascii. As long as used through String{} API, this will be 100% transparent. But if used directly, it may not compile (but hopefully in obvious ways)
@@ -2159,7 +2164,7 @@ or no args/defaults...
         - String::FromNarrowString/FromNarrowSDKString refactored/deprecate /2 overload
         - use Memory::eUninitialized on a bunch of StackBuffer construction calls as performance tweak - forgotten - as part of String code mostly
         - rewrite String::EqualsComparer and  String::ThreeWayComparer using concepts to greatly simplfiy (havent profiled yet)
-        - String code: fixed #if qDebug missing; tmphack fix to SubString_() so it no longer depends on c_str_peek returning non-null
+        - String code: fixed #if qStroika_Foundation_Debug_AssertionsChecked missing; tmphack fix to SubString_() so it no longer depends on c_str_peek returning non-null
         - forced c_str_peek for buffered string to return nullptr; and use new impl of c_str () that auto-patches with wrapper that returns non-null as needed
         - String impl refactoring - StringRepHelper_ -> StringRepHelperAllFitInSize_ and REP now TEMPLATED on CHAR_T
         - fixed bug with Find code for ascii optimized case, and supported creatming mk_span<char> for ascii case - so now have first proof of concept nearly completed  https://stroika.atlassian.net/browse/STK-684
@@ -2416,7 +2421,7 @@ or no args/defaults...
         - fSingleSharedLockThread_ in AssertExternallySynchronizedMutex for speed tweak (debug builds)
         - AssertExternallySynchronizedMutex further performance tweaks
         - Debug::AssertExternallySynchronizedMutex now hides fSharedContext, and accessed via (public was protected) GetSharedContext and SetAssertExternallySynchronizedMutexContext (not backward compatible but close); DataBase::Connection (and sucblasses) changes to use of AssertExternallySynchronizedMutex and chagnes to thread safety rules/docs for these classes (base unspecified if letter is threadsafe and for ODBC and SQLITE say they are not); implies some changes to GetSharedContext/SetAssertExternallySynchronizedMutexContext () usage for these classes (sb all internal and not noticable outside for hte most part)
-        - qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
+        - qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qStroika_Foundation_Debug_AssertionsChecked (but defaults to qStroika_Foundation_Debug_AssertionsChecked and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
       - use DropIntoDebuggerIfPresent () rather than direct call to windows DebugBreak()
       - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
       - new UncheckedDynamicPointerCast
@@ -15979,7 +15984,7 @@ with:
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a102">v2.0a102</a><br/>2015-08-17</td>
 <td>
     <ul>
-        <li>added new Debug/CompileTimeFlagChecker and used for qDebug qDefaultTracingOn ... etc</li>
+        <li>added new Debug/CompileTimeFlagChecker and used for qStroika_Foundation_Debug_AssertionsChecked qDefaultTracingOn ... etc</li>
         <li>cleanup docs: doxygen - Example Usage and code declaration around bodies</li>
         <li>Lose some deprecated options from make default-configuration</li>
         <li>implemented Logger::FileAppender - and Logger::StreamAppender</li>
@@ -16516,7 +16521,7 @@ with:
         <br/>Use Holder_ to allow threadsafety checking
         <br/>Lose lots of non-const overloads and make API threadafe except for actual threadafety part)
         <br/>Lose TRAITS support
-        <br/>Added ifdef(qDebug) - for now - fDebugMutex_ support
+        <br/>Added ifdef(qStroika_Foundation_Debug_AssertionsChecked) - for now - fDebugMutex_ support
     </li>
     <li>redo DiscreteRange() to not inherit from Iterable<> but have convert op, and experimental begin/end methods so can be used in iteration expressions</li>
     <li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>

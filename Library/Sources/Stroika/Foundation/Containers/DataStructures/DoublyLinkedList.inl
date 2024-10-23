@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
@@ -333,7 +333,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         //
         // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
         // old for old, and when I match, stop on new
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (pi->fData_ == movedFrom);
 #endif
         auto                  newI = this->fHead_;
@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Assert (oldI == pi->fCurrent_);
         pi->fCurrent_ = newI;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         pi->fData_ = this;
 #endif
     }
@@ -379,7 +379,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         this->Invariant ();
@@ -435,7 +435,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         this->Invariant ();
@@ -446,7 +446,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void DoublyLinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         /*
@@ -490,7 +490,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void DoublyLinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         this->Invariant ();
@@ -518,7 +518,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         this->Invariant ();
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T>
     void DoublyLinkedList<T>::Invariant_ () const noexcept
     {
@@ -571,7 +571,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     constexpr DoublyLinkedList<T>::ForwardIterator::ForwardIterator ([[maybe_unused]] const DoublyLinkedList* data, UnderlyingIteratorRep startAt) noexcept
         : fCurrent_{startAt}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fData_{data}
 #endif
     {
@@ -584,7 +584,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
@@ -596,7 +596,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::Done () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         if (fData_ != nullptr) {
             AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
             Invariant ();
@@ -624,7 +624,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline const T& DoublyLinkedList<T>::ForwardIterator::operator* () const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         RequireNotNull (fData_);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
 #endif
@@ -636,7 +636,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline const T* DoublyLinkedList<T>::ForwardIterator::operator->() const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         RequireNotNull (fData_);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
 #endif
@@ -649,7 +649,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     size_t DoublyLinkedList<T>::ForwardIterator::CurrentIndex (const DoublyLinkedList* data) const
     {
         Require (not Done ());
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
         RequireNotNull (fData_);
 #endif
@@ -672,7 +672,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_}; // read lock on data, though writing to this iterator
 #endif
         // MUST COME FROM THIS LIST
@@ -682,7 +682,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     constexpr void DoublyLinkedList<T>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const DoublyLinkedList* data) const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
 #endif
     }
@@ -691,7 +691,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         return fCurrent_ == rhs.fCurrent_;
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T>
     void DoublyLinkedList<T>::ForwardIterator::Invariant_ () const noexcept
     {

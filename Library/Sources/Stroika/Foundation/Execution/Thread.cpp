@@ -53,7 +53,7 @@ using Debug::AssertExternallySynchronizedMutex;
 //
 //#define   qSupportSetThreadNameDebuggerCall_   0
 #ifndef qSupportSetThreadNameDebuggerCall_
-#if qDebug && qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Foundation_Debug_AssertionsChecked && qStroika_Foundation_Common_Platform_Windows
 #define qSupportSetThreadNameDebuggerCall_ 1
 #endif
 #endif
@@ -86,7 +86,7 @@ namespace {
         }
         ~AllThreadsDeadDetector_ ()
         {
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 if (not sRunningThreads_.empty ()) {
                     DbgTrace ("Threads {} running"_f, Thread::GetStatistics ().fRunningThreads);
                     Require (sRunningThreads_.empty ());
@@ -472,7 +472,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
     RequireNotNull (thisThreadRep); // NOTE - since shared_ptr<> is NOT a const reference, this holds the bumped reference count til the end of ThreadMain_ scope
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Execution::Thread::Ptr::Rep_::ThreadMain_", "thisThreadRep={}"_f,
                                                                           Characters::ToString (thisThreadRep))};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (Debug::AppearsDuringMainLifetime ());
     [[maybe_unused]] auto&& cleanupCheckMain = Finally ([] () noexcept { Require (Debug::AppearsDuringMainLifetime ()); });
 #endif
@@ -726,7 +726,7 @@ void Thread::Ptr::Start () const
     Debug::TraceContextBumper ctx{"Thread::Start", "*this={}"_f, ToString ()};
     RequireNotNull (fRep_);
     Require (not fRep_->fStartEverInitiated_);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     {
         auto s = GetStatus ();                                           // @todo - consider - not sure about this
         Require (s == Status::eNotYetRunning or s == Status::eAborting); // if works - document
@@ -794,7 +794,7 @@ void Thread::Ptr::Start (WaitUntilStarted) const
         // --LGP 2023-11-30
         this_thread::yield ();
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     auto s = GetStatus ();
     Ensure (s == Status::eRunning or s == Status::eAborting or s == Status::eCompleted);
 #endif

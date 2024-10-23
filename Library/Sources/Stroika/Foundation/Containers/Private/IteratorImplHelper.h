@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Private {
      */
     struct ContainerDebugChangeCounts_ {
         using ChangeCountType = unsigned int;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         static ChangeCountType mkInitial_ ();
 #endif
 
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Private {
         ContainerDebugChangeCounts_ (const ContainerDebugChangeCounts_& src);
         ~ContainerDebugChangeCounts_ ();
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         // NOTE - might want to use weakly_shared_ptr (weakref) as safer 'debugging' check than this, but only
         // for debug checking, so not strictly needed (and might cost too much). CONSIDER going forward just
         // for DEBUG mode -- LGP 2021-11-11
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers::Private {
         virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override;
         virtual void                                   More (optional<T>* result, bool advance) override;
         virtual bool                                   Equals (const typename Iterator<T>::IRep* rhs) const override;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         /**
          */
         virtual void Invariant () const noexcept override;
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::Private {
 
     public:
         mutable DATASTRUCTURE_CONTAINER_ITERATOR fIterator{};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         const ContainerDebugChangeCounts_*           fChangeCounter{nullptr};
         ContainerDebugChangeCounts_::ChangeCountType fLastCapturedChangeCount{};
 #endif

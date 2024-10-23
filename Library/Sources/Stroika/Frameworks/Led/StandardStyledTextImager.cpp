@@ -14,7 +14,7 @@ using namespace Stroika::Frameworks::Led;
  ************************** AbstractStyleDatabaseRep ****************************
  ********************************************************************************
  */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void AbstractStyleDatabaseRep::Invariant_ () const
 {
 }
@@ -119,7 +119,7 @@ void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowin
     }
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void StyleDatabaseRep::Invariant_ () const
 {
     inheritedMC::Invariant_ ();
@@ -422,7 +422,7 @@ void StandardStyledTextImager::Convert (const vector<StyledInfoSummaryRecord>& f
 }
 #endif
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void StandardStyledTextImager::Invariant_ () const
 {
     StyledTextImager::Invariant_ ();

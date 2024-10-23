@@ -181,7 +181,7 @@ namespace CommonTests {
 
                     MultiSetIteratorTests_ (testingSchema, s);
 
-                    static const size_t K = qDebug ? (Debug::IsRunningUnderValgrind () ? 50 : 250) : 500;
+                    static const size_t K = qStroika_Foundation_Debug_AssertionsChecked ? (Debug::IsRunningUnderValgrind () ? 50 : 250) : 500;
 
                     EXPECT_TRUE (s.empty ());
                     s.Add (three);

@@ -74,7 +74,7 @@ BOOL LedItControlItem::CanActivate ()
     return inherited::CanActivate ();
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 LedItDocument& LedItControlItem::GetDocument () const
 {
     LedItDocument* result = (LedItDocument*)COleClientItem::GetDocument ();

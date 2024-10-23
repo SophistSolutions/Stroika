@@ -88,7 +88,7 @@ public:
 private:
     static bool DoPromptFileName (::CString* fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, CodePage* codePage);
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 public:
     virtual void AssertValid () const override;
 #endif

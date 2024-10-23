@@ -89,7 +89,7 @@ namespace {
 
             void SingleProcessLargeDataSend_ ()
             {
-                Memory::BLOB                     testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
+                Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qStroika_Foundation_Debug_AssertionsChecked) ? k1K_ : k16MB_;
                 Streams::MemoryStream::Ptr<byte> myStdIn  = Streams::MemoryStream::New<byte> (testBLOB);
                 Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
                 ProcessRunner                    pr{"cat", myStdIn, myStdOut};
@@ -122,7 +122,7 @@ namespace {
                 ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);
                 EXPECT_TRUE (not myStdOut.AvailableToRead ().has_value ()); // sb no data available, but NOT EOF
-                Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
+                Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qStroika_Foundation_Debug_AssertionsChecked) ? k1K_ : k16MB_;
                 myStdIn.Write (testBLOB);
                 myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();

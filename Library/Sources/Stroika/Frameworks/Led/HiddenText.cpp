@@ -102,11 +102,11 @@ void HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
     // proceed in reverse direction - so that any markers being shown won't affect our text offsets
     for (auto i = markers.rbegin (); i != markers.rend (); ++i) {
         if (TextStore::Overlap (**i, from, to)) {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             HidableTextMarkerOwner::Invariant_ (); // don't make virtual call - cuz that might not be fully valid til end of routine...
 #endif
             (*i)->Show ();
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             HidableTextMarkerOwner::Invariant_ (); // don't make virtual call - cuz that might not be fully valid til end of routine...
 #endif
         }
@@ -461,7 +461,7 @@ HidableTextMarkerOwner::MarkerList HidableTextMarkerOwner::CollectAllInRange_OrS
     return result.fResult;
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void HidableTextMarkerOwner::Invariant_ () const
 {
     MarkerList markers = CollectAllInRange (0, fTextStore.GetEnd () + 1);

@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <typename ALGORITHM, typename RETURN_TYPE>
     inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const byte* from, const byte* to)
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (not fCompleted_);
 #endif
         Require ((from == nullptr and to == nullptr) or (from != nullptr and from <= to));
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <typename ALGORITHM, typename RETURN_TYPE>
     inline auto IncrementalDigester<ALGORITHM, RETURN_TYPE>::Complete () -> ReturnType
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (not this->fCompleted_);
         this->fCompleted_ = true;
 #endif

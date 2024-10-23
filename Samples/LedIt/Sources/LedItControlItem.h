@@ -41,7 +41,7 @@ private:
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if !qDebug
+#if !qStroika_Foundation_Debug_AssertionsChecked
 inline LedItDocument& LedItControlItem::GetDocument () const
 {
     // See debug version for ensures...

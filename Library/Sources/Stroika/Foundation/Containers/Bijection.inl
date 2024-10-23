@@ -458,7 +458,7 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::_AssertRepValidType () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             _SafeReadRepAccessor<_IRep>{this};
         }
     }

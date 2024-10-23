@@ -327,7 +327,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
 #if qSupportOLEControlEmbedding
 //class Led_MFC_ControlItem
-#if !qDebug
+#if !qStroika_Foundation_Debug_AssertionsChecked
     inline COleDocument& Led_MFC_ControlItem::GetDocument () const
     {
         // See debug version for ensures...

@@ -180,7 +180,7 @@ namespace Stroika::Frameworks::Led {
     {
         RequireNotNull (m);
         Require (IndexOf (fMarkersToBeDeleted, m) == kBadIndex);
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (fMarkersToBeDeleted.size () != 0) {
                 RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ());
                 RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore ());

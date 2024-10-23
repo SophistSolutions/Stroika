@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers {
     protected:
         explicit PriorityQueue (const shared_ptr<_IRep>& rep);
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     public:
         ~PriorityQueue ();
 #endif

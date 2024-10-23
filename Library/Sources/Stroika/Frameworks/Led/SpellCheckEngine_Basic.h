@@ -112,16 +112,16 @@ namespace Stroika::Frameworks::Led {
     private:
         vector<const Dictionary*> fDictionaries;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const override;
 #endif
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     public:
         /*
         @METHOD:        SpellCheckEngine_Basic::RegressionTest
-        @DESCRIPTION:   <p>This function only exists if @'qDebug' is on. When run, it performs a basic regression test.</p>
+        @DESCRIPTION:   <p>This function only exists if @'qStroika_Foundation_Debug_AssertionsChecked' is on. When run, it performs a basic regression test.</p>
         */
         static void RegressionTest ();
 
@@ -218,7 +218,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void RegressionTest ();
 #endif

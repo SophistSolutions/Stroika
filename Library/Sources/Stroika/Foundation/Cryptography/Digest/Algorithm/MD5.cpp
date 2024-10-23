@@ -337,7 +337,7 @@ Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm ()
 
 void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const byte* start, const byte* end)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fCompleted_);
 #endif
     Require (start == end or start != nullptr);
@@ -347,7 +347,7 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const byte* start, con
 
 auto Algorithm::DigesterAlgorithm<Algorithm::MD5>::Complete () -> ReturnType
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fCompleted_);
     fCompleted_ = true;
 #endif

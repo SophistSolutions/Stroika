@@ -129,7 +129,7 @@ namespace CommonTests {
 
                 IteratorTests_ (s);
 
-                static const size_t K = qDebug ? (Debug::IsRunningUnderValgrind () ? 50 : 200) : 500;
+                static const size_t K = qStroika_Foundation_Debug_AssertionsChecked ? (Debug::IsRunningUnderValgrind () ? 50 : 200) : 500;
 
                 size_t i;
 
@@ -183,7 +183,7 @@ namespace CommonTests {
 
                 s2.Add (three);
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 const size_t K = 200;
 #else
                 const size_t K = 500;
@@ -239,7 +239,7 @@ namespace CommonTests {
                 multiset<T> shouldBePresent; // double check we are doing this right
 
                 // For N times, keep randomly adding an item (from test set) or removing an item (from s)
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 constexpr unsigned int kTimesToRepeat_{1000};
 #else
                 constexpr unsigned int kTimesToRepeat_{10000};

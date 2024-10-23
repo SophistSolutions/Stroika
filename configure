@@ -389,7 +389,7 @@ sub	DoHelp_
 		print("	    --build-platform {PLATFORM}                     /* Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n");
 		print("	    --target-platforms {TargetPlatforms}            /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
 		print("	    --build-tools-root {BuildToolsRoot}             /* Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected */\n");
-		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
+		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qStroika_Foundation_Debug_AssertionsChecked) */\n");
 		print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
 		print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code */\n");
 		print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
@@ -2318,7 +2318,7 @@ sub GetDefaultCZZFLAGS_flags_
 			# to get them to also know about these defines (TBD)
 			#		--LGP 2019-02-10
 			my $dashFlag="-D";
-			push @flags, $dashFlag . "qDebug=" . ZERO_OR_1_ ($gAssertionsEnabled);
+			push @flags, $dashFlag . "qStroika_Foundation_Debug_AssertionsChecked=" . ZERO_OR_1_ ($gAssertionsEnabled);
 			if (defined $FEATUREFLAG_ATLMFC) {
 				push @flags, $dashFlag . "qHasFeature_ATLMFC=" . ZERO_OR_1_ ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem);
 			}
@@ -2335,7 +2335,7 @@ sub GetDefaultCZZFLAGS_flags_
 			push @flags, $dashFlag . "qHasFeature_ZLib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
 			if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 				push @flags, $dashFlag . "qStroika_Foundation_Debug_Trace_TraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
-				#override the default (true iff qDebug) - if set the trace2file option set 
+				#override the default (true iff qStroika_Foundation_Debug_AssertionsChecked) - if set the trace2file option set 
 				if ($ENABLE_TRACE2FILE == 1) {
 					push @flags, $dashFlag . "qStroika_Foundation_Debug_Trace_DefaultTracingOn=1";
 				}

@@ -300,7 +300,7 @@ SignalHandlerRegistry& SignalHandlerRegistry::Get ()
 
 SignalHandlerRegistry::SignalHandlerRegistry ()
 {
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         [[maybe_unused]] static int nConstructed = 0;
         ++nConstructed;
         Assert (nConstructed == 1);

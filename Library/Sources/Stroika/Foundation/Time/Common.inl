@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Time {
         static constexpr auto kMin  = chrono::time_point<CLOCK_T, DURATION_T>{chrono::seconds::min ()};
         static constexpr auto kMax_ = chrono::time_point<CLOCK_T, DURATION_T>{chrono::seconds::max ()};
 #endif
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         [[maybe_unused]] static auto test1 = chrono::time_point_cast<chrono::seconds> (kMax_); // verify the +1000/-1000 stuff enuf
         [[maybe_unused]] static auto test2 = chrono::time_point_cast<chrono::seconds> (kMin_);
 #endif

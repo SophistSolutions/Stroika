@@ -87,7 +87,7 @@ namespace {
 
 vector<string> Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Stroika::Foundation::Debug::SetAssertionHandler (ASSERT_HANDLER_);
     Stroika::Foundation::Debug::SetWeakAssertionHandler (WEAK_ASSERT_HANDLER_);
 #endif

@@ -28,7 +28,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 
-#if qLedAssertsDefaultToMFCAsserts && qDebug
+#if qLedAssertsDefaultToMFCAsserts && qStroika_Foundation_Debug_AssertionsChecked
 static class OneTimeLedMFCAssertionFunctionSetter {
 public:
     static void MFCAssertionHandler (const char* fileName, int lineNum)

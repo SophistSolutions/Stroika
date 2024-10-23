@@ -85,7 +85,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     {
         TimePointSeconds funResult =
             fData_.cget ()->Map<Iterable<TimePointSeconds>> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (TimePointSeconds{kInfinity});
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         auto dataLock = fData_.cget ();
         // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process
         // from one thread, while checking this simultaneously from another

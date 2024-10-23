@@ -723,7 +723,7 @@ namespace Stroika::Foundation::DataExchange {
          *  \note AddSubClass captures the existing mapping for BASE_CLASS at the time of this call, so this
          *        can be used to subclass in place, adding a few extra properties.
          *          \code
-         *              #if qDebug
+         *              #if qStroika_Foundation_Debug_AssertionsChecked
          *                  mapper.AddSubClass<Network, Network> ({
          *                      {"debugProps"sv, &Network::fDebugProps},
          *                  });

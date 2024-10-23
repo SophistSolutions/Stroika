@@ -229,7 +229,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
           .fInternallySynchronized = Execution::InternallySynchronized::eNotKnownInternallySynchronized, .fSeekable = false})}
     , fUseOutStream_{Streams::BufferedOutputStream::New<byte> (outStream)}
 {
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\""); // sadly no way to [[maybe_unused]] on captures
         this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (not this->responseStatusSent ());
@@ -330,7 +330,7 @@ void Response::StateTransition_ (State to)
             fUseOutStream_.Write (as_bytes (span{kCRLF_, ::strlen (kCRLF_)}));
         }
         fState_ = to;
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (to >= State::eHeadersSent and hasEntityBody ()) {
                 Assert (chunkedTransferMode () or this->headers ().contentLength ().has_value ()); // I think is is always required, but double check...
             }

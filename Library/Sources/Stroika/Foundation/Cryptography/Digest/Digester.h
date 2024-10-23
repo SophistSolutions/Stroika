@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
 
     private:
         Algorithm::DigesterAlgorithm<ALGORITHM> fDigesterAlgorithm_;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         bool fCompleted_{false};
 #endif
     };

@@ -113,14 +113,14 @@ void StyleMarkerSummarySink::SplitIfNeededAt (size_t markerPos)
         size_t eltStart = upTo;
         size_t eltEnd   = upTo + (*i).fLength;
         if (markerPos >= eltStart and markerPos <= eltEnd and markerPos != eltStart and markerPos != eltEnd) {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             size_t oldLength = (*i).fLength;
 #endif
             // then we need a split at that position.
             StyleRunElement newElt = *i;
             (*i).fLength           = markerPos - eltStart;
             newElt.fLength         = eltEnd - markerPos;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Assert (oldLength == (*i).fLength + newElt.fLength);
 #endif
             Assert ((*i).fLength != 0);
@@ -505,7 +505,7 @@ DistanceType StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) c
     return maxHeight;
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void StyledTextImager::Invariant_ () const
 {
 }

@@ -555,7 +555,7 @@ void Headers::AddAll (const Headers& headers)
 bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemovals)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         if (value == nullopt) {
             Require (flag == AddOrSet::eRemove or flag == AddOrSet::eSet);
         }

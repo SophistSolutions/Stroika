@@ -13,7 +13,7 @@ namespace Stroika::Foundation::Containers::Private {
      *************************** ContainerDebugChangeCounts_ ************************
      ********************************************************************************
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     inline ContainerDebugChangeCounts_::ChangeCountType ContainerDebugChangeCounts_::mkInitial_ ()
     {
         // use random number so when we assign new object we are more likely to detect bad iterators (dangling)
@@ -24,13 +24,13 @@ namespace Stroika::Foundation::Containers::Private {
     }
 #endif
     inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ()
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         : fChangeCount{mkInitial_ ()}
 #endif
     {
     }
     inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ([[maybe_unused]] const ContainerDebugChangeCounts_& src)
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         : fDeleted{src.fDeleted}
         , fChangeCount{src.fChangeCount.load ()}
 #endif
@@ -38,13 +38,13 @@ namespace Stroika::Foundation::Containers::Private {
     }
     inline ContainerDebugChangeCounts_::~ContainerDebugChangeCounts_ ()
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         fDeleted = true;
 #endif
     }
     inline void ContainerDebugChangeCounts_::PerformedChange ()
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         ++fChangeCount;
 #endif
     }
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Private {
         ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
         requires (constructible_from<DATASTRUCTURE_CONTAINER_ITERATOR, const DATASTRUCTURE_CONTAINER*, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS...>)
         : fIterator{data, forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fChangeCounter{changeCounter}
         , fLastCapturedChangeCount{(changeCounter == nullptr) ? 0 : changeCounter->fChangeCount.load ()}
 #endif
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Private {
         [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
         requires (constructible_from<DATASTRUCTURE_CONTAINER_ITERATOR, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS...>)
         : fIterator{forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fChangeCounter{changeCounter}
         , fLastCapturedChangeCount{(changeCounter == nullptr) ? 0 : changeCounter->fChangeCount.load ()}
 #endif
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Containers::Private {
         const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
         return fIterator == rrhs->fIterator;
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Invariant () const noexcept
     {
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::UpdateChangeCount ()
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         if (fChangeCounter != nullptr) {
             fLastCapturedChangeCount = fChangeCounter->fChangeCount;
         }
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::ValidateChangeCount () const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         if (fChangeCounter != nullptr) {
             Require (not fChangeCounter->fDeleted); // if this is triggered, it means the container changed so drastically that its rep was deleted
             Require (fChangeCounter->fChangeCount == fLastCapturedChangeCount); // if this fails, it almost certainly means you are using a stale iterator

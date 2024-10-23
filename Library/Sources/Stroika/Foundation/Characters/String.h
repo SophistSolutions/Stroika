@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Characters {
     using StringShorteningPreference::ePreferKeepRight;
 
     /**
-     *  \brief returns true iff T == u8string, u16string, u32string, or wstring
+     *  \brief returns true iff T == u8string, u16string, u32string, or wstring - which std::string types can be unambiguously converted to UNICODE
      */
     template <typename T>
     concept IBasicUNICODEStdString = same_as<T, u8string> or same_as<T, u16string> or same_as<T, u32string> or same_as<T, wstring>;
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Characters {
      *          not bad cuz I deprecated? COULD just deprecate ALL of these, and then the class is fully immutable. Probably
      *          easier to understand/reason about.
      * 
-     *          @todo CONSIDER LOSIING THESE METHODS ABOVE (or deprecating at leats)
+     *          @todo CONSIDER LOSIING THESE METHODS ABOVE (or deprecating at least)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<String>);

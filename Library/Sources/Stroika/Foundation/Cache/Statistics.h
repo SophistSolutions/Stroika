@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Cache::Statistics {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
-    using StatsType_DEFAULT = conditional_t<qDebug, Stats_Basic, Stats_Null>;
+    using StatsType_DEFAULT = conditional_t<qStroika_Foundation_Debug_AssertionsChecked, Stats_Basic, Stats_Null>;
 
 }
 

@@ -25,7 +25,7 @@ using namespace Stroika::Foundation::Execution;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
-    constexpr bool kEmitDbgTraceOnThreadPoolEntryExceptions_ = qDebug;
+    constexpr bool kEmitDbgTraceOnThreadPoolEntryExceptions_ = qStroika_Foundation_Debug_AssertionsChecked;
 }
 
 class ThreadPool::MyRunnable_ {
@@ -50,14 +50,14 @@ public:
         // Keep grabbing new tasks, and running them
         while (true) {
             {
-                if constexpr (qDebug) {
+                if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                     [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
                     Assert (fCurTask == nullptr);
                 }
                 // Subtle point, but we must copy directly into fCurTask (WaitForNextTask_ call) so its filled in under lock
                 // while being moved so task moves from pending to in-use without ever temporarily disappearing from known tasks lists
                 fThreadPool.WaitForNextTask_ (&fCurTask, &fCurName); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
-                if constexpr (qDebug) {
+                if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                     [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
                     Assert (fCurTask != nullptr);
                 }
@@ -184,12 +184,12 @@ auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Charac
     // also INTENTIONALLY dont hold lock long enuf to make this work 100% reliably cuz these magic numbers dont need to be precise, just approximate
     // @todo rewrite this with condition variables, so more efficient and wakes up/times out appropriately...
     Time::TimePointSeconds timeoutAt = Time::GetTickCount () + qmax.fAddBlockTimeout;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     bool blockedAtLeastOnce = false;
 #endif
     while (true) {
         if (GetPendingTasksCount () >= qmax.fLength) [[unlikely]] {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             if (not blockedAtLeastOnce) {
                 DbgTrace ("Blocking inside ThreadPool::AddTask due to excessive pending task count"_f);
                 blockedAtLeastOnce = true;

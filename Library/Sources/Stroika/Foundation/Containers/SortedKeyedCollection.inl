@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             _SafeReadRepAccessor<_IRep>{this};
         }
     }

@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Traversal {
         protected:
             [[no_unique_address]] _ContextObjectType _fContextForEachIterator;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         protected:
             // @todo clarify, but I think this is just a debugging hack to make sure the underlying itertor
             // lifetime is long enough for any iterators generated from this iterable.

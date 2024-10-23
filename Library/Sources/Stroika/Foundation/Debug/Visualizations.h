@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Debug::Visualizations {
     namespace Private_ {
         extern bool gMagicSoIncluded;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         /**
          *  Magic to force the linker to include the visualizations obj file in executables.
          */

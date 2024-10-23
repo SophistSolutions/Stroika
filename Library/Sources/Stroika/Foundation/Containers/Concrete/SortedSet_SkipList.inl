@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     inline void SortedSet_SkipList<T>::AssertRepValidType_ () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
         }
     }

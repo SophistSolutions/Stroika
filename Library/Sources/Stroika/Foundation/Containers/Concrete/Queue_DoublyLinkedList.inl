@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     inline void Queue_DoublyLinkedList<T>::AssertRepValidType_ () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
         }
     }

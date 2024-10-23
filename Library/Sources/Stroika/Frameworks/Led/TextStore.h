@@ -429,7 +429,7 @@ namespace Stroika::Frameworks::Led {
          */
         nonvirtual void Invariant () const;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const;
 #endif

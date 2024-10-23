@@ -496,7 +496,7 @@ SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
         return String{CPUBrandString};
     }();
 
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         ::SYSTEM_INFO sysInfo{}; // GetNativeSystemInfo cannot fail so no need to initialize data
         ::GetNativeSystemInfo (&sysInfo);
         Assert (sysInfo.dwNumberOfProcessors == logicalProcessorCount);
@@ -912,7 +912,7 @@ unsigned int Common::GetNumberOfLogicalCPUCores (const chrono::duration<double>&
     [[maybe_unused]] static auto computeViaGetSystemConfiguration_CPU   = [] () {
         return Common::GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
     };
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     static auto compute = [=] () {
         unsigned int hc                = computeViaStdThreadHardwareConcurrency ();
         unsigned int sysConfigLogCores = computeViaGetSystemConfiguration_CPU ();

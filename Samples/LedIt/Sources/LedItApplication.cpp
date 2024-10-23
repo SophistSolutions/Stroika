@@ -1287,7 +1287,7 @@ BOOL LedItApplication::InitInstance ()
     }
 
 #if qIncludeBasicSpellcheckEngine
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     SpellCheckEngine_Basic::RegressionTest ();
 #endif
 

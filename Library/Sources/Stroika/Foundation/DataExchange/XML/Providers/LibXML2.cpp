@@ -274,7 +274,7 @@ namespace {
 }
 
 namespace {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     bool ValidNewNodeName_ (const String& n)
     {
         if (n.empty ()) {
@@ -362,7 +362,7 @@ namespace {
         virtual void SetName (const NameWithNamespace& name) override
         {
             AssertNotNull (fNode_);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Require (ValidNewNodeName_ (name.fName));
 #endif
             if (name.fNamespace) {
@@ -497,7 +497,7 @@ namespace {
         }
         virtual Element::Ptr InsertElement (const NameWithNamespace& eltName, const Element::Ptr& afterNode) override
         {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Require (ValidNewNodeName_ (eltName.fName));
 #endif
             Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
@@ -522,7 +522,7 @@ namespace {
         }
         virtual Element::Ptr AppendElement (const NameWithNamespace& eltName) override
         {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Require (ValidNewNodeName_ (eltName.fName));
 #endif
             // when adding a child, if no NS specified, copy parents
@@ -944,7 +944,7 @@ String Providers::LibXML2::libXMLString2String (const xmlChar* t)
 Providers::LibXML2::Provider::Provider ()
 {
     TraceContextBumper ctx{"LibXML2::Provider::CTOR"};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     static unsigned int sNProvidersCreated_{0}; // don't create multiple of these - will lead to confusion
     Assert (++sNProvidersCreated_ == 1);
 #endif

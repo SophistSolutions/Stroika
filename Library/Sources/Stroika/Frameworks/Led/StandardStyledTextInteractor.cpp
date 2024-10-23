@@ -83,12 +83,12 @@ size_t StandardStyledTextIOSrcStream::GetTotalTextLength () const
 vector<StyledInfoSummaryRecord> StandardStyledTextIOSrcStream::GetStyleInfo (size_t from, size_t len) const
 {
     size_t effectiveFrom = from + fSelStart;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     size_t effectiveTo = effectiveFrom + len;
 #endif
     Require (effectiveFrom >= fSelStart);
     Require (effectiveFrom <= fSelEnd);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (effectiveTo >= fSelStart);
     Require (effectiveTo <= fSelEnd);
 #endif

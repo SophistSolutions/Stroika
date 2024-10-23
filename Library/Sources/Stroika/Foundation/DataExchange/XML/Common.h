@@ -36,7 +36,7 @@ namespace Stroika::Foundation::DataExchange::XML {
  *  Track memory allocations internally, and assure no memory leaks within XML code
  */
 #ifndef qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
-#define qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations qDebug
+#define qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations qStroika_Foundation_Debug_AssertionsChecked
 #endif
 
 }

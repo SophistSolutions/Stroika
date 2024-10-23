@@ -77,7 +77,7 @@ namespace {
  */
 void Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Write (const byte* start, const byte* end)
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fCompleted_);
 #endif
     DoMore_ (&fData_, start, end);
@@ -85,7 +85,7 @@ void Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Write (const byte* start, c
 
 auto Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Complete () -> ReturnType
 {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Require (not fCompleted_);
     fCompleted_ = true;
 #endif

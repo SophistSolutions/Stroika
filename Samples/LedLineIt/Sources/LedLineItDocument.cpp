@@ -595,7 +595,7 @@ bool LedLineItDocument::DoPromptOpenFileName (CString* fileName, CodePage* codeP
 bool LedLineItDocument::DoPromptFileName (CString* fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, CodePage* codePage)
 {
     vector<CodePage> codePages = CodePagesInstalled{}.GetAll ();
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         // We use these magic numbers internally here - just assure they don't conflict...
         Assert (std::find (codePages.begin (), codePages.end (), kAutomaticallyGuessCodePage) == codePages.end ());
         Assert (std::find (codePages.begin (), codePages.end (), kIGNORECodePage) == codePages.end ());
@@ -649,7 +649,7 @@ bool LedLineItDocument::DoPromptFileName (CString* fileName, UINT nIDSTitle, boo
     return bResult;
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 void LedLineItDocument::AssertValid () const
 {
     COleServerDoc::AssertValid ();

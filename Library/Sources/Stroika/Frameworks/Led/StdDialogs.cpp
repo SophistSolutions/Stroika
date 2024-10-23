@@ -86,7 +86,7 @@ StdColorPopupHelper::StdColorPopupHelper (bool allowNone)
     , fHWnd{NULL}
 #endif
 {
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         [[maybe_unused]] size_t offset = fAllowNone ? 1 : 0;
         for (size_t i = 0; i < 16; ++i) {
             Assert (MapColorIdx (MapColorIdx (i + offset)) == i + offset);

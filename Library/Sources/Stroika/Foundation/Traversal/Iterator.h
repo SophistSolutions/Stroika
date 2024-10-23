@@ -550,7 +550,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief, does nothing if !qDebug, but if qDebug, checks internal state and asserts in good shape
+         *  \brief, does nothing if !qStroika_Foundation_Debug_AssertionsChecked, but if qStroika_Foundation_Debug_AssertionsChecked, checks internal state and asserts in good shape
          */
         nonvirtual void Invariant () const noexcept;
 
@@ -645,7 +645,7 @@ namespace Stroika::Foundation::Traversal {
          *  @see Iterator<T>::Equals for details
          */
         virtual bool Equals (const IRep* rhs) const = 0;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         /**
          */
         virtual void Invariant () const noexcept;

@@ -95,7 +95,7 @@ namespace {
 }
 
 namespace {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .001 : 1.0;
 #else
     double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .002 : 1.0;
@@ -109,7 +109,7 @@ namespace {
  */
 
 // Turn this on rarely to calibrate so # runs a good test
-//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
+//#define   qPrintOutIfBaselineOffFromOneSecond (!qStroika_Foundation_Debug_AssertionsChecked && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
 // My performance expectation numbers WERE calibrated for MSVC (2k13.net) and 32-bit code - until Stroika v3. Now
 // still using visual studio.net as warning baseline, but using 64-bit tests.
@@ -118,15 +118,15 @@ namespace {
 // This is only intended to alert me when something changes GROSSLY.
 namespace {
 #if defined(_MSC_VER)
-    constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ = not qDebug and qStroika_Foundation_Memory_PreferBlockAllocation and
-                                                                    not qStroika_Foundation_Debug_Trace_DefaultTracingOn and
-                                                                    sizeof (void*) == sizeof (int64_t);
+    constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ =
+        not qStroika_Foundation_Debug_AssertionsChecked and qStroika_Foundation_Memory_PreferBlockAllocation and
+        not qStroika_Foundation_Debug_Trace_DefaultTracingOn and sizeof (void*) == sizeof (int64_t);
 #else
     constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ = false;
 #endif
 }
 
-// Use this so when running #if qDebug case - we don't waste a ton of time with this test
+// Use this so when running #if qStroika_Foundation_Debug_AssertionsChecked case - we don't waste a ton of time with this test
 #define qDebugCaseRuncountRatio (.01)
 
 namespace {
@@ -202,7 +202,7 @@ namespace {
                      printResults = DEFAULT_TEST_PRINTER)
     {
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Tester", "testName={}, runCount={}"_f, testName, runCount)};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
 #endif
         Duration baselineTime    = RunTest_ (baselineT, runCount);
@@ -228,7 +228,7 @@ namespace {
                      printResults = DEFAULT_TEST_PRINTER)
     {
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Tester", "testName={}, runCount={}"_f, testName, runCount)};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         runCount = Math::AtLeast<unsigned int> (static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio), 1);
 #endif
         baselineTime *= runCount;
@@ -1319,7 +1319,7 @@ namespace {
             }
             for (auto testCase : kTestCases_) {
                 DoJSONParse_ (jsonTestRoot / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
-                if constexpr (not qDebug) {
+                if constexpr (not qStroika_Foundation_Debug_AssertionsChecked) {
                     // don't bother testing these except in release builds - too slow
                     DoJSONParse_ (jsonTestRoot / "medium-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                     DoJSONParse_ (jsonTestRoot / "large-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));

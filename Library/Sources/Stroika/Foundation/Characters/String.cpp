@@ -65,7 +65,7 @@ namespace {
         protected:
             span<const CHAR_T> _fData;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         private:
             mutable unsigned int fOutstandingIterators_{};
 #endif
@@ -86,7 +86,7 @@ namespace {
             }
             Rep& operator= (span<const CHAR_T> s)
             {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 Require (fOutstandingIterators_ == 0);
 #endif
                 if constexpr (same_as<CHAR_T, char> or same_as<CHAR_T, char8_t>) {
@@ -141,25 +141,25 @@ namespace {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
                     span<const CHAR_T> fData_; // clone span (not underlying data)
                     size_t             fIdx_{0};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                     const Rep* fOwningRep_;
 #endif
                     MyIterRep_ (span<const CHAR_T> data
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                                 ,
                                 const Rep* dbgRep
 #endif
                                 )
                         : fData_{data}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                         , fOwningRep_{dbgRep}
 #endif
                     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                         ++fOwningRep_->fOutstandingIterators_;
 #endif
                     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                     virtual ~MyIterRep_ () override
                     {
                         Require (fOwningRep_->fOutstandingIterators_ > 0); // if this fails, probably cuz fOwningRep_ destroyed
@@ -170,7 +170,7 @@ namespace {
                     virtual unique_ptr<Iterator<Character>::IRep> Clone () const override
                     {
                         return make_unique<MyIterRep_> (fData_.subspan (fIdx_)
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                                                             ,
                                                         fOwningRep_
 #endif
@@ -203,7 +203,7 @@ namespace {
                 {
                     make_unique<MyIterRep_> (this->_fData
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                                              ,
                                              this
 #endif
@@ -385,7 +385,7 @@ namespace {
                 : inherited{s} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
             {
                 if constexpr (same_as<CHAR_T, wchar_t>) {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                     const CHAR_T* start = s.data ();
                     const CHAR_T* end   = start + s.size ();
                     // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
@@ -403,7 +403,7 @@ namespace {
                 if constexpr (same_as<CHAR_T, wchar_t>) {
                     // we check/require this in CTOR, so should still be true
                     const wchar_t* start = reinterpret_cast<const wchar_t*> (this->_fData.data ());
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                     const wchar_t* end = start + this->_fData.size ();
                     Assert (*end == '\0' and start + ::wcslen (start) <= end); // less or equal because you can call c_str() even through the string has embedded nuls
 #endif
@@ -662,7 +662,7 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
      */
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
     static_assert (kBaseOfFixedBufSize_ < 64); // this code below assumes, so must re-tune if this ever fails
-    if constexpr (qStroika_Foundation_Common_Platform_Windows and not qDebug) {
+    if constexpr (qStroika_Foundation_Common_Platform_Windows and not qStroika_Foundation_Debug_AssertionsChecked) {
         static_assert (kBaseOfFixedBufSize_ == 3 * sizeof (void*));
         if constexpr (sizeof (void*) == 4) {
             static_assert (kBaseOfFixedBufSize_ == 12);
@@ -681,7 +681,7 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     static constexpr size_t kNElts3_ = (128 - kBaseOfFixedBufSize_ - kOverheadSizeForMakeShared_) / sizeof (CHAR_T);
 
     // These checks are NOT important, just for documentation/reference
-    if constexpr (qStroika_Foundation_Common_Platform_Windows and sizeof (CHAR_T) == 1 and not qDebug) {
+    if constexpr (qStroika_Foundation_Common_Platform_Windows and sizeof (CHAR_T) == 1 and not qStroika_Foundation_Debug_AssertionsChecked) {
         if constexpr (sizeof (void*) == 4) {
             static_assert (kNElts1_ == 40);
             static_assert (kNElts2_ == 72);
@@ -694,9 +694,9 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
         }
     }
 
-    static_assert (qDebug or kNElts1_ >= 6); // crazy otherwise
-    static_assert (kNElts2_ > kNElts1_);     // ""
-    static_assert (kNElts3_ > kNElts2_);     // ""
+    static_assert (qStroika_Foundation_Debug_AssertionsChecked or kNElts1_ >= 6); // crazy otherwise
+    static_assert (kNElts2_ > kNElts1_);                                          // ""
+    static_assert (kNElts3_ > kNElts2_);                                          // ""
 
     static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64 - kOverheadSizeForMakeShared_); // not quite guaranteed but close
     static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 96 - kOverheadSizeForMakeShared_);  // ""
@@ -1089,7 +1089,7 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
     if (subString.size () > size ()) {
         return false;
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     bool referenceResult = ThreeWayComparer{co}(SubString (0, subString.size ()), subString) == 0;
 #endif
     Memory::StackBuffer<Character> maybeIgnoreBuf1;
@@ -1097,7 +1097,7 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
     span<const Character>          subStrData = subString.GetData (&maybeIgnoreBuf1);
     span<const Character>          thisData   = GetData (&maybeIgnoreBuf2);
     bool                           result     = Character::Compare (thisData.subspan (0, subStrData.size ()), subStrData, co) == 0;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Ensure (result == referenceResult);
 #endif
     return result;
@@ -1124,7 +1124,7 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
     if (subStrLen > thisStrLen) {
         return false;
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     bool referenceResult = String::EqualsComparer{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString);
 #endif
     Memory::StackBuffer<Character> maybeIgnoreBuf1;
@@ -1132,7 +1132,7 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
     span<const Character>          subStrData = subString.GetData (&maybeIgnoreBuf1);
     span<const Character>          thisData   = GetData (&maybeIgnoreBuf2);
     bool                           result     = Character::Compare (thisData.subspan (thisStrLen - subStrLen), subStrData, co) == 0;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     Ensure (result == referenceResult);
 #endif
     return result;
@@ -1715,7 +1715,7 @@ namespace Stroika::Foundation::Traversal {
     Characters::String Iterable<Characters::String>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
     {
         using namespace Characters;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         String referenceResult = this->Join (Iterable<String>::kDefaultToStringConverter<String>,
                                              Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
 #endif
@@ -1736,7 +1736,7 @@ namespace Stroika::Foundation::Traversal {
             }
             ++idx;
         });
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Ensure (sb == referenceResult);
 #endif
         return sb;

@@ -161,7 +161,7 @@ namespace Stroika::Frameworks::Led {
         // only support one cmd
     private:
         Command* fLastCmd;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         bool fDoingCommands; // avoid common bug of posting new commands during execution of a command
 #endif
     };
@@ -203,7 +203,7 @@ namespace Stroika::Frameworks::Led {
         unsigned         fCommandGroupCount;
         unsigned         fUndoneGroupCount;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         bool fDoingCommands; // avoid common bug of posting new commands during execution of a command
 #endif
 

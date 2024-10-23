@@ -265,7 +265,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void TextStore::Invariant () const
     {
-#if qDebug and qStroika_Frameworks_Led_HeavyDebugging
+#if qStroika_Foundation_Debug_AssertionsChecked and qStroika_Frameworks_Led_HeavyDebugging
         Invariant_ ();
 #endif
     }
@@ -339,7 +339,7 @@ namespace Stroika::Frameworks::Led {
         m.GetRange (&start, &end);
         Assert (start <= end);
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         // Note - the old algorithm DOESNT give the same answers as the new one. Otherwise - we wouldn't bother with a new algorithm.
         // This assertion/testing code is just temporary - for me to get a sense how often we're producing different answers, and how
         // serious this will be (a testing issue) - LGP 2000/04/26
@@ -378,14 +378,14 @@ namespace Stroika::Frameworks::Led {
                 return end == start;
             }
             else {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 Ensure (oldAlgorithmAnswer == true);
 #endif
                 return true;
             }
         }
         else {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Ensure (oldAlgorithmAnswer == false);
 #endif
             return false;

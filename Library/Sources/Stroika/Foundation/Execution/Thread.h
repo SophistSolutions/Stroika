@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Execution {
      *  and DbgTrace() automatically in construction/destruction.
      */
 #ifndef qStroika_Foundation_Execution_Thread_SupportThreadStatistics
-#define qStroika_Foundation_Execution_Thread_SupportThreadStatistics qDebug
+#define qStroika_Foundation_Execution_Thread_SupportThreadStatistics qStroika_Foundation_Debug_AssertionsChecked
 #endif
 
     /**

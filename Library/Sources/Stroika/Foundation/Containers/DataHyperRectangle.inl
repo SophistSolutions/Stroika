@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename... INDEXES>
     inline void DataHyperRectangle<T, INDEXES...>::_AssertRepValidType () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             _SafeReadRepAccessor<_IRep>{this};
         }
     }

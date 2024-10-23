@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Traversal {
      ********************** Iterator<T, ITERATOR_TRAITS>::IRep **********************
      ********************************************************************************
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T, typename ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::IRep::Invariant () const noexcept
     {
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::Invariant () const noexcept
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (fRep_) {
                 fRep_->Invariant ();
             }

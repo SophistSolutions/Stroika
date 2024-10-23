@@ -452,7 +452,7 @@ namespace {
             }
         }
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     struct Tester_ {
         Tester_ ()
         {

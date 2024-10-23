@@ -26,7 +26,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void AbstractStyleDatabaseRep::Invariant () const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }

@@ -144,7 +144,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if !qDebug && qPlatform_Windows
+#if !qStroika_Foundation_Debug_AssertionsChecked && qPlatform_Windows
 inline LedItDocument& LedItView::GetDocument () const
 {
     return *(LedItDocument*)m_pDocument;

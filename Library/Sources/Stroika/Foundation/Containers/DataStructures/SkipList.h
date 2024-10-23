@@ -550,7 +550,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // @todo ask sterl meaning of LinkVector_ argument here? Why not have PatchLinks_ method?
         nonvirtual void RemoveLink_ (Link_* n, const LinkVector_& linksToPatch);
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void Invariant_ () const noexcept;
 #endif
@@ -607,7 +607,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator& operator= (const ForwardIterator&)     = default;
         nonvirtual ForwardIterator& operator= (ForwardIterator&&) noexcept = default;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     public:
         ~ForwardIterator ();
 #endif
@@ -667,14 +667,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         constexpr void Invariant () const noexcept;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     private:
         nonvirtual void Invariant_ () const noexcept;
 #endif
 
     private:
         const Link_* fCurrent_{nullptr};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         const SkipList* fData_{nullptr};
 #endif
 

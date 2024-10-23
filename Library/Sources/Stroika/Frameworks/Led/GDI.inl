@@ -434,7 +434,7 @@ namespace Stroika::Frameworks::Led {
         RECT r;
         int  tmp = ::GetRgnBox (fRgn, &r);
         Verify (tmp != 0);
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (tmp == 0) {
                 Assert (AsLedRect (r) == Led_Rect (0, 0, 0, 0));
             }

@@ -195,7 +195,7 @@ namespace {
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Assert (fCurrentPendingReadsCount++ == 0);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
@@ -214,7 +214,7 @@ namespace {
         virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Assert (fCurrentPendingReadsCount++ == 0);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
@@ -238,7 +238,7 @@ namespace {
 #endif
                         return tmp;
                     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                     --fCurrentPendingReadsCount; // reverse for inherited Read ()
                     [[maybe_unused]] auto&& cleanup2 = Finally ([this] () noexcept { ++fCurrentPendingReadsCount; });
 #endif
@@ -372,7 +372,7 @@ namespace {
             setsockopt<int> (IPPROTO_TCP, TCP_NODELAY, noDelay);
         }
         optional<Time::DurationSeconds> fAutomaticTCPDisconnectOnClose_;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         mutable atomic<int> fCurrentPendingReadsCount{};
 #endif
     };

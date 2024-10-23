@@ -186,7 +186,7 @@ namespace {
         // overwrite OK, but
         a = SortedCollection<int>{3, 4, 5};
 // cannot access i any longer
-#if qDebug && 0
+#if qStroika_Foundation_Debug_AssertionsChecked && 0
         i++; // assert failure
 #endif
     }

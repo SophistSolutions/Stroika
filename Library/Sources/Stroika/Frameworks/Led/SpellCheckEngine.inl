@@ -26,12 +26,12 @@ namespace Stroika::Frameworks::Led {
     }
     inline void SpellCheckEngine::Invariant () const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     /*
     @METHOD:        SpellCheckEngine::Invariant_
     @DESCRIPTION:   <p>Default implementaiton for calls to @'SpellCheckEngine::Invariant'. Overridden in subclasses

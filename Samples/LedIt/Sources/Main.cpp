@@ -34,9 +34,9 @@
 #endif
 #elif qStroika_FeatureSupported_XWindows
 #define qSlowXDebugSyncMode 0
-//#define   qSlowXDebugSyncMode qDebug
+//#define   qSlowXDebugSyncMode qStroika_Foundation_Debug_AssertionsChecked
 #ifndef qUseMyXErrorHandlers
-#define qUseMyXErrorHandlers qDebug
+#define qUseMyXErrorHandlers qStroika_Foundation_Debug_AssertionsChecked
 #endif
 #endif
 
@@ -149,7 +149,7 @@ static int MyXErrorHandler (Display* display, XErrorEvent* error)
 int main ([[maybe_unused]]int argc, [maybe_unused]]char** argv)
 {
 #if qPlatform_MacOS
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         // Set Debugging options
         SetDebugThrow_ (debugAction_Alert);
         SetDebugSignal_ (debugAction_Alert);

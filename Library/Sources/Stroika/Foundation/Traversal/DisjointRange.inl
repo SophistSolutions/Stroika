@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Traversal {
         for (auto i = forward<COPY_FROM_ITERATOR_OF_RANGE_OF_T> (start); i != forward<COPY_FROM_ITERATOR_OF_RANGE_OF_T2> (end); ++i) {
             MergeIn_ (*i);
         }
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             for (auto i = fSubRanges_.begin (); i != fSubRanges_.end (); ++i) {
                 if (i + 1 != fSubRanges_.end ()) {
                     Ensure (i->GetUpperBound () <= (i + 1)->GetLowerBound ());
@@ -342,7 +342,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     inline void DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             optional<RangeType> lastRangeSeenSoFar;
             for (const RangeType& r : fSubRanges_) {
                 Assert (not r.empty ());

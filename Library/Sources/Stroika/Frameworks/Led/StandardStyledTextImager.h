@@ -52,7 +52,7 @@ namespace Stroika::Frameworks::Led {
         // Debug support
     public:
         nonvirtual void Invariant () const;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const;
 #endif
@@ -115,7 +115,7 @@ namespace Stroika::Frameworks::Led {
         virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo) override;
         virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const StyledInfoSummaryRecord* styleInfos) override;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const override;
 #endif
@@ -232,7 +232,7 @@ namespace Stroika::Frameworks::Led {
         bool                                 fICreatedDatabase{false};
 
 // Debug support
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const;
 #endif

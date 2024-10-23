@@ -193,7 +193,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     }
 };
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 Logger::~Logger ()
 {
     Assert (&sThe == this);

@@ -504,7 +504,7 @@ namespace {
 
         GTEST_TEST (Foundation_Database, RegressionTest2_sqlite_EmployeesDB_with_threads_)
         {
-            if (Debug::IsRunningUnderValgrind () and qDebug) {
+            if (Debug::IsRunningUnderValgrind () and qStroika_Foundation_Debug_AssertionsChecked) {
                 DbgTrace ("Skipping remaining tests cuz too slow"_f);
                 return;
             }
@@ -747,7 +747,7 @@ namespace {
         GTEST_TEST (Foundation_Database, RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_)
         {
             TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::DoIt"};
-            if (Debug::IsRunningUnderValgrind () and qDebug) {
+            if (Debug::IsRunningUnderValgrind () and qStroika_Foundation_Debug_AssertionsChecked) {
                 DbgTrace ("Skipping remaining tests cuz too slow"_f);
                 return;
             }

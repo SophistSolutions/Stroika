@@ -100,11 +100,11 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                 size_t bufSpaceRemaining   = fBuffer_.capacity () - fBuffer_.size ();
                 size_t size2WriteRemaining = elts.size ();
                 size_t copy2Buffer         = min (bufSpaceRemaining, size2WriteRemaining);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 size_t oldCap = fBuffer_.capacity ();
 #endif
                 fBuffer_.insert (fBuffer_.end (), elts.data (), elts.data () + copy2Buffer);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 Assert (oldCap == fBuffer_.capacity ());
 #endif
 
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                     Flush_ ();
                     Assert (fBuffer_.empty ());
                 }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                 Assert (oldCap == fBuffer_.capacity ());
 #endif
 

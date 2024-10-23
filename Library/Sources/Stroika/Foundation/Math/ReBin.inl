@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Math::ReBin {
         template <typename DATA_DESCRIPTOR_TYPE>
         void CheckRebinDataDescriptorInvariant_ (const DATA_DESCRIPTOR_TYPE& d)
         {
-            if constexpr (qDebug) {
+            if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 using namespace Traversal;
                 using BucketIndexType = typename DATA_DESCRIPTOR_TYPE::BucketIndexType;
                 using XType           = typename DATA_DESCRIPTOR_TYPE::XType;
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Math::ReBin {
          *      so we can have differently scaled source buckets.
          */
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         PRIVATE_::CheckRebinDataDescriptorInvariant_ (srcData);
         PRIVATE_::CheckRebinDataDescriptorInvariant_ (*trgData);
 #endif

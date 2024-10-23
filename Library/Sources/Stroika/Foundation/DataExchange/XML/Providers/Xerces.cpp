@@ -86,7 +86,7 @@ public:
     }
     ~MyXercesMemMgr_ ()
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         auto snapshot = fAllocator.GetSnapshot ();
         Assert (snapshot.fAllocations.empty ()); // else we have a memory leak which can be perused here in the debugger
 #endif
@@ -547,9 +547,9 @@ namespace {
         return *impl;
     }
 
-    constexpr bool qDumpXMLOnValidationError_ = qDebug;
+    constexpr bool qDumpXMLOnValidationError_ = qStroika_Foundation_Debug_AssertionsChecked;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     bool ValidNewNodeName_ (const String& n)
     {
         if (n.empty ()) {
@@ -771,7 +771,7 @@ namespace {
         virtual void SetName (const NameWithNamespace& name) override
         {
             AssertNotNull (fNode_);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Require (ValidNewNodeName_ (name.fName));
 #endif
             START_LIB_EXCEPTION_MAPPER_
@@ -929,7 +929,7 @@ namespace {
         }
         virtual Element::Ptr InsertElement (const NameWithNamespace& eltName, const Element::Ptr& afterNode) override
         {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Require (ValidNewNodeName_ (eltName.fName));
 #endif
             START_LIB_EXCEPTION_MAPPER_
@@ -958,7 +958,7 @@ namespace {
         }
         virtual Element::Ptr AppendElement (const NameWithNamespace& eltName) override
         {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Require (ValidNewNodeName_ (eltName.fName));
 #endif
             START_LIB_EXCEPTION_MAPPER_
@@ -1495,7 +1495,7 @@ String Providers::Xerces::xercesString2String (const XMLCh* t)
 Providers::Xerces::Provider::Provider ()
 {
     TraceContextBumper ctx{"Xerces::Provider::CTOR"};
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     static unsigned int sNProvidersCreated_{0}; // don't create multiple of these - will lead to confusion
     Assert (++sNProvidersCreated_ == 1);
 #endif

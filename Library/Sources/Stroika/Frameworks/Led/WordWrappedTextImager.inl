@@ -40,7 +40,7 @@ namespace Stroika::Frameworks::Led {
         if (rhs != nullptr) {
             *rhs = this->GetWindowRect ().GetWidth ();
         }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         if (lhs != nullptr and rhs != nullptr) {
             Ensure (*rhs > *lhs);
         }

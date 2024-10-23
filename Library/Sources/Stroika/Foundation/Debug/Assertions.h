@@ -15,6 +15,14 @@
  *  \quote
  *      "Truth emerges more readily from error than from confusion." 
  *          - Francis Bacon
+ * 
+ *  \note MACRO NAMES
+ *        We use easily conflicted names, like Assert, Ensure, etc, for the macros, but elsewhere in Stroika,
+ *        (since v3) - we switched to more decorated macro names, to avoid conflicts with other libraries.
+ * 
+ *        We chose NOT to do this with Ensure/Assert etc because
+ *          > they are used so much it would be awkward
+ *          > they will go away before too long, due to C++26 contracts (I hope)
  *
  *  TODO:
  *      @todo   Find some way to map Require(), RequireNotNull(), etc to things picked up automatically
@@ -24,32 +32,37 @@
 
 namespace Stroika::Foundation::Debug {
 
-/*
+/**
+ *  \brief The qStroika_Foundation_Debug_AssertionsChecked flag determines if assertions are checked and validated, or uses as hints for [[assume]]
+ * 
  *  Assume the define _DEBUG is used throughout the code to indicate DEBUG mode (assertions on). Assure NDEBUG flag
  *  is set consistently (even if its not explicitly checked).
+ * 
+ *  \brief alias qStroika_Foundation_Debug_AssertionsChecked was called qDebug before Stroika v3.0d11
+ *  \brief this mechanism will be replaced in future versions of Stroika with 'contracts' (when we support c++26 - so two major releases from now)
  */
-#if !defined(qDebug)
+#if !defined(qStroika_Foundation_Debug_AssertionsChecked)
 #if defined(_DEBUG)
-#define qDebug 1
+#define qStroika_Foundation_Debug_AssertionsChecked 1
 #elif defined(NDEBUG)
-#define qDebug 0
+#define qStroika_Foundation_Debug_AssertionsChecked 0
 #else
     // The <cassert> convention is that if NDEBUG is defined, we turn off debugging, but if nothing like it is defined, we
-    // turn on assertions by default. The caller can simply specify qDebug to prevent this defaulting if desired.
-#define qDebug 1
+    // turn on assertions by default. The caller can simply specify qStroika_Foundation_Debug_AssertionsChecked to prevent this defaulting if desired.
+#define qStroika_Foundation_Debug_AssertionsChecked 1
 #endif
 #endif
 
 // Check for consistent defines
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #if defined(NDEBUG)
     // NB #warning is a non-standard extension - maybe we shouldnt use?
-    static_assert (false, "INCONSISTENT DEFINES (NDEBUG and qDebug=1)");
+    static_assert (false, "INCONSISTENT DEFINES (NDEBUG and qStroika_Foundation_Debug_AssertionsChecked=1)");
 #endif
 #else
 #if defined(_DEBUG)
     // NB #warning is a non-standard extension - maybe we shouldnt use?
-    static_assert (false, "INCONSISTENT DEFINES (_DEBUG and qDebug=0)");
+    static_assert (false, "INCONSISTENT DEFINES (_DEBUG and qStroika_Foundation_Debug_AssertionsChecked=0)");
 #endif
 #endif
 
@@ -60,7 +73,7 @@ namespace Stroika::Foundation::Debug {
 #define Stroika_Foundation_Debug_Widen2_(x) L##x
 #define Stroika_Foundation_Debug_Widen(x) Stroika_Foundation_Debug_Widen2_ (x)
 
-#if qDebug || defined(__Doxygen__)
+#if qStroika_Foundation_Debug_AssertionsChecked || defined(__Doxygen__)
     /**
      *  Note: Some any parameters may be null, if no suitable value is available.
      *
@@ -84,7 +97,7 @@ namespace Stroika::Foundation::Debug {
      *  the assertions hold true</em>.
      *
      *  This latter point about conditional compilation is important. If the macro
-     *  preprocessor symbol <code>qDebug</code> is true (non-zero), then this assertion checking is
+     *  preprocessor symbol <code>qStroika_Foundation_Debug_AssertionsChecked</code> is true (non-zero), then this assertion checking is
      *  enabled. If the symbol is false (zero), then the checking is disabled. <b>Of course the
      *  promises must always hold true!</b> But since the checking can significantly slow the code,
      *  it is best to only build with assertions on in certain circumstances (like while developing,
@@ -137,10 +150,10 @@ namespace Stroika::Foundation::Debug {
      *
      *  This last point is worth repeating, as it is the only source of bugs I've ever seen
      *  introduced from the use of assertions (and I've seen the mistake more than once). <b>All
-     *  flavors of assertions (except Verify) do NOT evaluate their arguments if <code>qDebug</code>
+     *  flavors of assertions (except Verify) do NOT evaluate their arguments if <code>qStroika_Foundation_Debug_AssertionsChecked</code>
      *  is off</b>. This means you <b>cannot</b> count on the arguments to assertions having any
      *  side-effects. Use <em>Verify</em> instead of the other assertion flavors if you want to
-     *  only check for compliance if <em><code>qDebug</code></em> is true, but want the side-effect
+     *  only check for compliance if <em><code>qStroika_Foundation_Debug_AssertionsChecked</code></em> is true, but want the side-effect
      *  to happen regardless.
      *
      *  Now when assertions are triggered, just what happens? Here I think there is only one
@@ -220,7 +233,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  result is EXPRESSION;
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define AssertExpression(c)                                                                                                                \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", Stroika_Foundation_Debug_Widen (#c),           \
                                                                                  Stroika_Foundation_Debug_Widen (__FILE__), __LINE__,      \
@@ -238,12 +251,12 @@ namespace Stroika::Foundation::Debug {
      *              GetAssertionHandler () (...)
      *          }
      *
-     *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
+     *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qStroika_Foundation_Debug_AssertionsChecked false. This means that - though the arguments will not be evaluated in a release
      *        build, they must be syntactic (new requirement in Stroika v3.0).
      * 
      *  @see GetAssertionHandler
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define Assert(c) AssertExpression (c)
 #else
 #define Assert(c) _ASSUME_ATTRIBUTE_ (c)
@@ -254,7 +267,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  result is EXPRESSION;
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define RequireExpression(c)                                                                                                               \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", Stroika_Foundation_Debug_Widen (#c),          \
                                                                                  Stroika_Foundation_Debug_Widen (__FILE__), __LINE__,      \
@@ -267,7 +280,7 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \def Require(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion about the incoming contract - arguments to a function.
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define Require(c) RequireExpression (c)
 #else
 #define Require(c) _ASSUME_ATTRIBUTE_ (c)
@@ -276,7 +289,7 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \def EnsureExpression(c) - alias for AssertExpression(), but with a different message, and used to declare an assertion promised about the state at the end of a function.
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define EnsureExpression(c)                                                                                                                \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", Stroika_Foundation_Debug_Widen (#c),           \
                                                                                  Stroika_Foundation_Debug_Widen (__FILE__), __LINE__,      \
@@ -289,7 +302,7 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \def Ensure(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion promised about the state at the end of a function.
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define Ensure(c) EnsureExpression (c)
 #else
 #define Ensure(c) _ASSUME_ATTRIBUTE_ (c)
@@ -342,7 +355,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  A program bug within the procedure called from, if this code is ever reached. In release builds, this calls unreachable, so can be optimized/assumed never reached.
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define AssertNotReached()                                                                                                                  \
     Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
                                                                       __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
@@ -357,7 +370,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  A program bug within the procedure called from, if this code is ever reached. In release builds, this calls unreachable, so can be optimized/assumed never reached.
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define EnsureNotReached()                                                                                                                  \
     Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
                                                                       __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
@@ -372,7 +385,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  A program bug within the caller, if this code is ever reached. In release builds, this calls unreachable, so can be optimized/assumed on argument condition.
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define RequireNotReached()                                                                                                                  \
     Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
                                                                       __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
@@ -388,7 +401,7 @@ namespace Stroika::Foundation::Debug {
      *  Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
      *  makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define AssertNotImplemented()                                                                                                                  \
     Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", L"Not Implemented", Stroika_Foundation_Debug_Widen (__FILE__), \
                                                                       __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
@@ -406,7 +419,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  @see GetAssertionHandler
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define Verify(c) Assert (c)
 #else
 #define Verify(c) ((void)(c))
@@ -425,7 +438,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  @see GetWeakAssertionHandler
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define WeakAssert(c)                                                                                                                      \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (L"WeakAssert", Stroika_Foundation_Debug_Widen (#c),  \
                                                                                       Stroika_Foundation_Debug_Widen (__FILE__), __LINE__, \
@@ -454,7 +467,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  @see WeakAssert
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define WeakAssertNotReached()                                                                                                             \
     Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (                                                                \
         L"WeakAssert", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
@@ -470,7 +483,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  @see WeakAssert
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define WeakAssertNotImplemented()                                                                                                         \
     Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (                                                                \
         L"WeakAssert", L"Not Implemented", Stroika_Foundation_Debug_Widen (__FILE__), __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
@@ -489,7 +502,7 @@ namespace Stroika::Foundation::Debug {
      *  @see Verify
      *  @see WeakAssert
      */
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define WeakVerify(c) WeakAssert (c)
 #else
 #define WeakVerify(c) ((void)(c))
@@ -502,6 +515,9 @@ namespace Stroika::Foundation::Debug {
     [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
     SetAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
                                                 const char* functionName) noexcept);
+
+// DEPRECATED NAME (to be removed in Stroika v3.0a1 - deprecated since Stroika v3.0d11)
+#define qDebug qStroika_Foundation_Debug_AssertionsChecked
 }
 
 /*
@@ -509,6 +525,6 @@ namespace Stroika::Foundation::Debug {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDebug, qDebug);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qStroika_Foundation_Debug_AssertionsChecked, qStroika_Foundation_Debug_AssertionsChecked);
 
 #endif /*_Stroika_Foundation_Debug_Assertions_h_*/

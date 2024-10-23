@@ -278,7 +278,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         }
 
             // if we get this far, we always complete processing the message
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
 #endif
 

@@ -248,8 +248,8 @@ namespace CommonTests {
                 {
                     Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test7_Keys"};
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    static const size_t   K     = qDebug ? (Debug::IsRunningUnderValgrind () ? 25 : 50) : 100;
-                    ConcreteContainerType c     = testingSchema.Factory ();
+                    static const size_t K = qStroika_Foundation_Debug_AssertionsChecked ? (Debug::IsRunningUnderValgrind () ? 25 : 50) : 100;
+                    ConcreteContainerType c = testingSchema.Factory ();
                     for (size_t i = 0; i < K; ++i) {
                         c.Add (i, i);
                     }

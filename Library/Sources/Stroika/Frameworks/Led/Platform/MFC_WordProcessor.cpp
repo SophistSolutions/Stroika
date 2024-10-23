@@ -554,7 +554,7 @@ bool Led_MFC_ControlItem::IsCmdEnabled (PrivateCmdNumber cmd) const
     }
 }
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
 COleDocument& Led_MFC_ControlItem::GetDocument () const
 {
     COleDocument* result = (COleDocument*)COleClientItem::GetDocument ();

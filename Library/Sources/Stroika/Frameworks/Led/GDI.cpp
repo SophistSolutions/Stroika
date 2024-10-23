@@ -44,7 +44,7 @@ using namespace Stroika::Frameworks::Led;
  *  Short term debugging crap to debug X-Windows font issues.
  */
 #ifndef qDebugFontDetails
-#define qDebugFontDetails qDebug&& qStroika_FeatureSupported_XWindows
+#define qDebugFontDetails qStroika_Foundation_Debug_AssertionsChecked&& qStroika_FeatureSupported_XWindows
 #endif
 
 // Suggestion from Greg Binkerd [gregb@microsoft.com] about SRX021206603127 - LGP 2003-01-02
@@ -1613,7 +1613,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
     }
 #endif
 
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         // Assure charLocations are in non-decreasing order (OK to have some zero width - but never negative).
         DistanceType d = 0;
         for (size_t i = 0; i < nTChars; ++i) {

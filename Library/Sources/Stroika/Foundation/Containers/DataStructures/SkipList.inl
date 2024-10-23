@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (pi->fData_ == movedFrom);
 #endif
         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Assert (oldI == pi->fCurrent_);
         pi->fCurrent_ = newI;
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         pi->fData_ = this;
 #endif
     }
@@ -744,7 +744,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         while (link != nullptr) {
             Link_* next = link->fNext[0];
             link->fNext.clear ();
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             bool patched = false;
 #endif
             for (size_t hIndex = lastValidHeight + 1; hIndex-- > 0;) {
@@ -754,13 +754,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
                         *patchLinks[patchIndex] = link;
                         patchLinks[patchIndex]  = &link->fNext[patchIndex];
                     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
                     patched = true;
 #endif
                     break;
                 }
             }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
             Assert (patched);
 #endif
 
@@ -789,11 +789,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant_ () const noexcept
     {
@@ -828,7 +828,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt) noexcept
         : fCurrent_{startAt}
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         , fData_{data}
 #endif
     {
@@ -840,7 +840,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         : ForwardIterator{data, (RequireExpression (data != nullptr), data->fHead_[0])}
     {
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::~ForwardIterator ()
     {
@@ -873,7 +873,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::CurrentIndex (const SkipList* data) const -> size_t
     {
         Require (not Done ());
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         RequireNotNull (fData_);
         Require (fData_ == data);
 #endif
@@ -891,7 +891,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline constexpr bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (fData_ == nullptr or rhs.fData_ == nullptr or fData_ == rhs.fData_); // fData_==null for end sentinel case
 #endif
         return fCurrent_ == rhs.fCurrent_;
@@ -909,7 +909,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const SkipList* data) const
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
 #endif
     }
@@ -937,11 +937,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept
     {
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
         Invariant_ ();
 #endif
     }
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant_ () const noexcept
     {

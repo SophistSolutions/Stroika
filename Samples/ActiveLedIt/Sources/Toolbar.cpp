@@ -463,7 +463,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_ButtonImage (IDispatch* v
 {
     try {
         fButtonImage = val;
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (fButtonImage.p == NULL and val != NULL) {
                 DumpSupportedInterfaces (val, "SUP INTERFACES FOR JSCRIPT IMAGE");
             }

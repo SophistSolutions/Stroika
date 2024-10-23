@@ -33,7 +33,8 @@ using namespace Stroika::Frameworks;
 
 namespace {
     double sTimeMultiplier_ =
-        (qDebug ? 0.2 : 1) * ((Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .1 : 1.0);
+        (qStroika_Foundation_Debug_AssertionsChecked ? 0.2 : 1) *
+        ((Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .1 : 1.0);
 }
 
 #if qHasFeature_GoogleTest

@@ -498,7 +498,7 @@ void ObjectVariantMapper::ResetToDefaultTypeRegistry ()
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
     auto i = fTypeMappingRegistry_.Lookup (forTypeInfo);
-    if constexpr (qDebug) {
+    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         if (not i.has_value ()) {
             DbgTrace ("ObjectVariantMapper::Lookup_ (forTypeInfo = {}) - UnRegistered Type!"_f, forTypeInfo); // failure almost always meand forgot to add dependent type earlier
         }

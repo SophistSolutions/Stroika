@@ -44,7 +44,7 @@ namespace Stroika::Frameworks::Led {
         virtual void CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) noexcept;
         virtual bool NeedToCoalesce (PartitionMarker* pm) noexcept;
 
-#if qDebug
+#if qStroika_Foundation_Debug_AssertionsChecked
     protected:
         virtual void Invariant_ () const override;
 #endif

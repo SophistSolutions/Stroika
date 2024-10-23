@@ -17,7 +17,7 @@
  *              as of Stroika v2.1d18
  *
  *      @todo   Make sure not actually generating code in release builds, but still generating enough code so
- *              we get linker erorr missing qDebug=1/0.
+ *              we get linker erorr missing qStroika_Foundation_Debug_AssertionsChecked=1/0.
  *
  */
 

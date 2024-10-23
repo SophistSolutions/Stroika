@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             switch (fInjectivityViolationPolicy_) {
                 case DataExchange::ValidationStrategy::eAssertion: {
-                    if constexpr (qDebug) {
+                    if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                         optional<DOMAIN_TYPE> back;
                         if (InverseLookup (newElt, &back)) {
                             Require (fDomainEqualsComparer_ (key, *back));
@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::AssertRepValidType_ () const
     {
-        if constexpr (qDebug) {
+        if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
         }
     }
