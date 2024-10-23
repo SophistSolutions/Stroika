@@ -103,7 +103,7 @@ $(ObjDir)ActiveLedIt.res:
 # without this the regsvr32 will fail; tried adding explict dllexport() in c++ code but couldnt find the right syntax to make it work
 LinkerArgs_ExtraSuffix += -DEF:Sources/ActiveLedIt.def
 
-$(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
+$(TARGETEXE):	$(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
