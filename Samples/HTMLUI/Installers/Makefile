@@ -1,4 +1,5 @@
-StroikaRoot:=$(abspath ../../../)/
+export TOP_ROOT:=$(abspath ../../../)/
+StroikaRoot:=$(TOP_ROOT)
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -17,7 +18,7 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/$(OUTDIR_NAME)/
+TARGET_OUT_DIR=			$(TOP_ROOT)Builds/$(CONFIGURATION)/$(OUTDIR_NAME)/
 
 BUILT_SERVICE_EXE				=	$(TARGET_OUT_DIR)Backend/HTMLUI${EXE_SUFFIX}
 BUILT_HTML_DIR					=	$(TARGET_OUT_DIR)html/
