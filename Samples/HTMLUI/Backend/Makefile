@@ -1,4 +1,5 @@
-StroikaRoot:=$(abspath ../../../)/
+export TOP_ROOT:=$(abspath ../../../)/
+StroikaRoot:=$(TOP_ROOT)
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,14 +9,14 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir			:=	$(StroikaRoot)Samples/HTMLUI/Backend/
-ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
+SrcDir			:=	$(TOP_ROOT)Samples/HTMLUI/Backend/
+ObjDir			:=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
 ResDir			:=	$(ObjDir)Resources/
 
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/)
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/Backend/
-TARGETHTMLDIR	:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/html/
+TARGETDIR		:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/Backend/
+TARGETHTMLDIR	:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/html/
 TARGETEXE		:=	$(TARGETDIR)HTMLUI${EXE_SUFFIX}
 
 
@@ -42,9 +43,9 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
-VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/AppVersion.h
+VERSION_FILE_OUT=$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/AppVersion.h
 $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
-	@mkdir -p $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI
+	@mkdir -p $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI
 	@$(StroikaRoot)ScriptsLib/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion
 
 $(Objs):	$(VERSION_FILE_OUT)

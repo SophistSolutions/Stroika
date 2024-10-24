@@ -4,16 +4,16 @@
 ###		@todo	use files to track various things so we can skip steps making this build faster - like if we did check
 ###				for preqequisites, or more importantly already built html
 
-
-StroikaRoot:=$(abspath ../../../)/
+export TOP_ROOT:=$(abspath ../../../)/
+StroikaRoot:=$(TOP_ROOT)
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/
+TARGETDIR		:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing $(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/html)/
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)/
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing $(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/html)/
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)/
 
 NEED_GNU_MAKE_ := 4.0.0
 OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VERSION) $(NEED_GNU_MAKE_))))
@@ -24,7 +24,7 @@ ifeq ($(CONFIGURATION),)
 	@echo "Cannot complete build without a configuraiton" && exit 1;
 endif
 ifeq ($(OK_GNU_MAKE_VERSION_),)
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(shell realpath --canonicalize-missing $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(shell realpath --canonicalize-missing $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)
 else
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
