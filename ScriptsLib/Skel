@@ -7,6 +7,7 @@
 #
 POSITIONAL_ARGS=()
 APP_ROOT=""
+TEMPLATE="Basic"
 APP_NAME=""
 STROIKA_SOURCE="git"
 STROIKA_SOURCE_GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
@@ -16,8 +17,9 @@ help_()
 {
   echo "Skel";
   echo "  --appRoot <DIR>         # top level directory generated (required - e.g. ../myApp)"
-  echo '  --appName <NAME>        # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}`)'
-  echo "  --stroikaSource (git)"
+  echo "  [--template T ]         # defaults to Basic, but also supported: HTMLUI"
+  echo '  [--appName <NAME>]      # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}`)'
+  echo "  [--stroikaSource (git)]"
   # todo add | download | symbolic-link, or maybe conan, but NYI --LGP 2023-10-24
 }
 parse_command_line_ () {
@@ -30,6 +32,11 @@ parse_command_line_ () {
         ;;
       --appName)
         APP_NAME="$2"
+        shift # past argument
+        shift # past value
+        ;;
+      --template)
+        TEMPLATE="$2"
         shift # past argument
         shift # past value
         ;;
@@ -81,15 +88,14 @@ mkTopLevelDir_()
 {
     echo "Making top level directory: $APP_ROOT"
     mkdir -p $APP_ROOT/$APP_NAME
-    cp $MY_PATH_/Shared/Skel-Templates/Makefile $APP_ROOT/
-    sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Makefile > $APP_ROOT/Makefile
+    sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/$TEMPLATE/Makefile > $APP_ROOT/Makefile
 }
 mkThirdPartyComponentsAndStroika_()
 {
     echo "Making $APP_ROOT/ThirdPartyComponents/Stroika"
     mkdir -p $APP_ROOT/ThirdPartyComponents/Stroika
-    cp $MY_PATH_/Shared/Skel-Templates/ThirdPartyComponents/Makefile $APP_ROOT/ThirdPartyComponents/
-    cp $MY_PATH_/Shared/Skel-Templates/ThirdPartyComponents/Stroika/Makefile $APP_ROOT/ThirdPartyComponents/Stroika/
+    cp $MY_PATH_/Shared/Skel-Templates/Common/ThirdPartyComponents/Makefile $APP_ROOT/ThirdPartyComponents/
+    cp $MY_PATH_/Shared/Skel-Templates/Common/ThirdPartyComponents/Stroika/Makefile $APP_ROOT/ThirdPartyComponents/Stroika/
     if [[ "$STROIKA_SOURCE" == "git" ]] ; then
       echo "Initializing git repository and adding Stroika submodule"
       (cd $APP_ROOT && git init)
@@ -105,19 +111,19 @@ mkMyApp_()
     $APP_ROOT/Workspaces/VSCode $APP_ROOT/$APP_NAME/Sources \
     $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022 \
     $APP_ROOT/.vscode
-  cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/VERSION
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Makefile > $APP_ROOT/$APP_NAME/Makefile
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Sources/Main.cpp > $APP_ROOT/$APP_NAME/Sources/Main.cpp
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Sources/Makefile > $APP_ROOT/$APP_NAME/Sources/Makefile
+  cp $MY_PATH_/Shared/Skel-Templates/Common/VERSION $APP_ROOT/VERSION
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Makefile > $APP_ROOT/$APP_NAME/Makefile
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Sources/Main.cpp > $APP_ROOT/$APP_NAME/Sources/Main.cpp
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Sources/Makefile > $APP_ROOT/$APP_NAME/Sources/Makefile
 
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Workspaces/VisualStudio.Net-2022/MyApp.sln > $APP_ROOT/Workspaces/VisualStudio.Net-2022/$APP_NAME.sln
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Workspaces/VSCode/MyApp.code-workspace > $APP_ROOT/Workspaces/VSCode/$APP_NAME.code-workspace
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/Workspaces/VisualStudio.Net-2022/MyApp.sln > $APP_ROOT/Workspaces/VisualStudio.Net-2022/$APP_NAME.sln
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/Workspaces/VSCode/MyApp.code-workspace > $APP_ROOT/Workspaces/VSCode/$APP_NAME.code-workspace
 
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj.filters
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj.filters
 
-  cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/
-  cp $MY_PATH_/Shared/Skel-Templates/ReadMe.md $APP_ROOT/
+  cp $MY_PATH_/Shared/Skel-Templates/Common/VERSION $APP_ROOT/
+  cp $MY_PATH_/Shared/Skel-Templates/Common/ReadMe.md $APP_ROOT/
 
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
@@ -125,10 +131,10 @@ mkMyApp_()
   
   cp $StroikaRoot/.gitignore $APP_ROOT
 
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/settings.json > $APP_ROOT/.vscode/settings.json
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/tasks.json > $APP_ROOT/.vscode/tasks.json
-  cp $MY_PATH_/Shared/Skel-Templates/.vscode/.gitignore $APP_ROOT/.vscode/
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/.vscode/settings.json > $APP_ROOT/.vscode/settings.json
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/.vscode/tasks.json > $APP_ROOT/.vscode/tasks.json
+  cp $MY_PATH_/Shared/Skel-Templates/Common/.vscode/.gitignore $APP_ROOT/.vscode/
   cp $StroikaRoot.config-default.json $APP_ROOT/.config.json
 }
 
@@ -143,6 +149,7 @@ OUTDIR=$APP_ROOT/"Skel-Output-$APP_NAME.txt"
 echo "Building skeletal app:"
 echo "  directory: $APP_ROOT"
 echo "  app name:  $APP_NAME"
+echo "  template:  $TEMPLATE"
 echo "  log:       $OUTDIR"
 
 mkdir -p $APP_ROOT
