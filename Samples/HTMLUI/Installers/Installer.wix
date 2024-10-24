@@ -31,8 +31,8 @@
   <?define Win64 = "no" ?>
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
   <?endif ?>
-  <?define serviceEXESourcePath = "..\..\..\IntermediateFiles\$(var.CONFIGURATION)\Samples-HTMLUI\WIX_TMP\HTMLUI.exe" ?>
-  <?define serviceDLLsPath = "..\..\..\IntermediateFiles\$(var.CONFIGURATION)\Samples-HTMLUI\WIX_TMP\" ?>
+  <?define serviceEXESourcePath = "HTMLUI.exe" ?>
+  <?define serviceDLLsPath = "." ?>
   <?define serviceName = "Stroika-Sample-HTMLUI Service" ?>
 
   <!--

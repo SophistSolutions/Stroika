@@ -28,10 +28,11 @@ done
 echo "Patching for HTMLUI Template::Sources..."
 for i in ${APP_ROOT}/Installers/*.wix ${APP_ROOT}/QuasarBasedHTMLApp/src/pages/*.vue ${APP_ROOT}/Backend/Sources/*.{h,inl,cpp};
 do
-    echo PATCHING HTMLUI NAME in: $i
+    #echo PATCHING HTMLUI NAME in: $i
     cat $i |
     sed "s/Samples-HTMLUI/${APP_NAME}/g" |
     sed "s/Samples\/HTMLUI/${APP_NAME}/g" |
+    sed "s/Stroika-Sample-HTMLUI/${APP_NAME}/g" |
     sed "s/Sample HTMLUI/${APP_NAME}/g" |
     sed "s/HTMLUI/${APP_NAME}/g" > $i.tmp
     mv  $i.tmp $i
