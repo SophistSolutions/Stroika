@@ -40,18 +40,18 @@
 #endif
 
 // DEPRECATED NAMES - BACKWARD COMPAT FROM PRE v3.0d11 - until v3.0a1 --LGP 2024-10-23
-#define qHas_Syslog qStroika_HasComponent_syslog
-#define qHasLibrary_ODBC qStroika_HasComponent_ODBC
-#define qHasFeature_sqlite qStroika_HasComponent_sqlite
-#define qHasFeature_OpenSSL qStroika_HasComponent_OpenSSL
-#define qHasFeature_Xerces qStroika_HasComponent_xerces
 #define qHasFeature_ATLMFC qStroika_HasComponent_ATLMFC
 #define qHasFeature_boost qStroika_HasComponent_boost
-#define qHasFeature_LibCurl qStroika_HasComponent_libcurl
 #define qHasFeature_fmtlib qStroika_HasComponent_fmtlib
 #define qHasFeature_GoogleTest qStroika_HasComponent_googletest
+#define qHasFeature_LibCurl qStroika_HasComponent_libcurl
 #define qHasFeature_LZMA qStroika_HasComponent_LZMA
-#define qHasFeature_WinHTTP qStroika_HasComponent_WinHTTP
 #define qHasFeature_libxml2 qStroika_HasComponent_libxml2
+#define qHasLibrary_ODBC qStroika_HasComponent_ODBC
+#define qHasFeature_OpenSSL qStroika_HasComponent_OpenSSL
+#define qHasFeature_sqlite qStroika_HasComponent_sqlite
+#define qHas_Syslog qStroika_HasComponent_syslog
+#define qHasFeature_WinHTTP qStroika_HasComponent_WinHTTP
+#define qHasFeature_Xerces qStroika_HasComponent_xerces
 
 #endif /*_Stroika_Foundation_Common_Private_ThirdPartyComponents_h_*/
