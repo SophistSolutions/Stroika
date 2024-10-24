@@ -55,7 +55,7 @@ parse_command_line_ () {
         TEMPLATE="$2"
         shift # past argument
         shift # past value
-        if [[ ! -e "$TEMPLATE/Extras.sh" ]] ; then
+        if [[ ! -e "$MY_PATH_/Shared/Skel-Templates/$TEMPLATE/Extras.sh" ]] ; then
           echo "Unknown template $TEMPLATE"
           help_;
           exit 1
@@ -117,16 +117,12 @@ mkMyApp_()
     $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022 \
     $APP_ROOT/.vscode
   cp $MY_PATH_/Shared/Skel-Templates/Common/VERSION $APP_ROOT/VERSION
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Makefile > $APP_ROOT/$APP_NAME/Makefile
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Sources/Main.cpp > $APP_ROOT/$APP_NAME/Sources/Main.cpp
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Sources/Makefile > $APP_ROOT/$APP_NAME/Sources/Makefile
 
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/Workspaces/VisualStudio.Net-2022/MyApp.sln > $APP_ROOT/Workspaces/VisualStudio.Net-2022/$APP_NAME.sln
+  mkdir -p $APP_ROOT/Workspaces/VSCode
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/Workspaces/VSCode/MyApp.code-workspace > $APP_ROOT/Workspaces/VSCode/$APP_NAME.code-workspace
 
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj
-  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj.filters
-
+  (export MY_PATH_ APP_ROOT APP_NAME TEMPLATE && $MY_PATH_/Shared/Skel-Templates/$TEMPLATE/Extras.sh)
+  
   cp $MY_PATH_/Shared/Skel-Templates/Common/VERSION $APP_ROOT/
   cp $MY_PATH_/Shared/Skel-Templates/Common/ReadMe.md $APP_ROOT/
 
