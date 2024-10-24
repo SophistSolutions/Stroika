@@ -13,6 +13,22 @@ STROIKA_SOURCE="git"
 STROIKA_SOURCE_GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
 STROIKA_SOURCE_GIT_STROIKA_BRANCH=`git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'v3-Release'`
 
+get_script_dir_ () {
+     #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
+     SOURCE="${BASH_SOURCE[0]}"
+     # While $SOURCE is a symlink, resolve it
+     while [ -h "$SOURCE" ]; do
+          DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+          SOURCE="$( readlink "$SOURCE" )"
+          # If $SOURCE was a relative symlink (so no "/" as prefix, need to resolve it relative to the symlink base directory
+          [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+     done
+     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+     echo "$DIR"
+}
+MY_PATH_=$(get_script_dir_)
+StroikaRoot=${MY_PATH_}/../
+
 help_()
 {
   echo "Skel";
@@ -39,6 +55,11 @@ parse_command_line_ () {
         TEMPLATE="$2"
         shift # past argument
         shift # past value
+        if [[ ! -e "$TEMPLATE/Extras.sh" ]] ; then
+          echo "Unknown template $TEMPLATE"
+          help_;
+          exit 1
+        fi
         ;;
       --stroikaSource)
         echo "NYI - only support git for now... $1"
@@ -67,22 +88,6 @@ parse_command_line_ () {
     APP_NAME=`basename ${APP_ROOT}`
   fi
 }
-
-get_script_dir_ () {
-     #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
-     SOURCE="${BASH_SOURCE[0]}"
-     # While $SOURCE is a symlink, resolve it
-     while [ -h "$SOURCE" ]; do
-          DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-          SOURCE="$( readlink "$SOURCE" )"
-          # If $SOURCE was a relative symlink (so no "/" as prefix, need to resolve it relative to the symlink base directory
-          [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
-     done
-     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-     echo "$DIR"
-}
-MY_PATH_=$(get_script_dir_)
-StroikaRoot=${MY_PATH_}/../
 
 mkTopLevelDir_()
 {
