@@ -121,17 +121,17 @@ mkMyApp_()
   mkdir -p $APP_ROOT/Workspaces/VSCode
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/Workspaces/VSCode/MyApp.code-workspace > $APP_ROOT/Workspaces/VSCode/$APP_NAME.code-workspace
 
-  (export MY_PATH_ APP_ROOT APP_NAME TEMPLATE && $MY_PATH_/Shared/Skel-Templates/$TEMPLATE/Extras.sh)
-  
   cp $MY_PATH_/Shared/Skel-Templates/Common/VERSION $APP_ROOT/
   cp $MY_PATH_/Shared/Skel-Templates/Common/ReadMe.md $APP_ROOT/
+  cp $StroikaRoot/.gitignore $APP_ROOT
 
+  (export MY_PATH_ APP_ROOT APP_NAME TEMPLATE && $MY_PATH_/Shared/Skel-Templates/$TEMPLATE/Extras.sh)
+
+  echo "Genericly adjusting $APP_ROOT contents for skel produced app..."
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
   (cd $APP_ROOT; $StroikaRoot/ScriptsLib/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
   
-  cp $StroikaRoot/.gitignore $APP_ROOT
-
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/.vscode/settings.json > $APP_ROOT/.vscode/settings.json
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/.vscode/tasks.json > $APP_ROOT/.vscode/tasks.json
@@ -153,6 +153,10 @@ echo "  app name:  $APP_NAME"
 echo "  template:  $TEMPLATE"
 echo "  log:       $OUTDIR"
 
+if [[ -e $APP_ROOT ]] ; then
+  echo "FAILED: Delete appRoot ($APP_ROOT) so not accidentally clobbered"
+  exit 1
+fi
 mkdir -p $APP_ROOT
 mkTopLevelDir_ >> $OUTDIR 2>&1
 mkThirdPartyComponentsAndStroika_ >> $OUTDIR 2>&1
