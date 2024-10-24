@@ -110,11 +110,11 @@ mkThirdPartyComponentsAndStroika_()
 }
 mkMyApp_()
 {
-  echo "Making $APP_ROOT/{Workspaces, .vscode, $APP_NAME} etc..."
-  mkdir -p $APP_ROOT/Workspaces/VisualStudio.Net-2022 \
+  echo "Making $APP_ROOT/{Workspaces, .vscode} etc..."
+  mkdir -p  \
     $APP_ROOT/Workspaces/VisualStudio.Net \
-    $APP_ROOT/Workspaces/VSCode $APP_ROOT/$APP_NAME/Sources \
-    $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022 \
+    $APP_ROOT/Workspaces/VSCode \
+    $APP_ROOT/$APP_NAME/Sources \
     $APP_ROOT/.vscode
   cp $MY_PATH_/Shared/Skel-Templates/Common/VERSION $APP_ROOT/VERSION
 

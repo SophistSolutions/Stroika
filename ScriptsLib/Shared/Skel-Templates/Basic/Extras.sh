@@ -6,6 +6,7 @@ sed s/\$\{APP_NAME\}/${APP_NAME}/g < $TEMPLATE_SRC_DIR/MyApp/Makefile > $APP_ROO
 sed s/\$\{APP_NAME\}/${APP_NAME}/g < $TEMPLATE_SRC_DIR/MyApp/Sources/Main.cpp > $APP_ROOT/$APP_NAME/Sources/Main.cpp
 sed s/\$\{APP_NAME\}/${APP_NAME}/g < $TEMPLATE_SRC_DIR/MyApp/Sources/Makefile > $APP_ROOT/$APP_NAME/Sources/Makefile
 
+mkdir -p $APP_ROOT/Workspaces/VisualStudio.Net-2022/ $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/
 sed s/\$\{APP_NAME\}/${APP_NAME}/g < $TEMPLATE_SRC_DIR/Workspaces/VisualStudio.Net-2022/MyApp.sln > $APP_ROOT/Workspaces/VisualStudio.Net-2022/$APP_NAME.sln
 
 sed s/\$\{APP_NAME\}/${APP_NAME}/g < $TEMPLATE_SRC_DIR/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj
