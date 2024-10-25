@@ -10,67 +10,23 @@ especially those they need to be aware of when upgrading.
 ### DRAFT UPGRADE NOTES FOR 3.0d11
 
 
+#MAJOR ITEMS
+Merged Foundation::Configuration into Foundation::Common
 
 #if 0
-commit 0ca1ec8d92f1cc61660e00496a1ba676abe4992d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 24 09:45:33 2024 -0400
 
-    start 3.0d11x
-
-commit 1f5d453795daf0648ecc1c432deacd3b7e4c8993
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 24 23:20:12 2024 -0400
-
-    comments
-
-commit d2dee31f7c65e49c7d79daa15291b525c33aefab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 08:27:36 2024 -0400
-
-    use concept same_as in a few places in place of older is_same
-
-commit 862ff60136192447291d3ecf9589d74a3a25b68b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 11:59:17 2024 -0400
-
-    Merged Foundation::Configuration into Foundation::Common, as having two separate names was slightly confusing (often unclear which something logically belonged under) - **not backward compatible** - but mostly backward compatible/through deprecation
-
-commit 740f5dceb75dcb3446cce31ebad95c8582b32a79
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 12:50:36 2024 -0400
-
-    fixed typo
-
-commit b947b266b5bbec0e0d8549f8b9b5f3c4634dcf87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 12:51:10 2024 -0400
-
+- use concept same_as in a few places in place of older is_same
+- Merged Foundation::Configuration into Foundation::Common, as having two separate names was slightly confusing (often unclear which something logically belonged under) - **not backward compatible** - but mostly backward compatible/through deprecation
     deprecate Configuration folder/namespace and update tests/samples to reflect
 
-commit 7510d0fde312f74b2054660e36929914fc458894
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 26 08:49:32 2024 -0400
+ -   ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
 
-    cosmetic; and renamed IsIterableOf to   IIterableOfTo
+- Iterable
+ - renamed IsIterableOf to   IIterableOfTo
 
-commit 243f792dc22df018ee0ba2f51c539d846211a70f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 26 09:09:45 2024 -0400
+-    use IIterableOfTo<> in Iterable CTOR
 
-    ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
-
-commit 265f66060d1744e5d0376a825aaf04f2a48290b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 26 09:55:15 2024 -0400
-
-    use IIterableOfTo<> in Iterable CTOR
-
-commit 9f20db216094e883b82907c74a35fd565d07ff6f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 26 10:33:54 2024 -0400
-
-    iterable docs, cleanups: more concepots (like on As()), and Map() methods
+ -    iterable docs, cleanups: more concepots (like on As()), and Map() methods
 
 commit 8ca22c27856c9ad95c0f48110a4d4babc5782659
 Author: Lewis Pringle <lewis@sophists.com>
