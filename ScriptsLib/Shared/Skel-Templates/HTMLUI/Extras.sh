@@ -26,7 +26,7 @@ done
 
 # Patch HTMLUI => {APP_NAME} in various source files
 echo "Patching for HTMLUI Template::Sources..."
-for i in ${APP_ROOT}/Installers/*.wix ${APP_ROOT}/QuasarBasedHTMLApp/src/pages/*.vue ${APP_ROOT}/Backend/Sources/*.{h,inl,cpp};
+for i in ${APP_ROOT}/Installers/*.wix ${APP_ROOT}/QuasarBasedHTMLApp/src/{pages,layouts}/*.vue ${APP_ROOT}/Backend/Sources/*.{h,inl,cpp};
 do
     #echo PATCHING HTMLUI NAME in: $i
     cat $i |
