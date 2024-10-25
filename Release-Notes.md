@@ -10,6 +10,1392 @@ especially those they need to be aware of when upgrading.
 ### DRAFT UPGRADE NOTES FOR 3.0d11
 
 
+
+#if 0
+commit 0ca1ec8d92f1cc61660e00496a1ba676abe4992d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 24 09:45:33 2024 -0400
+
+    start 3.0d11x
+
+commit 1f5d453795daf0648ecc1c432deacd3b7e4c8993
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 24 23:20:12 2024 -0400
+
+    comments
+
+commit d2dee31f7c65e49c7d79daa15291b525c33aefab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 25 08:27:36 2024 -0400
+
+    use concept same_as in a few places in place of older is_same
+
+commit 862ff60136192447291d3ecf9589d74a3a25b68b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 25 11:59:17 2024 -0400
+
+    Merged Foundation::Configuration into Foundation::Common, as having two separate names was slightly confusing (often unclear which something logically belonged under) - **not backward compatible** - but mostly backward compatible/through deprecation
+
+commit 740f5dceb75dcb3446cce31ebad95c8582b32a79
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 25 12:50:36 2024 -0400
+
+    fixed typo
+
+commit b947b266b5bbec0e0d8549f8b9b5f3c4634dcf87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 25 12:51:10 2024 -0400
+
+    deprecate Configuration folder/namespace and update tests/samples to reflect
+
+commit 7510d0fde312f74b2054660e36929914fc458894
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 08:49:32 2024 -0400
+
+    cosmetic; and renamed IsIterableOf to   IIterableOfTo
+
+commit 243f792dc22df018ee0ba2f51c539d846211a70f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 09:09:45 2024 -0400
+
+    ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
+
+commit 265f66060d1744e5d0376a825aaf04f2a48290b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 09:55:15 2024 -0400
+
+    use IIterableOfTo<> in Iterable CTOR
+
+commit 9f20db216094e883b82907c74a35fd565d07ff6f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 10:33:54 2024 -0400
+
+    iterable docs, cleanups: more concepots (like on As()), and Map() methods
+
+commit 8ca22c27856c9ad95c0f48110a4d4babc5782659
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 10:52:32 2024 -0400
+
+    Minor tweaks to SystemConfiguration code
+
+commit e9f0faec350bf7aa713289aafa0dbbba4afcef24
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 11:23:40 2024 -0400
+
+    ToString/formatter support for shared_ptr<> - incomplete
+
+commit 69d2b325566f78a03291bf8bb49215c33ec0899e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 11:24:29 2024 -0400
+
+    fixed typo
+
+commit 89a55d8808c54e9b642f1561ee53bc4302a52e6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 11:31:25 2024 -0400
+
+    Added ISharedPtr concept
+
+commit 98db0b5c2feb14e9dfb56ce7ba3de26555c02d7f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 11:42:45 2024 -0400
+
+    more attempts to debug issue with shared_ptr format on clang compilers
+
+commit 80b7a364862550ef7b60516ec1b78e632235923d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 12:09:26 2024 -0400
+
+    more hacks to workaround bugs with clang support for formatter / shared_ptr(not sure whats going on)
+
+commit 7e7002deb3ecd958125ad9c3fa78bc77648ebeba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 12:10:31 2024 -0400
+
+    fixed typo
+
+commit 787ec449d7d0d96f776aca0ced3704b60ed44f43
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 12:16:09 2024 -0400
+
+    qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for new ISharedPtr
+
+commit e3272c0fabcee174566c0b226d7c4344702b0ba5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 12:18:27 2024 -0400
+
+    fixed typo
+
+commit 370ec6a660653d345847e74e8cb92b64d5b281b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 12:20:07 2024 -0400
+
+    fixed typo
+
+commit 4d1c9468dd6823370ad059b71d2a4df3c5ce8c8f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 12:23:23 2024 -0400
+
+    maybe got shared_ptr formatting working with clang
+
+commit 123afe0648b557955651b7deede995706594a41b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 12:28:31 2024 -0400
+
+    see if shared_ptr fix now works on clang/formatter
+
+commit 6554a4240014bbfa29ce84b8be5d3de2f97993a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 12:37:07 2024 -0400
+
+    tweak docs
+
+commit cebd139fb40112b14099f74cf694d740e8a29ac2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 14:22:38 2024 -0400
+
+    deprecated file Foundation/Configuration/Version.h
+
+commit 750ac4f03db32f150b81d73627cdf907d4c1a3e2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 14:23:09 2024 -0400
+
+    Execution/CommandLine::GetAppName
+
+commit 8d82df9be583f79457589362ecc526b7d00c8840
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 14:23:40 2024 -0400
+
+    update scripts for Foundation/Configuration => Common change
+
+commit 0a0fae37d1eed93364eac3920e2b697186aead77
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Sep 26 14:25:48 2024 -0400
+
+    fixed typo
+
+commit 1d8dd8a619b148af394eb0e462294c662204917d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 15:24:31 2024 -0400
+
+    CommandLine GetAppName and GenerateUsage overloads
+
+commit ee372bdb1ec7edb3be9a0a4d6804e1dd8ca00211
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 15:24:57 2024 -0400
+
+    clenaup Usage generation in samples
+
+commit 1b1df4b10a08a41f86fa9164ce52fbb6a51ed08a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 15:28:10 2024 -0400
+
+    early draft HTMLUI sample
+
+commit fbd3a76f9943d96ea9bf1b220da436666710b1c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 17:06:55 2024 -0400
+
+    fixed typo; and added HTMLUI sample to makefile
+
+commit 82fa5a8c0451431866dd7b01904a6b07ace43d06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 20:07:29 2024 -0400
+
+    cosmetic
+
+commit fed65405e46e68cdef4a90ea6e30bb83a80f987a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 26 20:08:36 2024 -0400
+
+    progress on Samples/HTMLUI/
+
+commit 2ec1316a0851773d5c6fb97ca627459462fa1f15
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 27 08:58:54 2024 -0400
+
+    progress on Samples/HTMLUI
+
+commit 887f002a09126834dad340cfdb00e2bc01b4379d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 27 21:27:02 2024 -0400
+
+    fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
+
+commit 797bbbdf652cfb7240e2e5d700a5638e7c90893d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 27 21:27:32 2024 -0400
+
+    workspace
+
+commit bbb586923d4d4494a1ff051c8f13ab76041b33a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 27 21:28:29 2024 -0400
+
+    explicitly expose DefaultFatalErrorHandler and added new Execution::DefaultLoggingFatalErrorHandler
+
+commit 8c7399885308751760b60c7f0f4fb9aa6c07fc4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 28 08:18:32 2024 -0400
+
+    progress on Samples/HTMLUI/Backend/
+
+commit 1f592c48bc57e491c6cce1d4b9738a970b0e0df1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 28 09:11:52 2024 -0400
+
+    Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler etc... and Sample HTMLUI cleanups
+
+commit d4c6d1c43c04167ddb7afa692d13ef86e8a29157
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 28 09:43:47 2024 -0400
+
+    minor cleanup on SetStandardCrashHandlerSignals etc and samples
+
+commit c8963b69bd41e4b531ad54b7dc5418ba2f5da733
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 28 10:00:42 2024 -0400
+
+    more Samples/HTMLUI cleanups
+
+commit b7d3cf1b2a7ce14e20004ea9cca1062a4d2d59ee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 28 11:32:28 2024 -0400
+
+    cosmeitc; and Library/Sources/Stroika/Foundation/Execution/CommandLine generateusage cleanups; and Samples/HTMLUI/Backend/ cleanups - now clean except for wrong wsapi implemented
+
+commit 8006375c9dbc505e5be71ede6ed783469b28aac3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 28 21:35:33 2024 -0400
+
+    Comment
+
+commit 772ebd1c34d9522dd139651f8fbcba28a9d6e036
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 28 21:57:04 2024 -0400
+
+    more cleanups of Samples/HTMLUI
+
+commit 008339e953a45913a63eeee1643f460ceec4824b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 29 07:28:17 2024 -0400
+
+    Progress on Sample HTMLUI
+
+commit bd87ff1fd045d0173c80dc273db5d2d77383de7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 29 10:39:49 2024 -0400
+
+    comments
+
+commit 0b4f8febc02a6c93e47c433ff1b841c435cf3e89
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 29 10:40:27 2024 -0400
+
+    Samples/HTMLUI cleanups
+
+commit b73b9f2ea616753658216a1d5364d9083d371d02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 29 10:59:16 2024 -0400
+
+    minor fixes to /Samples/HTMLUI
+
+commit 485241deb7fbd9abddc56db7a69f99d024ae0ef3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 1 01:43:03 2024 -0400
+
+    Sample HTMLUI now has QuasarBasedHTMLApp
+
+commit 3c6238551bbab45d55b2561ed9aedb9aa2b8bbba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 1 02:07:33 2024 -0400
+
+    Samples/HTMLUI mostly makefile for html
+
+commit e6ebba2a68707f013d46bc7765aa419cbe9dad1f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 4 03:47:40 2024 -0400
+
+    polish htmlui stroika sample
+
+commit f45606cfa97b7eb3f1fb377079db80ac0cfa5511
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 4 11:57:23 2024 -0400
+
+    minor cleanups HTMLUI sample
+
+commit 2725916a68a493c89b6fe1e40e18ac1e59c709ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 4 13:15:17 2024 -0400
+
+    maybe fix quasar check in HTMLUI app
+
+commit 4a90aee74c1ee147698bf53d5de0a63b21233da1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 4 13:23:28 2024 -0400
+
+    cleanup sample htmlui openapi doc
+
+commit 79634a24a4c376398f5ec25495c0748adea22616
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 4 13:57:00 2024 -0400
+
+    assure STDOUT_FILENO etc defines always available and use in Stroika samples directly
+
+commit 12c463e226f7f3066221111eb2f80afb903129d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 5 00:34:43 2024 -0700
+
+    makefile cleanups Samples-HTMLUI
+
+commit 8410285c32ad11d3a487a92853aa786cecca3568
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 5 03:41:54 2024 -0400
+
+    Minor
+
+commit 2052de1b4be91076e415bf164ca7aabe64aee7a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 6 09:15:24 2024 +0200
+
+    docker container builds: for windows arg to instlal quasar and pass in makefile, and unix just install it on regressiontest configs
+
+commit 090cc217861c3380b0f8ea67350d6b38f93371b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 6 03:29:27 2024 -0400
+
+    skip instlal nodejs on ubuntu 23.10
+
+commit 2ee006daae195555d072a37969046b51387741ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 6 03:36:08 2024 -0400
+
+    skip instlal nodejs on ubuntu 22.04
+
+commit c94d819f9801aebf24def7aa0ec9bc99691b773a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 6 03:42:44 2024 -0400
+
+    skip instlal npm quasar on ubyntn 24.04
+
+commit 15f1d0640c43aba52b20be84a95546642fba1776
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 7 08:52:06 2024 +0200
+
+    fixed install of npm /quasar for ubuntu 24.04
+
+commit dcf246ce906cf27a05767bcfa7cedb8676a83434
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 7 08:56:19 2024 +0200
+
+    hopefully fixed DockerBuildContainers/Ubuntu2204-RegressionTests/Dockerfile for quasar
+
+commit 86969f14fb521424d5c9557e06fd9f05d17d325b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 7 09:07:30 2024 +0200
+
+    another try at docker container support for building with npm ubuntu 22 and 24
+
+commit bd6955fa58047a24f94ef452f8fa420a845b6c37
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 7 09:49:09 2024 +0200
+
+    minor/cosmetic
+
+commit 4f4f8ab6d374d62794a585d72a65a023fdc4244c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 7 10:19:38 2024 +0200
+
+    Early draft of samples/htmlui installers
+
+commit 68fac2b4465befb4e9d0150c0b02dafff9f83545
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 7 10:22:21 2024 +0200
+
+    sample docs
+
+commit 852530ed9278fb1757239c227b937842cc69993e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 7 10:52:01 2024 +0200
+
+    sample htmlui progress on installers
+
+commit d5938641f431d2fafdd1ffe6c7e3430b5a15006c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 8 09:06:51 2024 +0200
+
+    progress on htmlui windows installer
+
+commit f15e1399acdd83f799aa5c27b2575e0734e4b1a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 8 21:00:04 2024 +0200
+
+    Comments
+
+commit 9358129222fa0418bb4fe17cfdbdfb484582f539
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 8 21:01:08 2024 +0200
+
+    A little progress on Stroika-Sample-HTMLUI-Service
+
+commit e5158ae6e1d2c23b426732578a1598488d1b008a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 8 21:14:49 2024 +0200
+
+    Cosmetic
+
+commit 4d778d37f71ba41cf67881edeb6a3edbba2c85dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 11 11:04:08 2024 +0200
+
+    cosmetic and minor docs cleanups
+
+commit 0e4cc61ab466b35176037236b04e116a22ec8a31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 11 11:04:46 2024 +0200
+
+    Redo Set::ContainsAll/Any using Iterable Any/All methods
+
+commit 0beb9c854a441111aceca7f7a437122cc2a46bbd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 11 11:05:17 2024 +0200
+
+    Minor tweak to Iterable<T>::Any ():
+
+commit 113afedbebbaa2588fab6052efd6ba57b0d42966
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 11 11:06:31 2024 +0200
+
+    Cosmetic
+
+commit b70ac004a41dd2e6370da24d48e485b239c0303f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 11 11:07:16 2024 +0200
+
+    Minor celanups to Samples/HTMLUI/Backend/Sources/Main.cpp
+
+commit 90c18073667714de585e412dec96b7ca0bfb3c17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 11 14:36:23 2024 +0200
+
+    got installer mostly workging for HTMLUI windows service
+
+commit 84aa4f259a85c01d44e8895d647c5f593649cda9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 11 17:49:01 2024 +0200
+
+    Minor tweaks to Foundation/Execution/Logger
+
+commit 91f8924bfb57b1d358ae2d2f2d643d5af2efa676
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 11 18:33:43 2024 +0200
+
+    more progress on Samples/HTMLUI
+
+commit 52ba7572267f4511aff021660a328262c8d9fb02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 12 19:36:33 2024 +0200
+
+    workaround issue with ln -0 --directory on macis:
+
+commit bad19ee40265857f3398ec651c7a5eac5efeb27e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 12 20:14:23 2024 +0200
+
+    cosmetic
+
+commit 3e1ed9379ab358f5ebb60988281f387bd973c988
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 12 21:03:58 2024 +0200
+
+    debug commit backend makefile html ln
+
+commit ac5ade74b68def22597656d490295fdd0c7ab846
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 13 21:13:37 2024 +0200
+
+    HTMLUI/Backend/Makefile
+
+commit f3c0cc8af3050a5411c081c0bf4d9ab3464bc932
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 13 21:58:39 2024 +0200
+
+    Comments
+
+commit e0fc80581a3d28bab901d5ba5e29d1fe14748060
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 15 15:55:38 2024 +0200
+
+    progress on wix installer makefile heat support for dlls
+
+commit 1734c83c5bff52f2182c02f07e9b6b503db8733d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 15 16:16:28 2024 +0200
+
+    redid component stragtegy for dll components for sample htmlui wix installer
+
+commit 8d0acc04cdd6528a701bb06800010bc092dba557
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 15 16:43:23 2024 +0200
+
+    got installers and arbitrary dlls working with sample HTMLUI installer (windows only - so WIX installer done I think)
+
+commit dd3f8a743bf9a005ccd79d06267c3f20d18b066a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 15 17:54:01 2024 +0200
+
+    work on unix installers for sample htmlui - and enabled build of installers by default for sample htmlui
+
+commit 2548490d4e2488ba3e8efcf302577152bbedde05
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 15 18:08:44 2024 +0200
+
+    minor fixes to unix installer for htmlui sample;
+
+commit adb89fdc6309679fc8022072da132683e49141e6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 15 18:52:12 2024 +0200
+
+    try to get new htmlui installer mkaefiles working on more platforms
+
+commit 93722d93e28dd0e07d5964c47b7a0de2b43e03ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 15 19:22:48 2024 +0200
+
+    add Installer-Build.Out to archived files in github actions
+
+commit 78b077c2b9eb943fb9d04f719aa9c869706c1d58
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 13:28:55 2024 +0200
+
+    debug github action
+
+commit aae0a90e6c0340de7833895f94a059a191a3f7bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 14:15:01 2024 +0200
+
+    debug github action
+
+commit e0ed361e4dd2cf007d8eca90ae2988c34aa1c5cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 19:37:43 2024 +0200
+
+    fixed rpm build in HTMLUI sample
+
+commit 78427a79f6a7ec870689992fb2b276fcbab0b510
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 19:43:09 2024 +0200
+
+    github workflow - cleanup some warnings
+
+commit 83739905c37e7337b8279ddb91aaecda315c98f4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 19:59:16 2024 +0200
+
+    draft docker support for Ubuntu 24.10 - replacing support for Ubuntu 23.10
+
+commit d5a2e1c725743bd2234d2e3582e3b49ed443e8ee
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Oct 16 14:48:23 2024 -0400
+
+    more cleanups of recent chagne - replace ubuntu 23.10 with 24.10 in tests, docker etc
+
+commit e5f373c4e68d69289f0886226b4633b1b6240473
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 20:53:09 2024 +0200
+
+    windows docker VS_17_11_5
+
+commit d4c8bd4ce5444f06fc2ebce1a7c6470d74b5d02f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Oct 16 15:03:52 2024 -0400
+
+    docker container tweaks dev containers
+
+commit 65ec8a6cbb948b9bd6996b6cd4d4f29ce2bf4801
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 17:51:03 2024 -0400
+
+    build docker containers on github action updated for 23.10 => 24.10 switch
+
+commit bace797f161ab8b32141ee9a6df1797964102910
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 18:15:59 2024 -0400
+
+    tweaked output from building installers
+
+commit 4305ef679dd4ab3882b0104c35a74e7a713c59c7
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Oct 16 18:28:31 2024 -0400
+
+    Sample htmlui makefile tweaks
+
+commit e11b8771e5c12236f62126db37d5b705f8ec3fc1
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Oct 16 18:29:14 2024 -0400
+
+    Sample htmlui makefile tweaks
+
+commit 3fd578ce4c3e53ac87a65908f6138dec77e8e8fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 21:56:09 2024 -0400
+
+    noticed we really require msvc version 17.9 or later, so require that for now as minimum
+
+commit 014676a31a03a92ae775a61ba8989c8c5a21c33d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 16 22:03:10 2024 -0400
+
+    fixed small bug in Samples/HTMLUI/Backend/Makefile
+
+commit 34eed5637c0c1c02e7ca345e4fd974858c57875a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 17 07:07:31 2024 -0400
+
+    docs
+
+commit 84e3e30a43a2b2bc1d6a869c7141e7963e2216d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 08:10:37 2024 -0400
+
+    Minor String::CTOR cleanup, and allowed losing bug define qCompilerAndStdLib_templateConstructorSpecialization_Buggy
+
+commit ac144f5e68b074362a634a8497bb6dd981057a04
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 17 10:01:07 2024 -0400
+
+    experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+
+commit c4d3bcc6284e974abda91356f5f8cc69cebd6304
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 17 10:07:59 2024 -0400
+
+    experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+
+commit a2f03fbef7db361191943a1e88246b1fba884ea8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 17 10:10:37 2024 -0400
+
+    experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+
+commit 9ba5f7af1596075c127aa89bbd4c7954e63e4771
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 17 10:11:30 2024 -0400
+
+    experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+
+commit eb990bb4c4b87e758209c39c78ba4aa5d348481b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 17 10:12:41 2024 -0400
+
+    experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+
+commit 021cd39b6e68c200d198a4fec21f66978b226fe2
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 17 10:14:04 2024 -0400
+
+    experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+
+commit 5c466a4b748d3cb603ed23a63571401e884e5f20
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 17 10:15:46 2024 -0400
+
+    experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+
+commit 7590c215867a542c5c550e478ae5758a6288fd88
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 10:33:05 2024 -0400
+
+    add to regression-test-configurations for windows - ./configure Debug-Xerces
+
+commit b94c406ff1165a80bb956a3d30cb4012897c8c98
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 11:15:00 2024 -0400
+
+    Xerces - slight cleanup - use xerces namespace instead of xerces_3_2 (so can work with 33); and moved XERCES_CPP_NAMESPACE_USE to cpp file
+
+commit c2c155e010a4d82537e048d205259e65f9fc441f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 11:16:30 2024 -0400
+
+    makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
+
+commit 78918148375d0a20d32620dc4a87c5db8cffd64c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 11:23:25 2024 -0400
+
+    RegressionTests script uses regression-test-configurations instead of default-configurations by default
+
+commit 6fbe3782ef703c848838794dba053c7d01f01575
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 13:05:11 2024 -0400
+
+    cosmetic
+
+commit 276e2b19f45f92121e4bd83e4b664ea2533be1ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 13:12:21 2024 -0400
+
+    better message about missing quasar
+
+commit b382f94003e8ef706bf59f5c30cd36a6f476adef
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 13:33:02 2024 -0400
+
+    a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
+
+commit e8765ce35b8ffffbeb8e86c896552b744241dfd2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 15:02:13 2024 -0400
+
+    ficed typo
+
+commit 039c31428bead047125adee656b587d5acbbd3bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 17 15:27:43 2024 -0400
+
+    fixed some HTMLUI Makefile issues on MacOS
+
+commit ec072234aef30faadd8998c3bbf8e5ac642f0eab
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 15:29:17 2024 -0400
+
+    cosmetic
+
+commit fc758d7a0fd99d2c1894adf7aeab3c69326a7c75
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 15:34:54 2024 -0400
+
+    fixed makefile typo
+
+commit 9bddd41c7ce6f887f424b7a500fe851f3b1530c2
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 15:36:32 2024 -0400
+
+    cosmetic makefile tweak
+
+commit bd2c8ea97e42b1b0189fa4e82f829dc8f8f7c7cf
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 15:59:40 2024 -0400
+
+    minor tweak to qCompilerAndStdLib_formattable_of_tuple_Buggy def
+
+commit bb9b3b7c2ad0aa91d04477fe5848392d5bb98d11
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 18:46:41 2024 -0400
+
+    tweak  qCompiler_IUseToStringFormatterForFormatter_Buggy IUseToStringFormatterForFormatter_ clang++ BWA for when using newer libstdc++
+
+commit 4ae7c46b55db2bc52ac2a44cd5112da89f01dc22
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 18:58:09 2024 -0400
+
+    simplify deprecated define impl - qCompilerAndStdLib_to_chars_FP_Buggy
+
+commit 398f75711338ec97fa26b9ae410d10e2b08b7f9d
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 19:10:32 2024 -0400
+
+    draft HTMLUI docker build script/dockerfile/container
+
+commit 72afeb0d5eebd245c622aeee9f28848ce85d3230
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 20:43:43 2024 -0400
+
+    progress on HTMLUI sample Dockerfile
+
+commit 22e5854fe61f5b57e3701e63a52b223e9429b047
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Oct 17 20:53:45 2024 -0400
+
+    github actions: added build using clang++17 for ubuntu 24.04; and started switch to configurations for 24.10 (from 23.10)
+
+commit b0ebad1791ae239ea16227871e065de55786f83b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 18 08:23:47 2024 -0400
+
+    Silence warning
+
+commit 3ff7b986be71cb7c27d4352655c2d9082cc6c7bc
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 09:47:00 2024 -0400
+
+    got basics of docker container build/run support working with sample HTMLUI
+
+commit 1334ef8c9c201925c258c7421597f43d60a70e08
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 09:51:16 2024 -0400
+
+    minor tweaks to .github action configs and scripts/output names
+
+commit f67e7adafea83dc34b20816d467b117ee0cc5151
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 09:53:06 2024 -0400
+
+    minor tweaks to github actions so better output
+
+commit b498ea20ae3a64d171a37993380dd6a2bb484168
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 10:50:53 2024 -0400
+
+    tested and documented running the HTMLUI container and browsing resulting webpage from host
+
+commit c48c683eee6ae38969259341dd225400f2ab0b31
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 11:07:07 2024 -0400
+
+    htmlui app - added crhone debugger entry to launch.json; and fixed default port# if no /config)
+
+commit 977df1199dd3ed1cc56bab0557fcb0bb1925de95
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 13:15:01 2024 -0400
+
+    tweak some names in github workflow
+
+commit 7e84805b143fb5a59c12422783c91c36ed975515
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 13:16:17 2024 -0400
+
+    a few more minir fixes to new HTMLUI sample - esp html code
+
+commit 5292317489964f9df53e77bb96595c4825d69f76
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 13:21:22 2024 -0400
+
+    docs
+
+commit 3ca466a4cbd9dda699f6aee870baa56bacd12d41
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 13:27:23 2024 -0400
+
+    fiddling with logging settings for htmlui sample app/docker
+
+commit 76dc34269f96edaee9f8c9768676e435cff3c2dc
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 16:14:40 2024 -0400
+
+    HTMLUI docker cleanups (sample)
+
+commit f777dbd448fd171142af57ccda0c44fb1eb3f11d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 18 17:18:56 2024 -0400
+
+    **not backward compat** changes to Linguistics::MessageUtilities - fixed typo in name, made namespace, uses sThe pattern etc
+
+commit f6c923c9b737df7f0f243d27484590f67fab4771
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 18 17:19:12 2024 -0400
+
+    cosmetic
+
+commit f3996178cc1957786a2f2f21c04ae3f1cff8bf80
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 18 17:34:55 2024 -0400
+
+    mostly cosmetic/docs
+
+commit 774d881458ddd8292392f707af860ec81a844106
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 17:52:35 2024 -0400
+
+    use Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation to imporove messages in DataExchange/OptionsFile.cpp
+
+commit c88549e5c19dae8de855f11f72a2c21154409499
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 17:52:57 2024 -0400
+
+    a few more small cleanups to HTMLUI sample
+
+commit 9d646006bd230cb1ac98f19f548204764437eaae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 18 20:26:37 2024 -0400
+
+    minor tweaks to Linguistics/MessageUtilities and fixed typo
+
+commit 0a6e37d95ac8272a4043e490fcc6c8b2910c8d8d
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 21:49:08 2024 -0400
+
+    htmlui: makefile cleanups and fixwed typo in dockerfile
+
+commit 485b61ad530c363ad89e34e01da3791cdaef7e14
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Oct 18 22:39:39 2024 -0400
+
+    in dockerfile - RUN echo -e leaves -e in output - use /bin/echo -e
+
+commit 3d843b4849db58a61290b3da87efd39459eeb328
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 19 09:56:47 2024 -0400
+
+    cosmetic
+
+commit 3028b08c237f6185f75e055a53db257091b15832
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Oct 19 10:10:18 2024 -0400
+
+    Silence warnings
+
+commit ece0da85806214ea075c428be075bc99bcb56d8b
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Oct 19 10:17:24 2024 -0400
+
+    re-enable clang++16 with libc++ on ubuntu 24 and added to .github actions workflow
+
+commit 9e1574ebafacdf23f15c365c4405813dd0e0a42e
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Oct 19 10:20:17 2024 -0400
+
+    fixed message typo
+
+commit 0bafcc6853cc6f2a655f28ab01cb625645ab458a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 19 11:06:51 2024 -0400
+
+    AssertExternallySynchronizedMutex  docs cleanups, and WriteContext now uses unique_lock instead of lock_guard so movable, and changed static asserts to reflect that
+
+commit c500133fa85cf80e42c032d1b3879792b88f287c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 19 11:33:32 2024 -0400
+
+    **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
+
+commit 08dfead308db44cf6e40daa34078832a7f2a593e
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Oct 19 11:59:47 2024 -0400
+
+    start support for clang++19 _LIBCPP_VERSION = 190101
+
+commit 8ceab308eff8693d98634cc28f704034b1d83930
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Oct 19 16:30:28 2024 -0400
+
+    dont use basic_string<xmlChar> cuz not defined if xmlChar = unsinged char (https://en.cppreference.com/w/cpp/string/basic_string) - caught by clang++19
+
+commit 8b81bbc6fda64f038de93497250a563b01336cba
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Oct 19 16:30:59 2024 -0400
+
+    must define namespace std before using to avoid warnings (clang++19)
+
+commit 62211eee91da36714700df5463c1e7a16eedc110
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Oct 19 16:31:23 2024 -0400
+
+    qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy broken for clang++19
+
+commit 64549e6b0000e2bbb846c21c95d4d6057763f47c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 19 16:37:54 2024 -0400
+
+    Cosmetic
+
+commit f776d46260576a70ef793a582698b129003908a9
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 07:39:39 2024 -0400
+
+    draft clang++-19 bug define support
+
+commit 53dc8ab3b5f2ca1abdec5caf42e68f7ac48c9083
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 07:45:07 2024 -0400
+
+    github action - tweak run github actions on ubuntu 24.10
+
+commit a7e2d30dd120ddb7bd521922029dfe0a7f49b3a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 20 08:47:54 2024 -0400
+
+    changed def of qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy to assure not set for _LIBCPP_VERSION
+
+commit b4f114b410ce7ec79fa3b799eb808946d65d372e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 20 08:50:45 2024 -0400
+
+    fixed typo in .github workflow file
+
+commit 14a6474c7aa7a434cf9e1d64151f3396790c96d7
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 09:02:50 2024 -0400
+
+    tiny bit of docs on Foundation/Debug/Visualizations and added VariantValue
+
+commit d5385cd2cb46f7a9587c1f88ae310e2dcd9b9034
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 09:03:26 2024 -0400
+
+    other overload of InlineBuffer<T, BUF_SIZE>::BufferAsT_ ()  constexpr
+
+commit 9cffdd59d9f73693bb9a2e09b6a676172cd72776
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 09:08:02 2024 -0400
+
+    tweak ubuntu 24.10 github workflow configs due to not fully working yet ostly
+
+commit cf54cecaa44c90eba62dabcbd81ff9ec06ff11a2
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 12:17:46 2024 -0400
+
+    qCompilerAndStdLib_AssumeWarningSpamming_Buggy BWA
+
+commit e06604adf63f02105ee113bff7b71efd75a10f8b
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 12:18:15 2024 -0400
+
+    use #if qDebug in one place if constexpr (qDebug) illegal
+
+commit 439731c393751373b335e5b05fb5ff92bd46a495
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 20 12:18:38 2024 -0400
+
+    Cosmetic
+
+commit 0fdbd2a180ba2c455985ec8f4f0b3381b218edaa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 20 15:51:27 2024 -0400
+
+    cosmetic, and Debug::Visualizations cleanups
+
+commit d46436a8fe4ce7ff5c215591f00b905625fdb9e0
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 16:04:32 2024 -0400
+
+    fix Precision::GetEffectivePrecision for _LIBCPP_VERSION < 199999
+
+commit de46d0e06b5711917b9142e91defc8c2b2687a98
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 16:05:03 2024 -0400
+
+    qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
+
+commit a22d6e098ffe97ae9b1b48e4a024ffae87da4811
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 16:35:14 2024 -0400
+
+    experiment with using macos-15 from github actions
+
+commit 137281526329dba82bbfd1bd83c533556b771fa0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 20 18:42:22 2024 -0400
+
+    experimental fix to Precision::GetEffectivePrecision for max_digits10 - still need to document better and cleanup if works
+
+commit a27057f1330e2678a86d7af1da78f1ed3e83d9b2
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 18:52:20 2024 -0400
+
+    github action typo
+
+commit fd62cec22d86db3ac96d478b72a3b271ba3286ff
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 18:52:47 2024 -0400
+
+    Cosmetic
+
+commit dc21b5476b07c137f320c8cad6a675c7ba3ad296
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 18:53:00 2024 -0400
+
+    cosmetic
+
+commit b1ad9005882269d69f193341d4cb31e462f7ba41
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 18:53:29 2024 -0400
+
+    ifdefs to avoid warning
+
+commit 0f81e0accf4fe2645e83adcf35119dc2002b7a11
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 19:04:07 2024 -0400
+
+    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-19
+
+commit 6de968375e4a7f3dbb8568fad699bcca6cab570a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 21:58:08 2024 -0400
+
+    try xcode 16
+
+commit 10597dcdf9ef92197a8ed327bb84aa0e3ef212aa
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Oct 20 22:04:39 2024 -0400
+
+    tmp disable test MacOS-15-XCode-16.0-Debug github actions til I get working on my own pc
+
+commit b3a86d98bb06a2ea2b0a2cf4fe43c63cfd370568
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Oct 21 08:09:01 2024 -0400
+
+    fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for clang++-19
+
+commit c0e4b543b9e0290d58860969b3780a53f5b2cbff
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Oct 21 08:09:32 2024 -0400
+
+    fixed minor issue with regtest
+
+commit 6a13d235722bd1595640e9591f3a2a22f582c962
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 10:13:37 2024 -0400
+
+    configure: print macOSversion to configfile; and skipASANSanCuzBroken on darwin
+
+commit 121278bcd50f4e5adb3ceb330696c776e50366f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 10:28:15 2024 -0400
+
+    github actions with build with xcode 15.4 instead of 15.3
+
+commit cc9589d69c679ac0ce51fad8350a3edbd5d4d025
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 10:29:11 2024 -0400
+
+    fixed qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy define for xcode 16
+
+commit 59063e3ede95bc361a1731c1bfd090e7c3eac237
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 11:13:18 2024 -0400
+
+    Supported bug defines for xcode 16
+
+commit 12ae569a093605205d8dbc0f26b30b59f8f24d46
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 11:13:42 2024 -0400
+
+    githyb actions - added MacOS-15-XCode-16.0 test run each time
+
+commit f2a6ca404f1b644a0deaff74bc935424ef5c289e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 11:20:31 2024 -0400
+
+    cleanup apparently no longer needed BWAs in curl Makefile
+
+commit e893992cd3e3e9065a7941f218727c6512f72a06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 11:24:24 2024 -0400
+
+    docs
+
+commit 8fb7cb29199ed6b2830388ad667f08e04393cb49
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 11:59:03 2024 -0400
+
+    regtest XCode16
+
+commit 2f304a7d86e41553d6d0c699193e27d1dd6ebaee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 11:59:29 2024 -0400
+
+    cosmetic
+
+commit d4673a04e50b8433201f600d6f5fd840c791fa80
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 13:09:36 2024 -0400
+
+    fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for xcode16
+
+commit 5ed93e0a4ed4b15fcb9b5b4f8a752cae922550b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 13:18:47 2024 -0400
+
+    tweak regtest
+
+commit 345680df97a6378573268a236c57e9009277b104
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 13:39:13 2024 -0400
+
+    lose Common/Private/Defaults_Characters_StringUtils_.h Common/Private/Defaults_Memory_Common_.h - defines either no longer used or moved
+
+commit 0b2d47756da3b5fbddee1862b38a4b6cdd480112
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 14:35:35 2024 -0400
+
+    many more cleanups to Library/Sources/Stroika/Foundation/Common/Private/ .. losing several more files from there, and adjusting StroikaConfig.h accordingly, and renaming some and in some cases moving defines to tother more appropriate/modular files
+
+commit 8a5d2d8ef5bb108568082236594b0d7cee7da424
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 15:10:25 2024 -0400
+
+    more cleanups of  Library/Sources/Stroika/Foundation/Common/Private renames and deletions of old files and moving defines around (so far no renames of defines)
+
+commit 2a3881c8bccc92083a5670d2a292f947ff69017c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 15:20:12 2024 -0400
+
+    cleanups to recent Foundation/Common/Private changes
+
+commit 2f63e2213850c224bd21d0267bb7a724d0823f72
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 21 15:26:11 2024 -0400
+
+    Cosmetic
+
+commit a20b3e476bfed0b0e4d9277df66bd49046aabd4b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 22 09:30:13 2024 -0400
+
+    Moved Common(was Configuration)/Private/Platform_.h (was something else) to Common/Platform and renamed qPlatform_Windows to qStroika_Foundation_Common_Platform_Windows etc - and deprecating old names
+
+commit bc21f2c1ec5a16c4d7eaf614b024cd7fcc1f997a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Oct 22 11:16:40 2024 -0400
+
+    qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
+
+commit 9395780f9a86ef1eeb65325d8cf24f699f1a1b47
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Oct 22 11:16:49 2024 -0400
+
+    comments
+
+commit 4f13093ce554c5a5a4e5e62439234787cd1c5cea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 22 11:22:56 2024 -0400
+
+    .github workflow cleanups
+
+commit e5de9fcc000ad4256e34176b3203f7d6cd2c1a9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 22 11:25:53 2024 -0400
+
+    cosmeitc
+
+commit be63e679a1de1bf634606af9c81a76f182f5c585
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Oct 22 20:24:23 2024 -0400
+
+    github actions: build with g++-13 too
+
+commit 9d66cd453a65afe278fd680d872d9c45a03286d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 22 20:35:01 2024 -0400
+
+    sample htmlui makefile tweak to not build html if not needed (must fix for macos)
+
+commit cf771cc2a115189d249f6c6508ca80d70f76a0d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 22 20:53:47 2024 -0400
+
+    fix activeledit sample makefile so doesnt needlessly rebuild dll
+
+commit 8eb24aa505aaba653a398bac69350c6669a10df4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 22 22:22:29 2024 -0400
+
+    try save space on ubuntu-24.10-clang++-19 .github action test
+
+commit f0ef8a079d5315193d40b309b7db9fc6c1ed8cbc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 23 07:55:35 2024 -0400
+
+    again tweak github action for running out of space
+
+commit d0d1d7f43cdc259265f990dea613745d73bd5bc8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 23 08:37:55 2024 -0400
+
+    renamed qDebug -> qStroika_Foundation_Debug_AssertionsChecked ; name change **not backward compatible** upgrade carefully
+
+commit 6e4033122d4bafcc5d34a455320a5816f79a6819
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 23 15:57:23 2024 -0400
+
+    **not backward compatible** - renamed qHasFeature_ XXX to similar names qStroika_HasComponent_fmtlib - many
+
+commit d0969556df1a90cf00a9a85abae7d45f72916be7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 23 15:57:50 2024 -0400
+
+    another probably out of space issue correction for github actions
+
+commit 1466b662d84b4b73dd382bf037a782f8cbfbc1ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 23 22:03:01 2024 -0400
+
+    cosmetic
+
+commit 74f47336e39b98ddbe819b48b03366c30ccbdca8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 08:40:38 2024 -0400
+
+    -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
+
+commit 1c3067ab0d3d5d72fb287eb81505786248bf4a29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 10:47:46 2024 -0400
+
+    tweaks to Samples-HTMLUI to support new Skel cloning feature
+
+commit d8aee6f78a25ef2b77feb8daca777883d3536946
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 11:36:17 2024 -0400
+
+    progress refactoring Skel script to support new templates
+
+commit c501f057bcb14072de247edfc25f1fc1053af035
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 11:57:56 2024 -0400
+
+    progress on Skel script code
+
+commit aa71c1b9400833005424095bcffb28e4396364cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 12:47:16 2024 -0400
+
+    more progress on template support for Skel script
+
+commit 8e830fe9f865c4ddee691dfb078c0e50002215ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 13:09:54 2024 -0400
+
+    progress on Skel refactoring to support templates; maybe done with Basic - and working on HTMLUI
+
+commit e281dcf37cfaab091e6a15b1001edd58d06f6a61
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 13:54:21 2024 -0400
+
+    more progress on SKEL support for HTMLUI
+
+commit 173b47e01e03105e5368b06c868f316851ea2a6d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 17:23:54 2024 -0400
+
+    more progress on HTMLUI Skel template support
+
+commit b61093b13e353d1fa1df7128fc6472bec82dfffd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 18:04:49 2024 -0400
+
+    more progress on Skel support for HTMLUI template
+
+commit 62a1145211f0f3c98c04ce34cffca7c065519f52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 19:58:05 2024 -0400
+
+    fixed last major problem with htmlui windows skel support (still must todo unix)
+
+commit 194d64990a5af7c639744adec1ec8e7394f30c6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 20:17:17 2024 -0400
+
+    Minor tweaks to skel htmlui support
+
+commit d3d98ad8a063b86f69f405017f53786b28a50fff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 24 20:21:23 2024 -0400
+
+    start 3.0d11 release
+
+commit 5426e077fda1e0245065cae796ad7b81be0f79c0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 25 11:32:55 2024 -0400
+
+    more progress on Skel support - simplifications of new template code and further improvements to HTMLUI template (installer/docker - testing - but draft working)
+
+#endif
+
+
+
  ./ScriptsLib/Skel --appRoot ../NEWH --appName HearHE --template HTMLUI
 
 
