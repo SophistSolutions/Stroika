@@ -33,9 +33,9 @@ help_()
 {
   echo "Skel";
   echo "  --appRoot <DIR>         # top level directory generated (required - e.g. ../myApp)"
-  echo "  [--template T ]         # defaults to Basic, but also supported: HTMLUI"
-  echo '  [--appName <NAME>]      # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}`)'
-  echo "  [--stroikaSource (git)]"
+  echo "  [--template T ]         # defaults to Basic, but supported: [Basic, HTMLUI]"
+  echo '  [--appName <NAME>]      # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}` no spaces in name, and no punct except _)'
+  echo "  [--stroikaSource git]"
   # todo add | download | symbolic-link, or maybe conan, but NYI --LGP 2023-10-24
 }
 parse_command_line_ () {
@@ -92,8 +92,7 @@ parse_command_line_ () {
 mkTopLevelDir_()
 {
     echo "Making top level directory: $APP_ROOT"
-    mkdir -p $APP_ROOT/$APP_NAME
-    sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/$TEMPLATE/Makefile > $APP_ROOT/Makefile
+    mkdir -p $APP_ROOT
 }
 mkThirdPartyComponentsAndStroika_()
 {
@@ -114,9 +113,7 @@ mkMyApp_()
   mkdir -p  \
     $APP_ROOT/Workspaces/VisualStudio.Net \
     $APP_ROOT/Workspaces/VSCode \
-    $APP_ROOT/$APP_NAME/Sources \
     $APP_ROOT/.vscode
-  cp $MY_PATH_/Shared/Skel-Templates/Common/VERSION $APP_ROOT/VERSION
 
   mkdir -p $APP_ROOT/Workspaces/VSCode
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Common/Workspaces/VSCode/MyApp.code-workspace > $APP_ROOT/Workspaces/VSCode/$APP_NAME.code-workspace
@@ -126,7 +123,9 @@ mkMyApp_()
   cp $StroikaRoot/.gitignore $APP_ROOT
 
   (export MY_PATH_ APP_ROOT APP_NAME TEMPLATE && $MY_PATH_/Shared/Skel-Templates/$TEMPLATE/Extras.sh)
-
+}
+mkFinish_()
+{
   echo "Genericly adjusting $APP_ROOT contents for skel produced app..."
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
@@ -145,22 +144,23 @@ mkMyApp_()
 
 parse_command_line_ $*;
 
-OUTDIR=$APP_ROOT/"Skel-Output-$APP_NAME.txt"
+OUTLOG=$APP_ROOT/"Skel-Output-$APP_NAME.txt"
 
 echo "Building skeletal app:"
 echo "  directory: $APP_ROOT"
 echo "  app name:  $APP_NAME"
 echo "  template:  $TEMPLATE"
-echo "  log:       $OUTDIR"
+echo "  log:       $OUTLOG"
 
 if [[ -e $APP_ROOT ]] ; then
   echo "FAILED: Delete appRoot ($APP_ROOT) so not accidentally clobbered"
   exit 1
 fi
 mkdir -p $APP_ROOT
-mkTopLevelDir_ >> $OUTDIR 2>&1
-mkThirdPartyComponentsAndStroika_ >> $OUTDIR 2>&1
-mkMyApp_ >> $OUTDIR 2>&1
+mkTopLevelDir_ >> $OUTLOG 2>&1
+mkThirdPartyComponentsAndStroika_ >> $OUTLOG 2>&1
+mkMyApp_ >> $OUTLOG 2>&1
+mkFinish_ >> $OUTLOG 2>&1
 
 echo "  done"
 echo "Suggested next step:"

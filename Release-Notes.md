@@ -10,6 +10,9 @@ especially those they need to be aware of when upgrading.
 ### DRAFT UPGRADE NOTES FOR 3.0d11
 
 
+ ./ScriptsLib/Skel --appRoot ../NEWH --appName HearHE --template HTMLUI
+
+
 // DEPRECATED NAME (to be removed in Stroika v3.0a1 - deprecated since Stroika v3.0d11)
     #define qDebug qStroika_Foundation_Debug_AssertionsChecked
 
