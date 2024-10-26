@@ -13,8 +13,9 @@ especially those they need to be aware of when upgrading.
 #MAJOR ITEMS
 Merged Foundation::Configuration into Foundation::Common
 
-#if 0
 
+
+-----
 
 - Support XCode 16
 - Support Clang++-19 on Ubuntu 24.10 (both new) and lose 23.10 ubuntu support
@@ -27,86 +28,89 @@ Merged Foundation::Configuration into Foundation::Common
 
    
 
-
- - ALL - Across Library
+- Stroika Library
+  - Across Library
    - a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
-
-
-- Characters
-  - ToString/formatter support for shared_ptr<> - incomplete
-  
-- Common
-  -  **not backward compatible** - renamed qHasFeature_ XXX to similar names qStroika_HasComponent_fmtlib - many
-   -   ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
-
-
-
-   - many more cleanups to Library/Sources/Stroika/Foundation/Common/Private/ ..
-     losing several more files from there, and adjusting StroikaConfig.h accordingly, and renaming some 
-     and in some cases moving defines to tother more appropriate/modular files
-
-    - more cleanups of  Library/Sources/Stroika/Foundation/Common/Private renames and deletions of old files and moving defines around (so far no renames of defines)
-
-   - Moved Common(was Configuration)/Private/Platform_.h (was something else) to Common/Platform and renamed qPlatform_Windows to qStroika_Foundation_Common_Platform_Windows etc - and deprecating old names
-
-  -  Added ISharedPtr concept
-
-    qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for new ISharedPtr
-    lose Common/Private/Defaults_Characters_StringUtils_.h Common/Private/Defaults_Memory_Common_.h - defines either no longer used or moved
-
-- Containers::Set
-  - Redo Set::ContainsAll/Any using Iterable Any/All methods
-
-- Characters::String
-    Minor String::CTOR cleanup, and allowed losing bug define qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-
-- DataExcahnge
-  - DataExchange::OptionsFile
-      use Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation to imporove messages in DataExchange/OptionsFile.cpp
-  - XML
-    - Xerces - slight cleanup - use xerces namespace instead of xerces_3_2 (so can work with 33); and moved XERCES_CPP_NAMESPACE_USE to cpp file
-
-
-- Debug
-  - renamed qDebug -> qStroika_Foundation_Debug_AssertionsChecked ; name change **not backward compatible** upgrade carefully
-  
-    - AssertExternallySynchronizedMutex
-      - docs cleanups, 
-      - WriteContext now uses unique_lock instead of lock_guard so movable, and changed static asserts to reflect that
-
-- Debug::Fatal
-    explicitly expose DefaultFatalErrorHandler and added new Execution::DefaultLoggingFatalErrorHandler
-Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
-   minor cleanup on SetStandardCrashHandlerSignals etc and samples
-   - Visualizations
-    -    tiny bit of docs on Foundation/Debug/Visualizations and added VariantValue
-    - cosmetic, and Debug::Visualizations cleanups
-
-- Execution
-  - Execution::CommandLine
-    + added method  Execution/CommandLine::GetAppName
-    + CommandLine GetAppName and GenerateUsage overloads
-    - clenaup Usage generation in samples
-
-  - Execution::Logging
-      Minor tweaks to Foundation/Execution/Logger
-
- - IO::FileSystem::FileStream
-
-    assure STDOUT_FILENO etc defines always available and use in Stroika samples directly
-
-- Linguistics::MessageUtilities
-    **not backward compat** changes to Linguistics::MessageUtilities - fixed typo in name, made namespace, uses sThe pattern etc
-- Memory
-    other overload of InlineBuffer<T, BUF_SIZE>::BufferAsT_ ()  constexpr
-
-- Traversal
-  - Iterable
-    - renamed IsIterableOf to   IIterableOfTo
-    - use IIterableOfTo<> in Iterable CTOR
-    - iterable docs, cleanups: more concepots (like on As()), and Map() methods
-    - Minor tweak to Iterable<T>::Any ():
-    - **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
+  - Foundation
+    - Characters
+      - FloatConversion
+        - fix to Precision::GetEffectivePrecision for max_digits10 - still need to document better and cleanup if works
+      - ToString/formatter support for shared_ptr<> - incomplete
+    - Common
+      - **not backward compatible** - renamed qHasFeature_ XXX to similar names qStroika_HasComponent_fmtlib - many
+      - ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
+      - many more cleanups to Library/Sources/Stroika/Foundation/Common/Private/ ..
+      - losing several more files from there, and adjusting StroikaConfig.h accordingly, and renaming some 
+        and in some cases moving defines to tother more appropriate/modular files
+      - more cleanups of  Library/Sources/Stroika/Foundation/Common/Private renames and deletions of old files and moving defines around (so far no renames of defines)
+      - Moved Common(was Configuration)/Private/Platform_.h (was something else) to Common/Platform and 
+        renamed qPlatform_Windows to qStroika_Foundation_Common_Platform_Windows etc - and deprecating old names
+      - Added ISharedPtr concept
+      - Private
+        - Compile Bug Defines
+          Supported bug defines for xcode 16
+          noticed we really require msvc version 17.9 or later, so require that for now as minimum
+          minor tweak to qCompilerAndStdLib_formattable_of_tuple_Buggy def
+          tweak  qCompiler_IUseToStringFormatterForFormatter_Buggy IUseToStringFormatterForFormatter_ clang++ BWA for when using newer libstdc++
+          simplify deprecated define impl - qCompilerAndStdLib_to_chars_FP_Buggy
+          start support for clang++19 _LIBCPP_VERSION = 190101
+          dont use basic_string<xmlChar> cuz not defined if xmlChar = unsinged char (https://en.cppreference.com/w/cpp/string/basic_string) - caught by clang++19
+          must define namespace std before using to avoid warnings (clang++19)
+          qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy broken for clang++19
+          draft clang++-19 bug define support
+          changed def of qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy to assure not set for _LIBCPP_VERSION
+          qCompilerAndStdLib_AssumeWarningSpamming_Buggy BWA
+          qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-19
+          fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for clang++-19
+          fixed qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy define for xcode 16
+          qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
+          qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
+          fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for xcode16
+          qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for new ISharedPtr
+        - lose Common/Private/Defaults_Characters_StringUtils_.h Common/Private/Defaults_Memory_Common_.h - defines either no longer used or moved
+      - Characters
+        - String
+          - Minor String::CTOR cleanup, and allowed losing bug define qCompilerAndStdLib_templateConstructorSpecialization_Buggy
+      - Containers
+        - Set
+          - Redo Set::ContainsAll/Any using Iterable Any/All methods
+      - DataExcahnge
+        - OptionsFile
+          - use Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation to imporove messages in DataExchange/OptionsFile.cpp
+        - XML
+          - Xerces - slight cleanup - use xerces namespace instead of xerces_3_2 (so can work with 33); and moved XERCES_CPP_NAMESPACE_USE to cpp file
+      - Debug
+        - renamed qDebug -> qStroika_Foundation_Debug_AssertionsChecked ; name change **not backward compatible** upgrade carefully
+        - AssertExternallySynchronizedMutex
+          - docs cleanups, 
+          - WriteContext now uses unique_lock instead of lock_guard so movable, and changed static asserts to reflect that
+        - Fatal
+          - explicitly expose DefaultFatalErrorHandler and added new Execution::DefaultLoggingFatalErrorHandler; DefaultLoggingCrashSignalHandler
+        - minor cleanup on SetStandardCrashHandlerSignals etc and samples
+        - Visualizations
+          -    tiny bit of docs on Foundation/Debug/Visualizations and added VariantValue
+          - cosmetic, and Debug::Visualizations cleanups
+      - Execution
+        - CommandLine
+          - added method  Execution/CommandLine::GetAppName
+          - CommandLine GetAppName and GenerateUsage overloads
+          - clenaup Usage generation in samples
+        - Logging
+            Minor tweaks to Foundation/Execution/Logger
+    - IO
+      - FileSystem
+        - FileStream: assure STDOUT_FILENO etc defines always available and use in Stroika samples directly
+    - Linguistics
+      - MessageUtilities: **not backward compat** changes to Linguistics::MessageUtilities - fixed typo in name, made namespace, uses sThe pattern etc
+    - Memory
+      - other overload of InlineBuffer<T, BUF_SIZE>::BufferAsT_ ()  constexpr
+    - Traversal
+      - Iterable
+        - renamed IsIterableOf to   IIterableOfTo
+        - use IIterableOfTo<> in Iterable CTOR
+        - iterable docs, cleanups: more concepots (like on As()), and Map() methods
+        - Minor tweak to Iterable<T>::Any ():
+        - **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
 
 
 
@@ -178,35 +182,20 @@ SharedMakeVariables-Default.mk:
     tweak ubuntu 24.10 github workflow configs due to not fully working yet ostly
     github actions: added build using clang++17 for ubuntu 24.04; and started switch to configurations for 24.10 (from 23.10)
 
-- Compile Bug Defines
-    noticed we really require msvc version 17.9 or later, so require that for now as minimum
-    minor tweak to qCompilerAndStdLib_formattable_of_tuple_Buggy def
-    tweak  qCompiler_IUseToStringFormatterForFormatter_Buggy IUseToStringFormatterForFormatter_ clang++ BWA for when using newer libstdc++
-    simplify deprecated define impl - qCompilerAndStdLib_to_chars_FP_Buggy
-    start support for clang++19 _LIBCPP_VERSION = 190101
-    dont use basic_string<xmlChar> cuz not defined if xmlChar = unsinged char (https://en.cppreference.com/w/cpp/string/basic_string) - caught by clang++19
-    must define namespace std before using to avoid warnings (clang++19)
 
-    qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy broken for clang++19
-    draft clang++-19 bug define support
-    changed def of qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy to assure not set for _LIBCPP_VERSION
-    qCompilerAndStdLib_AssumeWarningSpamming_Buggy BWA
-    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-19
-    fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for clang++-19
-    fixed qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy define for xcode 16
-    qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
-    qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
-    fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for xcode16
+- Scripts
+  - configure
+    - configure: print macOSversion to configfile; and skipASANSanCuzBroken on darwin
+    - -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
+  - ScriptsLib
+    -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
 
-- ScriptsLib
-  -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+    - Config related scripts (and makefile stuff)
+      - add to regression-test-configurations for windows - ./configure Debug-Xerces
 
-  - Config related scripts (and makefile stuff)
-    - add to regression-test-configurations for windows - ./configure Debug-Xerces
-
-  - RegressionTests
-    - RegressionTests script uses regression-test-configurations instead of default-configurations by default
-    - makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
+    - RegressionTests
+      - RegressionTests script uses regression-test-configurations instead of default-configurations by default
+      - makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
 
 - Supported Compiler Configs:
   - re-enable clang++16 with libc++ on ubuntu 24 and added to .github actions workflow
@@ -217,37 +206,6 @@ SharedMakeVariables-Default.mk:
 
 
 
-commit 137281526329dba82bbfd1bd83c533556b771fa0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 20 18:42:22 2024 -0400
-
-    experimental fix to Precision::GetEffectivePrecision for max_digits10 - still need to document better and cleanup if works
-
-commit 10597dcdf9ef92197a8ed327bb84aa0e3ef212aa
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 22:04:39 2024 -0400
-
-    tmp disable test MacOS-15-XCode-16.0-Debug github actions til I get working on my own pc
-
-commit 6a13d235722bd1595640e9591f3a2a22f582c962
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 10:13:37 2024 -0400
-
-    configure: print macOSversion to configfile; and skipASANSanCuzBroken on darwin
-
-commit 59063e3ede95bc361a1731c1bfd090e7c3eac237
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 11:13:18 2024 -0400
-
-    Supported bug defines for xcode 16
-
-commit 74f47336e39b98ddbe819b48b03366c30ccbdca8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 24 08:40:38 2024 -0400
-
-    -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
-
-#endif
 
 
 
