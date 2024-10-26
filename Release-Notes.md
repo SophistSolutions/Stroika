@@ -21,22 +21,23 @@ Merged Foundation::Configuration into Foundation::Common
 - Support Clang++-19 on Ubuntu 24.10 (both new) and lose 23.10 ubuntu support
 
 
-- use concept same_as in a few places in place of older is_same
-- Merged Foundation::Configuration into Foundation::Common, as having two separate names was slightly confusing (often unclear which something logically belonged under) - **not backward compatible** - but mostly backward compatible/through deprecation
-    update scripts for Foundation/Configuration => Common change
-    deprecate Configuration folder/namespace and update tests/samples to reflect
 
    
 
 - Stroika Library
   - Across Library
-   - a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
+    - a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
+    - use concept same_as in a few places in place of older is_same
   - Foundation
     - Characters
       - FloatConversion
         - fix to Precision::GetEffectivePrecision for max_digits10 - still need to document better and cleanup if works
       - ToString/formatter support for shared_ptr<> - incomplete
     - Common
+      - Merged Foundation::Configuration into Foundation::Common, as having two separate names was slightly confusing 
+        (often unclear which something logically belonged under) - **not backward compatible** - but mostly backward compatible/through deprecation
+      - update scripts for Foundation/Configuration => Common change
+      - deprecate Configuration folder/namespace and update tests/samples to reflect
       - **not backward compatible** - renamed qHasFeature_ XXX to similar names qStroika_HasComponent_fmtlib - many
       - ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
       - many more cleanups to Library/Sources/Stroika/Foundation/Common/Private/ ..
@@ -48,25 +49,24 @@ Merged Foundation::Configuration into Foundation::Common
       - Added ISharedPtr concept
       - Private
         - Compile Bug Defines
-          Supported bug defines for xcode 16
-          noticed we really require msvc version 17.9 or later, so require that for now as minimum
-          minor tweak to qCompilerAndStdLib_formattable_of_tuple_Buggy def
-          tweak  qCompiler_IUseToStringFormatterForFormatter_Buggy IUseToStringFormatterForFormatter_ clang++ BWA for when using newer libstdc++
-          simplify deprecated define impl - qCompilerAndStdLib_to_chars_FP_Buggy
-          start support for clang++19 _LIBCPP_VERSION = 190101
-          dont use basic_string<xmlChar> cuz not defined if xmlChar = unsinged char (https://en.cppreference.com/w/cpp/string/basic_string) - caught by clang++19
-          must define namespace std before using to avoid warnings (clang++19)
-          qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy broken for clang++19
-          draft clang++-19 bug define support
-          changed def of qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy to assure not set for _LIBCPP_VERSION
-          qCompilerAndStdLib_AssumeWarningSpamming_Buggy BWA
-          qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-19
-          fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for clang++-19
-          fixed qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy define for xcode 16
-          qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
-          qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
-          fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for xcode16
-          qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for new ISharedPtr
+          - Supported bug defines for xcode 16
+          - noticed we really require msvc version 17.9 or later, so require that for now as minimum
+          - minor tweak to qCompilerAndStdLib_formattable_of_tuple_Buggy def
+          - tweak  qCompiler_IUseToStringFormatterForFormatter_Buggy IUseToStringFormatterForFormatter_ clang++ BWA for when using newer libstdc++
+          - simplify deprecated define impl - qCompilerAndStdLib_to_chars_FP_Buggy; qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
+          - start support for clang++19 _LIBCPP_VERSION = 190101
+          - dont use basic_string<xmlChar> cuz not defined if xmlChar = unsinged char (https://en.cppreference.com/w/cpp/string/basic_string) - caught by clang++19
+          - must define namespace std before using to avoid warnings (clang++19)
+          - qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy broken for clang++19
+          - draft clang++-19 bug define support
+          - changed def of qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy to assure not set for _LIBCPP_VERSION
+          - qCompilerAndStdLib_AssumeWarningSpamming_Buggy BWA
+          - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-19
+          - fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for clang++-19
+          - fixed qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy define for xcode 16
+          - qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
+          - fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for xcode16
+          - qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for new ISharedPtr
         - lose Common/Private/Defaults_Characters_StringUtils_.h Common/Private/Defaults_Memory_Common_.h - defines either no longer used or moved
       - Characters
         - String
@@ -112,41 +112,29 @@ Merged Foundation::Configuration into Foundation::Common
         - Minor tweak to Iterable<T>::Any ():
         - **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
 
-
-
-
 - Samples
-  - New HTMLUI Sample application
-  - elaborate demo
-  - run from docker (and build from docker)
-  - WIX, RPM, DEB installers
-  - Service integration
-  - WebServices
-  - Web HTML content served from filesystem
-  - HTML UI using webservices, using quasar/vue
-
+  -  HTMLUI **New Sample application**
+    - elaborate demo
+    - run from docker (and build from docker)
+    - WIX, RPM, DEB installers
+    - Service integration
+    - WebServices
+    - Web HTML content served from filesystem
+    - HTML UI using webservices, using quasar/vue
   -   fix activeledit sample makefile so doesnt needlessly rebuild dll
-
-
-
 
 
 SharedMakeVariables-Default.mk:
     fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
 
 
-
 - ScriptsLib/Skel
-  tweaks to Samples-HTMLUI to support new Skel cloning feature
-    progress refactoring Skel script to support new templates
-
-    more progress on Skel support for HTMLUI template
+  - refactoring Skel script to support new templates (now default Basic template)
+  - support for HTMLUI template
 
 - Docker Containers
     docker container tweaks dev containers
     build docker containers on github action updated for 23.10 => 24.10 switch
-
-
 
 - Docker Containers
     (review and doc just what we settled on)
