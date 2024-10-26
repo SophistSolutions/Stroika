@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     enum class PredefinedLocale {
         eUseCLocale,
         /**
-         *  \note - this selects the current locale at the time the prefence is used, whereas
+         *  \note - this selects the current locale at the time the preference is used, whereas
          *          in Stroika v2.1, it used the current locale at the time the preference object was created.
          */
         eUseCurrentLocale
@@ -66,8 +66,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *  after being written:
      *
      *      https://en.cppreference.com/w/cpp/utility/to_chars
+     *      https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
      * 
      *      3) ...string representation consists of ... and parsing the representation using the corresponding std::from_chars function recovers value exactly ...
+     * 
+     * &&& docs below obsolete - CLEANUP but review first: right answer I think in https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
      * 
      *  Somehow, using digits10, or digits10-1, doesn't appear to really work. Sometimes on some systems for some values. But doesn't appear clearly
      *  documented to work as above on the to_chars function description --LGP 2024-07-12
@@ -80,7 +83,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     struct Precision {
     public:
         /**
-         *  Flag indicating full precision (see class docs for explanation)
+         *  Flag indicating full precision (see Precision class docs for explanation) - max_digits10
          */
         enum FullFlag {
             eFull
@@ -116,6 +119,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *
          *  Docs like https://en.cppreference.com/w/cpp/utility/to_chars - (3) - suggest none of the above - you must call
          *      to_chars() without specifying a precision.
+         * 
+         * \see https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
          */
         template <floating_point T>
         constexpr unsigned int GetEffectivePrecision () const;
