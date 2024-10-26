@@ -39,14 +39,14 @@ namespace Stroika::Foundation::Execution {
      *  This is nearly always desirable, but in applications that do lots of exceptions (probably not a good idea), this can produce
      *  a lot of trace log noise, and some people object to it.
      *
-     *  Since this only affects calls to DbgTrace () - it only has effect if qStroika_Foundation_Debug_Trace_DefaultTracingOn is on.
+     *  Since this only affects calls to DbgTrace () - it only has effect if qStroika_Foundation_Debug_DefaultTracingOn is on.
      *
      *  \note - to turn this on, you can add the flag
      *          --c-define '\#define qStroika_Foundation_Execution_Throw_TraceThrowpoint 0'
      *          to your configure line
      */
 #ifndef qStroika_Foundation_Execution_Throw_TraceThrowpoint
-#define qStroika_Foundation_Execution_Throw_TraceThrowpoint qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#define qStroika_Foundation_Execution_Throw_TraceThrowpoint qStroika_Foundation_Debug_DefaultTracingOn
 #endif
 
     /**
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Execution {
      *  This has no effect unless qStroika_Foundation_Execution_Throw_TraceThrowpoint is also true.
      */
 #ifndef qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-#define qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#define qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace qStroika_Foundation_Debug_DefaultTracingOn
 #endif
 
     /**

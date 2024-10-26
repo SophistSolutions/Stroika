@@ -1342,7 +1342,7 @@ or no args/defaults...
         - Cleanup/re-orig macors in Assertions.h
         - Assert handlers now use wchar_t - fixing a number of rare/minor problems; and simplifying its use of DbgTrace
       - TimingTrace
-        - Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        - Minor imporovements to TimingTrace class: added Suppress() method, and better support for !qStroika_Foundation_Debug_DefaultTracingOn
         - clenaup compiler warnings and DbgTrace output (new format code) for TimingTrace
     - Execution
       - Activity
@@ -1989,7 +1989,7 @@ or no args/defaults...
         - Tweak DbgTrace code internals
         - experiment with moduleInit instead of Immortalize due to warnings (no easy way to localize suppress in library code) leak warnings using it; instead settle on just using static module initializer using standard c++ inline static support
         - Make Debug::Emitter private
-        - **not fully backward compatible** replaced macro qDefaultTracingOn with qStroika_Foundation_Debug_Trace_DefaultTracingOn and qTraceToFile with qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        - **not fully backward compatible** replaced macro qDefaultTracingOn with qStroika_Foundation_Debug_DefaultTracingOn and qTraceToFile with qStroika_Foundation_Debug_DefaultTracingOn
         - more cleanups to recent Debug Trace code
       - check __cpp_lib_stacktrace >= 202011 and if present/valid, use that for Debug::BackTrace::Capture () API
     - Execution
@@ -6726,7 +6726,7 @@ or no args/defaults...
     - Added Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated
     - cleanups to Valgrind macros/ DOCS
     - define Debug::kBuiltWithThreadSanitizer flag; and use that in regtest 39 (thresafetybuildinobject) - to reduce test count like we do for valgrind, so runs in acceptable timeframe
-    - new trace logging feature: qStroika_Foundation_Debug_Trace_ShowThreadIndex in Debug Trace code
+    - new trace logging feature: qStroika_Foundation_Debug_ShowThreadIndex in Debug Trace code
 
   - Execution
 
@@ -6741,7 +6741,7 @@ or no args/defaults...
       - Thread classes: moved private stuff inside Thread::Ptr, and deprecated Get/Set SignalUsedForThreadInterrupt and replaced with single dual-function call SignalUsedForThreadInterrupt
       - Switch Thread code from using Quasi-namespace to actual namespace (use of private not that compelling, and otherwise I think will work more naturally and as users would expect with true namespace
       - Threads: tons of cleanups; deprecated Get/Set ThrowInterruptExceptionInsideUserAPC and replaced with one name ThrowInterruptExceptionInsideUserAPC; similarly lose Get/Set DefaultConfiguration and replaced with function DefaultConfiguration() that gets and sets
-      - new Thread::IndexRegistrar: use in Thread::Ptr::ToString () and in Trace code (in place of local code I put there to do index dumping); and defined qStroika_Foundation_Debug_Trace_ShowThreadIndex to control if we do this in tracelog
+      - new Thread::IndexRegistrar: use in Thread::Ptr::ToString () and in Trace code (in place of local code I put there to do index dumping); and defined qStroika_Foundation_Debug_ShowThreadIndex to control if we do this in tracelog
       - if qStroika*Foundation_Debug_Trace_ShowThreadIndex - also changed output of sRunningThreads* to show threadindex (so easier compare in tracelog file)
       - moved Execution::FormatThreadID_A to Execution::Thread::FormatThreadID_A () adding extra param and changing default behavior
       - Moved a few more Thread related Execution namespace functions under Thread namespace (CheckForThreadInterruption, Yield, GetCurrentThreadID)

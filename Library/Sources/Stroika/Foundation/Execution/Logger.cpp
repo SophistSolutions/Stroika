@@ -332,7 +332,7 @@ void Logger::SetSuppressDuplicates (const optional<Duration>& suppressDuplicates
     }
 }
 
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
 void Logger::Log (Priority logLevel, const wchar_t* format, ...)
 {
     va_list argsList;

@@ -29,25 +29,25 @@ namespace Stroika::Foundation::Characters {
 namespace Stroika::Foundation::Debug {
 
     /**
-     *  If qStroika_Foundation_Debug_Trace_TraceToFile is set true, then DbgTrace () and other Trace calls all go both to the usual debugger output
+     *  If qStroika_Foundation_Debug_TraceToFile is set true, then DbgTrace () and other Trace calls all go both to the usual debugger output
      *  screen, and to an auto-generated logfile.
      *
      *  This can be handy for building a version of code to hand to customers with an irreproducible bug to get a detailed
      *  report of what happened. Its also handy for embedded or timing sensative programs where capturing the log
      *  of exactly what happened is helpful.
      */
-#if !defined(qStroika_Foundation_Debug_Trace_TraceToFile)
+#if !defined(qStroika_Foundation_Debug_TraceToFile)
 #if defined(qTraceToFile)
-#warning "use qStroika_Foundation_Debug_Trace_TraceToFile since Stroika v3.0d4 "
-#define qStroika_Foundation_Debug_Trace_TraceToFile qTraceToFile
+#warning "use qStroika_Foundation_Debug_TraceToFile since Stroika v3.0d4 "
+#define qStroika_Foundation_Debug_TraceToFile qTraceToFile
 #define qTraceToFile 0
 #else
-#define qStroika_Foundation_Debug_Trace_TraceToFile 0
+#define qStroika_Foundation_Debug_TraceToFile 0
 #endif
 #endif
 
     /*
-     *  qStroika_Foundation_Debug_Trace_DefaultTracingOn provides the default configuration for whether or not DbgTrace logs
+     *  qStroika_Foundation_Debug_DefaultTracingOn provides the default configuration for whether or not DbgTrace logs
      *  or just is 'compiled out' of target programs.
      * 
      *  Note ALSO - many Stroika modules (CPP files) contain a private
@@ -60,13 +60,13 @@ namespace Stroika::Foundation::Debug {
      *
      *    Turn per-module USE_NOISY_TRACE_IN_THIS_MODULE_ flags on selectively just to enable extra detailed logging on a per module basis.
      */
-#if !defined(qStroika_Foundation_Debug_Trace_DefaultTracingOn)
+#if !defined(qStroika_Foundation_Debug_DefaultTracingOn)
 
 #if defined(qDefaultTracingOn)
-#warning "use qStroika_Foundation_Debug_Trace_DefaultTracingOn since Stroika v3.0d4 "
-#define qStroika_Foundation_Debug_Trace_DefaultTracingOn qDefaultTracingOn
+#warning "use qStroika_Foundation_Debug_DefaultTracingOn since Stroika v3.0d4 "
+#define qStroika_Foundation_Debug_DefaultTracingOn qDefaultTracingOn
 #else
-#define qStroika_Foundation_Debug_Trace_DefaultTracingOn qStroika_Foundation_Debug_AssertionsChecked
+#define qStroika_Foundation_Debug_DefaultTracingOn qStroika_Foundation_Debug_AssertionsChecked
 #endif
 #endif
 
@@ -79,8 +79,8 @@ namespace Stroika::Foundation::Debug {
      *
      *  This is somewhat helpful on windows, but much more so on 64-bit linux with very long fairly random looking thread ids.
      */
-#ifndef qStroika_Foundation_Debug_Trace_ShowThreadIndex
-#define qStroika_Foundation_Debug_Trace_ShowThreadIndex 1
+#ifndef qStroika_Foundation_Debug_ShowThreadIndex
+#define qStroika_Foundation_Debug_ShowThreadIndex 1
 #endif
 
     namespace Private_ {
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Debug {
      *      \endcode
      *
      *  \note ***Not Cancelation Point*** - and uses  noexcept
-     *  \note safe to call and does nothing if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
+     *  \note safe to call and does nothing if !qStroika_Foundation_Debug_DefaultTracingOn
      */
     class TraceContextBumper final {
     public:
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Debug {
         [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] TraceContextBumper (const wchar_t* contextName,
                                                                                             const wchar_t* extraFmt, ...) noexcept;
 
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
     private:
         // Nothing too important about this constant, but not so long as to be hard to read
         static constexpr size_t kMaxContextNameLen_{80};
@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Debug {
 #endif
 
     public:
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         ~TraceContextBumper () noexcept;
 #else
         ~TraceContextBumper () noexcept = default;
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Debug {
     public:
         nonvirtual TraceContextBumper& operator= (const TraceContextBumper&) = delete;
 
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
     public:
         bool fDoEndMarker{false};
 
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::Debug {
      *  \note this may still be useful in Stroika v3 and later, but was mostly useful in before, switching to use of variadic templates, since now
      *        the compiler can see the variadic and format parameters are unused for anything, so probably is able to optimize them away.
      */
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
 #define Stroika_Foundation_Debug_OptionalizeTraceArgs(...) __VA_ARGS__
 #else
 #define Stroika_Foundation_Debug_OptionalizeTraceArgs(...)
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Debug {
      *
      *   This function either does NOTHING (trying to not even evaluate its arguments)
      *   or does a printf style PRINT function by delegating to @'EmitTraceMessage'. Which of
-     *   these two behaviors you see is conditioned on @'qStroika_Foundation_Debug_Trace_DefaultTracingOn'</p>
+     *   these two behaviors you see is conditioned on @'qStroika_Foundation_Debug_DefaultTracingOn'</p>
      *
      *   \note ***Not Cancelation Point*** - and uses  noexcept
      *         So you can call this freely without worrying about Throw (ThreadAbortException) etc
@@ -303,7 +303,7 @@ namespace Stroika::Foundation::Debug {
         }
         but only after 'd' stage development so I can lose C-style FMT string overloads...
      */
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
 #define DbgTrace Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage
 #else
 #define DbgTrace _NoOp_

@@ -13,7 +13,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
 void Execution::Private_::DbgTraceHelper_ (const wchar_t* w1, const optional<std::wstring>& w2)
 {
     if (w2) {

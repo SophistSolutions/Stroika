@@ -248,7 +248,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     fWaitForReadyConnectionThread_.Start (); // start here instead of AutoStart so a guaranteed initialized before thread main starts - see http://stroika-bugs.sophists.com/browse/STK-706
 }
 
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
 ConnectionManager::~ConnectionManager ()
 {
     DbgTrace ("Starting destructor for WebServer::ConnectionManager ({})"_f, static_cast<const void*> (this));

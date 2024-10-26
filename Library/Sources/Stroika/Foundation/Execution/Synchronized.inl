@@ -12,7 +12,7 @@ namespace Stroika::Foundation::Execution {
     void ThrowTimeOutException (); // forward declare to avoid include/deadly include embrace
 
     namespace Private_ {
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         void DbgTraceHelper_ (const wchar_t* w1, const optional<std::wstring>& w2);
 #endif
     }
@@ -356,7 +356,7 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             if (this->fDbgTraceLocksName) {
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
                 Private_::DbgTraceHelper_ (m, this->fDbgTraceLocksName);
 #endif
             }
@@ -460,7 +460,7 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             if (this->fDbgTraceLocksName) {
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
                 Private_::DbgTraceHelper_ (m, this->fDbgTraceLocksName);
 #endif
             }

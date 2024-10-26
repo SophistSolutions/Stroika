@@ -148,7 +148,7 @@ namespace {
                              const ServerOptions& options)
     {
         TraceContextBumper ctx{"Modbus-Connection"};
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         static atomic<uint32_t> sConnectionNumber_;
         uint32_t                thisModbusConnectionNumber = ++sConnectionNumber_;
         DbgTrace ("Starting Modbus connection {}"_f, thisModbusConnectionNumber);

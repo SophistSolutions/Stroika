@@ -13,7 +13,7 @@ namespace Stroika::Foundation::Debug {
      ********************************************************************************
      */
     inline TimingTrace::TimingTrace ([[maybe_unused]] Time::DurationSeconds warnIfLongerThan)
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         : WhenTimeExceeded{warnIfLongerThan, [this] (Time::DurationSeconds timeTaken) noexcept {
                                if (fShowIfTimeExceeded_) {
                                    DbgTrace (Characters::FormatString<char>{"(timeTaken={})"}, timeTaken);
@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Debug {
     {
     }
     inline TimingTrace::TimingTrace ([[maybe_unused]] const char* label, [[maybe_unused]] Time::DurationSeconds warnIfLongerThan)
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         : WhenTimeExceeded{warnIfLongerThan, [=, this] (Time::DurationSeconds timeTaken) noexcept {
                                if (fShowIfTimeExceeded_) {
                                    DbgTrace (Characters::FormatString<char>{"{} (timeTaken={})"}, Characters::String{label}, timeTaken);
@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Debug {
     {
     }
     inline TimingTrace::TimingTrace ([[maybe_unused]] const wchar_t* label, [[maybe_unused]] Time::DurationSeconds warnIfLongerThan)
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         : WhenTimeExceeded{warnIfLongerThan, [=, this] (Time::DurationSeconds timeTaken) noexcept {
                                if (fShowIfTimeExceeded_) {
                                    DbgTrace (Characters::FormatString<char>{"{} (timeTaken={})"}, label, timeTaken);
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Debug {
     {
     }
     inline TimingTrace::TimingTrace ([[maybe_unused]] const Characters::String& label, [[maybe_unused]] Time::DurationSeconds warnIfLongerThan)
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         : WhenTimeExceeded{warnIfLongerThan, [=, this] (Time::DurationSeconds timeTaken) noexcept {
                                if (fShowIfTimeExceeded_) {
                                    DbgTrace (Characters::FormatString<char>{"{} (timeTaken={})"}, label, timeTaken);
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Debug {
     }
     inline void TimingTrace::Suppress ()
     {
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         fShowIfTimeExceeded_ = false;
 #endif
     }

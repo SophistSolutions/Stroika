@@ -814,7 +814,7 @@ void ActiveLedItControl::RemoveFrameLevelUI ()
 
 BOOL ActiveLedItControl::OnSetObjectRects (LPCRECT lprcPosRect, LPCRECT lprcClipRect)
 {
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
     if (lprcClipRect == NULL) {
         DbgTrace ("ActiveLedItControl::OnSetObjectRects (m_bUIActive={}, m_bInPlaceSiteWndless={}, lprcPosRect=({}, {}, {}, {}), NULL)"_f,
                   (bool)m_bUIActive, (bool)m_bInPlaceSiteWndless, lprcPosRect->top, (int)lprcPosRect->left, lprcPosRect->bottom, lprcPosRect->right);

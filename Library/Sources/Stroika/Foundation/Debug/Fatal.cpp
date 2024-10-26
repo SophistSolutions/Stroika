@@ -27,7 +27,7 @@ void Debug::DefaultFatalErrorHandler ([[maybe_unused]] const SDKChar* msg) noexc
     if (auto exc = current_exception ()) {
         DbgTrace ("Uncaught exception: {}"_f, exc);
     }
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
     {
         wstring tmp{Debug::BackTrace::Capture ()};
         if (not tmp.empty ()) {

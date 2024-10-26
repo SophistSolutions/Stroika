@@ -48,13 +48,13 @@ namespace Stroika::Foundation::Debug {
      *              </do_some_call>
      *      \endcode
      *
-     * \note   This implementation should mostly disappear when qStroika_Foundation_Debug_Trace_DefaultTracingOn is disabled (and so the DbgTrace() calls wouldn't do anything)
-     *         To do something like this when when qStroika_Foundation_Debug_Trace_DefaultTracingOn is off, see the base class WhenTimeExceeded
+     * \note   This implementation should mostly disappear when qStroika_Foundation_Debug_DefaultTracingOn is disabled (and so the DbgTrace() calls wouldn't do anything)
+     *         To do something like this when when qStroika_Foundation_Debug_DefaultTracingOn is off, see the base class WhenTimeExceeded
      *
      * \note   Aliases Performance Trace, PerformanceTrace
      */
     class TimingTrace
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         : private Execution::WhenTimeExceeded
 #endif
     {
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Debug {
          */
         nonvirtual void Suppress ();
 
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
     private:
         bool fShowIfTimeExceeded_{true};
 #endif

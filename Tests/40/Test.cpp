@@ -1375,7 +1375,7 @@ namespace {
         using MutexType                                    = mymutex_;
         static constexpr bool kIsRecursiveReadMutex        = true;
         static constexpr bool kIsRecursiveLockMutex        = true;
-        static constexpr bool kDbgTraceLockUnlockIfNameSet = qStroika_Foundation_Debug_Trace_DefaultTracingOn;
+        static constexpr bool kDbgTraceLockUnlockIfNameSet = qStroika_Foundation_Debug_DefaultTracingOn;
         static constexpr bool kSupportsTimedLocks          = true;
         static constexpr bool kSupportSharedLocks          = false;
         using ReadLockType  = conditional_t<kSupportSharedLocks, shared_lock<MutexType>, unique_lock<MutexType>>;

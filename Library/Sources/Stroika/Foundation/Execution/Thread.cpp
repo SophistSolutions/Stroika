@@ -305,7 +305,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     if (fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) {
         // If fRefCountBumpedInsideThreadMainEvent_ not yet SET, then this info is bogus
         sb << "id: "sv << GetID () << ", "sv;
-        if constexpr (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
+        if constexpr (qStroika_Foundation_Debug_ShowThreadIndex) {
             sb << "index: " << IndexRegistrar::sThe.GetIndex (GetID ()) << ", "sv;
         }
     }
@@ -496,7 +496,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
         {
             Require (Debug::AppearsDuringMainLifetime ());
             [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
-#if qStroika_Foundation_Debug_Trace_ShowThreadIndex
+#if qStroika_Foundation_Debug_ShowThreadIndex
             DbgTrace (
                 "Adding thread index {} to sRunningThreads_ ({})"_f, IndexRegistrar::sThe.GetIndex (thisThreadID),
                 Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> ([] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); }));
@@ -509,7 +509,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             SuppressInterruptionInContext suppressThreadInterrupts; // may not be needed, but safer/harmless
             Require (Debug::AppearsDuringMainLifetime ()); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
-#if qStroika_Foundation_Debug_Trace_ShowThreadIndex
+#if qStroika_Foundation_Debug_ShowThreadIndex
             DbgTrace (
                 "removing thread index {} from sRunningThreads_ ({})"_f, IndexRegistrar::sThe.GetIndex (thisThreadID),
                 Traversal::Iterable<IDType>{sRunningThreads_}.Map<vector<int>> ([] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); }));
@@ -1147,7 +1147,7 @@ void Execution::Thread::CheckForInterruption ()
                 Throw (Thread::AbortException::kThe);
             }
         }
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         else if (thisRunningThreadRep->fAbortRequested_) {
             static atomic<unsigned int> sSuperSuppress_{};
             if (++sSuperSuppress_ <= 1) {

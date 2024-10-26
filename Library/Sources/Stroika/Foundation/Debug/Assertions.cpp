@@ -38,7 +38,7 @@ namespace {
                       assertionText == nullptr ? L"" : assertionText, functionName == nullptr ? L"" : functionName,
                       fileName == nullptr ? L"" : fileName, lineNum);
 #endif
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
             {
                 wstring tmp{Debug::BackTrace::Capture ()};
                 if (not tmp.empty ()) {
@@ -67,7 +67,7 @@ namespace {
                   assertionText == nullptr ? L"" : assertionText, functionName == nullptr ? L"" : functionName,
                   fileName == nullptr ? L"" : fileName, lineNum);
 #endif
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         {
             wstring tmp{Debug::BackTrace::Capture ()};
             if (not tmp.empty ()) {

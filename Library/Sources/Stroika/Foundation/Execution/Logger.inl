@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Execution {
     {
         return logLevel >= fMinLogLevel_ and not GetAppenders ().empty ();
     }
-#if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if !qStroika_Foundation_Debug_DefaultTracingOn
     inline void Logger::Log (Priority logLevel, const wchar_t* format, ...)
     {
         if (WouldLog (logLevel)) {
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Execution {
             Log_ (logLevel, msg);
         }
         else {
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
             DbgTrace ("...suppressed by WouldLog: {}"_f, Characters::Format (fmt, args...));
 #endif
         }

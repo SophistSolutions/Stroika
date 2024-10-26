@@ -6,8 +6,8 @@
 #include <filesystem>
 #include <mutex>
 
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_Trace_TraceToFile);
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qStroika_Foundation_Debug_Trace_DefaultTracingOn);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_TraceToFile);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qStroika_Foundation_Debug_DefaultTracingOn);
 
 #include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Time/Clock.h"
@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Debug {
     public:
         static Emitter& Get () noexcept;
 
-#if qStroika_Foundation_Debug_Trace_TraceToFile
+#if qStroika_Foundation_Debug_TraceToFile
     public:
         static filesystem::path GetTraceFileName ();
 #endif
@@ -110,14 +110,14 @@ namespace Stroika::Foundation::Debug {
      */
     inline TraceContextBumper::TraceContextBumper () noexcept
     {
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         IncCount_ ();
 #endif
     }
     template <typename CHAR_T>
     inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const CHAR_T* contextName) noexcept
         requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>)
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         : TraceContextBumper{cvt2WChartArrayTrunc_ (contextName)}
 #endif
     {
@@ -126,17 +126,17 @@ namespace Stroika::Foundation::Debug {
     TraceContextBumper::TraceContextBumper ([[maybe_unused]] const CHAR_T* contextName,
                                             [[maybe_unused]] Characters::FormatString<FCHAR_T> fmt, [[maybe_unused]] ARGS&&... args) noexcept
         requires ((same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>) and (same_as<FCHAR_T, char> or same_as<FCHAR_T, wchar_t>))
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
         : TraceContextBumper{cvt2WChartArrayTrunc_ (contextName), ProcessFmtString_ (fmt, forward<ARGS> (args)...)}
 #endif
     {
     }
-#if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if !qStroika_Foundation_Debug_DefaultTracingOn
     inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName, [[maybe_unused]] const wchar_t* extraFmt, ...) noexcept
     {
     }
 #endif
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
     template <typename CHAR_T, typename... ARGS>
     auto TraceContextBumper::ProcessFmtString_ (Characters::FormatString<CHAR_T> fmt, ARGS&&... args) noexcept -> CHAR_ARRAY_T
         requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>)

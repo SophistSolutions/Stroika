@@ -53,7 +53,7 @@ namespace {
         }
         void HandleMessage (Message* m)
         {
-#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
+#if qStroika_Foundation_Debug_DefaultTracingOn
             Debug::TimingTrace ttrc{"FSRouterRep_::HandleMessage", 1ms}; // prelim - gather info on whether worth supporting ETAGs etc - why is this sometimes somewhat slow
 #endif
             /*
