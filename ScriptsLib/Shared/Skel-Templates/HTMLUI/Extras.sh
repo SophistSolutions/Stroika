@@ -53,6 +53,11 @@ cat  ${APP_ROOT}/Docker/Dockerfile | \
 mv ${APP_ROOT}/Docker/Dockerfile.new ${APP_ROOT}/Docker/Dockerfile
 
 
+cat  ${APP_ROOT}/Docker/ReadMe.md | \
+  sed 's/..\/..\/..\//..\//' > ${APP_ROOT}/Docker/ReadMe.md.new
+mv ${APP_ROOT}/Docker/ReadMe.md.new ${APP_ROOT}/Docker/ReadMe.md
+
+
 (pushd ${APP_ROOT}/Installers; \
      mv stroika-sample-htmlui.control.static ${LC_APP_NAME}.control.static; \
      mv stroika-sample-htmlui.rpm.spec ${LC_APP_NAME}.rpm.spec; \
