@@ -55,181 +55,81 @@ Execution::CommandLine
 SharedMakeVariables-Default.mk:
     fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
 
-
-
-commit bbb586923d4d4494a1ff051c8f13ab76041b33a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 21:28:29 2024 -0400
-
+- Debug::Fatal
     explicitly expose DefaultFatalErrorHandler and added new Execution::DefaultLoggingFatalErrorHandler
+Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
+   minor cleanup on SetStandardCrashHandlerSignals etc and samples
 
-commit 8c7399885308751760b60c7f0f4fb9aa6c07fc4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 08:18:32 2024 -0400
+- Execution::Logging
+    Minor tweaks to Foundation/Execution/Logger
 
-    progress on Samples/HTMLUI/Backend/
-
-commit 1f592c48bc57e491c6cce1d4b9738a970b0e0df1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 09:11:52 2024 -0400
-
-    Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler etc... and Sample HTMLUI cleanups
-
-commit d4c6d1c43c04167ddb7afa692d13ef86e8a29157
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 09:43:47 2024 -0400
-
-    minor cleanup on SetStandardCrashHandlerSignals etc and samples
-
-commit c8963b69bd41e4b531ad54b7dc5418ba2f5da733
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 10:00:42 2024 -0400
-
-    more Samples/HTMLUI cleanups
-
-commit b7d3cf1b2a7ce14e20004ea9cca1062a4d2d59ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 11:32:28 2024 -0400
-
-    cosmeitc; and Library/Sources/Stroika/Foundation/Execution/CommandLine generateusage cleanups; and Samples/HTMLUI/Backend/ cleanups - now clean except for wrong wsapi implemented
-
-commit 79634a24a4c376398f5ec25495c0748adea22616
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 4 13:57:00 2024 -0400
+- - IO::FileSystem::FileStream
 
     assure STDOUT_FILENO etc defines always available and use in Stroika samples directly
 
-commit 090cc217861c3380b0f8ea67350d6b38f93371b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 03:29:27 2024 -0400
 
+- Docker Containers
+    (review and doc just what we settled on)
     skip instlal nodejs on ubuntu 23.10
-
-commit 2ee006daae195555d072a37969046b51387741ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 03:36:08 2024 -0400
-
     skip instlal nodejs on ubuntu 22.04
-
-commit c94d819f9801aebf24def7aa0ec9bc99691b773a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 03:42:44 2024 -0400
-
     skip instlal npm quasar on ubyntn 24.04
-
-commit 15f1d0640c43aba52b20be84a95546642fba1776
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 7 08:52:06 2024 +0200
-
     fixed install of npm /quasar for ubuntu 24.04
-
-commit dcf246ce906cf27a05767bcfa7cedb8676a83434
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 7 08:56:19 2024 +0200
-
     hopefully fixed DockerBuildContainers/Ubuntu2204-RegressionTests/Dockerfile for quasar
-
-commit 86969f14fb521424d5c9557e06fd9f05d17d325b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 7 09:07:30 2024 +0200
-
     another try at docker container support for building with npm ubuntu 22 and 24
-
-commit 0e4cc61ab466b35176037236b04e116a22ec8a31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 11 11:04:46 2024 +0200
-
-    Redo Set::ContainsAll/Any using Iterable Any/All methods
-
-commit 0beb9c854a441111aceca7f7a437122cc2a46bbd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 11 11:05:17 2024 +0200
-
-    Minor tweak to Iterable<T>::Any ():
-
-commit b70ac004a41dd2e6370da24d48e485b239c0303f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 11 11:07:16 2024 +0200
-
-    Minor celanups to Samples/HTMLUI/Backend/Sources/Main.cpp
-
-commit 90c18073667714de585e412dec96b7ca0bfb3c17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 11 14:36:23 2024 +0200
-
-    got installer mostly workging for HTMLUI windows service
-
-commit 84aa4f259a85c01d44e8895d647c5f593649cda9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 11 17:49:01 2024 +0200
-
-    Minor tweaks to Foundation/Execution/Logger
-
-commit adb89fdc6309679fc8022072da132683e49141e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 18:52:12 2024 +0200
-
-    try to get new htmlui installer mkaefiles working on more platforms
-
-commit 93722d93e28dd0e07d5964c47b7a0de2b43e03ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 19:22:48 2024 +0200
-
-    add Installer-Build.Out to archived files in github actions
-
-commit e0ed361e4dd2cf007d8eca90ae2988c34aa1c5cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 16 19:37:43 2024 +0200
-
-    fixed rpm build in HTMLUI sample
-
-commit 78427a79f6a7ec870689992fb2b276fcbab0b510
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 16 19:43:09 2024 +0200
-
-    github workflow - cleanup some warnings
-
-commit 83739905c37e7337b8279ddb91aaecda315c98f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 16 19:59:16 2024 +0200
-
-    draft docker support for Ubuntu 24.10 - replacing support for Ubuntu 23.10
-
-commit d5a2e1c725743bd2234d2e3582e3b49ed443e8ee
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Oct 16 14:48:23 2024 -0400
-
-    more cleanups of recent chagne - replace ubuntu 23.10 with 24.10 in tests, docker etc
-
-commit e5f373c4e68d69289f0886226b4633b1b6240473
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 16 20:53:09 2024 +0200
 
     windows docker VS_17_11_5
 
-commit d4c8bd4ce5444f06fc2ebce1a7c6470d74b5d02f
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Oct 16 15:03:52 2024 -0400
+- DataExchange::OptionsFile
+    use Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation to imporove messages in DataExchange/OptionsFile.cpp
 
+- Containers::Set
+  - Redo Set::ContainsAll/Any using Iterable Any/All methods
+
+- Iterable<T>
+    Minor tweak to Iterable<T>::Any ():
+
+- github actions
+    add Installer-Build.Out to archived files in github actions
+
+    github workflow - cleanup some warnings
+
+    tweak some names in github workflow
+    .github workflow cleanups
+
+    github actions: build with g++-13 too
+
+    githyb actions - added MacOS-15-XCode-16.0 test run each time
+    minor tweaks to .github action configs and scripts/output names
+
+    minor tweaks to github actions so better output
+    github action - tweak run github actions on ubuntu 24.10
+    experiment with using macos-15 from github actions
+
+    try save space on ubuntu-24.10-clang++-19 .github action test
+    again tweak github action for running out of space
+    github actions with build with xcode 15.4 instead of 15.3
+
+- Characters::String
+    Minor String::CTOR cleanup, and allowed losing bug define qCompilerAndStdLib_templateConstructorSpecialization_Buggy
+
+
+- Linguistics::MessageUtilities
+    **not backward compat** changes to Linguistics::MessageUtilities - fixed typo in name, made namespace, uses sThe pattern etc
+
+- ScriptsLib/Skel
+  tweaks to Samples-HTMLUI to support new Skel cloning feature
+    progress refactoring Skel script to support new templates
+
+    more progress on Skel support for HTMLUI template
+
+- Docker Containers
     docker container tweaks dev containers
-
-commit 65ec8a6cbb948b9bd6996b6cd4d4f29ce2bf4801
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 16 17:51:03 2024 -0400
-
     build docker containers on github action updated for 23.10 => 24.10 switch
 
-commit 3fd578ce4c3e53ac87a65908f6138dec77e8e8fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 16 21:56:09 2024 -0400
 
+- Compile Bug Defines
     noticed we really require msvc version 17.9 or later, so require that for now as minimum
 
-commit 84e3e30a43a2b2bc1d6a869c7141e7963e2216d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 17 08:10:37 2024 -0400
-
-    Minor String::CTOR cleanup, and allowed losing bug define qCompilerAndStdLib_templateConstructorSpecialization_Buggy
 
 commit ac144f5e68b074362a634a8497bb6dd981057a04
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -267,12 +167,6 @@ Date:   Thu Oct 17 13:33:02 2024 -0400
 
     a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
 
-commit 039c31428bead047125adee656b587d5acbbd3bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 17 15:27:43 2024 -0400
-
-    fixed some HTMLUI Makefile issues on MacOS
-
 commit bd2c8ea97e42b1b0189fa4e82f829dc8f8f7c7cf
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Thu Oct 17 15:59:40 2024 -0400
@@ -303,65 +197,11 @@ Date:   Fri Oct 18 09:47:00 2024 -0400
 
     got basics of docker container build/run support working with sample HTMLUI
 
-commit 1334ef8c9c201925c258c7421597f43d60a70e08
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 09:51:16 2024 -0400
-
-    minor tweaks to .github action configs and scripts/output names
-
-commit f67e7adafea83dc34b20816d467b117ee0cc5151
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 09:53:06 2024 -0400
-
-    minor tweaks to github actions so better output
-
 commit b498ea20ae3a64d171a37993380dd6a2bb484168
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Fri Oct 18 10:50:53 2024 -0400
 
     tested and documented running the HTMLUI container and browsing resulting webpage from host
-
-commit c48c683eee6ae38969259341dd225400f2ab0b31
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 11:07:07 2024 -0400
-
-    htmlui app - added crhone debugger entry to launch.json; and fixed default port# if no /config)
-
-commit 977df1199dd3ed1cc56bab0557fcb0bb1925de95
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 13:15:01 2024 -0400
-
-    tweak some names in github workflow
-
-commit 7e84805b143fb5a59c12422783c91c36ed975515
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 13:16:17 2024 -0400
-
-    a few more minir fixes to new HTMLUI sample - esp html code
-
-commit 3ca466a4cbd9dda699f6aee870baa56bacd12d41
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 13:27:23 2024 -0400
-
-    fiddling with logging settings for htmlui sample app/docker
-
-commit 76dc34269f96edaee9f8c9768676e435cff3c2dc
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 16:14:40 2024 -0400
-
-    HTMLUI docker cleanups (sample)
-
-commit f777dbd448fd171142af57ccda0c44fb1eb3f11d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 18 17:18:56 2024 -0400
-
-    **not backward compat** changes to Linguistics::MessageUtilities - fixed typo in name, made namespace, uses sThe pattern etc
-
-commit 774d881458ddd8292392f707af860ec81a844106
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 17:52:35 2024 -0400
-
-    use Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation to imporove messages in DataExchange/OptionsFile.cpp
 
 commit ece0da85806214ea075c428be075bc99bcb56d8b
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -411,23 +251,11 @@ Date:   Sun Oct 20 07:39:39 2024 -0400
 
     draft clang++-19 bug define support
 
-commit 53dc8ab3b5f2ca1abdec5caf42e68f7ac48c9083
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 07:45:07 2024 -0400
-
-    github action - tweak run github actions on ubuntu 24.10
-
 commit a7e2d30dd120ddb7bd521922029dfe0a7f49b3a9
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Oct 20 08:47:54 2024 -0400
 
     changed def of qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy to assure not set for _LIBCPP_VERSION
-
-commit b4f114b410ce7ec79fa3b799eb808946d65d372e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 20 08:50:45 2024 -0400
-
-    fixed typo in .github workflow file
 
 commit 14a6474c7aa7a434cf9e1d64151f3396790c96d7
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -477,12 +305,6 @@ Date:   Sun Oct 20 16:05:03 2024 -0400
 
     qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
 
-commit a22d6e098ffe97ae9b1b48e4a024ffae87da4811
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 16:35:14 2024 -0400
-
-    experiment with using macos-15 from github actions
-
 commit 137281526329dba82bbfd1bd83c533556b771fa0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Oct 20 18:42:22 2024 -0400
@@ -513,23 +335,11 @@ Date:   Mon Oct 21 08:09:01 2024 -0400
 
     fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for clang++-19
 
-commit c0e4b543b9e0290d58860969b3780a53f5b2cbff
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Oct 21 08:09:32 2024 -0400
-
-    fixed minor issue with regtest
-
 commit 6a13d235722bd1595640e9591f3a2a22f582c962
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Oct 21 10:13:37 2024 -0400
 
     configure: print macOSversion to configfile; and skipASANSanCuzBroken on darwin
-
-commit 121278bcd50f4e5adb3ceb330696c776e50366f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 10:28:15 2024 -0400
-
-    github actions with build with xcode 15.4 instead of 15.3
 
 commit cc9589d69c679ac0ce51fad8350a3edbd5d4d025
 Author: Lewis Pringle <lewis@sophists.com>
@@ -543,23 +353,11 @@ Date:   Mon Oct 21 11:13:18 2024 -0400
 
     Supported bug defines for xcode 16
 
-commit 12ae569a093605205d8dbc0f26b30b59f8f24d46
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 11:13:42 2024 -0400
-
-    githyb actions - added MacOS-15-XCode-16.0 test run each time
-
 commit f2a6ca404f1b644a0deaff74bc935424ef5c289e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Oct 21 11:20:31 2024 -0400
 
     cleanup apparently no longer needed BWAs in curl Makefile
-
-commit 8fb7cb29199ed6b2830388ad667f08e04393cb49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 11:59:03 2024 -0400
-
-    regtest XCode16
 
 commit d4673a04e50b8433201f600d6f5fd840c791fa80
 Author: Lewis Pringle <lewis@sophists.com>
@@ -597,35 +395,11 @@ Date:   Tue Oct 22 11:16:40 2024 -0400
 
     qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
 
-commit 4f13093ce554c5a5a4e5e62439234787cd1c5cea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 22 11:22:56 2024 -0400
-
-    .github workflow cleanups
-
-commit be63e679a1de1bf634606af9c81a76f182f5c585
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Oct 22 20:24:23 2024 -0400
-
-    github actions: build with g++-13 too
-
 commit cf771cc2a115189d249f6c6508ca80d70f76a0d4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Oct 22 20:53:47 2024 -0400
 
     fix activeledit sample makefile so doesnt needlessly rebuild dll
-
-commit 8eb24aa505aaba653a398bac69350c6669a10df4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 22 22:22:29 2024 -0400
-
-    try save space on ubuntu-24.10-clang++-19 .github action test
-
-commit f0ef8a079d5315193d40b309b7db9fc6c1ed8cbc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 23 07:55:35 2024 -0400
-
-    again tweak github action for running out of space
 
 commit d0d1d7f43cdc259265f990dea613745d73bd5bc8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -645,14 +419,6 @@ Date:   Thu Oct 24 08:40:38 2024 -0400
 
     -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
 
-commit 1c3067ab0d3d5d72fb287eb81505786248bf4a29
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 24 10:47:46 2024 -0400
-
-    tweaks to Samples-HTMLUI to support new Skel cloning feature
-    progress refactoring Skel script to support new templates
-
-    more progress on Skel support for HTMLUI template
 
 #endif
 
