@@ -15,6 +15,11 @@ Merged Foundation::Configuration into Foundation::Common
 
 #if 0
 
+
+- Support XCode 16
+- Support Clang++-19 on Ubuntu 24.10 (both new) and lose 23.10 ubuntu support
+
+
 - use concept same_as in a few places in place of older is_same
 - Merged Foundation::Configuration into Foundation::Common, as having two separate names was slightly confusing (often unclear which something logically belonged under) - **not backward compatible** - but mostly backward compatible/through deprecation
     update scripts for Foundation/Configuration => Common change
@@ -22,50 +27,69 @@ Merged Foundation::Configuration into Foundation::Common
 
  -   ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
 
-- Iterable
- - renamed IsIterableOf to   IIterableOfTo
 
--    use IIterableOfTo<> in Iterable CTOR
+- Characters
+  - ToString/formatter support for shared_ptr<> - incomplete
+  
+- DataExcahnge
+  - DataExchange::OptionsFile
+      use Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation to imporove messages in DataExchange/OptionsFile.cpp
+  - XML
+    - Xerces - slight cleanup - use xerces namespace instead of xerces_3_2 (so can work with 33); and moved XERCES_CPP_NAMESPACE_USE to cpp file
 
- -    iterable docs, cleanups: more concepots (like on As()), and Map() methods
 
+- Debug
+  - renamed qDebug -> qStroika_Foundation_Debug_AssertionsChecked ; name change **not backward compatible** upgrade carefully
 
-- ToString/formatter support for shared_ptr<> - incomplete
 
 -  Added ISharedPtr concept
 
     qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for new ISharedPtr
 
-Execution::CommandLine
-+ added method  Execution/CommandLine::GetAppName
- + CommandLine GetAppName and GenerateUsage overloads
-    clenaup Usage generation in samples
-
-
-
-- New HTMLUI Sample application
- - elaborate demo
- - run from docker (and build from docker)
- - WIX, RPM, DEB installers
- - Service integration
- - WebServices
- - Web HTML content served from filesystem
- - HTML UI using webservices, using quasar/vue
-
-SharedMakeVariables-Default.mk:
-    fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
 
 - Debug::Fatal
     explicitly expose DefaultFatalErrorHandler and added new Execution::DefaultLoggingFatalErrorHandler
 Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
    minor cleanup on SetStandardCrashHandlerSignals etc and samples
 
-- Execution::Logging
-    Minor tweaks to Foundation/Execution/Logger
+- Execution
+  - Execution::CommandLine
+    + added method  Execution/CommandLine::GetAppName
+    + CommandLine GetAppName and GenerateUsage overloads
+    - clenaup Usage generation in samples
+
+  - Execution::Logging
+      Minor tweaks to Foundation/Execution/Logger
 
 - - IO::FileSystem::FileStream
 
     assure STDOUT_FILENO etc defines always available and use in Stroika samples directly
+
+- Traversal
+  - Iterable
+    - renamed IsIterableOf to   IIterableOfTo
+    - use IIterableOfTo<> in Iterable CTOR
+    - iterable docs, cleanups: more concepots (like on As()), and Map() methods
+    - Minor tweak to Iterable<T>::Any ():
+
+
+
+
+- Samples
+  - New HTMLUI Sample application
+  - elaborate demo
+  - run from docker (and build from docker)
+  - WIX, RPM, DEB installers
+  - Service integration
+  - WebServices
+  - Web HTML content served from filesystem
+  - HTML UI using webservices, using quasar/vue
+
+
+
+SharedMakeVariables-Default.mk:
+    fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
+
 
 
 - Docker Containers
@@ -79,14 +103,9 @@ Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
 
     windows docker VS_17_11_5
 
-- DataExchange::OptionsFile
-    use Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation to imporove messages in DataExchange/OptionsFile.cpp
-
 - Containers::Set
   - Redo Set::ContainsAll/Any using Iterable Any/All methods
 
-- Iterable<T>
-    Minor tweak to Iterable<T>::Any ():
 
 - github actions
     add Installer-Build.Out to archived files in github actions
@@ -108,6 +127,7 @@ Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
     try save space on ubuntu-24.10-clang++-19 .github action test
     again tweak github action for running out of space
     github actions with build with xcode 15.4 instead of 15.3
+    tweak ubuntu 24.10 github workflow configs due to not fully working yet ostly
 
 - Characters::String
     Minor String::CTOR cleanup, and allowed losing bug define qCompilerAndStdLib_templateConstructorSpecialization_Buggy
@@ -129,25 +149,32 @@ Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
 
 - Compile Bug Defines
     noticed we really require msvc version 17.9 or later, so require that for now as minimum
+    minor tweak to qCompilerAndStdLib_formattable_of_tuple_Buggy def
+    tweak  qCompiler_IUseToStringFormatterForFormatter_Buggy IUseToStringFormatterForFormatter_ clang++ BWA for when using newer libstdc++
+    simplify deprecated define impl - qCompilerAndStdLib_to_chars_FP_Buggy
+    start support for clang++19 _LIBCPP_VERSION = 190101
+    dont use basic_string<xmlChar> cuz not defined if xmlChar = unsinged char (https://en.cppreference.com/w/cpp/string/basic_string) - caught by clang++19
+    must define namespace std before using to avoid warnings (clang++19)
 
+    qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy broken for clang++19
+    draft clang++-19 bug define support
+    changed def of qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy to assure not set for _LIBCPP_VERSION
+    qCompilerAndStdLib_AssumeWarningSpamming_Buggy BWA
+    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-19
+    fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for clang++-19
+    fixed qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy define for xcode 16
+    qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
+    qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
 
-commit ac144f5e68b074362a634a8497bb6dd981057a04
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Oct 17 10:01:07 2024 -0400
+- ScriptsLib
+  -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
 
-    experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+  - Config related scripts (and makefile stuff)
+    - add to regression-test-configurations for windows - ./configure Debug-Xerces
 
-commit 7590c215867a542c5c550e478ae5758a6288fd88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 17 10:33:05 2024 -0400
+  - RegressionTests
+    - RegressionTests script uses regression-test-configurations instead of default-configurations by default
 
-    add to regression-test-configurations for windows - ./configure Debug-Xerces
-
-commit b94c406ff1165a80bb956a3d30cb4012897c8c98
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 17 11:15:00 2024 -0400
-
-    Xerces - slight cleanup - use xerces namespace instead of xerces_3_2 (so can work with 33); and moved XERCES_CPP_NAMESPACE_USE to cpp file
 
 commit c2c155e010a4d82537e048d205259e65f9fc441f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -155,35 +182,11 @@ Date:   Thu Oct 17 11:16:30 2024 -0400
 
     makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
 
-commit 78918148375d0a20d32620dc4a87c5db8cffd64c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 17 11:23:25 2024 -0400
-
-    RegressionTests script uses regression-test-configurations instead of default-configurations by default
-
 commit b382f94003e8ef706bf59f5c30cd36a6f476adef
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Thu Oct 17 13:33:02 2024 -0400
 
     a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
-
-commit bd2c8ea97e42b1b0189fa4e82f829dc8f8f7c7cf
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Oct 17 15:59:40 2024 -0400
-
-    minor tweak to qCompilerAndStdLib_formattable_of_tuple_Buggy def
-
-commit bb9b3b7c2ad0aa91d04477fe5848392d5bb98d11
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Oct 17 18:46:41 2024 -0400
-
-    tweak  qCompiler_IUseToStringFormatterForFormatter_Buggy IUseToStringFormatterForFormatter_ clang++ BWA for when using newer libstdc++
-
-commit 4ae7c46b55db2bc52ac2a44cd5112da89f01dc22
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Oct 17 18:58:09 2024 -0400
-
-    simplify deprecated define impl - qCompilerAndStdLib_to_chars_FP_Buggy
 
 commit 22e5854fe61f5b57e3701e63a52b223e9429b047
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -221,42 +224,6 @@ Date:   Sat Oct 19 11:33:32 2024 -0400
 
     **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
 
-commit 08dfead308db44cf6e40daa34078832a7f2a593e
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Oct 19 11:59:47 2024 -0400
-
-    start support for clang++19 _LIBCPP_VERSION = 190101
-
-commit 8ceab308eff8693d98634cc28f704034b1d83930
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Oct 19 16:30:28 2024 -0400
-
-    dont use basic_string<xmlChar> cuz not defined if xmlChar = unsinged char (https://en.cppreference.com/w/cpp/string/basic_string) - caught by clang++19
-
-commit 8b81bbc6fda64f038de93497250a563b01336cba
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Oct 19 16:30:59 2024 -0400
-
-    must define namespace std before using to avoid warnings (clang++19)
-
-commit 62211eee91da36714700df5463c1e7a16eedc110
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Oct 19 16:31:23 2024 -0400
-
-    qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy broken for clang++19
-
-commit f776d46260576a70ef793a582698b129003908a9
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 07:39:39 2024 -0400
-
-    draft clang++-19 bug define support
-
-commit a7e2d30dd120ddb7bd521922029dfe0a7f49b3a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 20 08:47:54 2024 -0400
-
-    changed def of qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy to assure not set for _LIBCPP_VERSION
-
 commit 14a6474c7aa7a434cf9e1d64151f3396790c96d7
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sun Oct 20 09:02:50 2024 -0400
@@ -269,41 +236,11 @@ Date:   Sun Oct 20 09:03:26 2024 -0400
 
     other overload of InlineBuffer<T, BUF_SIZE>::BufferAsT_ ()  constexpr
 
-commit 9cffdd59d9f73693bb9a2e09b6a676172cd72776
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 09:08:02 2024 -0400
-
-    tweak ubuntu 24.10 github workflow configs due to not fully working yet ostly
-
-commit cf54cecaa44c90eba62dabcbd81ff9ec06ff11a2
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 12:17:46 2024 -0400
-
-    qCompilerAndStdLib_AssumeWarningSpamming_Buggy BWA
-
-commit e06604adf63f02105ee113bff7b71efd75a10f8b
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 12:18:15 2024 -0400
-
-    use #if qDebug in one place if constexpr (qDebug) illegal
-
 commit 0fdbd2a180ba2c455985ec8f4f0b3381b218edaa
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Oct 20 15:51:27 2024 -0400
 
     cosmetic, and Debug::Visualizations cleanups
-
-commit d46436a8fe4ce7ff5c215591f00b905625fdb9e0
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 16:04:32 2024 -0400
-
-    fix Precision::GetEffectivePrecision for _LIBCPP_VERSION < 199999
-
-commit de46d0e06b5711917b9142e91defc8c2b2687a98
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 16:05:03 2024 -0400
-
-    qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
 
 commit 137281526329dba82bbfd1bd83c533556b771fa0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -311,41 +248,17 @@ Date:   Sun Oct 20 18:42:22 2024 -0400
 
     experimental fix to Precision::GetEffectivePrecision for max_digits10 - still need to document better and cleanup if works
 
-commit 0f81e0accf4fe2645e83adcf35119dc2002b7a11
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 19:04:07 2024 -0400
-
-    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken for clang++-19
-
-commit 6de968375e4a7f3dbb8568fad699bcca6cab570a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 21:58:08 2024 -0400
-
-    try xcode 16
-
 commit 10597dcdf9ef92197a8ed327bb84aa0e3ef212aa
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sun Oct 20 22:04:39 2024 -0400
 
     tmp disable test MacOS-15-XCode-16.0-Debug github actions til I get working on my own pc
 
-commit b3a86d98bb06a2ea2b0a2cf4fe43c63cfd370568
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Oct 21 08:09:01 2024 -0400
-
-    fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for clang++-19
-
 commit 6a13d235722bd1595640e9591f3a2a22f582c962
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Oct 21 10:13:37 2024 -0400
 
     configure: print macOSversion to configfile; and skipASANSanCuzBroken on darwin
-
-commit cc9589d69c679ac0ce51fad8350a3edbd5d4d025
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 10:29:11 2024 -0400
-
-    fixed qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy define for xcode 16
 
 commit 59063e3ede95bc361a1731c1bfd090e7c3eac237
 Author: Lewis Pringle <lewis@sophists.com>
@@ -389,23 +302,11 @@ Date:   Tue Oct 22 09:30:13 2024 -0400
 
     Moved Common(was Configuration)/Private/Platform_.h (was something else) to Common/Platform and renamed qPlatform_Windows to qStroika_Foundation_Common_Platform_Windows etc - and deprecating old names
 
-commit bc21f2c1ec5a16c4d7eaf614b024cd7fcc1f997a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Oct 22 11:16:40 2024 -0400
-
-    qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
-
 commit cf771cc2a115189d249f6c6508ca80d70f76a0d4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Oct 22 20:53:47 2024 -0400
 
     fix activeledit sample makefile so doesnt needlessly rebuild dll
-
-commit d0d1d7f43cdc259265f990dea613745d73bd5bc8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 23 08:37:55 2024 -0400
-
-    renamed qDebug -> qStroika_Foundation_Debug_AssertionsChecked ; name change **not backward compatible** upgrade carefully
 
 commit 6e4033122d4bafcc5d34a455320a5816f79a6819
 Author: Lewis Pringle <lewis@sophists.com>
@@ -418,7 +319,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Oct 24 08:40:38 2024 -0400
 
     -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
-
 
 #endif
 
