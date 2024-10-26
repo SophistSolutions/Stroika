@@ -25,12 +25,41 @@ Merged Foundation::Configuration into Foundation::Common
     update scripts for Foundation/Configuration => Common change
     deprecate Configuration folder/namespace and update tests/samples to reflect
 
- -   ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
+   
+
+
+ - ALL - Across Library
+   - a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
 
 
 - Characters
   - ToString/formatter support for shared_ptr<> - incomplete
   
+- Common
+  -  **not backward compatible** - renamed qHasFeature_ XXX to similar names qStroika_HasComponent_fmtlib - many
+   -   ConvertibleTo now uses concept convertible_to; and added mirror ConvertibleFrom helper and used in new IIterableOfFrom
+
+
+
+   - many more cleanups to Library/Sources/Stroika/Foundation/Common/Private/ ..
+     losing several more files from there, and adjusting StroikaConfig.h accordingly, and renaming some 
+     and in some cases moving defines to tother more appropriate/modular files
+
+    - more cleanups of  Library/Sources/Stroika/Foundation/Common/Private renames and deletions of old files and moving defines around (so far no renames of defines)
+
+   - Moved Common(was Configuration)/Private/Platform_.h (was something else) to Common/Platform and renamed qPlatform_Windows to qStroika_Foundation_Common_Platform_Windows etc - and deprecating old names
+
+  -  Added ISharedPtr concept
+
+    qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for new ISharedPtr
+    lose Common/Private/Defaults_Characters_StringUtils_.h Common/Private/Defaults_Memory_Common_.h - defines either no longer used or moved
+
+- Containers::Set
+  - Redo Set::ContainsAll/Any using Iterable Any/All methods
+
+- Characters::String
+    Minor String::CTOR cleanup, and allowed losing bug define qCompilerAndStdLib_templateConstructorSpecialization_Buggy
+
 - DataExcahnge
   - DataExchange::OptionsFile
       use Lingusitcs::MessageUtilities::Manager::sThe.RemoveTrailingSentencePunctuation to imporove messages in DataExchange/OptionsFile.cpp
@@ -40,17 +69,18 @@ Merged Foundation::Configuration into Foundation::Common
 
 - Debug
   - renamed qDebug -> qStroika_Foundation_Debug_AssertionsChecked ; name change **not backward compatible** upgrade carefully
-
-
--  Added ISharedPtr concept
-
-    qCompilerAndStdLib_template_concept_matcher_requires_Buggy BWA for new ISharedPtr
-
+  
+    - AssertExternallySynchronizedMutex
+      - docs cleanups, 
+      - WriteContext now uses unique_lock instead of lock_guard so movable, and changed static asserts to reflect that
 
 - Debug::Fatal
     explicitly expose DefaultFatalErrorHandler and added new Execution::DefaultLoggingFatalErrorHandler
 Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
    minor cleanup on SetStandardCrashHandlerSignals etc and samples
+   - Visualizations
+    -    tiny bit of docs on Foundation/Debug/Visualizations and added VariantValue
+    - cosmetic, and Debug::Visualizations cleanups
 
 - Execution
   - Execution::CommandLine
@@ -61,9 +91,14 @@ Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
   - Execution::Logging
       Minor tweaks to Foundation/Execution/Logger
 
-- - IO::FileSystem::FileStream
+ - IO::FileSystem::FileStream
 
     assure STDOUT_FILENO etc defines always available and use in Stroika samples directly
+
+- Linguistics::MessageUtilities
+    **not backward compat** changes to Linguistics::MessageUtilities - fixed typo in name, made namespace, uses sThe pattern etc
+- Memory
+    other overload of InlineBuffer<T, BUF_SIZE>::BufferAsT_ ()  constexpr
 
 - Traversal
   - Iterable
@@ -71,6 +106,7 @@ Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
     - use IIterableOfTo<> in Iterable CTOR
     - iterable docs, cleanups: more concepots (like on As()), and Map() methods
     - Minor tweak to Iterable<T>::Any ():
+    - **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
 
 
 
@@ -85,10 +121,26 @@ Debug::DefaultFatalErrorHandler; DefaultLoggingCrashSignalHandler
   - Web HTML content served from filesystem
   - HTML UI using webservices, using quasar/vue
 
+  -   fix activeledit sample makefile so doesnt needlessly rebuild dll
+
+
+
 
 
 SharedMakeVariables-Default.mk:
     fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
+
+
+
+- ScriptsLib/Skel
+  tweaks to Samples-HTMLUI to support new Skel cloning feature
+    progress refactoring Skel script to support new templates
+
+    more progress on Skel support for HTMLUI template
+
+- Docker Containers
+    docker container tweaks dev containers
+    build docker containers on github action updated for 23.10 => 24.10 switch
 
 
 
@@ -102,10 +154,6 @@ SharedMakeVariables-Default.mk:
     another try at docker container support for building with npm ubuntu 22 and 24
 
     windows docker VS_17_11_5
-
-- Containers::Set
-  - Redo Set::ContainsAll/Any using Iterable Any/All methods
-
 
 - github actions
     add Installer-Build.Out to archived files in github actions
@@ -128,24 +176,7 @@ SharedMakeVariables-Default.mk:
     again tweak github action for running out of space
     github actions with build with xcode 15.4 instead of 15.3
     tweak ubuntu 24.10 github workflow configs due to not fully working yet ostly
-
-- Characters::String
-    Minor String::CTOR cleanup, and allowed losing bug define qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-
-
-- Linguistics::MessageUtilities
-    **not backward compat** changes to Linguistics::MessageUtilities - fixed typo in name, made namespace, uses sThe pattern etc
-
-- ScriptsLib/Skel
-  tweaks to Samples-HTMLUI to support new Skel cloning feature
-    progress refactoring Skel script to support new templates
-
-    more progress on Skel support for HTMLUI template
-
-- Docker Containers
-    docker container tweaks dev containers
-    build docker containers on github action updated for 23.10 => 24.10 switch
-
+    github actions: added build using clang++17 for ubuntu 24.04; and started switch to configurations for 24.10 (from 23.10)
 
 - Compile Bug Defines
     noticed we really require msvc version 17.9 or later, so require that for now as minimum
@@ -165,6 +196,7 @@ SharedMakeVariables-Default.mk:
     fixed qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy define for xcode 16
     qCompilerAndStdLib_StdFmtOfPath_Buggy BWA
     qCompilerAndStdLib_to_chars_FP_Buggy _LIBCPP_VERSION < 199999
+    fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for xcode16
 
 - ScriptsLib
   -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
@@ -174,73 +206,16 @@ SharedMakeVariables-Default.mk:
 
   - RegressionTests
     - RegressionTests script uses regression-test-configurations instead of default-configurations by default
+    - makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
+
+- Supported Compiler Configs:
+  - re-enable clang++16 with libc++ on ubuntu 24 and added to .github actions workflow
+
+ - ThirdPartyComponents
+   - Libcurl
+     -  cleanup apparently no longer needed BWAs in curl Makefile
 
 
-commit c2c155e010a4d82537e048d205259e65f9fc441f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 17 11:16:30 2024 -0400
-
-    makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
-
-commit b382f94003e8ef706bf59f5c30cd36a6f476adef
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Oct 17 13:33:02 2024 -0400
-
-    a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
-
-commit 22e5854fe61f5b57e3701e63a52b223e9429b047
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Oct 17 20:53:45 2024 -0400
-
-    github actions: added build using clang++17 for ubuntu 24.04; and started switch to configurations for 24.10 (from 23.10)
-
-commit 3ff7b986be71cb7c27d4352655c2d9082cc6c7bc
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 09:47:00 2024 -0400
-
-    got basics of docker container build/run support working with sample HTMLUI
-
-commit b498ea20ae3a64d171a37993380dd6a2bb484168
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Oct 18 10:50:53 2024 -0400
-
-    tested and documented running the HTMLUI container and browsing resulting webpage from host
-
-commit ece0da85806214ea075c428be075bc99bcb56d8b
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Oct 19 10:17:24 2024 -0400
-
-    re-enable clang++16 with libc++ on ubuntu 24 and added to .github actions workflow
-
-commit 0bafcc6853cc6f2a655f28ab01cb625645ab458a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 19 11:06:51 2024 -0400
-
-    AssertExternallySynchronizedMutex  docs cleanups, and WriteContext now uses unique_lock instead of lock_guard so movable, and changed static asserts to reflect that
-
-commit c500133fa85cf80e42c032d1b3879792b88f287c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 19 11:33:32 2024 -0400
-
-    **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
-
-commit 14a6474c7aa7a434cf9e1d64151f3396790c96d7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 09:02:50 2024 -0400
-
-    tiny bit of docs on Foundation/Debug/Visualizations and added VariantValue
-
-commit d5385cd2cb46f7a9587c1f88ae310e2dcd9b9034
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Oct 20 09:03:26 2024 -0400
-
-    other overload of InlineBuffer<T, BUF_SIZE>::BufferAsT_ ()  constexpr
-
-commit 0fdbd2a180ba2c455985ec8f4f0b3381b218edaa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 20 15:51:27 2024 -0400
-
-    cosmetic, and Debug::Visualizations cleanups
 
 commit 137281526329dba82bbfd1bd83c533556b771fa0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -265,54 +240,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Oct 21 11:13:18 2024 -0400
 
     Supported bug defines for xcode 16
-
-commit f2a6ca404f1b644a0deaff74bc935424ef5c289e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 11:20:31 2024 -0400
-
-    cleanup apparently no longer needed BWAs in curl Makefile
-
-commit d4673a04e50b8433201f600d6f5fd840c791fa80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 13:09:36 2024 -0400
-
-    fixed qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy for xcode16
-
-commit 345680df97a6378573268a236c57e9009277b104
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 13:39:13 2024 -0400
-
-    lose Common/Private/Defaults_Characters_StringUtils_.h Common/Private/Defaults_Memory_Common_.h - defines either no longer used or moved
-
-commit 0b2d47756da3b5fbddee1862b38a4b6cdd480112
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 14:35:35 2024 -0400
-
-    many more cleanups to Library/Sources/Stroika/Foundation/Common/Private/ .. losing several more files from there, and adjusting StroikaConfig.h accordingly, and renaming some and in some cases moving defines to tother more appropriate/modular files
-
-commit 8a5d2d8ef5bb108568082236594b0d7cee7da424
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 15:10:25 2024 -0400
-
-    more cleanups of  Library/Sources/Stroika/Foundation/Common/Private renames and deletions of old files and moving defines around (so far no renames of defines)
-
-commit a20b3e476bfed0b0e4d9277df66bd49046aabd4b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 22 09:30:13 2024 -0400
-
-    Moved Common(was Configuration)/Private/Platform_.h (was something else) to Common/Platform and renamed qPlatform_Windows to qStroika_Foundation_Common_Platform_Windows etc - and deprecating old names
-
-commit cf771cc2a115189d249f6c6508ca80d70f76a0d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 22 20:53:47 2024 -0400
-
-    fix activeledit sample makefile so doesnt needlessly rebuild dll
-
-commit 6e4033122d4bafcc5d34a455320a5816f79a6819
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 23 15:57:23 2024 -0400
-
-    **not backward compatible** - renamed qHasFeature_ XXX to similar names qStroika_HasComponent_fmtlib - many
 
 commit 74f47336e39b98ddbe819b48b03366c30ccbdca8
 Author: Lewis Pringle <lewis@sophists.com>
