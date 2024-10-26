@@ -33,13 +33,14 @@
 namespace Stroika::Foundation::Debug {
 
 /**
- *  \brief The qStroika_Foundation_Debug_AssertionsChecked flag determines if assertions are checked and validated, or uses as hints for [[assume]]
- * 
- *  Assume the define _DEBUG is used throughout the code to indicate DEBUG mode (assertions on). Assure NDEBUG flag
- *  is set consistently (even if its not explicitly checked).
+ *  \brief The qStroika_Foundation_Debug_AssertionsChecked flag determines if assertions are checked and validated (else used as hints for [[assume]])
  * 
  *  \brief alias qStroika_Foundation_Debug_AssertionsChecked was called qDebug before Stroika v3.0d11
  *  \brief this mechanism will be replaced in future versions of Stroika with 'contracts' (when we support c++26 - so two major releases from now)
+ * 
+ *  Defaults to value determined by other common bug defines (_DEBUG,NDEBUG), or 1.
+ * 
+ *  Assure other common defines for this concept: (_DEBUG,NDEBUG) are set consistently (even if its not explicitly checked).
  */
 #if !defined(qStroika_Foundation_Debug_AssertionsChecked)
 #if defined(_DEBUG)
