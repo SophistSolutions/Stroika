@@ -56,7 +56,7 @@ git commit -m "my first stroika-based app"
 now build and run the app
 ~~~
 make CONFIGURATION=Debug all -j10
-./Builds/Debug/myStarterApp
+./Builds/Debug/myStarterApp/myStarterApp
 ~~~
 
 
@@ -65,3 +65,12 @@ make CONFIGURATION=Debug all -j10
 Next to try - is same as above - but with --template HTMLUI
 This creates a much more complex, and useful application (webservices in C++,
 HTML UI, talking to those webservices, installers etc)
+
+But it also requires NodeJS, and quasar. So either install these yourself, or choose a container
+that already has them installed
+
+Abbreviated instructions based on the Simple example:
+
+~~~
+docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
+~~~
