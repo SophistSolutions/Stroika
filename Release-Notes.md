@@ -15,7 +15,7 @@ especially those they need to be aware of when upgrading.
 - new sample HTMLUI - an excellent default to clone to create a webservice (service) application (c++ backend) with a modern HMTL UI fronend
 - Skel template support
   ~~~
-  ./ScriptsLib/Skel --appRoot ../NewHTMLBasedApp --appName HearHE --template HTMLUI
+  ./ScriptsLib/Skel --appRoot ../NewHTMLBasedApp --appName MyApp --template HTMLUI
   ~~~
 - Support XCode 16, and clang++-19, and Ubuntu 24.10 (in place of 23.10)
 
@@ -63,44 +63,31 @@ especially those they need to be aware of when upgrading.
     - Docker Containers
       - docker container tweaks dev containers
       - build docker containers on github action updated for 23.10 => 24.10 switch
-    - Docker Containers
-      - (review and doc just what we settled on)
-      - skip instlal nodejs on ubuntu 23.10
-      - skip instlal nodejs on ubuntu 22.04
-      - skip instlal npm quasar on ubyntn 24.04
-      - fixed install of npm /quasar for ubuntu 24.04
-      - hopefully fixed DockerBuildContainers/Ubuntu2204-RegressionTests/Dockerfile for quasar
-      - another try at docker container support for building with npm ubuntu 22 and 24
+      - docker container support for building with npm ubuntu 22 and 24
       - windows docker VS_17_11_5
     - github actions
       - add Installer-Build.Out to archived files in github actions
-      - github workflow - cleanup some warnings
-      - tweak some names in github workflow
-      - .github workflow cleanups
+      - github workflow - cleanup some warnings and scripts/output names
       - github actions: build with g++-13 too
       - github actions - added MacOS-15-XCode-16.0 test run each time
-      - minor tweaks to .github action configs and scripts/output names
-      - minor tweaks to github actions so better output
       - github action - tweak run github actions on ubuntu 24.10
-      - experiment with using macos-15 from github actions
+      - using macos-15 from github actions
       - try save space on ubuntu-24.10-clang++-19 .github action test
       - again tweak github action for running out of space
       - github actions with build with xcode 15.4 instead of 15.3
-      - tweak ubuntu 24.10 github workflow configs due to not fully working yet ostly
       - github actions: added build using clang++17 for ubuntu 24.04; and started switch to configurations for 24.10 (from 23.10)
     - Scripts
       - configure
         - configure: print macOSversion to configfile; and skipASANSanCuzBroken on darwin
         - -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
       - ScriptsLib
-        -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
-        - Config related scripts (and makefile stuff)
-          - add to regression-test-configurations for windows - ./configure Debug-Xerces
+        - fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
         - RegressionTests
+          - add to regression-test-configurations for windows - ./configure Debug-Xerces
           - RegressionTests script uses regression-test-configurations instead of default-configurations by default
-          - makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
-        - SharedMakeVariables-Default.mk:
-            fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
+          - makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests and related cleanups
+        - SharedMakeVariables-Default.mk
+          - fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
         - ScriptsLib/Skel
           - refactoring Skel script to support new templates (now default Basic template)
           - support for HTMLUI template
@@ -173,17 +160,15 @@ especially those they need to be aware of when upgrading.
           - WriteContext now uses unique_lock instead of lock_guard so movable, and changed static asserts to reflect that
         - Fatal
           - explicitly expose DefaultFatalErrorHandler and added new Execution::DefaultLoggingFatalErrorHandler; DefaultLoggingCrashSignalHandler
-        - minor cleanup on SetStandardCrashHandlerSignals etc and samples
         - Visualizations
-          -    tiny bit of docs on Foundation/Debug/Visualizations and added VariantValue
+          - tiny bit of docs on Foundation/Debug/Visualizations and added VariantValue
           - cosmetic, and Debug::Visualizations cleanups
       - Execution
         - CommandLine
-          - added method  Execution/CommandLine::GetAppName
           - CommandLine GetAppName and GenerateUsage overloads
-          - clenaup Usage generation in samples
+          - cleanup Usage generation in samples
         - Logging
-            Minor tweaks to Foundation/Execution/Logger
+          - Minor tweaks to Foundation/Execution/Logger
     - IO
       - FileSystem
         - FileStream: assure STDOUT_FILENO etc defines always available and use in Stroika samples directly
@@ -199,7 +184,7 @@ especially those they need to be aware of when upgrading.
         - Minor tweak to Iterable<T>::Any ():
         - **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
 - Samples
-  -  HTMLUI **New Sample application**
+  - HTMLUI **New Sample application**
     - elaborate demo
     - run from docker (and build from docker)
     - WIX, RPM, DEB installers
@@ -207,7 +192,7 @@ especially those they need to be aware of when upgrading.
     - WebServices
     - Web HTML content served from filesystem
     - HTML UI using webservices, using quasar/vue
-  -   fix activeledit sample makefile so doesnt needlessly rebuild dll
+  - fix activeledit sample makefile so doesnt needlessly rebuild dll
  - ThirdPartyComponents
    - Libcurl
      -  cleanup apparently no longer needed BWAs in curl Makefile
