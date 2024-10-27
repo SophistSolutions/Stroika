@@ -41,7 +41,8 @@ especially those they need to be aware of when upgrading.
 
 - Replace #include and namespace references to Configuration with Common
   ~~~
-  namespace Stroika::Foundation::Configuration {
+  #include "Stroika/Foundation/**Configuration**/Enumeration.h"
+  namespace Stroika::Foundation::**Configuration** {
       template <typename ENUM_TYPE>
       class EnumNames;
       template <>
@@ -215,7 +216,6 @@ SharedMakeVariables-Default.mk:
     -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
     - Config related scripts (and makefile stuff)
       - add to regression-test-configurations for windows - ./configure Debug-Xerces
-
     - RegressionTests
       - RegressionTests script uses regression-test-configurations instead of default-configurations by default
       - makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
