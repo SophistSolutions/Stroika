@@ -17,6 +17,7 @@ especially those they need to be aware of when upgrading.
   ~~~
   ./ScriptsLib/Skel --appRoot ../NewHTMLBasedApp --appName MyApp --template HTMLUI
   ~~~
+  so now easy to create Stroika-based webservice app, serving up static and dynamic content, and running as service, with installers (or docker run) etc...
 - Support XCode 16, and clang++-19, and Ubuntu 24.10 (in place of 23.10)
 
 #### Upgrade Notes (3.0d10 to 3.0d11)
