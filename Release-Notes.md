@@ -60,6 +60,54 @@ especially those they need to be aware of when upgrading.
 
 #### Change Details
 
+- Various docs/comments cleanups
+- Build System
+    - Docker Containers
+      - docker container tweaks dev containers
+      - build docker containers on github action updated for 23.10 => 24.10 switch
+    - Docker Containers
+      - (review and doc just what we settled on)
+      - skip instlal nodejs on ubuntu 23.10
+      - skip instlal nodejs on ubuntu 22.04
+      - skip instlal npm quasar on ubyntn 24.04
+      - fixed install of npm /quasar for ubuntu 24.04
+      - hopefully fixed DockerBuildContainers/Ubuntu2204-RegressionTests/Dockerfile for quasar
+      - another try at docker container support for building with npm ubuntu 22 and 24
+      - windows docker VS_17_11_5
+    - github actions
+      - add Installer-Build.Out to archived files in github actions
+      - github workflow - cleanup some warnings
+      - tweak some names in github workflow
+      - .github workflow cleanups
+      - github actions: build with g++-13 too
+      - githyb actions - added MacOS-15-XCode-16.0 test run each time
+      - minor tweaks to .github action configs and scripts/output names
+      - minor tweaks to github actions so better output
+      - github action - tweak run github actions on ubuntu 24.10
+      - experiment with using macos-15 from github actions
+      - try save space on ubuntu-24.10-clang++-19 .github action test
+      - again tweak github action for running out of space
+      - github actions with build with xcode 15.4 instead of 15.3
+      - tweak ubuntu 24.10 github workflow configs due to not fully working yet ostly
+      - github actions: added build using clang++17 for ubuntu 24.04; and started switch to configurations for 24.10 (from 23.10)
+    - Scripts
+      - configure
+        - configure: print macOSversion to configfile; and skipASANSanCuzBroken on darwin
+        - -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
+      - ScriptsLib
+        -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
+        - Config related scripts (and makefile stuff)
+          - add to regression-test-configurations for windows - ./configure Debug-Xerces
+        - RegressionTests
+          - RegressionTests script uses regression-test-configurations instead of default-configurations by default
+          - makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
+        - SharedMakeVariables-Default.mk:
+            fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
+        - ScriptsLib/Skel
+          - refactoring Skel script to support new templates (now default Basic template)
+          - support for HTMLUI template
+    - Supported Compiler Configs:
+      - re-enable clang++16 with libc++ on ubuntu 24 and added to .github actions workflow
 - Stroika Library
   - Across Library
     - a few static asserts (copyable<AssertExternallySynchronizedMutex>) for docs purposes
@@ -117,6 +165,11 @@ especially those they need to be aware of when upgrading.
           - Xerces - slight cleanup - use xerces namespace instead of xerces_3_2 (so can work with 33); and moved XERCES_CPP_NAMESPACE_USE to cpp file
       - Debug
         - renamed qDebug -> qStroika_Foundation_Debug_AssertionsChecked ; name change **not backward compatible** upgrade carefully
+        - Simplify samples with defaults in Debug modules (or no args/defaults)
+          ~~~
+          Debug::RegisterDefaultFatalErrorHandlers (Execution::DefaultLoggingFatalErrorHandler);
+          SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
+          ~~~
         - AssertExternallySynchronizedMutex
           - docs cleanups, 
           - WriteContext now uses unique_lock instead of lock_guard so movable, and changed static asserts to reflect that
@@ -161,84 +214,11 @@ especially those they need to be aware of when upgrading.
    - Libcurl
      -  cleanup apparently no longer needed BWAs in curl Makefile
 
-SharedMakeVariables-Default.mk:
-    fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
-
-
-- ScriptsLib/Skel
-  - refactoring Skel script to support new templates (now default Basic template)
-  - support for HTMLUI template
-
-- Docker Containers
-    docker container tweaks dev containers
-    build docker containers on github action updated for 23.10 => 24.10 switch
-
-- Docker Containers
-    (review and doc just what we settled on)
-    skip instlal nodejs on ubuntu 23.10
-    skip instlal nodejs on ubuntu 22.04
-    skip instlal npm quasar on ubyntn 24.04
-    fixed install of npm /quasar for ubuntu 24.04
-    hopefully fixed DockerBuildContainers/Ubuntu2204-RegressionTests/Dockerfile for quasar
-    another try at docker container support for building with npm ubuntu 22 and 24
-
-    windows docker VS_17_11_5
-
-- github actions
-    add Installer-Build.Out to archived files in github actions
-
-    github workflow - cleanup some warnings
-
-    tweak some names in github workflow
-    .github workflow cleanups
-
-    github actions: build with g++-13 too
-
-    githyb actions - added MacOS-15-XCode-16.0 test run each time
-    minor tweaks to .github action configs and scripts/output names
-
-    minor tweaks to github actions so better output
-    github action - tweak run github actions on ubuntu 24.10
-    experiment with using macos-15 from github actions
-
-    try save space on ubuntu-24.10-clang++-19 .github action test
-    again tweak github action for running out of space
-    github actions with build with xcode 15.4 instead of 15.3
-    tweak ubuntu 24.10 github workflow configs due to not fully working yet ostly
-    github actions: added build using clang++17 for ubuntu 24.04; and started switch to configurations for 24.10 (from 23.10)
-
-
-- Scripts
-  - configure
-    - configure: print macOSversion to configfile; and skipASANSanCuzBroken on darwin
-    - -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
-  - ScriptsLib
-    -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
-    - Config related scripts (and makefile stuff)
-      - add to regression-test-configurations for windows - ./configure Debug-Xerces
-    - RegressionTests
-      - RegressionTests script uses regression-test-configurations instead of default-configurations by default
-      - makefile default-configuration/regression-test-configuration cleanups so builds xerces on windows for regression tests(untested) and related cleanups
-
-- Supported Compiler Configs:
-  - re-enable clang++16 with libc++ on ubuntu 24 and added to .github actions workflow
-
-
-#### TO ORGANIZE
--- Support clang++19, and XCode 16 and MacOS 15
-
-Generally simplify 
-            Debug::RegisterDefaultFatalErrorHandlers (Execution::DefaultLoggingFatalErrorHandler);
-            SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
-or no args/defaults...
-- Support XCode 16
-- Support Clang++-19 on Ubuntu 24.10 (both new) and lose 23.10 ubuntu support
-
 #### Release-Validation
 - Compilers Tested/Supported
   - g++ { 11, 12, 13, 14 }
   - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
-  - MSVC: { 17.11.4 }
+  - MSVC: { 17.11.5 }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 11 version 23H2
