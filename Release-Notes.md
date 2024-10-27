@@ -41,10 +41,8 @@ especially those they need to be aware of when upgrading.
 
 - Replace #include and namespace references to Configuration with Common
   ~~~
-  #include "Stroika/Foundation/**Configuration**/Enumeration.h"
-  namespace Stroika::Foundation::**Configuration** {
-      template <typename ENUM_TYPE>
-      class EnumNames;
+  #include "Stroika/Foundation/Configuration/Enumeration.h"
+  namespace Stroika::Foundation::Configuration {
       template <>
       constexpr EnumNames<Characters::CompareOptions> DefaultNames<Characters::CompareOptions>::k{{{
           {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
@@ -80,7 +78,7 @@ especially those they need to be aware of when upgrading.
       - tweak some names in github workflow
       - .github workflow cleanups
       - github actions: build with g++-13 too
-      - githyb actions - added MacOS-15-XCode-16.0 test run each time
+      - github actions - added MacOS-15-XCode-16.0 test run each time
       - minor tweaks to .github action configs and scripts/output names
       - minor tweaks to github actions so better output
       - github action - tweak run github actions on ubuntu 24.10
