@@ -7,22 +7,57 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### DRAFT UPGRADE NOTES FOR 3.0d11
+### 3.0d11 {2024-10-27} {[diff](../../compare/v3.0d10...v3.0d11)}   -- DRAFT
 
+#### TLDR
 
-#MAJOR ITEMS
-Merged Foundation::Configuration into Foundation::Common
+- Merged Foundation::Configuration namespace/folder into Foundation::Common (namespace/folder)
+- new sample HTMLUI - an excellent default to clone to create a webservice (service) application (c++ backend) with a modern HMTL UI fronend
+- Skel template support
+  ~~~
+  ./ScriptsLib/Skel --appRoot ../NewHTMLBasedApp --appName HearHE --template HTMLUI
+  ~~~
+- Support XCode 16, and clang++-19, and Ubuntu 24.10 (in place of 23.10)
 
+#### Upgrade Notes (3.0d10 to 3.0d11)
 
+- #define name changes (if you use the name on the left, change to name on the right)
+  ~~~
+  #define qDebug qStroika_Foundation_Debug_AssertionsChecked
+  #define qHas_Syslog qStroika_HasComponent_syslog
+  #define qHasLibrary_ODBC qStroika_HasComponent_ODBC
+  #define qHasFeature_sqlite qStroika_HasComponent_sqlite
+  #define qHasFeature_OpenSSL qStroika_HasComponent_OpenSSL
+  #define qHasFeature_Xerces qStroika_HasComponent_xerces
+  #define qHasFeature_ATLMFC qStroika_HasComponent_ATLMFC
+  #define qHasFeature_boost qStroika_HasComponent_boost
+  #define qHasFeature_LibCurl qStroika_HasComponent_libcurl
+  #define qHasFeature_fmtlib qStroika_HasComponent_fmtlib
+  #define qHasFeature_GoogleTest qStroika_HasComponent_googletest
+  #define qHasFeature_LZMA qStroika_HasComponent_LZMA
+  #define qHasFeature_WinHTTP qStroika_HasComponent_WinHTTP
+  #define qHasFeature_libxml2 qStroika_HasComponent_libxml2
+  ~~~
 
------
+- Replace #include and namespace references to Configuration with Common
+  ~~~
+  namespace Stroika::Foundation::Configuration {
+      template <typename ENUM_TYPE>
+      class EnumNames;
+      template <>
+      constexpr EnumNames<Characters::CompareOptions> DefaultNames<Characters::CompareOptions>::k{{{
+          {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
+          {Characters::CompareOptions::eWithCase, L"With-Case"},
+      }}};
+  }
+  ~~~
+  ~~~
+  using namespace Configuration => Using namespace Common;
+  ~~~
+- Replace 
+    Linguistics::MessageUtiltiesManager::Get () with Linguistics::MessageUtilities::Manager::sThe
 
-- Support XCode 16
-- Support Clang++-19 on Ubuntu 24.10 (both new) and lose 23.10 ubuntu support
-
-
-
-   
+#### Change Details
 
 - Stroika Library
   - Across Library
@@ -111,7 +146,6 @@ Merged Foundation::Configuration into Foundation::Common
         - iterable docs, cleanups: more concepots (like on As()), and Map() methods
         - Minor tweak to Iterable<T>::Any ():
         - **not backward compatible - but minor** - Iterable::_SafeReadWriteRepAccessor and _SafeReadRepAccessor now both properly movable but neither copyable
-
 - Samples
   -  HTMLUI **New Sample application**
     - elaborate demo
@@ -122,7 +156,9 @@ Merged Foundation::Configuration into Foundation::Common
     - Web HTML content served from filesystem
     - HTML UI using webservices, using quasar/vue
   -   fix activeledit sample makefile so doesnt needlessly rebuild dll
-
+ - ThirdPartyComponents
+   - Libcurl
+     -  cleanup apparently no longer needed BWAs in curl Makefile
 
 SharedMakeVariables-Default.mk:
     fixed DEFAULT_LINK_LINE for LinkTime_CopyFilesToEXEDir so properly handles failed link
@@ -177,7 +213,6 @@ SharedMakeVariables-Default.mk:
     - -Wno-return-local-addr on ubuntu 24.04 also to cleanup spurrious warnings
   - ScriptsLib
     -  experimental fix for issue with quasar - RunInDockerEnvironment makes sure ~ is user writable
-
     - Config related scripts (and makefile stuff)
       - add to regression-test-configurations for windows - ./configure Debug-Xerces
 
@@ -188,61 +223,45 @@ SharedMakeVariables-Default.mk:
 - Supported Compiler Configs:
   - re-enable clang++16 with libc++ on ubuntu 24 and added to .github actions workflow
 
- - ThirdPartyComponents
-   - Libcurl
-     -  cleanup apparently no longer needed BWAs in curl Makefile
 
-
-
-
-
-
- ./ScriptsLib/Skel --appRoot ../NEWH --appName HearHE --template HTMLUI
-
-
-// DEPRECATED NAME (to be removed in Stroika v3.0a1 - deprecated since Stroika v3.0d11)
-    #define qDebug qStroika_Foundation_Debug_AssertionsChecked
-
-// DEPRECATED NAMES - BACKWARD COMPAT FROM PRE v3.0d11 - until v3.0a1 --LGP 2024-10-23
-#define qHas_Syslog qStroika_HasComponent_syslog
-#define qHasLibrary_ODBC qStroika_HasComponent_ODBC
-#define qHasFeature_sqlite qStroika_HasComponent_sqlite
-#define qHasFeature_OpenSSL qStroika_HasComponent_OpenSSL
-#define qHasFeature_Xerces qStroika_HasComponent_xerces
-#define qHasFeature_ATLMFC qStroika_HasComponent_ATLMFC
-#define qHasFeature_boost qStroika_HasComponent_boost
-#define qHasFeature_LibCurl qStroika_HasComponent_libcurl
-#define qHasFeature_fmtlib qStroika_HasComponent_fmtlib
-#define qHasFeature_GoogleTest qStroika_HasComponent_googletest
-#define qHasFeature_LZMA qStroika_HasComponent_LZMA
-#define qHasFeature_WinHTTP qStroika_HasComponent_WinHTTP
-#define qHasFeature_libxml2 qStroika_HasComponent_libxml2
-
-    
+#### TO ORGANIZE
 -- Support clang++19, and XCode 16 and MacOS 15
-
-Replace 
-    Linguistics::MessageUtiltiesManager::Get () with 
-    Linguistics::MessageUtilities::Manager::sThe
-
-
-namespace Stroika::Foundation::Configuration {
-    template <typename ENUM_TYPE>
-    class EnumNames;
-    template <>
-    constexpr EnumNames<Characters::CompareOptions> DefaultNames<Characters::CompareOptions>::k{{{
-        {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
-        {Characters::CompareOptions::eWithCase, L"With-Case"},
-    }}};
-}
-- must change namespace to Common...(and maybe more)
-using namespace Configuration => Using namespace Common; etc...
-- 
 
 Generally simplify 
             Debug::RegisterDefaultFatalErrorHandlers (Execution::DefaultLoggingFatalErrorHandler);
             SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
 or no args/defaults...
+- Support XCode 16
+- Support Clang++-19 on Ubuntu 24.10 (both new) and lose 23.10 ubuntu support
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
+  - MSVC: { 17.11.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 24.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
 ---
 
