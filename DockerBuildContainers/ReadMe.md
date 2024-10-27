@@ -2,10 +2,24 @@
 
 Stroika does **not** depend on Docker, but Docker can provide a quickstart to building Stroika.
 
-Just create one or more of these docker images, and run them as in:
+## Pre-built Docker Containers
+
+- sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
+- sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
+- sophistsolutionsinc/stroika-buildvm-ubuntu2410-small
+- sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+- sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
+- sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests
+- sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+- sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+- sophistsolutionsinc/stroika-dev
+- sophistsolutionsinc/stroika-dev-2204
+- sophistsolutionsinc/stroika-dev-2404
+- sophistsolutionsinc/stroika-dev-2410
 
 ## Create Docker Images
 
+Just create one or more of these docker images, and run them as in:
 (or you can pull them from docker hub - skipping this step)
 
 - `make docker-images`

@@ -72,5 +72,10 @@ that already has them installed
 Abbreviated instructions based on the Simple example:
 
 ~~~
-docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
+docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
+git clone https://github.com/SophistSolutions/Stroika.git
+cd Stroika
+./ScriptsLib/Skel --appRoot ../myStarterApp --template HTMLUI
+cd ../myStarterApp
+make CONFIGURATION=Debug all -j10
 ~~~
