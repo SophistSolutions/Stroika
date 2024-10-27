@@ -4,18 +4,19 @@ Stroika does **not** depend on Docker, but Docker can provide a quickstart to bu
 
 ## Pre-built Docker Containers
 
-- sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
-- sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
-- sophistsolutionsinc/stroika-buildvm-ubuntu2410-small
-- sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
-- sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
-- sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests
-- sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
-- sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
-- sophistsolutionsinc/stroika-dev
-- sophistsolutionsinc/stroika-dev-2204
-- sophistsolutionsinc/stroika-dev-2404
-- sophistsolutionsinc/stroika-dev-2410
+- [sophistsolutionsinc/stroika-buildvm-ubuntu2204-small](Ubuntu2204-Small/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-ubuntu2404-small](Ubuntu2404-Small/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-ubuntu2410-small](Ubuntu2410-Small/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests](Ubuntu2204-RegressionTests/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests](Ubuntu2404-RegressionTests/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests](Ubuntu2410-RegressionTests/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22](Windows-Cygwin/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22](Windows-MSYS/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-windows-vs2k22 *base - not directly usable*](Windows-VS2k22/Dockerfile)
+- [sophistsolutionsinc/stroika-dev](Stroika-Dev/Dockerfile)
+- [sophistsolutionsinc/stroika-dev-2204](Stroika-Dev/Dockerfile)
+- [sophistsolutionsinc/stroika-dev-2404](Stroika-Dev/Dockerfile)
+- [sophistsolutionsinc/stroika-dev-2410](Stroika-Dev/Dockerfile)
 
 ## Create Docker Images
 
