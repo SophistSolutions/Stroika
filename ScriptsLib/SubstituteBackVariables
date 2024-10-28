@@ -7,12 +7,12 @@ TEXT="$1"
 
 if [ ! -z $StroikaRoot ] ; then
 	#TEXT=`echo $TEXT | sed s%$StroikaRoot%\{StroikaRoot\}%g`
-	StroikaRoot=${StroikaRoot%/}
+	# StroikaRoot=${StroikaRoot%/}
 	TEXT=`echo $TEXT | sed s%$StroikaRoot%%g`
 fi
 if [ ! -z $TOP_ROOT ] ; then
 	#TEXT=`echo $TEXT | sed s%$TOP_ROOT%\{TOP_ROOT\}%g`
-	TOP_ROOT=${TOP_ROOT%/}
+	# TOP_ROOT=${TOP_ROOT%/}
 	TEXT=`echo $TEXT | sed s%$TOP_ROOT%%g`
 fi
 echo -n $TEXT

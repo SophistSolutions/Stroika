@@ -73,8 +73,7 @@ especially those they need to be aware of when upgrading.
       - github actions - added MacOS-15-XCode-16.0 test run each time
       - github action - tweak run github actions on ubuntu 24.10
       - using macos-15 from github actions
-      - try save space on ubuntu-24.10-clang++-19 .github action test
-      - again tweak github action for running out of space
+      - save space on ubuntu-24.10-clang++-19 .github action and others
       - github actions with build with xcode 15.4 instead of 15.3
       - github actions: added build using clang++17 for ubuntu 24.04; and started switch to configurations for 24.10 (from 23.10)
     - Scripts
