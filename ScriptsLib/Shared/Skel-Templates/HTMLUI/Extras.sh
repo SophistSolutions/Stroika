@@ -19,6 +19,7 @@ do
     sed 's/SrcDir.*:=.*/SrcDir:=$(TOP_ROOT)Backend\//' | \
     sed 's/VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION/VERSION_FILE_IN=$(TOP_ROOT)VERSION/' | \
     sed "s/Samples-HTMLUI/${APP_NAME}/g" | \
+    sed "s/Stroika-Sample-HTMLUI/${APP_NAME}/g" | \
     sed "s/Samples\/HTMLUI/${APP_NAME}/g" | \
     sed "s/stroika-sample-htmlui/${LC_APP_NAME}/g" | \
     sed "s/HTMLUI/${APP_NAME}/g" > $APP_ROOT/$i/Makefile
