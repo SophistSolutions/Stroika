@@ -2,17 +2,18 @@
 TEXT="$1"
 
 # EXAMPLES
-# (export TOP_ROOT=/myStarterApp/ ; /myStarterApp/ThirdPartyComponents/Stroika/StroikaRoot/ScriptsLib/SubstituteBackVariables /myStarterApp/ThirdPartyComponents/Stroika/StroikaRoot/Builds/Debug/myStarterApp/myStarterApp)
-# (export TOP_ROOT=/myStarterApp ; /myStarterApp/ThirdPartyComponents/Stroika/StroikaRoot/ScriptsLib/SubstituteBackVariables /myStarterApp/ThirdPartyComponents/Stroika/StroikaRoot/Builds/Debug/myStarterApp/myStarterApp)
+# (export TOP_ROOT=/myStarterApp/ ; ./ScriptsLib/SubstituteBackVariables /myStarterApp/ThirdPartyComponents/Stroika/StroikaRoot/Builds/Debug/myStarterApp/myStarterApp)
+# (export TOP_ROOT=/myStarterApp ; ./ScriptsLib/SubstituteBackVariables /myStarterApp/ThirdPartyComponents/Stroika/StroikaRoot/Builds/Debug/myStarterApp/myStarterApp)
+# (export TOP_ROOT=/c/Sandbox/Stroika/DevRoot/; ./ScriptsLib/SubstituteBackVariables /c/Sandbox/Stroika/DevRoot/Builds)
 
 if [ ! -z $StroikaRoot ] ; then
 	#TEXT=`echo $TEXT | sed s%$StroikaRoot%\{StroikaRoot\}%g`
 	# StroikaRoot=${StroikaRoot%/}
-	TEXT=`echo $TEXT | sed s%$StroikaRoot%%g`
+	TEXT=`echo $TEXT | sed "s%^$StroikaRoot%%g"`
 fi
 if [ ! -z $TOP_ROOT ] ; then
 	#TEXT=`echo $TEXT | sed s%$TOP_ROOT%\{TOP_ROOT\}%g`
 	# TOP_ROOT=${TOP_ROOT%/}
-	TEXT=`echo $TEXT | sed s%$TOP_ROOT%%g`
+	TEXT=`echo $TEXT | sed "s%^$TOP_ROOT%%g"`
 fi
 echo -n $TEXT
