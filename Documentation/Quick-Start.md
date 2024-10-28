@@ -10,7 +10,7 @@
 
 ## Docker
 
-Stroika doesn't depend on docker. But - it depends on lots of build tools (make, c compilers etc) and containers
+Stroika doesn't depend on docker. But - it depends on lots of build tools (make, c compilers etc); containers
 provide a very convenient way to package those dependencies. You can install those dependencies yourself on your platform, and
 just use the Dockerfile as a recipe to see what you need. Or you can just install docker, and run under it to quick start.
 

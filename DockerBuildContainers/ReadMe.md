@@ -12,7 +12,7 @@ Stroika does **not** depend on Docker, but Docker can provide a quickstart to bu
 - [sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests](Ubuntu2410-RegressionTests/Dockerfile)
 - [sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22](Windows-Cygwin/Dockerfile)
 - [sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22](Windows-MSYS/Dockerfile)
-- [sophistsolutionsinc/stroika-buildvm-windows-vs2k22 *base - not directly usable*](Windows-VS2k22/Dockerfile)
+- [sophistsolutionsinc/stroika-buildvm-windows-vs2k22](Windows-VS2k22/Dockerfile)  *base for others - not directly usable*
 - [sophistsolutionsinc/stroika-dev](Stroika-Dev/Dockerfile)
 - [sophistsolutionsinc/stroika-dev-2204](Stroika-Dev/Dockerfile)
 - [sophistsolutionsinc/stroika-dev-2404](Stroika-Dev/Dockerfile)

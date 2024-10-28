@@ -52,6 +52,7 @@ RUN apt-get -qq install -y g++
 #Only needed to use sanitizer builds
 RUN apt-get -qq install -y libasan5 libasan6 libubsan1
 
+# echo on bash startup to read md file so more obvious how to get started
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
 COPY Ubuntu2404-Small/.bash_profile /root
 
