@@ -44,6 +44,12 @@ const ObjectVariantMapper About::APIServerInfo::OperatingSystem::kMapper = [] ()
     return mapper;
 }();
 
+
+/*
+ ********************************************************************************
+ ************** Model::About::APIServerInfo::ComponentInfo **********************
+ ********************************************************************************
+ */
 String About::APIServerInfo::ComponentInfo::ToString () const
 {
     StringBuilder sb;
@@ -55,6 +61,11 @@ String About::APIServerInfo::ComponentInfo::ToString () const
     return sb;
 }
 
+/*
+ ********************************************************************************
+ ************** Model::About::APIServerInfo::CurrentMachine *********************
+ ********************************************************************************
+ */
 String About::APIServerInfo::CurrentMachine::ToString () const
 {
     StringBuilder sb;
@@ -67,6 +78,11 @@ String About::APIServerInfo::CurrentMachine::ToString () const
     return sb;
 }
 
+/*
+ ********************************************************************************
+ ************** Model::About::APIServerInfo::CurrentProcess *********************
+ ********************************************************************************
+ */
 String About::APIServerInfo::CurrentProcess::ToString () const
 {
     StringBuilder sb;
@@ -80,6 +96,11 @@ String About::APIServerInfo::CurrentProcess::ToString () const
     return sb;
 }
 
+/*
+ ********************************************************************************
+ ***************** Model::About::APIServerInfo::APIEndpoint *********************
+ ********************************************************************************
+ */
 String About::APIServerInfo::APIEndpoint::ToString () const
 {
     StringBuilder sb;
@@ -96,6 +117,11 @@ String About::APIServerInfo::APIEndpoint::ToString () const
     return sb.str ();
 }
 
+/*
+ ********************************************************************************
+ ******************* Model::About::APIServerInfo::WebServer *********************
+ ********************************************************************************
+ */
 String About::APIServerInfo::WebServer::ToString () const
 {
     StringBuilder sb;
@@ -108,6 +134,11 @@ String About::APIServerInfo::WebServer::ToString () const
     return sb.str ();
 }
 
+/*
+ ********************************************************************************
+ ******************** Model::About::APIServerInfo::Database *********************
+ ********************************************************************************
+ */
 String About::APIServerInfo::Database::ToString () const
 {
     StringBuilder sb;
@@ -125,6 +156,11 @@ String About::APIServerInfo::Database::ToString () const
     return sb;
 }
 
+/*
+ ********************************************************************************
+ ************************** Model::About::APIServerInfo *************************
+ ********************************************************************************
+ */
 String About::APIServerInfo::ToString () const
 {
     StringBuilder sb;
@@ -140,6 +176,11 @@ String About::APIServerInfo::ToString () const
     return sb;
 }
 
+/*
+ ********************************************************************************
+ *********************************** Model::About *******************************
+ ********************************************************************************
+ */
 String About::ToString () const
 {
     StringBuilder sb;
@@ -240,6 +281,11 @@ const ObjectVariantMapper About::kMapper = [] () {
     return mapper;
 }();
 
+/*
+ ********************************************************************************
+ ************************************ Model::kMapper ****************************
+ ********************************************************************************
+ */
 const ObjectVariantMapper Stroika::Samples::HTMLUI::Model::kMapper = [] () {
     ObjectVariantMapper mapper;
 
@@ -249,74 +295,6 @@ const ObjectVariantMapper Stroika::Samples::HTMLUI::Model::kMapper = [] () {
     mapper.AddCommonType<Collection<Common::GUID>> ();
 
     mapper += About::kMapper;
-
-    // Read/Write real/complex numbers
-    mapper.Add<Number> (
-        [] (const ObjectVariantMapper& mapper [[maybe_unused]], const Number* obj) -> VariantValue {
-            static const FloatConversion::ToStringOptions kFloat2StringOptions_{};
-            StringBuilder                                 sb;
-            if (obj->real () != 0) {
-                if (obj->imag () == 0) {
-                    return obj->real (); // return a number in this case, not a string
-                }
-                sb << FloatConversion::ToString (obj->real (), kFloat2StringOptions_);
-            }
-            if (obj->imag () != 0) {
-                if (not sb.empty ()) {
-                    sb << ' ';
-                }
-                if (obj->imag () > 0 and sb.length () > 1) {
-                    sb << "+ "sv;
-                }
-                if (obj->imag () == 1) {
-                    // skip
-                }
-                else if (obj->imag () == -1) {
-                    sb << "- "sv;
-                }
-                else {
-                    sb << FloatConversion::ToString (obj->imag (), kFloat2StringOptions_);
-                }
-                sb << "i"sv;
-            }
-            if (sb.empty ()) {
-                return "0"_k;
-            }
-            return sb.str ();
-        },
-        [] (const ObjectVariantMapper& mapper [[maybe_unused]], const VariantValue& vv, Number* intoObj) -> void {
-            // Parse complex numbers of the form a + bi, handling special cases of a, and bi.
-            // Trick: parse one number, and then accumulate second number (if any)
-            // Works with a few minor rewrites
-            String remainingNumber2Parse = vv.As<String> ();
-            remainingNumber2Parse = remainingNumber2Parse.ReplaceAll (" "_k, String{}); // strip spaces - not needed and cause 2 + 4i to not parse (where 2+4i would) with simple trick we use (parse numbers and accum)
-            Number accum{};
-            for (unsigned int cnt = 0; cnt < 2 and not remainingNumber2Parse.empty (); ++cnt) {
-                // special case rewrite bare 'i' as '1i' with +/- cases
-                if (remainingNumber2Parse.StartsWith ("i"_k)) {
-                    static_assert (is_base_of_v<String, decltype (remainingNumber2Parse)>);
-                    remainingNumber2Parse = "1i"_k + remainingNumber2Parse.Skip (1);
-                }
-                else if (remainingNumber2Parse.StartsWith ("+i"_k)) {
-                    remainingNumber2Parse = "+1i"_k + remainingNumber2Parse.Skip (2);
-                }
-                else if (remainingNumber2Parse.StartsWith ("-i"_k)) {
-                    remainingNumber2Parse = "-1i"_k + remainingNumber2Parse.Skip (2);
-                }
-                Number::value_type d = Characters::FloatConversion::ToFloat<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse);
-                if (remainingNumber2Parse.StartsWith ("i"_k)) {
-                    accum += Number{0, d};
-                    remainingNumber2Parse = remainingNumber2Parse.Skip (1);
-                }
-                else {
-                    accum += Number{d};
-                }
-            }
-            if (not remainingNumber2Parse.empty ()) {
-                Execution::Throw (Execution::Exception{"invalid complex number: "sv + vv.As<String> ()});
-            }
-            *intoObj = accum;
-        });
 
     mapper.AddCommonType<Collection<String>> ();
 

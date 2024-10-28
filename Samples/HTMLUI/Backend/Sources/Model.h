@@ -27,8 +27,6 @@ namespace Stroika::Samples::HTMLUI::Model {
 
     using namespace Stroika::Foundation;
 
-    using Number = std::complex<double>;
-
     using Characters::String;
     using Containers::Sequence;
     using IO::Network::URI;
