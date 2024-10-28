@@ -72,7 +72,7 @@ that already has them installed
 Abbreviated instructions based on the Simple example:
 
 ~~~
-docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
+docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests  # OR USE sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 git clone https://github.com/SophistSolutions/Stroika.git
 cd Stroika
 ./ScriptsLib/Skel --appRoot ../myHTMLGUIApp --template HTMLUI
