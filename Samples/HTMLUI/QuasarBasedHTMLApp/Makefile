@@ -19,7 +19,7 @@ NEED_GNU_MAKE_ := 4.0.0
 OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VERSION) $(NEED_GNU_MAKE_))))
 
 all:
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Samples-HTMLUI/HTML Build:"
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples-HTMLUI/HTML:"
 ifeq ($(CONFIGURATION),)
 	@echo "Cannot complete build without a configuraiton" && exit 1;
 endif
@@ -80,7 +80,7 @@ $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/TOOLS_CHECKED:
 
 
 $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_):
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Preparing symbolic links for $@"` "... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Preparing symbolic links for " `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$@"` "... "
 	@rm -rf $@ && mkdir -p $@
 	@for i in ${SRC_FILES2Link_}; do cp -r `pwd`/$$i $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/$$i; done
 
