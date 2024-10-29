@@ -44,18 +44,13 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y git; \
     apt-get -qq install -y xxd;
     
-# ### https://stackoverflow.com/questions/76974555/glibcxx-3-4-32-not-found-error-at-runtime-gcc-13-2-0
-# RUN apt-get install -y software-properties-common; \
-#     add-apt-repository -y ppa:ubuntu-toolchain-r/test; \
-#     apt-get update -y ; \
-#     apt-get install -y libstdc++6;
-
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
 RUN apt-get -qq install -y g++
 
 #Only needed to use sanitizer builds
 RUN apt-get -qq install -y libasan5 libasan6 libubsan1
 
+# echo on bash startup to read md file so more obvious how to get started
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
 COPY Ubuntu2204-Small/.bash_profile /root
 

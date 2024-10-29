@@ -2,15 +2,15 @@
 
 ## Rough Outline
 
-- run docker container to build
+- **run docker container** to build
 - checkout/clone Stroika
-- Skel to create your app shell/outline
-- make - to build it all
+- **Skel** to create your app shell/outline
+- **make** - to build it all
 - run/test
 
 ## Docker
 
-Stroika doesn't depend on docker. But - it depends on lots of build tools (make, c compilers etc); containers
+Stroika doesn't depend on docker. But - it depends on lots of build tools (e.g. make, c compilers etc); containers
 provide a very convenient way to package those dependencies. You can install those dependencies yourself on your platform, and
 just use the Dockerfile as a recipe to see what you need. Or you can just install docker, and run under it to quick start.
 
