@@ -7,7 +7,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #include <LSingleDoc.h>
 #elif defined(WIN32)
 #pragma warning(push)
@@ -30,21 +30,21 @@
 
 class LedItView;
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 class LedItServerItem;
 #endif
 
 class LedItDocument :
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     public LSingleDoc,
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     public COleServerDoc,
 #endif
     public MarkerOwner {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 public:
     LedItDocument (LCommander* inSuper, FileFormat format);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 protected: // create from serialization only
     LedItDocument ();
     DECLARE_DYNCREATE (LedItDocument)
@@ -60,7 +60,7 @@ public:
     virtual void       DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept override;
     virtual TextStore* PeekAtTextStore () const override;
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     // Call exactly once (inFileSpec==NULL for new window)
 public:
     nonvirtual void BuildDocWindow (const FSSpec* inFileSpec);
@@ -89,7 +89,7 @@ public:
 
 private:
     nonvirtual void DoReadCode ();
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 public:
     nonvirtual LedItServerItem* GetEmbeddedItem ();
 
@@ -135,7 +135,7 @@ public:
     nonvirtual void Save ();
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // utilities to pick save/open file names
 public:
     static bool DoPromptSaveAsFileName (CString& fileName, FileFormat* fileFormat);
@@ -156,7 +156,7 @@ public:
     FileFormat             fFileFormat;
     StyledTextIO::HTMLInfo fHTMLInfo;
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 protected:
     nonvirtual void DoSaveHelper ();
 
@@ -172,7 +172,7 @@ private:
     nonvirtual void NameNewDoc ();
     nonvirtual void OpenFile (const FSSpec& inFileSpec);
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #if qStroika_Foundation_Debug_AssertionsChecked
 public:
     virtual void AssertValid () const override;
@@ -194,7 +194,7 @@ SDKString ExtractFileSuffix (const SDKString& from);
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 inline LedItServerItem* LedItDocument::GetEmbeddedItem ()
 {
     return (LedItServerItem*)COleServerDoc::GetEmbeddedItem ();

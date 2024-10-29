@@ -19,7 +19,7 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
 #endif
@@ -72,13 +72,13 @@ namespace {
             /**
              * Setup various error/assertion error handlers/checkers
              */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
             Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
 #endif
             Debug::RegisterDefaultFatalErrorHandlers (DefaultLoggingFatalErrorHandler);
             SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
         }
@@ -130,7 +130,7 @@ namespace {
                 if (loggingConfig.ToSysLog.value_or (Logging::kToSysLog_Default)) {
                     appenders += make_shared<Logger::SysLogAppender> (kAppName_);
                 }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
                 if (loggingConfig.ToWindowsEventLog.value_or (Logging::kToWindowsEventLog_Default)) {
                     appenders += make_shared<Logger::WindowsEventLogAppender> (kAppName_);
                 }

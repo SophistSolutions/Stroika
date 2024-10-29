@@ -4,7 +4,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #include <Balloons.h>
 #include <Gestalt.h>
 #include <ToolUtils.h>
@@ -43,16 +43,16 @@
 
 #include "Stroika/Frameworks/Led/Config.h"
 #include "Stroika/Frameworks/Led/StdDialogs.h"
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Frameworks/Led/Platform/Windows_FileRegistration.h"
 #endif
 #include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "LedItControlItem.h"
 #include "LedItInPlaceFrame.h"
 #include "LedItMainFrame.h"
-#elif qPlatform_MacOS
+#elif qStroika_Foundation_Common_Platform_MacOS
 #include "FilteredFilePicker.h"
 #endif
 
@@ -72,7 +72,7 @@ using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 static Handle sDeepShitCheeseBuf = NULL; // so no mem alerts don't crash...
 
 inline void DoStringyAlert (short alertID, const ConstStr255Param p0 = NULL, const ConstStr255Param p1 = NULL,
@@ -102,7 +102,7 @@ inline void DoStringyAlert (short alertID, const ConstStr255Param p0 = NULL, con
 
 const char kAppName[] = "LedIt";
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 
 #define STANDARD_LEDITAPPLICATION_MACOS_CATCHERS()                                                                                         \
     catch (OSErr err)                                                                                                                      \
@@ -132,7 +132,7 @@ const char kAppName[] = "LedIt";
 
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 
 #define STD_EXCEPT_CATCHER(APP)                                                                                                            \
     catch (CMemoryException * e)                                                                                                           \
@@ -164,7 +164,7 @@ const char kAppName[] = "LedIt";
 
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 class SimpleLedTemplate : public CSingleDocTemplate {
 public:
     SimpleLedTemplate (const char* daStr);
@@ -352,7 +352,7 @@ static BOOL AFXAPI SetRegKey (LPCTSTR lpszKey, LPCTSTR lpszValue, LPCTSTR lpszVa
 class MyAboutBox : public Led_StdDialogHelper_AboutBox {
 private:
     using inherited = Led_StdDialogHelper_AboutBox;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 public:
     MyAboutBox (HINSTANCE hInstance, HWND parentWnd)
         : inherited (hInstance, parentWnd)
@@ -376,13 +376,13 @@ public:
 #define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         const short kPictHeight = 273;
         const short kPictWidth  = 437;
         SDKString   verStr      = SDKString{qLed_ShortVersionString} + kUNICODE_NAME_ADORNER " (" + __DATE__ + ")";
         const int   kVERWidth   = 230;
         SimpleLayoutHelper (kPictHeight, kPictWidth, Led_Rect (159, 15, 17, 142), Led_Rect (159, 227, 17, 179), verStr);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
         // we must resize our dlog on the fly based on pict resource size...
         const int kPictWidth  = 437; // must agree with ACTUAL bitmap size
@@ -600,7 +600,7 @@ private:
  ******************************** LedItApplication ******************************
  ********************************************************************************
  */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 LedItApplication theApp;
 
 // This identifier was generated to be statistically unique for your app.
@@ -630,22 +630,22 @@ LedItApplication* LedItApplication::sThe = NULL;
 
 LedItApplication::LedItApplication ()
     :
-#if qPlatform_MacOS || qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
     inherited ()
     ,
 #endif
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     fHelpMenuItem (0)
     , fGotoLedItWebPageMenuItem (0)
     , fGotoSophistsWebPageMenuItem (0)
     , fCheckForUpdatesWebPageMenuItem (0)
     , fLastLowMemWarnAt (0.0f)
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
           fOleTemplateServer ()
     ,
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     fInstalledFonts ()
 #elif qStroika_FeatureSupported_XWindows
     fInstalledFonts (GDK_DISPLAY ())
@@ -667,11 +667,11 @@ LedItApplication::LedItApplication ()
      *  a better way to make this work, but lets KISS (keep it simple stupid) for now, as we are very close to
      *  release -- LGP 2001-10-06.
      */
-#if !qPlatform_Windows
+#if !qStroika_Foundation_Common_Platform_Windows
     // Tell Led about the kinds of embeddings we will allow
     EmbeddedObjectCreatorRegistry::Get ().AddStandardTypes ();
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     // Support OLE embeddings (both created from clip, and from RTF-format files)
     EmbeddedObjectCreatorRegistry::Get ().AddAssoc (LedItControlItem::kClipFormat, LedItControlItem::kEmbeddingTag,
                                                     LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
@@ -680,7 +680,7 @@ LedItApplication::LedItApplication ()
 #endif
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     // Register classes for objects created from 'PPob' resources
     TRegistrar<LPlaceHolder>::Register ();
     TRegistrar<LPrintout>::Register ();
@@ -788,9 +788,9 @@ LedItApplication& LedItApplication::Get ()
 
 void LedItApplication::DoAboutBox ()
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     MyAboutBox dlg;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     MyAboutBox dlg (m_hInstance, AfxGetMainWnd ()->m_hWnd);
 #elif qStroika_FeatureSupported_XWindows
     MyAboutBox dlg (GTK_WINDOW (fAppWindow));
@@ -804,7 +804,7 @@ void LedItApplication::OnGotoLedItWebPageCommand ()
         Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/LedIt/", kAppName));
     }
     catch (...) {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         DoStringyAlert (kCannotOpenWebPageAlertID);
 #endif
     }
@@ -816,7 +816,7 @@ void LedItApplication::OnGotoSophistsWebPageCommand ()
         Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/", kAppName));
     }
     catch (...) {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         DoStringyAlert (kCannotOpenWebPageAlertID);
 #endif
     }
@@ -828,13 +828,13 @@ void LedItApplication::OnCheckForUpdatesWebPageCommand ()
         Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/CheckForUpdates.asp", kAppName));
     }
     catch (...) {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         DoStringyAlert (kCannotOpenWebPageAlertID);
 #endif
     }
 }
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 void LedItApplication::StartUp ()
 {
     try {
@@ -1232,7 +1232,7 @@ void LedItApplication::UpdateViewsForPrefsChange ()
     bool smartCutNPaste = Options{}.GetSmartCutAndPaste ();
     bool showHiddenText = Options{}.GetShowHiddenText ();
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     const TArray<LDocument*>&  docList = LDocument::GetDocumentList ();
     TArrayIterator<LDocument*> iterator (docList);
     LDocument*                 theDoc = NULL;
@@ -1244,7 +1244,7 @@ void LedItApplication::UpdateViewsForPrefsChange ()
         d->GetTextView ()->SetWrapToWindow (wrapToWindow);
         d->GetTextView ()->SetShowHiddenText (showHiddenText);
     }
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     // Update each open view
     POSITION tp = GetFirstDocTemplatePosition ();
     while (tp != NULL) {
@@ -1275,7 +1275,7 @@ void LedItApplication::UpdateViewsForPrefsChange ()
 #endif
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 BOOL LedItApplication::InitInstance ()
 {
     SetRegistryKey (_T ("Sophist Solutions, Inc."));
@@ -1293,7 +1293,7 @@ BOOL LedItApplication::InitInstance ()
 
     fSpellCheckEngine = make_shared<SpellCheckEngine_Basic_Simple> ();
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     {
         // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,
         // and other spellchecking options (see SPR#1591)
@@ -1347,7 +1347,7 @@ BOOL LedItApplication::InitInstance ()
     StandardUnknownTypeStyleMarker::sUnknownPict          = (const Led_DIB*)::LoadAppResource (kUnknownEmbeddingPictID, RT_BITMAP);
     StandardMacPictureStyleMarker::sUnsupportedFormatPict = (const Led_DIB*)::LoadAppResource (kUnsupportedPICTFormatPictID, RT_BITMAP);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     {
         class MyRegistrationHelper : public Win32UIFileAssociationRegistrationHelper {
         private:
@@ -1569,7 +1569,7 @@ void LedItApplication::OnToggleShowHiddenTextOptionUpdateCommandUI (CCmdUI* pCmd
 
 void LedItApplication::OnChooseDefaultFontCommand ()
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     FontSpecification fsp = Options{}.GetDefaultNewDocFont ();
 
     LOGFONT lf;
@@ -1597,10 +1597,10 @@ void LedItApplication::OnChooseDefaultFontCommand ()
 void LedItApplication::HandleBadAllocException () noexcept
 {
     try {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         CDialog errorDialog (kBadAllocExceptionOnCmdDialogID);
         errorDialog.DoModal ();
-#elif qPlatform_MacOS
+#elif qStroika_Foundation_Common_Platform_MacOS
         // ALSO, FREE ANY MEMORY WE CAN...
         TArray<LDocument*>&        docList = LDocument::GetDocumentList ();
         TArrayIterator<LDocument*> iterator (docList);
@@ -1624,9 +1624,9 @@ void LedItApplication::HandleBadAllocException () noexcept
 void LedItApplication::HandleBadUserInputException () noexcept
 {
     try {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         DoStringyAlert (kBadUserInputExceptionAlertID);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         CDialog errorDialog (kBadUserInputExceptionOnCmdDialogID);
         errorDialog.DoModal ();
 #else
@@ -1641,9 +1641,9 @@ void LedItApplication::HandleBadUserInputException () noexcept
 void LedItApplication::HandleUnknownException () noexcept
 {
     try {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         DoStringyAlert (kUnknownExceptionAlertID);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         CDialog errorDialog (kUnknownExceptionOnCmdDialogID);
         errorDialog.DoModal ();
 #endif
@@ -2158,7 +2158,7 @@ GtkWidget* LedItApplication::get_main_menu (GtkWidget* window)
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 const vector<SDKString>& LedItApplication::GetUsableFontNames ()
 {
     return fInstalledFonts.GetUsableFontNames ();
@@ -2187,7 +2187,7 @@ SDKString LedItApplication::CmdNumToFontName (UINT cmdNum)
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ******************************** LedItDocManager *******************************
@@ -2232,7 +2232,7 @@ void SimpleLedTemplate::LoadTemplate ()
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ******************************** LedItDocManager *******************************

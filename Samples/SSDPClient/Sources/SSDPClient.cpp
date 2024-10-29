@@ -99,7 +99,7 @@ int main (int argc, const char* argv[])
 {
     Debug::TraceContextBumper ctx{
         Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
     bool                  listen = false;

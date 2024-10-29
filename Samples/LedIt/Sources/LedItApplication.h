@@ -10,11 +10,11 @@
 #include <string>
 #include <vector>
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #include <Dialogs.h>
 
 #include <LDocApplication.h>
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 
 #include "Stroika/Foundation/Execution/Platform/Windows/COM.h"
 
@@ -37,40 +37,40 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 #include "Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #include "Stroika/Frameworks/Led/Platform/Led_PP.h"
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Frameworks/Led/Platform/MFC.h"
 #elif qStroika_FeatureSupported_XWindows
 #include "Stroika/Frameworks/Led/Platform/Gtk.h"
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 class CMenu;
 #endif
 
 class LedItDocument;
 class LedItView;
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 using CMD_ENABLER = Platform::Led_PP_TmpCmdUpdater;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 using CMD_ENABLER = Platform::Led_MFC_TmpCmdUpdater;
 #elif qStroika_FeatureSupported_XWindows
 using CMD_ENABLER = Platform::Led_Gtk_TmpCmdUpdater;
 #endif
 
 class LedItApplication
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     : public LDocApplication
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     : public CWinApp
 #endif
 {
 private:
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     using inherited = LDocApplication;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     using inherited = CWinApp;
 #endif
 
@@ -89,7 +89,7 @@ public:
     shared_ptr<SpellCheckEngine_Basic_Simple> fSpellCheckEngine;
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 public:
     nonvirtual void      FixupFontMenu (CMenu* fontMenu);
     nonvirtual SDKString CmdNumToFontName (UINT cmdNum);
@@ -107,7 +107,7 @@ protected:
 private:
     nonvirtual void UpdateViewsForPrefsChange ();
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 public:
     virtual BOOL InitInstance () override;
 
@@ -162,7 +162,7 @@ public:
     nonvirtual void OnGotoSophistsWebPageCommand ();
     nonvirtual void OnCheckForUpdatesWebPageCommand ();
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 public:
     virtual void MakeMenuBar () override;
     virtual void StartUp () override;
@@ -253,13 +253,13 @@ private:
 private:
     static GtkItemFactoryEntry kMenuItemResources[];
 #endif
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 private:
     Execution::Platform::Windows::COMInitializer fCOMInitializer_{COINIT_APARTMENTTHREADED};
 #endif
 private:
     Execution::Logger::Activator fLogMgrActivator_;
-#if qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#if qStroika_Foundation_Common_Platform_Windows || qStroika_FeatureSupported_XWindows
 public:
     InstalledFonts fInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
 #endif

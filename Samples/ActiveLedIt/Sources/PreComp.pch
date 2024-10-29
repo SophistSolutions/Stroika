@@ -74,8 +74,8 @@
 
 
 
-#define	qPlatform_MacOS			0
-#define	qPlatform_Windows		1
+#define	qStroika_Foundation_Common_Platform_MacOS			0
+#define	qStroika_Foundation_Common_Platform_Windows		1
 
 
 

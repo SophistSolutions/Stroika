@@ -12,7 +12,7 @@
 #include "Stroika/Frameworks/Led/GDI.h"
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #define kApplicationSignature 'LDAP'
 
 #define kTEXTFileType 'TEXT'

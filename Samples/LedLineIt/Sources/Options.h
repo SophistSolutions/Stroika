@@ -55,7 +55,7 @@ public:
     nonvirtual void                 SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption);
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 public:
     nonvirtual bool GetCheckFileAssocsAtStartup () const;
     nonvirtual void SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup);

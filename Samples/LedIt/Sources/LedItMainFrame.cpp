@@ -11,7 +11,7 @@
 #include "LedItView.h"
 #include "Options.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "LedItApplication.h"
 #endif
 

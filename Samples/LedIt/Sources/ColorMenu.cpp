@@ -12,7 +12,7 @@
 
 #include "ColorMenu.h"
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  *********************************** ColorMenu **********************************

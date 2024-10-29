@@ -360,7 +360,7 @@ BOOL LedLineItApplication::InitInstance ()
         SpellCheckEngine_Basic::RegressionTest ();
     }
     fSpellCheckEngine = make_shared<SpellCheckEngine_Basic_Simple> ();
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     {
         // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,
         // and other spellchecking options (see SPR#1591)
@@ -371,7 +371,7 @@ BOOL LedLineItApplication::InitInstance ()
 #endif
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     {
         class MyRegistrationHelper : public Win32UIFileAssociationRegistrationHelper {
         private:
@@ -485,7 +485,7 @@ void LedLineItApplication::HandleBadAllocException () noexcept
 void LedLineItApplication::HandleBadUserInputException () noexcept
 {
     try {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         CDialog errorDialog (kBadUserInputExceptionOnCmdDialogID);
         errorDialog.DoModal ();
 #else

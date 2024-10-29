@@ -10,7 +10,7 @@ DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
 DISABLE_COMPILER_MSC_WARNING_END (5054)
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/COM.h"
 #endif
 #include "Stroika/Foundation/Execution/Logger.h"
@@ -89,7 +89,7 @@ private:
 private:
     nonvirtual void UpdateViewsForPrefsChange ();
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 private:
     Execution::Platform::Windows::COMInitializer fCOMInitializer_{COINIT_APARTMENTTHREADED};
 #endif

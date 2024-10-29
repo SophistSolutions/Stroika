@@ -4,7 +4,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #include <new.h>
 
 #include <UDrawingState.h> // for class UQDGlobals
@@ -24,7 +24,7 @@
 /*
  *  Config/Defines
  */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #if __profile__
 #define qProfile 1
 #endif
@@ -47,7 +47,7 @@ using namespace Stroika::Frameworks::Led::Platform;
 /*
  *  Profiling/Mac memory Management.
  */
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 
 #if qProfile && defined(__MWERKS__)
 #include "profiler.h"
@@ -145,10 +145,10 @@ static int MyXErrorHandler (Display* display, XErrorEvent* error)
 }
 #endif
 
-#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
+#if qStroika_Foundation_Common_Platform_MacOS || qStroika_FeatureSupported_XWindows
 int main ([[maybe_unused]]int argc, [maybe_unused]]char** argv)
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         // Set Debugging options
         SetDebugThrow_ (debugAction_Alert);

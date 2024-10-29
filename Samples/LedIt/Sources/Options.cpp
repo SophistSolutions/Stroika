@@ -40,7 +40,7 @@ namespace {
         bool             fShowParagraphGlyphs{false};
         bool             fShowTabGlyphs{false};
         bool             fShowSpaceGlyphs{false};
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         bool fCheckFileAssocAtStartup{true};
         BLOB fDefaultNewDocFont;
 #endif
@@ -74,7 +74,7 @@ namespace {
                                         {"ShowHiddenText"sv, &Options_::fShowHiddenText},
                                         {"ShowParagraphGlyphs"sv, &Options_::fShowParagraphGlyphs},
                                         {"ShowTabGlyphs"sv, &Options_::fShowTabGlyphs}, {"ShowSpaceGlyphs"sv, &Options_::fShowSpaceGlyphs},
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
                                         {"CheckFileAssocAtStartup"sv, &Options_::fCheckFileAssocAtStartup},
                                         {"DefaultNewDocFont"sv, &Options_::fDefaultNewDocFont},
 #endif
@@ -125,7 +125,7 @@ void Options::SetSearchParameters (const SearchParameters& searchParameters)
     });
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 const CDockState& Options::GetDocBarState () const
 {
     static CDockState     dockState; // keep static copy and clear each time cuz CDocState doesn't support copy CTOR - LGP971214
@@ -243,7 +243,7 @@ void Options::SetShowSpaceGlyphs (bool showSpaceGlyphs)
     });
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 bool Options::GetCheckFileAssocsAtStartup () const
 {
     return sOptions_.Get ().fCheckFileAssocAtStartup;
@@ -260,7 +260,7 @@ void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 
 FontSpecification Options::GetDefaultNewDocFont () const
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     BLOB bytes = sOptions_.Get ().fDefaultNewDocFont;
     if (not bytes.empty ()) {
         if (bytes.size () == sizeof (LOGFONT)) {
@@ -275,7 +275,7 @@ FontSpecification Options::GetDefaultNewDocFont () const
 
 void Options::SetDefaultNewDocFont ([[maybe_unused]] const FontSpecification& defaultNewDocFont)
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     sOptions_.Update ([&] (Options_ d) {
         d.fDefaultNewDocFont = BLOB::FromRaw (defaultNewDocFont.GetOSRep ());
         return d;

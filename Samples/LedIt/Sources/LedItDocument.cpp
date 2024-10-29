@@ -6,7 +6,7 @@
 
 #include <cctype>
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #include <Finder.h>
 
 #include <LFile.h>
@@ -33,13 +33,13 @@
 #include "Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_PlainText.h"
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_STYLText.h"
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 #include "Stroika/Frameworks/Led/FilteredFilePicker.h"
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 #include "LedItControlItem.h"
 #include "LedItServerItem.h"
 #endif
@@ -57,7 +57,7 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 
 using Memory::StackBuffer;
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 class LedItDocumentWindow : public LWindow {
 public:
     LedItDocumentWindow (ResIDT inWINDid, UInt32 inAttributes, LCommander* inSuper)
@@ -184,7 +184,7 @@ public:
 };
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 // special exception handling just for MFC library implementation
 // copied here so I could clone MFC code as needed - not well understood - UGH!!! - LGP 951227
 #ifndef _AFX_OLD_EXCEPTIONS
@@ -206,7 +206,7 @@ static void AppendFilterSuffix (CString& filter, OPENFILENAME& ofn, CDocTemplate
  ******************************** LedItDocument *********************************
  ********************************************************************************
  */
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 FileFormat LedItDocument::sHiddenDocOpenArg = eUnknownFormat; // See LedItDocument::OnOpenDocument ()
 
 IMPLEMENT_DYNCREATE (LedItDocument, COleServerDoc)
@@ -238,11 +238,11 @@ END_INTERFACE_MAP ()
 
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 LedItDocument::LedItDocument (LCommander* inSuper, FileFormat format)
     : LSingleDoc (inSuper)
     ,
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
 LedItDocument::LedItDocument ()
     : COleServerDoc ()
     ,
@@ -258,10 +258,10 @@ LedItDocument::LedItDocument ()
     , fHidableTextDatabase ()
     , fCommandHandler (kMaxNumUndoLevels)
     ,
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     fFileFormat (format)
     ,
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#elif qStroika_Foundation_Common_Platform_Windows || qStroika_FeatureSupported_XWindows
     fFileFormat (eDefaultFormat)
     ,
 #endif
@@ -269,11 +269,11 @@ LedItDocument::LedItDocument ()
 #if qStroika_FeatureSupported_XWindows
     , fPathName ()
 #endif
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     , fTextView (NULL)
 #endif
 {
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     EnableAutomation ();
     ::AfxOleLockApp ();
 #endif
@@ -285,7 +285,7 @@ LedItDocument::LedItDocument ()
 
 LedItDocument::~LedItDocument ()
 {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
     if (mWindow != NULL) {
         mWindow->PostAction (NULL); //  Flush undo buffer
     }
@@ -296,7 +296,7 @@ LedItDocument::~LedItDocument ()
 // DTOR is done...
 #endif
     fTextStore.RemoveMarkerOwner (this);
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
     ::AfxOleUnlockApp ();
 #endif
 }
@@ -304,10 +304,10 @@ LedItDocument::~LedItDocument ()
 void LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     if (updateInfo.fRealContentUpdate) {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         mIsModified = true;
         SetUpdateCommandStatus (true);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         SetModifiedFlag ();
 #endif
     }
@@ -502,7 +502,7 @@ void LedItDocument::Save ()
 }
 #endif
 
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
 const vector<LWindow*>& LedItDocument::GetDocumentWindows ()
 {
     return LedItDocumentWindow::sWindowList;
@@ -1095,7 +1095,7 @@ void LedItDocument::OnSaveACopyAsCommand ()
 }
 #endif
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 BOOL LedItDocument::OnNewDocument ()
 {
     fCommandHandler.Commit ();
@@ -1650,7 +1650,7 @@ SDKString ExtractFileSuffix (const SDKString& from)
     }
 }
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 /*
  ********************************************************************************
  ******************************** AppendFilterSuffix ****************************

@@ -488,7 +488,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
             size_t charsToWrite = min (kBufSize, eob - offset);
             fTextStore.CopyOut (offset, charsToWrite, buf);
             offset += charsToWrite;
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
             Led_tChar buf2[2 * sizeof (buf)];
 #else
             Led_tChar buf2[sizeof (buf)];

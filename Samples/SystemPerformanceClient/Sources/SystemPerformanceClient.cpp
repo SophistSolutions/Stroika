@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Process.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
 #include "Stroika/Foundation/Execution/Synchronized.h"
@@ -212,7 +212,7 @@ int main (int argc, const char* argv[])
 {
     Execution::CommandLine    cmdLine{argc, argv};
     Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
-#if qPlatform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
     using namespace Execution::StandardCommandLineOptions;

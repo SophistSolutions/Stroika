@@ -29,7 +29,7 @@ public:
     nonvirtual SearchParameters GetSearchParameters () const;
     nonvirtual void             SetSearchParameters (const SearchParameters& searchParameters);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 public:
     nonvirtual const CDockState& GetDocBarState () const;
     nonvirtual void              SetDocBarState (const CDockState& dockState);
@@ -59,7 +59,7 @@ public:
     nonvirtual bool GetShowSpaceGlyphs () const;
     nonvirtual void SetShowSpaceGlyphs (bool showSpaceGlyphs);
 
-#if qPlatform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
 public:
     nonvirtual bool GetCheckFileAssocsAtStartup () const;
     nonvirtual void SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup);

@@ -287,10 +287,10 @@ public:
 public:
     virtual void DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
     {
-        Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback> delegator (callback);
-#if qPlatform_MacOS
+        Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback> delegator{callback};
+#if qStroika_Foundation_Common_Platform_MacOS
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
@@ -311,9 +311,9 @@ public:
 #if qSupportOtherFontSizeDlg
     virtual DistanceType PickOtherFontHeight (DistanceType origHeight) override
     {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         Led_StdDialogHelper_OtherFontSizeDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (origHeight);
@@ -329,9 +329,9 @@ public:
     virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid,
                                               LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog dlg;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         Led_StdDialogHelper_ParagraphSpacingDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (*spaceBefore, *spaceBeforeValid, *spaceAfter, *spaceAfterValid, *lineSpacing, *lineSpacingValid);
@@ -360,9 +360,9 @@ public:
     virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin,
                                                         bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
     {
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog dlg;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         Led_StdDialogHelper_ParagraphIndentsDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (*leftMargin, *leftMarginValid, *rightMargin, *rightMarginValid, *firstIndent, *firstIndentValid);
@@ -446,9 +446,9 @@ public:
         RequireNotNull (tableProperties);
 
         using DLGTYPE = Led_StdDialogHelper_EditTablePropertiesDialog;
-#if qPlatform_MacOS
+#if qStroika_Foundation_Common_Platform_MacOS
         DLGTYPE infoDialog;
-#elif qPlatform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
         DLGTYPE infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         DLGTYPE::cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);

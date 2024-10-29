@@ -371,7 +371,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
     // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
     //
     if (optional<pid_t> o = fRep_->fPID) {
-#if qPlatform_Posix
+#if qStroika_Foundation_Common_Platform_POSIX
         ::kill (SIGTERM, *o);
 #elif qStroika_Foundation_Common_Platform_Windows
         // @todo - if this OpenProcess gives us any trouble, we can return the handle directry from the 'CreateRunnable' where we invoke the process
