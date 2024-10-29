@@ -97,3 +97,6 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
 
 clean::
 	@rm -rf $(ObjDir)
+
+format-code:
+	@$(StroikaRoot)ScriptsLib/FormatCode Sources *.h *.inl *.cpp

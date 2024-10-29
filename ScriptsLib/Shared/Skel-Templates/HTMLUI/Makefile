@@ -171,5 +171,5 @@ endif
 
 .PHONY: installers installer-deb installer-rpm installer-wix
 installers installer-deb installer-rpm installer-wix:
-	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Samples/HTMLUI: Building Installers:"
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME}: Building Installers:"
 	@$(MAKE) --no-print-directory --directory Installers --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@

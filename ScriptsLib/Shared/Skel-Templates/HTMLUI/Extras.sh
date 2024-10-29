@@ -7,7 +7,7 @@ cp -r ${oldStroikaDir}Samples/HTMLUI/{Backend,Docker,Installers,OpenAPI,QuasarBa
 
 LC_APP_NAME=`echo -n "${APP_NAME}" | tr '[:upper:]' '[:lower:]'`
 
-sed s/\$\{APP_NAME\}/${APP_NAME}/g < $TEMPLATE_SRC_DIR/Makefile > $APP_ROOT/Makefile
+sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/$TEMPLATE/Makefile > $APP_ROOT/Makefile
 
 # Patch TOP_ROOT and StroikaRoot, and HTMLUI->AppName in Makefiles
 echo "Patching for HTMLUI Template::Makefiles..."
@@ -24,7 +24,6 @@ do
     sed "s/stroika-sample-htmlui/${LC_APP_NAME}/g" | \
     sed "s/HTMLUI/${APP_NAME}/g" > $APP_ROOT/$i/Makefile
 done
-
 
 # Patch HTMLUI => {APP_NAME} in various source files
 echo "Patching for HTMLUI Template::Sources..."
@@ -63,4 +62,4 @@ mv ${APP_ROOT}/Docker/ReadMe.md.new ${APP_ROOT}/Docker/ReadMe.md
      mv stroika-sample-htmlui.control.static ${LC_APP_NAME}.control.static; \
      mv stroika-sample-htmlui.rpm.spec ${LC_APP_NAME}.rpm.spec; \
      mv stroika-sample-htmlui.service ${LC_APP_NAME}.service; \
-     )
+     ) > /dev/null
