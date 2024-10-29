@@ -41,8 +41,8 @@ else
 	@$(MAKE) --directory=ThirdPartyComponents --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(StroikaRoot)/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory=Backend --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all
-	@$(MAKE) --silent html
-	@$(MAKE) --silent installers
+	@$(MAKE) --silent html MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --silent installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
@@ -166,7 +166,7 @@ ifeq ($(shell which quasar 2>/dev/null),)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed:" `$(StroikaRoot)ScriptsLib/GetMessageForMissingTool quasar` "***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else
-	@$(MAKE) --silent --directory QuasarBasedHTMLApp --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all
+	@$(MAKE) --silent --directory QuasarBasedHTMLApp --no-print-directory all
 endif
 
 .PHONY: installers installer-deb installer-rpm installer-wix
