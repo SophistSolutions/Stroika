@@ -44,7 +44,6 @@ const ObjectVariantMapper About::APIServerInfo::OperatingSystem::kMapper = [] ()
     return mapper;
 }();
 
-
 /*
  ********************************************************************************
  ************** Model::About::APIServerInfo::ComponentInfo **********************
