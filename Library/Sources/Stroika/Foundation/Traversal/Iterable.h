@@ -745,13 +745,13 @@ namespace Stroika::Foundation::Traversal {
          *  \note   Prior to Stroika v3.0d5, this template look 2 template parameters, the first an element type and the second the collection to be produced.
          *          But since that release, we just take the second parameter (as first) - and infer the RESULT_ELELMENT_TYPE.
          * 
-         *  \note   Prior to Stroika v2.1.10, this was called Select()
+         *  \note   Prior to Stroika v2.1.10, this was called Select ()
          * 
          *  \note - The overloads returning Iterable<RESULT> do NOT IMMEDIATELY traverse its argument, but uses @see CreateGenerator - to create a new iterable that dynamically pulls
          *          from 'this' Iterable<>'.
          * 
          *          The overloads returning RESULT_CONTAINER DO however immediately construct RESULT_CONTAINER, and fill it in the the result
-         *          of traversal before Select() returns.
+         *          of traversal before Map () returns.
          * 
          *  \note   This can be used to filter data, but if that is the only goal, 'Where' is a better choice. If the argument function
          *          returns optional<THE RETURN TYPE> - then only accumulate those that are returned with has_value () (so also can be used to filter).
