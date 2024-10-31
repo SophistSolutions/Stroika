@@ -370,6 +370,13 @@ namespace Stroika::Foundation::DataExchange {
         inline const InternetMediaType::AtomType kApplication{"application"sv};
 
         /**
+         *  \brief 'audio'
+         *
+         *  This is the major type (atom) making up a class of InternetMediaTypes.
+         */
+        inline const InternetMediaType::AtomType kAudio{"audio"sv};
+
+        /**
          *  \brief 'image'
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
@@ -391,6 +398,16 @@ namespace Stroika::Foundation::DataExchange {
          *  \brief application/octet-stream
          */
         inline const InternetMediaType kOctetStream{Types::kApplication, "octet-stream"sv};
+
+        /**
+         *  \brief audio/mp3
+         */
+        inline const InternetMediaType kAudioMP3{Types::kAudio, "mp3"sv};
+
+        /**
+         *  \brief audio/mp4
+         */
+        inline const InternetMediaType kAudioMP4{Types::kAudio, "mp4"sv};
 
         /**
          *  \brief image/png
