@@ -34,8 +34,9 @@ namespace Stroika::Foundation::Common {
      *
      *          using traits = FunctionTraits<decltype(lambda)>;
      *
-     *          static_assert(same_as<long, traits::result_type>::value);
-     *          static_assert(same_as<int, traits::arg<0>::type>::value);
+     *          static_assert (traits::kArity == 1);
+     *          static_assert (same_as<long, traits::result_type>);
+     *          static_assert (same_as<int, traits::arg<0>::type>);
      *      \endcode
      * 
      *  CREDITS:
