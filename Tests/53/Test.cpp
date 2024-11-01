@@ -152,6 +152,11 @@ namespace {
         {
 
 #if 0
+
+            // first add object mapper for mapperableobj type - and then do GetAll (IDS) - POST, PUT, GET(s) and PATCH
+            // and I guess DELETE method as tests... (and maybe put into DEMO as well)
+
+
             , Route{"api/(v1/)?myobjs/(.+)"_RegEx,
                     ObjectRequestHandler::Factory{kMapper, [this] (const ObjectRequestHandler::Context& c) -> Recording {
                         ActiveCallCounter_ acc{*this};

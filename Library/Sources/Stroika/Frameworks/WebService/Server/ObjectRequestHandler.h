@@ -148,7 +148,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          *  Note this is broken out as a callable method so it can be used from a straight custom WebServer::RequestHandler
          *  and just parts of the functionality used.
          */
-        nonvirtual RETURN_TYPE ApplyHandler (Request* req) const
+        nonvirtual RETURN_TYPE ApplyHandler (Request& req) const
             requires (not INCLUDE_CONTEXT);
         nonvirtual RETURN_TYPE ApplyHandler (const Context& c) const
             requires (INCLUDE_CONTEXT);
@@ -157,9 +157,9 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         /**
          *  Given the packaged up response 'r' - send it as a result, in the appropriate format (based on request headers etc)
          */
-        nonvirtual void SendResponse (const Request* request, Response* response) const
+        nonvirtual void SendResponse (const Request& request, Response& response) const
             requires (same_as<RETURN_TYPE, void>);
-        nonvirtual void SendResponse (const Request* request, Response* response, const RETURN_TYPE& r) const
+        nonvirtual void SendResponse (const Request& request, Response& response, const RETURN_TYPE& r) const
             requires (not same_as<RETURN_TYPE, void>);
 
     private:

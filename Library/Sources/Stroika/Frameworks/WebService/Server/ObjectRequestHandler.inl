@@ -79,14 +79,14 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         };
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (Request* req) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (Request& req) const
         requires (not INCLUDE_CONTEXT)
     {
         if constexpr (same_as<WEB_METHOD_ARG, void>) {
             return fHighLevelHandler_ ();
         }
         else {
-            WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (req->GetBodyVariantValue ())};
+            WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (req.GetBodyVariantValue ())};
             return fHighLevelHandler_ (arg);
         }
     }
@@ -103,30 +103,30 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         }
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse ([[maybe_unused]] const Request* request,
-                                                                                     [[maybe_unused]] Response*      response) const
+    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse ([[maybe_unused]] const Request& request,
+                                                                                     [[maybe_unused]] Response&      response) const
         requires (same_as<RETURN_TYPE, void>)
     {
         // @todo - set status? Maybe no need - just do nothing??? and OK
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse (const Request* request, Response* response, const RETURN_TYPE& r) const
+    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse (const Request& request, Response& response, const RETURN_TYPE& r) const
         requires (not same_as<RETURN_TYPE, void>)
     {
         using namespace DataExchange;
         // @todo check accepts content type - and convert result (to JSON or binary json, xml etc)
         if constexpr (Common::IAnyOf<RETURN_TYPE, String, DataExchange::VariantValue>) {
             if constexpr (same_as<RETURN_TYPE, String>) {
-                response->contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kText_PLAIN);
+                response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kText_PLAIN);
             }
             else {
-                response->contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
+                response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
             }
-            response->write (r);
+            response.write (r);
         }
         else {
-            response->contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
-            response->write (Variant::JSON::Writer{}.WriteAsString (fObjectVariantMapper_.FromObject (r)));
+            response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
+            response.write (Variant::JSON::Writer{}.WriteAsString (fObjectVariantMapper_.FromObject (r)));
         }
     }
 
