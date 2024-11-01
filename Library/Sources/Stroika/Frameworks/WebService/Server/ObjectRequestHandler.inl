@@ -54,14 +54,14 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
                 "ObjectRequestHandler::Factory handler", "m->request = {}, RETURN_TYPE={}, WEB_METHOD_ARG={}, INCLUDE_CONTEXT={}"_f,
                 m->request ().ToString (), type_index{typeid (RETURN_TYPE)}, type_index{typeid (WEB_METHOD_ARG)}, INCLUDE_CONTEXT)};
-            Request*                  req  = m->rwRequest ();
-            Request*                  resp = m->rwResponse ();
+            Request&    req  = m->rwRequest ();
+            Response&   resp = m->rwResponse ();
             if constexpr (same_as<RETURN_TYPE, void>) {
                 if constexpr (INCLUDE_CONTEXT) {
                     ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp});
                 }
                 else {
-                    ApplyHandler (m->rwRequest ());
+                    ApplyHandler (req);
                 }
                 SendResponse (req, resp);
             }
