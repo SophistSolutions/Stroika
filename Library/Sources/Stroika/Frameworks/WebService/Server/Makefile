@@ -21,6 +21,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=	\
 	$(ObjDir)Basic${OBJ_SUFFIX}\
+	$(ObjDir)ObjectRequestHandler${OBJ_SUFFIX}\
 	$(ObjDir)VariantValue${OBJ_SUFFIX}\
 
 

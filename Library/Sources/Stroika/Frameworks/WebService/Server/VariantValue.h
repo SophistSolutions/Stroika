@@ -162,6 +162,10 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
     /**
+    * 
+    *   POSSIBLY TO BE DEPRECATED IN FAVOR OF ObjectRequestHandler
+    * 
+    * 
      *  \brief mkRequestHandler () is a series of overloaded helpers that first call ExpectedMethod to validate and then the argument function 'f' and then use the objMapper to format/return the result.
      *
      *  All the overloads of mkRequestHandler () take as the first argument a WebServiceMethodDescription, used to validate.
