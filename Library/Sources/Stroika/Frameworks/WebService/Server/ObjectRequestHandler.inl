@@ -116,6 +116,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse (const Request* request, Response* response, const RETURN_TYPE& r) const
         requires (not same_as<RETURN_TYPE, void>)
     {
+        using namespace DataExchange;
         // @todo check accepts content type - and convert result (to JSON or binary json, xml etc)
         if constexpr (Common::IAnyOf<RETURN_TYPE, String, DataExchange::VariantValue>) {
             if constexpr (same_as<RETURN_TYPE, String>) {
