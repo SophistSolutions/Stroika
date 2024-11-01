@@ -103,6 +103,11 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         concept IsFunctionOfOneArgPlusContext_ =
             FunctionTraits<CALLBACK_FUNCTION>::kArity == 2 and
             invocable<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type, Context>;
+
+        template <typename RETURN_TYPE, typename WEB_METHOD_ARG>
+        struct MagicRemoveVoidArgAddContext_ : function<RETURN_TYPE (WEB_METHOD_ARG, Context)> {};
+        template <typename RETURN_TYPE>
+        struct MagicRemoveVoidArgAddContext_<RETURN_TYPE, void> : function<RETURN_TYPE (Context)> {};
     }
 
     /**
@@ -148,14 +153,18 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         nonvirtual RETURN_TYPE ApplyHandler (const Context& c) const
             requires (INCLUDE_CONTEXT);
 
+    public:
+        /**
+         *  Given the packaged up response 'r' - send it as a result, in the appropriate format (based on request headers etc)
+         */
+        nonvirtual void SendResponse (const Request* request, Response* response) const
+            requires (same_as<RETURN_TYPE, void>);
+        nonvirtual void SendResponse (const Request* request, Response* response, const RETURN_TYPE& r) const
+            requires (not same_as<RETURN_TYPE, void>);
+
     private:
         ObjectVariantMapper fObjectVariantMapper_;
-        template <typename WA = WEB_METHOD_ARG>
-        struct MagicRemoveVoidArg_ : function<RETURN_TYPE (WEB_METHOD_ARG, Context)> {};
-        template <>
-        struct MagicRemoveVoidArg_<void> : function<RETURN_TYPE (Context)> {};
-        using HandlerType_ = Select_t<Case<INCLUDE_CONTEXT and same_as<WEB_METHOD_ARG, void>, function<RETURN_TYPE (Context)>>,
-                                      Case<INCLUDE_CONTEXT and not same_as<WEB_METHOD_ARG, void>, MagicRemoveVoidArg_<WEB_METHOD_ARG>>,
+        using HandlerType_ = Select_t<Case<INCLUDE_CONTEXT, Private_::MagicRemoveVoidArgAddContext_<RETURN_TYPE, WEB_METHOD_ARG>>,
                                       Case<not INCLUDE_CONTEXT, function<RETURN_TYPE (WEB_METHOD_ARG)>>>;
         HandlerType_ fHighLevelHandler_;
         Options      fOptions_;

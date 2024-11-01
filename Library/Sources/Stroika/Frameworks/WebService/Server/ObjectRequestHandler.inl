@@ -51,36 +51,38 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         using namespace DataExchange;
         using WebServer::Message;
         return [*this] (Message* m, [[maybe_unused]] const Sequence<String>& matchedArgs) {
-            Debug::TraceContextBumper ctx{"Factory handler", "m->request = {}"_f, m->request ().ToString ()};
-            DbgTrace ("RETURN_TYPE={}"_f, type_index{typeid (RETURN_TYPE)});
-            DbgTrace ("WEB_METHOD_ARG={}"_f, type_index{typeid (WEB_METHOD_ARG)});
-            DbgTrace ("INCLUDE_CONTEXT={}"_f, INCLUDE_CONTEXT);
-            RETURN_TYPE r = [&] () {
+            Debug::TraceContextBumper ctx{"ObjectRequestHandler::Factory handler",
+                                          "m->request = {}, RETURN_TYPE={}, WEB_METHOD_ARG={}, INCLUDE_CONTEXT={}"_f,
+                                          m->request ().ToString (),
+                                          type_index{typeid (RETURN_TYPE)},
+                                          type_index{typeid (WEB_METHOD_ARG)},
+                                          INCLUDE_CONTEXT};
+            Request*                  req  = m->rwRequest ();
+            Request*                  resp = m->rwResponse ();
+            if constexpr (same_as<RETURN_TYPE, void>) {
                 if constexpr (INCLUDE_CONTEXT) {
-                    return this->ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = m->rwRequest (), .fResponse = m->rwResponse ()});
+                    ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp});
                 }
                 else {
-                    return this->ApplyHandler (m->rwRequest ());
+                    ApplyHandler (m->rwRequest ());
                 }
-            }();
-            if constexpr (Common::IAnyOf<RETURN_TYPE, String, DataExchange::VariantValue>) {
-                // @todo check accepts content type - and convert result (to JSON or binary json etc)
-                if constexpr (same_as<RETURN_TYPE, String>) {
-                    m->rwResponse ().contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kText_PLAIN);
-                }
-                else {
-                    m->rwResponse ().contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
-                }
-                m->rwResponse ().write (r);
+                SendResponse (req, resp);
             }
             else {
-                m->rwResponse ().contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
-                m->rwResponse ().write (Variant::JSON::Writer{}.WriteAsString (fObjectVariantMapper_.FromObject (r)));
+                RETURN_TYPE r = [&] () {
+                    if constexpr (INCLUDE_CONTEXT) {
+                        return ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp});
+                    }
+                    else {
+                        return ApplyHandler (req);
+                    }
+                }();
+                SendResponse (req, resp, r);
             }
         };
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (Request* req) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (Request* req) const
         requires (not INCLUDE_CONTEXT)
     {
         if constexpr (same_as<WEB_METHOD_ARG, void>) {
@@ -92,7 +94,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         }
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const Context& c) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const Context& c) const
         requires (INCLUDE_CONTEXT)
     {
         if constexpr (same_as<WEB_METHOD_ARG, void>) {
@@ -101,6 +103,32 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         else {
             WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (c.fRequest.GetBodyVariantValue ())};
             return fHighLevelHandler_ (arg, c);
+        }
+    }
+    template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
+    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse ([[maybe_unused]] const Request* request,
+                                                                                     [[maybe_unused]] Response*      response) const
+        requires (same_as<RETURN_TYPE, void>)
+    {
+        // @todo - set status? Maybe no need - just do nothing??? and OK
+    }
+    template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
+    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse (const Request* request, Response* response, const RETURN_TYPE& r) const
+        requires (not same_as<RETURN_TYPE, void>)
+    {
+        // @todo check accepts content type - and convert result (to JSON or binary json, xml etc)
+        if constexpr (Common::IAnyOf<RETURN_TYPE, String, DataExchange::VariantValue>) {
+            if constexpr (same_as<RETURN_TYPE, String>) {
+                response->contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kText_PLAIN);
+            }
+            else {
+                response->contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
+            }
+            response->write (r);
+        }
+        else {
+            response->contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
+            response->write (Variant::JSON::Writer{}.WriteAsString (fObjectVariantMapper_.FromObject (r)));
         }
     }
 

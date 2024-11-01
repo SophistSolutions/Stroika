@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
@@ -34,6 +35,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 using Common::ConstantProperty;
+using Common::GUID;
 using Memory::BLOB;
 using Time::Duration;
 
@@ -136,6 +138,9 @@ namespace {
 }
 
 namespace {
+    struct ObjMapperableObj_ {
+        GUID id;
+    };
     /*
      */
     struct MyObjectWebServiceWebServer_ {
@@ -147,7 +152,7 @@ namespace {
         {
 
 #if 0
-            , Route{"api/(v1/)?recordings/(.+)"_RegEx,
+            , Route{"api/(v1/)?myobjs/(.+)"_RegEx,
                     ObjectRequestHandler::Factory{kMapper, [this] (const ObjectRequestHandler::Context& c) -> Recording {
                         ActiveCallCounter_ acc{*this};
                         String id = c.fMatchedURLArgs[1];
@@ -254,6 +259,23 @@ namespace {
 
 /// @todo - add tests with different Accept-Encoding headers
 
+namespace {
+    GTEST_TEST (Frameworks_WebServer, TestWebServiceObjectRequestHandler1)
+    {
+        EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
+        const IO::Network::PortType  portNumber = 8082;
+        MyObjectWebServiceWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
+        auto                         c = IO::Network::Transfer::Connection::New ();
+        //IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/TEST"sv});
+        //EXPECT_TRUE (r.GetSucceeded ());
+        //EXPECT_GT (r.GetData ().size (), 1u);
+        //String response = r.GetDataTextInputStream ().ReadAll ();
+        ////DbgTrace (L"response={}"_f, response);
+        //EXPECT_EQ (response, "TEST");
+        //// @todo enhance this test so we force accept-encoding none, and force accept-endcing : deflate, and check raw
+        //// result???
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
