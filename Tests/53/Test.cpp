@@ -135,6 +135,39 @@ namespace {
     };
 }
 
+namespace {
+    /*
+     */
+    struct MyObjectWebServiceWebServer_ {
+        const Sequence<Route> kRoutes_;
+        ConnectionManager     fConnectionMgr_;
+
+        MyObjectWebServiceWebServer_ (uint16_t portNumber)
+            : kRoutes_
+        {
+
+#if 0
+            , Route{"api/(v1/)?recordings/(.+)"_RegEx,
+                    ObjectRequestHandler::Factory{kMapper, [this] (const ObjectRequestHandler::Context& c) -> Recording {
+                        ActiveCallCounter_ acc{*this};
+                        String id = c.fMatchedURLArgs[1];
+                        return fWSImpl_->recordings_GET (id);
+                    }}}
+            , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
+                    // redo so can POST raw data and arguments as query-args!
+                    // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
+                    ObjectRequestHandler::Factory{kMapper, [this] ( const Recording& r, [[maybe_unused]]const Context& c) -> GUID {
+                        ActiveCallCounter_ acc{*this};
+                        return fWSImpl_->recordings_POST (r);
+                    }}}
+#endif
+        }
+        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
+        {
+        }
+    };
+}
+
 #if qStroika_HasComponent_googletest
 namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleStartStopServerTest)

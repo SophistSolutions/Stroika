@@ -55,24 +55,12 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             DbgTrace ("RETURN_TYPE={}"_f, type_index{typeid (RETURN_TYPE)});
             DbgTrace ("WEB_METHOD_ARG={}"_f, type_index{typeid (WEB_METHOD_ARG)});
             DbgTrace ("INCLUDE_CONTEXT={}"_f, INCLUDE_CONTEXT);
-            // at first - KISS
             RETURN_TYPE r = [&] () {
-                if constexpr (same_as<WEB_METHOD_ARG, void>) {
-                    if constexpr (INCLUDE_CONTEXT) {
-                        return fHighLevelHandler_ (Context{matchedArgs});
-                    }
-                    else {
-                        return fHighLevelHandler_ ();
-                    }
+                if constexpr (INCLUDE_CONTEXT) {
+                    return this->ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = m->rwRequest (), .fResponse = m->rwResponse ()});
                 }
                 else {
-                    WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (m->rwRequest ().GetBodyVariantValue ())};
-                    if constexpr (INCLUDE_CONTEXT) {
-                        return fHighLevelHandler_ (arg, Context{matchedArgs});
-                    }
-                    else {
-                        return fHighLevelHandler_ (arg);
-                    }
+                    return this->ApplyHandler (m->rwRequest ());
                 }
             }();
             if constexpr (Common::IAnyOf<RETURN_TYPE, String, DataExchange::VariantValue>) {
@@ -91,4 +79,29 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             }
         };
     }
+    template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
+    RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (Request* req) const
+        requires (not INCLUDE_CONTEXT)
+    {
+        if constexpr (same_as<WEB_METHOD_ARG, void>) {
+            return fHighLevelHandler_ ();
+        }
+        else {
+            WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (req->GetBodyVariantValue ())};
+            return fHighLevelHandler_ (arg);
+        }
+    }
+    template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
+    RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const Context& c) const
+        requires (INCLUDE_CONTEXT)
+    {
+        if constexpr (same_as<WEB_METHOD_ARG, void>) {
+            return fHighLevelHandler_ (c);
+        }
+        else {
+            WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (c.fRequest.GetBodyVariantValue ())};
+            return fHighLevelHandler_ (arg, c);
+        }
+    }
+
 }

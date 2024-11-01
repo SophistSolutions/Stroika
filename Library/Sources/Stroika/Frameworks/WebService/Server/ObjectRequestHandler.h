@@ -56,7 +56,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     // todo use template guides so dont need to specify RETURN_TYPE etc args...
 
     /**
-    *   \note data (like request) etc only valid until end of call - don't copy/save
+     *   \note data (like request) etc only valid until end of call - don't copy/save
      */
     struct Context {
         /**
@@ -65,13 +65,20 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          *          data but not the size). So you can index fMatchedURLArgs[2] - and have it checked
          *          with assertions safely.
          */
-        Sequence<String> fMatchedURLArgs;
-        Request*         fRequest;
-        Response*        fResponse;
+        const Sequence<String>& fMatchedURLArgs;
+        Request&                fRequest;
+        Response&               fResponse;
 
+        /**
+         *  \note since Context is not copyable, you must explicitly call .ToString() on it to use it with _f strings (std::format).
+         */
         String ToString () const;
     };
+    static_assert (not copyable<Context>);
+    static_assert (not movable<Context>);
 
+    /**
+     */
     struct Options {
         /**
          * This is the default media type for the content type of the result message. If missing, it will be inferred based on data type produced.
@@ -79,8 +86,11 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          */
         optional<InternetMediaType> fDefaultResultMediaType;
 
+        /**
+         */
         String ToString () const;
     };
+    static_assert (copyable<Options>);
 
     namespace Private_ {
         template <typename CALLBACK_FUNCTION>
@@ -121,13 +131,25 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
 
     public:
         /**
-         *  This is the whole point of this class - to produce a requesthandler that can be used in a Stroika WebServer Route.
+         *  This is the whole point of this class - to produce a RequestHandler that can be used in a Stroika WebServer Route.
          */
         nonvirtual operator Frameworks::WebServer::RequestHandler () const;
 
+    public:
+        /**
+         *  This is 1/2 the guts of the RequestHandler - taking the request calling the handler with it, and producing
+         *  the 'RESULT_TYPE' object.
+         * 
+         *  Note this is broken out as a callable method so it can be used from a straight custom WebServer::RequestHandler
+         *  and just parts of the functionality used.
+         */
+        nonvirtual RETURN_TYPE ApplyHandler (Request* req) const
+            requires (not INCLUDE_CONTEXT);
+        nonvirtual RETURN_TYPE ApplyHandler (const Context& c) const
+            requires (INCLUDE_CONTEXT);
+
     private:
         ObjectVariantMapper fObjectVariantMapper_;
-
         template <typename WA = WEB_METHOD_ARG>
         struct MagicRemoveVoidArg_ : function<RETURN_TYPE (WEB_METHOD_ARG, Context)> {};
         template <>

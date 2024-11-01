@@ -23,9 +23,9 @@ String ObjectRequestHandler::Context::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "fMatchedURLArgs: "sv << fMatchedURLArgs << ","sv;
-    sb << "fRequest: "sv << fRequest << ","sv;
-    sb << "fResponse: "sv << fResponse << ","sv;
+    sb << "MatchedURLArgs: "sv << fMatchedURLArgs << ","sv;
+    sb << "Request: "sv << fRequest << ","sv;
+    sb << "Response: "sv << fResponse << ","sv;
     sb << "}"sv;
     return sb;
 }
@@ -39,7 +39,7 @@ String ObjectRequestHandler::Options::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "overrideResultCT: "sv << overrideResultCT << ","sv;
+    sb << "DefaultResultMediaType: "sv << fDefaultResultMediaType << ","sv;
     sb << "}"sv;
     return sb;
 }
