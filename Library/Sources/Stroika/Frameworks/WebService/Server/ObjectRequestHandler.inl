@@ -51,12 +51,9 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         using namespace DataExchange;
         using WebServer::Message;
         return [*this] (Message* m, [[maybe_unused]] const Sequence<String>& matchedArgs) {
-            Debug::TraceContextBumper ctx{"ObjectRequestHandler::Factory handler",
-                                          "m->request = {}, RETURN_TYPE={}, WEB_METHOD_ARG={}, INCLUDE_CONTEXT={}"_f,
-                                          m->request ().ToString (),
-                                          type_index{typeid (RETURN_TYPE)},
-                                          type_index{typeid (WEB_METHOD_ARG)},
-                                          INCLUDE_CONTEXT};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                "ObjectRequestHandler::Factory handler", "m->request = {}, RETURN_TYPE={}, WEB_METHOD_ARG={}, INCLUDE_CONTEXT={}"_f,
+                m->request ().ToString (), type_index{typeid (RETURN_TYPE)}, type_index{typeid (WEB_METHOD_ARG)}, INCLUDE_CONTEXT)};
             Request*                  req  = m->rwRequest ();
             Request*                  resp = m->rwResponse ();
             if constexpr (same_as<RETURN_TYPE, void>) {
