@@ -186,20 +186,16 @@ namespace {
 
         MyObjectWebServiceWebServer_ (uint16_t portNumber)
             : kRoutes_{
-            
 
-            #if 1
                 Route{"api/objs/?"_RegEx,
+                // cannot lose explicit template args yet on clang here!!!
                              ObjectRequestHandler::Factory<Sequence<GUID>, void, false>{
                                  kMapper,
                                  [] () -> Sequence<GUID> {
                                      return sData_.cget ().cref ().Map<Sequence<GUID>> ([] (const ObjMapperableObj_& r) { return r.id; });
                                  }}}
 
-                ,
-                
-                #endif
-                 Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{kMapper,
+                , Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{kMapper,
                                                                         [] (const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
                                                                             return sData_.cget ().cref ().Map<Sequence<GUID>> (
                                                                                 [] (const ObjMapperableObj_& r) { return r.id; });
