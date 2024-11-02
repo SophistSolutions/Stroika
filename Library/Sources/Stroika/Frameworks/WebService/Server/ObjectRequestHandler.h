@@ -131,13 +131,18 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     public:
         /**
          */
-        Factory (const ObjectVariantMapper& ovm, function<RETURN_TYPE (Context)> highLevelHandler, const Options& options = {});
-        template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION>
-            requires (INCLUDE_CONTEXT)
-        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {});
+        template <invocable<> CALLBACK_FUNCTION>
+        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
+            requires (not INCLUDE_CONTEXT);
+        template <invocable<Context> CALLBACK_FUNCTION>
+        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
+            requires (INCLUDE_CONTEXT);
         template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION>
         Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
             requires (not INCLUDE_CONTEXT);
+        template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION>
+        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
+            requires (INCLUDE_CONTEXT);
 
     public:
         /**
@@ -175,8 +180,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         Options      fOptions_;
     };
     template <invocable<Context> CALLBACK_FUNCTION, typename... IGNORED>
-    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
-        -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;
+    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...) -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;
     template <invocable<> CALLBACK_FUNCTION>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&) -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, false>;
     template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION>

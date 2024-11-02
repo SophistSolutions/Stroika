@@ -188,7 +188,7 @@ namespace {
             : kRoutes_{
             
 
-            #if 0
+            #if 1
                 Route{"api/objs/?"_RegEx,
                              ObjectRequestHandler::Factory<Sequence<GUID>, void, false>{
                                  kMapper,
