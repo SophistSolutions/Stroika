@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Create a Syncrhonized with any argument type the underlying type will be constructed with the same
+         *  Create a Synchronized with any argument type the underlying type will be constructed with the same
          *  (perfectly) forwarded arguments.
          * 
          *  And plain copy constructor.
@@ -367,7 +367,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief  get a read-rwite smart pointer to the underlying Synchronized<> object, holding the full lock the whole
+         *  \brief  get a read-write smart pointer to the underlying Synchronized<> object, holding the full lock the whole
          *          time the (often temporary) WritableReference exists.
          *
          *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveLockMutex if using this in a place where the same thread may have a lock.
@@ -478,24 +478,24 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief Upgrade a shared_lock (ReadableReference) to a (WritableReference) full lock temporarily in the context of argument function; return true if succeeds, and false if fails (timeout trying to full-lock) or argument doWithWriteLock () returns false
          * 
-         *  @see UpgradeLockNonAtomically - to just calls UpgradeLockNonAtomicallyQuietly () and throws timeout on timeout inteveningWriteLock or doWithWriteLock returns false
+         *  @see UpgradeLockNonAtomically - to just calls UpgradeLockNonAtomicallyQuietly () and throws timeout on timeout intervening WriteLock or doWithWriteLock returns false
          *
          *  A DEFEFCT with (this) UpgradeLockNonAtomically API, is that you cannot count on values computed with the read lock to remain
          *  valid in the upgrade lock (since we unlock and then re-lock). We resolve this by having two versions of UpgradeLockNonAtomically,
-         *  one where the callback gets notified there was an interening writelock, and one where the entire call fails and you have to
+         *  one where the callback gets notified there was an intervening writelock, and one where the entire call fails and you have to
          *  re-run.
          *
-         *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
-         *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
+         *  \note optional 'bool interveningWriteLock' parameter - if present, intervening locks are flagged with this parameter, and if 
+         *        the parameter is NOT present, intervening locks are treated as timeouts (even if infinite timeout specified)
          *
-         *  \note - also returns false on intevening lock IFF doWithWriteLock/1 passed in has no inteveningWriteLock parameter.
+         *  \note - also returns false on intervening lock IFF doWithWriteLock/1 passed in has no intervening WriteLock parameter.
          *
-         *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
-         *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
+         *  \note optional 'bool interveningWriteLock' parameter - if present, intervening locks are flagged with this parameter, and if 
+         *        the parameter is NOT present, intervening locks are treated as timeouts (even if infinite timeout specified)
          *
          *  \note - This does NOT require the mutex be recursive  - just supporting both lock_shared and lock ()
          * 
-         *  \note - This function takes as argument an existing ReadableReference, which MUST come from a cget on this Syncrhonized object
+         *  \note - This function takes as argument an existing ReadableReference, which MUST come from a cget on this Synchronized object
          *          (and therefore must be locked) and DURING the context of this function call that becomes invalid, but when this call returns
          *          it will still be locked READONLY. This does NOT change the lock to writable (after the call) - but ONLY during the call
          *          of the argument function.
@@ -621,7 +621,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<optional<xxx>>>).
+         *  \note   Considered losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<optional<xxx>>>).
          *          But you don't need to use it, and this really does act as a smart pointer so it should most often just be
          *          more clear.
          */

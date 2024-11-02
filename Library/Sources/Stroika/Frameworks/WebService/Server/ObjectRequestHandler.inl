@@ -110,7 +110,9 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         // @todo - set status? Maybe no need - just do nothing??? and OK
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse (const Request& request, Response& response, const RETURN_TYPE& r) const
+    // note maybe_unused on request wrong but tmphack to quiet til we check accept headers
+    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse ([[maybe_unused]] const Request& request,
+                                                                                     Response& response, const RETURN_TYPE& r) const
         requires (not same_as<RETURN_TYPE, void>)
     {
         using namespace DataExchange;
