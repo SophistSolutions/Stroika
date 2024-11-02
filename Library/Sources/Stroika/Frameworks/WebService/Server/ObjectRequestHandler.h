@@ -179,10 +179,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         HandlerType_ fHighLevelHandler_;
         Options      fOptions_;
     };
-    template <invocable<Context> CALLBACK_FUNCTION, typename... IGNORED>
-    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...) -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;
     template <invocable<> CALLBACK_FUNCTION>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&) -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, false>;
+    template <invocable<Context> CALLBACK_FUNCTION, typename... IGNORED>
+    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...) -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;
     template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&)
         -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type>, false>;
