@@ -104,6 +104,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             FunctionTraits<CALLBACK_FUNCTION>::kArity == 2 and
             invocable<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type, Context>;
 
+        // nb: would be nice if could use using instead of subclass, or better yet, if whole issue
+        // of using (void) for arg wasn't so crazy inconvenient --LGP 2024-11-02
         template <typename RETURN_TYPE, typename WEB_METHOD_ARG>
         struct MagicRemoveVoidArgAddContext_ : function<RETURN_TYPE (WEB_METHOD_ARG, Context)> {};
         template <typename RETURN_TYPE>
@@ -180,9 +182,11 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         Options      fOptions_;
     };
     template <invocable<Context> CALLBACK_FUNCTION, typename... IGNORED>
-    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...) -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;
+    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
+        -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;
     template <invocable<> CALLBACK_FUNCTION, typename... IGNORED>
-    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...) -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, false>;
+    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
+        -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, false>;
     template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION, typename... IGNORED>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
         -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type>, true>;

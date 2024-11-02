@@ -201,23 +201,27 @@ namespace {
                                                                                 [] (const ObjMapperableObj_& r) { return r.id; });
                                                                         }}}
 
-                // @todo add getall checking url query flag about include-all or not - and return objs or ids - using two ObjectRequestHandler instances
+                , Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{kMapper,
+                                                                                [] (const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
+                                                                                    return sData_.cget ().cref ().Map<Sequence<GUID>> (
+                                                                                        [] (const ObjMapperableObj_& r) { return r.id; });
+                                                                                }}}
 
-                       
-                , Route{"api/objs/(.+)"_RegEx, ObjectRequestHandler::Factory{kMapper,
-                                                                            [] (const ObjectRequestHandler::Context& c) -> ObjMapperableObj_ {
-                                                                                String id = c.fMatchedURLArgs[0];
-                                                                                return sData_.cget ().cref ().LookupChecked (
-                                                                                    id, ClientErrorException{"obj with that ID not found"sv});
-                                                                            }}}
+            // @todo add getall checking url query flag about include-all or not - and return objs or ids - using two ObjectRequestHandler instances
 
+                ,  Route{"api/objs/(.+)"_RegEx, ObjectRequestHandler::Factory{kMapper,
+                                                                           [] (const ObjectRequestHandler::Context& c) -> ObjMapperableObj_ {
+                                                                               String id = c.fMatchedURLArgs[0];
+                                                                               return sData_.cget ().cref ().LookupChecked (
+                                                                                   id, ClientErrorException{"obj with that ID not found"sv});
+                                                                           }}}
 
-                // todo add a PATCH example
+            // todo add a PATCH example
 
-                , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
-                        // redo so can POST raw data and arguments as query-args!
-                        // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
-                        ObjectRequestHandler::Factory{kMapper,
+            ,  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
+                      // redo so can POST raw data and arguments as query-args!
+                      // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
+                      ObjectRequestHandler::Factory{kMapper,
                                                     [] (const ObjMapperableObj_& r) -> GUID {
                                                         ObjMapperableObj_ rr = r;
                                                         rr.id                = GUID::GenerateNew ();
@@ -225,17 +229,21 @@ namespace {
                                                         return rr.id;
                                                     }}}
 
-                , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
-                        // test with context
-                        ObjectRequestHandler::Factory{kMapper,
-                                                    [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
-                                                        ObjMapperableObj_ rr = r;
-                                                        rr.id                = GUID::GenerateNew ();
-                                                        sData_.rwget ().rwref ().Add (rr);
-                                                        return rr.id;
-                                                    }}}}
+            , Route  { IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
+                    // test with context
+                    ObjectRequestHandler::Factory
+                {
+                    kMapper, [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
+                        ObjMapperableObj_ rr = r;
+                        rr.id                = GUID::GenerateNew ();
+                        sData_.rwget ().rwref ().Add (rr);
+                        return rr.id;
+                    }
+                }
+            }
+        }
 
-            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
+        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
         {
         }
     };

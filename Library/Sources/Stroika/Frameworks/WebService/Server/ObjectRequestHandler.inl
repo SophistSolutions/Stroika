@@ -18,8 +18,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      */
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
     template <invocable<Context> CALLBACK_FUNCTION>
-    Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::Factory (const ObjectVariantMapper& ovm,
-                                                                    CALLBACK_FUNCTION&& highLevelHandler, const Options& options)
+    Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler,
+                                                                    const Options& options)
         requires (INCLUDE_CONTEXT)
         : fObjectVariantMapper_{ovm}
         , fHighLevelHandler_{highLevelHandler}
@@ -28,8 +28,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
     template <invocable<> CALLBACK_FUNCTION>
-    Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::Factory (const ObjectVariantMapper& ovm,
-                                                                    CALLBACK_FUNCTION&& highLevelHandler, const Options& options)
+    Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler,
+                                                                    const Options& options)
         requires (not INCLUDE_CONTEXT)
         : fObjectVariantMapper_{ovm}
         , fHighLevelHandler_{highLevelHandler}
@@ -38,8 +38,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
     template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION>
-    Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::Factory (const ObjectVariantMapper& ovm,
-                                                                    CALLBACK_FUNCTION&& highLevelHandler, const Options& options)
+    Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler,
+                                                                    const Options& options)
         requires (not INCLUDE_CONTEXT)
         : fObjectVariantMapper_{ovm}
         , fHighLevelHandler_{highLevelHandler}
