@@ -26,7 +26,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
     template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION>
-        requires (INCLUDE_CONTEXT and not same_as<remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type>, void>)
+        requires (INCLUDE_CONTEXT)
     Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler,
                                                                     const Options& options)
         : fObjectVariantMapper_{ovm}
@@ -36,8 +36,9 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     {
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
+    template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION>
     Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::Factory (const ObjectVariantMapper& ovm,
-                                                                    function<RETURN_TYPE (WEB_METHOD_ARG)> highLevelHandler, const Options& options)
+                                                                    CALLBACK_FUNCTION&& highLevelHandler, const Options& options)
         requires (not INCLUDE_CONTEXT)
         : fObjectVariantMapper_{ovm}
         , fHighLevelHandler_{highLevelHandler}

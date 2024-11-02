@@ -108,6 +108,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         struct MagicRemoveVoidArgAddContext_ : function<RETURN_TYPE (WEB_METHOD_ARG, Context)> {};
         template <typename RETURN_TYPE>
         struct MagicRemoveVoidArgAddContext_<RETURN_TYPE, void> : function<RETURN_TYPE (Context)> {};
+        template <typename RETURN_TYPE, typename WEB_METHOD_ARG>
+        struct MagicRemoveVoidArgNoContext_ : function<RETURN_TYPE (WEB_METHOD_ARG)> {};
+        template <typename RETURN_TYPE>
+        struct MagicRemoveVoidArgNoContext_<RETURN_TYPE, void> : function<RETURN_TYPE ()> {};
     }
 
     /**
@@ -129,9 +133,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          */
         Factory (const ObjectVariantMapper& ovm, function<RETURN_TYPE (Context)> highLevelHandler, const Options& options = {});
         template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION>
-            requires (INCLUDE_CONTEXT and not same_as<remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type>, void>)
+            requires (INCLUDE_CONTEXT)
         Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {});
-        Factory (const ObjectVariantMapper& ovm, function<RETURN_TYPE (WEB_METHOD_ARG)> highLevelHandler, const Options& options = {})
+        template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION>
+        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
             requires (not INCLUDE_CONTEXT);
 
     public:
@@ -165,7 +170,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     private:
         ObjectVariantMapper fObjectVariantMapper_;
         using HandlerType_ = Select_t<Case<INCLUDE_CONTEXT, Private_::MagicRemoveVoidArgAddContext_<RETURN_TYPE, WEB_METHOD_ARG>>,
-                                      Case<not INCLUDE_CONTEXT, function<RETURN_TYPE (WEB_METHOD_ARG)>>>;
+                                      Case<not INCLUDE_CONTEXT, Private_::MagicRemoveVoidArgNoContext_<RETURN_TYPE, WEB_METHOD_ARG>>>;
         HandlerType_ fHighLevelHandler_;
         Options      fOptions_;
     };

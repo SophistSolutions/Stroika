@@ -187,6 +187,8 @@ namespace {
         MyObjectWebServiceWebServer_ (uint16_t portNumber)
             : kRoutes_{
             
+
+            #if 0
                 Route{"api/objs/?"_RegEx,
                              ObjectRequestHandler::Factory<Sequence<GUID>, void, false>{
                                  kMapper,
@@ -194,7 +196,10 @@ namespace {
                                      return sData_.cget ().cref ().Map<Sequence<GUID>> ([] (const ObjMapperableObj_& r) { return r.id; });
                                  }}}
 
-                , Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{kMapper,
+                ,
+                
+                #endif
+                 Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{kMapper,
                                                                         [] (const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
                                                                             return sData_.cget ().cref ().Map<Sequence<GUID>> (
                                                                                 [] (const ObjMapperableObj_& r) { return r.id; });
