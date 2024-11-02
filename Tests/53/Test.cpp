@@ -1,21 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Frameworks::WebServer
+//  TEST    Frameworks::WebServer && Frameworks::WebService
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
@@ -24,18 +28,23 @@
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
+#include "Stroika/Frameworks/WebService/Server/ObjectRequestHandler.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
+using namespace Stroika::Frameworks::WebService;
+using namespace Stroika::Frameworks::WebService::Server;
 
 using Common::ConstantProperty;
 using Common::GUID;
+using IO::Network::HTTP::ClientErrorException;
 using Memory::BLOB;
 using Time::Duration;
 
@@ -138,41 +147,94 @@ namespace {
 }
 
 namespace {
+    // simple object to create keyed collection of, to test
     struct ObjMapperableObj_ {
         GUID id;
+
+        static const inline ObjectVariantMapper kMapper = [] () {
+            ObjectVariantMapper mapper;
+            mapper.AddCommonType<GUID> ();
+            mapper.AddClass<ObjMapperableObj_> ({
+                {"id", &ObjMapperableObj_::id},
+            });
+            return mapper;
+        }();
     };
+
     /*
      */
     struct MyObjectWebServiceWebServer_ {
+
+        using MyKeyedCollection_ = KeyedCollection<
+            ObjMapperableObj_, GUID,
+            KeyedCollection_DefaultTraits<ObjMapperableObj_, GUID, decltype ([] (const ObjMapperableObj_& t) -> GUID { return t.id; })>>;
+
+        static const inline ObjectVariantMapper kMapper = [] () {
+            ObjectVariantMapper mapper;
+            mapper += ObjMapperableObj_::kMapper;
+            mapper.AddCommonType<MyKeyedCollection_> ();
+            mapper.AddCommonType<Sequence<ObjMapperableObj_>> ();
+            mapper.AddCommonType<GUID> ();
+            mapper.AddCommonType<Sequence<GUID>> ();
+            return mapper;
+        }();
+
+        static inline Synchronized<MyKeyedCollection_> sData_;
+
         const Sequence<Route> kRoutes_;
         ConnectionManager     fConnectionMgr_;
 
         MyObjectWebServiceWebServer_ (uint16_t portNumber)
-            : kRoutes_
-        {
+            : kRoutes_{
+            
+                Route{"api/objs/?"_RegEx,
+                             ObjectRequestHandler::Factory<Sequence<GUID>, void, false>{
+                                 kMapper,
+                                 [] () -> Sequence<GUID> {
+                                     return sData_.cget ().cref ().Map<Sequence<GUID>> ([] (const ObjMapperableObj_& r) { return r.id; });
+                                 }}}
 
-#if 0
+                , Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{kMapper,
+                                                                        [] (const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
+                                                                            return sData_.cget ().cref ().Map<Sequence<GUID>> (
+                                                                                [] (const ObjMapperableObj_& r) { return r.id; });
+                                                                        }}}
 
-            // first add object mapper for mapperableobj type - and then do GetAll (IDS) - POST, PUT, GET(s) and PATCH
-            // and I guess DELETE method as tests... (and maybe put into DEMO as well)
+                // @todo add getall checking url query flag about include-all or not - and return objs or ids - using two ObjectRequestHandler instances
+
+                       
+                , Route{"api/objs/(.+)"_RegEx, ObjectRequestHandler::Factory{kMapper,
+                                                                            [] (const ObjectRequestHandler::Context& c) -> ObjMapperableObj_ {
+                                                                                String id = c.fMatchedURLArgs[0];
+                                                                                return sData_.cget ().cref ().LookupChecked (
+                                                                                    id, ClientErrorException{"obj with that ID not found"sv});
+                                                                            }}}
 
 
-            , Route{"api/(v1/)?myobjs/(.+)"_RegEx,
-                    ObjectRequestHandler::Factory{kMapper, [this] (const ObjectRequestHandler::Context& c) -> Recording {
-                        ActiveCallCounter_ acc{*this};
-                        String id = c.fMatchedURLArgs[1];
-                        return fWSImpl_->recordings_GET (id);
-                    }}}
-            , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
-                    // redo so can POST raw data and arguments as query-args!
-                    // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
-                    ObjectRequestHandler::Factory{kMapper, [this] ( const Recording& r, [[maybe_unused]]const Context& c) -> GUID {
-                        ActiveCallCounter_ acc{*this};
-                        return fWSImpl_->recordings_POST (r);
-                    }}}
-#endif
-        }
-        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
+                // todo add a PATCH example
+
+                , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
+                        // redo so can POST raw data and arguments as query-args!
+                        // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
+                        ObjectRequestHandler::Factory{kMapper,
+                                                    [] (const ObjMapperableObj_& r) -> GUID {
+                                                        ObjMapperableObj_ rr = r;
+                                                        rr.id                = GUID::GenerateNew ();
+                                                        sData_.rwget ().rwref ().Add (rr);
+                                                        return rr.id;
+                                                    }}}
+
+                , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
+                        // test with context
+                        ObjectRequestHandler::Factory{kMapper,
+                                                    [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
+                                                        ObjMapperableObj_ rr = r;
+                                                        rr.id                = GUID::GenerateNew ();
+                                                        sData_.rwget ().rwref ().Add (rr);
+                                                        return rr.id;
+                                                    }}}}
+
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
         {
         }
     };
@@ -271,6 +333,11 @@ namespace {
         const IO::Network::PortType  portNumber = 8082;
         MyObjectWebServiceWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
         auto                         c = IO::Network::Transfer::Connection::New ();
+
+        // @todo do some calls to test api...
+        //
+        //
+
         //IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/TEST"sv});
         //EXPECT_TRUE (r.GetSucceeded ());
         //EXPECT_GT (r.GetData ().size (), 1u);
