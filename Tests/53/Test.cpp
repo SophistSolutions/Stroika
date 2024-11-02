@@ -188,8 +188,7 @@ namespace {
             : kRoutes_{
 
                 Route{"api/objs/?"_RegEx,
-                // cannot lose explicit template args yet on clang here!!!
-                             ObjectRequestHandler::Factory<Sequence<GUID>, void, false>{
+                             ObjectRequestHandler::Factory{
                                  kMapper,
                                  [] () -> Sequence<GUID> {
                                      return sData_.cget ().cref ().Map<Sequence<GUID>> ([] (const ObjMapperableObj_& r) { return r.id; });
@@ -207,8 +206,7 @@ namespace {
                                                                                         [] (const ObjMapperableObj_& r) { return r.id; });
                                                                                 }}}
 
-            // @todo add getall checking url query flag about include-all or not - and return objs or ids - using two ObjectRequestHandler instances
-
+                // @todo add getall checking url query flag about include-all or not - and return objs or ids - using two ObjectRequestHandler instances
                 ,  Route{"api/objs/(.+)"_RegEx, ObjectRequestHandler::Factory{kMapper,
                                                                            [] (const ObjectRequestHandler::Context& c) -> ObjMapperableObj_ {
                                                                                String id = c.fMatchedURLArgs[0];
@@ -216,9 +214,9 @@ namespace {
                                                                                    id, ClientErrorException{"obj with that ID not found"sv});
                                                                            }}}
 
-            // todo add a PATCH example
+                // todo add a PATCH example
 
-            ,  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
+                ,  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
                       // redo so can POST raw data and arguments as query-args!
                       // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
                       ObjectRequestHandler::Factory{kMapper,
@@ -229,11 +227,9 @@ namespace {
                                                         return rr.id;
                                                     }}}
 
-            , Route  { IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
-                    // test with context
-                    ObjectRequestHandler::Factory
-                {
-                    kMapper, [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
+                , Route  { IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
+                    ObjectRequestHandler::Factory { kMapper,
+                        [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
                         ObjMapperableObj_ rr = r;
                         rr.id                = GUID::GenerateNew ();
                         sData_.rwget ().rwref ().Add (rr);
