@@ -195,13 +195,13 @@ namespace {
                                  }}}
 
                 , Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{kMapper,
-                                                                        [] (const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
+                                                                        [] ([[maybe_unused]]const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
                                                                             return sData_.cget ().cref ().Map<Sequence<GUID>> (
                                                                                 [] (const ObjMapperableObj_& r) { return r.id; });
                                                                         }}}
 
                 , Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{kMapper,
-                                                                                [] (const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
+                                                                                [] ([[maybe_unused]]const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
                                                                                     return sData_.cget ().cref ().Map<Sequence<GUID>> (
                                                                                         [] (const ObjMapperableObj_& r) { return r.id; });
                                                                                 }}}
@@ -214,7 +214,15 @@ namespace {
                                                                                    id, ClientErrorException{"obj with that ID not found"sv});
                                                                            }}}
 
-                // todo add a PATCH example
+                // todo INCOMPLETE a PATCH example (redo - dont use Object... stuff - cuz use variantvalue for patch)
+                ,  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
+                      ObjectRequestHandler::Factory{kMapper,
+                                                    [] (const ObjMapperableObj_& r) -> GUID {
+                                                        ObjMapperableObj_ rr = r;
+                                                        rr.id                = GUID::GenerateNew ();
+                                                        sData_.rwget ().rwref ().Add (rr);
+                                                        return rr.id;
+                                                    }}}
 
                 ,  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
                       // redo so can POST raw data and arguments as query-args!
