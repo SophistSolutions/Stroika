@@ -195,7 +195,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;
     template <invocable<> CALLBACK_FUNCTION, typename... IGNORED>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...) -> Factory<invoke_result_t<CALLBACK_FUNCTION>, void, false>;
-    template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION, typename RT_ = FunctionTraits<CALLBACK_FUNCTION>::result_type,
+    template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION, typename RT_ = typename FunctionTraits<CALLBACK_FUNCTION>::result_type,
               typename AT_ = remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&) -> Factory<RT_, AT_, true>;
     template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION, typename... IGNORED>
