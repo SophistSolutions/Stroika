@@ -80,9 +80,11 @@ Memory::BLOB Request::GetBody ()
 
 DataExchange::VariantValue Request::GetBodyVariantValue ()
 {
+    using namespace DataExchange;
     if (auto oct = contentType ()) {
-        if (DataExchange::InternetMediaTypeRegistry::sThe->IsA (DataExchange::InternetMediaTypes::kJSON, *oct)) {
-            return DataExchange::Variant::JSON::Reader{}.Read (GetBody ());
+        // @todo check 'feature enabled' flag for json reader - and do simular for xml and other types of readers that produce variantvalue
+        if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *oct)) {
+            return Variant::JSON::Reader{}.Read (GetBody ());
         }
     }
     static const auto kExcept_ = Execution::RuntimeErrorException{"Unrecognized content type"sv};
