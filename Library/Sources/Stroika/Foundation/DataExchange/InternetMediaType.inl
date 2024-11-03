@@ -16,7 +16,8 @@ namespace Stroika::Foundation::DataExchange {
         , fSuffix_{suffix}
         , fParameters_{String::EqualsComparer{Characters::eCaseInsensitive}, parameters}
     {
-        Require (type.empty () == subType.empty ());
+        // Require (type.empty () == subType.empty ()); before 3.0d12
+        Require (subType.empty () or not type.empty ());    // if subtype provided, a type must be provided
         Require (not type.empty () or parameters.empty ()); // dont specify params without type
         Require (not type.empty () or suffix == nullopt);   // dont specify suffix without type
     }
@@ -33,6 +34,9 @@ namespace Stroika::Foundation::DataExchange {
         : InternetMediaType{static_cast<AtomType> (type), static_cast<AtomType> (subType),
                             suffix == nullopt ? nullopt : optional<AtomType>{static_cast<AtomType> (*suffix)}, parameters}
     {
+        Require (suffix == nullopt or not suffix->empty ());
+        Require (suffix == nullopt or not suffix->StartsWith ('+'));
+        Require (suffix == nullopt or not suffix->StartsWith ('.'));
     }
     inline bool InternetMediaType::empty () const
     {

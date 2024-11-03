@@ -39,7 +39,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *          if (InternetMediaTypeRegistry::sThe->IsTextFormat (InternetMediaType {some-string}) {
+     *          if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, InternetMediaType {some-string}) {
      *              handle_textfiles()
      *          }
      *      \endcode
@@ -258,13 +258,13 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  This examines the 'Type' field, sometimes subtype field, as well as leverages the Suffix field (if present).
          */
-        nonvirtual bool IsTextFormat (const InternetMediaType& ct) const;
+        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::kText, ct)")]] bool IsTextFormat (const InternetMediaType& ct) const;
 
     public:
         /**
          * This returns true if the given type is known to be treatable as an image. 
          */
-        nonvirtual bool IsImageFormat (const InternetMediaType& ct) const;
+        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::kImage,ct)")]] bool IsImageFormat (const InternetMediaType& ct) const;
 
     public:
         /**
@@ -274,12 +274,32 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \note This returns true if 'ct.GetSuffix () == "xml"
          */
-        nonvirtual bool IsXMLFormat (const InternetMediaType& ct) const;
+        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::kXML,ct)")]] nonvirtual bool IsXMLFormat (const InternetMediaType& ct) const;
 
     public:
         /**
          *  \brief return true if moreSpecificType 'isa' moreGeneralType
          *
+         *  Still a bit of a work in progress (as of 2024-11-03). But basic idea is to make it easy to check categories of internet media types
+         *  in a (someday) extensible fashion.
+         * 
+         *  To check if a given type 'ct' is a 'text' type:
+         *      o   IsA (InternetMediaTypes::kText, ct)
+         * 
+         *  To check if a given type 'ct' is a 'image' type:
+         *      o   IsA (InternetMediaTypes::kImage, ct)
+         * 
+         *  To check if a given type 'ct' is a 'json' type:
+         *      o   IsA (InternetMediaTypes::kJSON, ct)         -- for example works for kJSONPatch
+         * 
+         * 
+         *  This API replaces the deprecated Stroika v2.1 APIs:
+         *      IsXMLFormat, IsImageFormat, IsTextFormat
+         * 
+         * 
+         * 
+         *  // OLD DOCS BELOW - @todo cleanup
+         * 
          *  The HISTORICAL algorithm for this is:
          *
          *         This function compares similar types, like 
@@ -324,6 +344,7 @@ namespace Stroika::Foundation::DataExchange {
     inline Execution::Synchronized<InternetMediaTypeRegistry> InternetMediaTypeRegistry::sThe;
 
     /**
+     *  \brief for OS facilities not updatable - or controllable - just usable.
      */
     struct InternetMediaTypeRegistry::IBackendRep {
         virtual ~IBackendRep ()                                                                                            = default;
@@ -335,6 +356,7 @@ namespace Stroika::Foundation::DataExchange {
     };
 
     /**
+     *  \brief alternative to IBackendRep - which can be updated/amended.
      */
     struct InternetMediaTypeRegistry::IFrontendRep_ {
         virtual ~IFrontendRep_ ()                                                = default;
@@ -347,6 +369,7 @@ namespace Stroika::Foundation::DataExchange {
         virtual Containers::Set<FileSuffixType>    GetAssociatedFileSuffixes (const InternetMediaType& ct) const                       = 0;
         virtual optional<String>                   GetAssociatedPrettyName (const InternetMediaType& ct) const                         = 0;
         virtual optional<InternetMediaType>        GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const             = 0;
+        virtual bool IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const                   = 0;
     };
 
     /**
@@ -393,6 +416,16 @@ namespace Stroika::Foundation::DataExchange {
     }
 
     namespace InternetMediaTypes {
+
+        /**
+          * Generic text content (used for IsA () primarily)
+         */
+        inline const InternetMediaType kText{Types::kText, {}};
+
+        /**
+          * Generic image content (used for IsA () primarily)
+         */
+        inline const InternetMediaType kImage{Types::kImage, {}};
 
         /**
          *  \brief application/octet-stream

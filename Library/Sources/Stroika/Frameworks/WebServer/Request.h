@@ -61,11 +61,13 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Check the content-type of the argument (so far just JSON supported) and select the appropriate parser to return
-         *  the body as a VariantValue. NOTE - this will block (calls GetBody()); and will throw if conversion problem/wrong contentType.
+         *  Check the content-type of the argument (with InternetMediaTypesRegistry::IsA - so matches sub-types) and select 
+         *  the appropriate parser to return the body as a VariantValue. 
+         * 
+         *  \note - this will block (calls GetBody()); and will throw if conversion problem/wrong contentType.
          * 
          *  \note Supported InternetMediaTypes for message body content type:
-         *      o   InternetMediaTypes::kJSON       (uses Variant::JSON::Reader to interpret the content)
+         *      o   IsA (InternetMediaTypes::kJSON)       (uses Variant::JSON::Reader to interpret the content)
          * 
          *  @todo support more content types - for now just supports JSON (xml, and string for plain text)
          */

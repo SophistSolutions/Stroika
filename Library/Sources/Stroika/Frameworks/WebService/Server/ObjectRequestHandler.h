@@ -117,9 +117,18 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
 
     /**
-    * &&& EARLY DRAFT &&&&
-    * 
-    * 
+     * &&& EARLY DRAFT &&&&
+     * 
+     *  \par Example Usage
+     *      \code
+     *          Route{"api/objs/?"_RegEx,
+     *                      ObjectRequestHandler::Factory{
+     *                          kMapper,
+     *                          [] () -> Sequence<GUID> {
+     *                              return Sequence<GUID>{};
+     *                          }}}
+     *      \endcode
+     * 
      *  \brief ObjectRequestHandler::Factory is a way to construct a WebServer::RequestHandler from an ObjectVariantMapper object and a lambda taking in/out params of objects.
      * 
      *  \todo check acceptsContentType and return result as JSON, binary json, or xml (etc) accordingly - take OPTIONS param saying default
@@ -181,7 +190,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         HandlerType_ fHighLevelHandler_;
         Options      fOptions_;
     };
-
     template <invocable<Context> CALLBACK_FUNCTION, typename... IGNORED>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
         -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;

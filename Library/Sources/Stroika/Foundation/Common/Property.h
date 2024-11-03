@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Common {
          *      \code
          *          namespace PredefinedInternetMediaType {  const inline Common::VirtualConstant<InternetMediaType> kPNG...
          *
-         *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsImageFormat ();
+         *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsA (InternetMediaTypes::kImage);
          *      \endcode
          * 
          *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
@@ -549,7 +549,7 @@ namespace Stroika::Foundation::Common {
          *      \code
          *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG...
          *
-         *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsImageFormat ();
+         *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsA (InternetMediaTypes::kImage);
          *      \endcode
          */
         nonvirtual const T operator() () const;
@@ -563,7 +563,7 @@ namespace Stroika::Foundation::Common {
          *      \code
          *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG = ...
          *
-         *          bool checkIsImage2 = PredefinedInternetMediaType::kPNG->IsImageFormat ();
+         *          bool checkIsImage2 = PredefinedInternetMediaType::kPNG->IsA (InternetMediaTypes::kImage);
          *      \endcode
          */
         nonvirtual const T* operator->() const;

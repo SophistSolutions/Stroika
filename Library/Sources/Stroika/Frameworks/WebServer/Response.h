@@ -196,7 +196,7 @@ namespace Stroika::Frameworks::WebServer {
          * For ContentTypes
          *      o   text / * {avoid comment-character}
          *      o   application/json
-         *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
+         *  and any other content type that returns true to InternetMediaType::IsA (InternetMediaTypes::kText) the codepage is added to the content-type as in:
          *          "text/html; charset=UTF-8"
          *
          * codePage.Set ()
@@ -205,7 +205,7 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  \note SEE http://stroika-bugs.sophists.com/browse/STK-983
          * 
-         * \note - if DataExchange::InternetMediaTypeRegistry::sThe->IsTextFormat (fContentType_), then
+         * \note - if DataExchange::InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, fContentType_), then
          *         the character set will be automatically folded into the used contentType. To avoid this, 
          *         Use UpdateHeader() to modify the contenttype field directly.
          * 
@@ -219,7 +219,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  \req this->headersCanBeSet() to set property
          * 
-         *  NOTE - if DataExchange::InternetMediaTypeRegistry::sThe->IsTextFormat (contentType), then
+         *  NOTE - if DataExchange::InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, contentType), then
          *  the character set will be automatically folded into the used contentType (on WRITES to the property - not reads).
          *      @todo revisit this - I think I always use character set if you use write API taking strings)--LGP 2024-06-22
          */

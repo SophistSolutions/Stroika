@@ -203,6 +203,79 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         }
         return lockedData->fBackendRep->GetAssociatedContentType (fileSuffix);
     }
+    virtual bool IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const override
+    {
+        /**
+         *  Generally simple to compare because AtomType code and parser handle case and breaking off bits like +xml, and ; parameters
+         * 
+         *  Only trick is that no good way to tell more general relationships between types, but doesn't appear well defined (like CCR is a kind of XML).
+         */
+        using AtomType = InternetMediaType::AtomType;
+        if (moreSpecificType.GetType<AtomType> () == moreGeneralType.GetType<AtomType> () and
+            moreSpecificType.GetSubType<AtomType> () == moreGeneralType.GetSubType<AtomType> ()) {
+            return true;
+        }
+
+        // @todo find a better way - generalize... But for now - Stroika v3.0d12x... - just copy old logic for a bunch of special cases we had - then later
+        // maybe add "override" records for this too....
+        if (moreGeneralType == InternetMediaTypes::kImage) {
+            if (moreSpecificType.GetType<AtomType> () == InternetMediaTypes::Types::kImage) {
+                return true;
+            }
+        }
+        else if (moreGeneralType == InternetMediaTypes::kJSON) {
+            if (IsA (InternetMediaTypes::kJSONPatch, moreSpecificType)) {
+                return true;
+            }
+        }
+        else if (moreGeneralType == InternetMediaTypes::kText) {
+            if (moreSpecificType.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
+                return true;
+            }
+            if (IsA (InternetMediaTypes::kXML, moreSpecificType)) {
+                return true;
+            }
+            // well known types that can be treated as text (@todo need some way to extend this API)? - Maybe not here but in REGISTRY
+            if (moreSpecificType.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
+                Assert (InternetMediaTypes::kJSON.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+                if (moreSpecificType.GetSubType<AtomType> () == InternetMediaTypes::kJSON.GetSubType<AtomType> ()) {
+                    return true;
+                }
+                Assert (InternetMediaTypes::kXSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+                if (moreSpecificType.GetSubType<AtomType> () == InternetMediaTypes::kXSLT.GetSubType<AtomType> ()) {
+                    return true;
+                }
+                Assert (InternetMediaTypes::kRTF.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+                if (moreSpecificType.GetSubType<AtomType> () == InternetMediaTypes::kRTF.GetSubType<AtomType> ()) {
+                    return true;
+                }
+            }
+        }
+        else if (moreGeneralType == InternetMediaTypes::kXML) {
+            if (moreSpecificType.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
+                Assert (InternetMediaTypes::kXML.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+                if (moreSpecificType.GetSubType<AtomType> () == InternetMediaTypes::kXML.GetSubType<AtomType> ()) {
+                    return true;
+                }
+                Assert (InternetMediaTypes::kXSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+                if (moreSpecificType.GetSubType<AtomType> () == InternetMediaTypes::kXSLT.GetSubType<AtomType> ()) {
+                    return true;
+                }
+            }
+            if (moreSpecificType.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
+                static const AtomType kXMLAtom_ = "xml"sv;
+                if (moreSpecificType.GetSubType<AtomType> () == kXMLAtom_) {
+                    return true;
+                }
+            }
+            static const AtomType kXMLMediaTypeSuffix{"xml"sv};
+            if (moreSpecificType.GetSuffix<AtomType> () == kXMLMediaTypeSuffix) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     static void CheckData_ (Synchronized<Data_>::WritableReference* lockedData)
     {
         if (lockedData->rwref ().fBackendRep == nullptr) {
@@ -762,94 +835,26 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
 
 bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
 {
-    // @todo look into info in type files/backend to make extensible
-    using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
-        return true;
-    }
-    if (IsXMLFormat (ct)) {
-        return true;
-    }
-    // well known types that can be treated as text (@todo need some way to extend this API)? - Maybe not here but in REGISTRY
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
-        Assert (InternetMediaTypes::kJSON.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kJSON.GetSubType<AtomType> ()) {
-            return true;
-        }
-        Assert (InternetMediaTypes::kXSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXSLT.GetSubType<AtomType> ()) {
-            return true;
-        }
-        Assert (InternetMediaTypes::kRTF.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kRTF.GetSubType<AtomType> ()) {
-            return true;
-        }
-    }
-    return false;
+    return IsA (InternetMediaTypes::kText, ct);
 }
 
 bool InternetMediaTypeRegistry::IsImageFormat (const InternetMediaType& ct) const
 {
-    // @todo look into info in type files/backend to make extensible
-    using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kImage) {
-        return true;
-    }
-    /*
-     * TODO:
-     *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES
-     */
-    return false;
+    return IsA (InternetMediaTypes::kImage, ct);
 }
 
 bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
 {
-    // @todo look into info in type files/backend to make extensible
-    using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
-        Assert (InternetMediaTypes::kXML.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXML.GetSubType<AtomType> ()) {
-            return true;
-        }
-        Assert (InternetMediaTypes::kXSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXSLT.GetSubType<AtomType> ()) {
-            return true;
-        }
-    }
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
-        static const AtomType kXMLAtom_ = "xml"sv;
-        if (ct.GetSubType<AtomType> () == kXMLAtom_) {
-            return true;
-        }
-    }
-    static const AtomType kXMLMediaTypeSuffix{"xml"sv};
-    if (ct.GetSuffix<AtomType> () == kXMLMediaTypeSuffix) {
-        return true;
-    }
-    /*
-     * TODO:
-     *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES
-     */
-    return false;
+    return IsA (InternetMediaTypes::kXML, ct);
 }
 
 bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const
 {
-    /**
-     *  Generally simple to compare because AtomType code and parser handle case and breaking off bits like +xml, and ; parameters
-     * 
-     *  Only trick is that no good way to tell more general relationships between types, but doesn't appear well defined (like CCR is a kind of XML).
-     */
     using AtomType = InternetMediaType::AtomType;
+    // shortcut this one case
     if (moreSpecificType.GetType<AtomType> () == moreGeneralType.GetType<AtomType> () and
         moreSpecificType.GetSubType<AtomType> () == moreGeneralType.GetSubType<AtomType> ()) {
         return true;
     }
-    // @todo find a better way - generalize...
-    if (moreGeneralType == InternetMediaTypes::kJSON) {
-        if (IsA (InternetMediaTypes::kJSONPatch, moreSpecificType)) {
-            return true;
-        }
-    }
-    return false;
+    return NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).IsA (moreGeneralType, moreSpecificType);
 }
