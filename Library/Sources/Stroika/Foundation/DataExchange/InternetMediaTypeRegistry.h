@@ -455,6 +455,12 @@ namespace Stroika::Foundation::DataExchange {
         inline const InternetMediaType kJSON{Types::kApplication, "json"sv};
 
         /**
+         *  \brief json-patch+json
+         *  \see https://datatracker.ietf.org/doc/html/rfc6902
+         */
+        inline const InternetMediaType kJSONPatch{Types::kApplication, "json-patch"sv, "json"sv};
+
+        /**
          *  \brief application/pdf
          */
         inline const InternetMediaType kPDF{Types::kApplication, "pdf"sv};

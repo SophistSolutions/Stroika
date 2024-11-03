@@ -841,6 +841,15 @@ bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, c
      *  Only trick is that no good way to tell more general relationships between types, but doesn't appear well defined (like CCR is a kind of XML).
      */
     using AtomType = InternetMediaType::AtomType;
-    return moreSpecificType.GetType<AtomType> () == moreGeneralType.GetType<AtomType> () and
-           moreSpecificType.GetSubType<AtomType> () == moreGeneralType.GetSubType<AtomType> ();
+    if (moreSpecificType.GetType<AtomType> () == moreGeneralType.GetType<AtomType> () and
+        moreSpecificType.GetSubType<AtomType> () == moreGeneralType.GetSubType<AtomType> ()) {
+        return true;
+    }
+    // @todo find a better way - generalize...
+    if (moreGeneralType == InternetMediaTypes::kJSON) {
+        if (IsA (InternetMediaTypes::kJSONPatch, moreSpecificType)) {
+            return true;
+        }
+    }
+    return false;
 }
