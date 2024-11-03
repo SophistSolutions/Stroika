@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/JSON/Patch.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
@@ -214,17 +215,21 @@ namespace {
                                                                                    id, ClientErrorException{"obj with that ID not found"sv});
                                                                            }}}
 
-                // todo INCOMPLETE a PATCH example (redo - dont use Object... stuff - cuz use variantvalue for patch)
-                ,  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
-                      ObjectRequestHandler::Factory{kMapper,
-                                                    [] (const ObjMapperableObj_& r) -> GUID {
-                                                        ObjMapperableObj_ rr = r;
-                                                        rr.id                = GUID::GenerateNew ();
-                                                        sData_.rwget ().rwref ().Add (rr);
-                                                        return rr.id;
-                                                    }}}
+                // PATCH could be implemented using ObjectRequestHandler::Factory, but it adds little value, and good to show
+                // mixing direct RequestHandlers with ObjectRequestHandler based ones
+                 ,  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
+                        [this] (Message* m, const String& id) {
+                            using JSON::Patch::OperationItemsType;
+                            OperationItemsType patch = ClientErrorException::TreatExceptionsAsClientError ([=] () {return OperationItemsType::kMapper.ToObject<OperationItemsType> (m->rwRequest ().GetBodyVariantValue()); });
+                            // automatic / generic patch implemented using the VariantValue representation - if thats good enuf for your purposes, easy to use
+                            ObjMapperableObj_ obj2Patch = sData_.cget ().cref ().LookupChecked (id, ClientErrorException{"obj with that ID not found"sv});
+                            VariantValue obj2PatchVV = patch.Apply (kMapper.FromObject (obj2Patch));
+                            obj2Patch                = kMapper.ToObject<ObjMapperableObj_> (obj2PatchVV);
+                            sData_.rwget ().rwref ().Add (obj2Patch);
+                            m->rwResponse ().status = IO::Network::HTTP::StatusCodes::kNoContent;
+                        }}
 
-                ,  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
+                , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
                       // redo so can POST raw data and arguments as query-args!
                       // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
                       ObjectRequestHandler::Factory{kMapper,
@@ -235,7 +240,7 @@ namespace {
                                                         return rr.id;
                                                     }}}
 
-                , Route  { IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
+                , Route{ IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
                     ObjectRequestHandler::Factory { kMapper,
                         [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
                         ObjMapperableObj_ rr = r;
