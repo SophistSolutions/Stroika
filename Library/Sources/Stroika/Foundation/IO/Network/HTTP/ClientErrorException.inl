@@ -2,6 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
+#include "Stroika/Foundation/Debug/Trace.h"
+
 namespace Stroika::Foundation::IO::Network::HTTP {
 
     /*
@@ -24,7 +26,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         try {
             return forward<FUNCTION> (f) ();
         }
+        catch (const ClientErrorException&) {
+            Execution::ReThrow (); // if it already is one, just rethrow
+        }
         catch (...) {
+            using namespace Characters;
+            DbgTrace ("Translating exception {} to ClientErrorException"_f, current_exception ());
             Execution::Throw (ClientErrorException{current_exception ()});
         }
     }
