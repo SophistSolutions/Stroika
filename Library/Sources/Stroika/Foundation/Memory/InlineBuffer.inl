@@ -111,10 +111,11 @@ namespace Stroika::Foundation::Memory {
         }
         else {
             // OK - we can do some trickery here to steal the underlying pointers
-            this->fLiveData_ = src.fLiveData_;
-            src.fLiveData_   = src.BufferAsT_ ();
-            this->fSize_     = src.fSize_;
-            src.fSize_       = 0;
+            this->fLiveData_                      = src.fLiveData_;
+            this->fCapacityOfFreeStoreAllocation_ = src.fCapacityOfFreeStoreAllocation_;
+            src.fLiveData_                        = src.BufferAsT_ ();
+            this->fSize_                          = src.fSize_;
+            src.fSize_                            = 0;
             Ensure (src.fSize_ == 0);
             Ensure (src.capacity () == BUF_SIZE);
         }
