@@ -82,7 +82,7 @@ DataExchange::VariantValue Request::GetBodyVariantValue ()
 {
     using namespace DataExchange;
     if (auto oct = contentType ()) {
-        // @todo check 'feature enabled' flag for json reader - and do simular for xml and other types of readers that produce variantvalue
+        // @todo check 'feature enabled' flag for xml and other types of readers that produce variantvalue - but that reader NYI as of 2024-11-04
         if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *oct)) {
             return Variant::JSON::Reader{}.Read (GetBody ());
         }
