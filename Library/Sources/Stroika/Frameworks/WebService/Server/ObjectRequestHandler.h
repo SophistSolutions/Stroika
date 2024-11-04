@@ -177,21 +177,32 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          * 
          *  Note this is broken out as a callable method so it can be used from a straight custom WebServer::RequestHandler
          *  and just parts of the functionality used.
+         * 
          *  \par Example Usage
          *      \code
-                    , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
-                            // redo so can POST raw data and arguments as query-args!
-                            // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
-                            [this] ( Message* m) -> GUID {
-                                ActiveCallCounter_ acc{*this};
-                                ObjectRequestHandler::Factory f{kMapper, [this] ( const Recording& r) {
-                                    return fWSImpl_->recordings_POST (r);
-                                }};
-                                // @todo redo this here - so check content type and arg Recording from composite places
-                                Recording arg{fObjectVariantMapper_.ToObject<Recording> (m->rwRequest().GetBodyVariantValue ())};
-                                auto result =    f.ApplyHandler(arg);
-                                f.SendResponse (m->request (), m->rwResponse (), result);
-                            }}}
+         *          , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
+         *                [this] (Message* m) {
+         *                    // use ObjectRequestHandler::Factory indirectly so can support POST raw data and arguments as query-args!
+         *                    ObjectRequestHandler::Factory f{kMapper, [this] (const Recording& r) { return fWSImpl_->recordings_POST (r); }};
+         *                    Recording                     arg = [&] () {
+         *                        InternetMediaType requestCt =
+         *                            Memory::ValueOfOrThrow (m->request ().contentType (), ClientErrorException{"missing request content type"sv});
+         *                        auto ctChecker = InternetMediaTypeRegistry::sThe.load ();
+         *                        if (ctChecker.IsA (InternetMediaTypes::kJSON, requestCt)) {
+         *                            return Recording{kMapper.ToObject<Recording> (m->rwRequest ().GetBodyVariantValue ())};
+         *                        }
+         *                        else if (ctChecker.IsA (InternetMediaTypes::kAudio, requestCt)) {
+         *                            auto r = Recording{.fData = make_tuple (requestCt, m->rwRequest ().GetBody ())};
+         *                            // also can grab some parameters, like user, etc from query args - @todo
+         *                            return r;
+         *                        }
+         *                        else {
+         *                            Throw (ClientErrorException{"unsupported request content type"sv});
+         *                        }
+         *                    }();
+         *                    auto rr = f.ApplyHandler (arg);
+         *                    f.SendResponse (m->request (), m->rwResponse (), rr);
+         *                }},
          *      \endcode
          */
         nonvirtual RETURN_TYPE ApplyHandler (Request& req) const
@@ -211,6 +222,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          */
         template <same_as<RETURN_TYPE> RT>
         nonvirtual void SendResponse (const Request& request, Response& response, const RT& r) const;
+        nonvirtual void SendResponse (const Request& request, Response& response) const
+            requires (same_as<RETURN_TYPE, void>);
 
     private:
         ObjectVariantMapper fObjectVariantMapper_;

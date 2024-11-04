@@ -182,5 +182,12 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             response.write (Variant::JSON::Writer{}.WriteAsString (fObjectVariantMapper_.FromObject (r)));
         }
     }
+    template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
+    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse ([[maybe_unused]] const Request& request,
+                                                                                     [[maybe_unused]] Response&      response) const
+        requires (same_as<RETURN_TYPE, void>)
+    {
+        // @todo - not sure anything todo here???
+    }
 
 }
