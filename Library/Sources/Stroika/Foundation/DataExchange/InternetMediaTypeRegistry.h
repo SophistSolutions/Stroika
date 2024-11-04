@@ -418,12 +418,17 @@ namespace Stroika::Foundation::DataExchange {
     namespace InternetMediaTypes {
 
         /**
-          * Generic text content (used for IsA () primarily)
+         * Generic text content (used for IsA () primarily)
          */
         inline const InternetMediaType kText{Types::kText, {}};
 
         /**
-          * Generic image content (used for IsA () primarily)
+         * Generic audio content (used for IsA () primarily)
+         */
+        inline const InternetMediaType kAudio{Types::kAudio, {}};
+
+        /**
+         * Generic image content (used for IsA () primarily)
          */
         inline const InternetMediaType kImage{Types::kImage, {}};
 
