@@ -216,8 +216,16 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
             return true;
         }
 
+        // Handle wildcard 'moreGeneralType'
+        if (moreGeneralType == InternetMediaType{moreGeneralType.GetType<AtomType> (), {}}) {
+            if (moreSpecificType.GetType<AtomType> () == moreGeneralType.GetType ()) {
+                return true;
+            }
+        }
+
         // @todo find a better way - generalize... But for now - Stroika v3.0d12x... - just copy old logic for a bunch of special cases we had - then later
         // maybe add "override" records for this too....
+#if 0
         if (moreGeneralType == InternetMediaTypes::kImage) {
             if (moreSpecificType.GetType<AtomType> () == InternetMediaTypes::Types::kImage) {
                 return true;
@@ -228,10 +236,12 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
                 return true;
             }
         }
-        else if (moreGeneralType == InternetMediaTypes::kText) {
-            if (moreSpecificType.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
-                return true;
-            }
+        else
+#endif
+        if (moreGeneralType == InternetMediaTypes::kText) {
+            //if (moreSpecificType.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
+            //    return true;
+            //}
             if (IsA (InternetMediaTypes::kXML, moreSpecificType)) {
                 return true;
             }
