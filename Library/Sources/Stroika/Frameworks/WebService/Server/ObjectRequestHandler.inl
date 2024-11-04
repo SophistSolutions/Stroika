@@ -116,17 +116,55 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         }
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse ([[maybe_unused]] const Request& request,
-                                                                                     [[maybe_unused]] Response&      response) const
-        requires (same_as<RETURN_TYPE, void>)
+    template <same_as<WEB_METHOD_ARG> WMA>
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const WMA& arg) const
+        requires (not INCLUDE_CONTEXT)
     {
-        // @todo - set status? Maybe no need - just do nothing??? and OK
+        if constexpr (same_as<RETURN_TYPE, void>) {
+            if constexpr (same_as<WEB_METHOD_ARG, void>) {
+                fHighLevelHandler_ ();
+            }
+            else {
+                return fHighLevelHandler_ (arg);
+            }
+        }
+        else {
+            if constexpr (same_as<WEB_METHOD_ARG, void>) {
+                return fHighLevelHandler_ ();
+            }
+            else {
+                return fHighLevelHandler_ (arg);
+            }
+        }
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
+    template <same_as<WEB_METHOD_ARG> WMA>
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const WMA& arg, const Context& c) const
+        requires (INCLUDE_CONTEXT)
+    {
+        if constexpr (same_as<RETURN_TYPE, void>) {
+            if constexpr (same_as<WEB_METHOD_ARG, void>) {
+                fHighLevelHandler_ (c);
+            }
+            else {
+                return fHighLevelHandler_ (arg, c);
+            }
+        }
+        else {
+            if constexpr (same_as<WEB_METHOD_ARG, void>) {
+                return fHighLevelHandler_ (c);
+            }
+            else {
+                WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (c.fRequest.GetBodyVariantValue ())};
+                return fHighLevelHandler_ (arg, c);
+            }
+        }
+    }
+    template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
+    template <same_as<RETURN_TYPE> RT>
     // note maybe_unused on request wrong but tmphack to quiet til we check accept headers
     inline void Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::SendResponse ([[maybe_unused]] const Request& request,
-                                                                                     Response& response, const RETURN_TYPE& r) const
-        requires (not same_as<RETURN_TYPE, void>)
+                                                                                     Response& response, const RT& r) const
     {
         using namespace DataExchange;
         // @todo check accepts content type - and convert result (to JSON or binary json, xml etc)

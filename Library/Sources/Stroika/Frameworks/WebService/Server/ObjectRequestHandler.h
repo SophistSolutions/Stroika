@@ -122,11 +122,20 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      *  \par Example Usage
      *      \code
      *          Route{"api/objs/?"_RegEx,
-     *                      ObjectRequestHandler::Factory{
-     *                          kMapper,
-     *                          [] () -> Sequence<GUID> {
-     *                              return Sequence<GUID>{};
-     *                          }}}
+     *                  ObjectRequestHandler::Factory{
+     *                      kMapper,
+     *                      [] () -> Sequence<GUID> {
+     *                          return Sequence<GUID>{};
+     *                      }}}
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          Route{"api/(v1/)?recordings/(.+)"_RegEx,
+     *                 ObjectRequestHandler::Factory{kMapper, [this] (const ObjectRequestHandler::Context& c) -> Recording {
+     *                     String id = c.fMatchedURLArgs[1];
+     *                     return fWSImpl_->recordings_GET (id);
+     *                 }}}
      *      \endcode
      * 
      *  \brief ObjectRequestHandler::Factory is a way to construct a WebServer::RequestHandler from an ObjectVariantMapper object and a lambda taking in/out params of objects.
@@ -168,20 +177,40 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          * 
          *  Note this is broken out as a callable method so it can be used from a straight custom WebServer::RequestHandler
          *  and just parts of the functionality used.
+         *  \par Example Usage
+         *      \code
+                    , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
+                            // redo so can POST raw data and arguments as query-args!
+                            // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
+                            [this] ( Message* m) -> GUID {
+                                ActiveCallCounter_ acc{*this};
+                                ObjectRequestHandler::Factory f{kMapper, [this] ( const Recording& r) {
+                                    return fWSImpl_->recordings_POST (r);
+                                }};
+                                // @todo redo this here - so check content type and arg Recording from composite places
+                                Recording arg{fObjectVariantMapper_.ToObject<Recording> (m->rwRequest().GetBodyVariantValue ())};
+                                auto result =    f.ApplyHandler(arg);
+                                f.SendResponse (m->request (), m->rwResponse (), result);
+                            }}}
+         *      \endcode
          */
         nonvirtual RETURN_TYPE ApplyHandler (Request& req) const
             requires (not INCLUDE_CONTEXT);
         nonvirtual RETURN_TYPE ApplyHandler (const Context& c) const
+            requires (INCLUDE_CONTEXT);
+        template <same_as<WEB_METHOD_ARG> WMA>
+        nonvirtual RETURN_TYPE ApplyHandler (const WMA& arg) const
+            requires (not INCLUDE_CONTEXT);
+        template <same_as<WEB_METHOD_ARG> WMA>
+        nonvirtual RETURN_TYPE ApplyHandler (const WMA& arg, const Context& c) const
             requires (INCLUDE_CONTEXT);
 
     public:
         /**
          *  Given the packaged up response 'r' - send it as a result, in the appropriate format (based on request headers etc)
          */
-        nonvirtual void SendResponse (const Request& request, Response& response) const
-            requires (same_as<RETURN_TYPE, void>);
-        nonvirtual void SendResponse (const Request& request, Response& response, const RETURN_TYPE& r) const
-            requires (not same_as<RETURN_TYPE, void>);
+        template <same_as<RETURN_TYPE> RT>
+        nonvirtual void SendResponse (const Request& request, Response& response, const RT& r) const;
 
     private:
         ObjectVariantMapper fObjectVariantMapper_;
