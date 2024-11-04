@@ -40,7 +40,8 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool InternetMediaType::empty () const
     {
-        Assert (fType_.empty () == fSubType_.empty ());
+        // Assert (fType_.empty () == fSubType_.empty ());  before 3.0d12
+        Assert (not fType_.empty () or fSubType_.empty ());    // if subtype provided, a type must be provided
         Assert (not fType_.empty () or fParameters_.empty ()); // dont specify params without type
         Assert (not fType_.empty () or fSuffix_ == nullopt);   // dont specify suffix without type
         return fType_.empty ();
