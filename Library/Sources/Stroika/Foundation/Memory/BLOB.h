@@ -34,8 +34,6 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm::Base64 {
 
 namespace Stroika::Foundation::Memory {
 
-    //using namespace Configuration;
-
     /**
      *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
      *  change (except by assignment - being assigned over).
@@ -164,21 +162,18 @@ namespace Stroika::Foundation::Memory {
          *
          *  \note ALL overloads require T is be 'trivially_copyable' - just like memcpy()
          */
-        template <typename T>
-        static BLOB FromRaw (const T* s, const T* e)
-            requires (is_trivially_copyable_v<T>);
-        template <typename T>
-        static BLOB FromRaw (const T* s, size_t sz)
-            requires (is_trivially_copyable_v<T>);
-        template <typename T>
+        template <Common::trivially_copyable T>
+        static BLOB FromRaw (const T* s, const T* e);
+        template <Common::trivially_copyable T>
+        static BLOB FromRaw (const T* s, size_t sz);
+        template <Common::trivially_copyable T>
         static BLOB FromRaw (const T* s)
             requires (same_as<typename char_traits<T>::char_type, T>);
-        template <typename T>
+        template <Common::trivially_copyable T>
         static BLOB FromRaw (const basic_string<T>& s)
             requires (same_as<typename char_traits<T>::char_type, T>);
-        template <typename T>
-        static BLOB FromRaw (const T& s)
-            requires (is_trivially_copyable_v<T>);
+        template <Common::trivially_copyable T>
+        static BLOB FromRaw (const T& s);
 
     public:
         /*

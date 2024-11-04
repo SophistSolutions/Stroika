@@ -141,34 +141,31 @@ namespace Stroika::Foundation::Memory {
     {
         return FromBase64 (span<const char>{s});
     }
-    template <typename T>
+    template <Common::trivially_copyable T>
     inline BLOB BLOB::FromRaw (const T* s, const T* e)
-        requires (is_trivially_copyable_v<T>)
     {
         return BLOB{span{reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (e)}};
     }
-    template <typename T>
+    template <Common::trivially_copyable T>
     inline BLOB BLOB::FromRaw (const T* s, size_t sz)
-        requires (is_trivially_copyable_v<T>)
     {
         return BLOB{span{reinterpret_cast<const byte*> (s), sz}};
     }
-    template <typename T>
+    template <Common::trivially_copyable T>
     inline BLOB BLOB::FromRaw (const T* s)
         requires (same_as<typename char_traits<T>::char_type, T>)
     {
         RequireNotNull (s);
         return FromRaw (s, s + char_traits<T>::length (s));
     }
-    template <typename T>
+    template <Common::trivially_copyable T>
     inline BLOB BLOB::FromRaw (const basic_string<T>& s)
         requires (same_as<typename char_traits<T>::char_type, T>)
     {
         return FromRaw (s.c_str (), s.c_str () + s.length ());
     }
-    template <typename T>
+    template <Common::trivially_copyable T>
     inline BLOB BLOB::FromRaw (const T& s)
-        requires (is_trivially_copyable_v<T>)
     {
         return FromRaw (&s, &s + 1);
     }

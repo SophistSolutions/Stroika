@@ -126,6 +126,12 @@ namespace Stroika::Foundation::Common {
     concept IAnyOf = (same_as<T, U> or ...);
 
     /**
+     *  \brief concept version of std::is_trivially_copyable_v
+     */
+    template <typename T>
+    concept trivially_copyable = is_trivially_copyable_v<T>;
+
+    /**
      *  A template which ignores its template arguments, and always returns true_type;
      *  NOT crazy - helpful is template metaprogramming.
      */
