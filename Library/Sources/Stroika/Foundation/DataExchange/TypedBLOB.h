@@ -19,6 +19,8 @@
 namespace Stroika::Foundation::DataExchange {
 
     /**
+     *  \brief TypedBLOB is a named tuple<InternetMediaType, Memory::BLOB> - with friendlier names, and
+     *         serialization properties.
      * 
      */
     class [[nodiscard]] TypedBLOB {
@@ -27,7 +29,7 @@ namespace Stroika::Foundation::DataExchange {
         Memory::BLOB      fData;
 
     public:
-        String ToString () const;
+        nonvirtual String ToString () const;
     };
 
 }
