@@ -139,15 +139,16 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
+    InternetMediaTypeRegistry registry = InternetMediaTypeRegistry::sThe;
     Require (not webServiceDescription.fResponseType.has_value () or
              (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON or
               webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN)); // all we support for now
     if (webServiceDescription.fResponseType) {
-        if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON) {
+        if (registry.IsA (InternetMediaTypes::kJSON, *webServiceDescription.fResponseType)) {
             response->contentType = *webServiceDescription.fResponseType;
             response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
         }
-        else if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN) {
+        else if (registry.IsA (InternetMediaTypes::Wildcards::kText, *webServiceDescription.fResponseType)) {
             response->contentType = *webServiceDescription.fResponseType;
             response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
         }

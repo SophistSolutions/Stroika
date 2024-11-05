@@ -229,20 +229,15 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
 
         // @todo find a better way - generalize... But for now - Stroika v3.0d12x... - just copy old logic for a bunch of special cases we had - then later
         // maybe add "override" records for this too....
-        if (moreGeneralType == InternetMediaTypes::kText) {
+        if (moreGeneralType == InternetMediaTypes::Wildcards::kText) {
             if (IsA (InternetMediaTypes::kXML, moreSpecificType)) {
+                return true;
+            }
+            if (IsA (InternetMediaTypes::kJSON, moreSpecificType)) {
                 return true;
             }
             // well known types that can be treated as text (@todo need some way to extend this API)? - Maybe not here but in REGISTRY
             if (specificType == InternetMediaTypes::Types::kApplication) {
-                Assert (InternetMediaTypes::kJSON.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-                if (specificSubType == InternetMediaTypes::kJSON.GetSubType<AtomType> ()) {
-                    return true;
-                }
-                Assert (InternetMediaTypes::kXSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-                if (specificSubType == InternetMediaTypes::kXSLT.GetSubType<AtomType> ()) {
-                    return true;
-                }
                 Assert (InternetMediaTypes::kRTF.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
                 if (specificSubType == InternetMediaTypes::kRTF.GetSubType<AtomType> ()) {
                     return true;
@@ -266,9 +261,21 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
                     return true;
                 }
             }
-            static const AtomType kXMLMediaTypeSuffix{"xml"sv};
-            if (moreSpecificType.GetSuffix<AtomType> () == kXMLMediaTypeSuffix) {
-                return true;
+        }
+
+        // look for suffixes
+        if (auto suffix = moreSpecificType.GetSuffix<AtomType> ()) {
+            if (moreGeneralType == InternetMediaTypes::kJSON) {
+                static const AtomType kSuffix_{"json"sv};
+                if (suffix == kSuffix_) {
+                    return true;
+                }
+            }
+            else if (moreGeneralType == InternetMediaTypes::kXML) {
+                static const AtomType kSuffix_{"xml"sv};
+                if (suffix == kSuffix_) {
+                    return true;
+                }
             }
         }
 
@@ -833,12 +840,12 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
 
 bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
 {
-    return IsA (InternetMediaTypes::kText, ct);
+    return IsA (InternetMediaTypes::Wildcards::kText, ct);
 }
 
 bool InternetMediaTypeRegistry::IsImageFormat (const InternetMediaType& ct) const
 {
-    return IsA (InternetMediaTypes::kImage, ct);
+    return IsA (InternetMediaTypes::Wildcards::kImage, ct);
 }
 
 bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const

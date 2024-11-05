@@ -217,7 +217,7 @@ namespace {
             InternetMediaType ct1{"text/plain; charset=us-ascii (Plain text)"};
             InternetMediaType ct2{"text/plain; charset=\"us-ascii\""};
             EXPECT_EQ (ct1, ct2);
-            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, ct1));
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::Wildcards::kText, ct1));
         }
         {
             auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
@@ -252,17 +252,20 @@ namespace {
             dumpCT (L"PNG", InternetMediaTypes::kPNG);
             checkCT (InternetMediaTypes::kPNG, {".png"});
             {
-                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kImage, InternetMediaTypes::kPNG));
-                EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kImage, InternetMediaTypes::kJSON));
-                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kXML, InternetMediaTypes::kXML));
-                EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kXML, InternetMediaTypes::kText_PLAIN));
-                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, InternetMediaTypes::kText_PLAIN));
-                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, InternetMediaTypes::kXML));
-                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, InternetMediaTypes::kHTML));
-                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, InternetMediaTypes::kJSON));
-                EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, InternetMediaTypes::kPNG));
-                EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kXML, InternetMediaType{"text/foobar"sv}));
-                EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kXML, InternetMediaType{"text/foobar+xml"sv}));
+                InternetMediaTypeRegistry registry = InternetMediaTypeRegistry::sThe;
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kImage, InternetMediaTypes::kPNG));
+                EXPECT_TRUE (not registry.IsA (InternetMediaTypes::Wildcards::kImage, InternetMediaTypes::kJSON));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::kXML, InternetMediaTypes::kXML));
+                EXPECT_TRUE (not registry.IsA (InternetMediaTypes::kXML, InternetMediaTypes::kText_PLAIN));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kText_PLAIN));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kXML));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kHTML));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kJSON));
+                EXPECT_TRUE (not registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kPNG));
+                EXPECT_TRUE (not registry.IsA (InternetMediaTypes::kXML, InternetMediaType{"text/foobar"sv}));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::kXML, InternetMediaType{"text/foobar+xml"sv}));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::kJSON, InternetMediaType{"application/openapi+json"sv}));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaType{"application/openapi+json"sv}));
             }
         }
         {

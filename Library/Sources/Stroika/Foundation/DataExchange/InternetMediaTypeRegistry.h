@@ -39,7 +39,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *          if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText, InternetMediaType {some-string}) {
+     *          if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::Wildcards::kText, InternetMediaType {some-string}) {
      *              handle_textfiles()
      *          }
      *      \endcode
@@ -258,13 +258,13 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  This examines the 'Type' field, sometimes subtype field, as well as leverages the Suffix field (if present).
          */
-        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::kText, ct)")]] bool IsTextFormat (const InternetMediaType& ct) const;
+        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::Wildcards::kText, ct)")]] bool IsTextFormat (const InternetMediaType& ct) const;
 
     public:
         /**
          * This returns true if the given type is known to be treatable as an image. 
          */
-        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::kImage,ct)")]] bool IsImageFormat (const InternetMediaType& ct) const;
+        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::Wildcards::kImage,ct)")]] bool IsImageFormat (const InternetMediaType& ct) const;
 
     public:
         /**
@@ -284,10 +284,10 @@ namespace Stroika::Foundation::DataExchange {
          *  in a (someday) extensible fashion.
          * 
          *  To check if a given type 'ct' is a 'text' type:
-         *      o   IsA (InternetMediaTypes::kText, ct)
+         *      o   IsA (InternetMediaTypes::Wildcards::kText, ct)
          * 
          *  To check if a given type 'ct' is a 'image' type:
-         *      o   IsA (InternetMediaTypes::kImage, ct)
+         *      o   IsA (InternetMediaTypes::Wildcards::kImage, ct)
          * 
          *  To check if a given type 'ct' is a 'json' type:
          *      o   IsA (InternetMediaTypes::kJSON, ct)         -- for example works for kJSONPatch
@@ -415,12 +415,7 @@ namespace Stroika::Foundation::DataExchange {
 
     }
 
-    namespace InternetMediaTypes {
-
-        /**
-         * Generic text content (used for IsA () primarily)
-         */
-        inline const InternetMediaType kText{Types::kText, {}};
+    namespace InternetMediaTypes::Wildcards {
 
         /**
          * Generic audio content (used for IsA () primarily)
@@ -431,6 +426,15 @@ namespace Stroika::Foundation::DataExchange {
          * Generic image content (used for IsA () primarily)
          */
         inline const InternetMediaType kImage{Types::kImage, {}};
+
+        /**
+         * Generic text content (used for IsA () primarily)
+         */
+        inline const InternetMediaType kText{Types::kText, {}};
+
+    }
+
+    namespace InternetMediaTypes {
 
         /**
          *  \brief application/octet-stream
