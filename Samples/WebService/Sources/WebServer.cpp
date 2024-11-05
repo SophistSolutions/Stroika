@@ -18,6 +18,7 @@
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
 #include "Stroika/Frameworks/WebService/Server/Basic.h"
+#include "Stroika/Frameworks/WebService/Server/ObjectRequestHandler.h"
 #include "Stroika/Frameworks/WebService/Server/VariantValue.h"
 
 #include "WebServer.h"
@@ -196,6 +197,7 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     {},
     Sequence<String>{
         "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
+        "curl -X POST 'http://localhost:8080/plus?arg1=3&arg2=5' --output -",
     },
     Sequence<String>{"add the two argument numbers"},
 };
