@@ -126,6 +126,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.cpp" />
@@ -494,6 +495,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.h" />
@@ -969,6 +971,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Makefile" />

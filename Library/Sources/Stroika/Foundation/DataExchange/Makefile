@@ -27,6 +27,7 @@ Objs	:=	\
 	$(ObjDir)ObjectVariantMapper${OBJ_SUFFIX}\
 	$(ObjDir)OptionsFile${OBJ_SUFFIX}\
 	$(ObjDir)StructFieldMetaInfo${OBJ_SUFFIX}\
+	$(ObjDir)TypedBLOB${OBJ_SUFFIX}\
 	$(ObjDir)VariantValue${OBJ_SUFFIX}\
 
 SubDirs	:=	\

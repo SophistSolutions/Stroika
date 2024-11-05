@@ -8,6 +8,8 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/MultiSet.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
@@ -16,8 +18,6 @@
 #include "Stroika/Foundation/Time/Date.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
-
-#include "InternetMediaType.h"
 
 #include "ObjectVariantMapper.h"
 
@@ -323,6 +323,14 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMed
         *intoObjOfTypeT = T{d.As<String> ()};
     };
     return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (T)};
+}
+
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const TypedBLOB*)
+{
+    return MakeClassSerializer<TypedBLOB> ({
+        {"data"sv, {&TypedBLOB::fData}},
+        {"type"sv, {&TypedBLOB::fType}},
+    });
 }
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::CIDR*)

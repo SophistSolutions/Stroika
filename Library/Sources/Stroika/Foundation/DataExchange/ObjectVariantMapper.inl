@@ -274,6 +274,11 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T, typename... ARGS>
     inline void ObjectVariantMapper::AddCommonType (ARGS&&... args)
     {
+        if constexpr (same_as<T, TypedBLOB>) {
+            // pre-add dependent types...
+            AddCommonType<Memory::BLOB> ();
+            //AddCommonType<InternetMediaType> ();  --already in by default
+        }
         const T* n = nullptr; // arg unused, just for overloading
         AssertDependentTypesAlreadyInRegistry_ (n);
         auto&& serializer = MakeCommonSerializer<T> (forward<ARGS> (args)...);

@@ -846,6 +846,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.cpp">
       <Filter>Sources\Common\Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.cpp">
+      <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2221,6 +2224,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Platform\Common.h">
       <Filter>Sources\Common\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.h">
+      <Filter>Sources\DataExchange</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3677,6 +3683,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\Platform\Makefile">
       <Filter>Sources\Common\Platform</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.inl">
+      <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

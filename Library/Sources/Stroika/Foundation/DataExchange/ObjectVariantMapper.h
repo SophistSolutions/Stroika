@@ -97,6 +97,7 @@
 
 namespace Stroika::Foundation::DataExchange {
     class InternetMediaType;
+    class TypedBLOB;
 }
 namespace Stroika::Foundation::IO::Network {
     class CIDR;
@@ -886,6 +887,14 @@ namespace Stroika::Foundation::DataExchange {
          * 
          *  Create a class serializer/de-serializer for the given field descriptions. Start with those from 'baseClass' - as if that was done first.
          *  and then if furtherDerivedClass provided, apply that type mapper as well last (so it gets final say on what's produced).
+         * 
+         *  \par Example Usage
+         *      \code
+         *           return MakeClassSerializer<TypedBLOB> ({
+         *                  {"data"sv, {&TypedBLOB::fData}},
+         *                  {"type"sv, {&TypedBLOB::fType}},
+         *              });
+         *      \endcode
          */
         template <typename T>
         static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
@@ -1069,6 +1078,7 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
         static TypeMappingDetails MakeCommonSerializer_ (const Memory::BLOB*);
         static TypeMappingDetails MakeCommonSerializer_ (const InternetMediaType*);
+        static TypeMappingDetails MakeCommonSerializer_ (const TypedBLOB*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::CIDR*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URI*);
