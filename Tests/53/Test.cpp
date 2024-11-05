@@ -218,7 +218,7 @@ namespace {
                 // PATCH could be implemented using ObjectRequestHandler::Factory, but it adds little value, and good to show
                 // mixing direct RequestHandlers with ObjectRequestHandler based ones
                  ,  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
-                        [this] (Message* m, const String& id) {
+                        [] (Message* m, const String& id) {
                             using JSON::Patch::OperationItemsType;
                             OperationItemsType patch = ClientErrorException::TreatExceptionsAsClientError ([=] () {return OperationItemsType::kMapper.ToObject<OperationItemsType> (m->rwRequest ().GetBodyVariantValue()); });
                             // automatic / generic patch implemented using the VariantValue representation - if thats good enuf for your purposes, easy to use

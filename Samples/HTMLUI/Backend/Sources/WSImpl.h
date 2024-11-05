@@ -29,7 +29,7 @@ namespace Stroika::Samples::HTMLUI {
         virtual About about_GET () const override;
 
     public:
-        virtual tuple<BLOB, InternetMediaType> resource_GET (const String& name) const override;
+        virtual TypedBLOB resource_GET (const String& name) const override;
 
     private:
         struct Rep_;

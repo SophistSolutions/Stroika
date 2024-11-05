@@ -22,6 +22,7 @@
 #include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
 #include "Stroika/Frameworks/WebService/Server/Basic.h"
+#include "Stroika/Frameworks/WebService/Server/ObjectRequestHandler.h"
 #include "Stroika/Frameworks/WebService/Server/VariantValue.h"
 
 #include "AppConfiguration.h"
@@ -146,10 +147,10 @@ public:
             /**
              * /about - health check etc
              */
-            , Route{"api/about/?"_RegEx, mkRequestHandler (kAbout_, About::kMapper, function<About (void)>{[this] () {
+            , Route{"api/about/?"_RegEx, ObjectRequestHandler::Factory{About::kMapper, [this] () {
                                                             ActiveCallCounter_ acc{*this};
                                                             return fWSImpl_->about_GET ();
-                                                        }})}
+                                                        }}}
 
             /**
              * /resource
@@ -158,14 +159,14 @@ public:
                     [this] (Message* m, const String& resID) {
                         ActiveCallCounter_ acc{*this};
                         auto               r         = fWSImpl_->resource_GET (resID);
-                        m->rwResponse ().contentType = get<InternetMediaType> (r);
-                        m->rwResponse ().write (get<BLOB> (r));
+                        m->rwResponse ().contentType = r.fType;
+                        m->rwResponse ().write (r.fData);
                     }}
 
             /*
              * configuration data for web-gui - private - just so can communicate with /api
              */
-           , Route{"config.json"_RegEx, mkRequestHandler (kGUIConfig_, Config_::kMapper, function<Config_ (void)>{[=] () { return GetConfig_ (); }})}
+           , Route{"config.json"_RegEx, ObjectRequestHandler::Factory{Config_::kMapper, [=] () { return GetConfig_ (); }}}
 
             /*
              * Serve up contents of html folder as static site

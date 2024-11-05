@@ -174,11 +174,12 @@ About WSImpl::about_GET () const
                  APIServerInfo{AppVersion::kVersion, kAPIServerComponents_, machineInfo, processInfo, apiStats, webServerStats, dbStats}};
 }
 
-tuple<BLOB, InternetMediaType> WSImpl::resource_GET (const String& name) const
+TypedBLOB WSImpl::resource_GET (const String& name) const
 {
     using namespace IO::Network::HTTP;
     if (name == "api.json"sv) {
-        return make_tuple (GetOpenAPISpecification ().As (Frameworks::WebService::OpenAPI::kMediaType), Frameworks::WebService::OpenAPI::kMediaType);
+        return TypedBLOB{.fType = Frameworks::WebService::OpenAPI::kMediaType,
+                         .fData = GetOpenAPISpecification ().As (Frameworks::WebService::OpenAPI::kMediaType)};
     }
     Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
 }

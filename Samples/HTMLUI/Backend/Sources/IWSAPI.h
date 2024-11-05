@@ -7,7 +7,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Containers/Collection.h"
-#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Stroika/Frameworks/WebService/OpenAPI/Specification.h"
@@ -21,8 +21,7 @@ namespace Stroika::Samples::HTMLUI {
     using Stroika::Foundation::Characters::String;
     using Stroika::Foundation::Common::GUID;
     using Stroika::Foundation::Containers::Collection;
-    using Stroika::Foundation::DataExchange::InternetMediaType;
-    using Stroika::Foundation::Memory::BLOB;
+    using Stroika::Foundation::DataExchange::TypedBLOB;
 
     using namespace Model;
 
@@ -48,7 +47,7 @@ namespace Stroika::Samples::HTMLUI {
         virtual About about_GET () const = 0;
 
     public:
-        virtual tuple<BLOB, InternetMediaType> resource_GET (const String& name) const = 0;
+        virtual TypedBLOB resource_GET (const String& name) const = 0;
     };
 
 }
