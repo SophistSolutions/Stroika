@@ -29,11 +29,11 @@
  *      @todo   Deadlock from two threads doing UpgradeLockNonAtomically(quietly) is ??? detectable, so in DEBUG builds translate that to an
  *              assert erorr?
  *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficent if not subclassing each other
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficient if not subclassing each other
  *
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in synchronized
  *
- *      @todo   Tons of cleanups, orthoganality, docs, etc.
+ *      @todo   Tons of cleanups, orthogonality, docs, etc.
  *
  *      @todo   consider/doc choice on explicit operator T ()
  *
@@ -155,9 +155,9 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   LIKE JAVA SYNCHRONIZED
      *          This is SIMPLE to use like the Java (and .net) synchronized attribute(lock) mechanism.
-     *          But why does it not suffer from the same performance deficiit?
+     *          But why does it not suffer from the same performance defect?
      *
-     *          Because with Java - you mixup exceptions and assertions. With Stroika, we have builtin
+     *          Because with Java - you mix up exceptions and assertions. With Stroika, we have builtin
      *          checking for races (Debug::AssertExternallySynchronizedMutex) in most objects, so
      *          you only use Synchronized<> (or some other more performant mechanism) in the few places
      *          you need it.
@@ -681,7 +681,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<optional<xxx>>>).
+         *  \note   Considered losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<optional<xxx>>>).
          *          But you don't need to use it, and this really does act as a smart pointer so it should most often just be
          *          more clear.
          */
@@ -693,7 +693,7 @@ namespace Stroika::Foundation::Execution {
          *  Get readable and writable reference to the underlying object.
          *
          *  \note   We experimented with overloading just ref() with const and non const versions, but the trouble with this
-         *          is that from the caller, its not obvious which version you are getting, and it often matters alot, so
+         *          is that from the caller, its not obvious which version you are getting, and it often matters a lot, so
          *          this appeared - though less convenient - less confusing.
          *
          *          We can always add (back) a ref () - so overloaded - method.
