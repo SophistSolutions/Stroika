@@ -135,14 +135,14 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline WaitForIOReady<T, TRAITS> UpdatableWaitForIOReady<T, TRAITS>::mkWaiter_ ()
     {
-        #if 1
+#if 1
         // https://stroika.atlassian.net/browse/STK-1021
         using Traversal::Iterable;
-        Iterable<pair<T, TypeOfMonitorSet>> r { fData_.load().template As<vector<pair<T, TypeOfMonitorSet>>> ()};
+        Iterable<pair<T, TypeOfMonitorSet>> r{fData_.load ().template As<vector<pair<T, TypeOfMonitorSet>>> ()};
         return WaitForIOReady<T, TRAITS>{r, fPollable2Wakeup_};
-        #else
+#else
         return WaitForIOReady<T, TRAITS>{fData_.load (), fPollable2Wakeup_};
-        #endif
+#endif
     }
 
 }
