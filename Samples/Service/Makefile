@@ -65,5 +65,5 @@ $(TARGETEXE):	$(Objs) $(StroikaLibs)
 
 .PHONY:  installers installer-deb installer-rpm installer-wix
 installers installer-deb installer-rpm installer-wix:   $(TARGETEXE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Installers:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Service Installers:"
 	@$(MAKE) --no-print-directory --directory Installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@

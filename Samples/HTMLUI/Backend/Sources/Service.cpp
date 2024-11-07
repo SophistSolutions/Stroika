@@ -65,8 +65,8 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
     Logger::sThe.Log (Logger::eInfo, "{} (version {}) service started successfully"_f, kServiceDescription_.fPrettyName, AppVersion::kVersion);
     successfullyStarted = true;
 
-    // the final object delcared on the stack before we wait, so its the first run when we are handling the
-    // thread aboort exception, and unwinding this call.
+    // the final object declared on the stack before we wait, so its the first run when we are handling the
+    // thread abort exception, and unwinding this call.
     [[maybe_unused]] auto&& cleanup2 = Finally ([&] () { Logger::sThe.Log (Logger::eInfo, "Beginning service shutdown"_f); });
 
     WebServer myWebServer{fPortNumberOverride_}; // listen and dispatch while this object exists
@@ -74,7 +74,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
     /*
      *  This thread will block here, and never go any further. When the service is terminated, WaitableEvent will
      *  abort (raise exception) and all the destructors on the stack (above) from this routine will get played
-     *  backewards to cleanup.
+     *  backwards to cleanup.
      */
     WaitableEvent{}.Wait (); // until told to stop by abort exception
 

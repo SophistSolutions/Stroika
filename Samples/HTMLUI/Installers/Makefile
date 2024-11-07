@@ -206,7 +206,7 @@ ifeq ($(CONFIGURATION),)
 endif
 	@rm -rf $(WIX_WORKDIR) $(WIX_BUILD_OUT)
 	@mkdir -p $(WIX_WORKDIR)
-	@MAKEFLAGS= $(MAKE) doBld_  2>&1 >> $(WIX_BUILD_OUT)
+	@MAKEFLAGS= $(MAKE) doBld_ 2>&1 >> $(WIX_BUILD_OUT)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_WIX)"`
 
 
