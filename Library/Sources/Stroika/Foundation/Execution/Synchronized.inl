@@ -489,7 +489,7 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (s);
         this->_NoteLockStateChanged (L"WritableReference move-Locked");
         ++s->fWriteLockCount_; // update lock count cuz though not a new lock, new to WritableReference
-                               // and just used outside construct of WritableRefernce to control how lock acquired
+                               // and just used outside construct of WritableReference to control how lock acquired
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, Time::DurationSeconds timeout)
@@ -508,7 +508,7 @@ namespace Stroika::Foundation::Execution {
         : ReadableReference{std::move (src)}
         , fWriteLock_{std::move (src.fWriteLock_)}
     {
-        // no change to writelockcount cuz not a new lock - just moved
+        // no change to writelock count cuz not a new lock - just moved
         this->_NoteLockStateChanged (L"WritableReference move-Locked");
     }
     template <typename T, typename TRAITS>

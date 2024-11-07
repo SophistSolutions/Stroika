@@ -27,7 +27,7 @@
  *
  * TODO:
  *      @todo   Deadlock from two threads doing UpgradeLockNonAtomically(quietly) is ??? detectable, so in DEBUG builds translate that to an
- *              assert erorr?
+ *              assert error?
  *
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficient if not subclassing each other
  *
