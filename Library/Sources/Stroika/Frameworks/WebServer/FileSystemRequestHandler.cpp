@@ -51,11 +51,12 @@ namespace {
                 }
             }
         }
-        void HandleMessage (Message* m)
+        void HandleMessage (Message* m, bool* handled)
         {
 #if qStroika_Foundation_Debug_DefaultTracingOn
             Debug::TimingTrace ttrc{"FSRouterRep_::HandleMessage", 1ms}; // prelim - gather info on whether worth supporting ETAGs etc - why is this sometimes somewhat slow
 #endif
+
             /*
              * @todo rewrite to incrementally copy file from stream, not read all into RAM
              */
@@ -80,10 +81,12 @@ namespace {
                 }
                 ApplyCacheControl_ (response, urlHostRelPath);
                 response.write (in.ReadAll ());
+                *handled = true;
             }
             catch (const system_error& e) {
                 if (e.code () == errc::no_such_file_or_directory) {
-                    Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
+                    Assert (not *handled);
+                    *handled = false; // Router itself will issue Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
                 }
                 else {
                     Execution::ReThrow ();
@@ -130,7 +133,8 @@ namespace {
  ********************************************************************************
  */
 FileSystemRequestHandler::FileSystemRequestHandler (const filesystem::path& filesystemRoot, const Options& options)
-    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip, Memory::NullCoalesce (options.fDefaultIndexFileNames),
-                                                       options.fCacheControlSettings)] (Message* m) -> void { rep->HandleMessage (m); }}
+    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip,
+                                                       Memory::NullCoalesce (options.fDefaultIndexFileNames), options.fCacheControlSettings)] (
+                         Message* m, const Sequence<String>&, bool* handled) -> void { rep->HandleMessage (m, handled); }}
 {
 }

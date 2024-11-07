@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/Traversal/Generator.h"
 
 #include "Router.h"
 
@@ -109,12 +110,12 @@ struct Router::Rep_ : Interceptor::_IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Router::Rep_::HandleMessage", "...method='{}',url='{}'"_f, m->request ().httpMethod (), m->request ().url ()};
 #endif
-        Sequence<String>         matches;
-        optional<RequestHandler> handler = Lookup_ (m->request (), &matches);
-        if (handler) {
-            Handle_Via_RequestHandler_ (m, matches, *handler);
+        while (Iterator<tuple<RequestHandler, Sequence<String>>> handlerI = Lookup_ (m->request ())) {
+            if (Handle_Via_RequestHandler_ (m, get<Sequence<String>> (*handlerI), get<RequestHandler> (*handlerI))) {
+                return;
+            }
         }
-        else if (m->request ().httpMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
+        if (m->request ().httpMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
             // handled
         }
         else if (m->request ().httpMethod () == HTTP::Methods::kOptions) {
@@ -169,18 +170,35 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
         }
     }
-    nonvirtual optional<RequestHandler> Lookup_ (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* matches) const
+    nonvirtual Iterator<tuple<RequestHandler, Sequence<String>>> Lookup_ (const String& method, const String& hostRelPath, const Request& request) const
     {
+        return Traversal::CreateGeneratorIterator<tuple<RequestHandler, Sequence<String>>> (
+            [=, &request, this, cur = this->fRoutes_.begin ()] () mutable -> optional<tuple<RequestHandler, Sequence<String>>> {
+                while (cur) {
+                    Sequence<String> matches;
+                    if (cur->Matches (method, hostRelPath, request, &matches)) {
+                        auto result = make_tuple (cur->fHandler_, matches);
+                        ++cur;
+                        return result;
+                    }
+                    else {
+                        ++cur;
+                    }
+                }
+                return nullopt;
+            });
+#if 0
         for (const Route& r : fRoutes_) {
             if (r.Matches (method, hostRelPath, request, matches)) {
                 return r.fHandler_;
             }
         }
-        return nullopt;
+        return fRoutes_.end ();
+#endif
     }
-    nonvirtual optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
+    nonvirtual Iterator<tuple<RequestHandler, Sequence<String>>> Lookup_ (const Request& request) const
     {
-        return Lookup_ (request.httpMethod, ExtractHostRelPath_ (request.url), request, matches);
+        return Lookup_ (request.httpMethod, ExtractHostRelPath_ (request.url), request);
     }
     nonvirtual optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
@@ -197,24 +215,30 @@ struct Router::Rep_ : Interceptor::_IRep {
         }
         return methods.empty () ? nullopt : optional<Set<String>>{methods};
     }
-    nonvirtual void Handle_Via_RequestHandler_ (Message* message, const Sequence<String>& matches, const RequestHandler& handler) const
+    nonvirtual bool Handle_Via_RequestHandler_ (Message* message, const Sequence<String>& matches, const RequestHandler& handler) const
     {
         const Request& request  = message->request ();
         Response&      response = message->rwResponse ();
         HandleCORSInNormallyHandledMessage_ (request, response);
-        (handler) (message, matches);
+        bool handled = false;
+        (handler) (message, matches, &handled);
+        return handled;
     }
     nonvirtual bool Handle_HEAD_ (Message* message) const
     {
         const Request&   request  = message->request ();
         Response&        response = message->rwResponse ();
         Sequence<String> matches;
-        if (optional<RequestHandler> handler = Lookup_ (HTTP::Methods::kGet, ExtractHostRelPath_ (request.url ()), request, &matches)) {
+        for (Iterator<tuple<RequestHandler, Sequence<String>>> handlerEtc = Lookup_ (HTTP::Methods::kGet, ExtractHostRelPath_ (request.url ()), request);
+             handlerEtc; ++handlerEtc) {
             // do something to response so 'in HEAD mode' and won't write
             response.headMode = true;
             HandleCORSInNormallyHandledMessage_ (request, response);
-            (*handler) (message, matches);
-            return true;
+            bool                handled = false;
+            get<RequestHandler> (*handlerEtc) (message, get<Sequence<String>> (*handlerEtc), &handled);
+            if (handled) {
+                return true;
+            }
         }
         return false;
     }
@@ -280,7 +304,7 @@ Router::Router (const Sequence<Route>& routes, const CORSOptions& corsOptions)
 {
 }
 
-optional<RequestHandler> Router::Lookup (const Request& request) const
+Iterator<tuple<RequestHandler, Sequence<String>>> Router::Lookup (const Request& request) const
 {
-    return _GetRep<Rep_> ().Lookup_ (request, nullptr);
+    return _GetRep<Rep_> ().Lookup_ (request);
 }

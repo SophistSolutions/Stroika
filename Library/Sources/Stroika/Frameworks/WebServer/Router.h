@@ -44,6 +44,7 @@ namespace Stroika::Frameworks::WebServer {
     using Characters::RegularExpression;
     using Characters::String;
     using Containers::Sequence;
+    using Traversal::Iterator;
 
     class Router;
 
@@ -172,9 +173,12 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         * typically just examine host-relative part of URL, routes CAN examine any part of the request
+         *  typically just examine host-relative part of URL, routes CAN examine any part of the request;
+         *  typically returns just one handler (and matched strings), but can return multiple.
+         * 
+         *  \note before Stroika v3.0d12 - this returned optional<RequestHandler>, but now returns Iterator<RequestHandler> - all matching routes (but lazy evaluated).
          */
-        nonvirtual optional<RequestHandler> Lookup (const Request& request) const;
+        nonvirtual Iterator<tuple<RequestHandler, Sequence<String>>> Lookup (const Request& request) const;
 
     private:
         struct Rep_;
