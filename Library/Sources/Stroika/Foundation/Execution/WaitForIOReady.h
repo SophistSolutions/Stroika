@@ -37,16 +37,16 @@ namespace Stroika::Foundation::Execution {
      *  WSAPoll is not (fully/mostly) alertable, in the Windows API. So for Windows, this trick is needed to make
      *  WaitForIOReady::Wait* a ***Cancelation Point***.
      *
-     *  Set qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks to a number of milliseconds between WSAPoll
+     *  Set qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks to a number of milliseconds between WSAPoll
      *  forced wakeups. A smaller value means more responsive, but more wasted CPU time.
      *
      *  \note Since Stroika 2.1a5, we no longer (generally use but still support) using Thread::Interrupt() to break the sleep.
      *        So this doesn't need to be quite as rapid. Changed from 1000ms to 3000ms --LGP 2020-04-09
      *        STILL NEEDED however, due to aborting threads (and cuz some users may still choose to use the thread interruption approach to wakeup)
      */
-#ifndef qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks
+#ifndef qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks
 #if qStroika_Foundation_Common_Platform_Windows
-#define qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks 3000
+#define qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks 3000
 #endif
 #endif
 
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Execution {
         class WaitForIOReady_Base {
         public:
             /**
-             *  This is the underlying native type 'T' objects mustbe converted to in order to be used with the OLD poll/select feature.
+             *  This is the underlying native type 'T' objects must be converted to in order to be used with the OLD poll/select feature.
              */
             using SDKPollableType = WaitForIOReady_Support::SDKPollableType;
 
@@ -159,12 +159,12 @@ namespace Stroika::Foundation::Execution {
         template <typename T>
         struct WaitForIOReady_Traits {
             /**
-             *  This is the type of object which is being wrapped (around a SDKPollableType object) and used with WiatForIOReady
+             *  This is the type of object which is being wrapped (around a SDKPollableType object) and used with WaitForIOReady
              */
             using HighLevelType = T;
 
             /**
-             *  To use WaitForIOReady, the high level 'descriptor' objects used mustbe convertible to associated low level
+             *  To use WaitForIOReady, the high level 'descriptor' objects used must be convertible to associated low level
              *  file descriptor objects to use with select/poll/etc...
              */
             static inline WaitForIOReady_Support::SDKPollableType GetSDKPollable (const HighLevelType& t)
@@ -186,8 +186,8 @@ namespace Stroika::Foundation::Execution {
      *
      *          Alternatively, users may interrupt Execution::WaitForIOReady portably using 
      *          Thread::Interrupt () (which is what Stroika generally did until v2.1a5) - but this is less efficient, and generates
-     *          lots of log noise (dbgtrace). Also, interreupt means if there were real answers mixed with 
-     *          non-nanswer we would miss the real ansers and this way captures them too)
+     *          lots of log noise (dbgtrace). Also, interrupt means if there were real answers mixed with 
+     *          non-answers we would miss the real answers and this way captures them too)
      *
      *  \par Example Usage
      *      \code
@@ -292,11 +292,11 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set)..
+         *  Waits until the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set)..
          *
          *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.
          *
-         *  if timeout is <= 0, this will not wait (but may still find some file desciptors ready).
+         *  if timeout is <= 0, this will not wait (but may still find some file descriptors ready).
          *
          *  \note   ***Cancelation Point***
          *
@@ -308,8 +308,8 @@ namespace Stroika::Foundation::Execution {
 
     private:
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-        Traversal::Iterable<pair<T, TypeOfMonitorSet>>                 fPollData_;
-        optional<pair<SDKPollableType, TypeOfMonitorSet>>              fPollable2Wakeup_;
+        const Traversal::Iterable<pair<T, TypeOfMonitorSet>>           fPollData_;
+        const optional<pair<SDKPollableType, TypeOfMonitorSet>>        fPollable2Wakeup_;
     };
 
 }

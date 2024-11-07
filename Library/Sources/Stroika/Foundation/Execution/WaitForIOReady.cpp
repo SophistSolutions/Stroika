@@ -182,13 +182,13 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
     Assert (timeoutMilliseconds >= 0);
     int pollResult;
 #if qStroika_Foundation_Common_Platform_Windows
-#if qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks > 0
+#if qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks > 0
     while (true) {
         Thread::CheckForInterruption ();
         DurationSeconds timeLeft2Wait     = Math::AtLeast<DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s);
         DurationSeconds time2WaitThisLoop = Math::AtLeast<DurationSeconds> (
             Math::AtMost<DurationSeconds> (
-                timeLeft2Wait, DurationSeconds{qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0}),
+                timeLeft2Wait, DurationSeconds{qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0}),
             0s);
         int time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop.count () * 1000);
         if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), time2WaitMillisecondsThisLoop)) == SOCKET_ERROR) {
