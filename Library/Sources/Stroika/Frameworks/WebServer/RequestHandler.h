@@ -32,7 +32,8 @@ namespace Stroika::Frameworks::WebServer {
      *  the regular expression MATCH of the URL (not from the body of the request, nor from the query string - unless that's part of the regexp matching).
      *
      *  \note bool* handled - \req handle != nullptr, and *handled defaults to false, and is typically set to true.
-     *        For constructor overloads with no 'handled' flag argument, 'handle' is automatically set to true
+     *        For constructor overloads with no 'handled' flag argument, 'handle' is automatically set to true 
+     *        (this is typically what you want to do - ignore param).
      *        
      *        This allows for multiple routes to match a given url, and dynamically choosing which one to apply.
      *

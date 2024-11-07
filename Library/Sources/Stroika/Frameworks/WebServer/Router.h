@@ -148,7 +148,7 @@ namespace Stroika::Frameworks::WebServer {
     };
 
     /**
-     *  If there is not an EXPLICIT route matched for HEAD, or OPTIONS, the those methods will be implemented
+     *  If there is not an EXPLICIT route matched for HEAD, or OPTIONS: those methods are implemented
      *  automatically by the Router.
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
