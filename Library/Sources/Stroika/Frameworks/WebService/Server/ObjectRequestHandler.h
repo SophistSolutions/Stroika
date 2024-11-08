@@ -78,13 +78,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     static_assert (not movable<Context>);
 
     /**
-    *  @todo document (parameterize) error handling strategies...
-    * 
-    * Trial balloon spec:
-    *  > FromRequest will combine the two sources. Consider error if one source gives string and the other mapping (cannot combine).
-    * 
-    * values returned typically Mapping<String,VariantValue> - but can be other - often also null-value
-    * 
+     * values returned typically Mapping<String,VariantValue> - but can be other - often also null-value
+     * 
      * \note - each of these - if they throw - they throw a subtype of ClientErrorException
      */
     struct ExtractArgumentsAsVariantValue {
