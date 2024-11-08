@@ -187,14 +187,6 @@ struct Router::Rep_ : Interceptor::_IRep {
                 }
                 return nullopt;
             });
-#if 0
-        for (const Route& r : fRoutes_) {
-            if (r.Matches (method, hostRelPath, request, matches)) {
-                return r.fHandler_;
-            }
-        }
-        return fRoutes_.end ();
-#endif
     }
     nonvirtual Iterator<tuple<RequestHandler, Sequence<String>>> Lookup_ (const Request& request) const
     {
