@@ -60,7 +60,7 @@ VariantValue ExtractArgumentsAsVariantValue::FromRequest (Request& request)
             Execution::Throw (ClientErrorException{"Expected url and body to both be structured VariantValue type"sv});
         }
         Mapping<String, VariantValue> rr = requestBody.As<Mapping<String, VariantValue>> ();
-        // merge - wtih url values taking precedence
+        // merge - with url values taking precedence
         rr.AddAll (urlBody.As<Mapping<String, VariantValue>> ());
 
         return VariantValue{rr};
