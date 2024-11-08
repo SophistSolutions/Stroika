@@ -62,7 +62,6 @@ VariantValue ExtractArgumentsAsVariantValue::FromRequest (Request& request)
         Mapping<String, VariantValue> rr = requestBody.As<Mapping<String, VariantValue>> ();
         // merge - with url values taking precedence
         rr.AddAll (urlBody.As<Mapping<String, VariantValue>> ());
-
         return VariantValue{rr};
     });
 }
