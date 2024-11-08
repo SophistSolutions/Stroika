@@ -41,19 +41,27 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     using WebServer::Request;
     using WebServer::Response;
 
-    // maybe call Factory => ObjectRequestHandler
-    // Stroika WebServer RequestHanlder looks like:
-    //      void (Message* message, const Containers::Sequence<Characters::String>& matchedArgs
-    //
-    // together with ObjectVariantMapper, we replace this with
-    //      RESULT_TYPE (MESSAGE_ARGUMENT_TYPE, optional<CONTEXT> c)
-    //      context contains matched URL args, and reference to original message (or at least request) in case we need to do more,
-    // andmaby also response (so maybe just message)
+    /**
+     *  \brief map a list of argument names, and a Mapping<String,VariantValue> (named arguments list), to a Sequence<VariantValue> - argument values.
+     *  for overload with VariantValue argumentValueMap - throw if not GetType() == VariantValue::eMap (or null) - for no arguments.
+     */
+    Iterable<VariantValue> PickOutNamedArguments (const Iterable<String>& argNames, const Mapping<String, VariantValue>& argumentValueMap);
+    Iterable<VariantValue> PickOutNamedArguments (const Iterable<String>& argNames, const VariantValue& argumentValueMap);
 
-    // sepearate issue - is mapping query-args to be part of original message
-    // making this work with PATCH methods
 
-    // todo use template guides so dont need to specify RETURN_TYPE etc args...
+
+    // @todo something which is a cross between 
+    //  template <typename RETURN_TYPE, typename... ARG_TYPES>
+    //VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+    //                        const function<RETURN_TYPE (ARG_TYPES...)>& f)
+    // and Factory BELIW
+
+    // We already have code to do most of it. Just change teh sole 'VariantValue' with a 'vector' of them, and do template magic over
+    // args (as we do in ApplyArgs above) to call the resulting function.
+
+
+
+
 
     /**
      *   \note data (like request) etc only valid until end of call - don't copy/save

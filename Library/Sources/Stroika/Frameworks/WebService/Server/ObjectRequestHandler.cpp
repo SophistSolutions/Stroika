@@ -21,6 +21,21 @@ using IO::Network::HTTP::ClientErrorException;
 
 /*
  ********************************************************************************
+ ************ ObjectRequestHandler::PickOutNamedArguments ***********************
+ ********************************************************************************
+ */
+Iterable<VariantValue> ObjectRequestHandler::PickOutNamedArguments (const Iterable<String>& argNames, const Mapping<String, VariantValue>& argumentValueMap)
+{
+    return argNames.Map<Iterable<VariantValue>> ([&] (String i) -> VariantValue { return argumentValueMap.LookupValue (i); });
+}
+
+Iterable<VariantValue> ObjectRequestHandler::PickOutNamedArguments (const Iterable<String>& argNames, const VariantValue& argumentValueMap)
+{
+    return PickOutNamedArguments (argNames, argumentValueMap.As<Mapping<String, VariantValue>> ());
+}
+
+/*
+ ********************************************************************************
  ********* ObjectRequestHandler::ExtractArgumentsAsVariantValue *****************
  ********************************************************************************
  */
