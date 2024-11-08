@@ -109,7 +109,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         requires (INCLUDE_CONTEXT)
     {
         if constexpr (same_as<WEB_METHOD_ARG, void>) {
-            return ApplyHandler (c, options);
+            return fHighLevelHandler_ (c);
         }
         else {
             VariantValue   argVV = options.fExtractVariantValueFromRequest (c.fRequest);
@@ -141,7 +141,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
     template <same_as<WEB_METHOD_ARG> WMA>
-    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const WMA& arg, const Context& c, const Options& options) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const WMA& arg, const Context& c,
+                                                                                            [[maybe_unused]] const Options& options) const
         requires (INCLUDE_CONTEXT)
     {
         if constexpr (same_as<RETURN_TYPE, void>) {

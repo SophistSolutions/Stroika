@@ -81,22 +81,36 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     *  @todo document (parameterize) error handling strategies...
     * 
     * Trial balloon spec:
-    *    > FromRequestBody throws if cannot convert data format (but if string - returns string variantvalue etc 
-    *   > FromRequestURL will returm mapping<string,stringish vv> from query string or null vv if nothing in query args
     *  > FromRequest will combine the two sources. Consider error if one source gives string and the other mapping (cannot combine).
     * 
     * values returned typically Mapping<String,VariantValue> - but can be other - often also null-value
+    * 
+     * \note - each of these - if they throw - they throw a subtype of ClientErrorException
      */
     struct ExtractArgumentsAsVariantValue {
         /**
+         *  Looks at request content type, and tries to convert body data accordingly. If no content in body - OK
+         *  returns empty VariantValue. If its text/plain - OK - returns a string. Otherwise if some sort of json, it parses
+         *  it and returns it as VariantValue. Similarly for future types (xml etc).
+         * 
+         *  Failure to parse incoming data will result in exception being thrown, but always ClientErrorException
          */
-        static VariantValue FromRequestBody (Request* request);
+        static VariantValue FromRequestBody (Request& request);
+
         /**
+         *  \brief - extracts Query args from request url into a Mapping<String,String> (converted to VariantValue), or empty variant-value if no query args
+         * 
+         *  Any kind of failure will produce ClientErrorException
          */
-        static VariantValue FromRequestURL (Request* request);
+        static VariantValue FromRequestURL (Request& request);
+
         /**
+         *  First invoke FromRequestBody, and then FromRequestURL. Combine their results. If either null, return the other.
+         *  If both non-null, both must of of type Mapping<String,VariantValue> - and then query-arguments take precedence.
+         * 
+         *  Any format or other errors, results in ClientErrorException
          */
-        static VariantValue FromRequest (Request* request);
+        static VariantValue FromRequest (Request& request);
     };
 
     /**
@@ -108,11 +122,11 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          */
         optional<InternetMediaType> fDefaultResultMediaType;
 
-        function<VariantValue (Request*)> fExtractVariantValueFromRequest{ExtractArgumentsAsVariantValue::FromRequestBody};
+        function<VariantValue (Request&)> fExtractVariantValueFromRequest{ExtractArgumentsAsVariantValue::FromRequestBody};
 
         /**
          */
-        String ToString () const;
+        nonvirtual String ToString () const;
     };
     static_assert (copyable<Options>);
 

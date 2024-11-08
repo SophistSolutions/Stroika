@@ -24,18 +24,16 @@ using IO::Network::HTTP::ClientErrorException;
  ********* ObjectRequestHandler::ExtractArgumentsAsVariantValue *****************
  ********************************************************************************
  */
-VariantValue ExtractArgumentsAsVariantValue::FromRequestBody (Request* request)
+VariantValue ExtractArgumentsAsVariantValue::FromRequestBody (Request& request)
 {
-    RequireNotNull (request);
-    return ClientErrorException::TreatExceptionsAsClientError ([&] () { return request->GetBodyVariantValue (); });
+    return ClientErrorException::TreatExceptionsAsClientError ([&] () { return request.GetBodyVariantValue (); });
 }
 
-VariantValue ExtractArgumentsAsVariantValue::FromRequestURL (Request* request)
+VariantValue ExtractArgumentsAsVariantValue::FromRequestURL (Request& request)
 {
-    RequireNotNull (request);
     return ClientErrorException::TreatExceptionsAsClientError ([&] () {
         Mapping<String, VariantValue> result;
-        if (auto query = request->url ().GetQuery ()) {
+        if (auto query = request.url ().GetQuery ()) {
             Mapping<String, String> unconverted = query->GetMap ();
             unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, VariantValue{kvp.fValue}); });
         }
@@ -46,13 +44,27 @@ VariantValue ExtractArgumentsAsVariantValue::FromRequestURL (Request* request)
     });
 }
 
-VariantValue ExtractArgumentsAsVariantValue::FromRequest (Request* request)
+VariantValue ExtractArgumentsAsVariantValue::FromRequest (Request& request)
 {
-    RequireNotNull (request);
-    VariantValue r = FromRequestBody (request);
-    // @todo merge - @todo handle/document handling of bad body arg types
+    return ClientErrorException::TreatExceptionsAsClientError ([&] () {
+        VariantValue requestBody = FromRequestBody (request);
+        VariantValue urlBody     = FromRequestURL (request);
+        if (requestBody == VariantValue{}) {
+            return urlBody;
+        }
+        if (urlBody == VariantValue{}) {
+            return requestBody;
+        }
+        Assert (requestBody != VariantValue{} and urlBody != VariantValue{});
+        if (requestBody.GetType () != VariantValue::eMap or urlBody.GetType () != VariantValue::eMap) {
+            Execution::Throw (ClientErrorException{"Expected url and body to both be structured VariantValue type"sv});
+        }
+        Mapping<String, VariantValue> rr = requestBody.As<Mapping<String, VariantValue>> ();
+        // merge - wtih url values taking precedence
+        rr.AddAll (urlBody.As<Mapping<String, VariantValue>> ());
 
-    return r;
+        return VariantValue{rr};
+    });
 }
 
 /*
