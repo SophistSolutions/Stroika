@@ -49,9 +49,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         ClientErrorException (Status status, const exception_ptr& basedOnInnerException);
 
         /**
-         *  Utility to map any functions thrown in the given (typically lambda) into a ClientErrorExcpetion
+         *  Utility to map any functions thrown in the given (typically lambda) into a ClientErrorException
          */
-        template <typename FUNCTION, typename RESULT_TYPE = std::invoke_result_t<FUNCTION>>
+        template <invocable FUNCTION, typename RESULT_TYPE = std::invoke_result_t<FUNCTION>>
         static RESULT_TYPE TreatExceptionsAsClientError (FUNCTION&& f);
     };
 
