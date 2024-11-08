@@ -113,7 +113,7 @@ public:
                             static const String kValueParamName_ = "value"sv;
                             // NOTE - PickoutParamValues combines PickoutParamValuesFromURL, and PickoutParamValuesFromBody. You can use
                             // Either one of those instead. PickoutParamValuesFromURL assumes you know the name of the parameter, and its
-                            // encoded in the query string. PickoutParamValuesFromBody assumes you have something equivilent you can parse ouf
+                            // encoded in the query string. PickoutParamValuesFromBody assumes you have something equivalent you can parse ouf
                             // of the body, either json encoded or form-encoded (as of 2.1d23, only json encoded supported)
                             Mapping<String, DataExchange::VariantValue> args = PickoutParamValues (&m->rwRequest ());
                             number                                           = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));

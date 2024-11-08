@@ -43,6 +43,7 @@ namespace Stroika::Frameworks::WebServer {
      *      
      *      Also - a RequestHandler should be careful about threads, as it could be called first on one thread, and
      *      then - possibly at the same time - on another thread. The same handler can be used multiple times (multiple sessions).
+     *      (meaning handler/lambda function itself required to be const or at least internally synchronized).
      */
     class RequestHandler : public function<void (Message* message, const Sequence<String>& matchedArgs, bool* handled)> {
     public:

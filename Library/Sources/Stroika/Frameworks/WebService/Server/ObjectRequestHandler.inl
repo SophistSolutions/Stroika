@@ -71,20 +71,20 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             Response&                 resp = m->rwResponse ();
             if constexpr (same_as<RETURN_TYPE, void>) {
                 if constexpr (INCLUDE_CONTEXT) {
-                    ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp});
+                    ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp}, fOptions_);
                 }
                 else {
-                    ApplyHandler (req);
+                    ApplyHandler (req, fOptions_);
                 }
                 SendResponse (req, resp);
             }
             else {
                 RETURN_TYPE r = [&] () {
                     if constexpr (INCLUDE_CONTEXT) {
-                        return ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp});
+                        return ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp}, fOptions_);
                     }
                     else {
-                        return ApplyHandler (req);
+                        return ApplyHandler (req, fOptions_);
                     }
                 }();
                 SendResponse (req, resp, r);
@@ -92,32 +92,34 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         };
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (Request& req) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (Request& req, const Options& options) const
         requires (not INCLUDE_CONTEXT)
     {
         if constexpr (same_as<WEB_METHOD_ARG, void>) {
             return fHighLevelHandler_ ();
         }
         else {
-            WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (req.GetBodyVariantValue ())};
+            VariantValue   argVV = options.fExtractVariantValueFromRequest (req);
+            WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (argVV)};
             return fHighLevelHandler_ (arg);
         }
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const Context& c) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const Context& c, const Options& options) const
         requires (INCLUDE_CONTEXT)
     {
         if constexpr (same_as<WEB_METHOD_ARG, void>) {
-            return fHighLevelHandler_ (c);
+            return ApplyHandler (c, options);
         }
         else {
-            WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (c.fRequest.GetBodyVariantValue ())};
-            return fHighLevelHandler_ (arg, c);
+            VariantValue   argVV = options.fExtractVariantValueFromRequest (c.fRequest);
+            WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (argVV)};
+            return ApplyHandler (arg, c, options);
         }
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
     template <same_as<WEB_METHOD_ARG> WMA>
-    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const WMA& arg) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const WMA& arg, const Options& options) const
         requires (not INCLUDE_CONTEXT)
     {
         if constexpr (same_as<RETURN_TYPE, void>) {
@@ -139,7 +141,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
     template <same_as<WEB_METHOD_ARG> WMA>
-    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const WMA& arg, const Context& c) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, WEB_METHOD_ARG, INCLUDE_CONTEXT>::ApplyHandler (const WMA& arg, const Context& c, const Options& options) const
         requires (INCLUDE_CONTEXT)
     {
         if constexpr (same_as<RETURN_TYPE, void>) {
@@ -155,7 +157,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                 return fHighLevelHandler_ (c);
             }
             else {
-                WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (c.fRequest.GetBodyVariantValue ())};
                 return fHighLevelHandler_ (arg, c);
             }
         }

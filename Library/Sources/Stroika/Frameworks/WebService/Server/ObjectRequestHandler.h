@@ -78,6 +78,28 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     static_assert (not movable<Context>);
 
     /**
+    *  @todo document (parameterize) error handling strategies...
+    * 
+    * Trial balloon spec:
+    *    > FromRequestBody throws if cannot convert data format (but if string - returns string variantvalue etc 
+    *   > FromRequestURL will returm mapping<string,stringish vv> from query string or null vv if nothing in query args
+    *  > FromRequest will combine the two sources. Consider error if one source gives string and the other mapping (cannot combine).
+    * 
+    * values returned typically Mapping<String,VariantValue> - but can be other - often also null-value
+     */
+    struct ExtractArgumentsAsVariantValue {
+        /**
+         */
+        static VariantValue FromRequestBody (Request* request);
+        /**
+         */
+        static VariantValue FromRequestURL (Request* request);
+        /**
+         */
+        static VariantValue FromRequest (Request* request);
+    };
+
+    /**
      */
     struct Options {
         /**
@@ -85,6 +107,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          * regardless, it maybe overriden based on (eventually) http accept headers.
          */
         optional<InternetMediaType> fDefaultResultMediaType;
+
+        function<VariantValue (Request*)> fExtractVariantValueFromRequest{ExtractArgumentsAsVariantValue::FromRequestBody};
 
         /**
          */
@@ -205,15 +229,15 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          *                }},
          *      \endcode
          */
-        nonvirtual RETURN_TYPE ApplyHandler (Request& req) const
+        nonvirtual RETURN_TYPE ApplyHandler (Request& req, const Options& options = {}) const
             requires (not INCLUDE_CONTEXT);
-        nonvirtual RETURN_TYPE ApplyHandler (const Context& c) const
+        nonvirtual RETURN_TYPE ApplyHandler (const Context& c, const Options& options = {}) const
             requires (INCLUDE_CONTEXT);
         template <same_as<WEB_METHOD_ARG> WMA>
-        nonvirtual RETURN_TYPE ApplyHandler (const WMA& arg) const
+        nonvirtual RETURN_TYPE ApplyHandler (const WMA& arg, const Options& options = {}) const
             requires (not INCLUDE_CONTEXT);
         template <same_as<WEB_METHOD_ARG> WMA>
-        nonvirtual RETURN_TYPE ApplyHandler (const WMA& arg, const Context& c) const
+        nonvirtual RETURN_TYPE ApplyHandler (const WMA& arg, const Context& c, const Options& options = {}) const
             requires (INCLUDE_CONTEXT);
 
     public:

@@ -3,6 +3,8 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
+
 #include "ObjectRequestHandler.h"
 
 using namespace Stroika::Foundation;
@@ -13,6 +15,45 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebService;
 using namespace Stroika::Frameworks::WebService::Server;
+using namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler;
+
+using IO::Network::HTTP::ClientErrorException;
+
+/*
+ ********************************************************************************
+ ********* ObjectRequestHandler::ExtractArgumentsAsVariantValue *****************
+ ********************************************************************************
+ */
+VariantValue ExtractArgumentsAsVariantValue::FromRequestBody (Request* request)
+{
+    RequireNotNull (request);
+    return ClientErrorException::TreatExceptionsAsClientError ([&] () { return request->GetBodyVariantValue (); });
+}
+
+VariantValue ExtractArgumentsAsVariantValue::FromRequestURL (Request* request)
+{
+    RequireNotNull (request);
+    return ClientErrorException::TreatExceptionsAsClientError ([&] () {
+        Mapping<String, VariantValue> result;
+        if (auto query = request->url ().GetQuery ()) {
+            Mapping<String, String> unconverted = query->GetMap ();
+            unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, VariantValue{kvp.fValue}); });
+        }
+        if (result.empty ()) {
+            return VariantValue{};
+        }
+        return VariantValue{result};
+    });
+}
+
+VariantValue ExtractArgumentsAsVariantValue::FromRequest (Request* request)
+{
+    RequireNotNull (request);
+    VariantValue r = FromRequestBody (request);
+    // @todo merge - @todo handle/document handling of bad body arg types
+
+    return r;
+}
 
 /*
  ********************************************************************************
