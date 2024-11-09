@@ -48,21 +48,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     Iterable<VariantValue> PickOutNamedArguments (const Iterable<String>& argNames, const Mapping<String, VariantValue>& argumentValueMap);
     Iterable<VariantValue> PickOutNamedArguments (const Iterable<String>& argNames, const VariantValue& argumentValueMap);
 
-
-
-    // @todo something which is a cross between 
-    //  template <typename RETURN_TYPE, typename... ARG_TYPES>
-    //VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
-    //                        const function<RETURN_TYPE (ARG_TYPES...)>& f)
-    // and Factory BELIW
-
-    // We already have code to do most of it. Just change teh sole 'VariantValue' with a 'vector' of them, and do template magic over
-    // args (as we do in ApplyArgs above) to call the resulting function.
-
-
-
-
-
     /**
      *   \note data (like request) etc only valid until end of call - don't copy/save
      */
@@ -284,6 +269,60 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION, typename... IGNORED>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
         -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>, false>;
+
+    // @todo something which is a cross between
+    //  template <typename RETURN_TYPE, typename... ARG_TYPES>
+    //VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+    //                        const function<RETURN_TYPE (ARG_TYPES...)>& f)
+    // and Factory BELIW
+
+    // We already have code to do most of it. Just change teh sole 'VariantValue' with a 'vector' of them, and do template magic over
+    // args (as we do in ApplyArgs above) to call the resulting function.
+
+    // maybe approach by creating new 'Factory2' - and only diff - is no conctext support.
+    // THEN - make it variadic in number of args to function<>
+    // THEN - special case ApplyArgs on a single arg type 'Context' - not to lookup argname - but just to add the context....
+
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    class Factory2 {
+    public:
+        static_assert (not is_reference_v<RETURN_TYPE>);
+        // static_assert (not is_reference_v<WEB_METHOD_ARG>);
+
+    public:
+        template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
+        Factory2 (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {});
+
+    public:
+        nonvirtual operator Frameworks::WebServer::RequestHandler () const;
+
+    public:
+        nonvirtual RETURN_TYPE ApplyHandler (const Context& context) const;
+
+    public:
+        nonvirtual RETURN_TYPE ApplyObjectHandler (const Context& context, ARG_TYPES... args) const;
+
+    public:
+        template <typename T>
+        nonvirtual T ConvertArg2Object (const VariantValue& v) const;
+
+    public:
+        template <same_as<RETURN_TYPE> RT>
+        nonvirtual void SendResponse (const Request& request, Response& response, const RT& r) const;
+        nonvirtual void SendResponse (const Request& request, Response& response) const
+            requires (same_as<RETURN_TYPE, void>);
+
+    private:
+        ObjectVariantMapper                  fObjectVariantMapper_;
+        function<RETURN_TYPE (ARG_TYPES...)> fHighLevelHandler_;
+        Options                              fOptions_;
+    };
+    template <typename CALLBACK_FUNCTION, typename RETURN_TYPE, typename... ARG_TYPES>
+        requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
+    Factory2 (const ObjectVariantMapper&, CALLBACK_FUNCTION&&) -> Factory2<RETURN_TYPE, ARG_TYPES...>;
+    template <typename CALLBACK_FUNCTION, typename RETURN_TYPE, typename... ARG_TYPES>
+        requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
+    Factory2 (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, const Options&) -> Factory2<RETURN_TYPE, ARG_TYPES...>;
 
 }
 

@@ -192,4 +192,140 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         // @todo - not sure anything todo here???
     }
 
+    /*
+     ********************************************************************************
+     *********************** ObjectRequestHandler::Factory2 **************************
+     ********************************************************************************
+     */
+
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
+    inline Factory2<RETURN_TYPE, ARG_TYPES...>::Factory2 (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options)
+        : fObjectVariantMapper_{ovm}
+        , fHighLevelHandler_{highLevelHandler}
+        , fOptions_{options}
+    {
+    }
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    inline Factory2<RETURN_TYPE, ARG_TYPES...>::operator Frameworks::WebServer::RequestHandler () const
+    {
+        using namespace Characters::Literals;
+        using namespace DataExchange;
+        using WebServer::Message;
+        return [*this] (Message* m, [[maybe_unused]] const Sequence<String>& matchedArgs) {
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                "ObjectRequestHandler::Factory2 handler", "m->request = {}, RETURN_TYPE={}"_f,
+                m->request ().ToString (), type_index{typeid (RETURN_TYPE)})};
+            Request&  req  = m->rwRequest ();
+            Response& resp = m->rwResponse ();
+            if constexpr (same_as<RETURN_TYPE, void>) {
+                ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp});
+                SendResponse (req, resp);
+            }
+            else {
+                RETURN_TYPE r = [&] () {
+                    return ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp});
+                }();
+                SendResponse (req, resp, r);
+            }
+        };
+    }
+
+
+    #if 0
+namespace STROIKA_PRIVATE_ {
+        // use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
+        template <typename IGNORED_F_RETURN_TYPE>
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+                                  [[maybe_unused]] const function<IGNORED_F_RETURN_TYPE (void)>& f)
+        {
+            Require (variantValueArgs.size () == 0);
+            return make_tuple ();
+        }
+        template <typename IGNORED_F_RETURN_TYPE, typename SINGLE_ARG>
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+                                  [[maybe_unused]] const function<IGNORED_F_RETURN_TYPE (SINGLE_ARG)>& f)
+        {
+            Require (variantValueArgs.size () == 1);
+            return make_tuple (objVarMapper.ToObject<SINGLE_ARG> (variantValueArgs.Nth (0)));
+        }
+        template <typename IGNORED_F_RETURN_TYPE, typename ARG_FIRST, typename... REST_ARG_TYPES>
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+                                  [[maybe_unused]] const function<IGNORED_F_RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
+        {
+            Require (variantValueArgs.size () == sizeof...(REST_ARG_TYPES) + 1);
+            return tuple_cat (mkArgsTuple_ (variantValueArgs.Take (1), objVarMapper, function<IGNORED_F_RETURN_TYPE (ARG_FIRST)>{}),
+                              mkArgsTuple_ (variantValueArgs.Skip (1), objVarMapper, function<IGNORED_F_RETURN_TYPE (REST_ARG_TYPES...)>{}));
+        }
+    }
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+                            const function<RETURN_TYPE (ARG_TYPES...)>& f)
+    {
+        using IO::Network::HTTP::ClientErrorException;
+        Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
+        // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
+        auto&& args = ClientErrorException::TreatExceptionsAsClientError (
+            [&] () { return STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f); });
+        if constexpr (same_as<RETURN_TYPE, void>) {
+            apply (f, args);
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (apply (f, args));
+        }
+    }
+    #endif
+
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    RETURN_TYPE Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
+    {
+        return {};
+    }
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    inline RETURN_TYPE Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyObjectHandler (const Context& context, ARG_TYPES... args) const
+    {
+        if constexpr (same_as<RETURN_TYPE, void>) {
+            fHighLevelHandler_ (args...);
+        }
+        else {
+            return fHighLevelHandler_ (args...);
+        }
+    }
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+     template <typename T>
+    inline T Factory2<RETURN_TYPE, ARG_TYPES...>::ConvertArg2Object (const VariantValue& v) const
+    {
+        return fObjectVariantMapper_.ToObject<T> (v);
+    }
+
+
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    template <same_as<RETURN_TYPE> RT>
+    // note maybe_unused on request wrong but tmphack to quiet til we check accept headers
+    inline void Factory2<RETURN_TYPE, ARG_TYPES...>::SendResponse ([[maybe_unused]] const Request& request, Response& response, const RT& r) const
+    {
+        using namespace DataExchange;
+        // @todo check accepts content type - and convert result (to JSON or binary json, xml etc)
+        if constexpr (Common::IAnyOf<RETURN_TYPE, String, DataExchange::VariantValue>) {
+            if constexpr (same_as<RETURN_TYPE, String>) {
+                response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kText_PLAIN);
+            }
+            else {
+                response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
+            }
+            response.write (r);
+        }
+        else {
+            response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
+            response.write (Variant::JSON::Writer{}.WriteAsString (fObjectVariantMapper_.FromObject (r)));
+        }
+    }
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    inline void Factory2<RETURN_TYPE, ARG_TYPES...>::SendResponse ([[maybe_unused]] const Request& request, [[maybe_unused]] Response& response) const
+        requires (same_as<RETURN_TYPE, void>)
+    {
+        // @todo - not sure anything todo here???
+    }
+
 }
