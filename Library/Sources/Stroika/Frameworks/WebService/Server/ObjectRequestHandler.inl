@@ -240,9 +240,14 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     tuple<SINGLE_ARG> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
                                                                          [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f)
     {
-        // @todo handle Context arg case
-        Require (variantValueArgs.size () == 1);
-        return make_tuple (ConvertArg2Object<SINGLE_ARG> (variantValueArgs.Nth (0)));
+        if constexpr (same_as<SINGLE_ARG, Context>) {
+            Require (variantValueArgs.size () == 0);
+            return make_tuple (context);
+        }
+        else {
+            Require (variantValueArgs.size () == 1);
+            return make_tuple (ConvertArg2Object<SINGLE_ARG> (variantValueArgs.Nth (0)));
+        }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <typename ARG_FIRST, typename... REST_ARG_TYPES>
@@ -250,10 +255,17 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                                                             [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
         -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()))
     {
-        // @todo handle Context arg case
-        Require (variantValueArgs.size () == sizeof...(REST_ARG_TYPES) + 1);
-        return tuple_cat (mkArgsTuple_ (context, variantValueArgs.Take (1), function<IGNORED_F_RETURN_TYPE (ARG_FIRST)>{}),
-                          mkArgsTuple_ (context, variantValueArgs.Skip (1), function<IGNORED_F_RETURN_TYPE (REST_ARG_TYPES...)>{}));
+        constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
+        if constexpr (same_as<ARG_FIRST, Context>) {
+            Require (variantValueArgs.size () == kTotalArgsRemaining_ - 1); // one arg is context, and rest or from variantArgs
+            return tuple_cat (mkArgsTuple_ (context, {}, function<IGNORED_F_RETURN_TYPE (ARG_FIRST)>{}),
+                              mkArgsTuple_ (context, variantValueArgs, function<IGNORED_F_RETURN_TYPE (REST_ARG_TYPES...)>{}));
+        }
+        else {
+            Require (variantValueArgs.size () == kTotalArgsRemaining_ or variantValueArgs.size () == kTotalArgsRemaining_ - 1); // need enuf remaining variantargs,except maybe one remaining still a context arg
+            return tuple_cat (mkArgsTuple_ (context, variantValueArgs.Take (1), function<IGNORED_F_RETURN_TYPE (ARG_FIRST)>{}),
+                              mkArgsTuple_ (context, variantValueArgs.Skip (1), function<IGNORED_F_RETURN_TYPE (REST_ARG_TYPES...)>{}));
+        }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     RETURN_TYPE Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
