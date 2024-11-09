@@ -223,7 +223,8 @@
         "xcode": "15.2",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable",
-        "run_on_branch": "always"
+        "xrun_on_branch": "always",
+        "run_on_branch": "v3-Release"
     },
     {
         "build_job": "MacOS",
@@ -250,7 +251,8 @@
         "xcode": "15.3",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable",
-        "run_on_branch": "always"
+        "xrun_on_branch": "always",
+        "run_on_branch": "v3-Release"
     },
     {
         "build_job": "MacOS",
