@@ -200,9 +200,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
-    inline Factory2<RETURN_TYPE, ARG_TYPES...>::Factory2 (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options)
-        : fObjectVariantMapper_{ovm}
-        , fHighLevelHandler_{highLevelHandler}
+    inline Factory2<RETURN_TYPE, ARG_TYPES...>::Factory2 (const Options& options, CALLBACK_FUNCTION&& highLevelHandler)
+        : fHighLevelHandler_{highLevelHandler}
         , fOptions_{options}
     {
     }
@@ -258,32 +257,36 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
         if constexpr (same_as<ARG_FIRST, Context>) {
             Require (variantValueArgs.size () == kTotalArgsRemaining_ - 1); // one arg is context, and rest or from variantArgs
-            return tuple_cat (mkArgsTuple_ (context, {}, function<IGNORED_F_RETURN_TYPE (ARG_FIRST)>{}),
-                              mkArgsTuple_ (context, variantValueArgs, function<IGNORED_F_RETURN_TYPE (REST_ARG_TYPES...)>{}));
+            return tuple_cat (mkArgsTuple_ (context, {}, function<RETURN_TYPE (ARG_FIRST)>{}),
+                              mkArgsTuple_ (context, variantValueArgs, function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }
         else {
             Require (variantValueArgs.size () == kTotalArgsRemaining_ or variantValueArgs.size () == kTotalArgsRemaining_ - 1); // need enuf remaining variantargs,except maybe one remaining still a context arg
-            return tuple_cat (mkArgsTuple_ (context, variantValueArgs.Take (1), function<IGNORED_F_RETURN_TYPE (ARG_FIRST)>{}),
-                              mkArgsTuple_ (context, variantValueArgs.Skip (1), function<IGNORED_F_RETURN_TYPE (REST_ARG_TYPES...)>{}));
+            return tuple_cat (mkArgsTuple_ (context, variantValueArgs.Take (1), function<RETURN_TYPE (ARG_FIRST)>{}),
+                              mkArgsTuple_ (context, variantValueArgs.Skip (1), function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     RETURN_TYPE Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
     {
-        // do like ApplyArgs but must special case Context arg....
         using IO::Network::HTTP::ClientErrorException;
         VariantValue argVV = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
-        Iterable<VariantValue> variantValueArgs; // @todo - add OPTION which is sequence<string> - and use that to extract as we did in old code
-        Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
-        // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
-        auto&& args = ClientErrorException::TreatExceptionsAsClientError (
-            [&] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
-        if constexpr (same_as<RETURN_TYPE, void>) {
-            apply (fHighLevelHandler_, args);
-            return VariantValue{};
+        if (fOptions_.fTreatBodyAsListOfArguments) {
+            Iterable<VariantValue> variantValueArgs = PickOutNamedArguments (*fOptions_.fTreatBodyAsListOfArguments, argVV);
+            Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
+            // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
+            auto&& args = ClientErrorException::TreatExceptionsAsClientError (
+                [&] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
+            if constexpr (same_as<RETURN_TYPE, void>) {
+                apply (fHighLevelHandler_, args);
+                return VariantValue{};
+            }
+            else {
+                return fOptions_.fObjectMapper.FromObject (apply (fHighLevelHandler_, args));
+            }
         }
         else {
-            return fObjectVariantMapper_.FromObject (apply (fHighLevelHandler_, args));
+            // see old code
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
@@ -300,7 +303,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     template <typename T>
     inline T Factory2<RETURN_TYPE, ARG_TYPES...>::ConvertArg2Object (const VariantValue& v) const
     {
-        return fObjectVariantMapper_.ToObject<T> (v);
+        return fOptions_.fObjectMapper.ToObject<T> (v);
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <same_as<RETURN_TYPE> RT>
@@ -320,7 +323,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         }
         else {
             response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
-            response.write (Variant::JSON::Writer{}.WriteAsString (fObjectVariantMapper_.FromObject (r)));
+            response.write (Variant::JSON::Writer{}.WriteAsString (fOptions_.fObjectMapper.FromObject (r)));
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>

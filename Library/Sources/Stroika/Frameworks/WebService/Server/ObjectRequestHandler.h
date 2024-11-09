@@ -104,6 +104,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     /**
      */
     struct Options {
+
+        // todo add objevrainatmapper here (move it)
+        ObjectVariantMapper fObjectMapper;
+
         /**
          * This is the default media type for the content type of the result message. If missing, it will be inferred based on data type produced.
          * regardless, it maybe overriden based on (eventually) http accept headers.
@@ -111,6 +115,13 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         optional<InternetMediaType> fDefaultResultMediaType;
 
         function<VariantValue (Request&)> fExtractVariantValueFromRequest{ExtractArgumentsAsVariantValue::FromRequestBody};
+
+        /** 
+         *  Sometimesyou will want to treat the body as the sole input object for a webservice call. Sometimes
+         * best to treat it as an array of parameters. If treated as an array of parameters (possible from mix of sources with fExtra... above)
+         * then need their names and ordering to map to the arguments to the callback function.
+         */
+        optional<Iterable<String>> fTreatBodyAsListOfArguments;
 
         /**
          */
@@ -291,7 +302,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
 
     public:
         template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
-        Factory2 (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {});
+        Factory2 (const Options& options, CALLBACK_FUNCTION&& highLevelHandler);
 
     public:
         nonvirtual operator Frameworks::WebServer::RequestHandler () const;
@@ -319,22 +330,20 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()));
 
     public:
+        /**
+         */
         template <same_as<RETURN_TYPE> RT>
         nonvirtual void SendResponse (const Request& request, Response& response, const RT& r) const;
         nonvirtual void SendResponse (const Request& request, Response& response) const
             requires (same_as<RETURN_TYPE, void>);
 
     private:
-        ObjectVariantMapper                  fObjectVariantMapper_;
         function<RETURN_TYPE (ARG_TYPES...)> fHighLevelHandler_;
         Options                              fOptions_;
     };
     template <typename CALLBACK_FUNCTION, typename RETURN_TYPE, typename... ARG_TYPES>
         requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
-    Factory2 (const ObjectVariantMapper&, CALLBACK_FUNCTION&&) -> Factory2<RETURN_TYPE, ARG_TYPES...>;
-    template <typename CALLBACK_FUNCTION, typename RETURN_TYPE, typename... ARG_TYPES>
-        requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
-    Factory2 (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, const Options&) -> Factory2<RETURN_TYPE, ARG_TYPES...>;
+    Factory2 (const Options&, CALLBACK_FUNCTION&&) -> Factory2<RETURN_TYPE, ARG_TYPES...>;
 
 }
 
