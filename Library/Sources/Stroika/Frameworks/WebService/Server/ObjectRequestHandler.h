@@ -306,6 +306,18 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         template <typename T>
         nonvirtual T ConvertArg2Object (const VariantValue& v) const;
 
+    private:
+        // use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
+        nonvirtual tuple<> mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
+                                         [[maybe_unused]] const function<RETURN_TYPE (void)>& f);
+        template <typename SINGLE_ARG>
+        nonvirtual tuple<SINGLE_ARG> mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
+                                                   [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f);
+        template <typename ARG_FIRST, typename... REST_ARG_TYPES>
+        nonvirtual auto mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
+                                      [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
+            -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()));
+
     public:
         template <same_as<RETURN_TYPE> RT>
         nonvirtual void SendResponse (const Request& request, Response& response, const RT& r) const;
