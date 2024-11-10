@@ -26,11 +26,11 @@
 namespace Stroika::Foundation::Common {
 
     namespace Private_ {
-
         struct void_type {
             using type = void;
         };
     }
+
     /**
      *  \brief Extract the number of arguments, return type, and each individual argument type from a lambda or simple function object.
      *
@@ -79,6 +79,11 @@ namespace Stroika::Foundation::Common {
             // the i-th argument is equivalent to the i-th tuple element of a tuple
             // composed of those arguments.
         };
+
+        /**
+         */
+        template <size_t i>
+        using arg_t = typename arg<i>::type;
 
         /**
          */
