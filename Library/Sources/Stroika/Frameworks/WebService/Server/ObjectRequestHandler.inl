@@ -342,10 +342,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             else {
                 static_assert (sizeof...(ARG_TYPES) <= 2);
                 AssertNotReached ();
-                // OOPS
-                // VariantValue   argVV = options.fExtractVariantValueFromRequest (req);
-                // WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (argVV)};
-                // return fHighLevelHandler_ (arg);
             }
         }
     }
