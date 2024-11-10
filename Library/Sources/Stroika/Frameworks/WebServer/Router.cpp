@@ -173,7 +173,7 @@ struct Router::Rep_ : Interceptor::_IRep {
     nonvirtual Iterator<tuple<RequestHandler, Sequence<String>>> Lookup_ (const String& method, const String& hostRelPath, const Request& request) const
     {
         return Traversal::CreateGeneratorIterator<tuple<RequestHandler, Sequence<String>>> (
-            [=, &request, this, cur = this->fRoutes_.begin ()] () mutable -> optional<tuple<RequestHandler, Sequence<String>>> {
+            [=, &request, cur = this->fRoutes_.begin ()] () mutable -> optional<tuple<RequestHandler, Sequence<String>>> {
                 while (cur) {
                     Sequence<String> matches;
                     if (cur->Matches (method, hostRelPath, request, &matches)) {
