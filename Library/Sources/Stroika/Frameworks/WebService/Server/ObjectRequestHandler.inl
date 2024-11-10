@@ -199,7 +199,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      ********************************************************************************
      */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
+    template <typename /*invocable<ARG_TYPES...>*/ CALLBACK_FUNCTION>
     inline Factory2<RETURN_TYPE, ARG_TYPES...>::Factory2 (const Options& options, CALLBACK_FUNCTION&& highLevelHandler)
         : fHighLevelHandler_{highLevelHandler}
         , fOptions_{options}
@@ -217,27 +217,29 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                                                                m->request ().ToString (), type_index{typeid (RETURN_TYPE)})};
             Request&  req  = m->rwRequest ();
             Response& resp = m->rwResponse ();
+            Context   context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp};
             if constexpr (same_as<RETURN_TYPE, void>) {
-                ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp});
+                ApplyHandler (context);
                 SendResponse (req, resp);
             }
             else {
-                RETURN_TYPE r = [&] () { return ApplyHandler (Context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp}); }();
-                SendResponse (req, resp, r);
+                SendResponse (req, resp, ApplyHandler (context));
             }
         };
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    inline tuple<> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
-                                                                      [[maybe_unused]] const function<RETURN_TYPE (void)>& f)
+    inline tuple<> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ ([[maybe_unused]] const Context&                      context,
+                                                                      [[maybe_unused]] const Iterable<VariantValue>&       variantValueArgs,
+                                                                      [[maybe_unused]] const function<RETURN_TYPE (void)>& f) const
     {
         Require (variantValueArgs.size () == 0);
         return make_tuple ();
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <typename SINGLE_ARG>
-    tuple<SINGLE_ARG> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
-                                                                         [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f)
+    tuple<SINGLE_ARG> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context&                                 context,
+                                                                         [[maybe_unused]] const Iterable<VariantValue>& variantValueArgs,
+                                                                         [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f) const
     {
         if constexpr (same_as<SINGLE_ARG, Context>) {
             Require (variantValueArgs.size () == 0);
@@ -251,7 +253,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <typename ARG_FIRST, typename... REST_ARG_TYPES>
     auto Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
-                                                            [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
+                                                            [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f) const
         -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()))
     {
         constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
@@ -279,14 +281,67 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                 [&] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
             if constexpr (same_as<RETURN_TYPE, void>) {
                 apply (fHighLevelHandler_, args);
-                return VariantValue{};
             }
             else {
-                return fOptions_.fObjectMapper.FromObject (apply (fHighLevelHandler_, args));
+                return apply (fHighLevelHandler_, args);
             }
         }
         else {
-            // see old code
+            if constexpr (sizeof...(ARG_TYPES) == 0) {
+                if constexpr (same_as<RETURN_TYPE, void>) {
+                    fHighLevelHandler_ ();
+                }
+                else {
+                    return fHighLevelHandler_ ();
+                }
+            }
+            else if constexpr (sizeof...(ARG_TYPES) == 1) {
+                using firstArgType = std::tuple_element_t<0, std::tuple<ARG_TYPES...>>;
+                if constexpr (same_as<firstArgType, Context>) {
+                    if constexpr (same_as<RETURN_TYPE, void>) {
+                        fHighLevelHandler_ (context);
+                    }
+                    else {
+                        return fHighLevelHandler_ (context);
+                    }
+                }
+                else {
+                    if constexpr (same_as<RETURN_TYPE, void>) {
+                        fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV));
+                    }
+                    else {
+                        return fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV));
+                    }
+                }
+            }
+            else if constexpr (sizeof...(ARG_TYPES) == 2) {
+                using firstArgType  = std::tuple_element_t<0, std::tuple<ARG_TYPES...>>;
+                using secondArgType = std::tuple_element_t<1, std::tuple<ARG_TYPES...>>;
+                if constexpr (same_as<firstArgType, Context>) {
+                    if constexpr (same_as<RETURN_TYPE, void>) {
+                        fHighLevelHandler_ (context, ConvertArg2Object<secondArgType> (argVV));
+                    }
+                    else {
+                        return fHighLevelHandler_ (context, ConvertArg2Object<secondArgType> (argVV));
+                    }
+                }
+                else {
+                    static_assert (same_as<secondArgType, Context>);
+                    if constexpr (same_as<RETURN_TYPE, void>) {
+                        fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV), context);
+                    }
+                    else {
+                        return fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV), context);
+                    }
+                }
+            }
+            else {
+                static_assert (false);
+                // OOPS
+                // VariantValue   argVV = options.fExtractVariantValueFromRequest (req);
+                // WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (argVV)};
+                // return fHighLevelHandler_ (arg);
+            }
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>

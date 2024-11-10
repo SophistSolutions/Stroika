@@ -105,7 +105,9 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      */
     struct Options {
 
-        // todo add objevrainatmapper here (move it)
+        /**
+         * todo add objevrainatmapper here (move it)
+         */
         ObjectVariantMapper fObjectMapper;
 
         /**
@@ -298,10 +300,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     class Factory2 {
     public:
         static_assert (not is_reference_v<RETURN_TYPE>);
-        // static_assert (not is_reference_v<WEB_METHOD_ARG>);
+        //static_assert (conjunction<not is_reference_v<ARG_TYPES>&&...>, "");  // todo something close to this
 
     public:
-        template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
+        template <typename /*invocable<ARG_TYPES...>*/ CALLBACK_FUNCTION>
         Factory2 (const Options& options, CALLBACK_FUNCTION&& highLevelHandler);
 
     public:
@@ -320,13 +322,13 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     private:
         // use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
         nonvirtual tuple<> mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
-                                         [[maybe_unused]] const function<RETURN_TYPE (void)>& f);
+                                         [[maybe_unused]] const function<RETURN_TYPE (void)>& f) const;
         template <typename SINGLE_ARG>
         nonvirtual tuple<SINGLE_ARG> mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
-                                                   [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f);
+                                                   [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f) const;
         template <typename ARG_FIRST, typename... REST_ARG_TYPES>
         nonvirtual auto mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
-                                      [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
+                                      [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f) const
             -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()));
 
     public:
@@ -341,9 +343,37 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         function<RETURN_TYPE (ARG_TYPES...)> fHighLevelHandler_;
         Options                              fOptions_;
     };
-    template <typename CALLBACK_FUNCTION, typename RETURN_TYPE, typename... ARG_TYPES>
-        requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
-    Factory2 (const Options&, CALLBACK_FUNCTION&&) -> Factory2<RETURN_TYPE, ARG_TYPES...>;
+
+    namespace PRIV_ {
+        // use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
+        template <typename RETURN_TYPE>
+        tuple<> mkArgsTuple_ (const function<RETURN_TYPE (void)>& f);
+        template <typename RETURN_TYPE, typename SINGLE_ARG>
+        tuple<SINGLE_ARG> mkArgsTuple_ (const function<RETURN_TYPE (SINGLE_ARG)>& f);
+        template <typename RETURN_TYPE, typename ARG_FIRST, typename... REST_ARG_TYPES>
+        auto mkArgsTuple_ (const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
+            -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()));
+
+    }
+
+    template <typename CALLBACK_FUNCTION>
+    Factory2 (const Options&, CALLBACK_FUNCTION&&) -> Factory2<invoke_result_t<CALLBACK_FUNCTION>>;
+    template <typename CALLBACK_FUNCTION>
+    Factory2 (const Options&, CALLBACK_FUNCTION&&)
+        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>,
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>>;
+
+#if 0
+    template <typename CALLBACK_FUNCTION>
+    //requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
+        requires (FunctionTraits<CALLBACK_FUNCTION>::kArity == 0)
+    Factory2 (const Options&, CALLBACK_FUNCTION&&) -> Factory2<invoke_result_t<CALLBACK_FUNCTION>, void>;
+    template <typename CALLBACK_FUNCTION>
+    //requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
+        requires (FunctionTraits<CALLBACK_FUNCTION>::kArity == 1)
+    Factory2 (const Options&, CALLBACK_FUNCTION&&)
+        -> Factory2<invoke_result_t<CALLBACK_FUNCTION>, remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>>;
+#endif
 
 }
 
