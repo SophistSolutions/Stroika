@@ -340,6 +340,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                 }
             }
             else {
+                static_assert (sizeof...(ARG_TYPES) <= 2);
                 AssertNotReached ();
                 // OOPS
                 // VariantValue   argVV = options.fExtractVariantValueFromRequest (req);
