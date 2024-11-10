@@ -276,6 +276,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         if (fOptions_.fTreatBodyAsListOfArguments) {
             Iterable<VariantValue> variantValueArgs = PickOutNamedArguments (*fOptions_.fTreatBodyAsListOfArguments, argVV);
             Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
+#if 0
+            // NYI - close to right?
             // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
             auto&& args = ClientErrorException::TreatExceptionsAsClientError (
                 [&] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
@@ -285,6 +287,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             else {
                 return apply (fHighLevelHandler_, args);
             }
+#endif
+            return {};
         }
         else {
             if constexpr (sizeof...(ARG_TYPES) == 0) {
@@ -336,7 +340,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                 }
             }
             else {
-                static_assert (false);
+                AssertNotReached ();
                 // OOPS
                 // VariantValue   argVV = options.fExtractVariantValueFromRequest (req);
                 // WEB_METHOD_ARG arg{fObjectVariantMapper_.ToObject<WEB_METHOD_ARG> (argVV)};

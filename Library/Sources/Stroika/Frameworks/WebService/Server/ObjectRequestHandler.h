@@ -356,12 +356,20 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
 
     }
 
+    // hopefully adequate approach for now, but there must be some way to generalize this - perhaps with folds?
+    // --LGP 2024-11-10
     template <typename CALLBACK_FUNCTION>
     Factory2 (const Options&, CALLBACK_FUNCTION&&) -> Factory2<invoke_result_t<CALLBACK_FUNCTION>>;
     template <typename CALLBACK_FUNCTION>
     Factory2 (const Options&, CALLBACK_FUNCTION&&)
         -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>,
                     remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>>;
+    template <typename CALLBACK_FUNCTION>
+    Factory2 (const Options&, CALLBACK_FUNCTION&&)
+        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type,
+                                    typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<1>::type>,
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>,
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<1>::type>>;
 
 #if 0
     template <typename CALLBACK_FUNCTION>
