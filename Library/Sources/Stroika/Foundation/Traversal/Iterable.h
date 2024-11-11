@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Traversal {
         // that working
     public:
         static_assert (copy_constructible<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
-        static_assert (copyable<T>); // cannot use as type constraint on T cuz fails with String - cuz??? not sure why - just??? test more...
+        static_assert (copyable<T>); // cannot use as type constraint on T cuz fails with String - cuz??? not sure why - something about being evaluated when incomplete type...
 
     public:
         /**
