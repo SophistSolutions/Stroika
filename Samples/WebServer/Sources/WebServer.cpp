@@ -77,7 +77,7 @@ namespace {
     struct MyWebServer_ {
 
         /**
-         *  Routes specify the 'handlers' for the various web urls your webserver will support.
+         *  Routes specify the 'handlers' for the various web URLs your webserver will support.
          */
         const Sequence<Route> kRoutes_;
 

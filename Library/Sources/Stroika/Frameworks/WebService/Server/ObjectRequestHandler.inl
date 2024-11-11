@@ -18,7 +18,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      ********************************************************************************
      */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    template <typename /*invocable<ARG_TYPES...>*/ CALLBACK_FUNCTION>
+    template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
     inline Factory<RETURN_TYPE, ARG_TYPES...>::Factory (const Options& options, CALLBACK_FUNCTION&& highLevelHandler)
         : fHighLevelHandler_{highLevelHandler}
         , fOptions_{options}
@@ -74,7 +74,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                                                            [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f) const
         -> decltype (tuple_cat (make_tuple (declval<remove_cvref_t<ARG_FIRST>> ()), make_tuple (declval<REST_ARG_TYPES...> ())))
     {
-        constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
+        [[maybe_unused]] constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
         Require (variantValueArgs.size () >= kTotalArgsRemaining_);
         if constexpr (same_as<remove_cvref_t<ARG_FIRST>, Context>) {
             return tuple_cat (mkArgsTuple_ (context, Iterable<VariantValue>{}, function<RETURN_TYPE (ARG_FIRST)>{}),
@@ -89,6 +89,9 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     RETURN_TYPE Factory<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
     {
         using IO::Network::HTTP::ClientErrorException;
+        if (fOptions_.fAllowedMethods) {
+            ExpectedMethod (context.fRequest, *fOptions_.fAllowedMethods);
+        }
         Iterable<VariantValue> variantValueArgs = [&] () {
             VariantValue argVV = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
             if (fOptions_.fTreatBodyAsListOfArguments) {

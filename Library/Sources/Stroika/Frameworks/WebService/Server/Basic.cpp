@@ -32,17 +32,22 @@ using IO::Network::HTTP::ClientErrorException;
  ************************ WebService::Server::ExpectedMethod ********************
  ********************************************************************************
  */
-void WebService::Server::ExpectedMethod (const Request& request, const Iterable<String>& methods, const optional<String>& fromInMessage)
+void WebService::Server::ExpectedMethod (const Request& request, const Set<String>& methods, const optional<String>& fromInMessage)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
         "WebService::Server::ExpectedMethod", "request={}, methods={}, fromInMessage={}"_f, request, methods, fromInMessage)};
 #endif
-    if (not Set<String> (String::EqualsComparer{CompareOptions::eCaseInsensitive}, methods).Contains (request.httpMethod ())) {
+    if (not methods.Contains (request.httpMethod ())) {
         Execution::Throw (ClientErrorException (
             Characters::Format ("Received HTTP method '{}'{}, but expected one from {}"_f, request.httpMethod (),
                                 (fromInMessage ? (L" from '"sv + *fromInMessage + L"'"sv).As<wstring> ().c_str () : L""), methods)));
     }
+}
+
+void WebService::Server::ExpectedMethod (const Request& request, const Iterable<String>& methods, const optional<String>& fromInMessage)
+{
+    ExpectedMethod (request, Set<String>{methods}, fromInMessage);
 }
 
 void WebService::Server::ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription)

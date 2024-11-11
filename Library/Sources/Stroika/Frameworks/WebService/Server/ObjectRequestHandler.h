@@ -70,7 +70,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         /**
          *  \note since Context is not copyable, you must explicitly call .ToString() on it to use it with _f strings (std::format).
          */
-        String ToString () const;
+        nonvirtual String ToString () const;
     };
     static_assert (not copyable<Context>);
     static_assert (not movable<Context>);
@@ -114,6 +114,12 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         /**
          */
         ObjectVariantMapper fObjectMapper;
+
+        /**
+         *  if set specified, any web-method not in the set will be rejected.
+         *      \note These are compared case-sensitive, and are typically upper case.
+         */
+        optional<Set<String>> fAllowedMethods; // e.g. GET
 
         /**
          * This is the default media type for the content type of the result message. If missing, it will be inferred based on data type produced.
@@ -176,7 +182,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         /**
          *  \brief Build Frameworks::WebServer::RequestHandler out of ObjectVariantMapper, a few options/clues, and a object-based Route callback function
          */
-        template <typename /*invocable<ARG_TYPES...>*/ CALLBACK_FUNCTION>
+        template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
         Factory (const Options& options, CALLBACK_FUNCTION&& highLevelHandler);
 
     public:
@@ -261,26 +267,33 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         Options                              fOptions_;
     };
 
+    namespace Private_ {
+        // just to shorten stuff below...
+        template <typename CALLBACK_FUNCTION, size_t i>
+        using CBArg_t_ = remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<i>>;
+    }
+
     // hopefully adequate approach for now, but there must be some way to generalize this - perhaps with folds?
     // --LGP 2024-11-10
     template <typename CALLBACK_FUNCTION>
     Factory (const Options&, CALLBACK_FUNCTION&&) -> Factory<invoke_result_t<CALLBACK_FUNCTION>>;
     template <typename CALLBACK_FUNCTION>
     Factory (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
-                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>>;
+        -> Factory<invoke_result_t<CALLBACK_FUNCTION, Private_::CBArg_t_<CALLBACK_FUNCTION, 0>>, Private_::CBArg_t_<CALLBACK_FUNCTION, 0>>;
     template <typename CALLBACK_FUNCTION>
     Factory (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
-                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
-                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>>;
+        -> Factory<invoke_result_t<CALLBACK_FUNCTION, Private_::CBArg_t_<CALLBACK_FUNCTION, 0>, Private_::CBArg_t_<CALLBACK_FUNCTION, 1>>,
+                   Private_::CBArg_t_<CALLBACK_FUNCTION, 0>, Private_::CBArg_t_<CALLBACK_FUNCTION, 1>>;
     template <typename CALLBACK_FUNCTION>
     Factory (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>,
-                                   typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<2>>,
-                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
-                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
-                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<2>>>;
+        -> Factory<invoke_result_t<CALLBACK_FUNCTION, Private_::CBArg_t_<CALLBACK_FUNCTION, 0>, Private_::CBArg_t_<CALLBACK_FUNCTION, 1>, Private_::CBArg_t_<CALLBACK_FUNCTION, 2>>,
+                   Private_::CBArg_t_<CALLBACK_FUNCTION, 0>, Private_::CBArg_t_<CALLBACK_FUNCTION, 1>, Private_::CBArg_t_<CALLBACK_FUNCTION, 2>>;
+    template <typename CALLBACK_FUNCTION>
+    Factory (const Options&, CALLBACK_FUNCTION&&)
+        -> Factory<invoke_result_t<CALLBACK_FUNCTION, Private_::CBArg_t_<CALLBACK_FUNCTION, 0>, Private_::CBArg_t_<CALLBACK_FUNCTION, 1>,
+                                   Private_::CBArg_t_<CALLBACK_FUNCTION, 2>, Private_::CBArg_t_<CALLBACK_FUNCTION, 3>>,
+                   Private_::CBArg_t_<CALLBACK_FUNCTION, 0>, Private_::CBArg_t_<CALLBACK_FUNCTION, 1>,
+                   Private_::CBArg_t_<CALLBACK_FUNCTION, 2>, Private_::CBArg_t_<CALLBACK_FUNCTION, 3>>;
 
 }
 
