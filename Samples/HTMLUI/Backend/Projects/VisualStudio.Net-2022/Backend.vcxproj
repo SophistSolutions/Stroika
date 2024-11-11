@@ -56,8 +56,8 @@
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
-    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-HTMLUI\Backend\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-Backend\Backend\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\..\..\Builds\$(Configuration)\Samples-HTMLUI\Backend\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\..\..\IntermediateFiles\$(Configuration)\Samples-Backend\Backend\</IntDir>
     <ExecutablePath>$(StroikaBuildToolsExtraPath);$(CommonExecutablePath)</ExecutablePath>
     <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
