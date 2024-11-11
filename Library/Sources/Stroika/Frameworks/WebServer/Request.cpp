@@ -86,9 +86,10 @@ DataExchange::VariantValue Request::GetBodyVariantValue ()
         if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *oct)) {
             return Variant::JSON::Reader{}.Read (GetBody ());
         }
+        static const auto kExcept_ = Execution::RuntimeErrorException{"Unrecognized content type"sv};
+        Execution::Throw (kExcept_);
     }
-    static const auto kExcept_ = Execution::RuntimeErrorException{"Unrecognized content type"sv};
-    Execution::Throw (kExcept_);
+    return VariantValue{};
 }
 
 Streams::InputStream::Ptr<byte> Request::GetBodyStream ()

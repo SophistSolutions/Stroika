@@ -52,7 +52,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                                                                      [[maybe_unused]] const Iterable<VariantValue>& variantValueArgs,
                                                                      [[maybe_unused]] const function<RET ()>&       f) const
     {
-        Require (variantValueArgs.size () == 0);
         return make_tuple ();
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
@@ -62,11 +61,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                                                                         [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f) const
     {
         if constexpr (same_as<remove_cvref_t<SINGLE_ARG>, Context>) {
-            Require (variantValueArgs.size () == 0);
             return make_tuple (context);
         }
         else {
-            Require (variantValueArgs.size () == 1);
+            Require (variantValueArgs.size () >= 1);
             return make_tuple (ConvertArg2Object<SINGLE_ARG> (variantValueArgs.Nth (0)));
         }
     }
@@ -77,13 +75,12 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         -> decltype (tuple_cat (make_tuple (declval<remove_cvref_t<ARG_FIRST>> ()), make_tuple (declval<REST_ARG_TYPES...> ())))
     {
         constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
+        Require (variantValueArgs.size () >= kTotalArgsRemaining_);
         if constexpr (same_as<remove_cvref_t<ARG_FIRST>, Context>) {
-            Require (variantValueArgs.size () == kTotalArgsRemaining_ - 1); // one arg is context, and rest or from variantArgs
             return tuple_cat (mkArgsTuple_ (context, Iterable<VariantValue>{}, function<RETURN_TYPE (ARG_FIRST)>{}),
                               mkArgsTuple_ (context, variantValueArgs, function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }
         else {
-            Require (variantValueArgs.size () == kTotalArgsRemaining_ or variantValueArgs.size () == kTotalArgsRemaining_ - 1); // need enuf remaining variantargs,except maybe one remaining still a context arg
             return tuple_cat (mkArgsTuple_ (context, variantValueArgs.Take (1), function<RETURN_TYPE (ARG_FIRST)>{}),
                               mkArgsTuple_ (context, variantValueArgs.Skip (1), function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }
@@ -92,75 +89,28 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     RETURN_TYPE Factory<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
     {
         using IO::Network::HTTP::ClientErrorException;
-        if (fOptions_.fTreatBodyAsListOfArguments) {
-            VariantValue           argVV            = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
-            Iterable<VariantValue> variantValueArgs = PickOutNamedArguments (*fOptions_.fTreatBodyAsListOfArguments, argVV);
-            Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
-            // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
-            auto&& args = ClientErrorException::TreatExceptionsAsClientError (
-                [&, this] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
-            if constexpr (same_as<RETURN_TYPE, void>) {
-                apply (fHighLevelHandler_, args);
+        Iterable<VariantValue> variantValueArgs = [&] () {
+            VariantValue argVV = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
+            if (fOptions_.fTreatBodyAsListOfArguments) {
+                Iterable<VariantValue> variantValueArgs = PickOutNamedArguments (*fOptions_.fTreatBodyAsListOfArguments, argVV);
+                Require (variantValueArgs.size () >= sizeof...(ARG_TYPES) - 1); // assuming one is context, else >= sizeof(argstype)
+                return variantValueArgs;
             }
             else {
-                return apply (fHighLevelHandler_, args);
+                Iterable<VariantValue> variantValueArgs{argVV};
+                Require (variantValueArgs.size () == 1);
+                return variantValueArgs;
             }
+        }();
+
+        // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
+        auto&& args = ClientErrorException::TreatExceptionsAsClientError (
+            [&, this] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
+        if constexpr (same_as<RETURN_TYPE, void>) {
+            apply (fHighLevelHandler_, args);
         }
         else {
-            if constexpr (sizeof...(ARG_TYPES) == 0) {
-                if constexpr (same_as<RETURN_TYPE, void>) {
-                    fHighLevelHandler_ ();
-                }
-                else {
-                    return fHighLevelHandler_ ();
-                }
-            }
-            else if constexpr (sizeof...(ARG_TYPES) == 1) {
-                using firstArgType = std::tuple_element_t<0, std::tuple<ARG_TYPES...>>;
-                if constexpr (same_as<firstArgType, Context>) {
-                    if constexpr (same_as<RETURN_TYPE, void>) {
-                        fHighLevelHandler_ (context);
-                    }
-                    else {
-                        return fHighLevelHandler_ (context);
-                    }
-                }
-                else {
-                    VariantValue argVV = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
-                    if constexpr (same_as<RETURN_TYPE, void>) {
-                        fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV));
-                    }
-                    else {
-                        return fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV));
-                    }
-                }
-            }
-            else if constexpr (sizeof...(ARG_TYPES) == 2) {
-                VariantValue argVV  = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
-                using firstArgType  = std::tuple_element_t<0, std::tuple<ARG_TYPES...>>;
-                using secondArgType = std::tuple_element_t<1, std::tuple<ARG_TYPES...>>;
-                if constexpr (same_as<firstArgType, Context>) {
-                    if constexpr (same_as<RETURN_TYPE, void>) {
-                        fHighLevelHandler_ (context, ConvertArg2Object<secondArgType> (argVV));
-                    }
-                    else {
-                        return fHighLevelHandler_ (context, ConvertArg2Object<secondArgType> (argVV));
-                    }
-                }
-                else {
-                    static_assert (same_as<secondArgType, Context>);
-                    if constexpr (same_as<RETURN_TYPE, void>) {
-                        fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV), context);
-                    }
-                    else {
-                        return fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV), context);
-                    }
-                }
-            }
-            else {
-                static_assert (sizeof...(ARG_TYPES) <= 2);
-                AssertNotReached ();
-            }
+            return apply (fHighLevelHandler_, args);
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>

@@ -69,6 +69,8 @@ namespace Stroika::Frameworks::WebServer {
          *  \note Supported InternetMediaTypes for message body content type:
          *      o   IsA (InternetMediaTypes::kJSON)       (uses Variant::JSON::Reader to interpret the content)
          * 
+         *  \note if content type is missing, an empty VariantValue will be returned.
+         * 
          *  @todo support more content types - for now just supports JSON (xml, and string for plain text)
          */
         nonvirtual DataExchange::VariantValue GetBodyVariantValue ();
