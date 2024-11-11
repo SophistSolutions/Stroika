@@ -253,8 +253,6 @@ namespace {
                                                         return rr.id;
                                                     }}}
 
-#if 0
-            // not sure why failing - @todo debug
                 , Route{ IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
                     ObjectRequestHandler::Factory { {kMapper},
                         [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
@@ -262,10 +260,7 @@ namespace {
                         rr.id                = GUID::GenerateNew ();
                         sData_.rwget ().rwref ().Add (rr);
                         return rr.id;
-                    }
-                }
-            }
-#endif
+                    }}}
 
         }
 

@@ -74,7 +74,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     template <typename ARG_FIRST, typename... REST_ARG_TYPES>
     auto Factory<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
                                                            [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f) const
-        -> decltype (tuple_cat (declval<remove_cvref_t<ARG_FIRST>> (), declval<REST_ARG_TYPES...> ()))
+        -> decltype (tuple_cat (make_tuple (declval<remove_cvref_t<ARG_FIRST>> ()), make_tuple (declval<REST_ARG_TYPES...> ())))
     {
         constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
         if constexpr (same_as<remove_cvref_t<ARG_FIRST>, Context>) {
