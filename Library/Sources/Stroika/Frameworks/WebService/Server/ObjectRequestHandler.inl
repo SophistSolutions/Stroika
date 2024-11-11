@@ -259,7 +259,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
         if constexpr (same_as<ARG_FIRST, Context>) {
             Require (variantValueArgs.size () == kTotalArgsRemaining_ - 1); // one arg is context, and rest or from variantArgs
-            return tuple_cat (mkArgsTuple_ (context, {}, function<RETURN_TYPE (ARG_FIRST)>{}),
+            return tuple_cat (mkArgsTuple_ (context, Iterable<VariantValue>{}, function<RETURN_TYPE (ARG_FIRST)>{}),
                               mkArgsTuple_ (context, variantValueArgs, function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }
         else {
@@ -276,11 +276,11 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         if (fOptions_.fTreatBodyAsListOfArguments) {
             Iterable<VariantValue> variantValueArgs = PickOutNamedArguments (*fOptions_.fTreatBodyAsListOfArguments, argVV);
             Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
-#if 0
+#if 1
             // NYI - close to right?
             // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
             auto&& args = ClientErrorException::TreatExceptionsAsClientError (
-                [&] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
+                [&, this] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
             if constexpr (same_as<RETURN_TYPE, void>) {
                 apply (fHighLevelHandler_, args);
             }

@@ -344,18 +344,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         Options                              fOptions_;
     };
 
-    namespace PRIV_ {
-        // use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
-        template <typename RETURN_TYPE>
-        tuple<> mkArgsTuple_ (const function<RETURN_TYPE (void)>& f);
-        template <typename RETURN_TYPE, typename SINGLE_ARG>
-        tuple<SINGLE_ARG> mkArgsTuple_ (const function<RETURN_TYPE (SINGLE_ARG)>& f);
-        template <typename RETURN_TYPE, typename ARG_FIRST, typename... REST_ARG_TYPES>
-        auto mkArgsTuple_ (const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
-            -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()));
-
-    }
-
     // hopefully adequate approach for now, but there must be some way to generalize this - perhaps with folds?
     // --LGP 2024-11-10
     template <typename CALLBACK_FUNCTION>
@@ -363,25 +351,12 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     template <typename CALLBACK_FUNCTION>
     Factory2 (const Options&, CALLBACK_FUNCTION&&)
         -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>>;
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>>;
     template <typename CALLBACK_FUNCTION>
     Factory2 (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type,
-                                    typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<1>::type>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<1>::type>>;
-
-#if 0
-    template <typename CALLBACK_FUNCTION>
-    //requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
-        requires (FunctionTraits<CALLBACK_FUNCTION>::kArity == 0)
-    Factory2 (const Options&, CALLBACK_FUNCTION&&) -> Factory2<invoke_result_t<CALLBACK_FUNCTION>, void>;
-    template <typename CALLBACK_FUNCTION>
-    //requires (convertible_to<CALLBACK_FUNCTION, function<RETURN_TYPE (ARG_TYPES...)>>)
-        requires (FunctionTraits<CALLBACK_FUNCTION>::kArity == 1)
-    Factory2 (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory2<invoke_result_t<CALLBACK_FUNCTION>, remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>>;
-#endif
+        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>>;
 
 }
 
