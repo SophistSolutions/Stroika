@@ -147,7 +147,7 @@ public:
             /**
              * /about - health check etc
              */
-            , Route{"api/about/?"_RegEx, ObjectRequestHandler::Factory2{{About::kMapper}, [this] () {
+            , Route{"api/about/?"_RegEx, ObjectRequestHandler::Factory{{About::kMapper}, [this] () {
                                                             ActiveCallCounter_ acc{*this};
                                                             return fWSImpl_->about_GET ();
                                                         }}}
@@ -166,7 +166,7 @@ public:
             /*
              * configuration data for web-gui - private - just so can communicate with /api
              */
-           , Route{"config.json"_RegEx, ObjectRequestHandler::Factory2{{Config_::kMapper}, [=] () { return GetConfig_ (); }}}
+           , Route{"config.json"_RegEx, ObjectRequestHandler::Factory{{Config_::kMapper}, [=] () { return GetConfig_ (); }}}
 
             /*
              * Serve up contents of html folder as static site

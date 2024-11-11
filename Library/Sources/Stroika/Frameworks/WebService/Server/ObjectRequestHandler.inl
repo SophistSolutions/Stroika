@@ -14,25 +14,25 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
 
     /*
      ********************************************************************************
-     *********************** ObjectRequestHandler::Factory2 *************************
+     ************************ ObjectRequestHandler::Factory *************************
      ********************************************************************************
      */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <typename /*invocable<ARG_TYPES...>*/ CALLBACK_FUNCTION>
-    inline Factory2<RETURN_TYPE, ARG_TYPES...>::Factory2 (const Options& options, CALLBACK_FUNCTION&& highLevelHandler)
+    inline Factory<RETURN_TYPE, ARG_TYPES...>::Factory (const Options& options, CALLBACK_FUNCTION&& highLevelHandler)
         : fHighLevelHandler_{highLevelHandler}
         , fOptions_{options}
     {
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    inline Factory2<RETURN_TYPE, ARG_TYPES...>::operator Frameworks::WebServer::RequestHandler () const
+    inline Factory<RETURN_TYPE, ARG_TYPES...>::operator Frameworks::WebServer::RequestHandler () const
     {
         using namespace Characters::Literals;
         using namespace DataExchange;
         using WebServer::Message;
         return [*this] (Message* m, [[maybe_unused]] const Sequence<String>& matchedArgs) {
             Debug::TraceContextBumper ctx{
-                Stroika_Foundation_Debug_OptionalizeTraceArgs ("ObjectRequestHandler::Factory2 handler", "m->request = {}, RETURN_TYPE={}"_f,
+                Stroika_Foundation_Debug_OptionalizeTraceArgs ("ObjectRequestHandler::Factory handler", "m->request = {}, RETURN_TYPE={}"_f,
                                                                m->request ().ToString (), type_index{typeid (RETURN_TYPE)})};
             Request&  req  = m->rwRequest ();
             Response& resp = m->rwResponse ();
@@ -48,18 +48,18 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <typename RET>
-    inline tuple<> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ ([[maybe_unused]] const Context&                context,
-                                                                      [[maybe_unused]] const Iterable<VariantValue>& variantValueArgs,
-                                                                      [[maybe_unused]] const function<RET ()>&       f) const
+    inline tuple<> Factory<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ ([[maybe_unused]] const Context&                context,
+                                                                     [[maybe_unused]] const Iterable<VariantValue>& variantValueArgs,
+                                                                     [[maybe_unused]] const function<RET ()>&       f) const
     {
         Require (variantValueArgs.size () == 0);
         return make_tuple ();
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <typename SINGLE_ARG>
-    tuple<SINGLE_ARG> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context&                                 context,
-                                                                         [[maybe_unused]] const Iterable<VariantValue>& variantValueArgs,
-                                                                         [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f) const
+    tuple<SINGLE_ARG> Factory<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context&                                 context,
+                                                                        [[maybe_unused]] const Iterable<VariantValue>& variantValueArgs,
+                                                                        [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f) const
     {
         if constexpr (same_as<remove_cvref_t<SINGLE_ARG>, Context>) {
             Require (variantValueArgs.size () == 0);
@@ -72,8 +72,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <typename ARG_FIRST, typename... REST_ARG_TYPES>
-    auto Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
-                                                            [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f) const
+    auto Factory<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
+                                                           [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f) const
         -> decltype (tuple_cat (declval<remove_cvref_t<ARG_FIRST>> (), declval<REST_ARG_TYPES...> ()))
     {
         constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
@@ -89,7 +89,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    RETURN_TYPE Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
+    RETURN_TYPE Factory<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
     {
         using IO::Network::HTTP::ClientErrorException;
         if (fOptions_.fTreatBodyAsListOfArguments) {
@@ -164,7 +164,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    inline RETURN_TYPE Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyObjectHandler (ARG_TYPES... args) const
+    inline RETURN_TYPE Factory<RETURN_TYPE, ARG_TYPES...>::ApplyObjectHandler (ARG_TYPES... args) const
     {
         if constexpr (same_as<RETURN_TYPE, void>) {
             fHighLevelHandler_ (args...);
@@ -175,14 +175,14 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <typename T>
-    inline T Factory2<RETURN_TYPE, ARG_TYPES...>::ConvertArg2Object (const VariantValue& v) const
+    inline T Factory<RETURN_TYPE, ARG_TYPES...>::ConvertArg2Object (const VariantValue& v) const
     {
         return fOptions_.fObjectMapper.ToObject<T> (v);
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <same_as<RETURN_TYPE> RT>
     // note maybe_unused on request wrong but tmphack to quiet til we check accept headers
-    inline void Factory2<RETURN_TYPE, ARG_TYPES...>::SendResponse ([[maybe_unused]] const Request& request, Response& response, const RT& r) const
+    inline void Factory<RETURN_TYPE, ARG_TYPES...>::SendResponse ([[maybe_unused]] const Request& request, Response& response, const RT& r) const
     {
         using namespace DataExchange;
         // @todo check accepts content type - and convert result (to JSON or binary json, xml etc)
@@ -201,7 +201,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    inline void Factory2<RETURN_TYPE, ARG_TYPES...>::SendResponse ([[maybe_unused]] const Request& request, [[maybe_unused]] Response& response) const
+    inline void Factory<RETURN_TYPE, ARG_TYPES...>::SendResponse ([[maybe_unused]] const Request& request, [[maybe_unused]] Response& response) const
         requires (same_as<RETURN_TYPE, void>)
     {
         // @todo - not sure anything todo here???

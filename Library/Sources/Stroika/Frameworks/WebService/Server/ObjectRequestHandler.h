@@ -107,6 +107,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     };
 
     /**
+     *  \brief Options for ObjectRequestHandler - mostly the ObjectVariantMapper, but also a few others depending on situation
      */
     struct Options {
 
@@ -120,6 +121,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          */
         optional<InternetMediaType> fDefaultResultMediaType;
 
+        /**
+         */
         function<VariantValue (Request&)> fExtractVariantValueFromRequest{ExtractArgumentsAsVariantValue::FromRequestBody};
 
         /** 
@@ -138,12 +141,13 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     static_assert (copyable<Options>);
 
     /**
+     *  \brief Build Frameworks::WebServer::RequestHandler out of ObjectVariantMapper, a few options/clues, and a object-based Route callback function
      * 
      *  \par Example Usage
      *      \code
      *          Route{"api/objs/?"_RegEx,
      *                  ObjectRequestHandler::Factory{
-     *                      kMapper,
+     *                      {kMapper},
      *                      [] () -> Sequence<GUID> {
      *                          return Sequence<GUID>{};
      *                      }}}
@@ -152,7 +156,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      *  \par Example Usage
      *      \code
      *          Route{"api/(v1/)?recordings/(.+)"_RegEx,
-     *                 ObjectRequestHandler::Factory{kMapper, [this] (const ObjectRequestHandler::Context& c) -> Recording {
+     *                 ObjectRequestHandler::Factory{{kMapper}, [this] (const ObjectRequestHandler::Context& c) -> Recording {
      *                     String id = c.fMatchedURLArgs[1];
      *                     return fWSImpl_->recordings_GET (id);
      *                 }}}
@@ -163,14 +167,17 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      *  \todo check acceptsContentType and return result as JSON, binary json, or xml (etc) accordingly - take OPTIONS param saying default
      */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    class Factory2 {
+    class Factory {
     public:
         static_assert (not is_reference_v<RETURN_TYPE>);
-        //static_assert (conjunction<not is_reference_v<ARG_TYPES>&&...>, "");  // todo something close to this
+        //static_assert (conjunction<(not is_reference_v<ARG_TYPES>) && ...>, "");  // todo something close to this
 
     public:
+        /**
+         *  \brief Build Frameworks::WebServer::RequestHandler out of ObjectVariantMapper, a few options/clues, and a object-based Route callback function
+         */
         template <typename /*invocable<ARG_TYPES...>*/ CALLBACK_FUNCTION>
-        Factory2 (const Options& options, CALLBACK_FUNCTION&& highLevelHandler);
+        Factory (const Options& options, CALLBACK_FUNCTION&& highLevelHandler);
 
     public:
         /**
@@ -191,7 +198,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          *          , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
          *                [this] (Message* m) {
          *                    // use ObjectRequestHandler::Factory indirectly so can support POST raw data and arguments as query-args!
-         *                    ObjectRequestHandler::Factory f{kMapper, [this] (const Recording& r) { return fWSImpl_->recordings_POST (r); }};
+         *                    ObjectRequestHandler::Factory f{{kMapper}, [this] (const Recording& r) { return fWSImpl_->recordings_POST (r); }};
          *                    Recording                     arg = [&] () {
          *                        InternetMediaType requestCt =
          *                            Memory::ValueOfOrThrow (m->request ().contentType (), ClientErrorException{"missing request content type"sv});
@@ -256,23 +263,23 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     // hopefully adequate approach for now, but there must be some way to generalize this - perhaps with folds?
     // --LGP 2024-11-10
     template <typename CALLBACK_FUNCTION>
-    Factory2 (const Options&, CALLBACK_FUNCTION&&) -> Factory2<invoke_result_t<CALLBACK_FUNCTION>>;
+    Factory (const Options&, CALLBACK_FUNCTION&&) -> Factory<invoke_result_t<CALLBACK_FUNCTION>>;
     template <typename CALLBACK_FUNCTION>
-    Factory2 (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>>;
+    Factory (const Options&, CALLBACK_FUNCTION&&)
+        -> Factory<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
+                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>>;
     template <typename CALLBACK_FUNCTION>
-    Factory2 (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>>;
+    Factory (const Options&, CALLBACK_FUNCTION&&)
+        -> Factory<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
+                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
+                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>>;
     template <typename CALLBACK_FUNCTION>
-    Factory2 (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>,
-                                    typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<2>>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
-                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<2>>>;
+    Factory (const Options&, CALLBACK_FUNCTION&&)
+        -> Factory<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>,
+                                   typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<2>>,
+                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
+                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
+                   remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<2>>>;
 
 }
 
