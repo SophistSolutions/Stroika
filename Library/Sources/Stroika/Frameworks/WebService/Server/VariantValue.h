@@ -144,7 +144,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
                             const function<RETURN_TYPE (ARG_TYPES...)>& f);
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+    VariantValue 
+    (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
                             const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPES...)>& f);
 
     /**

@@ -101,7 +101,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          *  First invoke FromRequestBody, and then FromRequestURL. Combine their results. If either null, return the other.
          *  If both non-null, both must of of type Mapping<String,VariantValue> - and then query-arguments take precedence.
          * 
-         *  Any format or other errors, results in ClientErrorException
+         *  Any format or other errors, results in ClientErrorException being thrown
          */
         static VariantValue FromRequest (Request& request);
     };
