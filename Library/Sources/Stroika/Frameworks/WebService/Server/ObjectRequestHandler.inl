@@ -275,8 +275,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     RETURN_TYPE Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
     {
         using IO::Network::HTTP::ClientErrorException;
-        VariantValue argVV = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
         if (fOptions_.fTreatBodyAsListOfArguments) {
+            VariantValue           argVV            = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
             Iterable<VariantValue> variantValueArgs = PickOutNamedArguments (*fOptions_.fTreatBodyAsListOfArguments, argVV);
             Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
             // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
@@ -309,6 +309,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                     }
                 }
                 else {
+                    VariantValue argVV = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
                     if constexpr (same_as<RETURN_TYPE, void>) {
                         fHighLevelHandler_ (ConvertArg2Object<firstArgType> (argVV));
                     }
@@ -318,6 +319,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                 }
             }
             else if constexpr (sizeof...(ARG_TYPES) == 2) {
+                VariantValue argVV  = fOptions_.fExtractVariantValueFromRequest (context.fRequest);
                 using firstArgType  = std::tuple_element_t<0, std::tuple<ARG_TYPES...>>;
                 using secondArgType = std::tuple_element_t<1, std::tuple<ARG_TYPES...>>;
                 if constexpr (same_as<firstArgType, Context>) {
