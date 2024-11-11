@@ -78,7 +78,16 @@ namespace {
         optional<String>       API_ROOT;         // if specified takes precedence over DEFAULT_API_PORT
         optional<unsigned int> DEFAULT_API_PORT; // added to remote host used in web browser for accessing API
 
-        static const ObjectVariantMapper kMapper;
+        static inline const ObjectVariantMapper kMapper = [] () {
+            ObjectVariantMapper mapper;
+            mapper.AddCommonType<optional<String>> ();
+            mapper.AddCommonType<optional<unsigned int>> ();
+            mapper.AddClass<Config_> ({
+                {"API_ROOT"sv, &Config_::API_ROOT},
+                {"DEFAULT_API_PORT"sv, &Config_::DEFAULT_API_PORT},
+            });
+            return mapper;
+        }();
     };
     const WebServiceMethodDescription kGUIConfig_{
         "config"sv,
@@ -88,16 +97,6 @@ namespace {
         Sequence<String>{},
         Sequence<String>{"GUI config."sv},
     };
-    const ObjectVariantMapper Config_::kMapper = [] () {
-        ObjectVariantMapper mapper;
-        mapper.AddCommonType<optional<String>> ();
-        mapper.AddCommonType<optional<unsigned int>> ();
-        mapper.AddClass<Config_> ({
-            {"API_ROOT"sv, &Config_::API_ROOT},
-            {"DEFAULT_API_PORT"sv, &Config_::DEFAULT_API_PORT},
-        });
-        return mapper;
-    }();
     Config_ GetConfig_ ()
     {
         return Config_{nullopt, gAppConfiguration.Get ().WebServerPort};
@@ -109,7 +108,7 @@ namespace {
  *  all the logic /options for HTTP interface.
  *
  *  This particular organization also makes it easy to save instance variables with the webserver (like a pointer to a handler)
- *  and accesss them from the Route handler functions.
+ *  and access them from the Route handler functions.
  */
 class WebServer::Rep_ {
 public:

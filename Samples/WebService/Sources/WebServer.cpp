@@ -143,8 +143,8 @@ public:
                          }},
 
                    /*
-               *    plus, minus, times, and divide, test-void-return all all demonstrate passing in variables through either the POST body, or query-arguments.
-               */
+                    *    plus, minus, times, and divide, test-void-return all all demonstrate passing in variables through either the POST body, or query-arguments.
+                    */
                    Route{HTTP::MethodsRegEx::kPost, "plus"_RegEx,
                          ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
                                                        [this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }}},
