@@ -46,6 +46,9 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     /**
      *  \brief map a list of argument names, and a Mapping<String,VariantValue> (named arguments list), to a Sequence<VariantValue> - argument values.
      *  for overload with VariantValue argumentValueMap - throw if not GetType() == VariantValue::eMap (or null) - for no arguments.
+     * 
+     *  Sometimes callers will wish to treat the Body (or/possibly plus query url args) as a single object, and sometimes
+     *  as multiple named parameters. This function serves that later scenario.
      */
     Iterable<VariantValue> PickOutNamedArguments (const Iterable<String>& argNames, const Mapping<String, VariantValue>& argumentValueMap);
     Iterable<VariantValue> PickOutNamedArguments (const Iterable<String>& argNames, const VariantValue& argumentValueMap);
@@ -108,7 +111,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     struct Options {
 
         /**
-         * todo add objevrainatmapper here (move it)
          */
         ObjectVariantMapper fObjectMapper;
 
@@ -121,9 +123,11 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         function<VariantValue (Request&)> fExtractVariantValueFromRequest{ExtractArgumentsAsVariantValue::FromRequestBody};
 
         /** 
-         *  Sometimesyou will want to treat the body as the sole input object for a webservice call. Sometimes
+         *  Sometimes you will want to treat the body as the sole input object for a webservice call. Sometimes
          * best to treat it as an array of parameters. If treated as an array of parameters (possible from mix of sources with fExtra... above)
          * then need their names and ordering to map to the arguments to the callback function.
+         * 
+         *  \see PickOutNamedArguments
          */
         optional<Iterable<String>> fTreatBodyAsListOfArguments;
 
@@ -132,160 +136,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         nonvirtual String ToString () const;
     };
     static_assert (copyable<Options>);
-
-#if 0
-    namespace Private_ {
-        template <typename CALLBACK_FUNCTION>
-        concept IsFunctionOfOneArgNoContext_ =
-            FunctionTraits<CALLBACK_FUNCTION>::kArity == 1 and
-            invocable<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type> and
-            not same_as<remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type>, Context>;
-
-        template <typename CALLBACK_FUNCTION>
-        concept IsFunctionOfOneArgPlusContext_ =
-            FunctionTraits<CALLBACK_FUNCTION>::kArity == 2 and
-            invocable<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template arg<0>::type, Context>;
-
-        // nb: would be nice if could use using instead of subclass, or better yet, if whole issue
-        // of using (void) for arg wasn't so crazy inconvenient --LGP 2024-11-02
-        template <typename RETURN_TYPE, typename WEB_METHOD_ARG>
-        struct MagicRemoveVoidArgAddContext_ : function<RETURN_TYPE (WEB_METHOD_ARG, Context)> {};
-        template <typename RETURN_TYPE>
-        struct MagicRemoveVoidArgAddContext_<RETURN_TYPE, void> : function<RETURN_TYPE (Context)> {};
-        template <typename RETURN_TYPE, typename WEB_METHOD_ARG>
-        struct MagicRemoveVoidArgNoContext_ : function<RETURN_TYPE (WEB_METHOD_ARG)> {};
-        template <typename RETURN_TYPE>
-        struct MagicRemoveVoidArgNoContext_<RETURN_TYPE, void> : function<RETURN_TYPE ()> {};
-    }
-
-    /**
-     * &&& EARLY DRAFT &&&&
-     * 
-     *  \par Example Usage
-     *      \code
-     *          Route{"api/objs/?"_RegEx,
-     *                  ObjectRequestHandler::Factory{
-     *                      kMapper,
-     *                      [] () -> Sequence<GUID> {
-     *                          return Sequence<GUID>{};
-     *                      }}}
-     *      \endcode
-     * 
-     *  \par Example Usage
-     *      \code
-     *          Route{"api/(v1/)?recordings/(.+)"_RegEx,
-     *                 ObjectRequestHandler::Factory{kMapper, [this] (const ObjectRequestHandler::Context& c) -> Recording {
-     *                     String id = c.fMatchedURLArgs[1];
-     *                     return fWSImpl_->recordings_GET (id);
-     *                 }}}
-     *      \endcode
-     * 
-     *  \brief ObjectRequestHandler::Factory is a way to construct a WebServer::RequestHandler from an ObjectVariantMapper object and a lambda taking in/out params of objects.
-     * 
-     *  \todo check acceptsContentType and return result as JSON, binary json, or xml (etc) accordingly - take OPTIONS param saying default
-     */
-    template <typename RETURN_TYPE, typename WEB_METHOD_ARG, bool INCLUDE_CONTEXT>
-    class Factory {
-    public:
-        static_assert (not is_reference_v<RETURN_TYPE>);
-        static_assert (not is_reference_v<WEB_METHOD_ARG>);
-
-    public:
-        /**
-         */
-        template <invocable<Context> CALLBACK_FUNCTION>
-        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
-            requires (INCLUDE_CONTEXT);
-        template <invocable<> CALLBACK_FUNCTION>
-        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
-            requires (not INCLUDE_CONTEXT);
-        template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION>
-        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
-            requires (INCLUDE_CONTEXT);
-        template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION>
-        Factory (const ObjectVariantMapper& ovm, CALLBACK_FUNCTION&& highLevelHandler, const Options& options = {})
-            requires (not INCLUDE_CONTEXT);
-
-    public:
-        /**
-         *  This is the whole point of this class - to produce a RequestHandler that can be used in a Stroika WebServer Route.
-         */
-        nonvirtual operator Frameworks::WebServer::RequestHandler () const;
-
-    public:
-        /**
-         *  This is 1/2 the guts of the RequestHandler - taking the request calling the handler with it, and producing
-         *  the 'RESULT_TYPE' object.
-         * 
-         *  Note this is broken out as a callable method so it can be used from a straight custom WebServer::RequestHandler
-         *  and just parts of the functionality used.
-         * 
-         *  \par Example Usage
-         *      \code
-         *          , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
-         *                [this] (Message* m) {
-         *                    // use ObjectRequestHandler::Factory indirectly so can support POST raw data and arguments as query-args!
-         *                    ObjectRequestHandler::Factory f{kMapper, [this] (const Recording& r) { return fWSImpl_->recordings_POST (r); }};
-         *                    Recording                     arg = [&] () {
-         *                        InternetMediaType requestCt =
-         *                            Memory::ValueOfOrThrow (m->request ().contentType (), ClientErrorException{"missing request content type"sv});
-         *                        auto ctChecker = InternetMediaTypeRegistry::sThe.load ();
-         *                        if (ctChecker.IsA (InternetMediaTypes::kJSON, requestCt)) {
-         *                            return Recording{kMapper.ToObject<Recording> (m->rwRequest ().GetBodyVariantValue ())};
-         *                        }
-         *                        else if (ctChecker.IsA (InternetMediaTypes::kAudio, requestCt)) {
-         *                            auto r = Recording{.fData = make_tuple (requestCt, m->rwRequest ().GetBody ())};
-         *                            // also can grab some parameters, like user, etc from query args - @todo
-         *                            return r;
-         *                        }
-         *                        else {
-         *                            Throw (ClientErrorException{"unsupported request content type"sv});
-         *                        }
-         *                    }();
-         *                    auto rr = f.ApplyHandler (arg);
-         *                    f.SendResponse (m->request (), m->rwResponse (), rr);
-         *                }},
-         *      \endcode
-         */
-        nonvirtual RETURN_TYPE ApplyHandler (Request& req, const Options& options = {}) const
-            requires (not INCLUDE_CONTEXT);
-        nonvirtual RETURN_TYPE ApplyHandler (const Context& c, const Options& options = {}) const
-            requires (INCLUDE_CONTEXT);
-        template <same_as<WEB_METHOD_ARG> WMA>
-        nonvirtual RETURN_TYPE ApplyHandler (const WMA& arg, const Options& options = {}) const
-            requires (not INCLUDE_CONTEXT);
-        template <same_as<WEB_METHOD_ARG> WMA>
-        nonvirtual RETURN_TYPE ApplyHandler (const WMA& arg, const Context& c, const Options& options = {}) const
-            requires (INCLUDE_CONTEXT);
-
-    public:
-        /**
-         *  Given the packaged up response 'r' - send it as a result, in the appropriate format (based on request headers etc)
-         */
-        template <same_as<RETURN_TYPE> RT>
-        nonvirtual void SendResponse (const Request& request, Response& response, const RT& r) const;
-        nonvirtual void SendResponse (const Request& request, Response& response) const
-            requires (same_as<RETURN_TYPE, void>);
-
-    private:
-        ObjectVariantMapper fObjectVariantMapper_;
-        using HandlerType_ = Select_t<Case<INCLUDE_CONTEXT, Private_::MagicRemoveVoidArgAddContext_<RETURN_TYPE, WEB_METHOD_ARG>>,
-                                      Case<not INCLUDE_CONTEXT, Private_::MagicRemoveVoidArgNoContext_<RETURN_TYPE, WEB_METHOD_ARG>>>;
-        HandlerType_ fHighLevelHandler_;
-        Options      fOptions_;
-    };
-    template <invocable<Context> CALLBACK_FUNCTION, typename... IGNORED>
-    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
-        -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, void, true>;
-    template <invocable<> CALLBACK_FUNCTION, typename... IGNORED>
-    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...) -> Factory<invoke_result_t<CALLBACK_FUNCTION>, void, false>;
-    template <Private_::IsFunctionOfOneArgPlusContext_ CALLBACK_FUNCTION, typename RT_ = typename FunctionTraits<CALLBACK_FUNCTION>::result_type,
-              typename AT_ = remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>>
-    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&) -> Factory<RT_, AT_, true>;
-    template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION, typename... IGNORED>
-    Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
-        -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>, false>;
-#endif
 
     /**
      * 
@@ -368,7 +218,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     public:
         /**
          */
-        nonvirtual RETURN_TYPE ApplyObjectHandler (const Context& context, ARG_TYPES... args) const;
+        nonvirtual RETURN_TYPE ApplyObjectHandler (ARG_TYPES... args) const;
 
     public:
         /**
