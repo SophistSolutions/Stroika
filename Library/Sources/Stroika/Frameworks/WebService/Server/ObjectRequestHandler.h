@@ -133,6 +133,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     };
     static_assert (copyable<Options>);
 
+#if 0
     namespace Private_ {
         template <typename CALLBACK_FUNCTION>
         concept IsFunctionOfOneArgNoContext_ =
@@ -284,6 +285,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     template <Private_::IsFunctionOfOneArgNoContext_ CALLBACK_FUNCTION, typename... IGNORED>
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
         -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>, false>;
+#endif
 
     /**
      * 

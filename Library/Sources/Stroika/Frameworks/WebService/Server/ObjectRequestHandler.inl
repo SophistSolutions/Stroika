@@ -12,6 +12,7 @@
 
 namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
 
+#if 0
     /*
      ********************************************************************************
      *********************** ObjectRequestHandler::Factory **************************
@@ -192,6 +193,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     {
         // @todo - not sure anything todo here???
     }
+#endif
 
     /*
      ********************************************************************************
