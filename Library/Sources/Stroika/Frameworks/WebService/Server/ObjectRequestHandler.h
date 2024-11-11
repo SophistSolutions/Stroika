@@ -6,6 +6,8 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include <tuple>
+
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
@@ -283,19 +285,31 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     Factory (const ObjectVariantMapper&, CALLBACK_FUNCTION&&, IGNORED...)
         -> Factory<typename FunctionTraits<CALLBACK_FUNCTION>::result_type, remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>, false>;
 
-    // @todo something which is a cross between
-    //  template <typename RETURN_TYPE, typename... ARG_TYPES>
-    //VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
-    //                        const function<RETURN_TYPE (ARG_TYPES...)>& f)
-    // and Factory BELIW
-
-    // We already have code to do most of it. Just change teh sole 'VariantValue' with a 'vector' of them, and do template magic over
-    // args (as we do in ApplyArgs above) to call the resulting function.
-
-    // maybe approach by creating new 'Factory2' - and only diff - is no conctext support.
-    // THEN - make it variadic in number of args to function<>
-    // THEN - special case ApplyArgs on a single arg type 'Context' - not to lookup argname - but just to add the context....
-
+    /**
+     * 
+     *  \par Example Usage
+     *      \code
+     *          Route{"api/objs/?"_RegEx,
+     *                  ObjectRequestHandler::Factory{
+     *                      kMapper,
+     *                      [] () -> Sequence<GUID> {
+     *                          return Sequence<GUID>{};
+     *                      }}}
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          Route{"api/(v1/)?recordings/(.+)"_RegEx,
+     *                 ObjectRequestHandler::Factory{kMapper, [this] (const ObjectRequestHandler::Context& c) -> Recording {
+     *                     String id = c.fMatchedURLArgs[1];
+     *                     return fWSImpl_->recordings_GET (id);
+     *                 }}}
+     *      \endcode
+     * 
+     *  \brief ObjectRequestHandler::Factory is a way to construct a WebServer::RequestHandler from an ObjectVariantMapper object and a lambda taking in/out params of objects.
+     * 
+     *  \todo check acceptsContentType and return result as JSON, binary json, or xml (etc) accordingly - take OPTIONS param saying default
+     */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     class Factory2 {
     public:
@@ -307,32 +321,75 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         Factory2 (const Options& options, CALLBACK_FUNCTION&& highLevelHandler);
 
     public:
+        /**
+         *  This is the whole point of this class - to produce a RequestHandler that can be used in a Stroika WebServer Route.
+         */
         nonvirtual operator Frameworks::WebServer::RequestHandler () const;
 
     public:
+        /**
+         *  This is 1/2 the guts of the RequestHandler - taking the request calling the handler with it, and producing
+         *  the 'RESULT_TYPE' object.
+         * 
+         *  Note this is broken out as a callable method so it can be used from a straight custom WebServer::RequestHandler
+         *  and just parts of the functionality used.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
+         *                [this] (Message* m) {
+         *                    // use ObjectRequestHandler::Factory indirectly so can support POST raw data and arguments as query-args!
+         *                    ObjectRequestHandler::Factory f{kMapper, [this] (const Recording& r) { return fWSImpl_->recordings_POST (r); }};
+         *                    Recording                     arg = [&] () {
+         *                        InternetMediaType requestCt =
+         *                            Memory::ValueOfOrThrow (m->request ().contentType (), ClientErrorException{"missing request content type"sv});
+         *                        auto ctChecker = InternetMediaTypeRegistry::sThe.load ();
+         *                        if (ctChecker.IsA (InternetMediaTypes::kJSON, requestCt)) {
+         *                            return Recording{kMapper.ToObject<Recording> (m->rwRequest ().GetBodyVariantValue ())};
+         *                        }
+         *                        else if (ctChecker.IsA (InternetMediaTypes::kAudio, requestCt)) {
+         *                            auto r = Recording{.fData = make_tuple (requestCt, m->rwRequest ().GetBody ())};
+         *                            // also can grab some parameters, like user, etc from query args - @todo
+         *                            return r;
+         *                        }
+         *                        else {
+         *                            Throw (ClientErrorException{"unsupported request content type"sv});
+         *                        }
+         *                    }();
+         *                    auto rr = f.ApplyHandler (arg);
+         *                    f.SendResponse (m->request (), m->rwResponse (), rr);
+         *                }},
+         *      \endcode
+         */
         nonvirtual RETURN_TYPE ApplyHandler (const Context& context) const;
 
     public:
+        /**
+         */
         nonvirtual RETURN_TYPE ApplyObjectHandler (const Context& context, ARG_TYPES... args) const;
 
     public:
+        /**
+         */
         template <typename T>
         nonvirtual T ConvertArg2Object (const VariantValue& v) const;
 
     private:
         // use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
+        template <typename RET = RETURN_TYPE>
         nonvirtual tuple<> mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
-                                         [[maybe_unused]] const function<RETURN_TYPE (void)>& f) const;
+                                         [[maybe_unused]] const function<RET ()>& f) const;
         template <typename SINGLE_ARG>
         nonvirtual tuple<SINGLE_ARG> mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
                                                    [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f) const;
         template <typename ARG_FIRST, typename... REST_ARG_TYPES>
         nonvirtual auto mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
                                       [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f) const
-            -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()));
+            -> decltype (tuple_cat (declval<remove_cvref_t<ARG_FIRST>> (), declval<REST_ARG_TYPES...> ()));
 
     public:
         /**
+         *  Given the packaged up response 'r' - send it as a result, in the appropriate format (based on request headers etc)
          */
         template <same_as<RETURN_TYPE> RT>
         nonvirtual void SendResponse (const Request& request, Response& response, const RT& r) const;
@@ -350,13 +407,20 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     Factory2 (const Options&, CALLBACK_FUNCTION&&) -> Factory2<invoke_result_t<CALLBACK_FUNCTION>>;
     template <typename CALLBACK_FUNCTION>
     Factory2 (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type>,
+        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
                     remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>>;
     template <typename CALLBACK_FUNCTION>
     Factory2 (const Options&, CALLBACK_FUNCTION&&)
-        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid<0>::type, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
+        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
                     remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
                     remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>>;
+    template <typename CALLBACK_FUNCTION>
+    Factory2 (const Options&, CALLBACK_FUNCTION&&)
+        -> Factory2<invoke_result_t<CALLBACK_FUNCTION, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>,
+                                    typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>, typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<2>>,
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<0>>,
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<1>>,
+                    remove_cvref_t<typename FunctionTraits<CALLBACK_FUNCTION>::template ArgOrVoid_t<2>>>;
 
 }
 

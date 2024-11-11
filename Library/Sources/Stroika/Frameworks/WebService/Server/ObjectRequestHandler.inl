@@ -228,9 +228,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         };
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    inline tuple<> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ ([[maybe_unused]] const Context&                      context,
-                                                                      [[maybe_unused]] const Iterable<VariantValue>&       variantValueArgs,
-                                                                      [[maybe_unused]] const function<RETURN_TYPE (void)>& f) const
+    template <typename RET>
+    inline tuple<> Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ ([[maybe_unused]] const Context&                context,
+                                                                      [[maybe_unused]] const Iterable<VariantValue>& variantValueArgs,
+                                                                      [[maybe_unused]] const function<RET ()>&       f) const
     {
         Require (variantValueArgs.size () == 0);
         return make_tuple ();
@@ -241,7 +242,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                                                                          [[maybe_unused]] const Iterable<VariantValue>& variantValueArgs,
                                                                          [[maybe_unused]] const function<RETURN_TYPE (SINGLE_ARG)>& f) const
     {
-        if constexpr (same_as<SINGLE_ARG, Context>) {
+        if constexpr (same_as<remove_cvref_t<SINGLE_ARG>, Context>) {
             Require (variantValueArgs.size () == 0);
             return make_tuple (context);
         }
@@ -254,10 +255,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     template <typename ARG_FIRST, typename... REST_ARG_TYPES>
     auto Factory2<RETURN_TYPE, ARG_TYPES...>::mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
                                                             [[maybe_unused]] const function<RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f) const
-        -> decltype (tuple_cat (declval<ARG_FIRST> (), declval<REST_ARG_TYPES...> ()))
+        -> decltype (tuple_cat (declval<remove_cvref_t<ARG_FIRST>> (), declval<REST_ARG_TYPES...> ()))
     {
         constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
-        if constexpr (same_as<ARG_FIRST, Context>) {
+        if constexpr (same_as<remove_cvref_t<ARG_FIRST>, Context>) {
             Require (variantValueArgs.size () == kTotalArgsRemaining_ - 1); // one arg is context, and rest or from variantArgs
             return tuple_cat (mkArgsTuple_ (context, Iterable<VariantValue>{}, function<RETURN_TYPE (ARG_FIRST)>{}),
                               mkArgsTuple_ (context, variantValueArgs, function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
@@ -276,8 +277,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         if (fOptions_.fTreatBodyAsListOfArguments) {
             Iterable<VariantValue> variantValueArgs = PickOutNamedArguments (*fOptions_.fTreatBodyAsListOfArguments, argVV);
             Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
-#if 1
-            // NYI - close to right?
             // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
             auto&& args = ClientErrorException::TreatExceptionsAsClientError (
                 [&, this] () { return mkArgsTuple_ (context, variantValueArgs, fHighLevelHandler_); });
@@ -287,8 +286,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             else {
                 return apply (fHighLevelHandler_, args);
             }
-#endif
-            return {};
         }
         else {
             if constexpr (sizeof...(ARG_TYPES) == 0) {
