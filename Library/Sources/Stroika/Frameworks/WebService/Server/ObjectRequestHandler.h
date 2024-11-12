@@ -141,7 +141,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         /**
          *  \brief Build Frameworks::WebServer::RequestHandler out of ObjectVariantMapper, a few options/clues, and a object-based Route callback function
          */
-        template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA(invocable<ARG_TYPES...>) CALLBACK_FUNCTION>
         Factory (const Options& options, CALLBACK_FUNCTION&& highLevelHandler);
 
     public:

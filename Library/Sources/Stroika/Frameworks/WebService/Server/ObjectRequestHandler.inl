@@ -18,7 +18,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      ********************************************************************************
      */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    template <invocable<ARG_TYPES...> CALLBACK_FUNCTION>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA(invocable<ARG_TYPES...>) CALLBACK_FUNCTION>
     inline Factory<RETURN_TYPE, ARG_TYPES...>::Factory (const Options& options, CALLBACK_FUNCTION&& highLevelHandler)
         : fHighLevelHandler_{highLevelHandler}
         , fOptions_{options}
