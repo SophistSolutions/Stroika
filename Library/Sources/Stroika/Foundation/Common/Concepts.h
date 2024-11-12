@@ -72,6 +72,8 @@ namespace Stroika::Foundation::Common {
          *  type of the ith 'arg';
          * 
          *  \note UNCLEAR if/how this might work if the function is overloaded...
+         * 
+         *  \see arg_t, ArgOrVoid, ArgOrVoid_t
          */
         template <size_t i>
         struct arg {
@@ -86,7 +88,8 @@ namespace Stroika::Foundation::Common {
         using arg_t = typename arg<i>::type;
 
         /**
-        * @todo cleanup dont understand type::type needed?
+         *  \brief like 'arg' - except that if index > max legal, instead of failing to compile, will return void. Helpful
+         *         sometimes in contexts where c++ templates run more code than you might want.
          */
         template <size_t i>
         struct ArgOrVoid {
