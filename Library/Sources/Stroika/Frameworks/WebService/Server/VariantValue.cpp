@@ -106,7 +106,8 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  ************ Server::VariantValue::PickOutNamedArguments ***********************
  ********************************************************************************
  */
-Iterable<DataExchange::VariantValue> Server::VariantValue::PickOutNamedArguments (const Iterable<String>& argNames, const Mapping<String, VariantValue>& argumentValueMap)
+Iterable<DataExchange::VariantValue> Server::VariantValue::PickOutNamedArguments (const Iterable<String>&              argNames,
+                                                                                  const Mapping<String, VariantValue>& argumentValueMap)
 {
     return argNames.Map<Iterable<VariantValue>> ([=] (const String& i) -> VariantValue { return argumentValueMap.LookupValue (i); });
 }

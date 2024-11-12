@@ -20,9 +20,6 @@
 
 /*
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
- * 
- * 
- *  @todo PROBABLY will replace mkRequestHandler
  */
 
 namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
@@ -45,6 +42,8 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     using WebServer::Response;
 
     /**
+     *  \brief not directly instantiated, but to receive context arguments in callbacks.
+     * 
      *   \note data (like request) etc only valid until end of call - don't copy/save
      */
     struct Context {
@@ -141,7 +140,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         /**
          *  \brief Build Frameworks::WebServer::RequestHandler out of ObjectVariantMapper, a few options/clues, and a object-based Route callback function
          */
-        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA(invocable<ARG_TYPES...>) CALLBACK_FUNCTION>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<ARG_TYPES...>) CALLBACK_FUNCTION>
         Factory (const Options& options, CALLBACK_FUNCTION&& highLevelHandler);
 
     public:

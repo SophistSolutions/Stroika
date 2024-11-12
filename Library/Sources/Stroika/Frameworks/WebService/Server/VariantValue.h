@@ -203,10 +203,10 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
     /**
-    * 
-    *   POSSIBLY TO BE DEPRECATED IN FAVOR OF ObjectRequestHandler
-    * 
-    * 
+     * 
+     *   DEPRECATED IN FAVOR OF ObjectRequestHandler
+     * 
+     * 
      *  \brief mkRequestHandler () is a series of overloaded helpers that first call ExpectedMethod to validate and then the argument function 'f' and then use the objMapper to format/return the result.
      *
      *  All the overloads of mkRequestHandler () take as the first argument a WebServiceMethodDescription, used to validate.
@@ -232,18 +232,19 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  The overload with f (void) as argument, takes no arguments (and so omits paramNames), and just returns the given result.
      */
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&               webServiceDescription,
-                                                const DataExchange::ObjectVariantMapper&         objVarMapper,
-                                                const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
     template <typename RETURN_TYPE, typename... IN_ARGS>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&       webServiceDescription,
-                                                const DataExchange::ObjectVariantMapper& objVarMapper,
-                                                const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f);
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f);
     template <typename RETURN_TYPE>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
-                                                const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f);
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&            webServiceDescription,
-                                                const function<BLOB (WebServer::Message* m)>& f);
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const function<RETURN_TYPE (void)>& f);
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<BLOB (WebServer::Message* m)>& f);
 
 }
 
