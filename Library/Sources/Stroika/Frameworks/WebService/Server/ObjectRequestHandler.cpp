@@ -44,7 +44,11 @@ String ObjectRequestHandler::Options::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "DefaultResultMediaType: "sv << fDefaultResultMediaType;
+    //sb << "ObjectMapper: "sv << fObjectMapper << ", "sv;
+    sb << "DefaultResultMediaType: "sv << fDefaultResultMediaType << ", "sv;
+    sb << "AllowedMethods: "sv << fAllowedMethods << ", "sv;
+    // sb << "ExtractVariantValueFromRequest: "sv << fExtractVariantValueFromRequest << ", "sv;
+    sb << "TreatBodyAsListOfArguments: "sv << fTreatBodyAsListOfArguments ;
     sb << "}"sv;
     return sb;
 }

@@ -107,7 +107,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     static_assert (copyable<Options>);
 
     /**
-     *  \brief Build Frameworks::WebServer::RequestHandler out of ObjectVariantMapper, a few options/clues, and a object-based Route callback function
+     *  \brief ObjectRequestHandler::Factory is a way to construct a WebServer::RequestHandler from an ObjectVariantMapper object and a lambda taking in/out params of objects.
      * 
      *  \par Example Usage
      *      \code
@@ -128,7 +128,6 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      *                 }}}
      *      \endcode
      * 
-     *  \brief ObjectRequestHandler::Factory is a way to construct a WebServer::RequestHandler from an ObjectVariantMapper object and a lambda taking in/out params of objects.
      * 
      *  \todo check acceptsContentType and return result as JSON, binary json, or xml (etc) accordingly - take OPTIONS param saying default
      */
