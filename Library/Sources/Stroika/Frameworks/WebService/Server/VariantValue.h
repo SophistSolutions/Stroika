@@ -120,6 +120,47 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     VariantValue CombineWebServiceArgsAsVariantValue (Request* request);
 
     /**
+     *  \brief map a list of argument names, and a Mapping<String,VariantValue> (named arguments list), to a Sequence<VariantValue> - argument values.
+     *  for overload with VariantValue argumentValueMap - throw if not GetType() == VariantValue::eMap (or null) - for no arguments.
+     * 
+     *  Sometimes callers will wish to treat the Body (or/possibly plus query url args) as a single object, and sometimes
+     *  as multiple named parameters. This function serves that later scenario.
+     */
+    Iterable<VariantValue> PickOutNamedArguments (const Iterable<String>& argNames, const Mapping<String, VariantValue>& argumentValueMap);
+    Iterable<VariantValue> PickOutNamedArguments (const Iterable<String>& argNames, const VariantValue& argumentValueMap);
+
+    /**
+     * values returned typically Mapping<String,VariantValue> - but can be other - often also null-value
+     * 
+     * \note - each of these - if they throw - they throw a subtype of ClientErrorException
+     */
+    struct ExtractArgumentsAsVariantValue {
+        /**
+         *  Looks at request content type, and tries to convert body data accordingly. If no content in body - OK
+         *  returns empty VariantValue. If its text/plain - OK - returns a string. Otherwise if some sort of json, it parses
+         *  it and returns it as VariantValue. Similarly for future types (xml etc).
+         * 
+         *  Failure to parse incoming data will result in exception being thrown, but always ClientErrorException
+         */
+        static VariantValue FromRequestBody (Request& request);
+
+        /**
+         *  \brief - extracts Query args from request url into a Mapping<String,String> (converted to VariantValue), or empty variant-value if no query args
+         * 
+         *  Any kind of failure will produce ClientErrorException
+         */
+        static VariantValue FromRequestURL (Request& request);
+
+        /**
+         *  First invoke FromRequestBody, and then FromRequestURL. Combine their results. If either null, return the other.
+         *  If both non-null, both must of of type Mapping<String,VariantValue> - and then query-arguments take precedence.
+         * 
+         *  Any format or other errors, results in ClientErrorException being thrown
+         */
+        static VariantValue FromRequest (Request& request);
+    };
+
+    /**
      *  Take the ordered list of param names, and produce an ordered list of variant values (with the same ordering).
      *  This is useful if you know the order of named parameters, and just want to pass them as ordered parameters.
      *

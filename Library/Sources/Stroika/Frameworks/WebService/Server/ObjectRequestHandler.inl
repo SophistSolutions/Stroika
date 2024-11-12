@@ -89,6 +89,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     RETURN_TYPE Factory<RETURN_TYPE, ARG_TYPES...>::ApplyHandler (const Context& context) const
     {
         using IO::Network::HTTP::ClientErrorException;
+        using Server::VariantValue::PickOutNamedArguments;
         if (fOptions_.fAllowedMethods) {
             ExpectedMethod (context.fRequest, *fOptions_.fAllowedMethods);
         }

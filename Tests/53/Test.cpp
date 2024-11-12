@@ -232,6 +232,7 @@ namespace {
                 // mixing direct RequestHandlers with ObjectRequestHandler based ones
                  ,  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
                         [] (Message* m, const String& id) {
+                    using DataExchange::VariantValue;
                             using JSON::Patch::OperationItemsType;
                             OperationItemsType patch = ClientErrorException::TreatExceptionsAsClientError ([=] () {return OperationItemsType::kMapper.ToObject<OperationItemsType> (m->rwRequest ().GetBodyVariantValue()); });
                             // automatic / generic patch implemented using the VariantValue representation - if thats good enuf for your purposes, easy to use
@@ -322,6 +323,7 @@ namespace {
         MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
         auto                        c = IO::Network::Transfer::Connection::New ();
         using namespace DataExchange;
+         using DataExchange::VariantValue;
         auto                            arg    = VariantValue{Mapping<String, VariantValue>{{"AppState", "Start"}}};
         auto                            toJson = [] (const VariantValue& v) { return Variant::JSON::Writer{}.WriteAsBLOB (v); };
         IO::Network::Transfer::Response r      = c.POST (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/SetAppState2"sv},

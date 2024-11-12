@@ -41,7 +41,7 @@ using namespace Stroika::Frameworks::WebService::Server::VariantValue;
 using Memory::BLOB;
 using Stroika::Frameworks::WebServer::Request;
 using Stroika::Frameworks::WebServer::Response;
-using Stroika::Frameworks::WebService::Server::ObjectRequestHandler::ExtractArgumentsAsVariantValue;
+using Stroika::Frameworks::WebService::Server::VariantValue::ExtractArgumentsAsVariantValue;
 
 using namespace StroikaSample::WebServices;
 
