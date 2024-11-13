@@ -222,7 +222,8 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable",
+        "comment-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --libcurl no",
         "run_on_branch": "always"
     },
     {
@@ -231,7 +232,8 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "comment-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --libcurl no",
         "run_on_branch": "v3-Release"
     },
     {
@@ -240,7 +242,8 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components",
+        "comment-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components --libcurl no",
         "run_on_branch": "v3-Release"
     },
     {
