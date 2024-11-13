@@ -393,7 +393,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \req not empty ()
          *
-         *  @see Math::PinInRange ()
+         *  @see std::clamp
          */
         constexpr T Pin (T v) const;
 

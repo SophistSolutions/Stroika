@@ -207,10 +207,13 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename T>
-    constexpr T PinInRange (T initialValue, T lowerBound, T upperBound)
+    [[deprecated ("Since Stroika v3.0d12 - use std::clamp")]] constexpr T PinInRange (T initialValue, T lowerBound, T upperBound)
     {
         Require (lowerBound <= upperBound);
-        return max (lowerBound, min (upperBound, initialValue));
+        auto r  = max (lowerBound, min (upperBound, initialValue));
+        auto r2 = clamp (initialValue, lowerBound, upperBound);
+        Assert (r2 == r);
+        return r2;
     }
 
     /*

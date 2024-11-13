@@ -130,22 +130,10 @@ namespace Stroika::Foundation::Math {
     T PinToSpecialPoint (T p, T special, T epsilon);
 
     /**
-     *  Compare initialValue with lowerBound and upperBound with min/max/operator<, and return a
-     *  value which equals initialValue, or lowerBound or upperBound to get it into that range.
-     *
-     *  @see Range<>::Pin ()
-     *  @see AtLeast
-     *  @see AtMost
-     */
-    template <typename T>
-    constexpr T PinInRange (T initialValue, T lowerBound, T upperBound);
-
-    /**
      *  Return a value at this at least the given value. This is the same as "max" as it turns out,
      *  but writing it this way I find more clear
      *
-     *  @see PinInRange
-     *  @see AtLeast
+     *  @see AtMost
      */
     template <typename T>
     constexpr T AtLeast (T initialValue, T lowerBound);
@@ -154,7 +142,6 @@ namespace Stroika::Foundation::Math {
      *  Return a value at this at no more than the given value. This is the same as "min" as it turns out,
      *  but writing it this way I find more clear
      *
-     *  @see PinInRange
      *  @see AtLeast
      */
     template <typename T>

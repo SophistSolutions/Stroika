@@ -73,10 +73,8 @@ namespace Stroika::Foundation::Math::ReBin {
         bucketLowerBound = (bucketLowerBound < 0) ? 0 : bucketLowerBound;
         bucketUpperBound = (bucketUpperBound < 0) ? 0 : bucketUpperBound;
 
-        BucketIndexType bucketLB =
-            Math::PinInRange<BucketIndexType> (static_cast<BucketIndexType> (floor (bucketLowerBound)), 0, GetBucketCount () - 1);
-        BucketIndexType bucketUB =
-            Math::PinInRange<BucketIndexType> (static_cast<BucketIndexType> (ceil (bucketUpperBound)), bucketLB, GetBucketCount () - 1);
+        BucketIndexType bucketLB = clamp<BucketIndexType> (static_cast<BucketIndexType> (floor (bucketLowerBound)), 0, GetBucketCount () - 1);
+        BucketIndexType bucketUB = clamp<BucketIndexType> (static_cast<BucketIndexType> (ceil (bucketUpperBound)), bucketLB, GetBucketCount () - 1);
 
         return Containers::Set<BucketIndexType> (DiscreteRange<BucketIndexType> (bucketLB, bucketUB).Elements ());
     }

@@ -707,7 +707,7 @@ namespace {
                     auto safePctInUse2QL_ = [] (double pctInUse) {
                         // %InUse = QL / (1 + QL)
                         pctInUse /= 100;
-                        pctInUse = Math::PinInRange<double> (pctInUse, 0, 1);
+                        pctInUse = clamp<double> (pctInUse, 0, 1);
                         return pctInUse / (1 - pctInUse);
                     };
                     if (_fOptions.fIOStatistics) {
@@ -957,7 +957,7 @@ namespace {
                             if (weightForFS > 0) {
                                 double scaleFactor = weightForFS / totalWeights.LookupValue (di);
                                 //Assert (0.0 <= scaleFactor and scaleFactor <= 1.0);
-                                scaleFactor = Math::PinInRange (scaleFactor, 0.0, 1.0);
+                                scaleFactor = clamp (scaleFactor, 0.0, 1.0);
                                 if (computeInuse and diskIOStats.fInUsePercent) {
                                     Memory::AccumulateIf<double> (&cumStats.fInUsePercent, *diskIOStats.fInUsePercent * scaleFactor);
                                 }

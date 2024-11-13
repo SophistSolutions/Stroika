@@ -186,8 +186,8 @@ String Date::Format (const locale& l, const String& formatPattern) const
     wostringstream           oss;
 
 #if qCompilerAndStdLib_FormatRangeRestriction_Buggy
-    WeakAssert (when.tm_year == Math::PinInRange<int> (when.tm_year, -1900, 8099));
-    when.tm_year = Math::PinInRange<int> (when.tm_year, -1900, 8099);
+    WeakAssert (when.tm_year == clamp<int> (when.tm_year, -1900, 8099));
+    when.tm_year = clamp<int> (when.tm_year, -1900, 8099);
 #endif
 
     tmput.put (oss, oss, ' ', &when, formatPatternCStr, formatPatternCStr + formatPatternSV.length ());
