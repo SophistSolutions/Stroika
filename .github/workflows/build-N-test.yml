@@ -165,6 +165,7 @@ jobs:
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/*-Installer-Build-Output.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
             /tmp/Trace*.txt
       - name: Archive Core-Dumps
@@ -253,7 +254,8 @@ jobs:
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             /tmp/LOGS-ARCHIVE
-            #${{ env.TMPDIR }}/Trace*.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
+            ${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
         with:
