@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
@@ -153,7 +154,7 @@ namespace {
             String argsAsString                = DataExchange::Variant::JSON::Reader{}
                                       .Read (message->rwRequest ().GetBody ())
                                       .As<Mapping<String, DataExchange::VariantValue>> ()
-                                      .LookupChecked ("AppState", Execution::RuntimeErrorException{"oops"})
+                                      .LookupChecked ("AppState", RuntimeErrorException{"oops"})
                                       .As<String> ();
             message->rwResponse ().write (argsAsString);
         }
@@ -277,24 +278,29 @@ namespace {
     {
         const auto   portNumber = 8082;
         const auto   quitAfter  = 1s;
-        MyWebServer_ myWebServer{portNumber, nullopt};      // listen and dispatch while this object exists
-        Execution::WaitableEvent{}.WaitQuietly (quitAfter); // leave it running for a bit
+        MyWebServer_ myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        WaitableEvent{}.WaitQuietly (quitAfter);       // leave it running for a bit
     }
 }
 
 namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleCurlTestTalk2Server)
     {
-        const IO::Network::PortType     portNumber = 8082;
-        MyWebServer_                    myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        auto                            c = IO::Network::Transfer::Connection::New ();
-        IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
-        EXPECT_TRUE (r.GetSucceeded ());
-        EXPECT_GT (r.GetData ().size (), 1u);
-        String response = r.GetDataTextInputStream ().ReadAll ();
-        //DbgTrace (L"response={}"_f, response);
-        EXPECT_TRUE (response.StartsWith ("<html>"));
-        EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
+        const IO::Network::PortType portNumber = 8082;
+        MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        try {
+            auto                            c = IO::Network::Transfer::Connection::New ();
+            IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
+            EXPECT_TRUE (r.GetSucceeded ());
+            EXPECT_GT (r.GetData ().size (), 1u);
+            String response = r.GetDataTextInputStream ().ReadAll ();
+            //DbgTrace (L"response={}"_f, response);
+            EXPECT_TRUE (response.StartsWith ("<html>"));
+            EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
     }
 }
 
@@ -303,16 +309,21 @@ namespace {
     {
         const IO::Network::PortType portNumber = 8082;
         MyWebServer_ myWebServer{portNumber, HTTP::TransferEncoding::kChunked}; // listen and dispatch while this object exists
-        auto         c                    = IO::Network::Transfer::Connection::New ();
-        IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
-        EXPECT_TRUE (r.GetSucceeded ());
-        EXPECT_GT (r.GetData ().size (), 1u);
-        //DbgTrace ("headers={}"_f, r.GetHeaders ());
-        //DbgTrace ("data=byte[{}]{}"_f, r.GetData ().size (), r.GetData ());
-        String response = r.GetDataTextInputStream ().ReadAll ();
-        //DbgTrace (L"response={}"_f, response);
-        EXPECT_TRUE (response.StartsWith ("<html>"));
-        EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
+        try {
+            auto                            c = IO::Network::Transfer::Connection::New ();
+            IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
+            EXPECT_TRUE (r.GetSucceeded ());
+            EXPECT_GT (r.GetData ().size (), 1u);
+            //DbgTrace ("headers={}"_f, r.GetHeaders ());
+            //DbgTrace ("data=byte[{}]{}"_f, r.GetData ().size (), r.GetData ());
+            String response = r.GetDataTextInputStream ().ReadAll ();
+            //DbgTrace (L"response={}"_f, response);
+            EXPECT_TRUE (response.StartsWith ("<html>"));
+            EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
     }
 }
 
@@ -321,18 +332,23 @@ namespace {
     {
         const IO::Network::PortType portNumber = 8082;
         MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        auto                        c = IO::Network::Transfer::Connection::New ();
-        using namespace DataExchange;
-        using DataExchange::VariantValue;
-        auto                            arg    = VariantValue{Mapping<String, VariantValue>{{"AppState", "Start"}}};
-        auto                            toJson = [] (const VariantValue& v) { return Variant::JSON::Writer{}.WriteAsBLOB (v); };
-        IO::Network::Transfer::Response r      = c.POST (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/SetAppState2"sv},
-                                                         toJson (arg), DataExchange::InternetMediaTypes::kJSON);
-        EXPECT_TRUE (r.GetSucceeded ());
-        EXPECT_GT (r.GetData ().size (), 1u);
-        String response = r.GetDataTextInputStream ().ReadAll ();
-        //DbgTrace (L"response={}"_f, response);
-        EXPECT_EQ (response, "Start");
+        try {
+            auto c = IO::Network::Transfer::Connection::New ();
+            using namespace DataExchange;
+            using DataExchange::VariantValue;
+            auto                            arg    = VariantValue{Mapping<String, VariantValue>{{"AppState", "Start"}}};
+            auto                            toJson = [] (const VariantValue& v) { return Variant::JSON::Writer{}.WriteAsBLOB (v); };
+            IO::Network::Transfer::Response r = c.POST (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/SetAppState2"sv},
+                                                        toJson (arg), DataExchange::InternetMediaTypes::kJSON);
+            EXPECT_TRUE (r.GetSucceeded ());
+            EXPECT_GT (r.GetData ().size (), 1u);
+            String response = r.GetDataTextInputStream ().ReadAll ();
+            //DbgTrace (L"response={}"_f, response);
+            EXPECT_EQ (response, "Start");
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
     }
 }
 
@@ -342,17 +358,22 @@ namespace {
         // @todo add tests with different flags about allowed compression - and add asserts about returned content-encoding headers.
 
         EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
-        const IO::Network::PortType     portNumber = 8082;
-        MyWebServer_                    myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        auto                            c = IO::Network::Transfer::Connection::New ();
-        IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/TEST"sv});
-        EXPECT_TRUE (r.GetSucceeded ());
-        EXPECT_GT (r.GetData ().size (), 1u);
-        String response = r.GetDataTextInputStream ().ReadAll ();
-        //DbgTrace (L"response={}"_f, response);
-        EXPECT_EQ (response, "TEST");
-        // @todo enhance this test so we force accept-encoding none, and force accept-endcing : deflate, and check raw
-        // result???
+        const IO::Network::PortType portNumber = 8082;
+        MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        try {
+            auto                            c = IO::Network::Transfer::Connection::New ();
+            IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/TEST"sv});
+            EXPECT_TRUE (r.GetSucceeded ());
+            EXPECT_GT (r.GetData ().size (), 1u);
+            String response = r.GetDataTextInputStream ().ReadAll ();
+            //DbgTrace (L"response={}"_f, response);
+            EXPECT_EQ (response, "TEST");
+            // @todo enhance this test so we force accept-encoding none, and force accept-endcing : deflate, and check raw
+            // result???
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
     }
 }
 
@@ -364,7 +385,12 @@ namespace {
         EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
         const IO::Network::PortType  portNumber = 8082;
         MyObjectWebServiceWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
-        auto                         c = IO::Network::Transfer::Connection::New ();
+        try {
+            auto c = IO::Network::Transfer::Connection::New ();
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
 
         // @todo do some calls to test api...
         //
