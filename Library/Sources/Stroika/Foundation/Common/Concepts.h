@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Common {
          */
         template <size_t i>
         struct ArgOrVoid {
-            using type = typename std::conditional<(i < sizeof...(ARGS)), std::tuple_element<i, std::tuple<ARGS...>>, Private_::void_type>::type::type;
+            using type = typename conditional_t<(i < sizeof...(ARGS)), tuple_element<i, tuple<ARGS...>>, Private_::void_type>::type;
         };
 
         /**
