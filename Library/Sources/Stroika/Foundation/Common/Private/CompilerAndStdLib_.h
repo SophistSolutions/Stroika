@@ -119,11 +119,11 @@
 #if _MSC_VER < _MSC_VER_2k22_17Pt9_
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2022 (17.9) - (use Stroika v2.1 or earlier)"
-#elif _MSC_VER <= _MSC_VER_2k22_17Pt11_
+#elif _MSC_VER <= _MSC_VER_2k22_17Pt12_
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: This version of Stroika (check newer version of Stroika) is untested with this release (> 17.11) of Microsoft Visual "       \
+    "Warning: This version of Stroika (check newer version of Stroika) is untested with this release (> 17.12) of Microsoft Visual "       \
     "Studio.net / Visual C++ - USING "                                                                                                     \
     "PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -278,8 +278,9 @@ C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): note: e
 #if defined(_MSC_VER)
 // verified broken in _MSC_VER_2k22_17Pt10_
 // verified broken in _MSC_VER_2k22_17Pt11_
+// verified broken in _MSC_VER_2k22_17Pt12_
 #define qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy 0
 #endif
@@ -529,6 +530,17 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (with operand types 'String' and 'String') to be ambiguous despite there being a unique best viable function [-Wambiguous-reversed-operator]
  1073 |     Ensure (sb.str () == SubString (0, from) + replacement + SubString (to));
       |             ~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+        Compiling Library/Sources/Stroika/Foundation/Linguistics/MessageUtilities.cpp ...
+1>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\compare(337): error C2666: 'Stroika::Foundation::Characters::String::operator <=>': overloaded functions have similar conversions
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Characters\String.inl(1109): note: could be 'std::strong_ordering Stroika::Foundation::Characters::String::operator <=><_Ty>(T &&) const'
+1>        with
+1>        [
+1>            _Ty=Stroika::Foundation::Characters::String,
+1>            T=Stroika::Foundation::Characters::String
+1>        ]
 /
 */
 #ifndef qCompilerAndStdLib_CompareOpReverse_Buggy
@@ -551,7 +563,8 @@ ing.cpp:1073:23: warning: ISO C++20 considers use of overloaded operator '==' (w
 // Still Broken in _MSC_VER_2k22_17Pt9_
 // Still Broken in _MSC_VER_2k22_17Pt10_
 // Still Broken in _MSC_VER_2k22_17Pt11_
-#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+// Still Broken in _MSC_VER_2k22_17Pt12_
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_CompareOpReverse_Buggy 0
 #endif
@@ -994,8 +1007,9 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 // still broken in _MSC_VER_2k22_17Pt9_
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
+// still broken in _MSC_VER_2k22_17Pt12_
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy                                                                    \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy 0
 #endif
@@ -1645,6 +1659,11 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 25>C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(76): note: see reference to function template instantiation 'void CommonTests::IterableTests::Test5_SequenceEquals_<USING_ITERABLE_CONTAINER,EQUALS_COMPARER>(const Stroika::Foundation::Traversal::Iterable<T> &,EQUALS_COMPARER)' being compiled
 25>        with
 25>        [
+
+\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\Test20.lib and object C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\Test20.exp
+C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(62): error C2187: syntax error: 'template' was unexpected here
+C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(62): note: the template instantiation context (the oldest one first) is
+C:\Sandbox\Stroika\DevRoot\Tests\22\Test.cpp(104): note: see reference to function template instantiation 'void `anonymous-namespace'::DoTestForConcreteContainer_<Stroika::Foundation::Containers::Set<Stroika::Frameworks::Test::ArchtypeClasses::OnlyCopyableMoveable>,`anonymous-namespace'::Foundation_Containers_Set_DEFAULT_SET_FACTORY_Test::TestBody::<lambda_1>>(CONCRETE_CONTAINER_FACTORY)' being compiled
 25*/
 #ifndef qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
 
@@ -1652,8 +1671,9 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 // still broken in _MSC_VER_2k22_17Pt9_
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
+// still broken in _MSC_VER_2k22_17Pt12_
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #elif defined(__clang__)
 // first broken in clang++ 19 (linux)
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
@@ -2024,7 +2044,8 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // verified still broken in _MSC_VER_2k22_17Pt9_
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+// verified still broken in _MSC_VER_2k22_17Pt12_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -2536,6 +2557,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // verified still broken in _MSC_VER_2k22_17Pt9_
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
+// no longer appears broken but probably is with _MSC_VER_2k22_17Pt12_
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy                                                                       \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
 #else
@@ -2586,8 +2608,9 @@ Test.cpp:173:31: error: template template argument has different template parame
 // still broken in _MSC_VER_2k22_17Pt9_
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
+// still broken in _MSC_VER_2k22_17Pt12_
 #define qCompilerAndStdLib_template_template_auto_deduced_Buggy                                                                            \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_template_template_auto_deduced_Buggy 0
 #endif
@@ -2689,8 +2712,9 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 // Verified still broken in _MSC_VER_2k22_17Pt9_
 // Verified still broken in _MSC_VER_2k22_17Pt10_
 // Verified still broken in _MSC_VER_2k22_17Pt11_
+// Verified still broken in _MSC_VER_2k22_17Pt12_
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy                                                                           \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
 #endif
@@ -2886,8 +2910,9 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified broken in _MSC_VER_2k22_17Pt9_
 // verified broken in _MSC_VER_2k22_17Pt10_
 // verified broken in _MSC_VER_2k22_17Pt11_
+// verified broken in _MSC_VER_2k22_17Pt12_
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -2934,8 +2959,9 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k22_17Pt9_
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
+// verified still broken in _MSC_VER_2k22_17Pt12_
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy                                                       \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy 0
 #endif
@@ -2987,7 +3013,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k22_17Pt9_
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
-#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
+// verified still broken in _MSC_VER_2k22_17Pt12_
+#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_locale_utf8_string_convert_Buggy 0
 #endif
