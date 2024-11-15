@@ -22,6 +22,9 @@ help:
 	@echo
 	@echo "And first thing when you run docker image, cat /Getting-Started-With-Stroika.md"
 
+### NOTE - if you see Invoke-WebRequest : The remote name could not be resolved:...
+### see https://stroika.atlassian.net/browse/STK-742
+### and add to docker desktop app config dns... setting 8.8.8.8
 
 
 # Was originally mostly for https://stroika.atlassian.net/browse/STK-742, but better workaround in ReadMe.md file.
@@ -34,6 +37,9 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 #EXTRA_DOCKER_BUILD_ARGS= --storage-opts "size 100GB" 
 #
 endif
+
+
+
 
 
 ## NOTE: Since these can be slow/big, the IMAGES arg can be given on the commandline to override this
