@@ -199,17 +199,14 @@ namespace {
                         return fData_.data () == rrhs->fData_.data () and fIdx_ == rrhs->fIdx_;
                     }
                 };
-                return Iterator<Character>
-                {
-                    make_unique<MyIterRep_> (this->_fData
+                return Iterator<Character>{make_unique<MyIterRep_> (this->_fData
 
 #if qStroika_Foundation_Debug_AssertionsChecked
-                                             ,
-                                             this
+                                                                    ,
+                                                                    this
 #endif
 
-                    )
-                };
+                                                                    )};
             }
             virtual size_t size () const override
             {

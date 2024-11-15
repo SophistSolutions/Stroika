@@ -640,9 +640,7 @@ namespace {
         template <typename CONTAINER_OF_CHAR_BUT_REALLY_UTF8>
         static String toStroikaString_ (CONTAINER_OF_CHAR_BUT_REALLY_UTF8 sv)
             requires requires (CONTAINER_OF_CHAR_BUT_REALLY_UTF8 t) {
-                {
-                    span<const char>{t}
-                };
+                { span<const char>{t} };
             }
         {
             return String{Memory::SpanReInterpretCast<const char8_t> (span<const char>{sv})};

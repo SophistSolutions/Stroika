@@ -87,12 +87,8 @@ namespace Stroika::Foundation::Common::StdCompat {
         template <class _Ty, class _Context, class _Formatter = typename _Context::template formatter_type<remove_const_t<_Ty>>>
         concept _Formattable_with = semiregular<_Formatter> && requires (_Formatter& __f, const _Formatter& __cf, _Ty&& __t, _Context __fc,
                                                                          basic_format_parse_context<typename _Context::char_type> __pc) {
-            {
-                __f.parse (__pc)
-            } -> same_as<typename decltype (__pc)::iterator>;
-            {
-                __cf.format (__t, __fc)
-            } -> same_as<typename _Context::iterator>;
+            { __f.parse (__pc) } -> same_as<typename decltype (__pc)::iterator>;
+            { __cf.format (__t, __fc) } -> same_as<typename _Context::iterator>;
         };
     }
     template <class T, class CharT>

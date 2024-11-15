@@ -37,7 +37,7 @@ namespace CommonTests {
             using MultiSetOfElementType = typename CONCRETE_CONTAINER::MultiSetOfElementType;
             EQUALS_COMPARER fEqualsComparer;
             using ArchetypeContainerType = typename CONCRETE_CONTAINER::ArchetypeContainerType;
-            static void ApplyToContainerExtraTest (const ConcreteContainerType&){};
+            static void ApplyToContainerExtraTest (const ConcreteContainerType&) {};
             FACTORY     Factory;
         };
 

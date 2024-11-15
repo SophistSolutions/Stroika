@@ -121,9 +121,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IToString = requires (T t) {
-        {
-            ToString (t)
-        } -> convertible_to<Characters::String>;
+        { ToString (t) } -> convertible_to<Characters::String>;
     };
 
     /**
@@ -382,9 +380,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         and not IStdFormatterPredefinedFor_<T>
 #else
         and (requires (T t) {
-                {
-                    t.ToString ()
-                } -> convertible_to<Characters::String>;
+                { t.ToString () } -> convertible_to<Characters::String>;
             } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
     //or Common::ISharedPtr<decay_t<T>>
 #if !__cpp_lib_format_ranges

@@ -414,7 +414,7 @@ namespace Stroika::Frameworks::Led::Platform {
         nonvirtual void StopDragAutoscrollTimer ();
         enum {
             eAutoscrolling4DragTimerEventID = 435
-        };                               // Magic#
+        }; // Magic#
         UINT_PTR fDragAutoScrollTimerID; // zero means no timer
 
     private:

@@ -131,14 +131,13 @@ namespace {
 #endif
 
 TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds, DataExchange::ValidationStrategy validationStrategy)
-    : TimeOfDay
-{
+    : TimeOfDay{
 #if qStroika_Foundation_Debug_AssertionsChecked
-    0
+          0
 #else
-    hour, minute, seconds
+          hour, minute, seconds
 #endif
-}
+      }
 {
     // Subtle - but we can let the base constructor run on the unvalidated data in NO-DEBUG mode, cuz it will just compute a bogus
     // value that will be ignored because of the below exception

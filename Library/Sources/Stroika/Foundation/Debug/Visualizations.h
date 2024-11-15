@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Debug::Visualizations {
      */
     template <typename REP_CHAR>
     struct StringRep {
-        virtual ~StringRep (){};
+        virtual ~StringRep () {};
         span<const REP_CHAR> fData;
     };
 

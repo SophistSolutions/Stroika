@@ -262,9 +262,8 @@ namespace {
                 EXPECT_TRUE (sharedValue.load () == kMaxVal_);
             });
             Thread::Start ({reader, adder});
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&reader, &adder] () noexcept {
-                Thread::AbortAndWaitForDone ({reader, adder});
-            });
+            [[maybe_unused]] auto&& cleanup =
+                Execution::Finally ([&reader, &adder] () noexcept { Thread::AbortAndWaitForDone ({reader, adder}); });
             // wait long time cuz of debuggers (esp valgrind) etc
             Thread::WaitForDone ({reader, adder}, 15 * 60s);
             EXPECT_TRUE (sharedValue.load () == kMaxVal_);

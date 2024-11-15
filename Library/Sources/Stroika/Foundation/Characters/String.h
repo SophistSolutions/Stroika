@@ -940,8 +940,8 @@ namespace Stroika::Foundation::Characters {
          *              is FIND the regular expression names the things looked for and SPLIT() uses regexp to name the separators?
          *              Add something like the above to the String String demo app (when it exists)
          */
-        nonvirtual Containers::Sequence<String> Tokenize (
-            const function<bool (Character)>& isTokenSeperator = [] (Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
+        nonvirtual Containers::Sequence<String>
+        Tokenize (const function<bool (Character)>& isTokenSeperator = [] (Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
         nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
 
     public:
@@ -1169,12 +1169,8 @@ namespace Stroika::Foundation::Characters {
         template <typename T = string>
         nonvirtual T AsASCII () const
             requires requires (T* into) {
-                {
-                    into->empty ()
-                } -> same_as<bool>;
-                {
-                    into->push_back (ASCII{0})
-                };
+                { into->empty () } -> same_as<bool>;
+                { into->push_back (ASCII{0}) };
             };
 
     public:
@@ -1191,12 +1187,8 @@ namespace Stroika::Foundation::Characters {
         template <typename T = string>
         nonvirtual optional<T> AsASCIIQuietly () const
             requires requires (T* into) {
-                {
-                    into->empty ()
-                } -> same_as<bool>;
-                {
-                    into->push_back (ASCII{0})
-                };
+                { into->empty () } -> same_as<bool>;
+                { into->push_back (ASCII{0}) };
             };
 
     public:
@@ -1565,7 +1557,8 @@ namespace Stroika::Foundation::Characters {
             : String{span<const CHAR_T>{from, to}}
         {
         }
-        [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t*
+        [[deprecated (
+            "Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t*
         c_str () const noexcept;
         [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] inline static String FromSDKString (const SDKChar* from, const SDKChar* to)
         {
@@ -1585,7 +1578,9 @@ namespace Stroika::Foundation::Characters {
         {
             return Character::AsASCIIQuietly (span<const wchar_t>{fromStart, fromEnd}, into);
         }
-        [[deprecated ("Since Stroika v3.0d1 due to http://stroika-bugs.sophists.com/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
+        [[deprecated (
+            "Since Stroika v3.0d1 due to http://stroika-bugs.sophists.com/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t*
+                                                                           data () const;
         [[deprecated ("Since Stroika v3.0d8 - use RemoveFirstIf")]] String Remove (Character c) const
         {
             return RemoveFirstIf (c);

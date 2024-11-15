@@ -14,9 +14,9 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename OPENNESS, typename DIFF_TYPE>
-    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (Common::ArgByValueType<value_type> lhs,
-                                                                                                              Common::ArgByValueType<value_type> rhs)
-        -> SignedDifferenceType
+    inline constexpr auto
+    RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (Common::ArgByValueType<value_type> lhs,
+                                                                                        Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType
     {
         if constexpr (is_enum_v<T> or is_convertible_v<T, SignedDifferenceType>) {
             return static_cast<SignedDifferenceType> (rhs) - static_cast<SignedDifferenceType> (lhs);

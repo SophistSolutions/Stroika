@@ -37,7 +37,7 @@ namespace CommonTests {
             }
             using ConcreteContainerType = CONCRETE_CONTAINER;
             FACTORY     Factory;
-            static void ApplyToContainerExtraTest (const ConcreteContainerType&){};
+            static void ApplyToContainerExtraTest (const ConcreteContainerType&) {};
         };
 
         template <typename TESTING_SCHEMA>

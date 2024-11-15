@@ -819,12 +819,8 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     inline T String::AsASCII () const
         requires requires (T* into) {
-            {
-                into->empty ()
-            } -> same_as<bool>;
-            {
-                into->push_back (ASCII{0})
-            };
+            { into->empty () } -> same_as<bool>;
+            { into->push_back (ASCII{0}) };
         }
     {
         // @todo possibly rewrite/inline impl to avoid map to optional<T> which involves copying
@@ -838,12 +834,8 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     inline optional<T> String::AsASCIIQuietly () const
         requires requires (T* into) {
-            {
-                into->empty ()
-            } -> same_as<bool>;
-            {
-                into->push_back (ASCII{0})
-            };
+            { into->empty () } -> same_as<bool>;
+            { into->push_back (ASCII{0}) };
         }
     {
         // @todo OPTIMIZE - PeekSpanData - may already be ASCII - OPTIMIZE THAT CASE!!!
@@ -1206,8 +1198,7 @@ namespace Stroika::Foundation::Characters {
     template <IConvertibleToString LT, IConvertibleToString RT>
     inline bool String::EqualsComparer::operator() (LT&& lhs, RT&& rhs) const
     {
-        if constexpr (
-            requires { lhs.size (); } and requires { rhs.size (); }) {
+        if constexpr (requires { lhs.size (); } and requires { rhs.size (); }) {
             if (lhs.size () != rhs.size ()) {
                 return false; // performance tweak
             }

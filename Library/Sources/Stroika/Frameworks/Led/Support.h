@@ -416,7 +416,7 @@ namespace Stroika::Frameworks::Led {
     Foundation::Time::DurationSeconds Led_GetDoubleClickTime (); // time-interval which defines how quick we consider two consecutive clicks a dbl-click
 
 #if qStroika_FeatureSupported_XWindows
-    extern void   (*gBeepNotifyCallBackProc) ();
+    extern void (*gBeepNotifyCallBackProc) ();
     unsigned long LedTickCount2XTime (float ledTickCount);
     void          SyncronizeLedXTickCount (unsigned long xTickCount);
 #endif

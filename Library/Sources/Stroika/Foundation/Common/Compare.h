@@ -103,9 +103,7 @@ namespace Stroika::Foundation::Common {
         struct ExtractComparisonTraits_ {};
         template <typename ARG_T, typename COMPARE_FUNCTION>
             requires requires (COMPARE_FUNCTION) {
-                {
-                    COMPARE_FUNCTION::kComparisonRelationKind
-                } -> convertible_to<ComparisonRelationType>;
+                { COMPARE_FUNCTION::kComparisonRelationKind } -> convertible_to<ComparisonRelationType>;
             }
         struct ExtractComparisonTraits_<ARG_T, COMPARE_FUNCTION> {
             static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
@@ -113,14 +111,10 @@ namespace Stroika::Foundation::Common {
         template <typename ARG_T, typename COMPARE_FUNCTION>
             requires (
                 requires (COMPARE_FUNCTION c, ARG_T l, ARG_T r) {
-                    {
-                        c (l, r)
-                    } -> convertible_to<strong_ordering>;
+                    { c (l, r) } -> convertible_to<strong_ordering>;
                 } and
                 not requires (COMPARE_FUNCTION) {
-                    {
-                        COMPARE_FUNCTION::kComparisonRelationKind
-                    } -> convertible_to<ComparisonRelationType>;
+                    { COMPARE_FUNCTION::kComparisonRelationKind } -> convertible_to<ComparisonRelationType>;
                 })
         struct ExtractComparisonTraits_<ARG_T, COMPARE_FUNCTION> {
             static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
@@ -161,9 +155,7 @@ namespace Stroika::Foundation::Common {
     template <typename COMPARER, typename ARG_T>
     concept IPotentiallyComparer = relation<COMPARER, ARG_T, ARG_T> or (same_as<COMPARER, compare_three_way> and three_way_comparable<ARG_T>) or
                                    (regular_invocable<COMPARER, ARG_T, ARG_T> and requires (COMPARER c, ARG_T l, ARG_T r) {
-                                       {
-                                           c (l, r)
-                                       } -> convertible_to<strong_ordering>;
+                                       { c (l, r) } -> convertible_to<strong_ordering>;
                                    });
 
     /**

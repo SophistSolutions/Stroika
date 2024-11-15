@@ -33,7 +33,7 @@ namespace Stroika::Frameworks::Led {
     {
         fAssocList.push_back (assoc);
     }
-    inline void EmbeddedObjectCreatorRegistry::AddAssoc (const char*                      embeddingTag,
+    inline void EmbeddedObjectCreatorRegistry::AddAssoc (const char* embeddingTag,
                                                          SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag,
                                                                                                         const void* data, size_t len))
     {

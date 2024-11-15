@@ -444,8 +444,10 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
         {"Load-Average"_k, &Info::fLoadAverage},
 #endif
-            {"Total-Logical-Cores"_k, &Info::fTotalLogicalCores}, {"Total-Process-CPU-Usage"_k, &Info::fTotalProcessCPUUsage},
-            {"Total-CPU-Usage"_k, &Info::fTotalCPUUsage}, {"Run-Q-Length"_k, &Info::fRunQLength},
+        {"Total-Logical-Cores"_k, &Info::fTotalLogicalCores},
+        {"Total-Process-CPU-Usage"_k, &Info::fTotalProcessCPUUsage},
+        {"Total-CPU-Usage"_k, &Info::fTotalCPUUsage},
+        {"Run-Q-Length"_k, &Info::fRunQLength},
     });
     return mapper;
 }();

@@ -586,8 +586,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
 
     /// deprecated
     template <typename ELEMENT_TYPE>
-    [[deprecated ("Since Stroika v3.0d5 - use span overload")]] inline auto New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-        -> Ptr<ELEMENT_TYPE>
+    [[deprecated ("Since Stroika v3.0d5 - use span overload")]] inline auto New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr<ELEMENT_TYPE>
     {
         return New (span<ELEMENT_TYPE>{start, end});
     }

@@ -291,7 +291,7 @@ namespace Stroika::Frameworks::Led::Platform {
     private:
         enum {
             eAutoscrollingTimerEventID = 434
-        };                           // Magic#
+        }; // Magic#
         UINT_PTR fAutoScrollTimerID; // zero means no timer
 
         // Scrolling Support

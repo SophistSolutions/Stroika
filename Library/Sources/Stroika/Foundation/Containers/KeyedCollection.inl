@@ -387,8 +387,7 @@ namespace Stroika::Foundation::Containers {
         return nextI;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    auto KeyedCollection<T, KEY_TYPE, TRAITS>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i)
-        -> tuple<_IRep*, Iterator<value_type>>
+    auto KeyedCollection<T, KEY_TYPE, TRAITS>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
     {
         Require (not i.Done ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;

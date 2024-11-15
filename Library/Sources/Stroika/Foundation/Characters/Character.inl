@@ -502,12 +502,8 @@ namespace Stroika::Foundation::Characters {
     template <typename RESULT_T, IPossibleCharacterRepresentation CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
         requires requires (RESULT_T* into) {
-            {
-                into->empty ()
-            } -> same_as<bool>;
-            {
-                into->push_back (ASCII{0})
-            };
+            { into->empty () } -> same_as<bool>;
+            { into->push_back (ASCII{0}) };
         }
     {
         RequireNotNull (into);

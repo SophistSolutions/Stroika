@@ -59,9 +59,8 @@ namespace {
 
         RunTests_<Bijection<size_t, size_t>> ();
         RunTests_<Bijection<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<Bijection<OnlyCopyableMoveable, OnlyCopyableMoveable>> ([] () {
-            return Bijection<OnlyCopyableMoveable, OnlyCopyableMoveable>{MyComparerWithEquals_{}, MyComparerWithEquals_{}};
-        });
+        RunTests_<Bijection<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Bijection<OnlyCopyableMoveable, OnlyCopyableMoveable>{MyComparerWithEquals_{}, MyComparerWithEquals_{}}; });
 
         RunTests_<Bijection_LinkedList<size_t, size_t>> ();
         RunTests_<Bijection_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();

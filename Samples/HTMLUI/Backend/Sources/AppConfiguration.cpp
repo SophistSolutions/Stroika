@@ -32,10 +32,10 @@ const ObjectVariantMapper AppConfigurationType::kMapper = [] () {
         {
             {"ToStdOut"sv, &AppConfigurationType::Logging::ToStdOut},
 #if qStroika_Foundation_Common_Platform_POSIX
-                {"ToSysLog"sv, &AppConfigurationType::Logging::ToSysLog},
+            {"ToSysLog"sv, &AppConfigurationType::Logging::ToSysLog},
 #endif
 #if qStroika_Foundation_Common_Platform_Windows
-                {"ToWindowsEventLog"sv, &AppConfigurationType::Logging::ToWindowsEventLog},
+            {"ToWindowsEventLog"sv, &AppConfigurationType::Logging::ToWindowsEventLog},
 #endif
         },
         {.fOmitNullEntriesInFromObject = false});

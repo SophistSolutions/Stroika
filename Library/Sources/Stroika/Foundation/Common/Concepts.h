@@ -107,9 +107,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename F, typename... Args>
     concept INoThrowInvocable = invocable<F, Args...> and requires (F f, Args... args) {
-        {
-            noexcept (f (args...))
-        };
+        { noexcept (f (args...)) };
     };
 
     // From https://stackoverflow.com/questions/74383254/concept-that-models-only-the-stdchrono-duration-types
@@ -215,9 +213,7 @@ namespace Stroika::Foundation::Common {
         template <typename T, std::size_t N>
         concept has_tuple_element = requires (T t) {
             typename std::tuple_element_t<N, std::remove_const_t<T>>;
-            {
-                get<N> (t)
-            } -> std::convertible_to<const std::tuple_element_t<N, T>&>;
+            { get<N> (t) } -> std::convertible_to<const std::tuple_element_t<N, T>&>;
         };
     }
 
@@ -291,17 +287,13 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T>
     concept IHasSizeMethod = requires (const T& t) {
-        {
-            t.size ()
-        } -> std::convertible_to<size_t>;
+        { t.size () } -> std::convertible_to<size_t>;
     };
 
     namespace Private_ {
         template <typename T>
         concept HasEq_ = requires (T t) {
-            {
-                t == t
-            } -> std::convertible_to<bool>;
+            { t == t } -> std::convertible_to<bool>;
         };
         template <typename T>
         constexpr inline bool HasEq_v_ = HasEq_<T>;
@@ -424,9 +416,7 @@ namespace Stroika::Foundation::Common {
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use require expression")]] constexpr inline bool has_plus_v = requires (T t) {
-        {
-            t + t
-        };
+        { t + t };
     };
     namespace Private_ {
         template <typename From, typename To>

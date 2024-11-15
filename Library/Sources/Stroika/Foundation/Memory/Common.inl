@@ -155,8 +155,8 @@ namespace Stroika::Foundation::Memory {
                         union X {
                             array<char, sizeof (T2)> bytes;
                             T2                       obj;
-                            X (){};
-                            ~X (){};
+                            X () {};
+                            ~X () {};
                         } objAsUnion;
                         /*
                          * &&& maybe not undefined anymore
@@ -215,8 +215,8 @@ namespace Stroika::Foundation::Memory {
                     union X {
                         array<char, sizeof (OUTER_OBJECT)> bytes;
                         OUTER_OBJECT                       obj;
-                        X (){};
-                        ~X (){};
+                        X () {};
+                        ~X () {};
                     } objAsUnion;
 
                     //     auto a4 = size_t (&(objAsUnion.obj.*dataMember)) - size_t (&objAsUnion.bytes);

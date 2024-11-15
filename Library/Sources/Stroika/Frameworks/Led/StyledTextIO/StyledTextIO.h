@@ -307,7 +307,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @DESCRIPTION:   <p>Called by StyledText IO readers when end of source buffer is encountered. This means that
                 the next Flush () call contains the last of the text.</p>
         */
-        virtual void EndOfBuffer (){};
+        virtual void EndOfBuffer () {};
 
     public:
         /*

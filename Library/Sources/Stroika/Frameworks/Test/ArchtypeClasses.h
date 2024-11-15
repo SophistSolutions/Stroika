@@ -24,12 +24,8 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
      */
     template <typename T>
     concept IINTeroperable = requires (T t) {
-        {
-            static_cast<size_t> (T{1u})
-        } -> convertible_to<size_t>;
-        {
-            T{1u} + T{1u}
-        } -> convertible_to<T>;
+        { static_cast<size_t> (T{1u}) } -> convertible_to<size_t>;
+        { T{1u} + T{1u} } -> convertible_to<T>;
     };
 
     /**
@@ -43,7 +39,7 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         OnlyDefaultConstructibleAndMoveable& operator= (const OnlyDefaultConstructibleAndMoveable&)     = delete;
         OnlyDefaultConstructibleAndMoveable& operator= (OnlyDefaultConstructibleAndMoveable&&) noexcept = default;
 
-        void method (){};
+        void method () {};
         void const_method () const {};
     };
     static_assert (default_initializable<OnlyDefaultConstructibleAndMoveable>);

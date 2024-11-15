@@ -226,7 +226,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             // do something to response so 'in HEAD mode' and won't write
             response.headMode = true;
             HandleCORSInNormallyHandledMessage_ (request, response);
-            bool                handled = false;
+            bool handled = false;
             get<RequestHandler> (*handlerEtc) (message, get<Sequence<String>> (*handlerEtc), &handled);
             if (handled) {
                 return true;

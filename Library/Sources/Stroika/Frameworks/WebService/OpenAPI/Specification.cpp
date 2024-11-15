@@ -69,8 +69,7 @@ Sequence<URI> Specification::GetServers () const
 void Specification::SetServers (const Sequence<URI>& s)
 {
     Mapping<String, VariantValue> vv = fValue_.As<Mapping<String, VariantValue>> ();
-    vv.Add (kServersElt_, VariantValue{s.Map<Sequence<VariantValue>> ([] (URI u) {
-                return VariantValue{Mapping<String, VariantValue>{{kURLElt_, u.As<String> ()}}};
-            })});
+    vv.Add (kServersElt_, VariantValue{s.Map<Sequence<VariantValue>> (
+                              [] (URI u) { return VariantValue{Mapping<String, VariantValue>{{kURLElt_, u.As<String> ()}}}; })});
     fValue_ = VariantValue{vv};
 }

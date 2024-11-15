@@ -69,14 +69,17 @@ namespace {
                                 });
 
                                 mapper.AddClass<Options_> ({
-                                    {"DockBarState"sv, &Options_::fDockBarState}, {"Search-Parameters"sv, &Options_::fSearchParameters},
-                                        {"SmartCutAndPaste"sv, &Options_::fSmartCutAndPaste}, {"WrapToWindow"sv, &Options_::fWrapToWindow},
-                                        {"ShowHiddenText"sv, &Options_::fShowHiddenText},
-                                        {"ShowParagraphGlyphs"sv, &Options_::fShowParagraphGlyphs},
-                                        {"ShowTabGlyphs"sv, &Options_::fShowTabGlyphs}, {"ShowSpaceGlyphs"sv, &Options_::fShowSpaceGlyphs},
+                                    {"DockBarState"sv, &Options_::fDockBarState},
+                                    {"Search-Parameters"sv, &Options_::fSearchParameters},
+                                    {"SmartCutAndPaste"sv, &Options_::fSmartCutAndPaste},
+                                    {"WrapToWindow"sv, &Options_::fWrapToWindow},
+                                    {"ShowHiddenText"sv, &Options_::fShowHiddenText},
+                                    {"ShowParagraphGlyphs"sv, &Options_::fShowParagraphGlyphs},
+                                    {"ShowTabGlyphs"sv, &Options_::fShowTabGlyphs},
+                                    {"ShowSpaceGlyphs"sv, &Options_::fShowSpaceGlyphs},
 #if qStroika_Foundation_Common_Platform_Windows
-                                        {"CheckFileAssocAtStartup"sv, &Options_::fCheckFileAssocAtStartup},
-                                        {"DefaultNewDocFont"sv, &Options_::fDefaultNewDocFont},
+                                    {"CheckFileAssocAtStartup"sv, &Options_::fCheckFileAssocAtStartup},
+                                    {"DefaultNewDocFont"sv, &Options_::fDefaultNewDocFont},
 #endif
                                 });
                                 return mapper;

@@ -85,8 +85,7 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2)
-        -> Ptr<ELEMENT_TYPE>
+    inline auto New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2) -> Ptr<ELEMENT_TYPE>
     {
         return make_shared<Private_::Rep_> (realOut1, realOut2);
     }

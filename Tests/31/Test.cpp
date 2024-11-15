@@ -628,38 +628,36 @@ namespace {
                     Set<String> allCiphers{
                         OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
                     Set<String>              passingCiphers              = allCiphers - failingCiphers.Elements ();
-                    static const Set<String> kLastSeenAllFailingCiphers_ = {
-                        "AES-128-OCB"sv,
-                        "AES-128-XTS"sv,
-                        "AES-192-OCB"sv,
-                        "AES-256-OCB"sv,
-                        "AES-256-XTS"sv,
-                        "ARIA-128-CCM"sv,
-                        "ARIA-128-GCM"sv,
-                        "ARIA-192-CCM"sv,
-                        "ARIA-192-GCM"sv,
-                        "ARIA-256-CCM"sv,
-                        "ARIA-256-GCM"sv,
+                    static const Set<String> kLastSeenAllFailingCiphers_ = {"AES-128-OCB"sv,
+                                                                            "AES-128-XTS"sv,
+                                                                            "AES-192-OCB"sv,
+                                                                            "AES-256-OCB"sv,
+                                                                            "AES-256-XTS"sv,
+                                                                            "ARIA-128-CCM"sv,
+                                                                            "ARIA-128-GCM"sv,
+                                                                            "ARIA-192-CCM"sv,
+                                                                            "ARIA-192-GCM"sv,
+                                                                            "ARIA-256-CCM"sv,
+                                                                            "ARIA-256-GCM"sv,
 // It appears these failures ONLY happen on X86 and x64 systems --LGP 2021-12-10
 // no idea why these work on windows, but fail on Unix... --LGP 2021-09-14
 #if qStroika_Foundation_Common_Platform_POSIX && (defined(__x86__) || defined(__x86_64__))
-                        "AES-256-CBC-HMAC-SHA256"sv,
-                        "AES-256-CBC-HMAC-SHA1"sv,
-                        "AES-128-CBC-HMAC-SHA256"sv,
-                        "AES-128-CBC-HMAC-SHA1"sv,
+                                                                            "AES-256-CBC-HMAC-SHA256"sv,
+                                                                            "AES-256-CBC-HMAC-SHA1"sv,
+                                                                            "AES-128-CBC-HMAC-SHA256"sv,
+                                                                            "AES-128-CBC-HMAC-SHA1"sv,
 #endif
 
-                        "id-aes128-CCM"sv,
-                        "id-aes128-GCM"sv,
-                        "id-aes128-wrap"sv,
-                        "id-aes192-CCM",
-                        "id-aes192-GCM"sv,
-                        "id-aes192-wrap"sv,
-                        "id-aes256-CCM"sv,
-                        "id-aes256-GCM"sv,
-                        "id-aes256-wrap"sv,
-                        "id-smime-alg-CMS3DESwrap"sv
-                    };
+                                                                            "id-aes128-CCM"sv,
+                                                                            "id-aes128-GCM"sv,
+                                                                            "id-aes128-wrap"sv,
+                                                                            "id-aes192-CCM",
+                                                                            "id-aes192-GCM"sv,
+                                                                            "id-aes192-wrap"sv,
+                                                                            "id-aes256-CCM"sv,
+                                                                            "id-aes256-GCM"sv,
+                                                                            "id-aes256-wrap"sv,
+                                                                            "id-smime-alg-CMS3DESwrap"sv};
                     if (kLastSeenAllFailingCiphers_ != Set<String>{failingCiphers.Elements ()}) {
                         Stroika::Frameworks::Test::WarnTestIssue (
                             Characters::Format ("For provider={}, nCipherTests={}, nFailures={}, new-failures={}, remove-failures={}, "

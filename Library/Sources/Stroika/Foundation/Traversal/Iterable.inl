@@ -64,8 +64,8 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    inline auto Iterable<T>::_IRep::Find (const function<bool (ArgByValueType<T> item)>& that, [[maybe_unused]] Execution::SequencePolicy seq) const
-        -> Iterator<value_type>
+    inline auto Iterable<T>::_IRep::Find (const function<bool (ArgByValueType<T> item)>& that,
+                                          [[maybe_unused]] Execution::SequencePolicy     seq) const -> Iterator<value_type>
     {
         RequireNotNull (that);
         for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i) {
@@ -76,8 +76,7 @@ namespace Stroika::Foundation::Traversal {
         return Iterator<T>::GetEmptyIterator ();
     }
     template <typename T>
-    inline auto Iterable<T>::_IRep::Find_equal_to (const ArgByValueType<T>& v, [[maybe_unused]] Execution::SequencePolicy seq) const
-        -> Iterator<value_type>
+    inline auto Iterable<T>::_IRep::Find_equal_to (const ArgByValueType<T>& v, [[maybe_unused]] Execution::SequencePolicy seq) const -> Iterator<value_type>
     {
         if constexpr (Common::IEqualToOptimizable<T>) {
             /*

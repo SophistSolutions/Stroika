@@ -27,9 +27,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T>
         concept has_ToStringMethod_v = requires (T t) {
-            {
-                t.ToString ()
-            } -> convertible_to<Characters::String>;
+            { t.ToString () } -> convertible_to<Characters::String>;
         };
         /**
          *  \brief this given type appears to be a 'pair' of some sort

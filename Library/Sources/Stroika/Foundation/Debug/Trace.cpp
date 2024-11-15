@@ -326,8 +326,7 @@ auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, const
 }
 #endif
 
-auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, wstring_view format, Common::StdCompat::wformat_args&& args) noexcept
-    -> TraceLastBufferedWriteTokenType
+auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, wstring_view format, Common::StdCompat::wformat_args&& args) noexcept -> TraceLastBufferedWriteTokenType
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
         return 0;

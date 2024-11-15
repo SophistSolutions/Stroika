@@ -1202,15 +1202,10 @@ namespace {
                             {Name{"Tuner", Name::eAttribute}, &KVPType_::fKey},
                         });
                         Sequence<MixinEltTraits>               tmp;
-                        tmp += MixinEltTraits{kTunerReader_,
-                                              [] (const Name& name) {
-                                                  return name == Name{"Tuner", Name::eAttribute};
-                                              },
+                        tmp += MixinEltTraits{kTunerReader_, [] (const Name& name) { return name == Name{"Tuner", Name::eAttribute}; },
                                               [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
                         tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_,
-                                              [] (const Name& name) {
-                                                  return name != Name{"Tuner", Name::eAttribute};
-                                              },
+                                              [] (const Name& name) { return name != Name{"Tuner", Name::eAttribute}; },
                                               [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fValue); }};
                         return tmp;
                     }

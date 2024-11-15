@@ -70,17 +70,19 @@ namespace {
                                 });
 
                                 mapper.AddClass<Options_> ({
-                                    {L"Dock-Bar-State", &Options_::fDockBarState}, {L"Search-Parameters", &Options_::fSearchParameters},
-                                        {L"Smart-Cut-And-Paste", &Options_::fSmartCutAndPaste}, {L"Auto-Indent", &Options_::fAutoIndent},
-                                        {L"Tabs-Auto-Shifts-Text", &Options_::fTabsAutoShiftsText},
+                                    {L"Dock-Bar-State", &Options_::fDockBarState},
+                                    {L"Search-Parameters", &Options_::fSearchParameters},
+                                    {L"Smart-Cut-And-Paste", &Options_::fSmartCutAndPaste},
+                                    {L"Auto-Indent", &Options_::fAutoIndent},
+                                    {L"Tabs-Auto-Shifts-Text", &Options_::fTabsAutoShiftsText},
 
 #if qSupportSyntaxColoring
-                                        {L"Syntax-Coloring", &Options_::fSyntaxColoring},
+                                    {L"Syntax-Coloring", &Options_::fSyntaxColoring},
 #endif
 
 #if qStroika_Foundation_Common_Platform_Windows
-                                        {L"Check-File-Assoc-At-Startup", &Options_::fCheckFileAssocAtStartup},
-                                        {L"Default-New-Doc-Font", &Options_::fDefaultNewDocFont},
+                                    {L"Check-File-Assoc-At-Startup", &Options_::fCheckFileAssocAtStartup},
+                                    {L"Default-New-Doc-Font", &Options_::fDefaultNewDocFont},
 #endif
                                 });
                                 return mapper;

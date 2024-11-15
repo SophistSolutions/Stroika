@@ -365,8 +365,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream::Ptr<byte>& realIn)
-    -> Streams::InputStream::Ptr<byte>
+auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction,
+                              const InputStream::Ptr<byte>& realIn) -> Streams::InputStream::Ptr<byte>
 {
     return Streams::InputStream::Ptr<byte>{make_shared<OpenSSLInputStreamRep_> (cryptoParams, direction, realIn)};
 }
@@ -390,8 +390,8 @@ auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchr
  ******************* Cryptography::OpenSSLOutputStream **************************
  ********************************************************************************
  */
-auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream::Ptr<byte>& realOut)
-    -> Streams::OutputStream::Ptr<byte>
+auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction,
+                               const OutputStream::Ptr<byte>& realOut) -> Streams::OutputStream::Ptr<byte>
 {
     return Streams::OutputStream::Ptr<byte>{make_shared<OpenSSLOutputStreamRep_> (cryptoParams, direction, realOut)};
 }

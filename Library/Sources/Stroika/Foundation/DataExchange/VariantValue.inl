@@ -98,9 +98,8 @@ namespace Stroika::Foundation::DataExchange {
             return this->AsSequence_ ();
         }
         else if constexpr (same_as<RETURNTYPE, map<wstring, VariantValue>>) {
-            return this->AsMapping_ ().Map<map<wstring, VariantValue>> ([] (auto v) -> pair<wstring, VariantValue> {
-                return {v.fKey.template As<wstring> (), v.fValue};
-            });
+            return this->AsMapping_ ().Map<map<wstring, VariantValue>> (
+                [] (auto v) -> pair<wstring, VariantValue> { return {v.fKey.template As<wstring> (), v.fValue}; });
         }
         else if constexpr (same_as<RETURNTYPE, vector<VariantValue>>) {
             return this->AsSequence_ ().As<vector<VariantValue>> ();

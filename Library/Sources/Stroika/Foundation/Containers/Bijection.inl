@@ -443,8 +443,7 @@ namespace Stroika::Foundation::Containers {
         return *this;
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i)
-        -> tuple<_IRep*, Iterator<value_type>>
+    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
     {
         Require (not i.Done ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;

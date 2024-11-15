@@ -373,7 +373,7 @@ namespace Stroika::Foundation::Characters {
                 }
 #endif
                 case Options::Implementation::eCodeCVT: {
-                    if constexpr ((same_as<SRC_T, char16_t> or same_as<SRC_T, char32_t>)and same_as<TRG_T, char8_t>) {
+                    if constexpr ((same_as<SRC_T, char16_t> or same_as<SRC_T, char32_t>) and same_as<TRG_T, char8_t>) {
                         return ConvertQuietly_codeCvt_ (source, target);
                     }
                     if constexpr (same_as<SRC_T, char8_t> and (same_as<TRG_T, char16_t> or same_as<SRC_T, char32_t>)) {
