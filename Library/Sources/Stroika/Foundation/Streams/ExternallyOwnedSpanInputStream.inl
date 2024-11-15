@@ -44,8 +44,8 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             }
             virtual void CloseRead () override
             {
-                Require (IsOpenRead ());
                 fIsOpenForRead_ = false;
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {

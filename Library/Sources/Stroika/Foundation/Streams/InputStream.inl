@@ -74,9 +74,9 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline void InputStream::Ptr<ELEMENT_TYPE>::Close () const
     {
-        Require (IsOpen ());
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         GetRepRWRef ().CloseRead ();
+        Ensure (not IsOpen ());
     }
     template <typename ELEMENT_TYPE>
     inline void InputStream::Ptr<ELEMENT_TYPE>::Close (bool reset)

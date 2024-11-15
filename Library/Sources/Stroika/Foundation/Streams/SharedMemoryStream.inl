@@ -47,7 +47,6 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             }
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
                 {
                     [[maybe_unused]] lock_guard critSec{fMutex_};
                     fClosedForWrites_ = true;
@@ -55,6 +54,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 if constexpr (kLocking_) {
                     fMoreDataWaiter_.Set ();
                 }
+                Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {
@@ -62,8 +62,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             }
             virtual void CloseRead () override
             {
-                Require (IsOpenRead ());
                 fIsOpenForRead_ = false;
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {
@@ -316,7 +316,6 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             }
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
                 {
                     [[maybe_unused]] lock_guard critSec{fMutex_};
                     fClosedForWrites_ = true;
@@ -324,6 +323,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 if constexpr (kLocking_) {
                     fMoreDataWaiter_.Set ();
                 }
+                Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {
@@ -331,8 +331,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             }
             virtual void CloseRead () override
             {
-                Require (IsOpenRead ());
                 fIsOpenForRead_ = false;
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {

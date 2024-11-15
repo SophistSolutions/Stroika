@@ -72,8 +72,9 @@ namespace {
         }
         virtual void CloseRead () override
         {
-            Require (IsOpenRead ());
-            fInStream_.Close ();
+            if (fInStream_ != nullptr) {
+                fInStream_.Close ();
+            }
             Assert (fInStream_ == nullptr);
             Ensure (not IsOpenRead ());
         }

@@ -73,9 +73,10 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
         }
         virtual void CloseRead () override
         {
-            Require (IsOpenRead ());
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            fInStream_.Close ();
+            if (fInStream_ != nullptr) {
+                fInStream_.Close ();
+            }
             Assert (fInStream_ == nullptr);
             Ensure (not IsOpenRead ());
         }

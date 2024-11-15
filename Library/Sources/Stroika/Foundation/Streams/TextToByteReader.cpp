@@ -38,9 +38,11 @@ namespace {
         }
         virtual void CloseRead () override
         {
-            Require (IsOpenRead ());
-            fSrc_.Close ();
-            Assert (fSrc_ == nullptr);
+            if (fSrc_ != nullptr) {
+                fSrc_.Close ();
+            }
+            Ensure (not IsOpenRead ());
+            Ensure (fSrc_ == nullptr);
         }
         virtual bool IsOpenRead () const override
         {

@@ -145,9 +145,10 @@ protected:
     }
     virtual void CloseRead () override
     {
-        Require (IsOpenRead ());
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        fSource_.Close ();
+        if (fSource_ != nullptr) {
+            fSource_.Close ();
+        }
         Assert (fSource_ == nullptr);
     }
     virtual bool IsOpenRead () const override

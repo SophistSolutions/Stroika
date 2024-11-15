@@ -24,12 +24,14 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
             }
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                fRealOut1_.CloseWrite ();
+                if (IsOpenWrite ()) {
+                    fRealOut1_.CloseWrite ();
+                    fRealOut2_.CloseWrite ();
+                }
                 Assert (fRealOut1_ == nullptr);
-                fRealOut2_.CloseWrite ();
                 Assert (fRealOut2_ == nullptr);
+                Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {

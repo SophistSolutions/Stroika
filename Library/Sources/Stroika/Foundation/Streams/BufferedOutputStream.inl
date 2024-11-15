@@ -57,10 +57,12 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             }
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
-                Flush ();
-                fRealOut_.Close ();
+                if (IsOpenWrite ()) {
+                    Flush ();
+                    fRealOut_.Close ();
+                }
                 Assert (fRealOut_ == nullptr);
+                Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {

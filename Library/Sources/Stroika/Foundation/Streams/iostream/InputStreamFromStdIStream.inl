@@ -32,7 +32,6 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             }
             virtual void CloseRead () override
             {
-                Require (IsOpenRead ());
                 fOpen_ = false;
                 Ensure (not IsOpenRead ());
             }

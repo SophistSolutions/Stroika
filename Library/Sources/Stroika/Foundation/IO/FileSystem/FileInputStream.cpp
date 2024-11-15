@@ -107,15 +107,17 @@ namespace {
         }
         virtual void CloseRead () override
         {
-            Require (IsOpenRead ());
-            if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+            if (IsOpenRead ()) {
+                if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
 #if qStroika_Foundation_Common_Platform_Windows
-                ::_close (fFD_);
+                    ::_close (fFD_);
 #else
-                ::close (fFD_);
+                    ::close (fFD_);
 #endif
+                }
+                fFD_ = -1;
             }
-            fFD_ = -1;
+            Ensure (not IsOpenRead ());
         }
         virtual bool IsOpenRead () const override
         {

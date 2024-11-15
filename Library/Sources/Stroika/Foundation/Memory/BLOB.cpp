@@ -223,8 +223,8 @@ namespace {
             }
             virtual void CloseRead () override
             {
-                Require (IsOpenRead ());
                 fIsOpenForRead_ = false;
+                Require (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {

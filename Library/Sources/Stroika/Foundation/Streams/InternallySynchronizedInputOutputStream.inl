@@ -116,8 +116,10 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
             virtual void CloseRead () override
             {
                 [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-                Require (IsOpenRead ());
-                fStream2Wrap.CloseRead ();
+                if (IsOpenRead ()) {
+                    fStream2Wrap.CloseRead ();
+                }
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {

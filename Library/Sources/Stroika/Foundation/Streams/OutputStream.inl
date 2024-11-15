@@ -137,18 +137,18 @@ namespace Stroika::Foundation::Streams::OutputStream {
     inline void Ptr<ELEMENT_TYPE>::Close () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
         GetRepRWRef ().CloseWrite ();
+        Ensure (not IsOpen ());
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Close (bool reset)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
         GetRepRWRef ().CloseWrite ();
         if (reset) {
             this->reset ();
         }
+        Ensure (not IsOpen ());
     }
     template <typename ELEMENT_TYPE>
     inline bool Ptr<ELEMENT_TYPE>::IsOpen () const

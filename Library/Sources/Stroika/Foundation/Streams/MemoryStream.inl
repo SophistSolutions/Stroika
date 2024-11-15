@@ -32,9 +32,9 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             }
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 fOpenWrite_ = false;
+                Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {
@@ -42,9 +42,9 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             }
             virtual void CloseRead () override
             {
-                Require (IsOpenRead ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 fOpenRead_ = false;
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {

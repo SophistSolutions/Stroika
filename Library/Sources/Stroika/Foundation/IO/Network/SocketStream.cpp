@@ -38,11 +38,12 @@ namespace {
         }
         virtual void CloseWrite () override
         {
-            Require (IsOpenWrite ());
-            fSD_.Shutdown (Socket::ShutdownTarget::eWrites);
-            if (not fOpenForRead_) {
-                fSD_.Close ();
-                fSD_.reset ();
+            if (IsOpenWrite ()) {
+                fSD_.Shutdown (Socket::ShutdownTarget::eWrites);
+                if (not fOpenForRead_) {
+                    fSD_.Close ();
+                    fSD_.reset ();
+                }
             }
             Ensure (not IsOpenWrite ());
         }
@@ -52,12 +53,14 @@ namespace {
         }
         virtual void CloseRead () override
         {
-            Require (IsOpenRead ());
-            fSD_.Shutdown (Socket::ShutdownTarget::eReads);
-            if (not fOpenForWrite_) {
-                fSD_.Close ();
-                fSD_.reset ();
+            if (fOpenForRead_) {
+                fSD_.Shutdown (Socket::ShutdownTarget::eReads);
+                if (not fOpenForWrite_) {
+                    fSD_.Close ();
+                    fSD_.reset ();
+                }
             }
+            Ensure (not IsOpenRead ());
         }
         virtual bool IsOpenRead () const override
         {

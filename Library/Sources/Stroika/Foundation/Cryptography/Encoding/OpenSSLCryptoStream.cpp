@@ -123,8 +123,9 @@ namespace {
         }
         virtual void CloseRead () override
         {
-            Require (IsOpenRead ());
-            fRealIn_.Close ();
+            if (fRealIn_ != nullptr) {
+                fRealIn_.Close ();
+            }
             Assert (fRealIn_ == nullptr);
             Ensure (not IsOpenRead ());
         }
@@ -253,10 +254,10 @@ namespace {
         }
         virtual void CloseWrite () override
         {
-            Require (IsOpenWrite ());
-            fRealOut_.Close ();
-            Assert (fRealOut_ == nullptr);
-            Ensure (not IsOpenWrite ());
+            if (fRealOut_ != nullptr) {
+                fRealOut_.Close ();
+            }
+            Ensure (fRealOut_ == nullptr);
         }
         virtual bool IsOpenWrite () const override
         {

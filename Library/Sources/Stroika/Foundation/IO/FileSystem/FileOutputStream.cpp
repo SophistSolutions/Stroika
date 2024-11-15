@@ -101,15 +101,17 @@ namespace {
         }
         virtual void CloseWrite () override
         {
-            Require (IsOpenWrite ());
-            if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+            if (IsOpenWrite ()) {
+                if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
 #if qStroika_Foundation_Common_Platform_Windows
-                ::_close (fFD_);
+                    ::_close (fFD_);
 #else
-                ::close (fFD_);
+                    ::close (fFD_);
 #endif
+                }
+                fFD_ = -1;
             }
-            fFD_ = -1;
+            Ensure (not IsOpenWrite ());
         }
         virtual bool IsOpenWrite () const override
         {

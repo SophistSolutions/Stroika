@@ -46,10 +46,12 @@ namespace Stroika::Foundation::Streams::InputSubStream {
             }
             virtual void CloseRead () override
             {
-                Require (IsOpenRead ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                fRealIn_.Close ();
+                if (IsOpenRead ()) {
+                    fRealIn_.Close ();
+                }
                 Assert (fRealIn_ == nullptr);
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {

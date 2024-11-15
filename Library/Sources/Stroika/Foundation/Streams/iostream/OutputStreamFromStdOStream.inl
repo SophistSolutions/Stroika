@@ -29,7 +29,6 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
             }
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 fOpen_ = false;
                 Ensure (not IsOpenWrite ());

@@ -24,8 +24,10 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
             virtual void CloseRead () override
             {
                 [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-                Require (IsOpenRead ());
-                BASE_REP_TYPE::CloseRead ();
+                if (IsOpenRead ()) {
+                    BASE_REP_TYPE::CloseRead ();
+                }
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {
@@ -81,8 +83,10 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
             virtual void CloseRead () override
             {
                 [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-                Require (IsOpenRead ());
-                fStream2Wrap.CloseRead ();
+                if (IsOpenRead ()) {
+                    fStream2Wrap.CloseRead ();
+                }
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {

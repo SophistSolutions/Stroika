@@ -21,9 +21,10 @@ namespace Stroika::Foundation::Streams::TextWriter {
             }
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                _fSource.Close ();
+                if (IsOpenWrite ()) {
+                    _fSource.Close ();
+                }
                 Assert (_fSource == nullptr);
                 Ensure (not IsOpenWrite ());
             }
@@ -89,9 +90,10 @@ namespace Stroika::Foundation::Streams::TextWriter {
             }
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                _fSource.Close ();
+                if (IsOpenWrite ()) {
+                    _fSource.Close ();
+                }
                 Assert (_fSource == nullptr);
                 Ensure (not IsOpenWrite ());
             }

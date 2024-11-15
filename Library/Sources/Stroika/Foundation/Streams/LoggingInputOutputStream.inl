@@ -30,8 +30,11 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
         public:
             virtual void CloseRead () override
             {
-                fRealStream_.CloseRead ();
-                fLogInput_.Close ();
+                if (IsOpenRead ()) {
+                    fRealStream_.CloseRead ();
+                    fLogInput_.Close ();
+                }
+                Ensure (not IsOpenRead ());
             }
             virtual bool IsOpenRead () const override
             {
@@ -65,10 +68,12 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
         public:
             virtual void CloseWrite () override
             {
-                Require (IsOpenWrite ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                fRealStream_.CloseWrite ();
+                if (IsOpenWrite ()) {
+                    fRealStream_.CloseWrite ();
+                }
                 Assert (fRealStream_ == nullptr);
+                Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {

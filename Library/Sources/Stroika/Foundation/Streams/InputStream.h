@@ -223,7 +223,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *        See the stream documentation for that stream class to see how it handles Close.
          *
-         *  \req IsOpen ()
+         *  \note Since Stroika v3.0d12, it is legal to call Close () even when a stream is already closed, because it can make
+         *        logic needlessly complex to only check in callers of Close () that the stream hasn't been closed.
          */
         nonvirtual void Close () const;
         nonvirtual void Close (bool reset);

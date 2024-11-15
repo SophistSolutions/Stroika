@@ -21,8 +21,10 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual void CloseRead () override
             {
-                Require (IsOpenRead ());
-                fRealIn_.Close ();
+                if (fRealIn_ != nullptr) {
+                    fRealIn_.Close ();
+                }
+                Ensure (not IsOpenRead ());
                 Assert (fRealIn_ == nullptr);
             }
             virtual bool IsOpenRead () const override
