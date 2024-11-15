@@ -113,6 +113,7 @@
 #define _MSC_VER_2k22_17Pt9_ 1939
 #define _MSC_VER_2k22_17Pt10_ 1940
 #define _MSC_VER_2k22_17Pt11_ 1941
+#define _MSC_VER_2k22_17Pt12_ 1942
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #if _MSC_VER < _MSC_VER_2k22_17Pt9_
@@ -1831,9 +1832,13 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 
  */
 #ifndef qCompilerAndStdLib_StdFmtOfPath_Buggy
+
 #if defined(__clang__) and __clang_major__ == 19 and _LIBCPP_STD_VER == 23
 // appears broken ONLY for clang++19 and stdc++ version 23
 #define qCompilerAndStdLib_StdFmtOfPath_Buggy 1
+#elif defined(_MSC_VER)
+// verified still broken in _MSC_VER_2k22_17Pt12_
+#define qCompilerAndStdLib_StdFmtOfPath_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
 #else
 #define qCompilerAndStdLib_StdFmtOfPath_Buggy 0
 #endif
