@@ -131,7 +131,7 @@ namespace {
  */
 unique_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"WaitForIOReady_Support::mkEventFD")};
+    Debug::TraceContextBumper ctx{"WaitForIOReady_Support::mkEventFD"};
     // @todo - See http://stroika-bugs.sophists.com/browse/STK-709
     // to support eventfd and pipe based helper classes
     /// need ifdefs to allow build based on eventfd, or pipe
@@ -186,10 +186,11 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
     while (true) {
         Thread::CheckForInterruption ();
         DurationSeconds timeLeft2Wait     = Math::AtLeast<DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s);
-        DurationSeconds time2WaitThisLoop = Math::AtLeast<DurationSeconds> (
-            Math::AtMost<DurationSeconds> (
-                timeLeft2Wait, DurationSeconds{qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0}),
-            0s);
+        // DurationSeconds time2WaitThisLoop = Math::AtLeast<DurationSeconds> (
+        //     Math::AtMost<DurationSeconds> (
+        //         timeLeft2Wait, DurationSeconds{qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0}),
+        //     0s);
+        DurationSeconds time2WaitThisLoop = clamp<DurationSeconds> (timeLeft2Wait, 0, DurationSeconds{qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0});
         int time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop.count () * 1000);
         if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), time2WaitMillisecondsThisLoop)) == SOCKET_ERROR) {
             Execution::ThrowSystemErrNo (::WSAGetLastError ());
