@@ -94,8 +94,7 @@ LibraryContext::LibraryInit_::LibraryInit_ ()
  ********************************************************************************
  */
 LibraryContext::LibraryContext ()
-    : fLibraryInit_{}
-    , pAvailableCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
+    : pAvailableCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
         const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         Set<String>                                    cipherNames;
