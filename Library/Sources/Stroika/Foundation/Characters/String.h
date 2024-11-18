@@ -1308,31 +1308,26 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Return true if case sensitive compare of the two IConvertibleToString objects have the same characters.
          *  Indirects to EqualsComparer{eWithCase} (...)
+         * 
+         *  \note For reasons I don't understand, the plain function declaration of operator== and requires not do appear to be required
+         *        on all major compilers due to quirks of the operator= rewrite rules, but I don't fully understand why --LGP 2024-11-18.
          */
-#if qCompilerAndStdLib_CompareOpReverse_Buggy
         nonvirtual bool operator== (const String& rhs) const;
         template <IConvertibleToString T>
         nonvirtual bool operator== (T&& rhs) const
             requires (not same_as<remove_cvref_t<T>, String>);
-#else
-        template <IConvertibleToString T>
-        nonvirtual bool operator== (T&& rhs) const;
-#endif
 
     public:
         /**
          *  Return strong_ordering of case sensitive (three-way) compare of the two IConvertibleToString objects.
          *  Indirects to ThreeWayComparer{eWithCase} (...)
+         * 
+         *  \see operator== ()
          */
-#if qCompilerAndStdLib_CompareOpReverse_Buggy
         nonvirtual strong_ordering operator<=> (const String& rhs) const;
         template <IConvertibleToString T>
         nonvirtual strong_ordering operator<=> (T&& rhs) const
             requires (not same_as<remove_cvref_t<T>, String>);
-#else
-        template <IConvertibleToString T>
-        nonvirtual strong_ordering operator<=> (T&& rhs) const;
-#endif
 
     public:
         /**

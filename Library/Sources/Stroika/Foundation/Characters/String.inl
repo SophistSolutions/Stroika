@@ -1085,7 +1085,6 @@ namespace Stroika::Foundation::Characters {
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
         return SubString_ (accessor, from, to);
     }
-#if qCompilerAndStdLib_CompareOpReverse_Buggy
     inline strong_ordering String::operator<=> (const String& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs);
@@ -1096,14 +1095,6 @@ namespace Stroika::Foundation::Characters {
     {
         return ThreeWayComparer{}(*this, forward<T> (rhs));
     }
-#else
-    template <IConvertibleToString T>
-    inline strong_ordering String::operator<=> (T&& rhs) const
-    {
-        return ThreeWayComparer{}(*this, forward<T> (rhs));
-    }
-#endif
-#if qCompilerAndStdLib_CompareOpReverse_Buggy
     inline bool String::operator== (const String& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
@@ -1114,13 +1105,6 @@ namespace Stroika::Foundation::Characters {
     {
         return EqualsComparer{}(*this, rhs);
     }
-#else
-    template <IConvertibleToString T>
-    inline bool String::operator== (T&& rhs) const
-    {
-        return EqualsComparer{}(*this, rhs);
-    }
-#endif
 
     /*
      ********************************************************************************
