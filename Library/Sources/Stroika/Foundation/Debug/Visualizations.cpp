@@ -26,9 +26,9 @@ using namespace Stroika::Foundation::Debug;
 
 namespace {
 
-    Visualizations::StringRep<char8_t>  kFake_8_;
-    Visualizations::StringRep<char16_t> kFake_16_;
-    Visualizations::StringRep<char32_t> kFake_32_;
+    [[maybe_unused]] Visualizations::StringRep<char8_t>  kFake_8_;  // so code gets linked in...
+    [[maybe_unused]] Visualizations::StringRep<char16_t> kFake_16_;
+    [[maybe_unused]] Visualizations::StringRep<char32_t> kFake_32_;
 
 }
 /**
