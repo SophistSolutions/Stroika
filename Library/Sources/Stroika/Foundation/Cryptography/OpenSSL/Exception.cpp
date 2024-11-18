@@ -59,7 +59,6 @@ namespace {
             auto l = sNamesLoaded_.rwget ();
             if (not static_cast<bool> (l)) {
                 ERR_load_crypto_strings ();
-                //SSL_load_error_strings ();
                 l = true;
             }
         }
