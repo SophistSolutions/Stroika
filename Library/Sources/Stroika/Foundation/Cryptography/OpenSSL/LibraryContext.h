@@ -95,19 +95,39 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         };
 
     public:
+        /**
+         * @brief Return all the cipher algorithms provided by (the linked copy of) openssl.
+         */
         Common::ReadOnlyProperty<Set<CipherAlgorithm>> pAvailableCipherAlgorithms;
 
     public:
+        /**
+         * @brief Return all the standard/safe (tbd) cipher algorithms provided by (the linked copy of) openssl.
+         */
         Common::ReadOnlyProperty<Set<CipherAlgorithm>> pStandardCipherAlgorithms;
 
     public:
+        /**
+         * @brief Return all the digest algorithms provided by (the linked copy of) openssl.
+         */
         Common::ReadOnlyProperty<Set<DigestAlgorithm>> pAvailableDigestAlgorithms;
 
     public:
+        /**
+         * @brief Return all the standard/safe (tbd) digest algorithms provided by (the linked copy of) openssl.
+         */
         Common::ReadOnlyProperty<Set<DigestAlgorithm>> pStandardDigestAlgorithms;
 
     private:
+        struct LibraryInit_ {
+            LibraryInit_ ();
+            ~LibraryInit_ () = default;
+        };
+
+    private:
+        [[no_unique_address]] LibraryInit_                             fLibraryInit_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+
 #if OPENSSL_VERSION_MAJOR >= 3
         Containers::Association<String, ::OSSL_PROVIDER*> fLoadedProviders_; // providers maybe listed multiple times here, if loaded multiple times by callers
 #endif

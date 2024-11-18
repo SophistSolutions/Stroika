@@ -5,6 +5,7 @@
 
 #if qStroika_HasComponent_OpenSSL
 #include <openssl/evp.h>
+#include <openssl/ssl.h>
 #if OPENSSL_VERSION_MAJOR >= 3
 #include <openssl/provider.h>
 #endif
@@ -76,13 +77,26 @@ namespace {
     };
 }
 
+
+/*
+ ********************************************************************************
+ ************* Cryptography::OpenSSL::LibraryContext::LibraryInit_ **************
+ ********************************************************************************
+ */
+LibraryContext::LibraryInit_::LibraryInit_ ()
+{
+    constexpr auto kOpts_ = OPENSSL_INIT_LOAD_SSL_STRINGS;
+    Verify (::OPENSSL_init_ssl(kOpts_, nullptr) == 1);
+}
+
 /*
  ********************************************************************************
  ******************* Cryptography::OpenSSL::LibraryContext **********************
  ********************************************************************************
  */
 LibraryContext::LibraryContext ()
-    : pAvailableCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
+    : fLibraryInit_{}
+    , pAvailableCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
         const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         Set<String>                                    cipherNames;
