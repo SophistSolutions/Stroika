@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::Cryptography::OpenSSL;
 using namespace Stroika::Foundation::Debug;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if qStroika_HasComponent_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
@@ -46,13 +46,12 @@ namespace {
         if (ciph != nullptr) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace (L"cipher: %p (name: %s), provider: %p (name %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str (),
-                      ::EVP_CIPHER_get0_provider (ciph),
+            DbgTrace ("cipher: {} (name: {}), provider: {} (name {})"_f, ciph, CipherAlgorithm{ciph}.pName (), ::EVP_CIPHER_get0_provider (ciph),
                       (::EVP_CIPHER_get0_provider (ciph) == nullptr
                            ? L"null"
-                           : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_CIPHER_get0_provider (ciph))).c_str ()));
+                           : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_CIPHER_get0_provider (ciph)))));
 #else
-            DbgTrace (L"cipher: %p (name: %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str ());
+            DbgTrace ("cipher: {} (name: {})"_f, ciph, CipherAlgorithm{ciph}.pName ());
 #endif
 #endif
             ciphers->Add (CipherAlgorithm{ciph}.pName ());
@@ -64,13 +63,12 @@ namespace {
         if (digest != nullptr) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace (L"digest: %p (name: %s), provider: %p (name %s)", digest, DigestAlgorithm{digest}.pName ().c_str (),
-                      ::EVP_MD_get0_provider (digest),
+            DbgTrace ("digest: {} (name: {}), provider: {} (name {})"_f, digest, DigestAlgorithm{digest}.pName (), ::EVP_MD_get0_provider (digest),
                       (::EVP_MD_get0_provider (digest) == nullptr
-                           ? L"null"
-                           : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_MD_get0_provider (digest))).c_str ()));
+                           ? "null"_k
+                           : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_MD_get0_provider (digest)))));
 #else
-            DbgTrace (L"digest: %p (name: %s)", digest, DigestAlgorithm{digest}.pName ().c_str ());
+            DbgTrace ("digest: {} (name: {})"_f, digest, DigestAlgorithm{digest}.pName ());
 #endif
 #endif
             digestNames->Add (DigestAlgorithm{digest}.pName ());
@@ -131,6 +129,11 @@ LibraryContext::LibraryContext ()
         results += CipherAlgorithms::kAES_256_CFB8;
         results += CipherAlgorithms::kAES_256_CFB128;
 
+    /**
+     * 
+     *      @todo review openssl ciphers -s - and compare with above list - and cleanup - and maybe automate (find in driver source how it does
+     * ciphers -s...)
+     */
     /*
      * @todo mark these below as deprecated...??? in openssl3?
      */
@@ -163,7 +166,7 @@ LibraryContext::LibraryContext ()
                                 &digestNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Found pAvailableDigestAlgorithms-FIRST-PASS (cnt={}): {}", digestNames.size (), digestNames);
+        DbgTrace ("Found pAvailableDigestAlgorithms-FIRST-PASS (cnt={}): {}"_f, digestNames.size (), digestNames);
 #endif
 
         Set<DigestAlgorithm> results{digestNames.Map<Set<DigestAlgorithm>> (
