@@ -77,7 +77,6 @@ namespace {
     };
 }
 
-
 /*
  ********************************************************************************
  ************* Cryptography::OpenSSL::LibraryContext::LibraryInit_ **************
@@ -86,7 +85,7 @@ namespace {
 LibraryContext::LibraryInit_::LibraryInit_ ()
 {
     constexpr auto kOpts_ = OPENSSL_INIT_LOAD_SSL_STRINGS;
-    Verify (::OPENSSL_init_ssl(kOpts_, nullptr) == 1);
+    Verify (::OPENSSL_init_ssl (kOpts_, nullptr) == 1);
 }
 
 /*
