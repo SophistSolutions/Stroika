@@ -54,7 +54,7 @@ using Debug::TraceContextBumper;
 using Memory::StackBuffer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #include <fstream>

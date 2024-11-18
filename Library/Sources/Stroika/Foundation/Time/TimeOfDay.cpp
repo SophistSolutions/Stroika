@@ -34,7 +34,7 @@ using Containers::Sequence;
 using namespace Time;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if qStroika_Foundation_Common_Platform_Windows
 namespace {

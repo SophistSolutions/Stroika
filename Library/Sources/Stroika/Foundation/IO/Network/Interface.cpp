@@ -70,7 +70,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::IO::Network;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if defined(_MSC_VER)
 // support use of Iphlpapi - but better to reference here than in lib entry of project file cuz

@@ -28,7 +28,7 @@ using Stroika::Foundation::Common::GUID;
 using namespace Stroika::Samples::HTMLUI;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 // @todo Lose DIGEST code and use new UUID::CreateNew () method when available.
 

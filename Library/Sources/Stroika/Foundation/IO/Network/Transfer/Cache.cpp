@@ -23,7 +23,7 @@ using namespace Stroika::Foundation::Time;
 using Stroika::Foundation::Cache::SynchronizedLRUCache;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace {
 

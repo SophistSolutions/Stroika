@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace {
     constexpr size_t kDefaultBufSize_ = 2 * 1024; // guess enough for http headers (typically around .8K but little cost in reserving a bit more)

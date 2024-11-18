@@ -43,7 +43,7 @@ using Containers::Set;
 using Debug::AssertExternallySynchronizedMutex;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 // Leave this off by default since I'm not sure its safe, and at best it uses some time. But make it
 // easy to turn on it release builds...
