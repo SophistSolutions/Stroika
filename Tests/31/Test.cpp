@@ -67,131 +67,130 @@ namespace {
     namespace Base64Test {
 
 #if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
-            using Encoding::Algorithm::LineBreak;
-            vector<byte> DecodeBase64_ATL_ (const string& s)
-            {
-                int                       dataSize1 = ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
-                Memory::StackBuffer<byte> buf1{static_cast<size_t> (dataSize1)};
-                if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), reinterpret_cast<BYTE*> (buf1.begin ()), &dataSize1)) {
-                    return vector<byte>{buf1.begin (), buf1.begin () + dataSize1};
-                }
-                return vector<byte>{};
+        using Encoding::Algorithm::LineBreak;
+        vector<byte> DecodeBase64_ATL_ (const string& s)
+        {
+            int                       dataSize1 = ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
+            Memory::StackBuffer<byte> buf1{static_cast<size_t> (dataSize1)};
+            if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), reinterpret_cast<BYTE*> (buf1.begin ()), &dataSize1)) {
+                return vector<byte>{buf1.begin (), buf1.begin () + dataSize1};
             }
-            string EncodeBase64_ATL_ (const vector<byte>& b, LineBreak lb)
-            {
-                size_t totalSize = b.size ();
-                if (totalSize != 0) {
-                    Memory::StackBuffer<char> relBuf{0};
-                    int                       relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
-                    relBuf.GrowToSize (relEncodedSize);
-                    EXPECT_TRUE (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize),
-                                                    relBuf.data (), &relEncodedSize));
-                    relBuf[relEncodedSize] = '\0';
-                    if (lb == LineBreak::eCRLF_LB) {
-                        return static_cast<const char*> (relBuf);
-                    }
-                    else {
-                        EXPECT_TRUE (lb == LineBreak::eLF_LB);
-                        string result;
-                        result.reserve (relEncodedSize);
-                        for (int i = 0; i < relEncodedSize; ++i) {
-                            if (relBuf[i] == '\r') {
-                                //
-                                result.push_back ('\n');
-                                ++i; // skip LF
-                            }
-                            else {
-                                result.push_back (relBuf[i]);
-                            }
+            return vector<byte>{};
+        }
+        string EncodeBase64_ATL_ (const vector<byte>& b, LineBreak lb)
+        {
+            size_t totalSize = b.size ();
+            if (totalSize != 0) {
+                Memory::StackBuffer<char> relBuf{0};
+                int                       relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
+                relBuf.GrowToSize (relEncodedSize);
+                EXPECT_TRUE (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize),
+                                                relBuf.data (), &relEncodedSize));
+                relBuf[relEncodedSize] = '\0';
+                if (lb == LineBreak::eCRLF_LB) {
+                    return static_cast<const char*> (relBuf);
+                }
+                else {
+                    EXPECT_TRUE (lb == LineBreak::eLF_LB);
+                    string result;
+                    result.reserve (relEncodedSize);
+                    for (int i = 0; i < relEncodedSize; ++i) {
+                        if (relBuf[i] == '\r') {
+                            //
+                            result.push_back ('\n');
+                            ++i; // skip LF
                         }
-                        return result;
+                        else {
+                            result.push_back (relBuf[i]);
+                        }
                     }
+                    return result;
                 }
-                return string{};
             }
+            return string{};
+        }
 #endif
 
-                inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
-                {
-                    using namespace Encoding::Algorithm;
+        inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
+        {
+            using namespace Encoding::Algorithm;
 #if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
-                    EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
-                                               (Base64::Options{.fLineBreak = Base64::LineBreak::eCRLF_LB})),
-                               EncodeBase64_ATL_ (bytes, Base64::LineBreak::eCRLF_LB));
-                    EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
-                                               (Base64::Options{.fLineBreak = Base64::LineBreak::eLF_LB})),
-                               EncodeBase64_ATL_ (bytes, Base64::LineBreak::eLF_LB));
+            EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
+                                       (Base64::Options{.fLineBreak = Base64::LineBreak::eCRLF_LB})),
+                       EncodeBase64_ATL_ (bytes, Base64::LineBreak::eCRLF_LB));
+            EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
+                                       (Base64::Options{.fLineBreak = Base64::LineBreak::eLF_LB})),
+                       EncodeBase64_ATL_ (bytes, Base64::LineBreak::eLF_LB));
 #endif
-                }
-                inline void VERIFY_ATL_DECODE_ ()
-                {
+        }
+        inline void VERIFY_ATL_DECODE_ ()
+        {
 #if qStroika_Foundation_Common_Platform_Windows
 #else
 #endif
-                }
+        }
 
-                void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
-                {
-                    EXPECT_TRUE (Encoding::Algorithm::Base64::Decode (
-                                     Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}))) == bytes);
-                }
+        void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
+        {
+            EXPECT_TRUE (Encoding::Algorithm::Base64::Decode (
+                             Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}))) == bytes);
+        }
 
-                void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
-                {
-                    EXPECT_TRUE (Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{originalUnEncodedBytes})) ==
-                                 base64EncodedString);
-                    EXPECT_TRUE (Encoding::Algorithm ::Base64::Decode (base64EncodedString) == originalUnEncodedBytes);
-                    VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
-                    VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
-                }
+        void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
+        {
+            EXPECT_TRUE (Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{originalUnEncodedBytes})) == base64EncodedString);
+            EXPECT_TRUE (Encoding::Algorithm ::Base64::Decode (base64EncodedString) == originalUnEncodedBytes);
+            VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
+            VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
         }
     }
+}
 
-    GTEST_TEST (Foundation_Cryptography, Base64Test)
+GTEST_TEST (Foundation_Cryptography, Base64Test)
+{
+    Debug::TraceContextBumper ctx{"::Base64Test"};
+    using namespace Base64Test;
+
     {
-        Debug::TraceContextBumper ctx{"::Base64Test"};
-        using namespace Base64Test;
-
-        {
-            const char kSrc[]        = "This is a good test\r\n"
-                                       "We eat wiggly worms.\r\n"
-                                       "\r\n"
-                                       "That is a very good thing.****^^^#$#AS\r\n";
-            const char kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGl"
-                                       "uZy4qKioqXl5eIyQjQVMNCg==";
-            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> {(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
-        }
-
-        {
-            const char kSrc[] =
-                "{\\rtf1 \\ansi {\\fonttbl {\\f0 \\fnil \\fcharset163 Times New Roman;}}{\\colortbl \\red0\\green0\\blue0;}\r\n"
-                "{\\*\\listtable{\\list \\listtemplateid12382 {\\listlevel \\levelnfc23 \\leveljc0 \\levelfollow0 \\levelstartat1 "
-                "\\levelindent0 {\\leveltext \\levelnfc23 \\leveltemplateid17421 \\'01\\u8226  ?;}\\f0 \\fi-360 \\li720 \\jclisttab "
-                "\\tx720 }\\listid292 }}\r\n"
-                "{\\*\\listoverridetable{\\listoverride \\listid292 \\listoverridecount0 \\ls1 }}\r\n"
-                "{\\*\\generator Sophist Solutions, Inc. Led RTF IO Engine - 3.1b2x;}\\pard \\plain \\f0 \\fs24 \\cf0 Had hay fever "
-                "today. Not terrible, but several times. And I think a bit yesterda\r\n"
-                "y.}";
-            const char kEncodedVal[] = "e1xydGYxIFxhbnNpIHtcZm9udHRibCB7XGYwIFxmbmlsIFxmY2hhcnNldDE2MyBUaW1lcyBOZXcg\r\n"
-                                       "Um9tYW47fX17XGNvbG9ydGJsIFxyZWQwXGdyZWVuMFxibHVlMDt9DQp7XCpcbGlzdHRhYmxle1xs\r\n"
-                                       "aXN0IFxsaXN0dGVtcGxhdGVpZDEyMzgyIHtcbGlzdGxldmVsIFxsZXZlbG5mYzIzIFxsZXZlbGpj\r\n"
-                                       "MCBcbGV2ZWxmb2xsb3cwIFxsZXZlbHN0YXJ0YXQxIFxsZXZlbGluZGVudDAge1xsZXZlbHRleHQg\r\n"
-                                       "XGxldmVsbmZjMjMgXGxldmVsdGVtcGxhdGVpZDE3NDIxIFwnMDFcdTgyMjYgID87fVxmMCBcZmkt\r\n"
-                                       "MzYwIFxsaTcyMCBcamNsaXN0dGFiIFx0eDcyMCB9XGxpc3RpZDI5MiB9fQ0Ke1wqXGxpc3RvdmVy\r\n"
-                                       "cmlkZXRhYmxle1xsaXN0b3ZlcnJpZGUgXGxpc3RpZDI5MiBcbGlzdG92ZXJyaWRlY291bnQwIFxs\r\n"
-                                       "czEgfX0NCntcKlxnZW5lcmF0b3IgU29waGlzdCBTb2x1dGlvbnMsIEluYy4gTGVkIFJURiBJTyBF\r\n"
-                                       "bmdpbmUgLSAzLjFiMng7fVxwYXJkIFxwbGFpbiBcZjAgXGZzMjQgXGNmMCBIYWQgaGF5IGZldmVy\r\n"
-                                       "IHRvZGF5LiBOb3QgdGVycmlibGUsIGJ1dCBzZXZlcmFsIHRpbWVzLiBBbmQgSSB0aGluayBhIGJp\r\n"
-                                       "dCB5ZXN0ZXJkYQ0KeS59";
-            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
-        }
-
-        {
-            const char kSrc[]        = "()'asdf***Adasdf a";
-            const char kEncodedVal[] = "KCknYXNkZioqKkFkYXNkZiBh";
-            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> {(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
-        }
+        const char kSrc[]        = "This is a good test\r\n"
+                                   "We eat wiggly worms.\r\n"
+                                   "\r\n"
+                                   "That is a very good thing.****^^^#$#AS\r\n";
+        const char kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGl"
+                                   "uZy4qKioqXl5eIyQjQVMNCg==";
+        DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte>{(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
     }
+
+    {
+        const char kSrc[] =
+            "{\\rtf1 \\ansi {\\fonttbl {\\f0 \\fnil \\fcharset163 Times New Roman;}}{\\colortbl \\red0\\green0\\blue0;}\r\n"
+            "{\\*\\listtable{\\list \\listtemplateid12382 {\\listlevel \\levelnfc23 \\leveljc0 \\levelfollow0 \\levelstartat1 "
+            "\\levelindent0 {\\leveltext \\levelnfc23 \\leveltemplateid17421 \\'01\\u8226  ?;}\\f0 \\fi-360 \\li720 \\jclisttab "
+            "\\tx720 }\\listid292 }}\r\n"
+            "{\\*\\listoverridetable{\\listoverride \\listid292 \\listoverridecount0 \\ls1 }}\r\n"
+            "{\\*\\generator Sophist Solutions, Inc. Led RTF IO Engine - 3.1b2x;}\\pard \\plain \\f0 \\fs24 \\cf0 Had hay fever "
+            "today. Not terrible, but several times. And I think a bit yesterda\r\n"
+            "y.}";
+        const char kEncodedVal[] = "e1xydGYxIFxhbnNpIHtcZm9udHRibCB7XGYwIFxmbmlsIFxmY2hhcnNldDE2MyBUaW1lcyBOZXcg\r\n"
+                                   "Um9tYW47fX17XGNvbG9ydGJsIFxyZWQwXGdyZWVuMFxibHVlMDt9DQp7XCpcbGlzdHRhYmxle1xs\r\n"
+                                   "aXN0IFxsaXN0dGVtcGxhdGVpZDEyMzgyIHtcbGlzdGxldmVsIFxsZXZlbG5mYzIzIFxsZXZlbGpj\r\n"
+                                   "MCBcbGV2ZWxmb2xsb3cwIFxsZXZlbHN0YXJ0YXQxIFxsZXZlbGluZGVudDAge1xsZXZlbHRleHQg\r\n"
+                                   "XGxldmVsbmZjMjMgXGxldmVsdGVtcGxhdGVpZDE3NDIxIFwnMDFcdTgyMjYgID87fVxmMCBcZmkt\r\n"
+                                   "MzYwIFxsaTcyMCBcamNsaXN0dGFiIFx0eDcyMCB9XGxpc3RpZDI5MiB9fQ0Ke1wqXGxpc3RvdmVy\r\n"
+                                   "cmlkZXRhYmxle1xsaXN0b3ZlcnJpZGUgXGxpc3RpZDI5MiBcbGlzdG92ZXJyaWRlY291bnQwIFxs\r\n"
+                                   "czEgfX0NCntcKlxnZW5lcmF0b3IgU29waGlzdCBTb2x1dGlvbnMsIEluYy4gTGVkIFJURiBJTyBF\r\n"
+                                   "bmdpbmUgLSAzLjFiMng7fVxwYXJkIFxwbGFpbiBcZjAgXGZzMjQgXGNmMCBIYWQgaGF5IGZldmVy\r\n"
+                                   "IHRvZGF5LiBOb3QgdGVycmlibGUsIGJ1dCBzZXZlcmFsIHRpbWVzLiBBbmQgSSB0aGluayBhIGJp\r\n"
+                                   "dCB5ZXN0ZXJkYQ0KeS59";
+        DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
+    }
+
+    {
+        const char kSrc[]        = "()'asdf***Adasdf a";
+        const char kEncodedVal[] = "KCknYXNkZioqKkFkYXNkZiBh";
+        DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte>{(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
+    }
+}
 
 namespace {
     GTEST_TEST (Foundation_Cryptography, MD5Test)
