@@ -67,7 +67,6 @@ namespace {
     namespace Base64Test {
 
 #if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
-        namespace {
             using Encoding::Algorithm::LineBreak;
             vector<byte> DecodeBase64_ATL_ (const string& s)
             {
@@ -112,7 +111,6 @@ namespace {
             }
 #endif
 
-            namespace {
                 inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
                 {
                     using namespace Encoding::Algorithm;
@@ -131,17 +129,13 @@ namespace {
 #else
 #endif
                 }
-            }
 
-            namespace {
                 void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
                 {
                     EXPECT_TRUE (Encoding::Algorithm::Base64::Decode (
                                      Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}))) == bytes);
                 }
-            }
 
-            namespace {
                 void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
                 {
                     EXPECT_TRUE (Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{originalUnEncodedBytes})) ==
@@ -150,7 +144,6 @@ namespace {
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
                 }
-            }
         }
     }
 
@@ -166,7 +159,7 @@ namespace {
                                        "That is a very good thing.****^^^#$#AS\r\n";
             const char kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGl"
                                        "uZy4qKioqXl5eIyQjQVMNCg==";
-            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
+            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> {(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
         }
 
         {
@@ -196,10 +189,9 @@ namespace {
         {
             const char kSrc[]        = "()'asdf***Adasdf a";
             const char kEncodedVal[] = "KCknYXNkZioqKkFkYXNkZiBh";
-            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
+            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> {(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
         }
     }
-}
 
 namespace {
     GTEST_TEST (Foundation_Cryptography, MD5Test)
