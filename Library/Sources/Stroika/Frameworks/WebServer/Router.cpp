@@ -27,12 +27,6 @@ using HTTP::ClientErrorException;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
-/*
- *  IMPLEMENTATION HINTS:
- *      A good place to look for a mature implementation of similar logic would be
- *          https://github.com/apache/cxf/blob/master/rt/rs/security/cors/src/main/java/org/apache/cxf/rs/security/cors/CrossOriginResourceSharingFilter.java
- */
-
 namespace {
     String ExtractHostRelPath_ (const URI& url)
     {
@@ -122,7 +116,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             Handle_OPTIONS_ (m);
         }
         else {
-            if (optional<Set<String>> o = GetAllowedMethodsForRequest_ (m->request ())) {
+            if (optional<Set<String>> o = GetAllowedMethodsForRequest_ (m->request ()); o && not o->Contains (m->request ().httpMethod ())) {
                 // From 10.4.6 405 Method Not Allowed
                 //      The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
@@ -131,10 +125,9 @@ struct Router::Rep_ : Interceptor::_IRep {
                 static const auto kException_       = ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed};
                 Execution::Throw (kException_);
             }
-            else {
-                DbgTrace ("Router 404: (...url={})"_f, m->request ().url ());
-                Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
-            }
+            DbgTrace ("Router 404: (...url={})"_f, m->request ().url ());
+            static const auto kException_ = ClientErrorException{HTTP::StatusCodes::kNotFound};
+            Execution::Throw (kException_);
         }
     }
     nonvirtual void HandleCORSInNormallyHandledMessage_ (const Request& request, Response& response) const
@@ -228,7 +221,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             HandleCORSInNormallyHandledMessage_ (request, response);
             bool handled = false;
             get<RequestHandler> (*handlerEtc) (message, get<Sequence<String>> (*handlerEtc), &handled);
-            if (handled) {
+            if (handled) [[likely]] {
                 return true;
             }
         }
