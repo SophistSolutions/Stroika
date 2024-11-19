@@ -125,6 +125,9 @@ namespace Stroika::Foundation::Execution {
          * 
          *  \note   ***NOT THREADSAFE*** - same as GetIsSet() except avoids the lock, so will be reported by TSAN (for example)
          *          as a race (cuz it is). JUST INTENDED for debug trace messages (so used in ToString).
+         * 
+         *          Because of this - if testing with TSAN (thread sanitizer) - probably best to prefix functions calling this with
+         *          Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
          *
          *  \note   ***Not Cancelation Point***
          */

@@ -298,7 +298,8 @@ void Thread::Ptr::Rep_::Run_ ()
     }
 }
 
-Characters::String Thread::Ptr::Rep_::ToString () const
+// [[nosanitize thread]] because PeekIsSet () - intentionally - reads without a lock
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD Characters::String Thread::Ptr::Rep_::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;

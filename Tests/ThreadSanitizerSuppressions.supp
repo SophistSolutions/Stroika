@@ -72,4 +72,5 @@ mutex:std::recursive_timed_mutex::unlock()
 # This is a REAL RACE, but on purpose, to avoid recursive locks and deadlocks in DBGTRACE calls.
 # Should be VERY rarely used (right now just in ToString() for thread rep).
 #       -- LGP 2023-10-19
+#### INSTEAD added Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD in procedures calling this with comments why...
 race:Stroika::Foundation::Execution::WaitableEvent::PeekIsSet() const 
