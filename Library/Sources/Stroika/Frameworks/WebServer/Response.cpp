@@ -483,7 +483,7 @@ bool Response::End ()
         catch (...) {
             DbgTrace ("Exception during Response::End () automaticaly triggers Response::Abort()"_f);
             Abort ();
-            Ensure (this->responseAborted ());
+            WeakAssert (this->responseAborted ());   // NOT ALWAYS TRUE, cuz could have been completed before we got to abort
             Ensure (this->responseCompleted ());
             Execution::ReThrow (); // but still rethrow so caller can see failure
         }
