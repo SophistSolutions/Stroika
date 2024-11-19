@@ -565,7 +565,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
-     *          Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
+     *          Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensitive so treat as case sensitive
      *
      *          comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
      *          So pick a preferred ordering (alphabetical) - and compare one after the other
