@@ -45,6 +45,30 @@ namespace Stroika::Foundation::Execution {
      *
      *  inspired partly by https://man7.org/linux/man-pages/man3/getopt.3.html
      * 
+     *  \par Example Usage
+     *      \code
+     *          uint16_t portNumber = 8080;
+     *
+     *          const CommandLine::Option kPortO_{
+     *              .fLongName = "port"sv, .fSupportsArgument = true, .fHelpOptionText = "specify webserver listen port (default {})"_f(portNumber)};
+     *          const CommandLine::Option kQuitAfterO_{
+     *              .fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpOptionText = "automatically quit after <argument> seconds"sv};
+     *          const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
+     *
+     *          try {
+     *              cmdLine.Validate (kAllOptions_);
+     *          }
+     *          catch (const InvalidCommandLineArgument&) {
+     *              cerr << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
+     *              cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+     *              return EXIT_FAILURE;
+     *          }
+     *          if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+     *              cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+     *              return EXIT_SUCCESS;
+     *          }
+     *      \endcode
+     * 
      *  TODO:
      *      o   \todo find some way to better handle std::filesystem::path arguments (hande quoting, normalizing paths so they work better cross platform if needed/helpful (e.g. /cygrdrive/c/???)
      * 
