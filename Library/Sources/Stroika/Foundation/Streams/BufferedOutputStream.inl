@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                 if (IsOpenWrite ()) {
                     IgnoreExceptionsForCall (Flush ());
                 }
-                Ensure (fBuffer_.size () == 0); // advisory - not quite right - could happen if a flush exception was eaten (@todo clean this up)
+                WeakAssert (fBuffer_.size () == 0); // advisory - not quite right - could happen if a flush exception was eaten (@todo clean this up)
             }
 
         public:
