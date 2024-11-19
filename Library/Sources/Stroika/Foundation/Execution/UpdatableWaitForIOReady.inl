@@ -138,7 +138,8 @@ namespace Stroika::Foundation::Execution {
 #if 1
         // https://stroika.atlassian.net/browse/STK-1021
         using Traversal::Iterable;
-        Iterable<pair<T, TypeOfMonitorSet>> r{fData_.load ().template As<vector<pair<T, TypeOfMonitorSet>>> ()};
+        auto dataLock = fData_.rwget ();    // not 100% understood yet, but it appears you need to hold lock longer - to make tsan happy
+        Iterable<pair<T, TypeOfMonitorSet>> r{dataLock.cref ()};
         return WaitForIOReady<T, TRAITS>{r, fPollable2Wakeup_};
 #else
         return WaitForIOReady<T, TRAITS>{fData_.load (), fPollable2Wakeup_};
