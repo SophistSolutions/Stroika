@@ -1,25 +1,27 @@
 
 # WebServer Stroika Sample
 
-Example of how to use the web server framework, including routers, interceptors, etc.
+Simple example of how to use the web server framework, including routers, interceptors, FileSystemRequestHandler (http serve content from filesystem), etc.
 
-This can easily be integrated with the service framework (see Service framework sample).
+This can easily be integrated with the service framework (see Service framework sample, or the HTMLUI sample).
 
-- To test this example:
- -      o   Run the service (under the debugger if you wish)
- -      o   curl  http://localhost:8080/ OR
- -      o   curl  http://localhost:8080/FRED OR      (to see error handling)
- -      o   curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
- -      o   curl  http://localhost:8080/Files/foo.html -v
+To test this example:
+  - Run the service (under the debugger if you wish)
+    ~~~bash
+    ; assumes cd to StroikaRoot directory - top level of repo
+    ; assumes you built CONFIGURATION=Debug
 
-**NOTE** this program 
+    ./Builds/Debug/Samples-WebServer/WebServer -h
+    ./Builds/Debug/Samples-WebServer/WebServer --quit-after 60
+    ~~~
+  - Then in another window, while the above is running
+    ~~~bash
+    curl  http://localhost:8080/
+    curl  http://localhost:8080/FRED
+    curl -H "Content-Type: application/json" -X POST -d '{"AppState":"see-echoed"}' http://localhost:8080/SetAppState
+    curl  http://localhost:8080/Files/index.html -v
+    # OR      (to see error handling)
+    curl  http://localhost:8080/Files/filenotfound.html -v
 
-(make sure you run with 'current directory == top level directory of this sample else you wont find sample-html-folder)
-
-ADD html query example
-
-/*
- *  To test this example: (make sure you run with 'current directory == top level directory of this sample else you wont find sample-html-folder)
- *
- */
-
+Source Code:
+ - [Sources/WebServer.cpp](Sources/WebServer.cpp)

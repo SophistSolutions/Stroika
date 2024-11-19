@@ -31,12 +31,12 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
 using Common::ConstantProperty;
-using Execution::CommandLine;
 using Memory::BLOB;
 
 using Stroika::Frameworks::WebServer::FileSystemRequestHandler;
@@ -88,18 +88,31 @@ namespace {
         ConnectionManager fConnectionMgr_;
 
         MyWebServer_ (uint16_t portNumber)
-            : kRoutes_{Route{""_RegEx, DefaultPage_}, Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
-                       Route{"FRED/?"_RegEx,
-                             [] (Request*, Response* response) {
-                                 response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                                 response->write (L"FRED");
-                             }},
-                       Route{"Files/.*"_RegEx, FileSystemRequestHandler{Execution::GetEXEDir () / "html", kFileSystemRouterOptions_}}}
-            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
+            : kRoutes_{
+                /*
+                 *  Define the 'routes' for your webserver - the dispatch of URLs to callbacks (usually lambdas).
+                 *  But - sometimes the callbacks are complex objects, like the filesystem handler.
+                 * 
+                 *  \see the ../../../WebService, or ../../../HTMLUI samples for more complex examples of routers.
+                 */
+
+                Route{""_RegEx, DefaultPage_}
+                
+                , Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_}
+                
+                , Route{"FRED/?"_RegEx,
+                        [] (Request*, Response* response) {
+                            response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                            response->write (L"FRED");
+                        }}
+                
+                , Route{"Files/.*"_RegEx, FileSystemRequestHandler{GetEXEDir () / "html", kFileSystemRouterOptions_}}}
+        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
                               ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
             cerr << "Listening on {}..."_f(fConnectionMgr_.bindings ()) << endl;
         }
+
         // Can declare arguments as Request*,Response*
         static void DefaultPage_ (Request*, Response* response)
         {
@@ -135,29 +148,46 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    CommandLine                                          cmdLine{argc, argv};
-    Debug::TraceContextBumper                            ctx{"main", "argv={}"_f, cmdLine};
-    Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
+    CommandLine                               cmdLine{argc, argv};
+    Debug::TraceContextBumper                 ctx{"main", "argv={}"_f, cmdLine};
+    SignalHandlerRegistry::SafeSignalsManager safeSignals;
 #if qStroika_Foundation_Common_Platform_POSIX
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+    SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
-    const Execution::CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
-    const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+
+    uint16_t portNumber = 8080;
+
+    const CommandLine::Option kPortO_{
+        .fLongName = "port"sv, .fSupportsArgument = true, .fHelpOptionText = "specify webserver listen port (default {})"_f(portNumber)};
+    const CommandLine::Option kQuitAfterO_{
+        .fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpOptionText = "automatically quit after <argument> seconds"sv};
+    const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
 
     try {
-        uint16_t              portNumber = 8080;
-        Time::DurationSeconds quitAfter  = Time::kInfinity;
-        cmdLine.Validate ({kPortO_, kQuitAfterO_});
+        cmdLine.Validate (kAllOptions_);
+    }
+    catch (const InvalidCommandLineArgument&) {
+        cerr << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+        return EXIT_FAILURE;
+    }
+    if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+        return EXIT_SUCCESS;
+    }
+
+    try {
+        Time::DurationSeconds quitAfter = Time::kInfinity;
         if (auto o = cmdLine.GetArgument (kPortO_)) {
             portNumber = Characters::String2Int<uint16_t> (*o);
         }
         if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
             quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
         }
-        MyWebServer_ myWebServer{portNumber};        // listen and dispatch while this object exists
-        Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
+        MyWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
+        WaitableEvent{}.Wait (quitAfter);     // wait quitAfter seconds, or til user hits ctrl-c
     }
-    catch (const Execution::TimeOutException&) {
+    catch (const TimeOutException&) {
         cerr << "Timed out - so - exiting..." << endl;
         return EXIT_SUCCESS;
     }
