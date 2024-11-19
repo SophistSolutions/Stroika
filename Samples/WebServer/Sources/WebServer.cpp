@@ -103,7 +103,7 @@ namespace {
                 , Route{"FRED/?"_RegEx,
                         [] (Request*, Response* response) {
                             response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                            response->write (L"FRED");
+                            response->write ("FRED"sv);
                         }}
                 
                 , Route{"Files/.*"_RegEx, FileSystemRequestHandler{GetEXEDir () / "html", kFileSystemRouterOptions_}}}

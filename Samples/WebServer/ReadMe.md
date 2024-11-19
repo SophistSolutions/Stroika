@@ -8,8 +8,8 @@ This can easily be integrated with the service framework (see Service framework 
 To test this example:
   - Run the service (under the debugger if you wish)
     ~~~bash
-    ; assumes cd to StroikaRoot directory - top level of repo
-    ; assumes you built CONFIGURATION=Debug
+    # assumes cd to StroikaRoot directory - top level of repo
+    # assumes you built CONFIGURATION=Debug
 
     ./Builds/Debug/Samples-WebServer/WebServer -h
     ./Builds/Debug/Samples-WebServer/WebServer --quit-after 60
