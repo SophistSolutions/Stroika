@@ -107,6 +107,9 @@ all_objs_:
 	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
+# @todo the reason the .lib file isn't rebuilt properly sometimes is that this rule doesn't
+# trigger, probably because in this makefile, we don't get to see the dates changes on the obj files after the all_objs_ rule runs? and
+# unlike normal makefiles, we dont see the dependencies in this makefile - just sub-makes (to a degree).
 $(StroikaFrameworksLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
