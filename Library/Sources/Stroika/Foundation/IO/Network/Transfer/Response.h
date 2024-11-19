@@ -162,9 +162,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     public:
         /**
          *  This is layered on top of GetDataBinaryInputStream(), but uses any Response headers, such as
-         *  content type, to help decode the text stream as best as possible.
-         *      (as of 2014-10-08 - this is PLANED decoding, and not necesarily fully implemented).
-         *      @todo FIX to take into account codepage/etc from MIME content type!
+         *  content type/charset, to help decode the text stream as best as possible (using CodeCvt).
          *
          *  \par Example Usage
          *      \code
@@ -197,7 +195,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
-         * scans headers (Content-Type: xxx; charset=yyy
+         * scans headers (Content-Type: xxx; charset=yyy)
          *
          *  Can be any name registered in https://www.iana.org/assignments/character-sets/character-sets.xhtml
          */
