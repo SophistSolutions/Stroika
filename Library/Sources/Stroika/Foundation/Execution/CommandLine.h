@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Execution {
      *      \endcode
      * 
      *  TODO:
-     *      o   \todo find some way to better handle std::filesystem::path arguments (hande quoting, normalizing paths so they work better cross platform if needed/helpful (e.g. /cygrdrive/c/???)
+     *      o   \todo find some way to better handle std::filesystem::path arguments (handle quoting, normalizing paths so they work better cross platform if needed/helpful (e.g. /cygrdrive/c/???)
      * 
      */
     class CommandLine {
