@@ -97,7 +97,7 @@ namespace {
         MyWebServer_ (uint16_t portNumber, optional<HTTP::TransferEncoding> transferEncoding)
             : kRoutes_{Route{""_RegEx, [this] (Request* req, Response* res) { DefaultPage_ (req, res); }},
                        Route{"test-chunked-transfer.*"_RegEx,
-                             [this] (Request* req, Response* res) { TestOptionalTransferChunking_ (req, res); }},
+                             [] (Request* req, Response* res) { TestOptionalTransferChunking_ (req, res); }},
                        Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, [this] (Message* message) { SetAppState_ (message); }},
                        Route{HTTP::MethodsRegEx::kPost, "SetAppState2"_RegEx, [this] (Message* message) { SetAppState2_ (message); }},
                        Route{"FRED"_RegEx,
