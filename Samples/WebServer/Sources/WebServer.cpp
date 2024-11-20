@@ -114,16 +114,18 @@ namespace {
         }
 
         // Can declare arguments as Request*,Response*
-        static void DefaultPage_ (Request*, Response* response)
+        static void DefaultPage_ (Request* request, Response* response)
         {
-            constexpr bool kUseChunkedTransferCoding_ = true;
-            //constexpr bool kUseChunkedTransferCoding_ = false;
-            if (kUseChunkedTransferCoding_) {
+            /*
+             *  Control aspects of the response, like chunked transfer (before writing).
+             */
+            if (request->url ().GetQuery<URI::Query> ().value_or (URI::Query{""}) ("useChunked") == "true") {
                 response->automaticTransferChunkSize = 25;
             }
-            else {
+            else if (request->url ().GetQuery<URI::Query> ().value_or (URI::Query{""}) ("useChunked") == "false") {
                 response->automaticTransferChunkSize = Response::kNoChunkedTransfer;
             }
+
             response->contentType = DataExchange::InternetMediaTypes::kHTML;
             response->writeln ("<html><body>"sv);
             response->writeln ("<p>Hi Mom</p>"sv);

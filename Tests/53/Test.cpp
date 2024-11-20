@@ -96,6 +96,8 @@ namespace {
 
         MyWebServer_ (uint16_t portNumber, optional<HTTP::TransferEncoding> transferEncoding)
             : kRoutes_{Route{""_RegEx, [this] (Request* req, Response* res) { DefaultPage_ (req, res); }},
+                       Route{"test-chunked-transfer.*"_RegEx,
+                             [this] (Request* req, Response* res) { TestOptionalTransferChunking_ (req, res); }},
                        Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, [this] (Message* message) { SetAppState_ (message); }},
                        Route{HTTP::MethodsRegEx::kPost, "SetAppState2"_RegEx, [this] (Message* message) { SetAppState2_ (message); }},
                        Route{"FRED"_RegEx,
@@ -123,6 +125,30 @@ namespace {
             if (fUseTransferEncoding_) {
                 response->rwHeaders ().transferEncoding = *fUseTransferEncoding_;
             }
+            response->contentType = DataExchange::InternetMediaTypes::kHTML;
+            response->writeln ("<html><body>"sv);
+            response->writeln ("<p>Hi Mom</p>"sv);
+            response->writeln ("<ul>"sv);
+            response->writeln ("Run the service (under the debugger if you wish)"sv);
+            response->writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
+            response->writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
+            response->writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
+            response->writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
+            response->writeln ("</ul>"sv);
+            response->writeln ("</body></html>"sv);
+        }
+        static void TestOptionalTransferChunking_ (Request* request, Response* response)
+        {
+            if (request->url ().GetQuery<URI::Query> ().value_or (URI::Query{""}) ("useChunked") == "true") {
+                response->automaticTransferChunkSize = 25;
+            }
+            else if (request->url ().GetQuery<URI::Query> ().value_or (URI::Query{""}) ("useChunked") == "false") {
+                response->automaticTransferChunkSize = Response::kNoChunkedTransfer;
+            }
+            else {
+                // default behavior...
+            }
+            DbgTrace ("response->automaticTransferChunkSize={}"_f, response->automaticTransferChunkSize ());
             response->contentType = DataExchange::InternetMediaTypes::kHTML;
             response->writeln ("<html><body>"sv);
             response->writeln ("<p>Hi Mom</p>"sv);
@@ -377,13 +403,52 @@ namespace {
     }
 }
 
+namespace {
+    GTEST_TEST (Frameworks_WebServer, TestChunkedTransfer_)
+    {
+        // @todo add tests with different flags about allowed compression - and add asserts about returned content-encoding headers.
+        const IO::Network::PortType portNumber = 8082;
+        MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        try {
+            auto c = IO::Network::Transfer::Connection::New ();
+            {
+                IO::Network::Transfer::Response r =
+                    c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer"sv});
+                EXPECT_TRUE (r.GetSucceeded ());
+                EXPECT_GT (r.GetData ().size (), 100u);
+                //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
+            }
+            {
+                c = IO::Network::Transfer::Connection::New ();
+                IO::Network::Transfer::Response r =
+                    c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer", "useChunked=true"sv});
+                EXPECT_TRUE (r.GetSucceeded ());
+                //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
+                EXPECT_TRUE (r.GetHeaders ().LookupValue (IO ::Network::HTTP::HeaderName:: kTransferEncoding).Contains ("chunked"));
+                EXPECT_GT (r.GetData ().size (), 100u);
+            }
+            {
+                IO::Network::Transfer::Response r =
+                    c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer", "useChunked=false"sv});
+                //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
+                EXPECT_TRUE (r.GetSucceeded ());
+                EXPECT_EQ (r.GetHeaders ().Lookup (IO ::Network::HTTP::HeaderName::kTransferEncoding), nullopt);
+                EXPECT_GT (r.GetData ().size (), 100u);
+            }
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
+    }
+}
+
 /// @todo - add tests with different Accept-Encoding headers
 
 namespace {
-    GTEST_TEST (Frameworks_WebServer, TestWebServiceObjectRequestHandler1)
+    GTEST_TEST (Frameworks_WebServervice, TestWebServiceObjectRequestHandler1)
     {
         EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
-        const IO::Network::PortType  portNumber = 8082;
+        const IO::Network::PortType  portNumber = 8083;
         MyObjectWebServiceWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
         try {
             auto c = IO::Network::Transfer::Connection::New ();
