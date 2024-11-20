@@ -203,6 +203,7 @@ jobs:
           echo "    X-CODE: `xcodebuild -version | tr '\n' ';'`"
           echo "LIBRARY_PATH = $LIBRARY_PATH"
       # If we had docker ability, most of these would be built into a docker file
+      ### started getting errors on instlal pkg-config - 2024-11-20 - so see if needed...brew install -q pkg-config
       - name: Install Basic Build requirements
         run: |
           brew install -q gnu-sed
@@ -210,7 +211,6 @@ jobs:
           brew install -q autoconf
           brew install -q libtool
           brew install -q automake
-          brew install -q pkg-config
           make install-realpath
       - name: Configure
         run: |
