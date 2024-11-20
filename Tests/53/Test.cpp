@@ -139,10 +139,10 @@ namespace {
         }
         static void TestOptionalTransferChunking_ (Request* request, Response* response)
         {
-            if (request->url ().GetQuery<URI::Query> ().value_or (URI::Query{""}) ("useChunked") == "true") {
+            if (request->url ().LookupQueryArg ("useChunked"sv) == "true"sv) {
                 response->automaticTransferChunkSize = 25;
             }
-            else if (request->url ().GetQuery<URI::Query> ().value_or (URI::Query{""}) ("useChunked") == "false") {
+            else if (request->url ().LookupQueryArg ("useChunked"sv) == "false"sv) {
                 response->automaticTransferChunkSize = Response::kNoChunkedTransfer;
             }
             else {

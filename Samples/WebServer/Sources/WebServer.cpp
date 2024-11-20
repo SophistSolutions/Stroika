@@ -119,11 +119,14 @@ namespace {
             /*
              *  Control aspects of the response, like chunked transfer (before writing).
              */
-            if (request->url ().GetQuery<URI::Query> ().value_or (URI::Query{""}) ("useChunked") == "true") {
+            if (request->url ().LookupQueryArg ("useChunked"sv) == "true"sv) {
                 response->automaticTransferChunkSize = 25;
             }
-            else if (request->url ().GetQuery<URI::Query> ().value_or (URI::Query{""}) ("useChunked") == "false") {
+            else if (request->url ().LookupQueryArg ("useChunked"sv) == "false"sv) {
                 response->automaticTransferChunkSize = Response::kNoChunkedTransfer;
+            }
+            else {
+                // use the default if requester didn't specify
             }
 
             response->contentType = DataExchange::InternetMediaTypes::kHTML;
@@ -132,6 +135,7 @@ namespace {
             response->writeln ("<ul>"sv);
             response->writeln ("Run the service (under the debugger if you wish)"sv);
             response->writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
+            response->writeln ("<li>curl http://localhost:8080/?useChunked=true OR</li>"sv);
             response->writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
             response->writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
             response->writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
