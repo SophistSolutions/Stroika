@@ -424,7 +424,7 @@ namespace {
                     c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer", "useChunked=true"sv});
                 EXPECT_TRUE (r.GetSucceeded ());
                 //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
-                EXPECT_TRUE (r.GetHeaders ().LookupValue (IO ::Network::HTTP::HeaderName:: kTransferEncoding).Contains ("chunked"));
+                EXPECT_TRUE (r.GetHeaders ().LookupValue (IO ::Network::HTTP::HeaderName::kTransferEncoding).Contains ("chunked"));
                 EXPECT_GT (r.GetData ().size (), 100u);
             }
             {
