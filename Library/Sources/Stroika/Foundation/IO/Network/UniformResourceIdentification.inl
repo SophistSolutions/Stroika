@@ -241,6 +241,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return HasField (Characters::String::FromUTF8 (idx));
     }
+    inline optional<String> Query::Lookup (const String& idx) const
+    {
+        return fMap_.Lookup (idx);
+    }
     inline void Query::AddField (const String& idx, const String& value)
     {
         fMap_.Add (idx, value);

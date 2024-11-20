@@ -158,6 +158,14 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fQuery_ = query ? query->ComputeQueryString () : optional<String>{};
     }
+    inline optional<String> URI::LookupQueryArg (const String& arg) const
+    {
+        if (fQuery_) {
+            // note could be more efficient, and just lookup the single argument here...
+            return Query{*fQuery_}.Lookup (arg);
+        }
+        return nullopt;
+    }
     inline optional<String> URI::GetFragment () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};

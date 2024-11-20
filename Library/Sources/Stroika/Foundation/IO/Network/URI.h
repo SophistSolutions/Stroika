@@ -292,6 +292,12 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         * \brief shortcut for url.GetQuery<Query> ()? url.GetQuery<Query> ()->Lookup (arg): nullopt;
+         */
+        nonvirtual optional<String> LookupQueryArg (const String& arg) const;
+
+    public:
+        /**
          */
         nonvirtual optional<String> GetFragment () const;
 

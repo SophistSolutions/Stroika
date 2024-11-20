@@ -562,10 +562,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     };
 
     /**
+     *  \note case sensitive - https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2.1
+     * 
+     *  \note Map, not Association - since https://www.rfc-editor.org/rfc/rfc3986#section-3.4 doesn't clearly indicate
+     *        that keys can be repeated, and common practice is to store query args in javascript 'object' which doesn't
+     *        allow duplicates. Do likewise for now... --LGP 2024-11-20
+     * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *
-     *          Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensitive so treat as case sensitive
      *
      *          comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
      *          So pick a preferred ordering (alphabetical) - and compare one after the other
@@ -596,6 +600,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     public:
         nonvirtual bool HasField (const u8string& idx) const;
         nonvirtual bool HasField (const String& idx) const;
+
+    public:
+        /**
+         *  \brief lookup argument in map
+         */
+        nonvirtual optional<String> Lookup (const String& idx) const;
 
     public:
         nonvirtual void AddField (const String& idx, const String& value);
