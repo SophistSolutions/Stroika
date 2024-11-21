@@ -34,6 +34,10 @@ fi
 
 VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
+# Set options so if sanitizer triggers, it offers more useful output by default
+# export ASAN_OPTIONS=
+export UBSAN_OPTIONS=print_stacktrace=1 
+#export TSAN_OPTIONS=
 
 mkdir -p Tests/HistoricalRegressionTestResults
 
