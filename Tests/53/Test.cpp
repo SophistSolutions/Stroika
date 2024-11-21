@@ -241,20 +241,6 @@ namespace {
                                                                                 [] (const ObjMapperableObj_& r) { return r.id; });
                                                                         }}}
 
-                , Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{{kMapper},
-                                                                                [] ([[maybe_unused]]const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
-                                                                                    return sData_.cget ().cref ().Map<Sequence<GUID>> (
-                                                                                        [] (const ObjMapperableObj_& r) { return r.id; });
-                                                                                }}}
-
-                // @todo add getall checking url query flag about include-all or not - and return objs or ids - using two ObjectRequestHandler instances
-                ,  Route{"api/objs/(.+)"_RegEx, ObjectRequestHandler::Factory{{kMapper},
-                                                                           [] (const ObjectRequestHandler::Context& c) -> ObjMapperableObj_ {
-                                                                               String id = c.fMatchedURLArgs[0];
-                                                                               return sData_.cget ().cref ().LookupChecked (
-                                                                                   id, ClientErrorException{"obj with that ID not found"sv});
-                                                                           }}}
-
                 // PATCH could be implemented using ObjectRequestHandler::Factory, but it adds little value, and good to show
                 // mixing direct RequestHandlers with ObjectRequestHandler based ones
                  ,  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
