@@ -15,18 +15,39 @@ namespace Stroika::Frameworks::WebServer {
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
         : function<void (Message* m, const Sequence<String>& args, bool* handled)>{
               [= messageHandler] (Message* m, [[maybe_unused]] const Sequence<String>& args, [[maybe_unused]] bool* handled) {
-                  if constexpr (invocable<Message&, const Sequence<String>&, bool&>) {
+                  if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&, bool&>) {
                       messageHandler (*m, args, *handled);
                   }
-                  else if constexpr (invocable<Message&, const Sequence<String>&>) {
+                  else if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&>) {
                       messageHandler (m, matchedArgs);
                       *handled = true;
                   }
-                  else if constexpr (invocable<Message&>) {
+                  else if constexpr (invocable<HANDLER_FUNCTION, Message&>) {
                       messageHandler (m);
                       *handled = true;
                   }
-                  // @todo other cases... below all handled
+                  else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&>) {
+                      messageHandler (m.rwRequest (), m.rwResponse ());
+                      *handled = true;
+                  }
+                  else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&>) {
+                      messageHandler (m.rwRequest (), m.rwResponse (), args);
+                      *handled = true;
+                  }
+                  else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&, bool&>) {
+                      messageHandler (m.rwRequest (), m.rwResponse (), args);
+                      *handled = true;
+                  }
+                  else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&>) {
+                      Require (matchedArgs.size () == 1);
+                      messageHandler (m, matchedArgs[0]);
+                      *handled = true;
+                  }
+                  else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&, const String&>) {
+                      Require (matchedArgs.size () == 2);
+                      messageHandler (m, matchedArgs[0], matchedArgs[1]);
+                      *handled = true;
+                  }
               }}
     {
     }
@@ -67,7 +88,7 @@ namespace Stroika::Frameworks::WebServer {
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&, const Sequence<String>&>) HANDLER_FUNCTION>
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
         : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
-            messageHandler (m, matchedArgs);
+            messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
             *handled = true;
         }}
     {
