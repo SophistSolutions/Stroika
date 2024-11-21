@@ -572,14 +572,17 @@ raspberrypi-cross-compile-test-configurations:
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-11-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-11' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
 	@#
 	@# gcc-12 ARM raspberrypi compiler
+	@#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-12-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-12' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-12-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-12' --sanitize none,address --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-12-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-12' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-12-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-12' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
 	@#
 	@# gcc-13 ARM raspberrypi compiler
+	@#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
+	@#### NOTE to get this working on current raspbi/debian - see https://stroika.atlassian.net/browse/STK-1022
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-13-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-13-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-13' --sanitize none,address --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-13-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-13-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
 
 
 regression-test-configurations:
