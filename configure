@@ -94,6 +94,7 @@ my @CFLAGS = qw ();
 my @CFLAGS2Remove = qw ();
 my $CFLAGS_Overridden = false;
 my @CXXFLAGS = qw ();
+my @CXXFLAGS2Append = qw ();
 my @CXXFLAGS2Remove = qw ();
 my $CXXFLAGS_Overridden = false;
 
@@ -1839,7 +1840,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-CXXFLAGS") or (lc ($var) eq "--append-cxxflags")) {
 			$i++;
 			$var = $args[$i];
-			push @CXXFLAGS, $var;
+			push @CXXFLAGS2Append, $var;
 		}
 		elsif ((lc ($var) eq "-remove-CXXFLAGS") or (lc ($var) eq "--remove-cxxflags")) {
 			$i++;
@@ -2710,6 +2711,12 @@ sub PostProcessOptions_ ()
 		@GetDefaultCZZFLAGS_flags_flags = @CXXFLAGS;
 		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CXXFLAGS2Remove;
 		@CXXFLAGS = GetDefaultCZZFLAGS_flags_ (2);
+	}
+
+	# Append these last so they can be used to override earlier options
+	# 
+	for my $r (@CXXFLAGS2Append) {
+		push @CXXFLAGS, $r;
 	}
 
 	if ($BuildPlatform eq 'Unix' && not ($CPPSTD_VERSION_FLAG eq '')) {
