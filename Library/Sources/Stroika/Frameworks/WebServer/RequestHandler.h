@@ -44,9 +44,51 @@ namespace Stroika::Frameworks::WebServer {
      *      Also - a RequestHandler should be careful about threads, as it could be called first on one thread, and
      *      then - possibly at the same time - on another thread. The same handler can be used multiple times (multiple sessions).
      *      (meaning handler/lambda function itself required to be const or at least internally synchronized).
+     * 
+     * 
+     * DEPRECATE OVERLOAD Message*, and switch to Message&, and same for bool* handled - I THINK
      */
     class RequestHandler : public function<void (Message* message, const Sequence<String>& matchedArgs, bool* handled)> {
     public:
+//NEW
+
+/**
+         * CALLBACK (Message& message, Sequence<String> matchedArgs, bool& handled)
+         *       This is the generic, underlying full form of the message-handler, without anything defaulted. Other APIs just trivially map back to this.
+         * CALLBACK (Message& message, Sequence<String> matchedArgs)
+         *       Just ignore handled flags
+         * CALLBACK (Message& message)
+         *       Just ignore matchedArgs, and handled flags
+         * 
+         * CALLBACK (Message& message, String arg1, String arg2, ...)
+         *      note: for this overload, \req count of arguments == matchedArgs.size () - cuz must match count of matches returned from Route regexp. 
+         */
+//NYI
+#if 1
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&, const Sequence<String>&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+
+        // not sure (yet) how to do this with variadic templates
+        // explode Sequence<String> - caller bug/assertion of invoked with wrong # of arguments (since based solely on route regexp)
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const String&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const String&, const String&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+
+#endif
+#endif
+
         /**
          *  \note _Fx _Func, void* arg for one overload is just to differentiate the overload cases so
          *        compiler doesn't complain its a redefinition.

@@ -10,6 +10,98 @@ namespace Stroika::Frameworks::WebServer {
      ************************** WebServer::RequestHandler ***************************
      ********************************************************************************
      */
+#if qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        : function<void (Message* m, const Sequence<String>& args, bool* handled)>{
+              [= messageHandler] (Message* m, [[maybe_unused]] const Sequence<String>& args, [[maybe_unused]] bool* handled) {
+                  if constexpr (invocable<Message&, const Sequence<String>&, bool&>) {
+                      messageHandler (*m, args, *handled);
+                  }
+                  else if constexpr (invocable<Message&, const Sequence<String>&>) {
+                      messageHandler (m, matchedArgs);
+                      *handled = true;
+                  }
+                  else if constexpr (invocable<Message&>) {
+                      messageHandler (m);
+                      *handled = true;
+                  }
+                  // @todo other cases... below all handled
+              }}
+    {
+    }
+#else
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        //: function<void (Message*, const Sequence<String>&, bool*)>{messageHandler}
+        : function<void (Message* m, const Sequence<String>& args, bool* handled)>{[=] (Message* m, const Sequence<String>& args, bool* handled) {
+            // backward compat with old api
+            messageHandler (*m, args, *handled);
+        }}
+    {
+    }
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        : RequestHandler{[=] (Message& m, const Sequence<String>& matchedArgs, bool& handled) {
+            messageHandler (m, matchedArgs);
+            *handled = true;
+        }}
+    {
+    }
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
+            messageHandler (m);
+            *handled = true;
+        }}
+    {
+    }
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
+            messageHandler (m.rwRequest (), m.rwResponse ());
+            *handled = true;
+        }}
+    {
+    }
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&, const Sequence<String>&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
+            messageHandler (m, matchedArgs);
+            *handled = true;
+        }}
+    {
+    }
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
+            messageHandler (m);
+            *handled = true;
+        }}
+    {
+    }
+    // not sure (yet) how to do this with variadic templates
+    // explode Sequence<String> - caller bug/assertion of invoked with wrong # of arguments (since based solely on route regexp)
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const String&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
+            Require (matchedArgs.size () == 1);
+            messageHandler (m, matchedArgs[0]);
+            *handled = true;
+        }}
+    {
+    }
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const String&, const String&>) HANDLER_FUNCTION>
+    inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
+        : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
+            Require (matchedArgs.size () == 2);
+            messageHandler (m, matchedArgs[0], matchedArgs[1]);
+            *handled = true;
+        }}
+    {
+    }
+#endif
+
     inline RequestHandler::RequestHandler (const function<void (Message*, const Sequence<String>&, bool*)>& f)
         : function<void (Message*, const Sequence<String>&, bool*)>{f}
     {
