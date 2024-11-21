@@ -34,12 +34,8 @@ using Debug::AssertExternallySynchronizedMutex;
  ********************** IO::Network::HTTP::Response *****************************
  ********************************************************************************
  */
-Response::Response (Response&& src)
-    : Response{}
-{
-    fStatusAndOverrideReason_ = move (src.fStatusAndOverrideReason_);
-    fHeaders_                 = move (src.fHeaders_);
-}
+static_assert (not copyable<Response>); // ensure 'Satisfies Concepts' valid
+static_assert (movable<Response>);
 
 Response::Response (const optional<Headers>& initialHeaders)
     : headers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {

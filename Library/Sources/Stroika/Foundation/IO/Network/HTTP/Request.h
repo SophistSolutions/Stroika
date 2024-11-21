@@ -27,6 +27,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     /**
      *  HTTP Request object that (shared by HTTP Client and HTTP Server APIs).
+     * 
+     *  \note Satisfies Concepts:
+     *      o   static_assert (not copyable<Request>);
+     *      o   static_assert (movable<Request>);
+     * 
      *  \note - @todo - KEY MISSING FEATURE is BODY and STREAM - which are just in the Frameworks/WebServer subclass
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
@@ -41,6 +46,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         nonvirtual Request& operator= (const Request&) = delete;
+        nonvirtual Request& operator= (Request&& src) noexcept;
 
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     public:

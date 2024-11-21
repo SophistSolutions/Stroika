@@ -25,6 +25,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using DataExchange::InternetMediaType;
 
     /*
+     *  \note Satisfies Concepts:
+     *      o   static_assert (not copyable<Response>);
+     *      o   static_assert (movable<Response>);
+     * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Response {
@@ -38,6 +42,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         nonvirtual Response& operator= (const Response&) = delete;
+        nonvirtual Response& operator= (Response&& rhs) noexcept;
 
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     public:

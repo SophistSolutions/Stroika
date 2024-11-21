@@ -35,17 +35,11 @@ using Debug::AssertExternallySynchronizedMutex;
 
 /*
  ********************************************************************************
- *************************** WebServer::Request *********************************
+ ******************* IO::Network::HTTP::Request *********************************
  ********************************************************************************
  */
-Request::Request (Request&& src)
-    : Request{}
-{
-    fHTTPVersion_ = move (src.fHTTPVersion_);
-    fMethod_      = move (src.fMethod_);
-    fURL_         = move (src.fURL_);
-    fHeaders_     = move (src.fHeaders_);
-}
+static_assert (not copyable<Request>); // ensure 'Satisfies Concepts' valid
+static_assert (movable<Request>);
 
 Request::Request ()
     : httpVersion{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
