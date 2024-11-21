@@ -42,12 +42,8 @@ using Debug::AssertExternallySynchronizedMutex;
  *************************** WebServer::Request *********************************
  ********************************************************************************
  */
-Request::Request (Request&& src)
-    : Request{src.fInputStream_}
-{
-    fBodyInputStream_ = move (src.fBodyInputStream_);
-    fBody_            = move (src.fBody_);
-}
+static_assert (not copyable<Request>); // enforce Satisfies Concepts
+static_assert (movable<Request>);
 
 Request::Request (const Streams::InputStream::Ptr<byte>& inStream)
     : keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {

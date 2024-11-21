@@ -26,18 +26,25 @@ namespace Stroika::Frameworks::WebServer {
     /**
      *  A message refers to a single back-and-forth request/response pair exchanged over HTTP.
      *
+     *  \note Satisfies Concepts:
+     *      o   static_assert (not copyable<Message>);
+     *      o   static_assert (movable<Message>);
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Message {
     public:
         /**
+         *  \note that a Message is not copyable (but is movable). Typically its passed around by reference.
          */
         Message ()               = delete;
         Message (const Message&) = delete;
+        Message (Message&& src) noexcept;
         Message (Request&& request, Response&& response, const optional<IO::Network::SocketAddress>& peerAddress = nullopt);
 
     public:
         nonvirtual Message& operator= (const Message&) = delete;
+        nonvirtual Message& operator= (Message&& rhs) noexcept;
 
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     public:

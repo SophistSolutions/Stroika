@@ -66,6 +66,9 @@ namespace {
     constexpr char kCRLF_[] = "\r\n";
 }
 
+static_assert (not copyable<Response>); // enforce Satisfies Concepts
+static_assert (movable<Response>);
+
 Response::Response (Response&& src)
     // Would be nice to use inherited src move, but PITA, because then would need to duplicate creating the properties below.
     : Response{src.fSocket_, src.fProtocolOutputStream_, src.headers ()}
@@ -297,6 +300,27 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         this->autoComputeETag = false;
         return PropertyChangedEventResultType::eContinueProcessing;
     });
+}
+
+Response& Response::operator= (Response&& rhs) noexcept
+{
+    inherited::operator= (move (rhs));
+    fSocket_                                    = rhs.fSocket_;
+    fProtocolOutputStream_                      = rhs.fProtocolOutputStream_;
+    fState_                                     = rhs.fState_;
+    fHeadMode_                                  = rhs.fHeadMode_;
+    fAborted_                                   = rhs.fAborted_;
+    fAutoTransferChunkSize_                     = rhs.fAutoTransferChunkSize_;
+    fBodyEncoding_                              = move (rhs.fBodyEncoding_);
+    fBodyRawStream_                             = move (rhs.fBodyRawStream_);
+    fBodyRawStreamLength_                       = move (rhs.fBodyRawStreamLength_);
+    fBodyRowStreamLengthWhenLastChunkGenerated_ = move (rhs.fBodyRowStreamLengthWhenLastChunkGenerated_);
+    fBodyCompressedStream_                      = move (rhs.fBodyCompressedStream_);
+    fUseOutStream_                              = move (rhs.fUseOutStream_);
+    fCodePage_                                  = move (rhs.fCodePage_);
+    fCodeCvt_                                   = move (rhs.fCodeCvt_);
+    fETagDigester_                              = move (rhs.fETagDigester_);
+    return *this;
 }
 
 void Response::StateTransition_ (State to)

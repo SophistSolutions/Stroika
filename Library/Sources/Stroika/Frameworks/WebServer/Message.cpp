@@ -23,6 +23,9 @@ using Debug::AssertExternallySynchronizedMutex;
  ************************* WebServer::Message ***********************************
  ********************************************************************************
  */
+static_assert (not copyable<Message>); // enforce docs Satisfies Concepts:
+static_assert (movable<Message>);
+
 Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<IO::Network::SocketAddress>& peerAddress)
     : peerAddress{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<IO::Network::SocketAddress> {
         const Message* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::peerAddress);

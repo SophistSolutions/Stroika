@@ -30,8 +30,12 @@ namespace Stroika::Frameworks::WebServer {
     /**
      *  \brief this represents a HTTP request object for the WebServer module
      * 
+     *  \note Satisfies Concepts:
+     *      o   static_assert (not copyable<Request>);
+     *      o   static_assert (movable<Request>);
+     * 
      *  TODO:
-     *      @todo Probably/possibly hide the fInptuStream and other public
+     *      @todo Probably/possibly hide the fInputStream and other public
      *      @todo Maybe associated TextStream, and maybe readline method goes here
      *      @todo http://stroika-bugs.sophists.com/browse/STK-726 - support Transfer-Encoding: chunked (as we do for response)
      *
@@ -51,6 +55,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         nonvirtual Request& operator= (const Request&) = delete;
+        nonvirtual Request& operator= (Request&&) noexcept;
 
     public:
         /**

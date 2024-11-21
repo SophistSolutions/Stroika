@@ -56,6 +56,10 @@ namespace Stroika::Frameworks::WebServer {
      *        response->write (...);
      *      \endcode
      *
+     *  \note Satisfies Concepts:
+     *      o   static_assert (not copyable<Response>);
+     *      o   static_assert (movable<Response>);
+     * 
      *  TODO:
      *      @todo Support http://stroika-bugs.sophists.com/browse/STK-727 - HTTP Chunked Transfer Trailers. We do support
      *            chunked transfers, but require all the headers set first.
@@ -99,12 +103,13 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         * Response must be completed (OK to Abort ()) before being destroyed
+         * Response must be completed (OK or Abort ()) before being destroyed
          */
         ~Response () = default;
 
     public:
         nonvirtual Response& operator= (const Response&) = delete;
+        nonvirtual Response& operator= (Response&&) noexcept;
 
     public:
         /**
