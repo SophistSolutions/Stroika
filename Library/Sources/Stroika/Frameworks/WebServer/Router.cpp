@@ -206,7 +206,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         Response&      response = message->rwResponse ();
         HandleCORSInNormallyHandledMessage_ (request, response);
         bool handled = false;
-        (handler) (message, matches, &handled);
+        (handler) (*message, matches, handled);
         return handled;
     }
     nonvirtual bool Handle_HEAD_ (Message* message) const
@@ -220,7 +220,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             response.headMode = true;
             HandleCORSInNormallyHandledMessage_ (request, response);
             bool handled = false;
-            get<RequestHandler> (*handlerEtc) (message, get<Sequence<String>> (*handlerEtc), &handled);
+            get<RequestHandler> (*handlerEtc) (*message, get<Sequence<String>> (*handlerEtc), handled);
             if (handled) [[likely]] {
                 return true;
             }

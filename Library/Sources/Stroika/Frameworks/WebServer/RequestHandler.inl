@@ -13,10 +13,10 @@ namespace Stroika::Frameworks::WebServer {
 #if qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
-        : function<void (Message* m, const Sequence<String>& args, bool* handled)>{
-              [= messageHandler] (Message* m, [[maybe_unused]] const Sequence<String>& args, [[maybe_unused]] bool* handled) {
+        : function<void (Message&, const Sequence<String>&, bool*)>{
+              [= messageHandler] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, [[maybe_unused]] bool& handled) {
                   if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&, bool&>) {
-                      messageHandler (*m, args, *handled);
+                      messageHandler (m, matchedArgs, handled);
                   }
                   else if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&>) {
                       messageHandler (m, matchedArgs);
@@ -31,11 +31,11 @@ namespace Stroika::Frameworks::WebServer {
                       *handled = true;
                   }
                   else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&>) {
-                      messageHandler (m.rwRequest (), m.rwResponse (), args);
+                      messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
                       *handled = true;
                   }
                   else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&, bool&>) {
-                      messageHandler (m.rwRequest (), m.rwResponse (), args);
+                      messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
                       *handled = true;
                   }
                   else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&>) {
@@ -54,11 +54,13 @@ namespace Stroika::Frameworks::WebServer {
 #else
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
-        //: function<void (Message*, const Sequence<String>&, bool*)>{messageHandler}
+        : function<void (Message&, const Sequence<String>&, bool&)>{messageHandler}
+#if 0
         : function<void (Message* m, const Sequence<String>& args, bool* handled)>{[=] (Message* m, const Sequence<String>& args, bool* handled) {
             // backward compat with old api
             messageHandler (*m, args, *handled);
         }}
+#endif
     {
     }
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&>) HANDLER_FUNCTION>
@@ -73,7 +75,7 @@ namespace Stroika::Frameworks::WebServer {
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
         : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
             messageHandler (m);
-            *handled = true;
+            handled = true;
         }}
     {
     }
@@ -81,7 +83,7 @@ namespace Stroika::Frameworks::WebServer {
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
         : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
             messageHandler (m.rwRequest (), m.rwResponse ());
-            *handled = true;
+            handled = true;
         }}
     {
     }
@@ -89,7 +91,7 @@ namespace Stroika::Frameworks::WebServer {
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
         : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
             messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
-            *handled = true;
+            handled = true;
         }}
     {
     }
@@ -97,7 +99,7 @@ namespace Stroika::Frameworks::WebServer {
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
         : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
             messageHandler (m);
-            *handled = true;
+            handled = true;
         }}
     {
     }
@@ -108,7 +110,7 @@ namespace Stroika::Frameworks::WebServer {
         : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
             Require (matchedArgs.size () == 1);
             messageHandler (m, matchedArgs[0]);
-            *handled = true;
+            handled = true;
         }}
     {
     }
@@ -117,27 +119,28 @@ namespace Stroika::Frameworks::WebServer {
         : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
             Require (matchedArgs.size () == 2);
             messageHandler (m, matchedArgs[0], matchedArgs[1]);
-            *handled = true;
+            handled = true;
         }}
     {
     }
 #endif
 
+    // SOON TO BE DEPRECATED
     inline RequestHandler::RequestHandler (const function<void (Message*, const Sequence<String>&, bool*)>& f)
-        : function<void (Message*, const Sequence<String>&, bool*)>{f}
+        : RequestHandler{[f] (Message& m, const Sequence<String>& a, bool& h) { f (&m, a, &h); }}
     {
     }
     inline RequestHandler::RequestHandler (const function<void (Message*, const Sequence<String>&)>& f)
-        : RequestHandler{[f] (Message* m, const Sequence<String>& matches, bool* completed) {
-            f (m, matches);
-            *completed = true;
+        : RequestHandler{[f] (Message& m, const Sequence<String>& matches, bool& completed) {
+            f (&m, matches);
+            completed = true;
         }}
     {
     }
     inline RequestHandler::RequestHandler (const function<void (Message*)>& f)
-        : RequestHandler{[f] (Message* m, const Sequence<String>&, bool* completed) {
-            f (m);
-            *completed = true;
+        : RequestHandler{[f] (Message& m, const Sequence<String>&, bool& completed) {
+            f (&m);
+            completed = true;
         }}
     {
     }

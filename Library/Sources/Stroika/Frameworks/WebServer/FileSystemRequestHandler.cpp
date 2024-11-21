@@ -135,6 +135,6 @@ namespace {
 FileSystemRequestHandler::FileSystemRequestHandler (const filesystem::path& filesystemRoot, const Options& options)
     : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip,
                                                        Memory::NullCoalesce (options.fDefaultIndexFileNames), options.fCacheControlSettings)] (
-                         Message* m, const Sequence<String>&, bool* handled) -> void { rep->HandleMessage (m, handled); }}
+                         Message& m, const Sequence<String>&, bool& handled) -> void { rep->HandleMessage (&m, &handled); }}
 {
 }
