@@ -1,3 +1,4 @@
+# SEE https://stroika.atlassian.net/browse/STK-1022
 # (SO FAR NOT FULLY FUNCTIONING) Hack to build GLIBC 2.38 for raspberrypi
 # if you build using arm...g++-13 (only one available on Ubuntu 24.04) it depends
 # on GLIBC 2.38; but the latest raspberry pi seems to only come with GLIBC 2.36
