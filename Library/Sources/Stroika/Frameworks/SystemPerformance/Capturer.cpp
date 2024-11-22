@@ -153,7 +153,7 @@ void Capturer::RunnerOnce_ (const CaptureSet& cs)
         }
         catch (...) {
             using namespace Characters::Literals;
-            DbgTrace ("Eating exception in Capturer runner"_f);
+            DbgTrace ("Eating exception '{}' in Capturer runner"_f, current_exception ());
         }
     }
     UpdateMeasurementSet_ (measurements);
