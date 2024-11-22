@@ -86,32 +86,32 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  \par Example Usage (GET with explicit method regexp)
          *      \code
-         *          Route{HTTP::MethodsRegEx::kGet, "session(/?)"_RegEx, [this] (Message* m) {
-         *              WriteResponse (&m->rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
+         *          Route{HTTP::MethodsRegEx::kGet, "session(/?)"_RegEx, [this] (Message& m) {
+         *              WriteResponse (&m.rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
          *          }},
          *      \endcode
          *
          *  \par Example Usage (GET with defaulted GET method spec, and no arguments)
          *      \code
-         *          Route{"session(/?)"_RegEx, [this] (Message* m) {
-         *              WriteResponse (&m->rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
+         *          Route{"session(/?)"_RegEx, [this] (Message& m) {
+         *              WriteResponse (&m.rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
          *          }},
          *      \endcode
          * 
          *  \par Example Usage (GET with arg parsed from URL path)
          *      \code
-         *          Route{"resource/(.+)"_RegEx, [this] (Message* m, const String& resID) {
+         *          Route{"resource/(.+)"_RegEx, [this] (Message& m, const String& resID) {
          *              auto r = fWSImpl_->resource_GET (resID);
-         *              m->rwResponse().contentType  = get<InternetMediaType> (r);
-         *              m->rwResponse().write (get<BLOB> (r));
+         *              m.rwResponse().contentType  = get<InternetMediaType> (r);
+         *              m.rwResponse().write (get<BLOB> (r));
          *          }},
          *      \endcode
          * 
          *  \par Example Usage (POST, and grab params from Body)
          *      \code
-         *          Route{HTTP::MethodsRegEx::kPost, "HR(/?)"_RegEx, [this] (Message* m) {
+         *          Route{HTTP::MethodsRegEx::kPost, "HR(/?)"_RegEx, [this] (Message& m) {
          *              if (optional<InternetMediaType> ct = m->request ().contentType()) {
-         *                  WriteResponse (&m->rwResponse (), kHR_, kMapper.FromObject (fWSImpl_->HR_POST (*ct, m->rwRequest().GetBody ())));
+         *                  WriteResponse (&m.rwResponse (), kHR_, kMapper.FromObject (fWSImpl_->HR_POST (*ct, m->rwRequest().GetBody ())));
          *              }
          *              else {
          *                  Execution::Throw (Execution::RuntimeErrorException{"expected Content-Type HTTP Request header"});

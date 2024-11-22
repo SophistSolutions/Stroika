@@ -30,12 +30,12 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         using namespace Characters::Literals;
         using namespace DataExchange;
         using WebServer::Message;
-        return [*this] (Message* m, [[maybe_unused]] const Sequence<String>& matchedArgs) {
+        return [*this] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs) {
             Debug::TraceContextBumper ctx{
                 Stroika_Foundation_Debug_OptionalizeTraceArgs ("ObjectRequestHandler::Factory handler", "m->request = {}, RETURN_TYPE={}"_f,
-                                                               m->request ().ToString (), type_index{typeid (RETURN_TYPE)})};
-            Request&  req  = m->rwRequest ();
-            Response& resp = m->rwResponse ();
+                                                               m.request ().ToString (), type_index{typeid (RETURN_TYPE)})};
+            Request&  req  = m.rwRequest ();
+            Response& resp = m.rwResponse ();
             Context   context{.fMatchedURLArgs = matchedArgs, .fRequest = req, .fResponse = resp};
             if constexpr (same_as<RETURN_TYPE, void>) {
                 ApplyHandler (context);

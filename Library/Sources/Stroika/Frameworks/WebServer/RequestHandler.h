@@ -11,11 +11,7 @@
 #include "Message.h"
 
 /*
- */
-
-/*
- * TODO:
- *      @todo   RequestHandler overloads taking STRING arguments should use variadic templates (but tricky)
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -26,7 +22,7 @@ namespace Stroika::Frameworks::WebServer {
     using Containers::Sequence;
 
     /**
-     * A request handler should be understood to be stateless - as far as the connection is concerned.
+     * A request handler (callback function) should be understood to be stateless - as far as the connection is concerned.
      * 
      *  Each handler is assumed to take an array of strings as arguments (or none). These string arguments come from
      *  the regular expression MATCH of the URL (not from the body of the request, nor from the query string - unless that's part of the regexp matching).
@@ -57,6 +53,8 @@ namespace Stroika::Frameworks::WebServer {
          * 
          * HANDLER (Message& message, String arg1, String arg2, ...)
          *      note: for this overload, \req count of arguments == matchedArgs.size () - cuz must match count of matches returned from Route regexp. 
+         * 
+         *  \par See Route constructors for examples...
          */
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
         RequestHandler (HANDLER_FUNCTION&& messageHandler);
@@ -72,11 +70,14 @@ namespace Stroika::Frameworks::WebServer {
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
         RequestHandler (HANDLER_FUNCTION&& messageHandler);
 
-        // not sure (yet) how to do this with variadic templates
-        // explode Sequence<String> - caller bug/assertion of invoked with wrong # of arguments (since based solely on route regexp)
+        // explode Sequence<String> arg inline: caller bug/assertion of invoked with wrong # of arguments (since based solely on route regexp)
+        // @todo RequestHandler overloads taking STRING arguments should use variadic templates (but tricky)
+        // not sure (yet) how to do this
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const String&>) HANDLER_FUNCTION>
         RequestHandler (HANDLER_FUNCTION&& messageHandler);
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const String&, const String&>) HANDLER_FUNCTION>
+        RequestHandler (HANDLER_FUNCTION&& messageHandler);
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const String&, const String&, const String&>) HANDLER_FUNCTION>
         RequestHandler (HANDLER_FUNCTION&& messageHandler);
 #endif
 

@@ -95,93 +95,93 @@ namespace {
         optional<HTTP ::TransferEncoding> fUseTransferEncoding_;
 
         MyWebServer_ (uint16_t portNumber, optional<HTTP::TransferEncoding> transferEncoding)
-            : kRoutes_{Route{""_RegEx, [this] (Request* req, Response* res) { DefaultPage_ (req, res); }},
-                       Route{"test-chunked-transfer.*"_RegEx, [] (Request* req, Response* res) { TestOptionalTransferChunking_ (req, res); }},
-                       Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, [this] (Message* message) { SetAppState_ (message); }},
-                       Route{HTTP::MethodsRegEx::kPost, "SetAppState2"_RegEx, [this] (Message* message) { SetAppState2_ (message); }},
+            : kRoutes_{Route{""_RegEx, [this] (Request& req, Response& res) { DefaultPage_ (req, res); }},
+                       Route{"test-chunked-transfer.*"_RegEx, [] (Request& req, Response& res) { TestOptionalTransferChunking_ (req, res); }},
+                       Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, [this] (Message& message) { SetAppState_ (message); }},
+                       Route{HTTP::MethodsRegEx::kPost, "SetAppState2"_RegEx, [this] (Message& message) { SetAppState2_ (message); }},
                        Route{"FRED"_RegEx,
-                             [] (Request*, Response* response) {
-                                 response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                                 response->write (L"FRED");
+                             [] (Request&, Response& response) {
+                                 response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                 response.write ("FRED");
                              }},
                        Route{"TEST"_RegEx,
-                             [] (Request*, Response* response) {
-                                 response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                                 response->write (TestDeflateEnc1_::kDecoded);
+                             [] (Request&, Response& response) {
+                                 response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                 response.write (TestDeflateEnc1_::kDecoded);
                              }}}
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
             , fUseTransferEncoding_{transferEncoding}
         {
         }
         // Can declare arguments as Request*,Response*
-        void DefaultPage_ (Request*, Response* response)
+        void DefaultPage_ (Request&, Response& response)
         {
             //constexpr bool kUseTransferCoding_ = true;
             //            constexpr bool kUseTransferCoding_ = false;
             //          if (kUseTransferCoding_) {
-            //            response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
+            //            response.rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
             //      }
             if (fUseTransferEncoding_) {
-                response->rwHeaders ().transferEncoding = *fUseTransferEncoding_;
+                response.rwHeaders ().transferEncoding = *fUseTransferEncoding_;
             }
-            response->contentType = DataExchange::InternetMediaTypes::kHTML;
-            response->writeln ("<html><body>"sv);
-            response->writeln ("<p>Hi Mom</p>"sv);
-            response->writeln ("<ul>"sv);
-            response->writeln ("Run the service (under the debugger if you wish)"sv);
-            response->writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
-            response->writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
-            response->writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
-            response->writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
-            response->writeln ("</ul>"sv);
-            response->writeln ("</body></html>"sv);
+            response.contentType = DataExchange::InternetMediaTypes::kHTML;
+            response.writeln ("<html><body>"sv);
+            response.writeln ("<p>Hi Mom</p>"sv);
+            response.writeln ("<ul>"sv);
+            response.writeln ("Run the service (under the debugger if you wish)"sv);
+            response.writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
+            response.writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
+            response.writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
+            response.writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
+            response.writeln ("</ul>"sv);
+            response.writeln ("</body></html>"sv);
         }
-        static void TestOptionalTransferChunking_ (Request* request, Response* response)
+        static void TestOptionalTransferChunking_ (Request& request, Response& response)
         {
-            if (request->url ().LookupQueryArg ("useChunked"sv) == "true"sv) {
-                response->automaticTransferChunkSize = 25;
+            if (request.url ().LookupQueryArg ("useChunked"sv) == "true"sv) {
+                response.automaticTransferChunkSize = 25;
             }
-            else if (request->url ().LookupQueryArg ("useChunked"sv) == "false"sv) {
-                response->automaticTransferChunkSize = Response::kNoChunkedTransfer;
+            else if (request.url ().LookupQueryArg ("useChunked"sv) == "false"sv) {
+                response.automaticTransferChunkSize = Response::kNoChunkedTransfer;
             }
             else {
                 // default behavior...
             }
-            DbgTrace ("response->automaticTransferChunkSize={}"_f, response->automaticTransferChunkSize ());
-            response->contentType = DataExchange::InternetMediaTypes::kHTML;
-            response->writeln ("<html><body>"sv);
-            response->writeln ("<p>Hi Mom</p>"sv);
-            response->writeln ("<ul>"sv);
-            response->writeln ("Run the service (under the debugger if you wish)"sv);
-            response->writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
-            response->writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
-            response->writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
-            response->writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
-            response->writeln ("</ul>"sv);
-            response->writeln ("</body></html>"sv);
+            DbgTrace ("response.automaticTransferChunkSize={}"_f, response.automaticTransferChunkSize ());
+            response.contentType = DataExchange::InternetMediaTypes::kHTML;
+            response.writeln ("<html><body>"sv);
+            response.writeln ("<p>Hi Mom</p>"sv);
+            response.writeln ("<ul>"sv);
+            response.writeln ("Run the service (under the debugger if you wish)"sv);
+            response.writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
+            response.writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
+            response.writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
+            response.writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
+            response.writeln ("</ul>"sv);
+            response.writeln ("</body></html>"sv);
         }
         // Can declare arguments as Message* message
-        void SetAppState_ (Message* message)
+        void SetAppState_ (Message& message)
         {
             if (fUseTransferEncoding_) {
-                message->rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
+                message.rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
             }
-            message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
-            String argsAsString                = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
-            message->rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
+            message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
+            String argsAsString               = Streams::TextReader::New (message.rwRequest ().GetBody ()).ReadAll ();
+            message.rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
         }
-        void SetAppState2_ (Message* message)
+        void SetAppState2_ (Message& message)
         {
             if (fUseTransferEncoding_) {
-                message->rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
+                message.rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
             }
-            message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-            String argsAsString                = DataExchange::Variant::JSON::Reader{}
-                                      .Read (message->rwRequest ().GetBody ())
+            message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+            String argsAsString               = DataExchange::Variant::JSON::Reader{}
+                                      .Read (message.rwRequest ().GetBody ())
                                       .As<Mapping<String, DataExchange::VariantValue>> ()
                                       .LookupChecked ("AppState", RuntimeErrorException{"oops"})
                                       .As<String> ();
-            message->rwResponse ().write (argsAsString);
+            message.rwResponse ().write (argsAsString);
         }
     };
 }
@@ -243,16 +243,16 @@ namespace {
                 // PATCH could be implemented using ObjectRequestHandler::Factory, but it adds little value, and good to show
                 // mixing direct RequestHandlers with ObjectRequestHandler based ones
                  ,  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
-                        [] (Message* m, const String& id) {
+                        [] (Message& m, const String& id) {
                     using DataExchange::VariantValue;
                             using JSON::Patch::OperationItemsType;
-                            OperationItemsType patch = ClientErrorException::TreatExceptionsAsClientError ([=] () {return OperationItemsType::kMapper.ToObject<OperationItemsType> (m->rwRequest ().GetBodyVariantValue()); });
-                            // automatic / generic patch implemented using the VariantValue representation - if thats good enuf for your purposes, easy to use
+                            OperationItemsType patch = ClientErrorException::TreatExceptionsAsClientError ([&] () {return OperationItemsType::kMapper.ToObject<OperationItemsType> (m.rwRequest ().GetBodyVariantValue()); });
+                            // automatic / generic patch implemented using the VariantValue representation - if that's good enuf for your purposes, easy to use
                             ObjMapperableObj_ obj2Patch = sData_.cget ().cref ().LookupChecked (id, ClientErrorException{"obj with that ID not found"sv});
                             VariantValue obj2PatchVV = patch.Apply (kMapper.FromObject (obj2Patch));
                             obj2Patch                = kMapper.ToObject<ObjMapperableObj_> (obj2PatchVV);
                             sData_.rwget ().rwref ().Add (obj2Patch);
-                            m->rwResponse ().status = IO::Network::HTTP::StatusCodes::kNoContent;
+                            m.rwResponse ().status = IO::Network::HTTP::StatusCodes::kNoContent;
                         }}
 
                 , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
