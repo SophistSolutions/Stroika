@@ -20,7 +20,7 @@ using namespace Stroika::Frameworks::WebServer;
  ******************************* WebServer::ILogHandler *************************
  ********************************************************************************
  */
-shared_ptr<ILogHandler::MessageInstance> ILogHandler::Started (Message* m)
+shared_ptr<ILogHandler::MessageInstance> ILogHandler::Started (Message& m)
 {
     return make_shared<MessageInstance> (m, Time::GetTickCount ());
 }
@@ -35,32 +35,31 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
         : fLogger_{logger}
     {
     }
-    virtual void HandleFault (Message* m, [[maybe_unused]] const exception_ptr& e) const noexcept override
+    virtual void HandleFault (Message& m, [[maybe_unused]] const exception_ptr& e) const noexcept override
     {
-        RequireNotNull (m);
         shared_ptr<ILogHandler::MessageInstance> logID;
         {
             auto rwLock = fOngoingMessages_.rwget ();
-            Assert (rwLock->Lookup (m));
-            logID = *rwLock->Lookup (m);
-            rwLock->Remove (m);
+            Assert (rwLock->Lookup (&m));
+            logID = *rwLock->Lookup (&m);
+            rwLock->Remove (&m);
         }
         fLogger_->Completed (logID);
     }
-    virtual void HandleMessage (Message* m) const override
+    virtual void HandleMessage (Message& m) const override
     {
         shared_ptr<ILogHandler::MessageInstance> logID = fLogger_->Started (m);
-        Assert (not fOngoingMessages_->Lookup (m).has_value ());
-        fOngoingMessages_.rwget ().rwref ().Add (m, logID);
+        Assert (not fOngoingMessages_->Lookup (&m).has_value ());
+        fOngoingMessages_.rwget ().rwref ().Add (&m, logID);
     }
-    virtual void CompleteNormally (Message* m) const override
+    virtual void CompleteNormally (Message& m) const override
     {
         shared_ptr<ILogHandler::MessageInstance> logID;
         {
             auto rwLock = fOngoingMessages_.rwget ();
-            Assert (rwLock->Lookup (m));
-            logID = *rwLock->Lookup (m);
-            rwLock->Remove (m);
+            Assert (rwLock->Lookup (&m));
+            logID = *rwLock->Lookup (&m);
+            rwLock->Remove (&m);
         }
         fLogger_->Completed (logID);
     }

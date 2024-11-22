@@ -91,7 +91,7 @@ namespace {
     };
     const WebServiceMethodDescription kGUIConfig_{
         "config"sv,
-        Set<String>{IO::Network::HTTP::Methods::kGet},
+        Set<String>{HTTP::Methods::kGet},
         DataExchange::InternetMediaTypes::kJSON,
         "GUI config"sv,
         Sequence<String>{},
@@ -202,9 +202,9 @@ public:
     {
         using Stroika::Frameworks::WebServer::DefaultFaultInterceptor;
         DefaultFaultInterceptor defaultHandler;
-        fConnectionMgr_.defaultErrorHandler = DefaultFaultInterceptor{[defaultHandler] (Message* m, const exception_ptr& e) {
+        fConnectionMgr_.defaultErrorHandler = DefaultFaultInterceptor{[defaultHandler] (Message& m, const exception_ptr& e) {
             // Unsure if we should bother recording 404s
-            DbgTrace ("faulting on request {}"_f, Characters::ToString (m->request ()));
+            DbgTrace ("faulting on request {}"_f, Characters::ToString (m.request ()));
             OperationalStatisticsMgr::ProcessAPICmd::NoteError ();
             defaultHandler.HandleFault (m, e);
         }};
@@ -237,7 +237,7 @@ public:
  */
 const WebServiceMethodDescription WebServer::Rep_::kAbout_{
     "api/about"sv,
-    Set<String>{IO::Network::HTTP::Methods::kGet},
+    Set<String>{HTTP::Methods::kGet},
     DataExchange::InternetMediaTypes::kJSON,
     "Data about the Sample HTMLUI server status, version etc"sv,
     Sequence<String>{

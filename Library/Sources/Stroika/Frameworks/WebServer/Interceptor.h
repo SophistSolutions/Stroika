@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::WebServer {
         Interceptor ()                   = delete;
         Interceptor (const Interceptor&) = default;
         Interceptor (Interceptor&&)      = default;
-        Interceptor (const function<void (Message*)>& handleMessage, const function<void (Message*, const exception_ptr& e)>& handleFault = nullptr);
+        Interceptor (const function<void (Message&)>& handleMessage, const function<void (Message&, const exception_ptr& e)>& handleFault = nullptr);
 
     protected:
         Interceptor (const shared_ptr<_IRep>& rep);
@@ -58,19 +58,19 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  This function should NOT throw an exception - just do what it can to cleanup.
          */
-        nonvirtual void HandleFault (Message* m, const exception_ptr& e) const noexcept;
+        nonvirtual void HandleFault (Message& m, const exception_ptr& e) const noexcept;
 
     public:
         /**
          *  Intercepts and handles a message. Typically this will read stuff from the Request and
          *  add stuff to the Response.
          */
-        nonvirtual void HandleMessage (Message* m) const;
+        nonvirtual void HandleMessage (Message& m) const;
 
     public:
         /**
          */
-        nonvirtual void CompleteNormally (Message* m) const;
+        nonvirtual void CompleteNormally (Message& m) const;
 
     public:
         /**
@@ -106,13 +106,13 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  This function should NOT throw an exception - just do what it can to cleanup.
          */
-        virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) const noexcept;
+        virtual void HandleFault ([[maybe_unused]] Message& m, [[maybe_unused]] const exception_ptr& e) const noexcept;
 
         /**
          *  Intercepts and handles a message. Typically this will read stuff from the Request and
          *  add write to the Response.
          */
-        virtual void HandleMessage (Message* m) const = 0;
+        virtual void HandleMessage (Message& m) const = 0;
 
         /**
          * Rarely overriden, but can be to get a notification
@@ -121,7 +121,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          * EG. for logging.
          */
-        virtual void CompleteNormally (Message* m) const;
+        virtual void CompleteNormally (Message& m) const;
     };
 
 }

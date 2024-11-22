@@ -16,20 +16,20 @@ using namespace Stroika::Frameworks::WebServer;
  ********************************************************************************
  */
 class Interceptor::MyRep_ : public Interceptor::_IRep {
-    function<void (Message*)>                         fHandleMessage_;
-    function<void (Message*, const exception_ptr& e)> fHandleFault_;
+    function<void (Message&)>                         fHandleMessage_;
+    function<void (Message&, const exception_ptr& e)> fHandleFault_;
 
 public:
-    MyRep_ (const function<void (Message*)>& handleMessage, const function<void (Message*, const exception_ptr&)>& handleFault)
+    MyRep_ (const function<void (Message&)>& handleMessage, const function<void (Message&, const exception_ptr&)>& handleFault)
         : fHandleMessage_{handleMessage}
         , fHandleFault_{handleFault}
     {
     }
-    virtual void HandleFault (Message* m, const exception_ptr& e) const noexcept override
+    virtual void HandleFault (Message& m, const exception_ptr& e) const noexcept override
     {
         fHandleFault_ (m, e);
     }
-    virtual void HandleMessage (Message* m) const override
+    virtual void HandleMessage (Message& m) const override
     {
         fHandleMessage_ (m);
     }
@@ -40,7 +40,7 @@ public:
  ***************************** WebServer::Interceptor ***************************
  ********************************************************************************
  */
-Interceptor::Interceptor (const function<void (Message*)>& handleMessage, const function<void (Message*, const exception_ptr&)>& handleFault)
+Interceptor::Interceptor (const function<void (Message&)>& handleMessage, const function<void (Message&, const exception_ptr&)>& handleFault)
     : Interceptor{make_shared<MyRep_> (handleMessage, handleFault)}
 {
 }
@@ -50,10 +50,10 @@ Interceptor::Interceptor (const function<void (Message*)>& handleMessage, const 
  *********************** WebServer::Interceptor::_IRep **************************
  ********************************************************************************
  */
-void Interceptor::_IRep::HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) const noexcept
+void Interceptor::_IRep::HandleFault ([[maybe_unused]] Message& m, [[maybe_unused]] const exception_ptr& e) const noexcept
 {
 }
 
-void Interceptor::_IRep::CompleteNormally ([[maybe_unused]] Message* m) const
+void Interceptor::_IRep::CompleteNormally ([[maybe_unused]] Message& m) const
 {
 }

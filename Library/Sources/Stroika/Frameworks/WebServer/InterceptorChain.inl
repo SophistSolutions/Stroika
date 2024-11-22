@@ -17,9 +17,8 @@ namespace Stroika::Frameworks::WebServer {
         : InterceptorChain{src.fRep_.load ()}
     {
     }
-    inline void InterceptorChain::HandleMessage (Message* m) const
+    inline void InterceptorChain::HandleMessage (Message& m) const
     {
-        RequireNotNull (m);
         fRep_.cget ().load ()->HandleMessage (m);
     }
 

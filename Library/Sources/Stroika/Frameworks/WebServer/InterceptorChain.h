@@ -122,7 +122,7 @@ namespace Stroika::Frameworks::WebServer {
          *  Interceptors must not throw during the HandleFault. InterceptorChain::HandleMessage() simply rethrows the original
          *  fault (exception) that triggered the unwind of the message.
          */
-        nonvirtual void HandleMessage (Message* m) const;
+        nonvirtual void HandleMessage (Message& m) const;
 
     private:
         Execution::RWSynchronized<shared_ptr<_IRep>> fRep_;
@@ -143,7 +143,7 @@ namespace Stroika::Frameworks::WebServer {
         virtual shared_ptr<_IRep> SetInterceptors (const Sequence<Interceptor>& interceptors) const = 0;
 
         // Intercepts a message, and handles exception logic - distributing to interceptors already called
-        virtual void HandleMessage (Message* m) const = 0;
+        virtual void HandleMessage (Message& m) const = 0;
     };
 
 }

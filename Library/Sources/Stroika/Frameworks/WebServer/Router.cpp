@@ -99,33 +99,33 @@ struct Router::Rep_ : Interceptor::_IRep {
         , fRoutes_{routes}
     {
     }
-    virtual void HandleMessage (Message* m) const override
+    virtual void HandleMessage (Message& m) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{"Router::Rep_::HandleMessage", "...method='{}',url='{}'"_f, m->request ().httpMethod (), m->request ().url ()};
+        Debug::TraceContextBumper ctx{"Router::Rep_::HandleMessage", "...method='{}',url='{}'"_f, m.request ().httpMethod (), m.request ().url ()};
 #endif
-        for (Iterator<tuple<RequestHandler, Sequence<String>>> handlerI = Lookup_ (m->request ()); handlerI; ++handlerI) {
+        for (Iterator<tuple<RequestHandler, Sequence<String>>> handlerI = Lookup_ (m.request ()); handlerI; ++handlerI) {
             if (Handle_Via_RequestHandler_ (m, get<Sequence<String>> (*handlerI), get<RequestHandler> (*handlerI))) {
                 return;
             }
         }
-        if (m->request ().httpMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
+        if (m.request ().httpMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
             // handled
         }
-        else if (m->request ().httpMethod () == HTTP::Methods::kOptions) {
+        else if (m.request ().httpMethod () == HTTP::Methods::kOptions) {
             Handle_OPTIONS_ (m);
         }
         else {
-            if (optional<Set<String>> o = GetAllowedMethodsForRequest_ (m->request ()); o && not o->Contains (m->request ().httpMethod ())) {
+            if (optional<Set<String>> o = GetAllowedMethodsForRequest_ (m.request ()); o && not o->Contains (m.request ().httpMethod ())) {
                 // From 10.4.6 405 Method Not Allowed
                 //      The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
                 Assert (not o->empty ());
-                m->rwResponse ().rwHeaders ().allow = o;
-                static const auto kException_       = ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed};
+                m.rwResponse ().rwHeaders ().allow = o;
+                static const auto kException_      = ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed};
                 Execution::Throw (kException_);
             }
-            DbgTrace ("Router 404: (...url={})"_f, m->request ().url ());
+            DbgTrace ("Router 404: (...url={})"_f, m.request ().url ());
             static const auto kException_ = ClientErrorException{HTTP::StatusCodes::kNotFound};
             Execution::Throw (kException_);
         }
@@ -200,19 +200,19 @@ struct Router::Rep_ : Interceptor::_IRep {
         }
         return methods.empty () ? nullopt : optional<Set<String>>{methods};
     }
-    nonvirtual bool Handle_Via_RequestHandler_ (Message* message, const Sequence<String>& matches, const RequestHandler& handler) const
+    nonvirtual bool Handle_Via_RequestHandler_ (Message& message, const Sequence<String>& matches, const RequestHandler& handler) const
     {
-        const Request& request  = message->request ();
-        Response&      response = message->rwResponse ();
+        const Request& request  = message.request ();
+        Response&      response = message.rwResponse ();
         HandleCORSInNormallyHandledMessage_ (request, response);
         bool handled = false;
-        (handler) (*message, matches, handled);
+        (handler) (message, matches, handled);
         return handled;
     }
-    nonvirtual bool Handle_HEAD_ (Message* message) const
+    nonvirtual bool Handle_HEAD_ (Message& message) const
     {
-        const Request&   request  = message->request ();
-        Response&        response = message->rwResponse ();
+        const Request&   request  = message.request ();
+        Response&        response = message.rwResponse ();
         Sequence<String> matches;
         for (Iterator<tuple<RequestHandler, Sequence<String>>> handlerEtc = Lookup_ (HTTP::Methods::kGet, ExtractHostRelPath_ (request.url ()), request);
              handlerEtc; ++handlerEtc) {
@@ -220,17 +220,17 @@ struct Router::Rep_ : Interceptor::_IRep {
             response.headMode = true;
             HandleCORSInNormallyHandledMessage_ (request, response);
             bool handled = false;
-            get<RequestHandler> (*handlerEtc) (*message, get<Sequence<String>> (*handlerEtc), handled);
+            get<RequestHandler> (*handlerEtc) (message, get<Sequence<String>> (*handlerEtc), handled);
             if (handled) [[likely]] {
                 return true;
             }
         }
         return false;
     }
-    nonvirtual void Handle_OPTIONS_ (Message* message) const
+    nonvirtual void Handle_OPTIONS_ (Message& message) const
     {
-        const Request& request  = message->request ();
-        Response&      response = message->rwResponse ();
+        const Request& request  = message.request ();
+        Response&      response = message.rwResponse ();
         // @todo note - This ignores - Access-Control-Request-Method - not sure how we are expected to use it?
         auto o = GetAllowedMethodsForRequest_ (request);
         if (o) {
@@ -257,7 +257,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             response.status = HTTP::StatusCodes::kNoContent;
         }
         else {
-            DbgTrace ("Router 404: (...url={})"_f, message->request ().url ());
+            DbgTrace ("Router 404: (...url={})"_f, request.url ());
             Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
         }
     }

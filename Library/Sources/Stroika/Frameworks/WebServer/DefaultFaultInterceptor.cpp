@@ -24,10 +24,9 @@ using namespace Stroika::Frameworks::WebServer;
  */
 struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
     Rep_ () = default;
-    virtual void HandleFault (Message* m, const exception_ptr& e) const noexcept override
+    virtual void HandleFault (Message& m, const exception_ptr& e) const noexcept override
     {
-        RequireNotNull (m);
-        Response& response = m->rwResponse ();
+        Response& response = m.rwResponse ();
         try {
             try {
                 rethrow_exception (e);
@@ -60,23 +59,22 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             response.Abort ();
         }
     }
-    virtual void HandleMessage ([[maybe_unused]] Message* m) const override
+    virtual void HandleMessage ([[maybe_unused]] Message& m) const override
     {
     }
 };
 
 struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
-    function<void (Message*, const exception_ptr&)> fHandleFault_;
-    Rep_Explicit_ (const function<void (Message*, const exception_ptr&)>& handleFault)
+    function<void (Message&, const exception_ptr&)> fHandleFault_;
+    Rep_Explicit_ (const function<void (Message&, const exception_ptr&)>& handleFault)
         : fHandleFault_{handleFault}
     {
     }
-    virtual void HandleFault (Message* m, const exception_ptr& e) const noexcept override
+    virtual void HandleFault (Message& m, const exception_ptr& e) const noexcept override
     {
-        RequireNotNull (m);
         fHandleFault_ (m, e);
     }
-    virtual void HandleMessage ([[maybe_unused]] Message* m) const override
+    virtual void HandleMessage ([[maybe_unused]] Message& m) const override
     {
     }
 };
@@ -90,7 +88,11 @@ DefaultFaultInterceptor::DefaultFaultInterceptor ()
     : inherited{make_shared<Rep_> ()}
 {
 }
-DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&)>& handleFault)
+DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void (Message&, const exception_ptr&)>& handleFault)
     : inherited{make_shared<Rep_Explicit_> (handleFault)}
+{
+}
+DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&)>& handleFault)
+    : DefaultFaultInterceptor{[=] (Message& m, const exception_ptr& e) { handleFault (&m, e); }}
 {
 }

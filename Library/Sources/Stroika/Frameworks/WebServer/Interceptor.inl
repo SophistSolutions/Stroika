@@ -15,17 +15,17 @@ namespace Stroika::Frameworks::WebServer {
     {
         RequireNotNull (rep);
     }
-    inline void Interceptor::HandleFault (Message* m, const exception_ptr& e) const noexcept
+    inline void Interceptor::HandleFault (Message& m, const exception_ptr& e) const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
         fRep_->HandleFault (m, e);
     }
-    inline void Interceptor::HandleMessage (Message* m) const
+    inline void Interceptor::HandleMessage (Message& m) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
         fRep_->HandleMessage (m);
     }
-    inline void Interceptor::CompleteNormally (Message* m) const
+    inline void Interceptor::CompleteNormally (Message& m) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
         fRep_->CompleteNormally (m);

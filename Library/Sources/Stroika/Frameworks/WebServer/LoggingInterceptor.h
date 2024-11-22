@@ -26,11 +26,11 @@ namespace Stroika::Frameworks::WebServer {
      */
     struct ILogHandler {
         struct MessageInstance {
-            MessageInstance (Message* m, Time::TimePointSeconds startedAt);
-            Message*               fMessage{};
+            MessageInstance (Message& m, Time::TimePointSeconds startedAt);
+            Message&               fMessage;
             Time::TimePointSeconds fStartedAt{};
         };
-        virtual shared_ptr<MessageInstance> Started (Message* m);
+        virtual shared_ptr<MessageInstance> Started (Message& m);
         virtual void                        Completed (const shared_ptr<MessageInstance>& messageInstance) noexcept = 0;
     };
 

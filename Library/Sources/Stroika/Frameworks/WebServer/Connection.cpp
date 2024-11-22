@@ -373,7 +373,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         WriteLogConnectionMsg_ (Characters::Format ("Handing request {} to interceptor chain"_f, request ()));
 #endif
         try {
-            fInterceptorChain_.HandleMessage (fMessage_.get ());
+            fInterceptorChain_.HandleMessage (*fMessage_.get ());
         }
         catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

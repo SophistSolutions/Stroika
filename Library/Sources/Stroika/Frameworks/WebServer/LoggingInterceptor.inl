@@ -6,10 +6,10 @@ namespace Stroika::Frameworks::WebServer {
 
     /*
      ********************************************************************************
-     ***************************** Implementation Details ***************************
+     ************************* ILogHandler::MessageInstance *************************
      ********************************************************************************
      */
-    inline ILogHandler::MessageInstance::MessageInstance (Message* m, Time::TimePointSeconds startedAt)
+    inline ILogHandler::MessageInstance::MessageInstance (Message& m, Time::TimePointSeconds startedAt)
         : fMessage{m}
         , fStartedAt{startedAt}
     {
