@@ -108,7 +108,7 @@ public:
                              // demo getting argument from the body
                              if (not number) {
                                  // read if content-type is text (not json)
-                                 if (m->request ().contentType () and
+                                 if (m.request ().contentType () and
                                      InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText_PLAIN, *m.request ().contentType ())) {
                                      String argsAsString = Streams::TextReader::New (m.rwRequest ().GetBody ()).ReadAll ();
                                      number              = kMapper.ToObject<Number> (DataExchange::VariantValue{argsAsString});
