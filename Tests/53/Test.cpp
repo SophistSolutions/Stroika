@@ -160,7 +160,6 @@ namespace {
             response.writeln ("</ul>"sv);
             response.writeln ("</body></html>"sv);
         }
-        // Can declare arguments as Message* message
         void SetAppState_ (Message& message)
         {
             if (fUseTransferEncoding_) {

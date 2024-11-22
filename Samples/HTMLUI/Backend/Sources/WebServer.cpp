@@ -90,12 +90,8 @@ namespace {
         }();
     };
     const WebServiceMethodDescription kGUIConfig_{
-        "config"sv,
-        Set<String>{HTTP::Methods::kGet},
-        DataExchange::InternetMediaTypes::kJSON,
-        "GUI config"sv,
-        Sequence<String>{},
-        Sequence<String>{"GUI config."sv},
+        "config"sv,         Set<String>{HTTP::Methods::kGet},  DataExchange::InternetMediaTypes::kJSON, "GUI config"sv,
+        Sequence<String>{}, Sequence<String>{"GUI config."sv},
     };
     Config_ GetConfig_ ()
     {

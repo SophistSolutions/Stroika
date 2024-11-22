@@ -160,18 +160,18 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          *  \par Example Usage
          *      \code
          *          , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?recordings/?"_RegEx,
-         *                [this] (Message* m) {
+         *                [this] (Message& m) {
          *                    // use ObjectRequestHandler::Factory indirectly so can support POST raw data and arguments as query-args!
          *                    ObjectRequestHandler::Factory f{{kMapper}, [this] (const Recording& r) { return fWSImpl_->recordings_POST (r); }};
          *                    Recording                     arg = [&] () {
          *                        InternetMediaType requestCt =
-         *                            Memory::ValueOfOrThrow (m->request ().contentType (), ClientErrorException{"missing request content type"sv});
+         *                            Memory::ValueOfOrThrow (m.request ().contentType (), ClientErrorException{"missing request content type"sv});
          *                        auto ctChecker = InternetMediaTypeRegistry::sThe.load ();
          *                        if (ctChecker.IsA (InternetMediaTypes::kJSON, requestCt)) {
-         *                            return Recording{kMapper.ToObject<Recording> (m->rwRequest ().GetBodyVariantValue ())};
+         *                            return Recording{kMapper.ToObject<Recording> (m.rwRequest ().GetBodyVariantValue ())};
          *                        }
          *                        else if (ctChecker.IsA (InternetMediaTypes::kAudio, requestCt)) {
-         *                            auto r = Recording{.fData = make_tuple (requestCt, m->rwRequest ().GetBody ())};
+         *                            auto r = Recording{.fData = make_tuple (requestCt, m.rwRequest ().GetBody ())};
          *                            // also can grab some parameters, like user, etc from query args - @todo
          *                            return r;
          *                        }
@@ -180,7 +180,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          *                        }
          *                    }();
          *                    auto rr = f.ApplyHandler (arg);
-         *                    f.SendResponse (m->request (), m->rwResponse (), rr);
+         *                    f.SendResponse (m.request (), m.rwResponse (), rr);
          *                }},
          *      \endcode
          */

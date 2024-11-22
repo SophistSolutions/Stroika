@@ -51,7 +51,7 @@ namespace {
                 }
             }
         }
-        void HandleMessage (Message* m, bool* handled)
+        void HandleMessage (Message& m, bool& handled)
         {
 #if qStroika_Foundation_Debug_DefaultTracingOn
             Debug::TimingTrace ttrc{"FSRouterRep_::HandleMessage", 1ms}; // prelim - gather info on whether worth supporting ETAGs etc - why is this sometimes somewhat slow
@@ -62,7 +62,6 @@ namespace {
              */
             using DataExchange::InternetMediaTypeRegistry;
             // super primitive draft
-            RequireNotNull (m);
             String           urlHostRelPath{ExtractURLHostRelPath_ (m)};
             filesystem::path fn{fFSRoot_ / filesystem::path{urlHostRelPath.As<wstring> ()}};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -71,7 +70,7 @@ namespace {
                                                                m->request ().url ().GetAuthorityRelativeResource (), fn)};
 #endif
             try {
-                Response&              response = m->rwResponse ();
+                Response&              response = m.rwResponse ();
                 InputStream::Ptr<byte> in{FileInputStream::New (fn)};
                 if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::sThe->GetAssociatedContentType (fn.extension ())) {
                     response.contentType = *oMediaType;
@@ -81,12 +80,12 @@ namespace {
                 }
                 ApplyCacheControl_ (response, urlHostRelPath);
                 response.write (in.ReadAll ());
-                *handled = true;
+                handled = true;
             }
             catch (const system_error& e) {
                 if (e.code () == errc::no_such_file_or_directory) {
-                    Assert (not *handled);
-                    *handled = false; // Router itself will issue Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
+                    Assert (not handled);
+                    handled = false; // Router itself will issue Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
                 }
                 else {
                     Execution::ReThrow ();
@@ -102,9 +101,9 @@ namespace {
                 }
             }
         }
-        String ExtractURLHostRelPath_ (const Message* m) const
+        String ExtractURLHostRelPath_ (const Message& m) const
         {
-            const Request& request        = m->request ();
+            const Request& request        = m.request ();
             String         urlHostRelPath = request.url ().Normalize (URI::NormalizationStyle::eAggressive).GetAbsPath<String> ();
             Assert (not urlHostRelPath.Contains ("/../")); // so no escape magic - normalize assures
             if (not fURLPrefix2Strip_.empty ()) {
@@ -135,6 +134,6 @@ namespace {
 FileSystemRequestHandler::FileSystemRequestHandler (const filesystem::path& filesystemRoot, const Options& options)
     : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip,
                                                        Memory::NullCoalesce (options.fDefaultIndexFileNames), options.fCacheControlSettings)] (
-                         Message& m, const Sequence<String>&, bool& handled) -> void { rep->HandleMessage (&m, &handled); }}
+                         Message& m, const Sequence<String>&, bool& handled) -> void { rep->HandleMessage (m, handled); }}
 {
 }

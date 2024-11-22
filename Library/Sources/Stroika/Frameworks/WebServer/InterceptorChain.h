@@ -48,7 +48,7 @@ namespace Stroika::Frameworks::WebServer {
      *
      * \note A draft of the implementation to clarify
      *      \code
-     *          void InterceptorChain::HandleMessage (Message* m)
+     *          void InterceptorChain::HandleMessage (Message& m)
      *          {
      *              size_t i = 0;
      *              for (; i < fInterceptors_.size (); ++i) {
