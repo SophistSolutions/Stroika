@@ -153,6 +153,9 @@ public:
 
             /**
              * /resource
+             * 
+             *      \note saying HTTP::MethodsRegEx::kGet here is not needed, and just as an example - its the default and can
+             *            be omitted.
              */
             , Route{HTTP::MethodsRegEx::kGet, "api/resource/(.+)"_RegEx,
                     [this] (Message& m, const String& resID) {
@@ -169,6 +172,9 @@ public:
 
             /*
              * Serve up contents of html folder as static site
+             * 
+             *  Note - since this matches any URL, and is the last in the router, the above patterns match first, and anything
+             *  else is assumed to come from the html folder (else if fall-through, the router will issue 404).
              */
            , Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / "html"sv, kStaticSiteHandlerOptions_}}
           }

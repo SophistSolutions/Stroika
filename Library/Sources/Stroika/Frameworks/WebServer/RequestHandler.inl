@@ -13,47 +13,46 @@ namespace Stroika::Frameworks::WebServer {
 #if qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
-        : inherited{
-              [=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, [[maybe_unused]] bool& handled) {
-                  if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&, bool&>) {
-                      messageHandler (m, matchedArgs, handled);
-                  }
-                  else if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&>) {
-                      messageHandler (m, matchedArgs);
-                      handled = true;
-                  }
-                  else if constexpr (invocable<HANDLER_FUNCTION, Message&>) {
-                      messageHandler (m);
-                      handled = true;
-                  }
-                  else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&>) {
-                      messageHandler (m.rwRequest (), m.rwResponse ());
-                      handled = true;
-                  }
-                  else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&>) {
-                      messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
-                      handled = true;
-                  }
-                  else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&, bool&>) {
-                      messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
-                      handled = true;
-                  }
-                  else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&>) {
-                      Require (matchedArgs.size () == 1);
-                      messageHandler (m, matchedArgs[0]);
-                      handled = true;
-                  }
-                  else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&, const String&>) {
-                      Require (matchedArgs.size () == 2);
-                      messageHandler (m, matchedArgs[0], matchedArgs[1]);
-                      handled = true;
-                  }
-                  else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&, const String&, const String&>) {
-                      Require (matchedArgs.size () == 3);
-                      messageHandler (m, matchedArgs[0], matchedArgs[1], matchedArgs[2]);
-                      handled = true;
-                  }
-              }}
+        : inherited{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, [[maybe_unused]] bool& handled) {
+            if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&, bool&>) {
+                messageHandler (m, matchedArgs, handled);
+            }
+            else if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&>) {
+                messageHandler (m, matchedArgs);
+                handled = true;
+            }
+            else if constexpr (invocable<HANDLER_FUNCTION, Message&>) {
+                messageHandler (m);
+                handled = true;
+            }
+            else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&>) {
+                messageHandler (m.rwRequest (), m.rwResponse ());
+                handled = true;
+            }
+            else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&>) {
+                messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
+                handled = true;
+            }
+            else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&, bool&>) {
+                messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
+                handled = true;
+            }
+            else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&>) {
+                Require (matchedArgs.size () == 1);
+                messageHandler (m, matchedArgs[0]);
+                handled = true;
+            }
+            else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&, const String&>) {
+                Require (matchedArgs.size () == 2);
+                messageHandler (m, matchedArgs[0], matchedArgs[1]);
+                handled = true;
+            }
+            else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&, const String&, const String&>) {
+                Require (matchedArgs.size () == 3);
+                messageHandler (m, matchedArgs[0], matchedArgs[1], matchedArgs[2]);
+                handled = true;
+            }
+        }}
     {
     }
 #else
