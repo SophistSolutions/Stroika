@@ -85,9 +85,9 @@ public:
                    Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
 
                    Route{"FRED"_RegEx,
-                         [] (Request*, Response* response) {
-                             response->write ("FRED");
-                             response->contentType = InternetMediaTypes::kText_PLAIN;
+                         [] (Request&, Response& response) {
+                             response.write ("FRED");
+                             response.contentType = InternetMediaTypes::kText_PLAIN;
                          }},
 
                    /*
@@ -95,29 +95,29 @@ public:
                * the URL itself.
                */
                    Route{"variables(/?)"_RegEx,
-                         [this] (Message* m) {
-                             WriteResponse (&m->rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
+                         [this] (Message& m) {
+                             WriteResponse (&m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
                          }},
                    Route{"variables/(.+)"_RegEx,
-                         [this] (Message* m, const String& varName) {
-                             WriteResponse (&m->rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
+                         [this] (Message& m, const String& varName) {
+                             WriteResponse (&m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
                          }},
                    Route{HTTP::MethodsRegEx::kPostOrPut, "variables/(.+)"_RegEx,
-                         [this] (Message* m, const String& varName) {
+                         [this] (Message& m, const String& varName) {
                              optional<Number> number;
                              // demo getting argument from the body
                              if (not number) {
                                  // read if content-type is text (not json)
                                  if (m->request ().contentType () and
-                                     InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText_PLAIN, *m->request ().contentType ())) {
-                                     String argsAsString = Streams::TextReader::New (m->rwRequest ().GetBody ()).ReadAll ();
+                                     InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText_PLAIN, *m.request ().contentType ())) {
+                                     String argsAsString = Streams::TextReader::New (m.rwRequest ().GetBody ()).ReadAll ();
                                      number              = kMapper.ToObject<Number> (DataExchange::VariantValue{argsAsString});
                                  }
                              }
                              // demo getting argument from the query argument
                              if (not number) {
                                  static const String                         kValueParamName_ = "value"sv;
-                                 Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (&m->request ());
+                                 Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (&m.request ());
                                  number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                              }
                              // demo getting either query arg, or url encoded arg
@@ -127,19 +127,19 @@ public:
                                  // Either one of those instead. PickoutParamValuesFromURL assumes you know the name of the parameter, and its
                                  // encoded in the query string. PickoutParamValuesFromBody assumes you have something equivalent you can parse ouf
                                  // of the body, either json encoded or form-encoded (as of 2.1d23, only json encoded supported)
-                                 Mapping<String, DataExchange::VariantValue> args = PickoutParamValues (&m->rwRequest ());
+                                 Mapping<String, DataExchange::VariantValue> args = PickoutParamValues (&m.rwRequest ());
                                  number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                              }
                              if (not number) {
                                  Execution::Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
                              }
                              fWSImpl_->Variables_SET (varName, *number);
-                             WriteResponse (&m->rwResponse (), kVariables_);
+                             WriteResponse (&m.rwResponse (), kVariables_);
                          }},
                    Route{HTTP::MethodsRegEx::kDelete, "variables/(.+)"_RegEx,
-                         [this] (Message* m, const String& varName) {
+                         [this] (Message& m, const String& varName) {
                              fWSImpl_->Variables_DELETE (varName);
-                             WriteResponse (&m->rwResponse (), kVariables_);
+                             WriteResponse (&m.rwResponse (), kVariables_);
                          }},
 
                    /*
@@ -179,9 +179,9 @@ public:
         Assert (tmp[1] == nullptr);
     }
     // Can declare arguments as Request*,Response*
-    static void DefaultPage_ (Request*, Response* response)
+    static void DefaultPage_ (Request&, Response& response)
     {
-        WriteDocsPage (response,
+        WriteDocsPage (&response,
                        Sequence<WebServiceMethodDescription>{
                            kVariables_,
                            kPlus_,
@@ -191,11 +191,11 @@ public:
                        },
                        DocsOptions{"Stroika Sample WebService - Web Methods"_k, "Note - curl lines all in bash quoting syntax"_k});
     }
-    static void SetAppState_ (Message* message)
+    static void SetAppState_ (Message& message)
     {
-        String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
-        message->rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>"sv);
-        message->rwResponse ().contentType = InternetMediaTypes::kHTML;
+        String argsAsString = Streams::TextReader::New (message.rwRequest ().GetBody ()).ReadAll ();
+        message.rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>"sv);
+        message.rwResponse ().contentType = InternetMediaTypes::kHTML;
     }
 };
 

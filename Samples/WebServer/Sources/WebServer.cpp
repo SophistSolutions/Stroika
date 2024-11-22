@@ -101,9 +101,9 @@ namespace {
                 , Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_}
                 
                 , Route{"FRED/?"_RegEx,
-                        [] (Request*, Response* response) {
-                            response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                            response->write ("FRED"sv);
+                        [] (Request&, Response& response) {
+                            response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                            response.write ("FRED"sv);
                         }}
                 
                 , Route{"Files/.*"_RegEx, FileSystemRequestHandler{GetEXEDir () / "html", kFileSystemRouterOptions_}}}
@@ -114,40 +114,40 @@ namespace {
         }
 
         // Can declare arguments as Request*,Response*
-        static void DefaultPage_ (Request* request, Response* response)
+        static void DefaultPage_ (Request& request, Response& response)
         {
             /*
              *  Control aspects of the response, like chunked transfer (before writing).
              */
-            if (request->url ().LookupQueryArg ("useChunked"sv) == "true"sv) {
-                response->automaticTransferChunkSize = 25;
+            if (request.url ().LookupQueryArg ("useChunked"sv) == "true"sv) {
+                response.automaticTransferChunkSize = 25;
             }
-            else if (request->url ().LookupQueryArg ("useChunked"sv) == "false"sv) {
-                response->automaticTransferChunkSize = Response::kNoChunkedTransfer;
+            else if (request.url ().LookupQueryArg ("useChunked"sv) == "false"sv) {
+                response.automaticTransferChunkSize = Response::kNoChunkedTransfer;
             }
             else {
                 // use the default if requester didn't specify
             }
 
-            response->contentType = DataExchange::InternetMediaTypes::kHTML;
-            response->writeln ("<html><body>"sv);
-            response->writeln ("<p>Hi Mom</p>"sv);
-            response->writeln ("<ul>"sv);
-            response->writeln ("Run the service (under the debugger if you wish)"sv);
-            response->writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
-            response->writeln ("<li>curl http://localhost:8080/?useChunked=true OR</li>"sv);
-            response->writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
-            response->writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
-            response->writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
-            response->writeln ("</ul>"sv);
-            response->writeln ("</body></html>"sv);
+            response.contentType = DataExchange::InternetMediaTypes::kHTML;
+            response.writeln ("<html><body>"sv);
+            response.writeln ("<p>Hi Mom</p>"sv);
+            response.writeln ("<ul>"sv);
+            response.writeln ("Run the service (under the debugger if you wish)"sv);
+            response.writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
+            response.writeln ("<li>curl http://localhost:8080/?useChunked=true OR</li>"sv);
+            response.writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
+            response.writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
+            response.writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
+            response.writeln ("</ul>"sv);
+            response.writeln ("</body></html>"sv);
         }
         // Can declare arguments as Message* message
-        static void SetAppState_ (Message* message)
+        static void SetAppState_ (Message& message)
         {
-            message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
-            String argsAsString                = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
-            message->rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
+            message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
+            String argsAsString                = Streams::TextReader::New (message.rwRequest ().GetBody ()).ReadAll ();
+            message.rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
         }
     };
 }
