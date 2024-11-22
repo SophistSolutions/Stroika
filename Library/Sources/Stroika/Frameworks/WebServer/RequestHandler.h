@@ -42,6 +42,8 @@ namespace Stroika::Frameworks::WebServer {
      *        compatible change...
      */
     class RequestHandler : public function<void (Message& message, const Sequence<String>& matchedArgs, bool& handled)> {
+    private:
+    using inherited = function<void (Message& message, const Sequence<String>& matchedArgs, bool& handled)>;
     public:
         /**
          * HANDLER (Message& message, Sequence<String> matchedArgs, bool& handled)

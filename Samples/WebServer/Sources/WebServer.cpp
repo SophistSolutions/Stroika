@@ -113,7 +113,7 @@ namespace {
             cerr << "Listening on {}..."_f(fConnectionMgr_.bindings ()) << endl;
         }
 
-        // Can declare arguments as Request*,Response*
+        // Can declare arguments as Request&,Response&, or Message&, or many other options - see WebServer::RequestHanlder constructor for details
         static void DefaultPage_ (Request& request, Response& response)
         {
             /*
@@ -142,7 +142,7 @@ namespace {
             response.writeln ("</ul>"sv);
             response.writeln ("</body></html>"sv);
         }
-        // Can declare arguments as Message* message
+        // Can declare arguments as Message& message
         static void SetAppState_ (Message& message)
         {
             message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;

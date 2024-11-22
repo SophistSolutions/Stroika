@@ -13,8 +13,8 @@ namespace Stroika::Frameworks::WebServer {
 #if qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
-        : function<void (Message&, const Sequence<String>&, bool*)>{
-              [= messageHandler] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, [[maybe_unused]] bool& handled) {
+        : inherited{
+              [=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, [[maybe_unused]] bool& handled) {
                   if constexpr (invocable<HANDLER_FUNCTION, Message&, const Sequence<String>&, bool&>) {
                       messageHandler (m, matchedArgs, handled);
                   }
@@ -59,7 +59,7 @@ namespace Stroika::Frameworks::WebServer {
 #else
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
-        : function<void (Message&, const Sequence<String>&, bool&)>{messageHandler}
+        : inherited{messageHandler}
     {
     }
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Message&, const Sequence<String>&>) HANDLER_FUNCTION>
