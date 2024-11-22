@@ -112,7 +112,7 @@ namespace {
  */
 class WebServer::Rep_ {
 public:
-    const Sequence<Route> kRoutes_;        // rules saying how to map urls to code
+    const Sequence<Route> kRoutes_;        // rules saying how to map URLs to code
     shared_ptr<IWSAPI>    fWSImpl_;        // application logic actually handling webservices
     ConnectionManager     fConnectionMgr_; // manage http connection objects, thread pool, etc
 
@@ -218,7 +218,7 @@ public:
                            kAbout_,
                        },
                        DocsOptions{.fH1Text           = "Stroika-Sample-HTMLUI"_k,
-                                   .fIntroductoryText = "EARLY DRAFT..."_k,
+                                   .fIntroductoryText = "Just a sample set of webservices to show how to hook C++ code into html via ajax callbacks..."_k,
                                    .fVariables2Substitute =
                                        Mapping<String, String>{
                                            {"ShowAsExternalURI"sv,
