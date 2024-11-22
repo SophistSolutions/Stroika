@@ -44,9 +44,8 @@ namespace {
             : ConnectionManager{SocketAddresses (InternetAddresses_Any (), webServerPortNumber),
                                 Sequence<Route>{
                                     Route{""_RegEx,
-                                          [dd] (Message* m) {
-                                              RequireNotNull (m);
-                                              Response& response   = m->rwResponse ();
+                                          [dd] (Message& m) {
+                                              Response& response   = m.rwResponse ();
                                               response.contentType = DataExchange::InternetMediaTypes::kXML;
                                               response.write (Stroika::Frameworks::UPnP::Serialize (dd));
                                           }},

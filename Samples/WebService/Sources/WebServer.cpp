@@ -91,9 +91,9 @@ public:
                          }},
 
                    /*
-               * the 'variable' API demonstrates a typical REST style CRUD usage - where the 'arguments' mainly come from 
-               * the URL itself.
-               */
+                    * the 'variable' API demonstrates a typical REST style CRUD usage - where the 'arguments' mainly come from 
+                    * the URL itself.
+                    */
                    Route{"variables(/?)"_RegEx,
                          [this] (Message& m) {
                              WriteResponse (&m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
@@ -137,6 +137,9 @@ public:
                              WriteResponse (&m.rwResponse (), kVariables_);
                          }},
                    Route{HTTP::MethodsRegEx::kDelete, "variables/(.+)"_RegEx,
+                         /*
+                          * varName - the first string argument to the request handler - comes from the first (and only) capture in the regexp.
+                          */
                          [this] (Message& m, const String& varName) {
                              fWSImpl_->Variables_DELETE (varName);
                              WriteResponse (&m.rwResponse (), kVariables_);

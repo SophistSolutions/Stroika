@@ -22,10 +22,10 @@ namespace Stroika::Frameworks::WebServer {
     using Containers::Sequence;
 
     /**
-     * A request handler (callback function) should be understood to be stateless - as far as the connection is concerned.
+     * A (WebServer Route) request handler (callback function) should be understood to be stateless - as far as the connection is concerned.
      * 
      *  Each handler is assumed to take an array of strings as arguments (or none). These string arguments come from
-     *  the regular expression MATCH of the URL (not from the body of the request, nor from the query string - unless that's part of the regexp matching).
+     *  the regular expression MATCH of the URL (not from the body of the request, nor from the query string - unless that's part of the regexp matching - not recommended).
      *
      *  \note bool& handled - handled defaults to false, and is typically set to true.
      *        For constructor overloads with no 'handled' flag argument, 'handled' is automatically set to true 

@@ -155,11 +155,11 @@ public:
              * /resource
              */
             , Route{HTTP::MethodsRegEx::kGet, "api/resource/(.+)"_RegEx,
-                    [this] (Message* m, const String& resID) {
+                    [this] (Message& m, const String& resID) {
                         ActiveCallCounter_ acc{*this};
                         auto               r         = fWSImpl_->resource_GET (resID);
-                        m->rwResponse ().contentType = r.fType;
-                        m->rwResponse ().write (r.fData);
+                        m.rwResponse ().contentType = r.fType;
+                        m.rwResponse ().write (r.fData);
                     }}
 
             /*
@@ -205,9 +205,9 @@ public:
         Logger::sThe.Log (Logger::eInfo, "Started WebServices on {}"_f, fConnectionMgr_.bindings ());
     }
     // Can declare arguments as Request*,Response*
-    static void DefaultPage_ (Request*, Response* response)
+    static void DefaultPage_ (Request&, Response& response)
     {
-        WriteDocsPage (response,
+        WriteDocsPage (&response,
                        Sequence<WebServiceMethodDescription>{
                            kAbout_,
                        },
