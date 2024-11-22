@@ -213,22 +213,22 @@ public:
     // Can declare arguments as Request*,Response*
     static void DefaultPage_ (Request&, Response& response)
     {
-        WriteDocsPage (&response,
-                       Sequence<WebServiceMethodDescription>{
-                           kAbout_,
-                       },
-                       DocsOptions{.fH1Text           = "Stroika-Sample-HTMLUI"_k,
-                                   .fIntroductoryText = "Just a sample set of webservices to show how to hook C++ code into html via ajax callbacks..."_k,
-                                   .fVariables2Substitute =
-                                       Mapping<String, String>{
-                                           {"ShowAsExternalURI"sv,
-                                            gAppConfiguration->ShowAsExternalURL
-                                                .value_or (Characters::Format ("http://[::1]:{}"_f, gAppConfiguration->WebServerPort.value_or (
-                                                                                                        AppConfigurationType::kWebServerPort_Default)))
-                                                .As<String> ()
-                                                .AssureEndsWith ('/')}},
-                                   //.fOpenAPISpecification    = kOpenAPISpecification,
-                                   .fOpenAPISpecificationURI = URI{"api/resource/api.json"sv}});
+        WriteDocsPage (
+            &response,
+            Sequence<WebServiceMethodDescription>{
+                kAbout_,
+            },
+            DocsOptions{.fH1Text = "Stroika-Sample-HTMLUI"_k,
+                        .fIntroductoryText = "Just a sample set of webservices to show how to hook C++ code into html via ajax callbacks..."_k,
+                        .fVariables2Substitute =
+                            Mapping<String, String>{
+                                {"ShowAsExternalURI"sv,
+                                 gAppConfiguration->ShowAsExternalURL
+                                     .value_or (Characters::Format ("http://[::1]:{}"_f, gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
+                                     .As<String> ()
+                                     .AssureEndsWith ('/')}},
+                        //.fOpenAPISpecification    = kOpenAPISpecification,
+                        .fOpenAPISpecificationURI = URI{"api/resource/api.json"sv}});
     }
 };
 
