@@ -62,13 +62,12 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  *** WebService::Server::VariantValue::CombineWebServiceArgsAsVariantValue ******
  ********************************************************************************
  */
-DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantValue (Request* request)
+DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantValue (Request& request)
 {
-    RequireNotNull (request);
     return ClientErrorException::TreatExceptionsAsClientError ([&] () {
         Mapping<String, DataExchange::VariantValue> result;
         {
-            Memory::BLOB inData = request->GetBody ();
+            Memory::BLOB inData = request.GetBody ();
             if (not inData.empty ()) {
                 DataExchange::VariantValue bodyObj = Variant::JSON::Reader{}.Read (inData);
                 switch (bodyObj.GetType ()) {
@@ -93,7 +92,7 @@ DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantV
  ********** WebService::Server::VariantValue::PickoutParamValues ****************
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (Request* request)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (Request& request)
 {
     Mapping<String, DataExchange::VariantValue> result = PickoutParamValuesFromURL (request);
     // body params take precedence, if they overlap
@@ -189,18 +188,18 @@ Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (con
  ***************** WebService::Server::VariantValue::WriteResponse **************
  ********************************************************************************
  */
-void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue)
+void Server::VariantValue::WriteResponse (Response& response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue)
 {
     if (webServiceDescription.fResponseType) {
-        response->contentType = *webServiceDescription.fResponseType;
-        response->write (responseValue);
+        response.contentType = *webServiceDescription.fResponseType;
+        response.write (responseValue);
     }
     else {
         WeakAssert (responseValue.empty ()); // if you returned a value you probably meant to have it written!
     }
 }
 
-void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
+void Server::VariantValue::WriteResponse (Response& response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
     InternetMediaTypeRegistry registry = InternetMediaTypeRegistry::sThe;
     Require (not webServiceDescription.fResponseType.has_value () or
@@ -208,12 +207,12 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
               webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN)); // all we support for now
     if (webServiceDescription.fResponseType) {
         if (registry.IsA (InternetMediaTypes::kJSON, *webServiceDescription.fResponseType)) {
-            response->contentType = *webServiceDescription.fResponseType;
-            response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
+            response.contentType = *webServiceDescription.fResponseType;
+            response.write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
         }
         else if (registry.IsA (InternetMediaTypes::Wildcards::kText, *webServiceDescription.fResponseType)) {
-            response->contentType = *webServiceDescription.fResponseType;
-            response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
+            response.contentType = *webServiceDescription.fResponseType;
+            response.write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
         }
         else {
             RequireNotReached ();

@@ -72,7 +72,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
      ********************************************************************************
      */
-    inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request)
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request)
     {
         RequireNotNull (request);
         return PickoutParamValuesFromBody (request->GetBody (), request->contentType ());
@@ -87,7 +87,11 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
      ********************************************************************************
      */
-    inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request* request)
+    inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request& request)
+    {
+        return PickoutParamValuesFromURL (request.url ());
+    }
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request* request)
     {
         RequireNotNull (request);
         return PickoutParamValuesFromURL (request->url ());
@@ -98,9 +102,14 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ************ WebService::Server::VariantValue::OrderParamValues ****************
      ********************************************************************************
      */
-    inline Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, Request* request)
+    inline Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, Request& request)
     {
         return OrderParamValues (paramNames, PickoutParamValues (request));
+    }
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames,
+                                                                                                            Request* request)
+    {
+        return OrderParamValues (paramNames, *request);
     }
 
     /*
@@ -108,9 +117,23 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ***************** WebService::Server::VariantValue::WriteResponse **************
      ********************************************************************************
      */
-    inline void WriteResponse ([[maybe_unused]] Response* response, [[maybe_unused]] const WebServiceMethodDescription& webServiceDescription)
+    inline void WriteResponse ([[maybe_unused]] Response& response, [[maybe_unused]] const WebServiceMethodDescription& webServiceDescription)
     {
         // nothing todo to write empty (void) response
+    }
+    [[deprecated ("Since Stroika v3.0d12 - use Response&")]] inline void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription)
+    {
+        WriteResponse (*response, webServiceDescription);
+    }
+    [[deprecated ("Since Stroika v3.0d12 - use Response&")]] inline void
+    WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue)
+    {
+        WriteResponse (*response, webServiceDescription, responseValue);
+    }
+    [[deprecated ("Since Stroika v3.0d12 - use Response&")]] inline void
+    WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
+    {
+        WriteResponse (*response, webServiceDescription, responseValue);
     }
 
     /*
@@ -119,6 +142,21 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ********************************************************************************
      */
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
+    template <typename RETURN_TYPE, typename... IN_ARGS>
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f);
+    template <typename RETURN_TYPE>
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const function<RETURN_TYPE (void)>& f);
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<BLOB (WebServer::Message* m)>& f);
+
+    template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&               webServiceDescription,
                                                 const DataExchange::ObjectVariantMapper&         objVarMapper,
                                                 const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
@@ -126,12 +164,12 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         return [=] (WebServer::Message* m) {
             ExpectedMethod (m->request (), webServiceDescription);
             if constexpr (same_as<RETURN_TYPE, void>) {
-                f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (&m->rwRequest ())));
+                f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->rwRequest ())));
                 WriteResponse (&m->rwResponse (), webServiceDescription);
             }
             else {
                 WriteResponse (&m->rwResponse (), webServiceDescription,
-                               f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (&m->rwRequest ()))));
+                               f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->rwRequest ()))));
             }
         };
     }
@@ -198,6 +236,11 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper,
                                                    function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
+    }
+
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] Mapping<String, DataExchange::VariantValue> PickoutParamValues (Request* request)
+    {
+        return PickoutParamValues (*request);
     }
 
 }

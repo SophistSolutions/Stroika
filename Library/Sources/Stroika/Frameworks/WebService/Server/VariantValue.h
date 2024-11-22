@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \note - PickoutParamValuesFromURL maps exceptions returned to IO::Network::HTTP::ClientErrorException
      */
-    Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request* request);
+    Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request& request);
     Mapping<String, VariantValue> PickoutParamValuesFromURL (const URI& url);
 
     /**
@@ -79,7 +79,6 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \note - PickoutParamValuesFromBody map exceptions returned to IO::Network::HTTP::ClientErrorException
      */
-    Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request);
     Mapping<String, VariantValue> PickoutParamValuesFromBody (Request& request);
     Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType);
 
@@ -103,7 +102,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \note - PickoutParamValues maps exceptions returned to IO::Network::HTTP::ClientErrorException
      */
-    Mapping<String, VariantValue> PickoutParamValues (Request* request);
+    Mapping<String, VariantValue> PickoutParamValues (Request& request);
 
     /**
       * Take the Body of the request, and if its missing, or an object, add in any query parameters (overriding body values) in the resulting object.
@@ -117,7 +116,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
       *
       * \note THIS IS RARELY used - but just if you want to have a single mapper that all your arguments and converts them to a single object.
       */
-    VariantValue CombineWebServiceArgsAsVariantValue (Request* request);
+    VariantValue CombineWebServiceArgsAsVariantValue (Request& request);
 
     /**
      *  \brief map a list of argument names, and a Mapping<String,VariantValue> (named arguments list), to a Sequence<VariantValue> - argument values.
@@ -174,7 +173,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      */
     Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
-    Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, Request* request);
+    Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, Request& request);
 
     /**
      *  \brief Apply the arguments in Sequence<VariantValue> or Mapping<String,VariantValue> in the order specified by paramNames, to function f, using objVariantMapper to transform them, and return the result
@@ -186,10 +185,10 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
                             const function<RETURN_TYPE (ARG_TYPES...)>& f);
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
-                            const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPES...)>& f);
+                            const Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPES...)>& f);
 
     /**
-     *  Send the argument value as a web-service response. If no argument (response value) response is empty. If resposne is a VariantValue,
+     *  Send the argument value as a web-service response. If no argument (response value) response is empty. If response is a VariantValue,
      *  its written as the format in the webServiceDescription.fResponseType.
      *  IF fResponseType !has_value, then no respose is written.
      *
@@ -198,53 +197,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *          o  DataExchange::InternetMediaTypes::JSON_CT
      *          o  DataExchange::InternetMediaTypes::kText_PLAIN
      */
-    void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription);
-    void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue);
-    void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
-
-    /**
-     * 
-     *   DEPRECATED IN FAVOR OF ObjectRequestHandler
-     * 
-     * 
-     *  \brief mkRequestHandler () is a series of overloaded helpers that first call ExpectedMethod to validate and then the argument function 'f' and then use the objMapper to format/return the result.
-     *
-     *  All the overloads of mkRequestHandler () take as the first argument a WebServiceMethodDescription, used to validate.
-     *
-     *  All (except the 'const function<BLOB (WebServer::Message* m)>& f' overload) take an ObjectVariantMapper used to map the arguments (if any) and results.
-     *
-     *  In the variadic overload with 'paramNames', each named parameter must correspond to the JSON param arg to the funtion and must correspond exactly in type and
-     *  order to the parameters of the function. They will be automatically extracted from the URL params or body (with @see OrderParamValues)
-     *
-     *  @see WriteResponse () for supported webServiceDescription.fResponseType values.
-     *
-     *  \par Example Usage
-     *      \code
-     *           Route{
-     *              RegularExpression{"plus"},
-     *              mkRequestHandler (
-     *                  kPlusWSDescriptor_,
-     *                  kObjectVariantMapper,
-     *                  Sequence<String>{"lhs", "rhs"},
-     *                  function<float (float, float)>{[=](float lhs, float rhs) { return lhs + rhs }})},
-     *      \endcode
-     *
-     *  The overload with f (void) as argument, takes no arguments (and so omits paramNames), and just returns the given result.
-     */
-    template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
-    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
-                      const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
-    template <typename RETURN_TYPE, typename... IN_ARGS>
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
-    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
-                      const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f);
-    template <typename RETURN_TYPE>
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
-    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
-                      const function<RETURN_TYPE (void)>& f);
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
-    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<BLOB (WebServer::Message* m)>& f);
+    void WriteResponse (Response& response, const WebServiceMethodDescription& webServiceDescription);
+    void WriteResponse (Response& response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue);
+    void WriteResponse (Response& response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
 }
 
