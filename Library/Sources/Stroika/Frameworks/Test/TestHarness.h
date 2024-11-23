@@ -16,6 +16,10 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 
+namespace Stroika::Foundation::Characters {
+    class String;
+}
+
 namespace Stroika::Frameworks::Test {
 
     /**
@@ -65,6 +69,7 @@ namespace Stroika::Frameworks::Test {
      */
     void WarnTestIssue (const char* issue);
     void WarnTestIssue (const wchar_t* issue);
+    void WarnTestIssue (const Foundation::Characters::String& issue);
 
 }
 #endif /*_Stroika_TestHarness_h_*/

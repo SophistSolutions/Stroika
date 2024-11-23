@@ -1376,8 +1376,8 @@ namespace {
 
 #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
-            Stroika::Frameworks::Test::WarnTestIssue (L"qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy and "
-                                                      L"Debug::kBuiltWithUndefinedBehaviorSanitizer so skipping test");
+            Stroika::Frameworks::Test::WarnTestIssue ("qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy and "
+                                                      "Debug::kBuiltWithUndefinedBehaviorSanitizer so skipping test");
             return;
         }
 #endif
@@ -1533,13 +1533,11 @@ namespace {
                 listAsMsg += i;
             });
             if (sShowOutput_) {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    (L"At least one test did not meet expected time constaint (see above): " + listAsMsg).c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue (("At least one test did not meet expected time constraint (see above): " + listAsMsg));
             }
             else {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    (Format ("At least one test ({}) did not meet expected time constraint (see {})"_f, listAsMsg, String{kDefaultPerfOutFile_}))
-                        .c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue ((Format ("At least one test ({}) did not meet expected time constraint (see {})"_f,
+                                                                   listAsMsg, String{kDefaultPerfOutFile_})));
             }
         }
     }

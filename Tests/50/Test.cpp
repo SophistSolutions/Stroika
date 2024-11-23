@@ -52,9 +52,8 @@ namespace {
             catch (...) {
                 // suppress macOS warn here - just not such locale installed
 #if !qStroika_Foundation_Common_Platform_MacOS
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    Characters::Format ("test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale {}"_f, localeName)
-                        .c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (
+                    "test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale {}"_f, localeName));
 #endif
             }
         };
@@ -85,7 +84,7 @@ namespace {
             }
             catch (...) {
                 Stroika::Frameworks::Test::WarnTestIssue (
-                    L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US missing locale");
+                    "localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US missing locale");
             }
             try {
                 localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US.utf8"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
@@ -94,7 +93,7 @@ namespace {
                 // suppress macos warn here - just not such locale installed
 #if !qStroika_Foundation_Common_Platform_MacOS
                 Stroika::Frameworks::Test::WarnTestIssue (
-                    L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
+                    "localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
 #endif
             }
         };
@@ -222,7 +221,7 @@ namespace {
             catch (...) {
 #if !qStroika_Foundation_Common_Platform_MacOS
                 Stroika::Frameworks::Test::WarnTestIssue (
-                    L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
+                    "tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
 #endif
             }
         };

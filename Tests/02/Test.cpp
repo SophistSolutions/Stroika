@@ -958,14 +958,11 @@ namespace {
                 if (not Math::NearlyEquals (l, f)) {
                     if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy) {
                         Stroika::Frameworks::Test::WarnTestIssue ("ToFloat(ToString({})) not properly roundtripping under valgrind: {}; note isinf({})={}, and isinf(f)={}"_f(
-                                                                      l, f, l, isinf (l), isinf (f))
-                                                                      .template As<wstring> ()
-                                                                      .c_str ());
+                            l, f, l, isinf (l), isinf (f)));
                         return;
                     }
                     if (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                        Stroika::Frameworks::Test::WarnTestIssue (
-                            "ToFloat(ToString({})) not properly roundtripping: {}"_f(l, f).template As<wstring> ().c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue ("ToFloat(ToString({})) not properly roundtripping: {}"_f(l, f));
                         return;
                     }
                 }

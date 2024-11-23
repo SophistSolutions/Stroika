@@ -231,16 +231,14 @@ namespace {
                 using namespace Characters;
                 if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
                     Stroika::Frameworks::Test::WarnTestIssue (Format ("File suffix mismatch for {}: got {}, expected {}"_f, i,
-                                                                      r.GetPreferredAssociatedFileSuffix (i), possibleFileSuffixes)
-                                                                  .c_str ());
+                                                                      r.GetPreferredAssociatedFileSuffix (i), possibleFileSuffixes));
                 }
                 if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
                     Stroika::Frameworks::Test::WarnTestIssue (
                         Format ("GetAssociatedContentType for fileSuffixes {} (expected {}, got {})"_f, possibleFileSuffixes, i,
                                 possibleFileSuffixes
                                     .Map<Iterable<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
-                                    .As<Set<InternetMediaType>> ())
-                            .c_str ());
+                                    .As<Set<InternetMediaType>> ()));
                 }
             };
             dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);

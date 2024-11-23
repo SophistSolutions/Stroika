@@ -530,8 +530,8 @@ namespace {
                 // vary. If diff, reverse the parse, and see if OK.
                 VariantValue vvv = DataExchange::Variant::JSON::Reader{}.Read (Memory::BLOB{x});
                 if (vvv != v) {
-                    Stroika::Frameworks::Test::WarnTestIssue (string{"x: " + x}.c_str ());
-                    Stroika::Frameworks::Test::WarnTestIssue (string{"expected: " + expected}.c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (string{"x: " + x});
+                    Stroika::Frameworks::Test::WarnTestIssue (string{"expected: " + expected});
                     EXPECT_TRUE (false);
                 }
             }
@@ -969,9 +969,7 @@ namespace {
                     Stroika::Frameworks::Test::WarnTestIssue (
                         "JSONONLY_Test_09_ReadWriteNANShouldNotFail_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, encodedRep={}, vOut={}"_f(
                             v, String::FromUTF8 (encodedRep), vOut)
-                            .ReplaceAll ("[\\r\\n]"_RegEx, "")
-                            .template As<wstring> ()
-                            .c_str ());
+                            .ReplaceAll ("[\\r\\n]"_RegEx, ""));
                     return;
                 }
                 EXPECT_EQ (vOut, v);
@@ -1019,10 +1017,7 @@ namespace {
             VariantValue vrt = vs.As<T> ();
             if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and v != vrt) {
                 Stroika::Frameworks::Test::WarnTestIssue (
-                    "Test3_VariantValue_Helper_MinMax_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt)
-                        .ReplaceAll ("[\r\n]"_RegEx, "")
-                        .template As<wstring> ()
-                        .c_str ());
+                    "Test3_VariantValue_Helper_MinMax_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
             }
             else {
                 EXPECT_EQ (v, vrt);
@@ -1040,10 +1035,7 @@ namespace {
             VariantValue vrt = vs.As<T> ();
             if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and v != vrt) {
                 Stroika::Frameworks::Test::WarnTestIssue (
-                    "Test3_VariantValue_Helper_MinMax_ (qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt)
-                        .ReplaceAll ("[\r\n]"_RegEx, "")
-                        .template As<wstring> ()
-                        .c_str ());
+                    "Test3_VariantValue_Helper_MinMax_ (qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
             }
             else {
                 EXPECT_EQ (v, vrt);

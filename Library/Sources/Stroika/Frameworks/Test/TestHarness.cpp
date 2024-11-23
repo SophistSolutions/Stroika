@@ -163,3 +163,8 @@ void Test::WarnTestIssue (const wchar_t* issue)
     wcerr << "WARNING: REGRESSION TEST ISSUE: '" << issue << "'" << endl;
     DbgTrace ("WARNING: REGRESSION TEST ISSUE: '{}"_f, issue);
 }
+
+void Test::WarnTestIssue (const Foundation::Characters::String& issue)
+{
+    WarnTestIssue (issue.As<wstring> ().c_str ());
+}
