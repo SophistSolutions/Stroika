@@ -30,6 +30,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     using Containers::Mapping;
     using Containers::Sequence;
     using DataExchange::InternetMediaType;
+    using DataExchange::ObjectVariantMapper;
     using DataExchange::VariantValue;
     using IO::Network::URI;
     using Memory::BLOB;
@@ -181,10 +182,10 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \note we only use the overload taking Sequence<VariantValue>, and MAY want to lose the Mapping<> overload.
      */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const ObjectVariantMapper& objVarMapper,
                             const function<RETURN_TYPE (ARG_TYPES...)>& f);
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const ObjectVariantMapper& objVarMapper,
                             const Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPES...)>& f);
 
     /**

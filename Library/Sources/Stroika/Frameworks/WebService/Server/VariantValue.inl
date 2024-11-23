@@ -238,7 +238,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
                                                    function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
     }
 
-    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] Mapping<String, DataExchange::VariantValue> PickoutParamValues (Request* request)
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, DataExchange::VariantValue> PickoutParamValues (Request* request)
     {
         return PickoutParamValues (*request);
     }
