@@ -9,4 +9,5 @@ namespace Stroika::Frameworks::WebService::Server {
     {
         WriteDocsPage (*response, operations, docsOptions);
     }
+    
 }
