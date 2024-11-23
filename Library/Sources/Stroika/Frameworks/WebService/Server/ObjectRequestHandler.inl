@@ -135,23 +135,26 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <same_as<RETURN_TYPE> RT>
-    // note maybe_unused on request wrong but tmphack to quiet til we check accept headers
     inline void Factory<RETURN_TYPE, ARG_TYPES...>::SendResponse ([[maybe_unused]] const Request& request, Response& response, const RT& r) const
     {
         using namespace DataExchange;
+        // note maybe_unused on request wrong but tmphack to quiet til we check accept headers
+        if (not response.contentType ().has_value ()) {
+            // @todo check accept headers for the default...
+            response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
+        }
+        auto ct = Memory::ValueOf (response.contentType ());
+
         // @todo check accepts content type - and convert result (to JSON or binary json, xml etc)
-        if constexpr (Common::IAnyOf<RETURN_TYPE, String, DataExchange::VariantValue>) {
-            if constexpr (same_as<RETURN_TYPE, String>) {
-                response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kText_PLAIN);
-            }
-            else {
-                response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
-            }
-            response.write (r);
+        VariantValue vv2Write = fOptions_.fObjectMapper.FromObject (r);
+        if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, ct)) {
+            response.write (Variant::JSON::Writer{}.WriteAsString (vv2Write));
+        }
+        else if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText_PLAIN, ct)) {
+            response.write (vv2Write.As<String> ()); // may throw if cannot convert to String, like accept: text/plain on content that was a map - should throw!
         }
         else {
-            response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kJSON);
-            response.write (Variant::JSON::Writer{}.WriteAsString (fOptions_.fObjectMapper.FromObject (r)));
+            RequireNotReached (); // that type not yet supported... - @todo binary json, xml, etc...
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
@@ -159,6 +162,20 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         requires (same_as<RETURN_TYPE, void>)
     {
         // @todo - not sure anything todo here???
+    }
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    template <same_as<RETURN_TYPE> RT>
+    inline void Factory<RETURN_TYPE, ARG_TYPES...>::SendStringResponse (const Request& request, Response& response, const RT& r) const
+    {
+        // @todo maybe respect accept headers - to a degree?
+        using namespace DataExchange;
+        response.contentType = fOptions_.fDefaultResultMediaType.value_or (InternetMediaTypes::kText_PLAIN);
+        if constexpr (Characters::IConvertibleToString<RT>) {
+            response.write (r);
+        }
+        else {
+            response.write (r.As<String> ()); // e.g. for Common::GUID, or URL, etc...
+        }
     }
 
 }

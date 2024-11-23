@@ -49,13 +49,13 @@
  *          add this to DOCS for class, but not needed in impl...
  *
  *      @todo   EXPLAIN why InsertAt () returns string and Append() doesn't! Or - change it!
- *              Basic idea is that append is SO convnentit (+=) - that we just must support that
+ *              Basic idea is that append is SO convenient (+=) - that we just must support that
  *              and it can be done safely.
  *
  *              But InsertAt () is less common, and so we can just encourage the more safe strategy of
  *              returning a new string.
  *
- *              Weak arguemnt! BUt best I can come up with...
+ *              Weak argument! BUt best I can come up with...
  *
  *      @todo   Cleanup SubString (), and String::SubString_ use of SharedByValue<TRAITS>::ReadOnlyReference for
  *              performance. At some level - in String::SubString_ - we have a (hidden) sharedPtr and it would
@@ -70,7 +70,7 @@
  *              very nicely.
  *
  *      @todo   Add PadLeft/PadRight or FillLeft/FilLRight() - not sure which name is better. But idea is to
- *              produce a string which is indentical to the orig except that IF start len < n, then expand it with
+ *              produce a string which is identical to the orig except that IF start len < n, then expand it with
  *              the given arg char repeated on the left or right.
  *
  *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%

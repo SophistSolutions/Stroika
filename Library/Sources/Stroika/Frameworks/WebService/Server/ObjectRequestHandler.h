@@ -213,12 +213,22 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
 
     public:
         /**
-         *  Given the packaged up response 'r' - send it as a result, in the appropriate format (based on request headers etc)
+         *  Given the packaged up response 'r' - send it as a result, in the appropriate format (based on request accept headers etc)
+         * 
+         *  \see also SendStringResponse, if the response should be sent as a string
          */
         template <same_as<RETURN_TYPE> RT>
         nonvirtual void SendResponse (const Request& request, Response& response, const RT& r) const;
         nonvirtual void SendResponse (const Request& request, Response& response) const
             requires (same_as<RETURN_TYPE, void>);
+
+    public:
+        /**
+         *  Send the given response, but assure content type is 'text' or textish, and don't encode 'r' as JSON.
+         *  This is primarily useful for a POST method, where you want to return the ID, not "ID".
+         */
+        template <same_as<RETURN_TYPE> RT>
+        nonvirtual void SendStringResponse (const Request& request, Response& response, const RT& r) const;
 
     private:
         function<RETURN_TYPE (ARG_TYPES...)> fHighLevelHandler_;
