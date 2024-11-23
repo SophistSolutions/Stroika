@@ -174,7 +174,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
             response.write (r);
         }
         else {
-            response.write (r.As<String> ()); // e.g. for Common::GUID, or URL, etc...
+            response.write (r.template As<String> ()); // e.g. for Common::GUID, or URL, etc...
         }
     }
 
