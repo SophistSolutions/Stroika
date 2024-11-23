@@ -61,8 +61,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     CommandLine cmdLine{argc, argv};
 
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, cmdLine)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, cmdLine)};
 
 #if qStroika_Foundation_Common_Platform_POSIX
     SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
@@ -71,7 +70,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     Time::DurationSeconds quitAfter    = Time::kInfinity;
     uint16_t              portForOurWS = 8080;
 
-    const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+    const CommandLine::Option           kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
     const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kQuitAfterO_};
 
     if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
