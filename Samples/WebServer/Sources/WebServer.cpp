@@ -98,14 +98,23 @@ namespace {
 
                 Route{""_RegEx, DefaultPage_}
                 
+                /*
+                 *  You can put the code for a route into a separate procedure
+                 */
                 , Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_}
                 
+                /*
+                 *  Or you can put the code for a route into a lambda directly - whichever you find easier/more maintainable.
+                 */
                 , Route{"FRED/?"_RegEx,
                         [] (Request&, Response& response) {
                             response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                             response.write ("FRED"sv);
                         }}
                 
+                /*
+                 *  Or use complex, pre-built handlers that do something complicated (like feed content from filesystem).
+                 */
                 , Route{"Files/.*"_RegEx, FileSystemRequestHandler{GetEXEDir () / "html", kFileSystemRouterOptions_}}}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
                               ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
@@ -113,7 +122,7 @@ namespace {
             cerr << "Listening on {}..."_f(fConnectionMgr_.bindings ()) << endl;
         }
 
-        // Can declare arguments as Request&,Response&, or Message&, or many other options - see WebServer::RequestHanlder constructor for details
+        // Can declare arguments as Request&,Response&, or Message&, or many other options - see WebServer::RequestHandler constructor for details
         static void DefaultPage_ (Request& request, Response& response)
         {
             /*
@@ -130,6 +139,9 @@ namespace {
             }
 
             response.contentType = DataExchange::InternetMediaTypes::kHTML;
+            /*
+             *  \note can also use HTMLViewCompiler to generate 'server side html' using more standard html syntax...
+             */
             response.writeln ("<html><body>"sv);
             response.writeln ("<p>Hi Mom</p>"sv);
             response.writeln ("<ul>"sv);

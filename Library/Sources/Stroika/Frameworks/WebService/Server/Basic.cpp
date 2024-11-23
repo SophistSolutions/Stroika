@@ -72,34 +72,34 @@ const String WebService::Server::DocsOptions::kDefaultCSSSection =
     "div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }\n"
     "div.introduction div { padding-top: 2pt; padding-bottom: 2pt; }\n"sv;
 
-void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions)
+void WebService::Server::WriteDocsPage (Response& response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions)
 {
-    response->contentType = DataExchange::InternetMediaTypes::kHTML;
-    response->writeln ("<html>"sv);
-    response->writeln ("<style type=\"text/css\">"sv);
-    response->writeln (docsOptions.fCSSSection);
-    response->writeln ("</style>"sv);
-    response->writeln ("<body>"sv);
-    response->write ("<h1>{}</h1>"_f, docsOptions.fH1Text);
-    response->write ("<div class='introduction'>{}</div>\n"_f, docsOptions.fIntroductoryText);
+    response.contentType = DataExchange::InternetMediaTypes::kHTML;
+    response.writeln ("<html>"sv);
+    response.writeln ("<style type=\"text/css\">"sv);
+    response.writeln (docsOptions.fCSSSection);
+    response.writeln ("</style>"sv);
+    response.writeln ("<body>"sv);
+    response.write ("<h1>{}</h1>"_f, docsOptions.fH1Text);
+    response.write ("<div class='introduction'>{}</div>\n"_f, docsOptions.fIntroductoryText);
 
     if (docsOptions.fOpenAPISpecificationURI) {
-        response->write ("<div class='OpenAPI'>Download <a href={}>OpenAPI File</a></div>\n"_f, *docsOptions.fOpenAPISpecificationURI);
+        response.write ("<div class='OpenAPI'>Download <a href={}>OpenAPI File</a></div>\n"_f, *docsOptions.fOpenAPISpecificationURI);
     }
-    response->writeln (L"<ul>");
-    auto substVars = [=] (const String& origStr) {
+    response.writeln (L"<ul>");
+    auto substVars = [&] (const String& origStr) {
         String str = origStr;
         for (const auto& i : docsOptions.fVariables2Substitute) {
             str = str.ReplaceAll ("{{" + i.fKey + "}}", i.fValue);
         }
         return str;
     };
-    auto writeDocs = [=] (const String& methodName, const String& docs, const String& exampleCall) {
-        response->writeln ("<li>"sv);
-        response->write ("<a href=\"/{}\">{}</a>"_f, methodName, methodName);
-        response->write ("<div class='mainDocs'>{}</div>"_f, docs);
-        response->write ("<div class='curlExample'>{}</div>"_f, exampleCall);
-        response->writeln ("</li>"sv);
+    auto writeDocs = [&] (const String& methodName, const String& docs, const String& exampleCall) {
+        response.writeln ("<li>"sv);
+        response.write ("<a href=\"/{}\">{}</a>"_f, methodName, methodName);
+        response.write ("<div class='mainDocs'>{}</div>"_f, docs);
+        response.write ("<div class='curlExample'>{}</div>"_f, exampleCall);
+        response.writeln ("</li>"sv);
     };
     for (const WebServiceMethodDescription& i : operations) {
         StringBuilder tmpDocs;
@@ -112,7 +112,7 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
         }
         writeDocs (i.fOperation, tmpDocs, tmpCurl);
     }
-    response->writeln ("</ul>"sv);
-    response->writeln ("</body>"sv);
-    response->writeln ("</html>"sv);
+    response.writeln ("</ul>"sv);
+    response.writeln ("</body>"sv);
+    response.writeln ("</html>"sv);
 }

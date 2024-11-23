@@ -210,7 +210,7 @@ public:
     static void DefaultPage_ (Request&, Response& response)
     {
         WriteDocsPage (
-            &response,
+            response,
             Sequence<WebServiceMethodDescription>{
                 kAbout_,
             },

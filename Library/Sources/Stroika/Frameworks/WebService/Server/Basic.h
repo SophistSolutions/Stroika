@@ -60,7 +60,7 @@ namespace Stroika::Frameworks::WebService::Server {
 
     /**
      */
-    void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions = {});
+    void WriteDocsPage (Response& response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions = {});
 
 }
 

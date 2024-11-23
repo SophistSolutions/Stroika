@@ -177,7 +177,7 @@ public:
     // Can declare arguments as Request&,Response&
     static void DefaultPage_ (Request&, Response& response)
     {
-        WriteDocsPage (&response,
+        WriteDocsPage (response,
                        Sequence<WebServiceMethodDescription>{
                            kVariables_,
                            kPlus_,
