@@ -16,6 +16,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebService;
@@ -47,19 +48,18 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  */
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType)
 {
-    using namespace Characters;
     static const InternetMediaType kDefaultCT_ = DataExchange::InternetMediaTypes::kJSON;
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::InternetMediaTypes::kJSON) {
         return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : ClientErrorException::TreatExceptionsAsClientError ([&] () {
             return Variant::JSON::Reader{}.Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
         });
     }
-    Execution::Throw (ClientErrorException{"Unrecognized content-type"sv});
+    Throw (ClientErrorException{"Unrecognized content-type"sv});
 }
 
 /*
  ********************************************************************************
- *** WebService::Server::VariantValue::CombineWebServiceArgsAsVariantValue ******
+ **** WebService::Server::VariantValue::CombineWebServiceArgsAsVariantValue *****
  ********************************************************************************
  */
 DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantValue (Request& request)
@@ -89,7 +89,7 @@ DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantV
 
 /*
  ********************************************************************************
- ********** WebService::Server::VariantValue::PickoutParamValues ****************
+ ************* WebService::Server::VariantValue::PickoutParamValues *************
  ********************************************************************************
  */
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (Request& request)
@@ -102,7 +102,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 
 /*
  ********************************************************************************
- ************ Server::VariantValue::PickOutNamedArguments ***********************
+ *************** Server::VariantValue::PickOutNamedArguments ********************
  ********************************************************************************
  */
 Iterable<DataExchange::VariantValue> Server::VariantValue::PickOutNamedArguments (const Iterable<String>&              argNames,
@@ -154,7 +154,7 @@ DataExchange::VariantValue Server::VariantValue::ExtractArgumentsAsVariantValue:
         }
         Assert (requestBody != VariantValue{} and urlBody != VariantValue{});
         if (requestBody.GetType () != VariantValue::eMap or urlBody.GetType () != VariantValue::eMap) {
-            Execution::Throw (ClientErrorException{"Expected url and body to both be structured VariantValue type"sv});
+            Throw (ClientErrorException{"Expected url and body to both be structured VariantValue type"sv});
         }
         Mapping<String, VariantValue> rr = requestBody.As<Mapping<String, VariantValue>> ();
         // merge - with url values taking precedence
@@ -221,21 +221,4 @@ void Server::VariantValue::WriteResponse (Response& response, const WebServiceMe
     else {
         WeakAssert (responseValue == nullptr); // if you returned a value you probably meant to have it written!
     }
-}
-
-/*
- ********************************************************************************
- **************** WebService::Server::VariantValue::mkRequestHandler ************
- ********************************************************************************
- */
-WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
-                                                                  const function<Memory::BLOB (WebServer::Message* m)>& f)
-{
-    return [=] (WebServer::Message& m) {
-        ExpectedMethod (m.request (), webServiceDescription);
-        if (webServiceDescription.fResponseType) {
-            m.rwResponse ().contentType = *webServiceDescription.fResponseType;
-        }
-        m.rwResponse ().write (f (&m));
-    };
 }

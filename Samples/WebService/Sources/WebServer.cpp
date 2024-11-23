@@ -96,11 +96,11 @@ public:
                     */
                    Route{"variables(/?)"_RegEx,
                          [this] (Message& m) {
-                             WriteResponse (&m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
+                             WriteResponse (m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
                          }},
                    Route{"variables/(.+)"_RegEx,
                          [this] (Message& m, const String& varName) {
-                             WriteResponse (&m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
+                             WriteResponse (m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
                          }},
                    Route{HTTP::MethodsRegEx::kPostOrPut, "variables/(.+)"_RegEx,
                          [this] (Message& m, const String& varName) {
@@ -117,7 +117,7 @@ public:
                              // demo getting argument from the query argument
                              if (not number) {
                                  static const String                         kValueParamName_ = "value"sv;
-                                 Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (&m.request ());
+                                 Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (m.request ());
                                  number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                              }
                              // demo getting either query arg, or url encoded arg
@@ -127,14 +127,14 @@ public:
                                  // Either one of those instead. PickoutParamValuesFromURL assumes you know the name of the parameter, and its
                                  // encoded in the query string. PickoutParamValuesFromBody assumes you have something equivalent you can parse ouf
                                  // of the body, either json encoded or form-encoded (as of 2.1d23, only json encoded supported)
-                                 Mapping<String, DataExchange::VariantValue> args = PickoutParamValues (&m.rwRequest ());
+                                 Mapping<String, DataExchange::VariantValue> args = PickoutParamValues (m.rwRequest ());
                                  number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                              }
                              if (not number) {
                                  Execution::Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
                              }
                              fWSImpl_->Variables_SET (varName, *number);
-                             WriteResponse (&m.rwResponse (), kVariables_);
+                             WriteResponse (m.rwResponse (), kVariables_);
                          }},
                    Route{HTTP::MethodsRegEx::kDelete, "variables/(.+)"_RegEx,
                          /*
@@ -142,7 +142,7 @@ public:
                           */
                          [this] (Message& m, const String& varName) {
                              fWSImpl_->Variables_DELETE (varName);
-                             WriteResponse (&m.rwResponse (), kVariables_);
+                             WriteResponse (m.rwResponse (), kVariables_);
                          }},
 
                    /*
@@ -181,7 +181,7 @@ public:
         Assert (tmp[0].ConvertTo (VariantValue::eInteger) == 5);
         Assert (tmp[1] == nullptr);
     }
-    // Can declare arguments as Request*,Response*
+    // Can declare arguments as Request&,Response&
     static void DefaultPage_ (Request&, Response& response)
     {
         WriteDocsPage (&response,

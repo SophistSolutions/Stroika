@@ -72,11 +72,6 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
      ********************************************************************************
      */
-    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request)
-    {
-        RequireNotNull (request);
-        return PickoutParamValuesFromBody (request->GetBody (), request->contentType ());
-    }
     inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request& request)
     {
         return PickoutParamValuesFromBody (request.GetBody (), request.contentType ());
@@ -91,11 +86,6 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         return PickoutParamValuesFromURL (request.url ());
     }
-    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request* request)
-    {
-        RequireNotNull (request);
-        return PickoutParamValuesFromURL (request->url ());
-    }
 
     /*
      ********************************************************************************
@@ -106,11 +96,6 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         return OrderParamValues (paramNames, PickoutParamValues (request));
     }
-    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames,
-                                                                                                            Request* request)
-    {
-        return OrderParamValues (paramNames, *request);
-    }
 
     /*
      ********************************************************************************
@@ -120,6 +105,61 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     inline void WriteResponse ([[maybe_unused]] Response& response, [[maybe_unused]] const WebServiceMethodDescription& webServiceDescription)
     {
         // nothing todo to write empty (void) response
+    }
+
+
+
+
+    /// DEPREACTED.....................................
+
+
+
+
+    /**
+     */
+    // template <typename RETURN_TYPE, typename... IN_ARGS>
+    // void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs);
+    namespace PRIVATE_ {
+        template <typename RETURN_TYPE>
+        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription,
+                                                     const DataExchange::ObjectVariantMapper& objVarMapper,
+                                                     const function<RETURN_TYPE ()>& f, enable_if_t<!same_as<RETURN_TYPE, void>>* = 0)
+        {
+            WriteResponse (*response, webServiceDescription, objVarMapper.FromObject (forward<RETURN_TYPE> (f ())));
+        }
+        template <typename RETURN_TYPE>
+        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription,
+                                                     const DataExchange::ObjectVariantMapper& objVarMapper,
+                                                     const function<RETURN_TYPE ()>& f, enable_if_t<same_as<RETURN_TYPE, void>>* = 0)
+        {
+            f ();
+            WriteResponse (*response, webServiceDescription);
+        }
+    }
+    template <typename RETURN_TYPE, typename... IN_ARGS>
+   [[deprecated ("Since Stroika v3.0d12 ")]] inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription,
+                                                const DataExchange::ObjectVariantMapper&  objVarMapper,
+                                                const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
+    {
+        PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper,
+                                                   function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
+    }
+
+
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request)
+    {
+        RequireNotNull (request);
+        return PickoutParamValuesFromBody (request->GetBody (), request->contentType ());
+    }
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request* request)
+    {
+        RequireNotNull (request);
+        return PickoutParamValuesFromURL (request->url ());
+    }
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames,
+                                                                                                            Request* request)
+    {
+        return OrderParamValues (paramNames, *request);
     }
     [[deprecated ("Since Stroika v3.0d12 - use Response&")]] inline void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription)
     {
@@ -136,111 +176,72 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         WriteResponse (*response, webServiceDescription, responseValue);
     }
 
-    /*
-     ********************************************************************************
-     **************** WebService::Server::VariantValue::mkRequestHandler ************
-     ********************************************************************************
-     */
-    template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
-    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
-                      const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
-    template <typename RETURN_TYPE, typename... IN_ARGS>
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
-    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
-                      const Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f);
-    template <typename RETURN_TYPE>
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
-    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
-                      const function<RETURN_TYPE (void)>& f);
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
-    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<BLOB (WebServer::Message* m)>& f);
+    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, DataExchange::VariantValue> PickoutParamValues (Request* request)
+    {
+        return PickoutParamValues (*request);
+    }
 
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&               webServiceDescription,
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&               webServiceDescription,
                                                 const DataExchange::ObjectVariantMapper&         objVarMapper,
                                                 const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
     {
-        return [=] (WebServer::Message* m) {
-            ExpectedMethod (m->request (), webServiceDescription);
+        return [=] (WebServer::Message& m) {
+            ExpectedMethod (m.request (), webServiceDescription);
             if constexpr (same_as<RETURN_TYPE, void>) {
-                f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->rwRequest ())));
-                WriteResponse (&m->rwResponse (), webServiceDescription);
+                f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m.rwRequest ())));
+                WriteResponse (m.rwResponse (), webServiceDescription);
             }
             else {
-                WriteResponse (&m->rwResponse (), webServiceDescription,
-                               f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->rwRequest ()))));
+                WriteResponse (m.rwResponse (), webServiceDescription,
+                               f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m.rwRequest ()))));
             }
         };
     }
     template <typename RETURN_TYPE, typename... IN_ARGS>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&       webServiceDescription,
+   [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]]  WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&       webServiceDescription,
                                                 const DataExchange::ObjectVariantMapper& objVarMapper,
                                                 const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f)
     {
         Require (paramNames.size () == sizeof...(IN_ARGS));
-        return [=] (WebServer::Message* m) {
-            ExpectedMethod (m->request (), webServiceDescription);
-            Sequence<VariantValue> args = OrderParamValues (paramNames, &m->rwRequest ());
+        return [=] (WebServer::Message& m) {
+            ExpectedMethod (m.request (), webServiceDescription);
+            Sequence<VariantValue> args = OrderParamValues (paramNames, m.rwRequest ());
             Assert (args.size () == paramNames.size ());
             if constexpr (same_as<RETURN_TYPE, void>) {
                 (void)ApplyArgs (args, objVarMapper, f);
-                WriteResponse (&m->rwResponse (), webServiceDescription);
+                WriteResponse (m.rwResponse (), webServiceDescription);
             }
             else {
-                WriteResponse (&m->rwResponse (), webServiceDescription, ApplyArgs (args, objVarMapper, f));
+                WriteResponse (m.rwResponse (), webServiceDescription, ApplyArgs (args, objVarMapper, f));
             }
         };
     }
     template <typename RETURN_TYPE>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
+   [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]]  WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
                                                 const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
     {
-        return [=] (WebServer::Message* m) {
-            ExpectedMethod (m->request (), webServiceDescription);
+        return [=] (WebServer::Message& m) {
+            ExpectedMethod (m.request (), webServiceDescription);
             if constexpr (same_as<RETURN_TYPE, void>) {
                 f ();
-                WriteResponse (&m->rwResponse (), webServiceDescription);
+                WriteResponse (m.rwResponse (), webServiceDescription);
             }
             else {
-                WriteResponse (&m->rwResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
+                WriteResponse (m.rwResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
             }
         };
     }
-
-    /**
-     */
-    // template <typename RETURN_TYPE, typename... IN_ARGS>
-    // void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs);
-    namespace PRIVATE_ {
-        template <typename RETURN_TYPE>
-        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription,
-                                                     const DataExchange::ObjectVariantMapper& objVarMapper,
-                                                     const function<RETURN_TYPE ()>& f, enable_if_t<!same_as<RETURN_TYPE, void>>* = 0)
-        {
-            WriteResponse (response, webServiceDescription, objVarMapper.FromObject (forward<RETURN_TYPE> (f ())));
-        }
-        template <typename RETURN_TYPE>
-        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription,
-                                                     const DataExchange::ObjectVariantMapper& objVarMapper,
-                                                     const function<RETURN_TYPE ()>& f, enable_if_t<same_as<RETURN_TYPE, void>>* = 0)
-        {
-            f ();
-            WriteResponse (response, webServiceDescription);
-        }
-    }
-    template <typename RETURN_TYPE, typename... IN_ARGS>
-    inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription,
-                                                const DataExchange::ObjectVariantMapper&  objVarMapper,
-                                                const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] inline WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
+                                                                  const function<Memory::BLOB (WebServer::Message* m)>& f)
     {
-        PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper,
-                                                   function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
-    }
-
-    [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, DataExchange::VariantValue> PickoutParamValues (Request* request)
-    {
-        return PickoutParamValues (*request);
+        return [=] (WebServer::Message& m) {
+            ExpectedMethod (m.request (), webServiceDescription);
+            if (webServiceDescription.fResponseType) {
+                m.rwResponse ().contentType = *webServiceDescription.fResponseType;
+            }
+            m.rwResponse ().write (f (&m));
+        };
     }
 
 }
