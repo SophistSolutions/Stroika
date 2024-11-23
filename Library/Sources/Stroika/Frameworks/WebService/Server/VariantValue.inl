@@ -107,13 +107,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         // nothing todo to write empty (void) response
     }
 
-
-
-
     /// DEPREACTED.....................................
-
-
-
 
     /**
      */
@@ -137,14 +131,13 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         }
     }
     template <typename RETURN_TYPE, typename... IN_ARGS>
-   [[deprecated ("Since Stroika v3.0d12 ")]] inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription,
-                                                const DataExchange::ObjectVariantMapper&  objVarMapper,
-                                                const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
+    [[deprecated ("Since Stroika v3.0d12 ")]] inline void
+    CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription,
+                                    const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
     {
         PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper,
                                                    function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
     }
-
 
     [[deprecated ("Since Stroika v3.0d12 - use Request&")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request)
     {
@@ -182,9 +175,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     }
 
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&               webServiceDescription,
-                                                const DataExchange::ObjectVariantMapper&         objVarMapper,
-                                                const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
     {
         return [=] (WebServer::Message& m) {
             ExpectedMethod (m.request (), webServiceDescription);
@@ -199,9 +192,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         };
     }
     template <typename RETURN_TYPE, typename... IN_ARGS>
-   [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]]  WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&       webServiceDescription,
-                                                const DataExchange::ObjectVariantMapper& objVarMapper,
-                                                const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f)
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f)
     {
         Require (paramNames.size () == sizeof...(IN_ARGS));
         return [=] (WebServer::Message& m) {
@@ -218,8 +211,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         };
     }
     template <typename RETURN_TYPE>
-   [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]]  WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
-                                                const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper,
+                      const function<RETURN_TYPE (void)>& f)
     {
         return [=] (WebServer::Message& m) {
             ExpectedMethod (m.request (), webServiceDescription);
@@ -232,8 +226,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
             }
         };
     }
-    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] inline WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
-                                                                  const function<Memory::BLOB (WebServer::Message* m)>& f)
+    [[deprecated ("Since v3.0d12 - use ObjectRequestHandler::Factory")]] inline WebServer::RequestHandler
+    mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<Memory::BLOB (WebServer::Message* m)>& f)
     {
         return [=] (WebServer::Message& m) {
             ExpectedMethod (m.request (), webServiceDescription);

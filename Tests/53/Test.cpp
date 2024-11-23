@@ -31,6 +31,7 @@
 #include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
 #include "Stroika/Frameworks/WebService/Server/ObjectRequestHandler.h"
+#include "Stroika/Frameworks/WebService/Server/VariantValue.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
@@ -366,6 +367,7 @@ namespace {
     GTEST_TEST (Frameworks_WebServer, TestEncContent)
     {
         // @todo add tests with different flags about allowed compression - and add asserts about returned content-encoding headers.
+        /// @todo - add tests with different Accept-Encoding headers
 
         EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
         const IO::Network::PortType portNumber = 8082;
@@ -426,10 +428,22 @@ namespace {
     }
 }
 
-/// @todo - add tests with different Accept-Encoding headers
+namespace {
+    GTEST_TEST (Frameworks_WebService, TestVariantValueSupport)
+    {
+        using namespace WebService::Server::VariantValue;
+        // @todo - move this to some framework-specific regtests...
+        using VariantValue = DataExchange::VariantValue;
+        Sequence<VariantValue> tmp =
+            OrderParamValues (Iterable<String>{"page", "xxx"}, PickoutParamValuesFromURL (URI{"http://www.sophist.com?page=5"}));
+        Assert (tmp.size () == 2);
+        Assert (tmp[0].ConvertTo (VariantValue::eInteger) == 5);
+        Assert (tmp[1] == nullptr);
+    }
+}
 
 namespace {
-    GTEST_TEST (Frameworks_WebServervice, TestWebServiceObjectRequestHandler1)
+    GTEST_TEST (Frameworks_WebService, TestWebServiceObjectRequestHandler1)
     {
         EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
         const IO::Network::PortType  portNumber = 8083;
@@ -455,6 +469,7 @@ namespace {
         //// result???
     }
 }
+
 #endif
 
 int main (int argc, const char* argv[])

@@ -173,13 +173,6 @@ public:
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
                           ConnectionManager::Options{.fDefaultResponseHeaders = kDefaultResponseHeaders_}}
     {
-        // @todo - move this to some framework-specific regtests...
-        using VariantValue = DataExchange::VariantValue;
-        Sequence<VariantValue> tmp =
-            OrderParamValues (Iterable<String>{"page", "xxx"}, PickoutParamValuesFromURL (URI{"http://www.sophist.com?page=5"}));
-        Assert (tmp.size () == 2);
-        Assert (tmp[0].ConvertTo (VariantValue::eInteger) == 5);
-        Assert (tmp[1] == nullptr);
     }
     // Can declare arguments as Request&,Response&
     static void DefaultPage_ (Request&, Response& response)
