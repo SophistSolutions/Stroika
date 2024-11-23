@@ -23,6 +23,7 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks;
@@ -58,23 +59,31 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
+    CommandLine cmdLine{argc, argv};
+
     Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, cmdLine)};
+
 #if qStroika_Foundation_Common_Platform_POSIX
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+    SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 
     Time::DurationSeconds quitAfter    = Time::kInfinity;
     uint16_t              portForOurWS = 8080;
 
-    const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+    const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+    const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kQuitAfterO_};
 
-    Execution::CommandLine cmdLine{argc, argv};
     if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
         quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 
-    Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by UPnP::BasicServer
+    if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+        return EXIT_SUCCESS;
+    }
+
+    IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by UPnP::BasicServer
 
     try {
         Device d;
@@ -98,9 +107,9 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
         WebServerForDeviceDescription_ deviceWS{portForOurWS, deviceInfo};
         BasicServer                    b{d, deviceInfo};
-        Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
+        WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
     }
-    catch (const Execution::TimeOutException&) {
+    catch (const TimeOutException&) {
         cerr << "Timed out - so - exiting..." << endl;
         return EXIT_SUCCESS;
     }
