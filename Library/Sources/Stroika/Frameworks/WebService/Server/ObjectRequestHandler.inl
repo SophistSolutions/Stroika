@@ -165,7 +165,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     template <same_as<RETURN_TYPE> RT>
-    inline void Factory<RETURN_TYPE, ARG_TYPES...>::SendStringResponse (const Request& request, Response& response, const RT& r) const
+    inline void Factory<RETURN_TYPE, ARG_TYPES...>::SendStringResponse ([[maybe_unused]] const Request& request, Response& response, const RT& r) const
     {
         // @todo maybe respect accept headers - to a degree?
         using namespace DataExchange;
