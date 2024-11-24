@@ -1240,14 +1240,41 @@ sub	SetDefaultForCompilerDriver_
 				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
 				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-odr ';
 				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-lto-type-mismatch ';
+			}
 
+			# In function 'copy',
+			# inlined from '__ct ' at /usr/include/c++/13/bits/basic_string.h:683:23,
+			# inlined from 'operator+' at /usr/include/c++/13/bits/basic_string.h:3676:46,
+			# inlined from 'OnTestProgramEnd' at /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/ThirdPartyComponents/GoogleTest/CURRENT/googletest/src/gtest-internal-inl.h:1156:43:
+			# /usr/include/c++/13/bits/char_traits.h:435:56: warning: '__builtin_memcpy' writing 30 bytes into a region of size 16 overflows the destination [-Wstringop-overflow=]
+			# 435 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+			# |                                                        ^
+			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/ThirdPartyComponents/GoogleTest/CURRENT/googletest/src/gtest-internal-inl.h: In member function 'OnTestProgramEnd':
+			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/ThirdPartyComponents/GoogleTest/CURRENT/googletest/src/gtest-internal-inl.h:1156:74: note: at offset 16 into destination object '<anonymous>' of size 32
+			# 1156 |     SendLn("event=TestProgramEnd&passed=" + FormatBool(unit_test.Passed()));
+			# |                                                                          ^
+			if ($itsVersion < 15.0) {
 				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-stringop-overflow ';
 			}
 
-			# MOSTLY UNRELATED ISSUE
-			if ($itsVersion < 13.0) {
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-stringop-overflow ';
+
+			# In member function 'deallocate',
+			# inlined from 'deallocate' at /usr/arm-linux-gnueabihf/include/c++/12/bits/allocator.h:200:35,
+			# inlined from 'deallocate' at /usr/arm-linux-gnueabihf/include/c++/12/bits/alloc_traits.h:496:23,
+			# inlined from '_M_deallocate' at /usr/arm-linux-gnueabihf/include/c++/12/bits/stl_vector.h:387:19,
+			# inlined from '__dt_base ' at /usr/arm-linux-gnueabihf/include/c++/12/bits/stl_vector.h:366:15,
+			# inlined from '__dt_comp ' at /usr/arm-linux-gnueabihf/include/c++/12/bits/stl_vector.h:733:7,
+			# inlined from 'KeepSignificantBits' at ../../Library/Sources/Stroika/Foundation/IO/Network/InternetAddress.cpp:383:1,
+			# inlined from '__ct ' at ../../Library/Sources/Stroika/Foundation/IO/Network/CIDR.cpp:25:57,
+			# inlined from 'read_' at ../../Library/Sources/Stroika/Foundation/IO/Network/CIDR.cpp:46:34,
+			# inlined from '__ct ' at ../../Library/Sources/Stroika/Foundation/IO/Network/CIDR.cpp:54:18,
+			# inlined from 'TestBody' at Test.cpp:1961:51:
+			# /usr/arm-linux-gnueabihf/include/c++/12/bits/new_allocator.h:158:33: warning: 'operator delete' called on pointer '_1397' with nonzero offset [1, 2147483647] [-Wfree-nonheap-object]
+			# 158 |         _GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n));
+			if ($itsVersion < 13.0 && $ARCH eq "armhf") {
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-free-nonheap-object ';
 			}
+
 		}
 	}
 
