@@ -2444,14 +2444,14 @@ sub PostProcessOptions_ ()
 			if (20.04 <= $ubuntuVersion and $ubuntuVersion <= 24.04) {
 				$LinkerArgs_ExtraPrefix = $LinkerArgs_ExtraPrefix  . " -Wno-return-local-addr";
 			}
-			# Lots of apparently spurrious warnings, which we cannot (easily) suppress locally with #pragma warn...
-			#	EG
-			#		In function 'CRYPTO_cfb128_encrypt',
-    		#		inlined from 'SEED_cfb128_encrypt' at ../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/seed/seed_cfb.c:24:5,
-			#		../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/modes/cfb128.c:122:33: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
-			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-stringop-overflow';
-			}
+			# # Lots of apparently spurrious warnings, which we cannot (easily) suppress locally with #pragma warn...
+			# #	EG
+			# #		In function 'CRYPTO_cfb128_encrypt',
+    		# #		inlined from 'SEED_cfb128_encrypt' at ../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/seed/seed_cfb.c:24:5,
+			# #		../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/modes/cfb128.c:122:33: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+			# if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
+			# 	$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-stringop-overflow';
+			# }
 		}
 	}
 
