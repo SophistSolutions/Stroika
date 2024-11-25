@@ -223,7 +223,8 @@
         "xcode": "15.2",
         "config_name": "Debug",
         "comment-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --libcurl no",
+        "comment-2": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --libcurl no --fmtlib use",
         "run_on_branch": "always"
     },
     {
@@ -233,7 +234,8 @@
         "xcode": "15.2",
         "config_name": "Release",
         "comment-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable --libcurl no",
+        "comment-2": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --libcurl no --fmtlib use",
         "run_on_branch": "v3-Release"
     },
     {
