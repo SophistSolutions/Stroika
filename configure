@@ -2109,17 +2109,20 @@ sub	ParseCommandLine_Remaining_
 			push @CXXFLAGS, "-pg";
 			$LinkerArgs_ExtraPrefix .= " -pg";
 		}
-		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
-			#HANDLED EARLIER
-		}
-		elsif ((lc ($var) eq "-apply-default-release-flags") or (lc ($var) eq "--apply-default-release-flags")) {
-			#HANDLED EARLIER
-		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ (0);
 		}
 		else {
-			if ((lc ($var) eq "-build-platform") or (lc ($var) eq "--build-platform")) {
+			#HANDLED EARLIER
+			if ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
+				#HANDLED EARLIER
+			}
+			elsif ((lc ($var) eq "-apply-default-release-flags") or (lc ($var) eq "--apply-default-release-flags")) {
+			}
+			elsif ((lc ($var) eq "-build-platform") or (lc ($var) eq "--build-platform")) {
+				$i++;
+			}
+			elsif ((lc ($var) eq "-arch") or (lc ($var) eq "--arch")) {
 				$i++;
 			}
 			elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
