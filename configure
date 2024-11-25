@@ -1432,12 +1432,6 @@ sub ComputeARCHFlag_
 }
 
 
-# These depend on compiler driver, OS, ARCH, etc...
-sub AddDefaultWarningsFlags_
-{
-
-}
-
 sub	SetDefaultsWhichDependOnPlatform_
 {
 	if ($BuildPlatform eq 'Unix' && $COMPILER_DRIVER eq '') {
