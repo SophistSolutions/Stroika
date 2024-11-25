@@ -480,6 +480,7 @@ echo "$PREFIX_OUT_LABEL" "Regression Tests Summary:" >>$TEST_OUT_FILE 2>&1
 TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS))
 
 X1=`cat $TEST_OUT_FILE | grep -F "[  PASSED  ]" | wc -l`
+NTSANS=`cat $TEST_OUT_FILE | grep -F "because sudo sysctl vm.mmap_rnd_bits" | wc -l`
 ### Dont count fFailConnectionIfSSLCertificateInvalid as an error or failure - its a warning
 XF=`cat $TEST_OUT_FILE | grep -i FAILED | grep -v TEST_FAILURES_CAUSE_FAILED_MAKE | grep -v fFailConnectionIfSSLCertificateInvalid | wc -l`
 XE=`cat $TEST_OUT_FILE | grep -v fFailConnectionIfSSLCertificateInvalid | grep -E -i "error[ \t]*:" | wc -l`
@@ -513,6 +514,10 @@ echo "   $XC core dumps (expected 0)">>$TEST_OUT_FILE 2>&1
 if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
 	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
+fi
+if [ "$NTSANS" -ne 0 ] ; then
+	echo "   Saw warnings about sysctl vm.mmap_rnd_bits so TSAN disabled"
+	echo "   Saw warnings about sysctl vm.mmap_rnd_bits so TSAN disabled" >>$TEST_OUT_FILE 2>&1
 fi
 TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
 echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
