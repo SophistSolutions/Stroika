@@ -1,5 +1,8 @@
 #!/bin/sh
 
+### ROUGH DRAFT - mostly for docs - either more fully script (params) or get rid of ...
+### only part of Stroika cuz going to add ssl soon...
+
 openssl genrsa -out private_key.pem 2048
 openssl req -new -key private_key.pem -out certificate_request.csr
 openssl x509 -req -days 365 -signkey private_key.pem -in certificate_request.csr -out public_certificate.crt
