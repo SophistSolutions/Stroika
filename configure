@@ -601,8 +601,8 @@ sub     IsTargettingSanitizer_
 
 sub     NeedsFmtLib_
 {
-	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+	if (IsClangPlusPlus_($COMPILER_DRIVER)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER);
 		if ("$^O" eq "darwin") {
 			my $xcodeVer = getXCodeVersion_ ();
 			return $xcodeVer < 15.3;	## seems to work as of xcode 15.3, but not 15.2
@@ -614,8 +614,8 @@ sub     NeedsFmtLib_
 			}
 		}
 	}
-	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
 		# Builtin supports works for gcc as of gcc 13
 		if ($itsVersion < 13.0) {
 			return true;
@@ -925,8 +925,10 @@ sub     ReplaceLast_
 }
 
 
-sub	SetDefaultsWhichDependOnCompilerDriver_
+sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 {
+	ComputeARCHFlag_();
+
 	my $isVisualStudio = 		($BuildPlatform =~ /^VisualStudio.Net/);
 	if ($isVisualStudio eq 1) {
 		$isVisualStudio = true;
@@ -936,27 +938,6 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 	}
 
 	if ($isVisualStudio) {
-		if ($ARCH eq "32" or $ARCH eq "WIN32") {
-			$ARCH = "x86";
-		}
-		if ($ARCH eq "64" or $ARCH eq "WIN64") {
-			$ARCH = "x86_64";
-		}
-		if ($ARCH eq "") {
-			if ($configurationName =~ /64$/) {
-				$ARCH = "x86_64";
-				print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
-			}
-			if ($configurationName =~ /32/) {
-				$ARCH = "x86";
-				print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
-			}
-		}
-		if ($ARCH eq "") {
-			$ARCH = "x86_64";
-			print STDERR "WARNING: guessing the target arch x86_64: use --arch (x86 or x86_64) instead!\n";
-		}
-
 		if (!(defined $AS)) {
 			$AS = GetMSVCVarName_ ("AS");
 		}
@@ -1086,21 +1067,21 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 			# failure running some regtests - crash in leak sanitizer at end of run... --LGP 2024-05-01
 			# NOTE - now disabling BOTH ASAN and UBSAN, but maybe only ASAN broken--LGP 2024-08-21
 			if (getUbuntuVersion() == 22.04) {
-				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 					$skipSanCuzBroken = true;
 				}
 				# with asan and ununtu 22.04, about 1/2 the tests fail (somewhat randomly, not always). --LGP 2024-05-01
-				if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+				if (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 					$skipSanCuzBroken = true;
 				}
 			}
 			if (getUbuntuVersion() == 23.10) {
 				# LibCurl fails to build and not important enuf platform to debug...
-				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 					$skipSanCuzBroken = true;
 				}
 				# with asan and ununtu 23.10, about 1/2 the tests fail (somewhat randomly, not always). --LGP 2024-05-07
-				if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+				if (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 					$skipSanCuzBroken = true;
 				}
 			}
@@ -1122,7 +1103,7 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 		}
 
 		### if is msvc and version > 19.29 (which is 16.10), enable asan
-		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037) {
+		if (IsMSVCCompiler_($COMPILER_DRIVER) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER) >= 192930037) {
 			if (!$sanitizerFlagsNoneSet) {
 				if (!IsTargettingSanitizer_ ('address')) {
 					push @sanitizerFlags, 'address';
@@ -1168,7 +1149,7 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 		#	==2050532==ABORTING
 		#
 		# MAYBE add check for only if gcc version < 14 (seen in gcc 13.2)
-		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) && IsTargettingSanitizer_ ('address')) {
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsGCCOrGPlusPlus_($COMPILER_DRIVER) && IsTargettingSanitizer_ ('address')) {
 			$ENABLE_LTO = false;
 		}
 
@@ -1177,23 +1158,23 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 		# /usr/bin/ld: /usr/lib/llvm-18/bin/../lib/LLVMgold.so: error loading plugin: /usr/lib/llvm-18/bin/../lib/LLVMgold.so: cannot open shared object file: No such file or directory
 		# clang-18: error: linker command failed with exit code 1 (use -v to see invocation)
 		# gmake[3]: *** [CMakeFiles/cmTC_cbb0a.dir/build.make:100: cmTC_cbb0a] Error 1
-		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "24.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 19) {
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "24.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && GetClangVersion_ ($COMPILER_DRIVER) < 19) {
 			$ENABLE_LTO = false;
 		}
 
 
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
-			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) ) {
+			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) ) {
 				$ENABLE_LTO = true;
 			}
-			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 				$ENABLE_LTO = true;
 			}
 			if ($isVisualStudio) {
 				$ENABLE_LTO = true;
 			}
 		}
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 			if ($COPTIMIZE_FLAGS eq "") {
 				$COPTIMIZE_FLAGS = "-O3";
 			}
@@ -1201,7 +1182,7 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 				$ENABLE_GLIBCXX_DEBUG = 0;
 			}
 		}
-		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
+		if (IsMSVCCompiler_ ($COMPILER_DRIVER)) {
 			$COPTIMIZE_FLAGS = "-O2 -Oi -Oy";
 		}
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
@@ -1218,7 +1199,7 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 
 	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 		if ($ENABLE_LTO == true) {
-			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
 			if (13.0 <= $itsVersion && $itsVersion < 14) {
 				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
 				# are hard to figure out what todo about --LGP 2023-10-04
@@ -1279,12 +1260,12 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 	}
 
 	if (!(defined $AR)) {
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 			my $ccLessArgs = $COMPILER_DRIVER_C;
 			$ccLessArgs  =~ s/\ .*//;
 			$AR = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ar');
 		}
-		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			my $ccLessArgs = $COMPILER_DRIVER_C;
 			$ccLessArgs  =~ s/\ .*//;
 			$AR = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ar');
@@ -1297,12 +1278,12 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 		$AR = "ar";
 	}
 	if (!(defined $RANLIB)) {
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 			my $ccLessArgs = $COMPILER_DRIVER_C;
 			$ccLessArgs  =~ s/\ .*//;
 			$RANLIB = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ranlib');
 		}
-		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			my $ccLessArgs = $COMPILER_DRIVER_C;
 			$ccLessArgs  =~ s/\ .*//;
 			$RANLIB = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ranlib');
@@ -1311,7 +1292,7 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 			$RANLIB = "ranlib";
 		}
 	}
-	if (!(defined $STRIP) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
+	if (!(defined $STRIP) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER))) {
 		my $ccLessArgs = $COMPILER_DRIVER_C;
 		$ccLessArgs  =~ s/\ .*//;
 		my $ma = trim (`$ccLessArgs -print-multiarch`);
@@ -1326,25 +1307,25 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 	## LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost...
 	## https://learn.microsoft.com/en-us/answers/questions/864574/enabling-address-sanitizer-results-in-error-lnk203
 	## https://learn.microsoft.com/en-us/cpp/sanitizers/error-container-overflow?view=msvc-170
-	if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037 && IsTargettingSanitizer_ ('address')) {
+	if (IsMSVCCompiler_($COMPILER_DRIVER) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER) >= 192930037 && IsTargettingSanitizer_ ('address')) {
 		## Workaround issue which started in 17.6 compiler
 		push @CPPFLAGS, '-D_DISABLE_VECTOR_ANNOTATION';
 		push @CPPFLAGS, '-D_DISABLE_STRING_ANNOTATION';
 	}
 
-	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 11.0)) {
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (GetGCCVersion_ ($COMPILER_DRIVER) >= 11.0)) {
 		# Needed for sqlite build warning
 		$qCompiler_HasNoMisleadingIndentation_Flag = true;
 	}
 
 	if ($onlyGenerateIfCompilerExists == false) {
-		if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 15) {
-				print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 (xcode 15) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER)) {
+			if (GetClangVersion_ ($COMPILER_DRIVER) < 15) {
+				print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 (xcode 15) or later needed (compiler-driver: $COMPILER_DRIVER).\n";
 			}
 		}
-		if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 15) {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (IsClangPlusPlus_($COMPILER_DRIVER) and GetClangVersion_ ($COMPILER_DRIVER) < 15) {
+			print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later needed (compiler-driver: $COMPILER_DRIVER).\n";
 		}
 	}
 
@@ -1352,7 +1333,7 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
 
 		#### VERIFIED STILL BROKEN TSAN DEBUG on Ubuntu 22.04 g++-debug-sanitize_thread
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14.0)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 14.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
 		}
 		# if ($ENABLE_LTO == true and $TargettingValgrind == true) {
@@ -1403,7 +1384,61 @@ sub	SetDefaultsWhichDependOnCompilerDriver_
 	}
 }
 
-sub	SetDefaultForPlatform_
+
+# These depend on compiler driver, OS, ARCH, etc...
+sub ComputeARCHFlag_
+{
+	my @args = GetAppArgs_ ();
+
+	for (my $i = 1; $i <= $#args; $i++) {
+		my $var = $args[$i];
+		if (lc ($var) eq "-arch" or lc ($var) eq "--arch") {
+			$i++;
+			$var = $args[$i];
+			$ARCH = $var;
+		}
+	}
+
+	if ($ARCH eq "") {
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			if ($configurationName =~ /64$/) {
+				$ARCH = "x86_64";
+				print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
+			}
+			if ($configurationName =~ /32/) {
+				$ARCH = "x86";
+				print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
+			}
+		}
+	}
+
+	if ($ARCH eq "") {
+		$ARCH = trim (`./ScriptsLib/GetCompilerArch $COMPILER_DRIVER`);
+	}
+	
+	# Patch some old/bad names
+	if ($ARCH eq "32" or $ARCH eq "WIN32") {
+		print STDERR "WARNING: replacing ARCH $ARCH with x86\n";
+		$ARCH = "x86";
+	}
+	if ($ARCH eq "64" or $ARCH eq "WIN64") {
+		print STDERR "WARNING: replacing ARCH $ARCH with x86_64\n";
+		$ARCH = "x86_64";
+	}
+
+	if ($ARCH eq "") {
+		die ("Failed to compute ARCH - specify with --arch flag")
+	}
+}
+
+
+# These depend on compiler driver, OS, ARCH, etc...
+sub AddDefaultWarningsFlags_
+{
+
+}
+
+sub	SetDefaultsWhichDependOnPlatform_
 {
 	if ($BuildPlatform eq 'Unix' && $COMPILER_DRIVER eq '') {
 		# Ubuntu 20.04 comes with gcc version 9.x, which this version of Stroika doesnt support so
@@ -1483,13 +1518,13 @@ sub	ParseCommandLine_Platform_
 			$i++;
 			$var = $args[$i];
 			$BuildPlatform = $var;
-			SetDefaultForPlatform_ ();
+			SetDefaultsWhichDependOnPlatform_ ();
 		}
 	}
 }
 
-### Do initial pass, just looking for platform
-sub	ParseCommandLine_CompilerDriver_
+### Do initial pass, just looking for compiler-driver and apply-default-xxx flags
+sub	ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_
 {
 	my @args = GetAppArgs_ ();
 	for (my $i = 0; $i <= $#args; $i++) {
@@ -1534,11 +1569,6 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			$BuildToolsRoot = $var;
-		}
-		elsif (lc ($var) eq "-arch" or lc ($var) eq "--arch") {
-			$i++;
-			$var = $args[$i];
-			$ARCH = $var;
 		}
 		elsif ((lc ($var) eq "-assertions") or (lc ($var) eq "--assertions")) {
 			$i++;
@@ -2189,11 +2219,10 @@ sub	ParseCommandLine_
 
 	ParseEnvVarsToSetupInfluencedVariables_();
 	ParseCommandLine_Platform_ ();
-	SetDefaultForPlatform_ ();
+	SetDefaultsWhichDependOnPlatform_ ();
 
-	ParseCommandLine_CompilerDriver_ ();
-
-	SetDefaultsWhichDependOnCompilerDriver_();
+	ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_ ();
+	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_();
 
 	ParseCommandLine_Remaining_ ();
 
@@ -2635,15 +2664,6 @@ sub PostProcessOptions_ ()
 		}
 		else {
 			$FEATUREFLAG_WIX = $LIBFEATUREFLAG_No;
-		}
-	}
-
-	if ($ARCH eq "") {
-		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			die ("assert error - sb handled earlier");
-		}
-		else {
-			$ARCH = trim (`./ScriptsLib/GetCompilerArch $COMPILER_DRIVER_CPlusPlus`);
 		}
 	}
 
