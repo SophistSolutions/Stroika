@@ -925,7 +925,7 @@ sub     ReplaceLast_
 }
 
 
-sub	SetDefaultForCompilerDriver_
+sub	SetDefaultsWhichDependOnCompilerDriver_
 {
 	my $isVisualStudio = 		($BuildPlatform =~ /^VisualStudio.Net/);
 	if ($isVisualStudio eq 1) {
@@ -2193,9 +2193,9 @@ sub	ParseCommandLine_
 
 	ParseCommandLine_CompilerDriver_ ();
 
-	ParseCommandLine_Remaining_ ();
+	SetDefaultsWhichDependOnCompilerDriver_();
 
-	SetDefaultForCompilerDriver_();
+	ParseCommandLine_Remaining_ ();
 
 	DoSetThirdPartyComponents_ ($DoSetThirdPartyComponentsParameterFromCommandLine);
 
