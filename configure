@@ -929,6 +929,16 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 {
 	ComputeARCHFlag_();
 
+	if ($COMPILER_DRIVER eq "") {
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			$COMPILER_DRIVER = GetMSVCVarName_ ("CC");
+		}
+	}
+
+	if ($COMPILER_DRIVER eq "") {
+		die ("must set COMPILER_DRIVER before SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_");
+	}
+
 	my $isVisualStudio = 		($BuildPlatform =~ /^VisualStudio.Net/);
 	if ($isVisualStudio eq 1) {
 		$isVisualStudio = true;
