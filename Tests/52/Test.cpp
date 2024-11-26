@@ -1387,19 +1387,19 @@ namespace {
         Tester (L"Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, .51, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String", 65000, 0.49, &failedTests);
+                Test_StructWithStringsFillingAndCopying<String>, L"Characters::String", 65000, 0.49, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String", 66000, 0.45, &failedTests);
+                Test_StructWithStringsFillingAndCopying2<String>, L"Characters::String", 66000, 0.45, &failedTests);
         Tester (L"Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, L"wstring",
-                Test_SimpleStringAppends1_<String>, L"Charactes::String", 1350000, 4.9, &failedTests);
+                Test_SimpleStringAppends1_<String>, L"Characters::String", 1350000, 4.9, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
-                Test_SimpleStringAppends2_<String>, L"Charactes::String", 1500000, 4.1, &failedTests);
+                Test_SimpleStringAppends2_<String>, L"Characters::String", 1500000, 4.1, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, L"wstring",
-                Test_SimpleStringAppends3_<String>, L"Charactes::String", 360000, 78, &failedTests);
+                Test_SimpleStringAppends3_<String>, L"Characters::String", 360000, 78, &failedTests);
         Tester (L"String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.1, &failedTests);
         Tester (L"wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, L"wstring", Test_OperatorINSERT_ostream_<String>,
-                L"Charactes::String", 6000, 1.4, &failedTests);
-        Tester (L"String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Charactes::String", 2700000, 1.7, &failedTests);
+                L"Characters::String", 6000, 1.4, &failedTests);
+        Tester (L"String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Characters::String", 2700000, 1.7, &failedTests);
         struct MemStreamOfChars_ : public MemoryStream::Ptr<Characters::Character> {
             MemStreamOfChars_ ()
                 : Ptr{MemoryStream::New<Characters::Character> ()}
@@ -1525,19 +1525,20 @@ namespace {
         }
 
         if (not failedTests.empty ()) {
-            String listAsMsg;
+            StringBuilder listAsMsg;
             failedTests.Apply ([&listAsMsg] (String i) {
                 if (not listAsMsg.empty ()) {
-                    listAsMsg += L", ";
+                    listAsMsg += ", "sv;
                 }
                 listAsMsg += i;
             });
             if (sShowOutput_) {
-                Stroika::Frameworks::Test::WarnTestIssue (("At least one test did not meet expected time constraint (see above): " + listAsMsg));
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    ("At least one test did not meet expected time constraint (see above): " + listAsMsg.As<String> ()));
             }
             else {
                 Stroika::Frameworks::Test::WarnTestIssue ((Format ("At least one test ({}) did not meet expected time constraint (see {})"_f,
-                                                                   listAsMsg, String{kDefaultPerfOutFile_})));
+                                                                   listAsMsg.As<String> (), String{kDefaultPerfOutFile_})));
             }
         }
     }

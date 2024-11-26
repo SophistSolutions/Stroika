@@ -641,74 +641,6 @@ namespace Stroika::Foundation::Characters {
     {
         return InsertAt (Memory::ConstSpan (s), at);
     }
-    template <typename CHAR_T>
-    inline void String::Append (span<const CHAR_T> s)
-        requires (same_as<CHAR_T, Character> or same_as<CHAR_T, char32_t>)
-    {
-        if (not s.empty ()) {
-            Memory::StackBuffer<char32_t> ignored1;
-            span<const char32_t>          thisSpan = this->GetData (&ignored1);
-            Memory::StackBuffer<char32_t> combinedBuf{Memory::eUninitialized, thisSpan.size () + s.size ()};
-            Memory::CopySpanData (thisSpan, span{combinedBuf});
-            char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
-            for (auto i : s) {
-                if constexpr (same_as<CHAR_T, Character>) {
-                    *write2Buf = i.template As<char32_t> ();
-                }
-                else {
-                    *write2Buf = i;
-                }
-                ++write2Buf;
-            }
-            *this = mk_ (span{combinedBuf});
-        }
-    }
-    inline void String::Append (const wchar_t* from, const wchar_t* to)
-    {
-        Require (from <= to);
-        if (from != to) {
-            Memory::StackBuffer<wchar_t> ignored1;
-            span<const wchar_t>          thisSpan = this->GetData (&ignored1);
-            Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, thisSpan.size () + (to - from)};
-            span<wchar_t>                bufSpan{buf};
-            Memory::CopySpanData (thisSpan, bufSpan);
-            Memory::CopySpanData (span{from, to}, bufSpan.subspan (thisSpan.size ()));
-            *this = mk_ (bufSpan);
-        }
-    }
-    inline void String::Append (Character c)
-    {
-        Append (&c, &c + 1);
-    }
-    inline void String::Append (const String& s)
-    {
-        Memory::StackBuffer<char32_t> ignored1;
-        auto                          rhsSpan = s.GetData (&ignored1);
-        Append (rhsSpan);
-    }
-    inline void String::Append (const wchar_t* s)
-    {
-        Append (s, s + ::wcslen (s));
-    }
-    inline void String::Append (const Character* from, const Character* to)
-    {
-        Append (span{from, to});
-    }
-    inline String& String::operator+= (Character appendage)
-    {
-        Append (appendage);
-        return *this;
-    }
-    inline String& String::operator+= (const String& appendage)
-    {
-        Append (appendage);
-        return *this;
-    }
-    inline String& String::operator+= (const wchar_t* appendageCStr)
-    {
-        Append (appendageCStr);
-        return *this;
-    }
     inline const Character String::GetCharAt (size_t i) const noexcept
     {
         _SafeReadRepAccessor accessor{this};
@@ -1051,14 +983,6 @@ namespace Stroika::Foundation::Characters {
     {
         return RFind (c).value_or (npos);
     }
-    inline void String::push_back (wchar_t c)
-    {
-        Append (Character (c));
-    }
-    inline void String::push_back (Character c)
-    {
-        Append (c);
-    }
     inline Character String::back () const
     {
         Require (not empty ());
@@ -1291,6 +1215,89 @@ namespace Stroika::Foundation::Characters {
 }
 
 namespace Stroika::Foundation::Characters {
+
+    // DEPRECATED
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    template <typename CHAR_T>
+    inline void String::Append (span<const CHAR_T> s)
+        requires (same_as<CHAR_T, Character> or same_as<CHAR_T, char32_t>)
+    {
+        if (not s.empty ()) {
+            Memory::StackBuffer<char32_t> ignored1;
+            span<const char32_t>          thisSpan = this->GetData (&ignored1);
+            Memory::StackBuffer<char32_t> combinedBuf{Memory::eUninitialized, thisSpan.size () + s.size ()};
+            Memory::CopySpanData (thisSpan, span{combinedBuf});
+            char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
+            for (auto i : s) {
+                if constexpr (same_as<CHAR_T, Character>) {
+                    *write2Buf = i.template As<char32_t> ();
+                }
+                else {
+                    *write2Buf = i;
+                }
+                ++write2Buf;
+            }
+            *this = mk_ (span{combinedBuf});
+        }
+    }
+    inline void String::Append (const wchar_t* from, const wchar_t* to)
+    {
+        Require (from <= to);
+        if (from != to) {
+            Memory::StackBuffer<wchar_t> ignored1;
+            span<const wchar_t>          thisSpan = this->GetData (&ignored1);
+            Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, thisSpan.size () + (to - from)};
+            span<wchar_t>                bufSpan{buf};
+            Memory::CopySpanData (thisSpan, bufSpan);
+            Memory::CopySpanData (span{from, to}, bufSpan.subspan (thisSpan.size ()));
+            *this = mk_ (bufSpan);
+        }
+    }
+    inline void String::Append (Character c)
+    {
+        Append (&c, &c + 1);
+    }
+    inline void String::Append (const String& s)
+    {
+        Memory::StackBuffer<char32_t> ignored1;
+        auto                          rhsSpan = s.GetData (&ignored1);
+        Append (rhsSpan);
+    }
+    inline void String::Append (const wchar_t* s)
+    {
+        Append (s, s + ::wcslen (s));
+    }
+    inline void String::Append (const Character* from, const Character* to)
+    {
+        Append (span{from, to});
+    }
+    inline String& String::operator+= (Character appendage)
+    {
+        Append (appendage);
+        return *this;
+    }
+    inline String& String::operator+= (const String& appendage)
+    {
+        Append (appendage);
+        return *this;
+    }
+    inline String& String::operator+= (const wchar_t* appendageCStr)
+    {
+        Append (appendageCStr);
+        return *this;
+    }
+
+    inline void String::push_back (wchar_t c)
+    {
+        Append (Character (c));
+    }
+    inline void String::push_back (Character c)
+    {
+        Append (c);
+    }
+
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+
     [[deprecated ("Since Stroika v3.0d1 - just use _k, sv, or nothing")]] inline String operator"" _ASCII (const char* str, size_t len)
     {
         return String{span{str, len}};

@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "PathName.h"
@@ -33,7 +34,7 @@ String FileSystem::AssureDirectoryPathSlashTerminated (const String& dirPath)
         if (lastChar == kPathComponentSeperator) {
             return dirPath;
         }
-        String result = dirPath;
+        StringBuilder result = dirPath;
         result += kPathComponentSeperator;
         return result;
     }

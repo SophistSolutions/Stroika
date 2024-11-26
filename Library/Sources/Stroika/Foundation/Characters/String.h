@@ -167,14 +167,14 @@ namespace Stroika::Foundation::Characters {
      *          TODO WRITEUP AND MAYBE MAKE IMMUTABLE
      * 
      *          Current Mutating methods (as of v3.0d1x)
-     *          o   SetCharAt
+     *          o   SetCharAt       - deprecated v3.0d12
      *          o   c_str()
-     *          o   operator=
+     *          o   operator=       - deprecated v3.0d12
      *          o   clear()
-     *          o   Append
-     *          o   operator+=
+     *          o   Append           - deprecated v3.0d12
+     *          o   operator+=       - deprecated v3.0d12
      *          o   c_str ()  -- non-const
-     *          o   erase()
+     *          o   erase()          - deprecated v3.0d12
      *
      *          SOMEWHAT ironically, the only of these methods hard to replace is the non-const c_str () - and maybe there
      *          not bad cuz I deprecated? COULD just deprecate ALL of these, and then the class is fully immutable. Probably
@@ -435,7 +435,7 @@ namespace Stroika::Foundation::Characters {
          *  \brief - PREFER USING StringBuilder if you are using this. This is very slow;
          *  \todo Consider losing this method...
          */
-        nonvirtual void SetCharAt (Character c, size_t i);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder::SetAt")]] void SetCharAt (Character c, size_t i);
 
     public:
         /**
@@ -476,19 +476,19 @@ namespace Stroika::Foundation::Characters {
          *  \todo CONSIDER DEPRECATING/LOSING THIS API - right now its NOT performant, but could easily be tweaked. Just better to use StringBuilder... Also API could
          *        be generalized like CTOR - with appending any 'convertible to string' type, like char16_t, etc...
          */
-        nonvirtual void Append (Character c);
-        nonvirtual void Append (const String& s);
-        nonvirtual void Append (const wchar_t* s);
-        nonvirtual void Append (const wchar_t* from, const wchar_t* to);
-        nonvirtual void Append (const Character* from, const Character* to);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (Character c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const String& s);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const wchar_t* s);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const wchar_t* from, const wchar_t* to);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const Character* from, const Character* to);
         template <typename CHAR_T>
-        nonvirtual void Append (span<const CHAR_T> s)
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (span<const CHAR_T> s)
             requires (same_as<CHAR_T, Character> or same_as<CHAR_T, char32_t>);
 
     public:
-        nonvirtual String& operator+= (Character appendage);
-        nonvirtual String& operator+= (const String& appendage);
-        nonvirtual String& operator+= (const wchar_t* appendageCStr);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String& operator+= (Character appendage);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String& operator+= (const String& appendage);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String& operator+= (const wchar_t* appendageCStr);
 
     public:
         /**
@@ -1396,14 +1396,14 @@ namespace Stroika::Foundation::Characters {
         /**
          *  mimic (much of - need more overloads) STL variant
          */
-        nonvirtual void erase (size_t from = 0);
-        nonvirtual void erase (size_t from, size_t count);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void erase (size_t from = 0);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void erase (size_t from, size_t count);
 
     public:
         /**
          */
-        nonvirtual void push_back (wchar_t c);
-        nonvirtual void push_back (Character c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void push_back (wchar_t c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void push_back (Character c);
 
     public:
         /**

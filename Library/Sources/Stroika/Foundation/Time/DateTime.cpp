@@ -771,8 +771,8 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
 
 String DateTime::ToString () const
 {
-    // @todo - reconsider how we format this cuz unclear if Format() already incldues timezone -- LGP 2018-10-16
-    String tmp = Format ();
+    // @todo - reconsider how we format this cuz unclear if Format() already includes timezone -- LGP 2018-10-16
+    StringBuilder tmp = Format ();
     if (const auto& tz = GetTimezone ()) {
         tmp += " "sv + Characters::ToString (*tz);
     }

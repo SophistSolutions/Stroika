@@ -1418,13 +1418,13 @@ String String::StripAll (bool (*removeCharIf) (Character)) const
     // TODO: optimize special case where removeCharIf is always false
     //
     // Walk string and find first character we need to remove
-    String result{*this};
-    size_t n = result.size ();
+    StringBuilder result{*this};
+    size_t        n = result.size ();
     for (size_t i = 0; i < n; ++i) {
         Character c = result[i];
         if (removeCharIf (c)) {
             // on first removal, clone part of string done so far, and start appending
-            String tmp = result.SubString (0, i);
+            String tmp = result.As<String> ().SubString (0, i);
             // Now keep iterating IN THIS LOOP appending characters and return at the end of this loop
             ++i;
             for (; i < n; ++i) {

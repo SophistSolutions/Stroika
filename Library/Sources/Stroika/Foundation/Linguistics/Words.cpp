@@ -10,6 +10,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -27,7 +28,7 @@ using namespace Stroika::Foundation::Linguistics;
  */
 String Linguistics::CapitalizeEachWord (const String& s)
 {
-    String r;
+    StringBuilder r;
     // take an ENGLISH string (assume English)
 
     // toupper each lower-case character preceeded by a space
@@ -49,9 +50,9 @@ String Linguistics::CapitalizeEachWord (const String& s)
  */
 String Linguistics::CapitalizeEachSentence (const String& s)
 {
-    // WAY too kludgly - but hopefully adequate for primitive message cleanups...
+    // WAY too kludgy - but hopefully adequate for primitive message cleanups...
     //      -- LGP 2008-09-20
-    String r;
+    StringBuilder r;
     // take an ENGLISH string (assume English)
 
     // toupper each lower-case character preceeded by a ENDOFSENTECE PUNCT
@@ -76,12 +77,12 @@ String Linguistics::CapitalizeEachSentence (const String& s)
  */
 String Linguistics::UnCapitalizeFirstWord (const String& s)
 {
-    // WAY too kludgly - but hopefully adequate for primitive message cleanups...
+    // WAY too kludgy - but hopefully adequate for primitive message cleanups...
     //      -- LGP 2008-09-20
-    String r = s;
+    StringBuilder<StringBuilder_Options<char32_t>> r = s; // char32_t for performant indexing
     if (r.length () > 2) {
         if (r[0].ToUpperCase () == r[0] and r[1].ToUpperCase () != r[1]) {
-            r.SetCharAt (r[0].ToLowerCase (), 0);
+            r.SetAt (r[0].ToLowerCase (), 0);
         }
     }
     return r;

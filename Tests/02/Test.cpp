@@ -43,7 +43,7 @@ using std::byte;
 
 #define qPrintTimings 0
 
-//tmphack while experimenting with new std format code
+////tmphack while experimenting with new std format code - @todo move these tests to IO::Network tests
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 
@@ -122,20 +122,21 @@ namespace {
 
         void StressTest1_ (String big)
         {
+            StringBuilder bigger = big;
             for (size_t j = 1; j <= kLoopEnd / 50; j++) {
-                String a = "a"_k;
+                StringBuilder a = "a"_k;
                 for (size_t i = 0; i <= kLoopEnd; ++i) {
-                    big += a;
-                    EXPECT_TRUE ((big.size () - 1) == i);
-                    EXPECT_TRUE (big[i] == 'a');
+                    bigger += a;
+                    EXPECT_TRUE ((bigger.size () - 1) == i);
+                    EXPECT_TRUE (bigger[i] == 'a');
                 }
-                big.clear ();
+                bigger.clear ();
             }
 
             String s1 = "test strings";
             for (int i = 1; i <= kLoopEnd; ++i) {
-                big += s1;
-                EXPECT_TRUE (big.size () == s1.size () * i);
+                bigger += s1;
+                EXPECT_TRUE (bigger.size () == s1.size () * i);
             }
         }
         void StressTest2_ (String big)
@@ -226,12 +227,12 @@ namespace {
         EXPECT_TRUE ('s' == s1[2].GetCharacterCode ());
         EXPECT_TRUE (s1.size () == 12);
 
-        String s3;
+        StringBuilder s3;
         s3 += s1;
         s3 += s2;
 
-        s1 += "\n";
-        EXPECT_TRUE (s1.size () == 13);
+        s1 = (s1 + "\n");
+        EXPECT_EQ (s1.size (), 13);
     }
 
 }
@@ -288,13 +289,13 @@ namespace {
     GTEST_TEST (Foundation_Characters, Test3_)
     {
         Debug::TraceContextBumper ctx{"Test3_"};
-        String                    t1;
+        StringBuilder             t1;
         String                    t2 = t1;
         String                    t3 = "a";
         String                    t4 = "a";
 
-        EXPECT_TRUE (t1 == "");
-        EXPECT_TRUE (t1 == String{});
+        EXPECT_EQ (t1, "");
+        EXPECT_EQ (t1, String{});
         EXPECT_TRUE (t1 == String{""});
         EXPECT_TRUE (t1 == t2);
         EXPECT_TRUE (t3 == "a");
@@ -349,10 +350,10 @@ namespace {
         Debug::TraceContextBumper ctx{"Test4_"};
         const wchar_t             frobaz[] = L"abc";
 
-        String  t1;
-        String  t3 = "a";
-        String  t5 = String{frobaz};
-        String* t6 = new String{"xyz"};
+        StringBuilder t1;
+        String        t3 = "a";
+        StringBuilder t5 = String{frobaz};
+        String*       t6 = new String{"xyz"};
         delete (t6);
 
         t5 = t1;
@@ -375,66 +376,68 @@ namespace {
         t1 += 'd';
         t1 += " Flintstone";
         EXPECT_TRUE (t1 == "Fred Flintstone");
-        t5 = t1.SubString (5, 5 + 10);
+        t5 = t1.As<String> ().SubString (5, 5 + 10);
         EXPECT_TRUE (t5 == "Flintstone");
-        EXPECT_TRUE (not t5.Find ("STONE").has_value ());
-        EXPECT_TRUE (not t5.Contains ("SToNE"));
-        EXPECT_TRUE (t5.Find ("STONE", eCaseInsensitive) == 5u);
-        EXPECT_TRUE (t5.Contains ("SToNE", eCaseInsensitive));
+        EXPECT_TRUE (not t5.As<String> ().Find ("STONE").has_value ());
+        EXPECT_TRUE (not t5.As<String> ().Contains ("SToNE"));
+        EXPECT_TRUE (t5.As<String> ().Find ("STONE", eCaseInsensitive) == 5u);
+        EXPECT_TRUE (t5.As<String> ().Contains ("SToNE", eCaseInsensitive));
 
         t1.erase (4);
         EXPECT_TRUE (t1.length () == 4);
 
         t5 = t1;
-        t5.SetCharAt ('f', 0);
-        t5.SetCharAt ('R', 1);
-        t5.SetCharAt ('E', 2);
-        t5.SetCharAt ('D', 3);
+        t5.SetAt ('f', 0);
+        t5.SetAt ('R', 1);
+        t5.SetAt ('E', 2);
+        t5.SetAt ('D', 3);
 
         EXPECT_TRUE (t5[0] == 'f');
         EXPECT_TRUE (t5[1] == 'R');
         EXPECT_TRUE (t5[2] == 'E');
         EXPECT_TRUE (t5[3] == 'D');
-        EXPECT_TRUE (t5.Find ('f') == 0u);
-        EXPECT_TRUE (t5.Find ("f") == 0u);
-        EXPECT_TRUE (t5.Find ("fR") == 0u);
-        EXPECT_TRUE (t5.Find ("fRE") == 0u);
-        EXPECT_TRUE (t5.Find ("fRED") == 0u);
-        EXPECT_TRUE (not t5.Find ("fRD").has_value ());
-        EXPECT_TRUE (t5.Find ('R') == 1u);
-        EXPECT_TRUE (t5.Find ('E') == 2u);
-        EXPECT_TRUE (t5.Find ('D') == 3u);
-        EXPECT_TRUE (t5.Find ("D") == 3u);
+        String t5s = t5.As<String> ();
+        EXPECT_TRUE (t5s.Find ('f') == 0u);
+        EXPECT_TRUE (t5s.Find ("f") == 0u);
+        EXPECT_TRUE (t5s.Find ("fR") == 0u);
+        EXPECT_TRUE (t5s.Find ("fRE") == 0u);
+        EXPECT_TRUE (t5s.Find ("fRED") == 0u);
+        EXPECT_TRUE (not t5s.Find ("fRD").has_value ());
+        EXPECT_TRUE (t5s.Find ('R') == 1u);
+        EXPECT_TRUE (t5s.Find ('E') == 2u);
+        EXPECT_TRUE (t5s.Find ('D') == 3u);
+        EXPECT_TRUE (t5s.Find ("D") == 3u);
 
-        EXPECT_TRUE (t5.RFind ('f') == 0u);
-        EXPECT_TRUE (t5.RFind ('R') == 1u);
-        EXPECT_TRUE (t5.RFind ('E') == 2u);
-        EXPECT_TRUE (t5.RFind ('D') == 3u);
-        EXPECT_TRUE (t5.RFind ("D") == 3u);
-        EXPECT_TRUE (t5.RFind ("ED") == 2u);
-        EXPECT_TRUE (t5.RFind ("RED") == 1u);
-        EXPECT_TRUE (t5.RFind ("fRED") == 0u);
-        EXPECT_TRUE (not t5.RFind ("fr").has_value ());
-        EXPECT_TRUE (t5.RFind ("f") == 0u);
+        EXPECT_TRUE (t5s.RFind ('f') == 0u);
+        EXPECT_TRUE (t5s.RFind ('R') == 1u);
+        EXPECT_TRUE (t5s.RFind ('E') == 2u);
+        EXPECT_TRUE (t5s.RFind ('D') == 3u);
+        EXPECT_TRUE (t5s.RFind ("D") == 3u);
+        EXPECT_TRUE (t5s.RFind ("ED") == 2u);
+        EXPECT_TRUE (t5s.RFind ("RED") == 1u);
+        EXPECT_TRUE (t5s.RFind ("fRED") == 0u);
+        EXPECT_TRUE (not t5s.RFind ("fr").has_value ());
+        EXPECT_TRUE (t5s.RFind ("f") == 0u);
 
-        t5.SetCharAt ('D', 0);
-        t5.SetCharAt ('D', 1);
-        t5.SetCharAt ('D', 2);
-        t5.SetCharAt ('D', 3);
-        EXPECT_TRUE (t5.Find ('D') == 0u);
-        EXPECT_TRUE (t5.Find ("D") == 0u);
-        EXPECT_TRUE (t5.RFind ('D') == 3u);
-        EXPECT_TRUE (t5.RFind ("D") == 3u);
+        t5.SetAt ('D', 0);
+        t5.SetAt ('D', 1);
+        t5.SetAt ('D', 2);
+        t5.SetAt ('D', 3);
+        t5s = t5.As<String> ();
+        EXPECT_TRUE (t5s.Find ('D') == 0u);
+        EXPECT_TRUE (t5s.Find ("D") == 0u);
+        EXPECT_TRUE (t5s.RFind ('D') == 3u);
+        EXPECT_TRUE (t5s.RFind ("D") == 3u);
 
-        EXPECT_TRUE (not t5.Find ('f').has_value ());
-        EXPECT_TRUE (not t5.Find ("f").has_value ());
-        EXPECT_TRUE (not t5.RFind ('f').has_value ());
-        EXPECT_TRUE (not t5.RFind ("f").has_value ());
+        EXPECT_TRUE (not t5s.Find ('f').has_value ());
+        EXPECT_TRUE (not t5s.Find ("f").has_value ());
+        EXPECT_TRUE (not t5s.RFind ('f').has_value ());
+        EXPECT_TRUE (not t5s.RFind ("f").has_value ());
 
-        EXPECT_TRUE (t5[0] == 'D');
-        EXPECT_TRUE (t5[1] == 'D');
-        EXPECT_TRUE (t5[2] == 'D');
-        EXPECT_TRUE (t5[3] == 'D');
+        EXPECT_TRUE (t5s[0] == 'D');
+        EXPECT_TRUE (t5s[1] == 'D');
+        EXPECT_TRUE (t5s[2] == 'D');
+        EXPECT_TRUE (t5s[3] == 'D');
     }
 }
 
@@ -546,7 +549,7 @@ namespace {
         Debug::TraceContextBumper ctx{"ReadOnlyStrings_"};
         // NOTE - THIS TESTS String_Constant
         //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime;
-        String s = String::FromStringConstant ("fred");
+        StringBuilder s = String::FromStringConstant ("fred");
         EXPECT_TRUE (s[0] == 'f');
         s.erase (3);
         EXPECT_TRUE (s[0] == 'f');
@@ -556,62 +559,27 @@ namespace {
         EXPECT_TRUE (s.size () == 4);
         EXPECT_TRUE (s[3] == 'x');
         EXPECT_TRUE (s == "frex");
-        s = s.InsertAt ('x', 2);
+        s.InsertAt ('x', 2);
         EXPECT_TRUE (s == "frxex");
-        {
-            wchar_t kZero[] = L"";
-            s               = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 0);
-            EXPECT_TRUE (s == "frxex");
-            s = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 1);
-            EXPECT_TRUE (s == "frxex");
-            s = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 5);
-            EXPECT_TRUE (s == "frxex");
-        }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Characters, ExternalMemoryOwnershipStrings_)
+    GTEST_TEST (Foundation_Characters, StringBuilderAppend_)
     {
-        Debug::TraceContextBumper ctx{"ExternalMemoryOwnershipStrings_"};
-        String                    s = String::FromStringConstant ("fred");
-        EXPECT_TRUE (s[0] == 'f');
-        s.erase (3);
-        EXPECT_TRUE (s[0] == 'f');
-        EXPECT_TRUE (s.size () == 3);
-        s += "x";
-        EXPECT_TRUE (s.size () == 4);
-        EXPECT_TRUE (s[3] == 'x');
-        EXPECT_TRUE (s == "frex");
-        s = s.InsertAt ('x', 2);
-        EXPECT_TRUE (s == "frxex");
-    }
-}
-
-namespace {
-    namespace Test9Support {
-        template <typename STRING>
-        void DoTest1 (STRING s)
-        {
-            STRING           t1 = s;
+        auto DoTest1 = [] (String s) {
+            StringBuilder    t1 = s;
             constexpr size_t kMaxCount_{100}; // NOTE - see http://stroika-bugs.sophists.com/browse/STK-996
             for (size_t i = 0; i < kMaxCount_; ++i) {
                 t1 += L"X";
             }
-            STRING t2 = t1;
+            String t2 = t1;
             if (t1 != t2) {
                 EXPECT_TRUE (false);
             }
-        }
-    }
-    GTEST_TEST (Foundation_Characters, StringVersusStdCString_)
-    {
-        Debug::TraceContextBumper ctx{"StringVersusStdCString_"};
-        // EMBELLISH THIS MORE ONCE WE HAVE TIMING SUPPORT WORKING - SO WE CNA COMPARE PERFORMANCE - AND COME UP WITH MORE REASONABLE TESTS
-        //
-        //      -- LGP 2011-09-01
-        Test9Support::DoTest1<String> ("Hello");
-        Test9Support::DoTest1<std::wstring> (L"Hello");
+        };
+        Debug::TraceContextBumper ctx{"StringBuilderAppend_"};
+        DoTest1 ("Hello");
     }
 }
 
@@ -900,15 +868,15 @@ namespace {
         EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcde"}.c_str (), L"0123456789abcdef0123456789abcde") == 0);   // 31 chars
         EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcdef"}.c_str (), L"0123456789abcdef0123456789abcdef") == 0); // 32 chars
         {
-            String tmp = "333";
-            EXPECT_TRUE (wcscmp (tmp.c_str (), L"333") == 0);
+            StringBuilder tmp{"333"};
+            EXPECT_EQ (tmp, "333");
             tmp = "Barny";
-            EXPECT_TRUE (wcscmp (tmp.c_str (), L"Barny") == 0);
-            tmp.SetCharAt ('c', 2);
-            EXPECT_TRUE (wcscmp (tmp.c_str (), L"Bacny") == 0);
+            EXPECT_EQ (tmp, "Barny");
+            tmp.SetAt ('c', 2);
+            EXPECT_EQ (tmp, "Bacny");
             String bumpRefCnt = tmp;
-            tmp.SetCharAt ('d', 2);
-            EXPECT_TRUE (wcscmp (tmp.c_str (), L"Badny") == 0);
+            tmp.SetAt ('d', 2);
+            EXPECT_EQ (tmp, "Badny");
         }
     }
 }
@@ -1329,14 +1297,14 @@ namespace {
     GTEST_TEST (Foundation_Characters, Append_)
     {
         Debug::TraceContextBumper ctx{"Append_"};
-        String                    result;
+        StringBuilder             result;
         Character                 buf[]{'a', 'b', 'c', 'd'};
         for (int i = 0; i < 10; ++i) {
             result.Append (std::begin (buf), std::begin (buf) + Memory::NEltsOf (buf));
         }
-        EXPECT_TRUE (result.size () == 4 * 10);
-        EXPECT_TRUE (result == "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
-        Verify (L"a" + String{} == "a"); // we had bug in v2.0a100 and earlier with null string on RHS of operator+
+        EXPECT_EQ (result.size (), 4 * 10);
+        EXPECT_EQ (result, "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
+        EXPECT_EQ (L"a" + String{}, "a"); // we had bug in v2.0a100 and earlier with null string on RHS of operator+
     }
 }
 
@@ -1512,7 +1480,7 @@ namespace {
                     auto                         rhsSpan = a.GetData (&ignored1);
                     EXPECT_TRUE (rhsSpan.size () == 5);
                 }
-                String b;
+                StringBuilder b;
                 b += a;
                 EXPECT_TRUE (a == b);
                 EXPECT_TRUE (a.size () == 5);
@@ -1660,8 +1628,8 @@ namespace {
             EXPECT_TRUE (u16string{u"שלום"} == String{u"שלום"}.AsUTF16 ());
         }
         {
-            String tmp;
-            tmp = tmp + u"phred";
+            StringBuilder tmp;
+            tmp = tmp.As<String> () + u"phred";
             tmp += u"שלום";
             Verify (tmp == u"phredשלום");
         }

@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Characters {
      *  \brief rarely used  directly - defaults generally fine
      * 
      *  BUF_CHAR_T of char32_t probably does better if definitely using a lot of wide unicode characters.
-     *  BUF_CHAR_T of char8_t probably best for mostly ASCII text. Note - GetCharAt/SetCharAt very slow
+     *  BUF_CHAR_T of char8_t probably best for mostly ASCII text. Note - GetAt/SetAt very slow
      *  unless using char32_t.
      * 
      *  Maybe easy to support all at once.
@@ -214,6 +214,21 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief return (read-only) Character object
+         *
+         *  Alias for GetAt (size_t i) const;
+         */
+        nonvirtual const Character operator[] (size_t i) const noexcept;
+
+    public:
+        /**
+         *  Mimic the String::InsertAt API, except modify in place.
+         */
+        template <Common::IAnyOf<char, Character, String, span<const Character>, span<Character>> T>
+        nonvirtual void InsertAt (T c, size_t at);
+
+    public:
+        /**
          *  Change the size of this object to sz = where sz must be <= size()
          */
         nonvirtual void ShrinkTo (size_t sz) noexcept;
@@ -306,6 +321,17 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
             requires (not is_const_v<CHAR_T>);
+
+    public:
+        // @todo cleanup
+        bool operator== (const String& rhs) const;
+        bool operator== (const StringBuilder& rhs) const;
+
+    public:
+        // ape std::string API
+        // @todo cleanup
+        void erase (size_t from);
+        void erase (size_t from, size_t count);
 
     public:
         [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] StringBuilder (const wchar_t* start, const wchar_t* end)

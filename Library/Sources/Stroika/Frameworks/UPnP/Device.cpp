@@ -44,7 +44,7 @@ String UPnP::MungePrimaryMacAddrIntoBaseDeviceID (String baseDeviceID)
         macAddr = macAddr.SubString (0, 12);
     }
     while (macAddr.length () < 12) {
-        macAddr += "0"sv;
+        macAddr = macAddr + "0"sv;
     }
     result = baseDeviceID.SubString (0, 36 - 12) + macAddr;
     Ensure (result.length () == 36);

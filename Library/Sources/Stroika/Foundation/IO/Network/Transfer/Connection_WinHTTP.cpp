@@ -188,7 +188,7 @@ namespace {
                 fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
                 useHeadersMap.Add (HeaderName::kAuthorization, fOptions_.fAuthentication->GetAuthToken ());
             }
-            String useHeaderStrBuf;
+            StringBuilder useHeaderStrBuf;
             {
                 for (auto i = useHeadersMap.begin (); i != useHeadersMap.end (); ++i) {
                     useHeaderStrBuf += i->fKey + ": "sv + i->fValue + "\r\n"sv;
@@ -255,7 +255,7 @@ namespace {
                     Throw (Execution::Exception{"Too large a message to send using WinHTTP"sv});
                 }
                 ThrowIfZeroGetLastError (
-                    ::WinHttpSendRequest (hRequest, useHeaderStrBuf.c_str (), static_cast<DWORD> (-1),
+                    ::WinHttpSendRequest (hRequest, useHeaderStrBuf.As<String> ().c_str (), static_cast<DWORD> (-1),
                                           useRequest.fData.empty () ? nullptr : const_cast<byte*> (useRequest.fData.begin ()),
                                           static_cast<DWORD> (useRequest.fData.size ()), static_cast<DWORD> (useRequest.fData.size ()), NULL));
 

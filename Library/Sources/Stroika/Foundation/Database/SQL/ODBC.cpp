@@ -65,11 +65,11 @@ namespace {
                                       SQL_NTS, nullptr, SQL_NTS, nullptr, SQL_NTS);
                     if ((return_value != SQL_SUCCESS) && (return_value != SQL_SUCCESS_WITH_INFO)) {
                         // This logic for producing an error message completely sucks and is largely incorrect
-                        String      errorString = "Error SQLConnect: "_k;
-                        SQLTCHAR    sqlState[6];
-                        SQLINTEGER  errorCode;
-                        SQLSMALLINT messageLength;
-                        SQLTCHAR    errorMessage[1024];
+                        StringBuilder errorString = "Error SQLConnect: "_k;
+                        SQLTCHAR      sqlState[6];
+                        SQLINTEGER    errorCode;
+                        SQLSMALLINT   messageLength;
+                        SQLTCHAR      errorMessage[1024];
                         DISABLE_COMPILER_MSC_WARNING_START (4267)
                         long errValue = ::SQLGetDiagRec (SQL_HANDLE_DBC, fConnectionHandle, 1, reinterpret_cast<SQLTCHAR*> (sqlState), &errorCode,
                                                          reinterpret_cast<SQLTCHAR*> (errorMessage), Memory::NEltsOf (errorMessage), &messageLength);

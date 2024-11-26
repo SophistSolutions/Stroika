@@ -256,6 +256,19 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <typename OPTIONS>
+    inline const Character StringBuilder<OPTIONS>::operator[] (size_t i) const noexcept
+    {
+        return GetAt (i);
+    }
+    template <typename OPTIONS>
+    template <Common::IAnyOf<char, Character, String, span<const Character>, span<Character>> T>
+    nonvirtual void StringBuilder<OPTIONS>::InsertAt (T c, size_t at)
+    {
+        // inefficient, but functional for now - implementation
+        String asStr = this->As<String> ();
+        *this        = asStr.InsertAt (c, at);
+    }
+    template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::ShrinkTo (size_t sz) noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
@@ -358,6 +371,29 @@ namespace Stroika::Foundation::Characters {
             probablyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
             return UTFConvert::kThe.ConvertSpan (span{fData_}, span{*probablyIgnoredBuf});
         }
+    }
+
+    template <typename OPTIONS>
+    bool StringBuilder<OPTIONS>::operator== (const String& rhs) const
+    {
+        return As<String> () == rhs;
+    }
+    template <typename OPTIONS>
+    bool StringBuilder<OPTIONS>::operator== (const StringBuilder& rhs) const
+    {
+        return As<String> () == rhs.As<String> ();
+    }
+    template <typename OPTIONS>
+    void StringBuilder<OPTIONS>::erase (size_t from)
+    {
+        erase (from, size () - from);
+    }
+    template <typename OPTIONS>
+    void StringBuilder<OPTIONS>::erase (size_t from, size_t count)
+    {
+        //tmphack
+        String a = *this;
+        *this    = a.RemoveAt (from, from + count);
     }
 
 }

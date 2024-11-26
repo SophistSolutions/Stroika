@@ -2,6 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+
 namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 
     /*
@@ -27,7 +29,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     }
     inline String Name::ToString () const
     {
-        String result;
+        Characters::StringBuilder result;
         if (fType == NameType::eAttribute) {
             result += "@"sv;
         }
