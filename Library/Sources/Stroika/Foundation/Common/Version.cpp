@@ -140,7 +140,7 @@ Characters::String Version::AsWin32Version4DotString () const
 
 Characters::String Version::AsPrettyVersionString () const
 {
-    String stageStr = "?"sv;
+    StringBuilder stageStr{"?"sv};
     switch (fVerStage) {
         case VersionStage::Dev:
             stageStr = "d"sv;
@@ -158,7 +158,7 @@ Characters::String Version::AsPrettyVersionString () const
             stageStr = fVerSubStage == 0 ? String{} : "."sv;
             break;
     }
-    String verSubStagStr;
+    StringBuilder verSubStagStr;
     if (fVerSubStage != 0) {
         verSubStagStr = Characters::Format ("{}"_f, fVerSubStage);
     }

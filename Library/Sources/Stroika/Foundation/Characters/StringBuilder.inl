@@ -29,7 +29,8 @@ namespace Stroika::Foundation::Characters {
         Append (initialValue);
     }
     template <typename OPTIONS>
-    inline auto StringBuilder<OPTIONS>::operator= (const String& rhs) -> StringBuilder&
+    template <convertible_to<String> T>
+    inline auto StringBuilder<OPTIONS>::operator= (const T& rhs) -> StringBuilder&
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         clear ();

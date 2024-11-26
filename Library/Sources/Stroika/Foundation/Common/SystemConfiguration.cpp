@@ -609,7 +609,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
         if (tmp.fRFC1945CompatProductTokenWithVersion.empty ()) {
             tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (" "sv, "-"sv);
             if (not tmp.fMajorMinorVersionString.empty ()) {
-                tmp.fRFC1945CompatProductTokenWithVersion += "/"sv + tmp.fMajorMinorVersionString;
+                tmp.fRFC1945CompatProductTokenWithVersion = tmp.fRFC1945CompatProductTokenWithVersion + "/"sv + tmp.fMajorMinorVersionString;
             }
         }
 

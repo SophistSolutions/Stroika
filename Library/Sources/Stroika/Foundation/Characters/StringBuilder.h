@@ -95,7 +95,8 @@ namespace Stroika::Foundation::Characters {
 
     public:
         nonvirtual StringBuilder& operator= (const StringBuilder& rhs) = default;
-        nonvirtual StringBuilder& operator= (const String& rhs);
+        template <convertible_to<String> T>
+        nonvirtual StringBuilder& operator= (const T& rhs);
 
     public:
         /**

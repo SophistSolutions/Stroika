@@ -1424,7 +1424,7 @@ String String::StripAll (bool (*removeCharIf) (Character)) const
         Character c = result[i];
         if (removeCharIf (c)) {
             // on first removal, clone part of string done so far, and start appending
-            String tmp = result.As<String> ().SubString (0, i);
+            StringBuilder tmp = result.As<String> ().SubString (0, i);
             // Now keep iterating IN THIS LOOP appending characters and return at the end of this loop
             ++i;
             for (; i < n; ++i) {
