@@ -1217,8 +1217,8 @@ namespace Stroika::Foundation::Characters {
 namespace Stroika::Foundation::Characters {
 
     // DEPRECATED
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     template <typename CHAR_T>
     inline void String::Append (span<const CHAR_T> s)
@@ -1299,8 +1299,8 @@ namespace Stroika::Foundation::Characters {
     }
 
     DISABLE_COMPILER_MSC_WARNING_END (4996)
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     [[deprecated ("Since Stroika v3.0d1 - just use _k, sv, or nothing")]] inline String operator"" _ASCII (const char* str, size_t len)
     {
