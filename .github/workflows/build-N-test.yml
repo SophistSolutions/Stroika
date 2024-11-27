@@ -151,11 +151,12 @@ jobs:
       - name: Archive Documentation Results
         uses: actions/upload-artifact@v4
         with:
-          name: Stroika-Doxygen-Help.tar.gz
           path: |
             Builds/Stroika-Doxygen-Help.tar.gz
           #Dont name based on who built - sb all the same
           overwrite: true
+          # https://github.com/actions/upload-artifact/issues/506 include matrix configname until bug fixed --LGP 2024-11-27
+          name: ${{ matrix.config_name }}-Stroika-Doxygen-Help.tar.gz
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
