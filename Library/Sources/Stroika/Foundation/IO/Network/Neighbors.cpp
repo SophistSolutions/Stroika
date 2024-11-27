@@ -98,7 +98,7 @@ namespace {
                     }
                     else {
                         WeakAssert (false); // bad -
-                        curInterface.clear ();
+                        curInterface = String{};
                     }
                 }
             }
@@ -122,7 +122,7 @@ namespace {
 #endif
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"returning: {}"_f, result);
+        DbgTrace ("returning: {}"_f, result);
 #endif
         return result;
     }

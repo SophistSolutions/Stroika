@@ -572,12 +572,8 @@ namespace Stroika::Foundation::Characters {
         _SafeReadRepAccessor accessor{this};
         return accessor._ConstGetRep ().size () == 0;
     }
-    inline void String::clear ()
-    {
-        *this = String{};
-    }
     namespace Private_ {
-        // match index starts with 1 (and requres match.size () >=2)
+        // match index starts with 1 (and requires match.size () >=2)
         inline void ExtractMatches_ ([[maybe_unused]] const wsmatch& base_match, [[maybe_unused]] size_t currentUnpackIndex)
         {
         }

@@ -48,15 +48,6 @@
  *          i think locale stuff needed for std::string cuz not unicode but not needed wti stk impl cuz using unicode
  *          add this to DOCS for class, but not needed in impl...
  *
- *      @todo   EXPLAIN why InsertAt () returns string and Append() doesn't! Or - change it!
- *              Basic idea is that append is SO convenient (+=) - that we just must support that
- *              and it can be done safely.
- *
- *              But InsertAt () is less common, and so we can just encourage the more safe strategy of
- *              returning a new string.
- *
- *              Weak argument! BUt best I can come up with...
- *
  *      @todo   Cleanup SubString (), and String::SubString_ use of SharedByValue<TRAITS>::ReadOnlyReference for
  *              performance. At some level - in String::SubString_ - we have a (hidden) sharedPtr and it would
  *              be safe and performant in that case to re-use that shared_ptr to make a new String envelope.
@@ -168,12 +159,12 @@ namespace Stroika::Foundation::Characters {
      * 
      *          Current Mutating methods (as of v3.0d1x)
      *          o   SetCharAt       - deprecated v3.0d12
-     *          o   c_str()
+     *          o   c_str()           (consider deprecating?)
      *          o   operator=       - deprecated v3.0d12
-     *          o   clear()
+     *          o   clear()- deprecated v3.0d12
      *          o   Append           - deprecated v3.0d12
      *          o   operator+=       - deprecated v3.0d12
-     *          o   c_str ()  -- non-const
+     *          o   c_str ()  -- non-const                  (consider deprecating?)
      *          o   erase()          - deprecated v3.0d12
      *
      *          SOMEWHAT ironically, the only of these methods hard to replace is the non-const c_str () - and maybe there
@@ -421,12 +412,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Alias for *this = String{};
-         */
-        nonvirtual void clear ();
-
-    public:
-        /**
          */
         nonvirtual const Character GetCharAt (size_t i) const noexcept;
 
@@ -459,36 +444,6 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String InsertAt (const String& s, size_t at) const;
         nonvirtual String InsertAt (span<const Character> s, size_t at) const;
         nonvirtual String InsertAt (span<Character> s, size_t at) const;
-
-    public:
-        /**
-         *  Append() adds the given argument characters to the end of this string object.
-         *
-         *  Unlike InsertAt() - this modifies 'this' string, rather than returning a new one.
-         *
-         *  \em Note that for repeated insertions, this is much less efficient than just
-         *      using StringBuilder.
-         *
-         *  \em Note that it is legal, but pointless to pass in an empty string to insert
-         *
-         *  @see    Concatenate() for a similar function that doesn't modify the source
-         * 
-         *  \todo CONSIDER DEPRECATING/LOSING THIS API - right now its NOT performant, but could easily be tweaked. Just better to use StringBuilder... Also API could
-         *        be generalized like CTOR - with appending any 'convertible to string' type, like char16_t, etc...
-         */
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (Character c);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const String& s);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const wchar_t* s);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const wchar_t* from, const wchar_t* to);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const Character* from, const Character* to);
-        template <typename CHAR_T>
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (span<const CHAR_T> s)
-            requires (same_as<CHAR_T, Character> or same_as<CHAR_T, char32_t>);
-
-    public:
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String& operator+= (Character appendage);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String& operator+= (const String& appendage);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String& operator+= (const wchar_t* appendageCStr);
 
     public:
         /**
@@ -1394,19 +1349,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  mimic (much of - need more overloads) STL variant
-         */
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void erase (size_t from = 0);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void erase (size_t from, size_t count);
-
-    public:
-        /**
-         */
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void push_back (wchar_t c);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void push_back (Character c);
-
-    public:
-        /**
          *  mimic https://en.cppreference.com/w/cpp/string/basic_string/front
          * 
          *  \req not empty ()
@@ -1436,6 +1378,28 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
+        /**
+         *  mimic (much of - need more overloads) STL variant
+         */
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void erase (size_t from = 0);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void erase (size_t from, size_t count);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void push_back (wchar_t c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void push_back (Character c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (Character c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const String& s);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const wchar_t* s);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const wchar_t* from, const wchar_t* to);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const Character* from, const Character* to);
+        template <typename CHAR_T>
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (span<const CHAR_T> s)
+            requires (same_as<CHAR_T, Character> or same_as<CHAR_T, char32_t>);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String&    operator+= (Character appendage);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String&    operator+= (const String& appendage);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] String&    operator+= (const wchar_t* appendageCStr);
+        [[deprecated ("Since Stroika v3.0d12 - just use a b String{}")]] void clear ()
+        {
+            *this = String{};
+        }
         template <typename T>
         [[deprecated ("Since Stroika v3.0d2, just use 0 arg version)")]] void As (T* into) const
             requires (IBasicUNICODEStdString<T> or same_as<T, String>)
