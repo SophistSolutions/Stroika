@@ -516,8 +516,8 @@ if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
 fi
 if [ "$NTSANS" -ne 0 ] ; then
-	echo "   Saw warnings about sysctl vm.mmap_rnd_bits so TSAN disabled"
-	echo "   Saw warnings about sysctl vm.mmap_rnd_bits so TSAN disabled" >>$TEST_OUT_FILE 2>&1
+	echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled"
+	echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled" >>$TEST_OUT_FILE 2>&1
 fi
 TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
 echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
