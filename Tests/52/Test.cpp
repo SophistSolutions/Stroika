@@ -239,8 +239,7 @@ namespace {
                  << " so try using runCount = " << int (runCount / baselineTime.count ()) << endl;
         }
 #endif
-        printResults (testName, Characters::Format ("{} seconds"_f, baselineTime.count ()), compareWithTName,
-                      warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
+        printResults (testName, "{} seconds"_f(baselineTime.count ()), compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
         if constexpr (kPrintOutIfFailsToMeetPerformanceExpectations_) {
             double ratio = compareWithTime.count () / baselineTime.count ();
             return ratio > warnIfPerformanceScoreHigherThan;

@@ -36,11 +36,11 @@ namespace Stroika::Foundation::Execution {
     }
 #endif
     template <typename CHAR_T, typename... ARGS>
-    inline void Logger::Log (Priority logLevel, Characters::FormatString<CHAR_T> fmt, ARGS&&... args)
+    inline void Logger::Log (Priority logLevel, const Characters::FormatString<CHAR_T>& fmt, ARGS&&... args)
     {
         using namespace Characters::Literals;
         if (WouldLog (logLevel)) {
-            String msg = Characters::Format (fmt, args...);
+            String msg = fmt (args...);
             DbgTrace ("Logger::Log ({}, \"{}\")"_f, logLevel, msg);
             Log_ (logLevel, msg);
         }

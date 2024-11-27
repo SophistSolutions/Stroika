@@ -96,6 +96,10 @@ namespace Stroika::Foundation::Characters {
         wstring_view fSV_; // maybe SB wformat_string here??
         /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
     };
+    template <typename CHAR_T>
+    FormatString (const CHAR_T*) -> FormatString<CHAR_T>;
+    template <typename CHAR_T>
+    FormatString (const basic_string_view<CHAR_T>&) -> FormatString<CHAR_T>;
     template <>
     struct FormatString<char> {
     private:

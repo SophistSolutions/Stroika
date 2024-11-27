@@ -726,14 +726,14 @@ namespace {
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("Ignoring {}"_f, e));
+                    Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                 }
                 else {
                     Execution::ReThrow ();
                 }
             }
             catch (const Execution::TimeOutException& e) {
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("Ignoring {}"_f, e));
+                Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP

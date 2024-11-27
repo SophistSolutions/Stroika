@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_DefaultTracingOn
         : WhenTimeExceeded{warnIfLongerThan, [this] (Time::DurationSeconds timeTaken) noexcept {
                                if (fShowIfTimeExceeded_) {
-                                   DbgTrace (Characters::FormatString<char>{"(timeTaken={})"}, timeTaken);
+                                   DbgTrace (Characters::FormatString{"(timeTaken={})"}, timeTaken);
                                }
                            }}
 #endif
@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_DefaultTracingOn
         : WhenTimeExceeded{warnIfLongerThan, [=, this] (Time::DurationSeconds timeTaken) noexcept {
                                if (fShowIfTimeExceeded_) {
-                                   DbgTrace (Characters::FormatString<char>{"{} (timeTaken={})"}, Characters::String{label}, timeTaken);
+                                   DbgTrace (Characters::FormatString{"{} (timeTaken={})"}, Characters::String{label}, timeTaken);
                                }
                            }}
 #endif
@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_DefaultTracingOn
         : WhenTimeExceeded{warnIfLongerThan, [=, this] (Time::DurationSeconds timeTaken) noexcept {
                                if (fShowIfTimeExceeded_) {
-                                   DbgTrace (Characters::FormatString<char>{"{} (timeTaken={})"}, label, timeTaken);
+                                   DbgTrace (Characters::FormatString{"{} (timeTaken={})"}, label, timeTaken);
                                }
                            }}
 #endif
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_DefaultTracingOn
         : WhenTimeExceeded{warnIfLongerThan, [=, this] (Time::DurationSeconds timeTaken) noexcept {
                                if (fShowIfTimeExceeded_) {
-                                   DbgTrace (Characters::FormatString<char>{"{} (timeTaken={})"}, label, timeTaken);
+                                   DbgTrace (Characters::FormatString{"{} (timeTaken={})"}, label, timeTaken);
                                }
                            }}
 #endif

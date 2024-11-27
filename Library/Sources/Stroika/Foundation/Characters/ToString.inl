@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
         template <typename OPTIONS>
-        inline String ToString(const StringBuilder<OPTIONS>& sb)
+        inline String ToString (const StringBuilder<OPTIONS>& sb)
         {
             return sb.template As<String> ();
         }

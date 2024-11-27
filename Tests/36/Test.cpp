@@ -114,7 +114,7 @@ namespace {
                             sb += "select "sv;
                             sb += "'"sv + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + "',"sv;
                             sb += "'"sv + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + "',"sv;
-                            sb += Characters::Format ("{}"_f, (int)scanKind) + ","sv;
+                            sb += "{}"_f((int)scanKind) + ","sv;
                             if (rawSpectrum) {
                                 sb += "'" + Database::SQL::Utils::QuoteStringForDB ("SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"sv) +
                                       "',"sv;

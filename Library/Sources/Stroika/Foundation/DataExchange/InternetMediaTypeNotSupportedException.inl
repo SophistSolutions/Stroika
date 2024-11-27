@@ -15,7 +15,7 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     inline InternetMediaTypeNotSupportedException::InternetMediaTypeNotSupportedException (const InternetMediaType& mediaType)
-        : Execution::RuntimeErrorException<>{Characters::FormatString<char>{"Internet Media Type '{}' not supported"sv}(mediaType)}
+        : Execution::RuntimeErrorException<>{Characters::FormatString{"Internet Media Type '{}' not supported"sv}(mediaType)}
     {
     }
 

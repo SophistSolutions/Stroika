@@ -96,7 +96,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         Sequence<String> tokens{line.Tokenize ({' '})};
         if (tokens.size () < 3) {
             DbgTrace ("tokens={}, line='{}', fMsgHeaderInTextStream={}"_f, tokens, line, fMsgHeaderInTextStream.ToString ());
-            Execution::Throw (ClientErrorException{Characters::Format ("Bad METHOD Request HTTP line ({})"_f, line)});
+            Execution::Throw (ClientErrorException{"Bad METHOD Request HTTP line ({})"_f(line)});
         }
         updatableRequest.httpMethod  = tokens[0];
         updatableRequest.httpVersion = tokens[2];
@@ -203,13 +203,10 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
         String socketName = "{}-{}"_f((long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
         fSocketStream_    = Streams::LoggingInputOutputStream<byte>::New (
             fSocketStream_,
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () +
-                                                      Characters::Format (L"socket-%s-input-trace.txt", socketName.c_str ())),
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () +
-                                                      Characters::Format (L"socket-%s-output-trace.txt", socketName.c_str ())));
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}-input-trace.txt"_f(socketName)),
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}output-trace.txt"_f(socketName)));
         fLogConnectionState_ = Streams::TextWriter::New (
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () +
-                                                   Characters::Format (L"socket-%s-highlevel-trace.txt", socketName.c_str ())),
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}-highlevel-trace.txt"_f(socketName)),
             Streams::TextWriter::Format::eUTF8WithoutBOM);
     }
 #endif

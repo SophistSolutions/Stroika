@@ -100,8 +100,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                         default:
                             // avoid races and critical sections (appender internally threadsafe)
                             for (shared_ptr<IAppenderRep> tmp : fAppenders_.load ()) {
-                                tmp->Log (i->fKey.first,
-                                          Characters::Format ("[{} duplicates suppressed]: {}"_f, i->fValue.fRepeatCount_ - 1, i->fKey.second));
+                                tmp->Log (i->fKey.first, "[{} duplicates suppressed]: {}"_f(i->fValue.fRepeatCount_ - 1, i->fKey.second));
                             }
                             break;
                     }

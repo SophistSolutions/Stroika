@@ -262,13 +262,13 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     {
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
-            extraMsg << Characters::Format ("exit status {}"_f, int (*wExitStatus));
+            extraMsg << "exit status {}"_f(int (*wExitStatus));
         }
         if (wTermSig) {
             if (not extraMsg.empty ()) {
                 extraMsg << ", "sv;
             }
-            extraMsg << Characters::Format ("terminated by signal {}"_f, int (*wTermSig));
+            extraMsg << "terminated by signal {}"_f(int (*wTermSig));
         }
         if (wStopSig) {
             if (not extraMsg.empty ()) {
